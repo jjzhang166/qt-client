@@ -37,13 +37,13 @@ WHERE ((bomitem_item_id=item_id)
  AND (bomitem_parent_item_id=&lt;? value(&quot;item_id&quot;) ?>)
 
 &lt;? if exists(&quot;expiredDays&quot;) ?>
- AND (bomitem_expires > (CURRENT_DATE - &lt;? value(&quot;expiredDays&quot;) ?>
+ AND (bomitem_expires > (CURRENT_DATE - &lt;? value(&quot;expiredDays&quot;) ?>))
 &lt;? else ?>
  AND (bomitem_expires > CURRENT_DATE)
 &lt;? endif ?>
 
-&lt;? if exists(&quot;futureDays&quot;) ?>
- AND (bomitem_effective &lt;= (CURRENT_DATE + &lt;? value(&quot;expiredDays&quot;) ?>
+&lt;? if exists(&quot;effectiveDays&quot;) ?>
+ AND (bomitem_effective &lt;= (CURRENT_DATE + &lt;? value(&quot;effectiveDays&quot;) ?>))
 &lt;? else ?>
  AND (bomitem_effective &lt;= CURRENT_DATE)
 &lt;? endif ?>

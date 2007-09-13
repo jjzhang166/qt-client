@@ -201,6 +201,7 @@ void dspCheckRegister::sFillList()
 	     "       currConcat(bankaccnt_curr_id) AS currAbbr "
              "FROM apchk, vend, bankaccnt "
              "WHERE ( (apchk_vend_id=vend_id) "
+             "  AND   (NOT apchk_void)"
              " AND (apchk_checkdate BETWEEN :startDate AND :endDate) "
 	     " AND (bankaccnt_id=apchk_bankaccnt_id) "
              " AND (apchk_bankaccnt_id=:bankaccnt_id) )"

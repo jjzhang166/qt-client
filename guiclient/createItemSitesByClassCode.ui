@@ -1223,7 +1223,7 @@
               <item>
                <widget class="QCheckBox" name="_stocked" >
                 <property name="text" >
-                 <string>Make-To-Stock</string>
+                 <string>Stocked</string>
                 </property>
                </widget>
               </item>

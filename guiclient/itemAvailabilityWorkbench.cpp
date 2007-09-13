@@ -1356,6 +1356,9 @@ void itemAvailabilityWorkbench::sPopulateMenuAvail( QMenu *pMenu, QTreeWidgetIte
 
 void itemAvailabilityWorkbench::sPopulateMenuCosted( QMenu * pMenu, QTreeWidgetItem * pSelected )
 {
+  if(!_privleges->check("ViewCosts"))
+    return;
+ 
   if (((XTreeWidgetItem *)pSelected)->id() != -1)
     pMenu->insertItem(tr("Maintain Item Costs..."), this, SLOT(sMaintainItemCosts()), 0);
 

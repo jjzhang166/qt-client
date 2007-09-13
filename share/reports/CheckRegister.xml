@@ -3,9 +3,9 @@
  <title>Check Register</title>
  <name>CheckRegister</name>
  <description></description>
- <parameter name="bankaccnt_id" ></parameter>
- <parameter name="endDate" ></parameter>
- <parameter name="startDate" ></parameter>
+ <parameter default="" active="false" type="" name="bankaccnt_id" ></parameter>
+ <parameter default="" active="false" type="" name="endDate" ></parameter>
+ <parameter default="" active="false" type="" name="startDate" ></parameter>
  <size>Letter</size>
  <portrait/>
  <topmargin>50</topmargin>
@@ -16,11 +16,11 @@
   <name>head</name>
   <sql>SELECT bankaccnt_name,
        bankaccnt_descrip,
-       formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
+       formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
        curr_symbol
   FROM bankaccnt, curr_symbol
- WHERE ((bankaccnt_id=&lt;? value(&quot;bankaccnt_id&quot;) ?>)
+ WHERE ((bankaccnt_id=&lt;? value("bankaccnt_id") ?>)
    AND  (bankaccnt_curr_id = curr_id));</sql>
  </querysource>
  <querysource>
@@ -38,16 +38,28 @@
        curr_symbol as currAbbr
   FROM apchk, vend, curr_symbol, bankaccnt
  WHERE ( (apchk_vend_id=vend_id)
-   AND   (apchk_checkdate BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-   AND   (apchk_bankaccnt_id=&lt;? value(&quot;bankaccnt_id&quot;) ?>)
+   AND   (apchk_checkdate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+   AND   (apchk_bankaccnt_id=&lt;? value("bankaccnt_id") ?>)
    AND   (apchk_curr_id = curr_id) )
 ORDER BY apchk_number</sql>
+ </querysource>
+ <querysource>
+  <name>total</name>
+  <sql>SELECT formatMoney(SUM(currToCurr(apchk_curr_id, bankaccnt_curr_id, apchk_amount, apchk_checkdate))) AS f_amount,
+       currConcat(bankaccnt_curr_id) AS currAbbr
+  FROM apchk, vend, bankaccnt
+ WHERE ( (apchk_vend_id=vend_id)
+   AND   (NOT apchk_void)
+   AND   (apchk_checkdate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+   AND   (apchk_bankaccnt_id=bankaccnt_id)
+   AND   (apchk_bankaccnt_id=&lt;? value("bankaccnt_id") ?>) )
+GROUP BY bankaccnt_curr_id;</sql>
  </querysource>
  <rpthead>
   <height>161</height>
   <label>
    <rect>
-    <x>5</x>
+    <x>112</x>
     <y>140</y>
     <width>50</width>
     <height>15</height>
@@ -59,46 +71,7 @@ ORDER BY apchk_number</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Void</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>155</ystart>
-   <xend>745</xend>
-   <yend>155</yend>
-   <weight>2</weight>
-  </line>
-  <label>
-   <rect>
-    <x>560</x>
-    <y>140</y>
-    <width>90</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Check Date</string>
-  </label>
-  <label>
-   <rect>
-    <x>25</x>
-    <y>65</y>
-    <width>110</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Bank Account:</string>
+   <string>Printed</string>
   </label>
   <label>
    <rect>
@@ -118,6 +91,22 @@ ORDER BY apchk_number</sql>
   </label>
   <label>
    <rect>
+    <x>560</x>
+    <y>140</y>
+    <width>90</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Check Date</string>
+  </label>
+  <label>
+   <rect>
     <x>270</x>
     <y>5</y>
     <width>475</width>
@@ -132,92 +121,6 @@ ORDER BY apchk_number</sql>
    <vcenter/>
    <string>Check Register</string>
   </label>
-  <field>
-   <rect>
-    <x>550</x>
-    <y>85</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>enddate</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>225</x>
-    <y>140</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Check. #</string>
-  </label>
-  <label>
-   <rect>
-    <x>444</x>
-    <y>65</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Start Date:</string>
-  </label>
-  <label>
-   <rect>
-    <x>170</x>
-    <y>140</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Posted</string>
-  </label>
-  <field>
-   <rect>
-    <x>550</x>
-    <y>65</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>startdate</column>
-   </data>
-  </field>
   <field>
    <rect>
     <x>140</x>
@@ -239,6 +142,163 @@ ORDER BY apchk_number</sql>
   </field>
   <field>
    <rect>
+    <x>550</x>
+    <y>85</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>enddate</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>170</x>
+    <y>140</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Posted</string>
+  </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>155</ystart>
+   <xend>745</xend>
+   <yend>155</yend>
+   <weight>2</weight>
+  </line>
+  <label>
+   <rect>
+    <x>60</x>
+    <y>140</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Misc.</string>
+  </label>
+  <label>
+   <rect>
+    <x>25</x>
+    <y>65</y>
+    <width>110</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Bank Account:</string>
+  </label>
+  <label>
+   <rect>
+    <x>330</x>
+    <y>140</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Vendor</string>
+  </label>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>140</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Void</string>
+  </label>
+  <field>
+   <rect>
+    <x>550</x>
+    <y>65</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>startdate</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>444</x>
+    <y>65</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Start Date:</string>
+  </label>
+  <label>
+   <rect>
+    <x>225</x>
+    <y>140</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Check. #</string>
+  </label>
+  <field>
+   <rect>
     <x>140</x>
     <y>65</y>
     <width>150</width>
@@ -258,38 +318,6 @@ ORDER BY apchk_number</sql>
   </field>
   <label>
    <rect>
-    <x>112</x>
-    <y>140</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Printed</string>
-  </label>
-  <label>
-   <rect>
-    <x>60</x>
-    <y>140</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Misc.</string>
-  </label>
-  <label>
-   <rect>
     <x>655</x>
     <y>140</y>
     <width>90</width>
@@ -304,22 +332,6 @@ ORDER BY apchk_number</sql>
    <vcenter/>
    <string>Amount</string>
   </label>
-  <label>
-   <rect>
-    <x>330</x>
-    <y>140</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Vendor</string>
-  </label>
  </rpthead>
  <pghead>
   <firstpage/>
@@ -327,6 +339,22 @@ ORDER BY apchk_number</sql>
  </pghead>
  <pghead>
   <height>21</height>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>0</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Void</string>
+  </label>
   <label>
    <rect>
     <x>225</x>
@@ -361,22 +389,6 @@ ORDER BY apchk_number</sql>
   </label>
   <label>
    <rect>
-    <x>170</x>
-    <y>0</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Posted</string>
-  </label>
-  <label>
-   <rect>
     <x>655</x>
     <y>0</y>
     <width>90</width>
@@ -393,9 +405,9 @@ ORDER BY apchk_number</sql>
   </label>
   <label>
    <rect>
-    <x>112</x>
+    <x>170</x>
     <y>0</y>
-    <width>50</width>
+    <width>100</width>
     <height>15</height>
    </rect>
    <font>
@@ -403,32 +415,9 @@ ORDER BY apchk_number</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Printed</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>15</ystart>
-   <xend>745</xend>
-   <yend>13</yend>
-   <weight>2</weight>
-  </line>
-  <label>
-   <rect>
-    <x>60</x>
-    <y>0</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Misc.</string>
+   <string>Posted</string>
   </label>
   <label>
    <rect>
@@ -446,9 +435,16 @@ ORDER BY apchk_number</sql>
    <vcenter/>
    <string>Vendor</string>
   </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>15</ystart>
+   <xend>745</xend>
+   <yend>15</yend>
+   <weight>2</weight>
+  </line>
   <label>
    <rect>
-    <x>5</x>
+    <x>112</x>
     <y>0</y>
     <width>50</width>
     <height>15</height>
@@ -460,7 +456,23 @@ ORDER BY apchk_number</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Void</string>
+   <string>Printed</string>
+  </label>
+  <label>
+   <rect>
+    <x>60</x>
+    <y>0</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Misc.</string>
   </label>
  </pghead>
  <section>
@@ -472,28 +484,9 @@ ORDER BY apchk_number</sql>
    <height>16</height>
    <field>
     <rect>
-     <x>60</x>
+     <x>225</x>
      <y>0</y>
-     <width>50</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_misc</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>750</x>
-     <y>0</y>
-     <width>35</width>
+     <width>100</width>
      <height>15</height>
     </rect>
     <font>
@@ -502,10 +495,10 @@ ORDER BY apchk_number</sql>
      <weight>bold</weight>
     </font>
     <left/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
-     <column>currAbbr</column>
+     <column>number</column>
     </data>
    </field>
    <field>
@@ -529,28 +522,9 @@ ORDER BY apchk_number</sql>
    </field>
    <field>
     <rect>
-     <x>5</x>
+     <x>60</x>
      <y>0</y>
      <width>50</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_void</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>655</x>
-     <y>0</y>
-     <width>90</width>
      <height>15</height>
     </rect>
     <font>
@@ -562,7 +536,7 @@ ORDER BY apchk_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_amount</column>
+     <column>f_misc</column>
     </data>
    </field>
    <field>
@@ -605,9 +579,9 @@ ORDER BY apchk_number</sql>
    </field>
    <field>
     <rect>
-     <x>170</x>
+     <x>750</x>
      <y>0</y>
-     <width>50</width>
+     <width>35</width>
      <height>15</height>
     </rect>
     <font>
@@ -619,14 +593,14 @@ ORDER BY apchk_number</sql>
     <top/>
     <data>
      <query>detail</query>
-     <column>f_posted</column>
+     <column>currAbbr</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>225</x>
+     <x>170</x>
      <y>0</y>
-     <width>100</width>
+     <width>50</width>
      <height>15</height>
     </rect>
     <font>
@@ -638,16 +612,54 @@ ORDER BY apchk_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>number</column>
+     <column>f_posted</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>5</x>
+     <y>0</y>
+     <width>50</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <hcenter/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_void</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>655</x>
+     <y>0</y>
+     <width>90</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_amount</column>
     </data>
    </field>
   </detail>
  </section>
  <pgfoot>
   <height>21</height>
-  <field>
+  <label>
    <rect>
-    <x>104</x>
+    <x>0</x>
     <y>0</y>
     <width>100</width>
     <height>15</height>
@@ -655,15 +667,12 @@ ORDER BY apchk_number</sql>
    <font>
     <face>Arial</face>
     <size>8</size>
-    <weight>bold</weight>
+    <weight>normal</weight>
    </font>
-   <left/>
+   <right/>
    <vcenter/>
-   <data>
-    <query>Context Query</query>
-    <column>report_date</column>
-   </data>
-  </field>
+   <string>Report Date:</string>
+  </label>
   <label>
    <rect>
     <x>600</x>
@@ -699,9 +708,9 @@ ORDER BY apchk_number</sql>
     <column>page_number</column>
    </data>
   </field>
-  <label>
+  <field>
    <rect>
-    <x>0</x>
+    <x>104</x>
     <y>0</y>
     <width>100</width>
     <height>15</height>
@@ -709,12 +718,15 @@ ORDER BY apchk_number</sql>
    <font>
     <face>Arial</face>
     <size>8</size>
-    <weight>normal</weight>
+    <weight>bold</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
-   <string>Report Date:</string>
-  </label>
+   <data>
+    <query>Context Query</query>
+    <column>report_date</column>
+   </data>
+  </field>
  </pgfoot>
  <rptfoot>
   <height>21</height>
@@ -736,26 +748,6 @@ ORDER BY apchk_number</sql>
     <query>head</query>
     <column>curr_symbol</column>
    </data>
-  </field>
-  <field>
-   <rect>
-    <x>655</x>
-    <y>0</y>
-    <width>90</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>detail</query>
-    <column>apchk_amount_bankcurr</column>
-   </data>
-   <tracktotal builtin="true" >money</tracktotal>
   </field>
   <line>
    <xstart>565</xstart>
@@ -780,5 +772,24 @@ ORDER BY apchk_number</sql>
    <vcenter/>
    <string>Total:</string>
   </label>
+  <field>
+   <rect>
+    <x>655</x>
+    <y>0</y>
+    <width>90</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>total</query>
+    <column>f_amount</column>
+   </data>
+  </field>
  </rptfoot>
 </report>

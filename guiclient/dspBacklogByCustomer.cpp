@@ -189,9 +189,8 @@ void dspBacklogByCustomer::sAddToPackingListBatch()
   {
     if ( (cursor->isSelected()) && (cursor->altId() == -1) )
     {
-      q.prepare("SELECT addToPackingListBatch(:sohead_id, :cosmisc_id) AS result;");
+      q.prepare("SELECT addToPackingListBatch(:sohead_id) AS result;");
       q.bindValue(":sohead_id", cursor->id());
-      q.bindValue(":cosmisc_id", cursor->altId());
       q.exec();
       if (q.lastError().type() != QSqlError::None)
       {

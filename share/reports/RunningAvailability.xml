@@ -282,387 +282,7 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
  AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>));</sql>
  </querysource>
  <rpthead>
-  <height>233</height>
-  <label>
-   <rect>
-    <x>250</x>
-    <y>55</y>
-    <width>50</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>UOM:</string>
-  </label>
-  <label>
-   <rect>
-    <x>430</x>
-    <y>75</y>
-    <width>160</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Show Planned Orders:</string>
-  </label>
-  <label>
-   <rect>
-    <x>467</x>
-    <y>125</y>
-    <width>120</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Reorder Level:</string>
-  </label>
-  <field>
-   <rect>
-    <x>305</x>
-    <y>55</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>item_invuom</column>
-   </data>
-  </field>
-  <field>
-   <rect>
-    <x>595</x>
-    <y>75</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>showplnord</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>310</x>
-    <y>125</y>
-    <width>50</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>QOH:</string>
-  </label>
-  <label>
-   <rect>
-    <x>385</x>
-    <y>215</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Ordered</string>
-  </label>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>55</y>
-    <width>80</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Item:</string>
-  </label>
-  <label>
-   <rect>
-    <x>555</x>
-    <y>215</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Balance</string>
-  </label>
-  <label>
-   <rect>
-    <x>260</x>
-    <y>145</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Order Multiple:</string>
-  </label>
-  <label>
-   <rect>
-    <x>467</x>
-    <y>145</y>
-    <width>120</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Order up to Qty.:</string>
-  </label>
-  <label>
-   <rect>
-    <x>467</x>
-    <y>215</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Received</string>
-  </label>
-  <field>
-   <rect>
-    <x>365</x>
-    <y>125</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>info</query>
-    <column>qoh</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>270</x>
-    <y>215</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Due Date</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>227</ystart>
-   <xend>740</xend>
-   <yend>227</yend>
-   <weight>2</weight>
-  </line>
-  <field>
-   <rect>
-    <x>595</x>
-    <y>145</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>info</query>
-    <column>ordertoqty</column>
-   </data>
-  </field>
-  <field>
-   <rect>
-    <x>365</x>
-    <y>145</y>
-    <width>100</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>info</query>
-    <column>multorderqty</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>270</x>
-    <y>5</y>
-    <width>475</width>
-    <height>40</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Running Availability</string>
-  </label>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>125</y>
-    <width>80</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Warehouse:</string>
-  </label>
-  <label>
-   <rect>
-    <x>290</x>
-    <y>10</y>
-    <width>37</width>
-    <height>16</height>
-   </rect>
-   <font>
-    <face>Helvetica</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>Label</string>
-  </label>
-  <field>
-   <rect>
-    <x>95</x>
-    <y>55</y>
-    <width>150</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>item_number</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>5</x>
-    <y>215</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Order Type/#</string>
-  </label>
-  <field>
-   <rect>
-    <x>95</x>
-    <y>125</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>warehouse</column>
-   </data>
-  </field>
+  <height>234</height>
   <field>
    <rect>
     <x>595</x>
@@ -684,7 +304,148 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
   </field>
   <label>
    <rect>
-    <x>645</x>
+    <x>467</x>
+    <y>125</y>
+    <width>120</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Reorder Level:</string>
+  </label>
+  <label>
+   <rect>
+    <x>10</x>
+    <y>55</y>
+    <width>80</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Item:</string>
+  </label>
+  <label>
+   <rect>
+    <x>467</x>
+    <y>145</y>
+    <width>120</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Order up to Qty.:</string>
+  </label>
+  <field>
+   <rect>
+    <x>595</x>
+    <y>145</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>info</query>
+    <column>ordertoqty</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>215</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Order Type/#</string>
+  </label>
+  <label>
+   <rect>
+    <x>10</x>
+    <y>125</y>
+    <width>80</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Warehouse:</string>
+  </label>
+  <field>
+   <rect>
+    <x>305</x>
+    <y>55</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>item_invuom</column>
+   </data>
+  </field>
+  <line>
+   <xstart>5</xstart>
+   <ystart>230</ystart>
+   <xend>740</xend>
+   <yend>230</yend>
+   <weight>2</weight>
+  </line>
+  <label>
+   <rect>
+    <x>430</x>
+    <y>75</y>
+    <width>160</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Show Planned Orders:</string>
+  </label>
+  <label>
+   <rect>
+    <x>270</x>
     <y>215</y>
     <width>100</width>
     <height>15</height>
@@ -696,12 +457,31 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Running Availability</string>
+   <string>Due Date</string>
   </label>
   <field>
    <rect>
     <x>95</x>
-    <y>95</y>
+    <y>55</y>
+    <width>150</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>item_number</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>95</x>
+    <y>125</y>
     <width>300</width>
     <height>20</height>
    </rect>
@@ -714,7 +494,157 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    <vcenter/>
    <data>
     <query>head</query>
-    <column>item_descrip2</column>
+    <column>warehouse</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>555</x>
+    <y>215</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Balance</string>
+  </label>
+  <label>
+   <rect>
+    <x>467</x>
+    <y>215</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Received</string>
+  </label>
+  <label>
+   <rect>
+    <x>385</x>
+    <y>215</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Ordered</string>
+  </label>
+  <label>
+   <rect>
+    <x>250</x>
+    <y>55</y>
+    <width>50</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>UOM:</string>
+  </label>
+  <label>
+   <rect>
+    <x>310</x>
+    <y>125</y>
+    <width>50</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>QOH:</string>
+  </label>
+  <label>
+   <rect>
+    <x>110</x>
+    <y>215</y>
+    <width>150</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Parent Item Number</string>
+  </label>
+  <field>
+   <rect>
+    <x>365</x>
+    <y>145</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>info</query>
+    <column>multorderqty</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>260</x>
+    <y>145</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Order Multiple:</string>
+  </label>
+  <field>
+   <rect>
+    <x>365</x>
+    <y>125</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>info</query>
+    <column>qoh</column>
    </data>
   </field>
   <field>
@@ -738,31 +668,62 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
   </field>
   <label>
    <rect>
-    <x>110</x>
-    <y>215</y>
-    <width>150</width>
-    <height>15</height>
+    <x>270</x>
+    <y>5</y>
+    <width>475</width>
+    <height>40</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
+    <size>18</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Running Availability</string>
+  </label>
+  <field>
+   <rect>
+    <x>595</x>
+    <y>75</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
    </font>
    <left/>
    <vcenter/>
-   <string>Parent Item Number</string>
-  </label>
- </rpthead>
- <pghead>
-  <firstpage/>
-  <height>6</height>
- </pghead>
- <pghead>
-  <height>26</height>
+   <data>
+    <query>head</query>
+    <column>showplnord</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>95</x>
+    <y>95</y>
+    <width>300</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>item_descrip2</column>
+   </data>
+  </field>
   <label>
    <rect>
-    <x>270</x>
-    <y>5</y>
+    <x>645</x>
+    <y>215</y>
     <width>100</width>
     <height>15</height>
    </rect>
@@ -773,31 +734,15 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Due Date</string>
+   <string>Running Availability</string>
   </label>
-  <label>
-   <rect>
-    <x>5</x>
-    <y>5</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Order Type/#</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>20</ystart>
-   <xend>745</xend>
-   <yend>20</yend>
-   <weight>2</weight>
-  </line>
+ </rpthead>
+ <pghead>
+  <firstpage/>
+  <height>6</height>
+ </pghead>
+ <pghead>
+  <height>26</height>
   <label>
    <rect>
     <x>467</x>
@@ -832,22 +777,6 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
   </label>
   <label>
    <rect>
-    <x>110</x>
-    <y>5</y>
-    <width>150</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Parent Item Number</string>
-  </label>
-  <label>
-   <rect>
     <x>385</x>
     <y>5</y>
     <width>80</width>
@@ -861,6 +790,22 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    <hcenter/>
    <vcenter/>
    <string>Ordered</string>
+  </label>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>5</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Order Type/#</string>
   </label>
   <label>
    <rect>
@@ -878,6 +823,45 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    <vcenter/>
    <string>Running Availability</string>
   </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>20</ystart>
+   <xend>745</xend>
+   <yend>20</yend>
+   <weight>2</weight>
+  </line>
+  <label>
+   <rect>
+    <x>270</x>
+    <y>5</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Due Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>110</x>
+    <y>5</y>
+    <width>150</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Parent Item Number</string>
+  </label>
  </pghead>
  <section>
   <name>detail</name>
@@ -885,12 +869,12 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    <key>
     <query>detail</query>
    </key>
-   <height>17</height>
+   <height>16</height>
    <field>
     <rect>
-     <x>467</x>
+     <x>5</x>
      <y>0</y>
-     <width>80</width>
+     <width>100</width>
      <height>15</height>
     </rect>
     <font>
@@ -898,11 +882,11 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
      <size>8</size>
      <weight>bold</weight>
     </font>
-    <right/>
+    <left/>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>qtyreceived</column>
+     <column>ordernumber</column>
     </data>
    </field>
    <field>
@@ -922,6 +906,25 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
     <data>
      <query>detail</query>
      <column>duedate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>467</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_qtyreceived</column>
     </data>
    </field>
    <field>
@@ -965,44 +968,6 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    </field>
    <field>
     <rect>
-     <x>385</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>qtyordered</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>5</x>
-     <y>0</y>
-     <width>100</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>ordernumber</column>
-    </data>
-   </field>
-   <field>
-    <rect>
      <x>555</x>
      <y>0</y>
      <width>80</width>
@@ -1020,45 +985,29 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
      <column>f_balance</column>
     </data>
    </field>
+   <field>
+    <rect>
+     <x>385</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_qtyordered</column>
+    </data>
+   </field>
   </detail>
  </section>
  <pgfoot>
   <height>16</height>
-  <label>
-   <rect>
-    <x>600</x>
-    <y>0</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Page:</string>
-  </label>
-  <field>
-   <rect>
-    <x>705</x>
-    <y>0</y>
-    <width>40</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>Context Query</query>
-    <column>page_number</column>
-   </data>
-  </field>
   <field>
    <rect>
     <x>102</x>
@@ -1080,6 +1029,22 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
   </field>
   <label>
    <rect>
+    <x>600</x>
+    <y>0</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Page:</string>
+  </label>
+  <label>
+   <rect>
     <x>0</x>
     <y>0</y>
     <width>100</width>
@@ -1094,5 +1059,24 @@ WHERE ((itemsite_item_id=&lt;? value("item_id") ?>)
    <vcenter/>
    <string>Report Date:</string>
   </label>
+  <field>
+   <rect>
+    <x>705</x>
+    <y>0</y>
+    <width>40</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Context Query</query>
+    <column>page_number</column>
+   </data>
+  </field>
  </pgfoot>
 </report>

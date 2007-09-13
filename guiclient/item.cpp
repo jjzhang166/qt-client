@@ -1393,6 +1393,18 @@ void item::sEditItemSite()
     q.exec();
     if (q.first())
       params.append("itemsite_id", q.value("itemsite_id").toInt());
+    else
+    {
+      if((_mode == cEdit) &&
+         (QMessageBox::question(this, tr("No Item Site Found"),
+            tr("There is no Item Site for this item. Would you like to create one now?"),
+            QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes))
+        sNewItemSite();
+      else if(_mode != cEdit)
+        QMessageBox::information(this, tr("No Item Site Found"),
+          tr("There is no Item Site for this item."));
+      return; 
+    }
   }
   else
     params.append("itemsite_id", _itemSite->id());

@@ -139,6 +139,11 @@ void packingListBatch::sPrintBatch()
   QPrinter printer;
   bool     setupPrinter = TRUE;
 
+  XSqlQuery updateq;
+  updateq.prepare("UPDATE pack "
+		  "SET pack_printed=TRUE "
+		  "WHERE (pack_id=:packid);" );
+
   ParameterList params;
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
@@ -174,7 +179,17 @@ void packingListBatch::sPrintBatch()
 
     orReport report(q.value(osmiscid > 0 ? "packform" : "pickform").toString(), params);
     if (report.isValid() && report.print(&printer, setupPrinter))
+    {
         setupPrinter = FALSE;
+	updateq.bindValue(":packid", q.value("pack_id").toInt());
+	updateq.exec();
+	if (updateq.lastError().type() != QSqlError::None)
+	{
+	  systemError(this, updateq.lastError().databaseText(), __FILE__, __LINE__);
+	  orReport::endMultiPrint(&printer);
+	  return;
+	}
+    }
     else
     {
       report.reportError(this);
@@ -192,14 +207,6 @@ void packingListBatch::sPrintBatch()
   }
   else
   {
-    q.exec( "UPDATE pack "
-	    "SET pack_printed=TRUE;" );
-    if (q.lastError().type() != QSqlError::None)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-
     sFillList();
   }
 }

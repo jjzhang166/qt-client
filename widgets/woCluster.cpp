@@ -196,50 +196,31 @@ void WoLineEdit::sParse()
       QString sql = QString( "SELECT wo_id "
                              "FROM wo "
                              "WHERE ((wo_number=%1)"
-                             " AND (wo_subnumber=%2)"
-                             " AND (" )
+                             " AND (wo_subnumber=%2)" )
                     .arg(soNumber)
                     .arg(subNumber);
 
   //  Add in the Status checks
+      QStringList statuses;
       if (_woType & cWoOpen)
-      {
-        sql += "(wo_status='O')";
-        statusCheck = TRUE;
-      }
+        statuses << "(wo_status='O')";
 
       if (_woType & cWoExploded)
-      {
-        if (statusCheck)
-          sql += " OR ";
-        sql += "(wo_status='E')";
-        statusCheck = TRUE;
-      }
+        statuses << "(wo_status='E')";
 
       if (_woType & cWoReleased)
-      {
-        if (statusCheck)
-          sql += " OR ";
-        sql += "(wo_status='R')";
-        statusCheck = TRUE;
-      }
+        statuses << "(wo_status='R')";
 
       if (_woType & cWoIssued)
-      {
-        if (statusCheck)
-          sql += " OR ";
-        sql += "(wo_status='I')";
-        statusCheck = TRUE;
-      }
+        statuses << "(wo_status='I')";
 
       if (_woType & cWoClosed)
-      {
-        if (statusCheck)
-          sql += " OR ";
-        sql += "(wo_status='C')";
-      }
+        statuses << "(wo_status='C')";
 
-      sql += "))";
+      if(!statuses.isEmpty())
+        sql += " AND (" + statuses.join(" OR ") + ")";
+
+      sql += ")";
 
       XSqlQuery wo(sql);
 
