@@ -400,8 +400,8 @@ menuSales::menuSales(OpenMFGGUIClient *pParent) :
     { "sa.dspSalesHistoryByProductCategory", tr("by &Product Category..."), SLOT(sDspSalesHistoryByProductCategory()), analysisHistMenu, _privleges->check("ViewSalesHistory"), NULL, NULL, true , NULL },
     { "sa.dspSalesHistoryByItem", tr("by &Item..."), SLOT(sDspSalesHistoryByItem()), analysisHistMenu, _privleges->check("ViewSalesHistory"), NULL, NULL, true , NULL },
 
-    // Sales | Analysis | Breif Sales History
-    { "menu",	tr("Brei&f Sales History"),           (char*)analysisBrfHistMenu,	analysisMenu,	true,	NULL, NULL, true, NULL },
+    // Sales | Analysis | Brief Sales History
+    { "menu",	tr("Brie&f Sales History"),           (char*)analysisBrfHistMenu,	analysisMenu,	true,	NULL, NULL, true, NULL },
     { "sa.dspBriefSalesHistoryBySalesRep", tr("by &Sales Rep..."), SLOT(sDspBriefSalesHistoryBySalesRep()), analysisBrfHistMenu, _privleges->check("ViewSalesHistory"), NULL, NULL, true , NULL },
     { "separator",	NULL,	NULL,	analysisBrfHistMenu,	true,		NULL, NULL, true, NULL },
     { "sa.dspBriefSalesHistoryByCustomerType", tr("by Customer &Type..."), SLOT(sDspBriefSalesHistoryByCustomerType()), analysisBrfHistMenu, _privleges->check("ViewSalesHistory"), NULL, NULL, true , NULL },
