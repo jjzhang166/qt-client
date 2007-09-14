@@ -310,6 +310,14 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
 
 bool transferOrder::insertPlaceholder()
 {
+  if(_trnsWhs->id() == -1)
+  {
+    QMessageBox::critical(this, tr("No Transit Warehouse"),
+      tr("There are no transit warehouses defined in the system."
+         " You must define at least one transit warehouse to use Transfer Orders.") );
+    return false;
+  }
+
   q.prepare("INSERT INTO tohead ("
 	    "          tohead_id, tohead_number, tohead_src_warehous_id,"
 	    "          tohead_trns_warehous_id, tohead_dest_warehous_id,"
@@ -1643,8 +1651,10 @@ void transferOrder::newTransferOrder(int pSrcWhsid, int pDstWhsid)
     params.append("dst_warehous_id", pDstWhsid);
 
   transferOrder *newdlg = new transferOrder();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  if(newdlg->set(params) != UndefinedError)
+    omfgThis->handleNewWindow(newdlg);
+  else
+    delete newdlg;
 }
 
 void transferOrder::editTransferOrder( int pId , bool enableSaveAndAdd )

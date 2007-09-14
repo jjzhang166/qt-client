@@ -265,7 +265,7 @@
         <item row="4" column="3" >
          <widget class="WComboBox" name="_trnsWhs" >
           <property name="allowNull" >
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="type" >
            <enum>WComboBox::Transit</enum>
@@ -1005,26 +1005,6 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>AddressCluster</class>
-   <extends>QWidget</extends>
-   <header>addresscluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>CurrDisplay</class>
-   <extends>QWidget</extends>
-   <header>currcluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Comments</class>
-   <extends>QWidget</extends>
-   <header>comments.h</header>
-  </customwidget>
-  <customwidget>
-   <class>WComboBox</class>
-   <extends>XComboBox</extends>
-   <header>wcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>XURLLabel</class>
    <extends>QLabel</extends>
    <header>xurllabel.h</header>
@@ -1040,14 +1020,24 @@
    <header>xcombobox.h</header>
   </customwidget>
   <customwidget>
+   <class>CurrCluster</class>
+   <extends>CurrDisplay</extends>
+   <header>currcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WComboBox</class>
+   <extends>XComboBox</extends>
+   <header>wcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CurrDisplay</class>
+   <extends>QWidget</extends>
+   <header>currcluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>ToitemTableView</class>
    <extends>QTableView</extends>
    <header>toitemTableView.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ProjectCluster</class>
-   <extends>QWidget</extends>
-   <header>projectcluster.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
@@ -1055,14 +1045,24 @@
    <header>xlineedit.h</header>
   </customwidget>
   <customwidget>
+   <class>Comments</class>
+   <extends>QWidget</extends>
+   <header>comments.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AddressCluster</class>
+   <extends>QWidget</extends>
+   <header>addresscluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>ContactCluster</class>
    <extends>QWidget</extends>
    <header>contactcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>CurrCluster</class>
-   <extends>CurrDisplay</extends>
-   <header>currcluster.h</header>
+   <class>ProjectCluster</class>
+   <extends>QWidget</extends>
+   <header>projectcluster.h</header>
   </customwidget>
   <customwidget>
    <class>XTreeWidget</class>

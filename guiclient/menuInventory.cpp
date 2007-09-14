@@ -607,12 +607,7 @@ void menuInventory::sTransferTrans()
 
 void menuInventory::sNewTransferOrder()
 {
-  ParameterList params;
-  params.append("mode", "new");
-
-  transferOrder *newdlg = new transferOrder();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  transferOrder::newTransferOrder(-1, -1);
 }
 
 void menuInventory::sTransferOrders()
