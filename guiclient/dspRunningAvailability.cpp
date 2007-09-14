@@ -73,6 +73,7 @@
 #include "workOrder.h"
 
 #define ORDERTYPE_COL		0
+#define ORDERNUM_COL		1
 #define DUEDATE_COL		3
 #define RUNNINGAVAIL_COL	7
 
@@ -169,13 +170,13 @@ void dspRunningAvailability::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelec
 {
   int menuItem;
 
-  if (pSelected->text(ORDERTYPE_COL) == tr("Planned W/O (firmed)") ||
-      pSelected->text(ORDERTYPE_COL) == tr("Planned W/O") ||
-      pSelected->text(ORDERTYPE_COL) == tr("Planned P/O (firmed)") ||
-      pSelected->text(ORDERTYPE_COL) == tr("Planned P/O") )
+  if (pSelected->text(ORDERNUM_COL) == tr("Planned W/O (firmed)") ||
+      pSelected->text(ORDERNUM_COL) == tr("Planned W/O") ||
+      pSelected->text(ORDERNUM_COL) == tr("Planned P/O (firmed)") ||
+      pSelected->text(ORDERNUM_COL) == tr("Planned P/O") )
   {
-    if (pSelected->text(ORDERTYPE_COL) == tr("Planned W/O (firmed)") ||
-	pSelected->text(ORDERTYPE_COL) == tr("Planned P/O (firmed)") )
+    if (pSelected->text(ORDERNUM_COL) == tr("Planned W/O (firmed)") ||
+	pSelected->text(ORDERNUM_COL) == tr("Planned P/O (firmed)") )
       pMenu->insertItem(tr("Soften Order..."), this, SLOT(sSoftenOrder()), 0);
     else
       pMenu->insertItem(tr("Firm Order..."), this, SLOT(sFirmOrder()), 0);
@@ -185,8 +186,8 @@ void dspRunningAvailability::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelec
   }
   
   else if (pSelected->text(ORDERTYPE_COL).contains("W/O") &&
-	  !(pSelected->text(ORDERTYPE_COL) == tr("Planned W/O Req. (firmed)") ||
-	    pSelected->text(ORDERTYPE_COL) == tr("Planned W/O Req.")))
+	  !(pSelected->text(ORDERNUM_COL) == tr("Planned W/O Req. (firmed)") ||
+	    pSelected->text(ORDERNUM_COL) == tr("Planned W/O Req.")))
     pMenu->insertItem(tr("View Work Order Details..."), this, SLOT(sViewWo()), 0);
   else if (pSelected->text(ORDERTYPE_COL) == "S/O")
   {
