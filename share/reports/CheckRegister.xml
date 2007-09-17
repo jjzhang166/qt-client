@@ -40,6 +40,7 @@
  WHERE ( (apchk_vend_id=vend_id)
    AND   (apchk_checkdate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
    AND   (apchk_bankaccnt_id=&lt;? value("bankaccnt_id") ?>)
+   AND   (apchk_bankaccnt_id=bankaccnt_id)
    AND   (apchk_curr_id = curr_id) )
 ORDER BY apchk_number</sql>
  </querysource>

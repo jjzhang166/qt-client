@@ -268,6 +268,22 @@ WHERE ((pr_itemsite_id=itemsite_id)
   AND  (itemsite_item_id=&lt;? value("item_id") ?>) )
 &lt;? endif ?>
 
+UNION SELECT -1 AS orderid, -1 AS altorderid,
+             '' AS ordertype,
+             '' AS ordernumber,
+             -1 AS sequence,
+             'Initial QOH' AS item_number,
+             '' AS duedate,
+             date('1/1/1978') AS r_duedate,
+             FALSE AS late,
+             '' AS f_qtyordered,
+             '' AS f_qtyreceived,
+             '' AS f_balance,
+             itemsite_qtyonhand AS balance
+        FROM itemsite
+       WHERE ((itemsite_item_id=&lt;? value(&quot;item_id&quot;) ?>)
+         AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>))
+
 ORDER BY r_duedate, sequence;</sql>
  </querysource>
  <querysource>
