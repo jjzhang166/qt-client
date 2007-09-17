@@ -319,6 +319,15 @@ void warehouse::sSave()
     return;
   }
 
+  if (_transit->isChecked() && ! _costcat->isValid())
+  {
+    QMessageBox::information(this, tr("Cannot Save Warehouse"),
+			     tr("<p>You must select a Cost Category for this "
+				"Transit Warehouse before saving it.") );
+    _costcat->setFocus();
+    return;
+  }
+
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
