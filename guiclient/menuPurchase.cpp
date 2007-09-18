@@ -168,7 +168,7 @@ menuPurchase::menuPurchase(OpenMFGGUIClient *Pparent) :
 
   actionProperties acts[] = {
     //  Purchase | Requisitions
-    { "menu", tr("Purchase &Requests"), (char*)reportsPrMenu, mainMenu, true, NULL, NULL, true , NULL },
+    { "menu", tr("Purchase &Requests"), (char*)requestMenu, mainMenu, true, NULL, NULL, true , NULL },
     { "po.dspPurchaseRequestsByPlannerCode", tr("by &Planner Code..."), SLOT(sDspPurchaseReqsByPlannerCode()), requestMenu, _privleges->check("ViewPurchaseRequests"), new QPixmap(":/images/dspPurchaseReqByPlannerCode.png"), toolBar, true , "Purchase Requests by Planner Code" },
     { "po.dspPurchaseRequestsByItem", tr("by &Item..."), SLOT(sDspPurchaseReqsByItem()), requestMenu, _privleges->check("ViewPurchaseRequests"), NULL, NULL, true , NULL },
 
@@ -217,10 +217,8 @@ menuPurchase::menuPurchase(OpenMFGGUIClient *Pparent) :
     { "separator", NULL, NULL, reportsMenu, true, NULL, NULL, true , NULL },
  
     //  Purchasing | Reports | Purchase Requests
-    { "menu", tr("Purchase Re&quests"), (char*)reportsPrMenu, reportsMenu, true, NULL, NULL, true , NULL },
-    { "po.dspPurchaseRequestsByPlannerCode", tr("by &Planner Code..."), SLOT(sDspPurchaseReqsByPlannerCode()), reportsPrMenu, _privleges->check("ViewPurchaseRequests"), NULL, NULL, true , "Purchase Requests by Planner Code" },
-    { "po.dspPurchaseRequestsByItem", tr("by &Item..."), SLOT(sDspPurchaseReqsByItem()), reportsPrMenu, _privleges->check("ViewPurchaseRequests"), NULL, NULL, true , NULL },
-    { "separator", NULL, NULL, reportsMenu, true, NULL, NULL, true , NULL },
+    // { "menu", tr("Purchase Re&quests"), (char*)requestMenu, reportsMenu, true, NULL, NULL, true , NULL },
+    // { "separator", NULL, NULL, reportsMenu, true, NULL, NULL, true , NULL },
     
     //  Purchasing | Reports | P/Os
     { "menu", tr("&Purchase Orders"), (char*)reportsPoMenu, reportsMenu, true, NULL, NULL, true , NULL },
