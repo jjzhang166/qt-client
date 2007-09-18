@@ -783,6 +783,15 @@ void issueToShipping::sFillList()
 
 void issueToShipping::sBcFind()
 {
+  if (_bc->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("No Bar Code scanned"),
+			 tr("<p>Cannot search for Items by Bar Code without a "
+			    "Bar Code."));
+    _bc->setFocus();
+    return;
+  }
+
   // find item that matches barcode and is a line item in this order.
   // then call issueLineToShipping passing in params to preset and
   // run the issue button.
@@ -809,7 +818,7 @@ void issueToShipping::sBcFind()
             "          ON ( (shipitem_shiphead_id=shiphead_id)"
 	    "               AND (NOT shiphead_shipped"
 	    "               AND shiphead_order_type=<? value(\"ordertype\") ?>) )"
-            "        ) ON  (shipitem_orderitem_id=coitem_id) "
+            "        ) ON  (shipitem_orderitem_id=toitem_id) "
             " WHERE ((toitem_item_id=item_id)"
             "   AND  (toitem_status NOT IN ('C', 'X'))"
             "   AND  (toitem_tohead_id=<? value(\"tohead_id\") ?>)"
@@ -882,7 +891,7 @@ void issueToShipping::sBcFind()
 	"HAVING ((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) - COALESCE(SUM(shipitem_qty),0)) > 0);"
 	"<? elseif exists(\"tohead_id\") ?>"
 	"SELECT toitem_id,"
-	"       noNeg(toitem_qty_ordered - toitem_qty_shipped + toitem_qtyreturned) - COALESCE(SUM(shipitem_qty), 0) AS remaining"
+	"       noNeg(toitem_qty_ordered - toitem_qty_shipped) - COALESCE(SUM(shipitem_qty), 0) AS remaining"
 	"  FROM toitem LEFT OUTER JOIN"
 	"         ( shipitem JOIN shiphead"
 	"           ON ( (shipitem_shiphead_id=shiphead_id)"
