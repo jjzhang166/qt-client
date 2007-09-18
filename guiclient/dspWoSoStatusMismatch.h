@@ -78,6 +78,7 @@ public slots:
     virtual void sCloseWo();
     virtual void sPopulateMenu( Q3PopupMenu * pMenu, Q3ListViewItem * pSelected );
     virtual void sFillList();
+    virtual void sViewWomatlreq();
 
 protected slots:
     virtual void languageChange();

@@ -62,6 +62,7 @@
 #include <parameter.h>
 #include "closeWo.h"
 #include "rptWoSoStatus.h"
+#include "dspWoMaterialsByWorkOrder.h"
 
 /*
  *  Constructs a dspWoSoStatus as a child of 'parent', with the
@@ -150,6 +151,17 @@ void dspWoSoStatus::sPopulateMenu(Q3PopupMenu *pMenu, Q3ListViewItem *pSelected)
     pMenu->insertItem(tr("View W/O Material Requirements..."), this, SLOT(sViewWomatlreq()), 0);
 
   pMenu->insertItem(tr("Close W/O..."), this, SLOT(sCloseWo()), 0);
+}
+
+void dspWoSoStatus::sViewWomatlreq()
+{
+  ParameterList params;
+  params.append("wo_id", _wo->id());
+  params.append("run");
+
+  dspWoMaterialsByWorkOrder *newdlg = new dspWoMaterialsByWorkOrder();
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
 }
 
 void dspWoSoStatus::sFillList()
