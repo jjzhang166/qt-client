@@ -251,7 +251,7 @@ void dspItemsByCharacteristic::sFillList(int pItemid, bool pLocal)
                " AND (charass_target_id=item_id)"
                " AND (charass_char_id=char_id)"
                " AND (char_id=:char_id)"
-               " AND (charass_value ~ :charass_value) " );
+               " AND (charass_value ~* :charass_value) " );
     
   if (!_showInactive->isChecked())
     sql += " AND (item_active)";

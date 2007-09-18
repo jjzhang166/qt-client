@@ -781,6 +781,7 @@ void customer::sCheck()
 		  QMessageBox::Yes,
 		  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
 	  {
+                _number->clear();
 		_number->setFocus();
 		return;
 	  }

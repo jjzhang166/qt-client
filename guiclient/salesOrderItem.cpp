@@ -201,25 +201,16 @@ salesOrderItem::salesOrderItem(QWidget* parent, const char* name, bool modal, Qt
 
   sPriceGroup();
 
-
-  //If not multi-warehouse hide whs control
-  if (!_metrics->boolean("MultiWhs"))
-  {
-    _warehouseLit->hide();
-    _warehouse->hide();
-    _supplyWarehouseLit->hide();
-    _supplyWarehouse->hide();
-  }
 }
 
 salesOrderItem::~salesOrderItem()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 void salesOrderItem::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
 enum SetResponse salesOrderItem::set(const ParameterList &pParams)
@@ -517,6 +508,19 @@ enum SetResponse salesOrderItem::set(const ParameterList &pParams)
   {
     _item->setId(param.toInt());
     _item->setReadOnly(TRUE);
+  }
+
+  //If not multi-warehouse and a sales order hide whs control
+  //Leave the warehouse controls available on Quotes as it is
+  // possible to create quote line items without an itemsite
+  // and the user needs a means to come back and specify the
+  // warehouse after an itemsite is created.
+  if (ISORDER(_mode) && !_metrics->boolean("MultiWhs"))
+  {
+    _warehouseLit->hide();
+    _warehouse->hide();
+    _supplyWarehouseLit->hide();
+    _supplyWarehouse->hide();
   }
 
   _modified = false;

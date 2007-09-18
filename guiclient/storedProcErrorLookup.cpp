@@ -370,6 +370,14 @@ void initErrorLookupHash()
   { "deleteCustomer",	-4, QString("custhist"),		-2, "" },
   { "deleteCustomer",	-5, QString("A/R Open"),		-2, "" },
   { "deleteCustomer",	-6, QString("ipsass"),			 0, "" },
+  { "deleteCustomer",   -7, TR("The selected Customer cannot be deleted as there "
+                               "are still Invoices assigned to it. You must "
+                               "delete all of the selected Customer's Invoices "
+                               "before you may delete it"),      0, "" },
+  { "deleteCustomer",   -8, TR("The selected Customer cannot be deleted as there "
+                               "are still Quotes assigned to it. You must "
+                               "delete all of the selected Customer's Quotes "
+                               "before you may delete it"),      0, "" },
 
   { "deleteIncident",	-1, TR("This Incident cannot be deleted as there are "
 			       "To-Do List Items associated with it."),

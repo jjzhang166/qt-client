@@ -118,7 +118,10 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
   if (_x_metrics)
   {
     if (!_x_metrics->boolean("MultiWhs"))
+    {
       this->hide();
+      setAll();
+    }
   }
 }
 

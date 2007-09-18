@@ -193,7 +193,7 @@ void dspCustomersByCharacteristic::sFillList(int pCustid, bool pLocal)
 		" <? if exists(\"emptyValue\") ?>"
 		" AND (charass_value IS NULL OR LENGTH(TRIM(charass_value)) = 0)"
 		" <? else ?>"
-		" AND (charass_value ~ <? value(\"value\") ?>) "
+		" AND (charass_value ~* <? value(\"value\") ?>) "
 		" <? endif ?>"
 		") "
 		"<? else ?>"	// if does not have characteristic

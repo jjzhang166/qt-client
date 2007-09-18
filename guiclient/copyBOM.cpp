@@ -57,8 +57,8 @@
 
 #include "copyBOM.h"
 
-#include <qvariant.h>
-#include <qmessagebox.h>
+#include <QVariant>
+#include <QMessageBox>
 
 /*
  *  Constructs a copyBOM as a child of 'parent', with the
@@ -70,15 +70,19 @@
 copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : QDialog(parent, name, modal, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
 
-    // signals and slots connections
-    connect(_source, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
-    connect(_target, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
-    connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-    init();
+  // signals and slots connections
+  connect(_source, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
+  connect(_target, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
+  connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+
+  _captive = FALSE;
+
+  _source->setType(ItemLineEdit::cGeneralManufactured | ItemLineEdit::cPlanning);
+  _target->setType(ItemLineEdit::cGeneralManufactured | ItemLineEdit::cPlanning);
 }
 
 /*
@@ -86,7 +90,7 @@ copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
  */
 copyBOM::~copyBOM()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 /*
@@ -95,19 +99,10 @@ copyBOM::~copyBOM()
  */
 void copyBOM::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
-
-void copyBOM::init()
-{
-  _captive = FALSE;
-
-  _source->setType(ItemLineEdit::cGeneralManufactured);
-  _target->setType(ItemLineEdit::cGeneralManufactured);
-}
-
-enum SetResponse copyBOM::set(ParameterList &pParams)
+enum SetResponse copyBOM::set(const ParameterList &pParams)
 {
   _captive = TRUE;
 

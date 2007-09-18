@@ -32,7 +32,7 @@ WHERE ( (charass_target_type='C')
  &lt;? if exists("emptyValue") ?>
  AND (charass_value IS NULL OR LENGTH(TRIM(charass_value)) = 0)
  &lt;? else ?>
- AND (charass_value ~ &lt;? value("value") ?>)
+ AND (charass_value ~* &lt;? value("value") ?>)
  &lt;? endif ?>
 ) 
 &lt;? else ?>

@@ -93,6 +93,8 @@ postProduction::postProduction(QWidget* parent, const char* name, bool modal, Qt
     connect(_immediateTransfer, SIGNAL(toggled(bool)), _transferWarehouse, SLOT(setEnabled(bool)));
     connect(_backflushOperations, SIGNAL(toggled(bool)), this, SLOT(sBackflushOperationsToggled(bool)));
 
+    _captive = false;
+
     _wo->setType(cWoExploded | cWoReleased | cWoIssued);
 
     omfgThis->inputManager()->notify(cBCWorkOrder, this, this, SLOT(sCatchWoid(int)));
@@ -124,7 +126,7 @@ postProduction::postProduction(QWidget* parent, const char* name, bool modal, Qt
  */
 postProduction::~postProduction()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 /*
@@ -133,7 +135,7 @@ postProduction::~postProduction()
  */
 void postProduction::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
 enum SetResponse postProduction::set(const ParameterList &pParams)

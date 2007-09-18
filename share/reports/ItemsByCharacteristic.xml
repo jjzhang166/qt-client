@@ -48,7 +48,7 @@
    AND (charass_target_id=item_id)
    AND (charass_char_id=char_id)
    AND (char_id=&lt;? value(&quot;char_id&quot;) ?>)
-   AND (charass_value ~ &lt;? value(&quot;value&quot;) ?>)
+   AND (charass_value ~* &lt;? value(&quot;value&quot;) ?>)
 &lt;? if not exists(&quot;showInactive&quot;) ?>
    AND (item_active)
 &lt;? endif ?>
