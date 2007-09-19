@@ -803,11 +803,12 @@ void customer::sCheck()
 		  QMessageBox::Yes,
 		  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
 	  {
+            _number->clear();
 	    _number->setFocus();
-		return;
+            return;
 	  }
 	  else
-		sLoadProspect(q.value("cust_id").toInt());
+            sLoadProspect(q.value("cust_id").toInt());
 	}
 	else if ((q.value("type").toInt() == 3) && (_notice))
 	{
@@ -819,8 +820,9 @@ void customer::sCheck()
 		  QMessageBox::Yes,
 		  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
 	  {
-		_number->setFocus();
-		return;
+            _number->clear();
+            _number->setFocus();
+            return;
 	  }
 	  else
 	    sLoadCrmAcct(q.value("cust_id").toInt());
