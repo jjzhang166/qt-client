@@ -150,6 +150,7 @@ transferOrder::transferOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   _srcWhs->setId(_preferences->value("PreferredWarehouse").toInt());
   _trnsWhs->setId(_metrics->value("DefaultTransitWarehouse").toInt());
   _dstWhs->setId(_preferences->value("PreferredWarehouse").toInt());
+  getWhsInfo(_trnsWhs->id(), _trnsWhs);
 
   _taxCache.clear();
 
@@ -2025,10 +2026,8 @@ void transferOrder::getWhsInfo(const int pid, const QWidget* pwidget)
     }
     else if (pwidget == _trnsWhs)
     {
-      if (_shippingForm->isValid())
-	_shippingForm->setId(whsq.value("warehous_shipform_id").toInt());
-      if (_shipVia->isValid())
-	_shipVia->setId(whsq.value("warehous_shipvia").toInt());
+      _shippingForm->setId(whsq.value("warehous_shipform_id").toInt());
+      _shipVia->setId(whsq.value("warehous_shipvia_id").toInt());
       _shippingComments->setText(whsq.value("warehous_shipcomments").toString());
     }
   }
