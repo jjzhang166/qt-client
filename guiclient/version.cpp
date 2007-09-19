@@ -68,8 +68,8 @@ QString _Name = " Client";
 #endif
 
 #ifndef __USEALTVERSION__
-QString _Version   = "2.2.0";
-QString _dbVersion = "2.2.0";
+QString _Version   = "2.2.1";
+QString _dbVersion = "2.2.1";
 #else
 #include "../altVersion.cpp"
 #endif
