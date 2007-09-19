@@ -233,6 +233,13 @@ void dspWoScheduleByParameterList::sPrint()
   if (_showOnlyTopLevel->isChecked())
     params.append("showOnlyTopLevel");
 
+  if(_sortByStartDate->isChecked())
+    params.append("sortByStartDate");
+  else if(_sortByDueDate->isChecked())
+    params.append("sortByDueDate");
+  else
+    params.append("sortByItemNumber");
+
   rptWoScheduleByParameterList newdlg(this, "", TRUE);
   newdlg.set(params);
 }
@@ -712,8 +719,14 @@ void dspWoScheduleByParameterList::sFillList()
   if (_showOnlyTopLevel->isChecked())
     sql += " AND (wo_ordtype<>'W')";
 
-  sql += ") "
-         " ORDER BY wo_startdate, wo_number, wo_subnumber";
+  sql += ") ";
+
+  if(_sortByStartDate->isChecked())
+    sql += " ORDER BY wo_startdate, wo_number, wo_subnumber";
+  else if(_sortByDueDate->isChecked())
+    sql += " ORDER BY wo_duedate, wo_number, wo_subnumber";
+  else
+    sql += " ORDER BY item_number, wo_number, wo_subnumber";
 
   q.prepare(sql);
   _warehouse->bindValue(q);

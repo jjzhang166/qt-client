@@ -15,10 +15,10 @@
   <widget class="QWidget" name="widget" >
    <layout class="QVBoxLayout" >
     <property name="margin" >
-     <number>5</number>
+     <number>9</number>
     </property>
     <property name="spacing" >
-     <number>5</number>
+     <number>6</number>
     </property>
     <item>
      <layout class="QHBoxLayout" >
@@ -26,7 +26,7 @@
        <number>0</number>
       </property>
       <property name="spacing" >
-       <number>5</number>
+       <number>6</number>
       </property>
       <item>
        <layout class="QVBoxLayout" >
@@ -34,10 +34,13 @@
          <number>0</number>
         </property>
         <property name="spacing" >
-         <number>5</number>
+         <number>6</number>
         </property>
         <item>
          <widget class="ParameterGroup" name="_parameter" >
+          <property name="focusPolicy" >
+           <enum>Qt::StrongFocus</enum>
+          </property>
           <property name="title" >
            <string/>
           </property>
@@ -49,13 +52,55 @@
            <number>0</number>
           </property>
           <property name="spacing" >
-           <number>0</number>
+           <number>6</number>
           </property>
           <item>
            <widget class="WarehouseGroup" name="_warehouse" >
+            <property name="focusPolicy" >
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="title" >
              <string/>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="_sortByGroup" >
+            <property name="title" >
+             <string/>
+            </property>
+            <layout class="QVBoxLayout" >
+             <property name="margin" >
+              <number>5</number>
+             </property>
+             <property name="spacing" >
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="_sortByStartDate" >
+               <property name="text" >
+                <string>Sort by Start Date</string>
+               </property>
+               <property name="checked" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="_sortByDueDate" >
+               <property name="text" >
+                <string>Sort by Due Date</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="_sortByItemNumber" >
+               <property name="text" >
+                <string>Sort by Item Number</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -68,7 +113,7 @@
             </property>
             <property name="sizeHint" >
              <size>
-              <width>145</width>
+              <width>0</width>
               <height>20</height>
              </size>
             </property>
@@ -103,7 +148,11 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="DateCluster" name="_dates" />
+             <widget class="DateCluster" name="_dates" >
+              <property name="focusPolicy" >
+               <enum>Qt::StrongFocus</enum>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer>
@@ -277,140 +326,146 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" >
-      <property name="margin" >
-       <number>0</number>
+     <widget class="QFrame" name="frame" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>5</hsizetype>
+        <vsizetype>7</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
       </property>
-      <property name="spacing" >
-       <number>0</number>
+      <property name="frameShape" >
+       <enum>QFrame::NoFrame</enum>
       </property>
-      <item>
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="_workOrdersLit" >
-          <property name="enabled" >
-           <bool>true</bool>
-          </property>
-          <property name="text" >
-           <string>Work Orders:</string>
-          </property>
-          <property name="alignment" >
-           <set>Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="XTreeWidget" native="1" name="_wo" >
-          <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>7</hsizetype>
-            <vsizetype>7</vsizetype>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="_postProduction" >
-          <property name="enabled" >
-           <bool>false</bool>
-          </property>
-          <property name="text" >
-           <string>Post P&amp;roduction</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+R</string>
-          </property>
-          <property name="autoDefault" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="_postOperations" >
-          <property name="enabled" >
-           <bool>false</bool>
-          </property>
-          <property name="text" >
-           <string>Post &amp;Operations</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+O</string>
-          </property>
-          <property name="autoDefault" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="_printTraveler" >
-          <property name="enabled" >
-           <bool>false</bool>
-          </property>
-          <property name="text" >
-           <string>Print &amp;Traveler</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+T</string>
-          </property>
-          <property name="autoDefault" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
-           <number>0</number>
-          </property>
-          <item>
-           <spacer>
-            <property name="orientation" >
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType" >
-             <enum>QSizePolicy::Expanding</enum>
-            </property>
-            <property name="sizeHint" >
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="_autoUpdate" >
-            <property name="text" >
-             <string>Automatically Update</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
+      <property name="frameShadow" >
+       <enum>QFrame::Plain</enum>
+      </property>
+      <layout class="QVBoxLayout" >
+       <property name="margin" >
+        <number>0</number>
+       </property>
+       <property name="spacing" >
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="_workOrdersLit" >
+         <property name="enabled" >
+          <bool>true</bool>
+         </property>
+         <property name="text" >
+          <string>Work Orders:</string>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="XTreeWidget" name="_wo" >
+         <property name="sizePolicy" >
+          <sizepolicy>
+           <hsizetype>7</hsizetype>
+           <vsizetype>7</vsizetype>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" >
+         <property name="margin" >
+          <number>0</number>
+         </property>
+         <property name="spacing" >
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="_postProduction" >
+           <property name="enabled" >
+            <bool>false</bool>
+           </property>
+           <property name="text" >
+            <string>Post P&amp;roduction</string>
+           </property>
+           <property name="shortcut" >
+            <string>Alt+R</string>
+           </property>
+           <property name="autoDefault" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_postOperations" >
+           <property name="enabled" >
+            <bool>false</bool>
+           </property>
+           <property name="text" >
+            <string>Post &amp;Operations</string>
+           </property>
+           <property name="shortcut" >
+            <string>Alt+O</string>
+           </property>
+           <property name="autoDefault" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_printTraveler" >
+           <property name="enabled" >
+            <bool>false</bool>
+           </property>
+           <property name="text" >
+            <string>Print &amp;Traveler</string>
+           </property>
+           <property name="shortcut" >
+            <string>Alt+T</string>
+           </property>
+           <property name="autoDefault" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <property name="margin" >
+            <number>0</number>
+           </property>
+           <property name="spacing" >
+            <number>0</number>
+           </property>
+           <item>
+            <spacer>
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType" >
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" >
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="_autoUpdate" >
+             <property name="text" >
+              <string>Automatically Update</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -419,20 +474,19 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>DateCluster</class>
-   <extends>QWidget</extends>
-   <header>datecluster.h</header>
-  </customwidget>
-  <customwidget>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
   </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
-   <extends>QWidget</extends>
+   <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
-   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DateCluster</class>
+   <extends>QWidget</extends>
+   <header>datecluster.h</header>
   </customwidget>
   <customwidget>
    <class>ParameterGroup</class>
@@ -443,6 +497,9 @@
  <tabstops>
   <tabstop>_parameter</tabstop>
   <tabstop>_warehouse</tabstop>
+  <tabstop>_sortByStartDate</tabstop>
+  <tabstop>_sortByDueDate</tabstop>
+  <tabstop>_sortByItemNumber</tabstop>
   <tabstop>_dates</tabstop>
   <tabstop>_showOnlyRI</tabstop>
   <tabstop>_showOnlyTopLevel</tabstop>

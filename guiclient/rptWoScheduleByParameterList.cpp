@@ -213,6 +213,15 @@ enum SetResponse rptWoScheduleByParameterList::set(ParameterList &pParams)
   param = pParams.value("showOnlyTopLevel", &valid);
   _showOnlyTopLevel->setChecked(valid);
 
+  param = pParams.value("sortByStartDate", &valid);
+  _sortByStartDate->setChecked(valid);
+
+  param = pParams.value("sortByDueDate", &valid);
+  _sortByDueDate->setChecked(valid);
+
+  param = pParams.value("sortByItemNumber", &valid);
+  _sortByItemNumber->setChecked(valid);
+
   if (pParams.inList("print"))
   {
     sPrint();

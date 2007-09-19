@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>rptWoScheduleByParameterList</class>
  <widget class="QDialog" name="rptWoScheduleByParameterList" >
   <property name="geometry" >
@@ -344,25 +341,19 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
+   <class>WarehouseGroup</class>
+   <extends>QGroupBox</extends>
+   <header>warehousegroup.h</header>
+  </customwidget>
+  <customwidget>
    <class>DateCluster</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
   </customwidget>
   <customwidget>
    <class>ParameterGroup</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>WarehouseGroup</class>
-   <extends>QWidget</extends>
-   <header>warehousegroup.h</header>
-   <container>1</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <tabstops>
