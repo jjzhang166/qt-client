@@ -382,9 +382,6 @@
                   <property name="allowNull" >
                    <bool>true</bool>
                   </property>
-                  <property name="type" >
-                   <enum>XComboBox::ShippingForms</enum>
-                  </property>
                  </widget>
                 </item>
                </layout>
@@ -876,11 +873,7 @@
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="WComboBox" name="_warehouse" >
-                          <property name="type" >
-                           <enum>WComboBox::Shipping</enum>
-                          </property>
-                         </widget>
+                         <widget class="WComboBox" name="_warehouse" />
                         </item>
                         <item>
                          <spacer>
@@ -1742,14 +1735,17 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="baseVisible" >
-             <bool>false</bool>
-            </property>
-            <property name="currencyEditable" stdset="0" >
+            <property name="currencyEditable" >
              <bool>false</bool>
             </property>
             <property name="currencyVisible" >
              <bool>false</bool>
+            </property>
+            <property name="baseVisible" >
+             <bool>false</bool>
+            </property>
+            <property name="allowNegative" >
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1858,13 +1854,13 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="baseVisible" >
-             <bool>false</bool>
-            </property>
-            <property name="currencyEditable" stdset="0" >
+            <property name="currencyEditable" >
              <bool>false</bool>
             </property>
             <property name="currencyVisible" >
+             <bool>false</bool>
+            </property>
+            <property name="baseVisible" >
              <bool>false</bool>
             </property>
            </widget>
@@ -1959,7 +1955,7 @@
           </item>
           <item row="6" column="4" >
            <widget class="CurrCluster" name="_total" >
-            <property name="currencyEditable" stdset="0" >
+            <property name="currencyEditable" >
              <bool>false</bool>
             </property>
             <property name="currencyVisible" >
@@ -1982,7 +1978,7 @@
           </item>
           <item row="7" column="4" >
            <widget class="CurrCluster" name="_balance" >
-            <property name="currencyEditable" stdset="0" >
+            <property name="currencyEditable" >
              <bool>false</bool>
             </property>
             <property name="currencyVisible" >
@@ -2225,7 +2221,7 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="currencyEditable" stdset="0" >
+              <property name="currencyEditable" >
                <bool>false</bool>
               </property>
              </widget>
@@ -2355,54 +2351,14 @@
    <header>xlineedit.h</header>
   </customwidget>
   <customwidget>
-   <class>ProjectCluster</class>
-   <extends>QWidget</extends>
-   <header>projectcluster.h</header>
-  </customwidget>
-  <customwidget>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>CurrDisplay</class>
+   <class>GLCluster</class>
    <extends>QWidget</extends>
-   <header>currcluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DLineEdit</class>
-   <extends>XLineEdit</extends>
-   <header>datecluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>XComboBox</class>
-   <extends>QComboBox</extends>
-   <header>xcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>WComboBox</class>
-   <extends>XComboBox</extends>
-   <header>wcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>XTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>xtreewidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>CustInfo</class>
-   <extends>QWidget</extends>
-   <header>custcluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Comments</class>
-   <extends>QWidget</extends>
-   <header>comments.h</header>
-  </customwidget>
-  <customwidget>
-   <class>XURLLabel</class>
-   <extends>QLabel</extends>
-   <header>xurllabel.h</header>
+   <header>glcluster.h</header>
   </customwidget>
   <customwidget>
    <class>AddressCluster</class>
@@ -2410,9 +2366,49 @@
    <header>addresscluster.h</header>
   </customwidget>
   <customwidget>
-   <class>GLCluster</class>
+   <class>ProjectCluster</class>
    <extends>QWidget</extends>
-   <header>glcluster.h</header>
+   <header>projectcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustInfo</class>
+   <extends>QWidget</extends>
+   <header>custcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>xtreewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XURLLabel</class>
+   <extends>QLabel</extends>
+   <header>xurllabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XComboBox</class>
+   <extends>QComboBox</extends>
+   <header>xcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CurrDisplay</class>
+   <extends>QWidget</extends>
+   <header>currcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WComboBox</class>
+   <extends>XComboBox</extends>
+   <header>wcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DLineEdit</class>
+   <extends>XLineEdit</extends>
+   <header>datecluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Comments</class>
+   <extends>QWidget</extends>
+   <header>comments.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
