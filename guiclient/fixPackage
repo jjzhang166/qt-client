@@ -14,7 +14,7 @@ if ! [ -d $PGDIR/lib ]; then
   echo "Cannot find PGDIR/lib"
   exit
 fi
-FRAMEWORKSDIR=../bin/OpenMFG.app/Contents/Frameworks
+FRAMEWORKSDIR=../bin/xtuple.app/Contents/Frameworks
 
 if ! [ -d $FRAMEWORKSDIR ]; then
   mkdir $FRAMEWORKSDIR
@@ -59,13 +59,13 @@ install_name_tool -change $QTDIR/lib/libQtCore.4.dylib @executable_path/../Frame
 install_name_tool -id @executable_path/../Frameworks/libQtCore.4.dylib libQtCore.4.dylib
 
 cd ../MacOS
-install_name_tool -change $QTDIR/lib/libQt3Support.4.dylib @executable_path/../Frameworks/libQt3Support.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtAssistantClient.4.dylib @executable_path/../Frameworks/libQtAssistantClient.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib OpenMFG
-install_name_tool -change $QTDIR/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib OpenMFG
+install_name_tool -change $QTDIR/lib/libQt3Support.4.dylib @executable_path/../Frameworks/libQt3Support.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtAssistantClient.4.dylib @executable_path/../Frameworks/libQtAssistantClient.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib xtuple
+install_name_tool -change $QTDIR/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib xtuple
 
 if ! [ -d "../plugins" ]; then
   mkdir ../plugins

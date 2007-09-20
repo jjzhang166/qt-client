@@ -1,5 +1,5 @@
 PROG=`basename $0`
-VERFILE=OpenMFGGUIClient/version.cpp
+VERFILE=guiclient/version.cpp
 BUILD=false
 DEMO=false
 BASEDIR=`pwd`
@@ -33,6 +33,8 @@ bundle() {
     return 1
   fi
 
+  STARTDIR=`pwd`
+
   APPNAME="$1"
   if expr "$APPNAME" : ".*\.app" ; then
     BINARY="$APPNAME"
@@ -59,11 +61,11 @@ bundle() {
   fi
 
   if ! $DEMO ; then
-    if ! cp -R -L "$BASEDIR/bin/$BINARY" "$BUNDLEDIR" ; then
+    if ! mv "$BASEDIR/bin/$BINARY" "$BUNDLEDIR" ; then
       return 4
     fi
   else
-    if ! cp -R -L "$BASEDIR/bin/$BINARY" "$BUNDLEDIR"/"${APPNAME}_Demo.app" ; then
+    if ! mv "$BASEDIR/bin/$BINARY" "$BUNDLEDIR"/"${APPNAME}_Demo.app" ; then
       return 4
     fi
     BINARY="${APPNAME}_Demo.app"
@@ -95,6 +97,8 @@ bundle() {
   if ! hdiutil create -fs HFS+ -volname "$BUNDLENAME" -srcfolder "$BUNDLENAME" "$BUNDLENAME".dmg ; then
     return 5
   fi
+
+  cd $STARTDIR
 }
 
 ARGS=`getopt hbd:x $*`
@@ -152,7 +156,7 @@ if [ -z "$PGDIR" ] ; then
   exit 2
 fi
 
-if [ ! -e "$BASEDIR"/bin/OpenMFG.app -o ! -e "$BASEDIR"/bin/BatchManager.app ] ; then
+if [ ! -e "$BASEDIR"/bin/xtuple.app ] ; then
   if ! $BUILD ; then
     echo "Building even though not explicitly told to do so"
   fi
@@ -176,30 +180,21 @@ if $BUILD ; then
   make
 fi
 
-cd "$BASEDIR"/OpenMFGGUIClient
+cd "$BASEDIR"/guiclient
 ./fixPackage
 
 # PostBooks is just a copy of OpenMFG with some text changed
 cd "$BASEDIR"/bin
-cp -R -L OpenMFG.app PostBooks.app
-mv PostBooks.app/Contents/MacOS/OpenMFG PostBooks.app/Contents/MacOS/PostBooks
-sed -e "s,\\(<string>\\)OpenMFG\\(</string>\\),\\1PostBooks\\2," -i .OpenMFG PostBooks.app/Contents/Info.plist
 
-if ! bundle OpenMFG "${BASEDIR}/.." ; then
-  exit $?
-fi
+for FILE in OpenMFG PostBooks ; do
+  rm -rf ${FILE}.app
+  cp -R -L xtuple.app ${FILE}.app
+  mv ${FILE}.app/Contents/MacOS/xtuple ${FILE}.app/Contents/MacOS/${FILE}
+  sed -e "s,\\(<string>\\)xtuple\\(</string>\\),\\1${FILE}\\2," -i .xtuple ${FILE}.app/Contents/Info.plist
 
-if ! bundle PostBooks "${BASEDIR}/.." ; then
-  exit $?
-fi
-
-if ! $DEMO ; then
-  cd "$BASEDIR"/batchManager
-  ./fixPackage
-
-  if ! bundle BatchManager "$BASEDIR/.." ; then
+  if ! bundle ${FILE} "${BASEDIR}/.." ; then
     exit $?
   fi
-fi
+done
 
 echo "DONE!"
