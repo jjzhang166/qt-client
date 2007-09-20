@@ -169,7 +169,7 @@ void copyPurchaseOrder::sPopulatePoInfo(int)
                "       warehous_code,"
                "       formatQty(poitem_qty_ordered),"
                "       formatSalesPrice(poitem_unitprice),"
-               "       formatMoney(poitem_qty_ordered * poitem_unitprice / poitem_invvenduomratio) "
+               "       formatMoney(poitem_qty_ordered * poitem_unitprice) "
                "FROM poitem LEFT OUTER JOIN "
                "      (itemsite JOIN item ON (itemsite_item_id=item_id) "
                "                JOIN warehous ON (itemsite_warehous_id=warehous_id) ) "
