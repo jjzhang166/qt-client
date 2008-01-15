@@ -14,17 +14,23 @@
   </property>
   <widget class="QWidget" name="widget" >
    <layout class="QHBoxLayout" >
-    <property name="margin" >
+    <property name="spacing" >
      <number>5</number>
     </property>
-    <property name="spacing" >
+    <property name="leftMargin" >
+     <number>5</number>
+    </property>
+    <property name="topMargin" >
+     <number>5</number>
+    </property>
+    <property name="rightMargin" >
+     <number>5</number>
+    </property>
+    <property name="bottomMargin" >
      <number>5</number>
     </property>
     <item>
      <layout class="QVBoxLayout" >
-      <property name="margin" >
-       <number>0</number>
-      </property>
       <property name="spacing" >
        <number>0</number>
       </property>
@@ -49,9 +55,6 @@
     </item>
     <item>
      <layout class="QVBoxLayout" >
-      <property name="margin" >
-       <number>0</number>
-      </property>
       <property name="spacing" >
        <number>5</number>
       </property>
@@ -64,9 +67,6 @@
       </item>
       <item>
        <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
         <property name="spacing" >
          <number>0</number>
         </property>
@@ -117,9 +117,6 @@
       </item>
       <item>
        <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
         <property name="spacing" >
          <number>0</number>
         </property>
@@ -142,6 +139,42 @@
            <string>Post</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" >
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType" >
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" >
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="XCheckBox" name="_printJournal" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="text" >
+             <string>P&amp;rint Sales Journal</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
@@ -169,6 +202,11 @@
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
+  <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
+  </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>

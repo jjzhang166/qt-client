@@ -60,8 +60,9 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QStatusBar>
 #include <QVariant>
+
+#include  <openreports.h>
 
 #include "failedPostList.h"
 #include "getGLDistDate.h"
@@ -72,54 +73,57 @@
 unpostedInvoices::unpostedInvoices(QWidget* parent, const char* name, Qt::WFlags fl)
     : QMainWindow(parent, name, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-    (void)statusBar();
+  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
+  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_invchead, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*)));
+  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
+  connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));
+  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_invchead, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*)));
-    connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-    connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));
-    connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  _invchead->addColumn(tr("Invoice #"),  _orderColumn, Qt::AlignLeft   );
+  _invchead->addColumn(tr("Prnt'd"),     _orderColumn, Qt::AlignCenter );
+  _invchead->addColumn(tr("S/O #"),      _orderColumn, Qt::AlignLeft   );
+  _invchead->addColumn(tr("Customer"),   -1,           Qt::AlignLeft   );
+  _invchead->addColumn(tr("Invc. Date"), _dateColumn,  Qt::AlignCenter );
+  _invchead->addColumn(tr("Ship Date"),  _dateColumn,  Qt::AlignCenter );
+  _invchead->addColumn(tr("G/L Dist Date"), _dateColumn,  Qt::AlignCenter );
+  _invchead->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    statusBar()->hide();
-    
-    _invchead->addColumn(tr("Invoice #"),  _orderColumn, Qt::AlignLeft   );
-    _invchead->addColumn(tr("Prnt'd"),     _orderColumn, Qt::AlignCenter );
-    _invchead->addColumn(tr("S/O #"),      _orderColumn, Qt::AlignLeft   );
-    _invchead->addColumn(tr("Customer"),   -1,           Qt::AlignLeft   );
-    _invchead->addColumn(tr("Invc. Date"), _dateColumn,  Qt::AlignCenter );
-    _invchead->addColumn(tr("Ship Date"),  _dateColumn,  Qt::AlignCenter );
-    _invchead->addColumn(tr("G/L Dist Date"), _dateColumn,  Qt::AlignCenter );
-    _invchead->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  if (! _privleges->check("ChangeARInvcDistDate"))
+    _invchead->hideColumn(6);
 
-    if (! _privleges->check("ChangeARInvcDistDate"))
-      _invchead->hideColumn(6);
+  if (_privleges->check("MaintainMiscInvoices"))
+  {
+    _new->setEnabled(TRUE);
+    connect(_invchead, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+    connect(_invchead, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
+    connect(_invchead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
+  }
+  else
+    connect(_invchead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    if (_privleges->check("MaintainMiscInvoices"))
-    {
-      _new->setEnabled(TRUE);
-      connect(_invchead, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_invchead, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-      connect(_invchead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    }
-    else
-      connect(_invchead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+  if (_privleges->check("MaintainMiscInvoices") || _privleges->check("ViewMiscInvoices"))
+    connect(_invchead, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
 
-    if (_privleges->check("MaintainMiscInvoices") || _privleges->check("ViewMiscInvoices"))
-      connect(_invchead, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
+  if (_privleges->check("PrintInvoices"))
+    connect(_invchead, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
+  
+  if (_privleges->check("PostMiscInvoices"))
+  {
+    connect(_invchead, SIGNAL(valid(bool)), _post, SLOT(setEnabled(bool)));
+    connect(_invchead, SIGNAL(valid(bool)), _printJournal, SLOT(setEnabled(bool)));
+  }
 
-    if (_privleges->check("PrintInvoices"))
-      connect(_invchead, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
-    
-    if (_privleges->check("PostMiscInvoices"))
-      connect(_invchead, SIGNAL(valid(bool)), _post, SLOT(setEnabled(bool)));
+  connect(omfgThis, SIGNAL(invoicesUpdated(int, bool)), this, SLOT(sFillList()));
 
-    connect(omfgThis, SIGNAL(invoicesUpdated(int, bool)), this, SLOT(sFillList()));
+  Preferences _pref = Preferences(omfgThis->username());
+  if (_pref.boolean("XCheckBox/forgetful"))
+    _printJournal->setChecked(true);
 
-    sFillList();
+  sFillList();
 }
 
 unpostedInvoices::~unpostedInvoices()
@@ -226,6 +230,23 @@ void unpostedInvoices::sPost()
       return;
   }
 
+  int journal = -1;
+  q.exec("SELECT fetchJournalNumber('AR-IN') AS result;");
+  if (q.first())
+  {
+    journal = q.value("result").toInt();
+    if (journal < 0)
+    {
+      systemError(this, storedProcErrorLookup("fetchJournalNumber", journal), __FILE__, __LINE__);
+      return;
+    }
+  }
+  else if (q.lastError().type() != QSqlError::None)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+
   XSqlQuery xrate;
   xrate.prepare("SELECT curr_rate "
 		"FROM curr_rate, invchead "
@@ -246,7 +267,9 @@ void unpostedInvoices::sPost()
 	      "WHERE ((invcitem_invchead_id=invchead_id)"
 	      "  AND  (invchead_id=:invchead_id)) "
 	      "GROUP BY invchead_freight, invchead_tax, invchead_misc_amount;");
-  q.prepare("SELECT postInvoice(:invchead_id) AS result;");
+
+  XSqlQuery post;
+  post.prepare("SELECT postInvoice(:invchead_id, :journal) AS result;");
 
   XSqlQuery setDate;
   setDate.prepare("UPDATE invchead SET invchead_gldistdate=:distdate "
@@ -314,17 +337,18 @@ void unpostedInvoices::sPost()
 	}
       }
 
-      q.bindValue(":invchead_id", id);
-      q.exec();
-      if (q.first())
+      post.bindValue(":invchead_id", id);
+      post.bindValue(":journal",     journal);
+      post.exec();
+      if (post.first())
       {
-	int result = q.value("result").toInt();
+	int result = post.value("result").toInt();
 	if (result < 0)
 	  systemError(this, storedProcErrorLookup("postInvoice", result),
 		      __FILE__, __LINE__);
       }
       // contains() string is hard-coded in stored procedure
-      else if (q.lastError().databaseText().contains("post to closed period"))
+      else if (post.lastError().databaseText().contains("post to closed period"))
       {
 	if (changeDate)
 	{
@@ -334,10 +358,10 @@ void unpostedInvoices::sPost()
 	else
 	  triedToClosed.append(selected[i]);
       }
-      else if (q.lastError().type() != QSqlError::None)
+      else if (post.lastError().type() != QSqlError::None)
 	systemError(this, tr("A System Error occurred posting Invoice #%1.\n%2")
 			    .arg(selected[i]->text(0))
-			    .arg(q.lastError().databaseText()),
+			    .arg(post.lastError().databaseText()),
 		    __FILE__, __LINE__);
     }
 
@@ -350,6 +374,18 @@ void unpostedInvoices::sPost()
       triedToClosed.clear();
     }
   } while (tryagain);
+
+  if (_printJournal->isChecked())
+  {
+    ParameterList params;
+    params.append("journalNumber", journal);
+
+    orReport report("SalesJournal", params);
+    if (report.isValid())
+      report.print();
+    else
+      report.reportError(this);
+  }
 
   omfgThis->sInvoicesUpdated(-1, TRUE);
 }
