@@ -145,6 +145,10 @@ private:
     double _qtyinvuomratio;
     double _priceinvuomratio;
 
+    XTreeWidgetItem *findXTreeWidgetItemWithId(const XTreeWidget *ptree, const int pid);
+    XTreeWidgetItem *findXTreeWidgetItemWithId(const XTreeWidgetItem *ptreeitem, const int pid);
+
+
 };
 
 #endif // SALESORDERITEM_H

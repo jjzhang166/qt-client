@@ -1587,118 +1587,101 @@ void salesOrderItem::sDetermineAvailability()
       if ((_item->itemType() == "M") || (_item->itemType() == "J"))
       {
         if(_showIndented->isChecked())
-        {
-          availability.prepare("SELECT indentedBOM(:item_id) AS bomwork_set_id;");
-          availability.bindValue(":item_id", _item->id());
-          availability.exec();
-          if(availability.first())
-          {
-            int _worksetid = availability.value("bomwork_set_id").toInt();
-	    if (_worksetid < 0)
-	    {
-	      systemError(this, storedProcErrorLookup("indentedBOM", _worksetid),
-			  __FILE__, __LINE__);
-	      return;
-	    }
-            availability.prepare("SELECT itemsiteid, reorderlevel,"
-                                 "       bomwork_level, bomwork_id, bomwork_parent_id,"
-                                 "       bomwork_seqnumber AS bomitem_seqnumber,"
-                                 "       item_number, item_descrip, uom_name,"
-                                 "       pendalloc, formatQty(pendalloc) AS f_pendalloc,"
-                                 "       ordered, formatQty(ordered) AS f_ordered,"
-                                 "       qoh, formatQty(qoh) AS f_qoh,"
-                                 "       formatQty(totalalloc + pendalloc) AS f_totalalloc,"
-                                 "       (qoh + ordered - (totalalloc + pendalloc)) as totalavail,"
-                                 "       formatQty(qoh + ordered - (totalalloc + pendalloc)) as f_totalavail"
-                                 "  FROM ( SELECT itemsite_id AS itemsiteid,"
-                                 "                CASE WHEN(itemsite_useparams) THEN itemsite_reorderlevel ELSE 0.0 END AS reorderlevel,"
-                                 "                bomwork_id, bomwork_parent_id,"
-                                 "                bomwork_level, bomwork_seqnumber,"
-                                 "                item_number, uom_name,"
-                                 "                (item_descrip1 || ' ' || item_descrip2) AS item_descrip,"
-                                 "                ((bomwork_qtyper * (1 + bomwork_scrap)) * :qty) AS pendalloc,"
-                                 "                (qtyAllocated(itemsite_id, DATE(:schedDate)) - ((bomwork_qtyper * (1 + bomwork_scrap)) * :origQtyOrd)) AS totalalloc,"
-                                 "                noNeg(itemsite_qtyonhand) AS qoh,"
-                                 "                qtyOrdered(itemsite_id, DATE(:schedDate)) AS ordered"
-                                 "           FROM bomwork, uom,"
-				 "                item LEFT OUTER JOIN"
-				 "                itemsite ON ((itemsite_item_id=item_id)"
-                                 "                         AND (itemsite_warehous_id=:warehous_id))"
-                                 "          WHERE ( (item_inv_uom_id=uom_id)"
-                                 "            AND   (bomwork_item_id=item_id)"
-                                 "            AND   (bomwork_set_id=:bomwork_set_id)"
-                                 "                )"
-                                 "       ) AS data "
-                                 "ORDER BY bomwork_level, bomwork_seqnumber DESC;");
-            availability.bindValue(":bomwork_set_id", _worksetid);
-            availability.bindValue(":warehous_id", _warehouse->id());
-            availability.bindValue(":qty", _availabilityQtyOrdered);
-            availability.bindValue(":schedDate", _scheduledDate->date());
-            availability.bindValue(":origQtyOrd", _originalQtyOrd);
-            availability.exec();
-            while(availability.next())
-            {
-              XTreeWidgetItem *last = NULL;
+	{
+	  availability.prepare(
+	     "SELECT itemsite_id, reorderlevel,"
+	     "       bomdata_bomwork_level,"
+	     "       bomdata_bomwork_id,"
+	     "       bomdata_bomwork_parent_id,"
+	     "       bomdata_bomwork_seqnumber,"
+	     "       bomdata_item_number,"
+	     "       bomdata_itemdescription,"
+	     "       bomdata_uom_name,"
+	     "       pendalloc,"
+	     "       formatQty(pendalloc) AS f_pendalloc,"
+	     "       ordered,"
+	     "       formatQty(ordered) AS f_ordered,"
+	     "       qoh, formatQty(qoh) AS f_qoh,"
+	     "       formatQty(totalalloc + pendalloc) AS f_totalalloc,"
+	     "       (qoh + ordered - (totalalloc + pendalloc))"
+	     "                             AS totalavail,"
+	     "       formatQty(qoh + ordered - (totalalloc + pendalloc))"
+	     "                             AS f_totalavail"
+	     "  FROM ( SELECT itemsite_id,"
+	     "                CASE WHEN(itemsite_useparams)"
+	     "                     THEN itemsite_reorderlevel"
+	     "                     ELSE 0.0"
+	     "                     END AS reorderlevel,"
+	     "                ib.*, "
+	     "                ((bomdata_qtyper::NUMERIC * (1 + bomdata_scrap::NUMERIC)) * :qty)"
+	     "                                       AS pendalloc,"
+	     "                (qtyAllocated(itemsite_id, DATE(:schedDate)) -"
+	     "                             ((bomdata_qtyper::NUMERIC *"
+             "                              (1+bomdata_scrap::NUMERIC)) * :origQtyOrd))"
+	     "                                       AS totalalloc,"
+	     "                noNeg(itemsite_qtyonhand) AS qoh,"
+	     "                qtyOrdered(itemsite_id, DATE(:schedDate))"
+	     "                                                AS ordered"
+	     "           FROM indentedBOM(:item_id, -1, 0,0) ib LEFT OUTER JOIN"
+	     "                itemsite ON ((itemsite_item_id=bomdata_item_id)"
+	     "                         AND (itemsite_warehous_id=:warehous_id))"
+	     "          WHERE (bomdata_item_id > 0)"
+	     "       ) AS data "
+	     "ORDER BY bomdata_bomwork_level, bomdata_bomwork_seqnumber;");
+	  availability.bindValue(":item_id",        _item->id());
+	  availability.bindValue(":warehous_id",    _warehouse->id());
+	  availability.bindValue(":qty",            _availabilityQtyOrdered);
+	  availability.bindValue(":schedDate",      _scheduledDate->date());
+	  availability.bindValue(":origQtyOrd",     _originalQtyOrd);
+	  availability.exec();
+	  while(availability.next())
+	  {
+	    XTreeWidgetItem *last = NULL;
 
-              //  If the current bomwork is top level, make it a child of the XTreeWidget
-              if (availability.value("bomwork_parent_id").toInt() == -1)
-                last = new XTreeWidgetItem( _availability, availability.value("bomwork_id").toInt(),
-                                          availability.value("bomitem_seqnumber"), availability.value("item_number"),
-                                          availability.value("item_descrip"), availability.value("uom_name"),
-                                          availability.value("f_pendalloc"), availability.value("f_totalalloc"),
-                                          availability.value("f_ordered"), availability.value("f_qoh"),
-                                          availability.value("f_totalavail")  );
+	    if (availability.value("bomdata_bomwork_parent_id").toInt() == -1)
+	      last = new XTreeWidgetItem( _availability,
+			      availability.value("bomdata_bomwork_id").toInt(),
+			      availability.value("bomdata_bomwork_seqnumber"),
+			      availability.value("bomdata_item_number"),
+			      availability.value("bomdata_itemdescription"),
+			      availability.value("bomdata_uom_name"),
+			      availability.value("f_pendalloc"),
+			      availability.value("f_totalalloc"),
+			      availability.value("f_ordered"),
+			      availability.value("f_qoh"),
+			      availability.value("f_totalavail")  );
+
+	    else
+	    {
+	      last = new XTreeWidgetItem(
+			  findXTreeWidgetItemWithId(_availability,
+						    availability.value("bomdata_bomwork_parent_id").toInt()),
+			  availability.value("bomdata_bomwork_id").toInt(),
+			  availability.value("bomdata_bomwork_seqnumber"),
+			  availability.value("bomdata_item_number"),
+			  availability.value("bomdata_itemdescription"),
+			  availability.value("bomdata_uom_name"),
+			  availability.value("f_pendalloc"),
+			  availability.value("f_totalalloc"),
+			  availability.value("f_ordered"),
+			  availability.value("f_qoh"),
+			  availability.value("f_totalavail")  );
+	    }
+
+	    if (last && availability.value("qoh").toDouble() < availability.value("pendalloc").toDouble())
+	      last->setTextColor(7, "red");
   
-              else
-              {
-                //  March though the existing list, looking for the parent for the current bomwork
-                for (int i = 0; i < _availability->topLevelItemCount(); i++)
-                {
-		  XTreeWidgetItem *cursor = _availability->topLevelItem(i);
-                  cursor->setExpanded(TRUE);
-                  if (cursor->id() == availability.value("bomwork_parent_id").toInt())
-                  {
-                    //  Found it, add the current bomwork as a child of its parent
-                    last = new XTreeWidgetItem( cursor, availability.value("bomwork_id").toInt(),
-                                              availability.value("bomitem_seqnumber"), availability.value("item_number"),
-                                              availability.value("item_descrip"), availability.value("uom_name"),
-                                              availability.value("f_pendalloc"), availability.value("f_totalalloc"),
-                                              availability.value("f_ordered"), availability.value("f_qoh"),
-                                              availability.value("f_totalavail")  );
-                    break;
-                  }
-                }
-              }
+	    if (last && availability.value("totalavail").toDouble() < 0.0)
+	      last->setTextColor(8, "red");
+	    else if (last && availability.value("totalavail").toDouble() <= availability.value("reorderlevel").toDouble())
+	      last->setTextColor(8, "orange");
+	  }
 
-              if (last && availability.value("qoh").toDouble() < availability.value("pendalloc").toDouble())
-                last->setTextColor(7, "red");
-    
-              if (last && availability.value("totalavail").toDouble() < 0.0)
-                last->setTextColor(8, "red");
-              else if (last && availability.value("totalavail").toDouble() <= availability.value("reorderlevel").toDouble())
-                last->setTextColor(8, "orange");
-            }
-      
-            //  All done with the bomwork set, delete it
-            availability.prepare("SELECT deleteBOMWorkset(:bomwork_set_id) AS result;");
-            availability.bindValue(":bomwork_set_id", _worksetid);
-            availability.exec();
-	    if (availability.first())
-	    {
-	      int result = availability.value("result").toInt();
-	      if (result < 0)
-	      {
-		systemError(this, storedProcErrorLookup("deleteBOMWorkset", result),
-			    __FILE__, __LINE__);
-		return;
-	      }
-	    }
-	    else if (availability.lastError().type() != QSqlError::None)
-	    {
-	      systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
-	      return;
-	    }
-          }
+	  if (availability.lastError().type() != QSqlError::None)
+	  {
+	    systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
+	    return;
+	  }
         }
         else
         {
@@ -1757,6 +1740,12 @@ void salesOrderItem::sDetermineAvailability()
             else if (availability.value("totalavail").toDouble() <= availability.value("reorderlevel").toDouble())
               last->setTextColor(8, "orange");
           }
+
+	  if (availability.lastError().type() != QSqlError::None)
+	  {
+	    systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
+	    return;
+	  }
         }
       }
       else
@@ -2643,4 +2632,47 @@ void salesOrderItem::sCalcWoUnitCost()
 	if (q.first())
       _unitCost->setBaseValue(q.value("wo_value").toDouble() / _qtyOrdered->toDouble() * _qtyinvuomratio);
   }
+}
+
+// TODO: if this works well then move to XTreeWidget
+XTreeWidgetItem *salesOrderItem::findXTreeWidgetItemWithId(const XTreeWidget *ptree, const int pid)
+{
+  if (pid < 0)
+    return 0;
+
+  for (int i = 0; i < ptree->topLevelItemCount(); i++)
+  {
+    XTreeWidgetItem *item = ptree->topLevelItem(i);
+    if (item->id() == pid)
+      return item;
+    else
+    {
+      item = findXTreeWidgetItemWithId(item, pid);
+      if (item)
+	return item;
+    }
+  }
+
+  return 0;
+}
+
+XTreeWidgetItem *salesOrderItem::findXTreeWidgetItemWithId(const XTreeWidgetItem *ptreeitem, const int pid)
+{
+  if (pid < 0)
+    return 0;
+
+  for (int i = 0; i < ptreeitem->childCount(); i++)
+  {
+    XTreeWidgetItem *item = ptreeitem->child(i);
+    if (item->id() == pid)
+      return item;
+    else
+    {
+      item = findXTreeWidgetItemWithId(item, pid);
+      if (item)
+	return item;
+    }
+  }
+
+  return 0;
 }
