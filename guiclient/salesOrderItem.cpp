@@ -1620,10 +1620,11 @@ void salesOrderItem::sDetermineAvailability()
                                  "                (qtyAllocated(itemsite_id, DATE(:schedDate)) - ((bomwork_qtyper * (1 + bomwork_scrap)) * :origQtyOrd)) AS totalalloc,"
                                  "                noNeg(itemsite_qtyonhand) AS qoh,"
                                  "                qtyOrdered(itemsite_id, DATE(:schedDate)) AS ordered"
-                                 "           FROM bomwork, item, itemsite, uom"
-                                 "          WHERE ( (itemsite_item_id=item_id)"
-                                 "            AND   (item_inv_uom_id=uom_id)"
-                                 "            AND   (itemsite_warehous_id=:warehous_id)"
+                                 "           FROM bomwork, uom,"
+				 "                item LEFT OUTER JOIN"
+				 "                itemsite ON ((itemsite_item_id=item_id)"
+                                 "                         AND (itemsite_warehous_id=:warehous_id))"
+                                 "          WHERE ( (item_inv_uom_id=uom_id)"
                                  "            AND   (bomwork_item_id=item_id)"
                                  "            AND   (bomwork_set_id=:bomwork_set_id)"
                                  "                )"
@@ -1669,12 +1670,12 @@ void salesOrderItem::sDetermineAvailability()
                 }
               }
 
-              if (availability.value("qoh").toDouble() < availability.value("pendalloc").toDouble())
+              if (last && availability.value("qoh").toDouble() < availability.value("pendalloc").toDouble())
                 last->setTextColor(7, "red");
     
-              if (availability.value("totalavail").toDouble() < 0.0)
+              if (last && availability.value("totalavail").toDouble() < 0.0)
                 last->setTextColor(8, "red");
-              else if (availability.value("totalavail").toDouble() <= availability.value("reorderlevel").toDouble())
+              else if (last && availability.value("totalavail").toDouble() <= availability.value("reorderlevel").toDouble())
                 last->setTextColor(8, "orange");
             }
       
@@ -1718,11 +1719,12 @@ void salesOrderItem::sDetermineAvailability()
                                 "              (qtyAllocated(cs.itemsite_id, DATE(:schedDate)) - ((itemuomtouom(bomitem_item_id, bomitem_uom_id, NULL, bomitem_qtyper * (1 + bomitem_scrap))) * :origQtyOrd)) AS totalalloc,"
                                 "              noNeg(cs.itemsite_qtyonhand) AS qoh,"
                                 "              qtyOrdered(cs.itemsite_id, DATE(:schedDate)) AS ordered "
-                                "       FROM itemsite AS cs, itemsite AS ps, item, bomitem, uom "
+                                "       FROM item, bomitem, uom,"
+				"            itemsite AS ps LEFT OUTER JOIN"
+				"            itemsite AS cs ON ((cs.itemsite_warehous_id=ps.itemsite_warehous_id)"
+				"                           AND (cs.itemsite_item_id=ps.itemsite_item_id)) "
                                 "       WHERE ( (bomitem_item_id=item_id)"
                                 "        AND (item_inv_uom_id=uom_id)"
-                                "        AND (cs.itemsite_item_id=item_id)"
-                                "        AND (cs.itemsite_warehous_id=ps.itemsite_warehous_id)"
                                 "        AND (bomitem_parent_item_id=ps.itemsite_item_id)"
                                 "        AND (:schedDate BETWEEN bomitem_effective AND (bomitem_expires-1))"
                                 "        AND (ps.itemsite_id=:itemsite_id) ) ) AS data "
