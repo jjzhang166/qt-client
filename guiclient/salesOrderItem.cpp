@@ -1682,6 +1682,7 @@ void salesOrderItem::sDetermineAvailability()
 	    systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
 	    return;
 	  }
+	  _availability->expandAll();
         }
         else
         {
