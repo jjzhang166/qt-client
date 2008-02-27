@@ -102,7 +102,7 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _password->setEchoMode(QLineEdit::Password);
 
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
-  _databaseURL = settings.readEntry("/OpenMFG/_databaseURL", "pgsql://127.0.0.1:5432/mfg");
+  _databaseURL = settings.readEntry("/OpenMFG/_databaseURL", "pgsql://:5432/");
   _enhancedAuth = settings.readBoolEntry("/OpenMFG/_enhancedAuthentication", false);
   _requireSSL = settings.readBoolEntry("/OpenMFG/_requireSSL", false);
   if(settings.readBoolEntry("/OpenMFG/_demoOption", false))
@@ -205,21 +205,21 @@ void login2::sLogin()
   db = QSqlDatabase::addDatabase("QPSQL7");
   if (!db.isValid())
   {
+    if (_splash)
+      _splash->hide();
+    
     QMessageBox::warning( this, tr("No Database Driver"),
                           tr( "A connection could not be established with the specified\n"
                               "Database as the Proper Database Drivers have not been installed.\n"
                                  "Contact your Systems Administator.\n"  ));
     
-    if (_splash)
-      _splash->hide();
-    
     return;
   }
 
   QString databaseURL;
-  if (_demoOption->isChecked())
-    _databaseURL = _evalDatabaseURL.arg(_username->text().stripWhiteSpace());
   databaseURL = _databaseURL;
+  if (_demoOption->isChecked())
+    databaseURL = _evalDatabaseURL.arg(_username->text().stripWhiteSpace());
 
 //  Try to connect to the Database
   QString protocol;
@@ -227,6 +227,19 @@ void login2::sLogin()
   QString dbName;
   QString port;
   parseDatabaseURL(databaseURL, protocol, hostName, dbName, port);
+
+  if(hostName.isEmpty() || dbName.isEmpty())
+  {
+    if (_splash)
+      _splash->hide();
+    
+    QMessageBox::warning(this, tr("Incomplete Connection Options"),
+      tr("One or more connection options are missing. Please check that you have specified"
+         " the host name, database name, and any other required options.") );
+
+    return;
+  }
+
   db.setDatabaseName(dbName);
   db.setHostName(hostName);
   db.setPort(port.toInt());
