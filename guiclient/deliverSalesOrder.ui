@@ -111,7 +111,7 @@
            <item>
             <widget class="QLabel" name="_ccLit" >
              <property name="text" >
-              <string>CC:</string>
+              <string>Cc:</string>
              </property>
              <property name="alignment" >
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
