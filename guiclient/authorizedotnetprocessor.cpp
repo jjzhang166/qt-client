@@ -60,7 +60,6 @@
    support Visa CAVV or MasterCard UCAF for x_cardholder_authentication_value?
 */
 
-#include <QDomDocument>
 #include <QSqlError>
 
 #include <currcluster.h>
@@ -681,7 +680,8 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   else
     pparams.append("amount",   0);	// no money changed hands this attempt
 
-  if (_metrics->boolean("CCANMD5HashSetOnGateway"))
+  // don't bother checking MD5 if we hit a bigger problem
+  if (returnValue == 0 && _metrics->boolean("CCANMD5HashSetOnGateway"))
   {
     QString expected_hash;
     QString r_hash;
