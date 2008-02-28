@@ -307,7 +307,7 @@
            <item>
             <widget class="QLabel" name="_ccValidDaysLit" >
              <property name="text" >
-              <string>Number of days Pre-authorizations are valid for:</string>
+              <string>Number of days Pre-Authorizations are valid for:</string>
              </property>
             </widget>
            </item>
@@ -447,14 +447,14 @@
           <item>
            <widget class="QRadioButton" name="_avsWarn" >
             <property name="text" >
-             <string>Warn on Failed AVS Check</string>
+             <string>Warn on failed AVS check</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="_avsReject" >
             <property name="text" >
-             <string>Reject on Failed AVS Check</string>
+             <string>Reject on failed AVS check</string>
             </property>
            </widget>
           </item>
@@ -470,28 +470,28 @@
           <item>
            <widget class="QCheckBox" name="_cvvNotMatch" >
             <property name="text" >
-             <string>Code Does Not Match</string>
+             <string>Code does not match</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_cvvNotProcessed" >
             <property name="text" >
-             <string>CVV Was Not Processed</string>
+             <string>CVV was not processed</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_cvvNotOnCard" >
             <property name="text" >
-             <string>Card Has No Code</string>
+             <string>Card has no code</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_cvvInvalidIssuer" >
             <property name="text" >
-             <string>Card Issuer Is Not Certified</string>
+             <string>Card issuer is not certified</string>
             </property>
            </widget>
           </item>
@@ -507,28 +507,28 @@
           <item>
            <widget class="QCheckBox" name="_avsAddrNotMatch" >
             <property name="text" >
-             <string>Address Does Not Match</string>
+             <string>Address does not match</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_avsAddrNotAvail" >
             <property name="text" >
-             <string>Address Comparison Not Available</string>
+             <string>Address comparison not available</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_avsZIPNotMatch" >
             <property name="text" >
-             <string>ZIP Does Not Match</string>
+             <string>ZIP does not match</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="_avsZIPNotAvail" >
             <property name="text" >
-             <string>ZIP Comparison Not Available</string>
+             <string>ZIP comparison not available</string>
             </property>
            </widget>
           </item>

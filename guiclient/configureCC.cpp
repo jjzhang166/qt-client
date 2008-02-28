@@ -75,6 +75,9 @@ configureCC::configureCC(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save,  SIGNAL(clicked()), this, SLOT(sSave()));
 
+  _enableChargePreauth->setVisible(false);
+  _enableCredit->setVisible(false);
+
   if (_metricsenc == 0)
   {
     QMessageBox::critical( this, tr("Cannot Read Configuration"),
