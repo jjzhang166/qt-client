@@ -3134,7 +3134,8 @@ void salesOrder::sFillCcardList()
              "       formatbytea(decrypt(setbytea(ccard_name), setbytea(:key), 'bf')) AS ccard_name,"
              "       formatbytea(decrypt(setbytea(ccard_month_expired), setbytea(:key), 'bf')) ||  '-' ||formatbytea(decrypt(setbytea(ccard_year_expired), setbytea(:key), 'bf')) AS ccard_expired "
              "FROM ccard "
-             "WHERE (ccard_cust_id=:cust_id) "
+             "WHERE ((ccard_cust_id=:cust_id) "
+             " AND   (ccard_active))"
              "ORDER BY ccard_seq;" );
   q.bindValue(":cust_id", _cust->id());
   q.bindValue(":masterCard", tr("MasterCard"));

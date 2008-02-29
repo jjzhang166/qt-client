@@ -826,6 +826,7 @@ void cashReceipt::setCreditCard()
              "FROM ccard "
              "WHERE ((ccard_cust_id=:cust_id) "
              " AND   (ccard_type=:ccard_type)) "
+             " AND   (ccard_active)"
              "ORDER BY ccard_seq;" );
   q.bindValue(":cust_id",    _cust->id());
   q.bindValue(":ccard_type", QString(*(_fundsTypes + _fundsType->currentItem())));
