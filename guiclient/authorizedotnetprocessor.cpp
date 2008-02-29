@@ -429,13 +429,13 @@ int AuthorizeDotNetProcessor::doCredit(const int pccardid, const int pcvv, const
   return returnValue;
 }
 
-int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &pparams)
+int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, QString &papproval, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
-    qDebug("AN:doVoidPrevious(%d, %d, %f, %d, %s, %s, %d)",
+    qDebug("AN:doVoidPrevious(%d, %d, %f, %d, %s, %s, %s, %d)",
 	   pccardid, pcvv, pamount, pcurrid,
 	   pneworder.toAscii().data(), preforder.toAscii().data(),
-	   pccpayid);
+	   papproval.toAscii().data(), pccpayid);
 
   QString tmpErrorMsg = _errorMsg;
 
@@ -460,7 +460,7 @@ int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const int pcvv,
   if (returnValue != 0)
     return returnValue;
 
-  APPENDFIELD(request, "x_trans_id", );
+  APPENDFIELD(request, "x_trans_id", papproval);
 
   QString response;
 
@@ -471,7 +471,8 @@ int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const int pcvv,
 
   returnValue = handleResponse(response, pccardid, "V", amount, currid,
 			       pneworder, preforder, pccpayid, pparams);
-  _errorMsg = tmpErrorMsg;
+  if (! tmpErrorMsg.isEmpty())
+    _errorMsg = tmpErrorMsg;
   return returnValue;
 }
 
@@ -493,9 +494,10 @@ int AuthorizeDotNetProcessor::fieldValue(const QStringList plist, const int pind
     int lastPos  = plist.at(pindex - 1).lastIndexOf(_metrics->value("CCANEncap"));
     pvalue = pvalue.mid(firstPos + 1, lastPos - firstPos - 1);
   }
+  if (DEBUG)
+    qDebug("AN:fieldValue of %d is %s", pindex, pvalue.toAscii().data());
   return 0;
 }
-  
 
 int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int pccardid, const QString &ptype, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &pparams)
 {
@@ -651,13 +653,14 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
 	    r_avs.toAscii().data(), _passedAvs,
 	    r_cvv.toAscii().data(), _passedCvv);
 
+  pparams.append("ccard_id",    pccardid);
   pparams.append("currid",      pcurrid);
   pparams.append("auth_charge", ptype);
   pparams.append("type",        ptype);
   pparams.append("reforder",    (preforder.isEmpty()) ? pneworder : preforder);
   pparams.append("status",      status);
   pparams.append("avs",         r_avs);
-  pparams.append("ordernum",    r_ordernum);
+  pparams.append("ordernum",    (preforder.isEmpty()) ? pneworder : preforder);
   pparams.append("error",       r_error);
   pparams.append("approved",    r_approved);
   pparams.append("code",        r_code);
@@ -665,7 +668,6 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   pparams.append("tax",         r_tax);
   pparams.append("ref",         r_ref);
   pparams.append("message",     r_message);
-  pparams.append("ccard_id",    pccardid);
 
   if (ptype == "A")
     pparams.append("auth", QVariant(true, 0));
@@ -717,6 +719,9 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
     }
   }
 
+  if (DEBUG)
+    qDebug("AN::handleResponse returning %d %s",
+           returnValue, errorMsg().toAscii().data());
   return returnValue;
 }
 

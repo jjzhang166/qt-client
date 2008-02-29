@@ -62,7 +62,6 @@
 
 #include <QMainWindow>
 #include <QMenu>
-#include <QProcess>
 
 #include <parameter.h>
 
@@ -100,6 +99,7 @@ public slots:
     virtual void sViewAropen();
     virtual void sViewAropenCM();
     virtual void sViewCashrcpt();
+    virtual void sVoidPreauth();
     virtual void sgetCCAmount();
 
 protected slots:

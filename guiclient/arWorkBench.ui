@@ -506,6 +506,16 @@
             </property>
            </spacer>
           </item>
+          <item row="1" column="1" >
+           <widget class="QPushButton" name="_voidPreauth" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="text" >
+             <string>Void</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -552,14 +562,14 @@
   <tabstop>_viewAropen</tabstop>
   <tabstop>_preauth</tabstop>
   <tabstop>_postPreauth</tabstop>
+  <tabstop>_voidPreauth</tabstop>
   <tabstop>_CCAmount</tabstop>
+  <tabstop>_aropenTotal</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
  <includes>
   <include location="global" >parameter.h</include>
   <include location="local" >OpenMFGGUIClient.h</include>
-  <include location="global" >qdom.h</include>
-  <include location="global" >q3process.h</include>
  </includes>
  <resources/>
  <connections>
@@ -672,6 +682,22 @@
     <hint type="destinationlabel" >
      <x>20</x>
      <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_preauth</sender>
+   <signal>valid(bool)</signal>
+   <receiver>_voidPreauth</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>255</x>
+     <y>552</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>681</x>
+     <y>540</y>
     </hint>
    </hints>
   </connection>

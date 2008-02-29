@@ -950,11 +950,13 @@ int CreditCardProcessor::voidPrevious(int &pccpayid)
 
   QString neworder = ccq.value("ccpay_order_number").toString();
   QString reforder = ccq.value("ccpay_r_ordernum").toString();
+  QString approval = ccq.value("ccpay_r_ref").toString();
   ParameterList dbupdateinfo;
   int returnVal = doVoidPrevious(ccardid, ccv,
 				 ccq.value("ccpay_amount").toDouble(),
 				 ccq.value("ccpay_curr_id").toInt(),
-				 neworder, reforder, pccpayid, dbupdateinfo);
+				 neworder, reforder, approval,
+                                 pccpayid, dbupdateinfo);
   if (returnVal < 0)
     return returnVal;
   else if (returnVal > 0)
@@ -1133,13 +1135,13 @@ int CreditCardProcessor::doCredit(const int pccardid, const int pcvv, const doub
   return -19;
 }
 
-int CreditCardProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &)
+int CreditCardProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, QString &papproval, int &pccpayid, ParameterList &)
 {
   if (DEBUG)
-    qDebug("CCP:doVoidPrevious(%d, %d, %f, %d, %s, %s, %d)",
+    qDebug("CCP:doVoidPrevious(%d, %d, %f, %d, %s, %s, %s, %d)",
 	   pccardid, pcvv, pamount, pcurrid,
 	   pneworder.toAscii().data(), preforder.toAscii().data(),
-	   pccpayid);
+	   papproval.toAscii().data(), pccpayid);
   _errorMsg = errorMsg(-19).arg("doVoidPrevious");
   return -19;
 }

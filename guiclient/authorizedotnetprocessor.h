@@ -77,7 +77,7 @@ class AuthorizeDotNetProcessor : public CreditCardProcessor
     virtual int  doCharge(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList &);
     virtual int  doChargePreauthorized(const int, const int, const double, const int, QString&, QString&, int&, ParameterList &);
     virtual int  doCredit(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList &);
-    virtual int  doVoidPrevious(const int, const int, const double, const int, QString&, QString&, int&, ParameterList &);
+    virtual int  doVoidPrevious(const int, const int, const double, const int, QString&, QString&, QString&, int&, ParameterList &);
     virtual bool handlesCreditCards();
     virtual int  handleResponse(const QString&, const int, const QString&, const double, const int, QString&, QString&, int&, ParameterList&);
 

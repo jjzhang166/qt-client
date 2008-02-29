@@ -461,13 +461,13 @@ int YourPayProcessor::doCredit(const int pccardid, const int pcvv, const double 
   return returnValue;
 }
 
-int YourPayProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &pparams)
+int YourPayProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, QString &papproval, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
-    qDebug("YP:doVoidPrevious(%d, %d, %f, %d, %s, %s, %d)",
+    qDebug("YP:doVoidPrevious(%d, %d, %f, %d, %s, %s, %s, %d)",
 	   pccardid, pcvv, pamount, pcurrid,
 	   pneworder.toAscii().data(), preforder.toAscii().data(),
-	   pccpayid);
+	   papproval.toAscii().data(), pccpayid);
 
   int returnValue = 0;
   double amount = currToCurr(pcurrid, _ypcurrid, pamount, &returnValue);
@@ -485,7 +485,7 @@ int YourPayProcessor::doVoidPrevious(const int pccardid, const int pcvv, const d
 
   QDomElement elem = request.createElement("transactiondetails");
   request.documentElement().appendChild(elem);
-  CREATECHILDTEXTNODE(elem, "oid",              pneworder);
+  CREATECHILDTEXTNODE(elem, "oid",              preforder);
   CREATECHILDTEXTNODE(elem, "terminaltype",     "UNSPECIFIED");
 
   QString response;

@@ -59,10 +59,6 @@
 
 #include <QVariant>
 #include <QMessageBox>
-#include <QWorkspace>
-#include <QStatusBar>
-#include <QFileInfo>
-#include <QApplication>
 #include <QSqlError>
 
 #include <stdlib.h>
@@ -98,6 +94,7 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_postCashrcpt, SIGNAL(clicked()), this, SLOT(sPostCashrcpt()));
   connect(_preauth, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(sgetCCAmount()));
   connect(_postPreauth, SIGNAL(clicked()), this, SLOT(sPostPreauth()));
+  connect(_voidPreauth, SIGNAL(clicked()), this, SLOT(sVoidPreauth()));
   connect(_aropen, SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*)),
           this, SLOT(sPopulateAropenMenu(QMenu*)));
   connect(_aropenCM, SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*)),
@@ -623,6 +620,7 @@ void arWorkBench::sPostPreauth()
   }
 
   _postPreauth->setEnabled(false);
+  _voidPreauth->setEnabled(false);
   int ccpayid   = _preauth->id();
   QString ordernum;
   int returnVal = cardproc->chargePreauthorized(-2,
@@ -646,6 +644,43 @@ void arWorkBench::sPostPreauth()
   sFillAropenList();
   sFillPreauthList();
 
+  _voidPreauth->setEnabled(true);
+  _postPreauth->setEnabled(true);
+}
+
+void arWorkBench::sVoidPreauth()
+{
+  CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
+  if (! cardproc->errorMsg().isEmpty())
+  {
+    QMessageBox::warning( this, tr("Credit Card Error"), cardproc->errorMsg() );
+    _CCAmount->setFocus();
+    return;
+  }
+
+  _postPreauth->setEnabled(false);
+  _voidPreauth->setEnabled(false);
+  int ccpayid   = _preauth->id();
+  QString ordernum;
+  int returnVal = cardproc->voidPrevious(ccpayid);
+  if (returnVal < 0)
+    QMessageBox::critical(this, tr("Credit Card Processing Error"),
+			  cardproc->errorMsg());
+  else if (returnVal > 0)
+    QMessageBox::warning(this, tr("Credit Card Processing Warning"),
+			 cardproc->errorMsg());
+  else if (! cardproc->errorMsg().isEmpty())
+    QMessageBox::information(this, tr("Credit Card Processing Note"),
+			 cardproc->errorMsg());
+  else
+    _CCAmount->clear();
+
+  sFillCashrcptList();
+  sFillAropenCMList();
+  sFillAropenList();
+  sFillPreauthList();
+
+  _voidPreauth->setEnabled(true);
   _postPreauth->setEnabled(true);
 }
 

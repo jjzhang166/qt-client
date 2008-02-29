@@ -102,7 +102,7 @@ class CreditCardProcessor : public QObject
     virtual int doCharge(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList&);
     virtual int doChargePreauthorized(const int, const int, const double, const int, QString&, QString&, int&, ParameterList&);
     virtual int doCredit(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList&);
-    virtual int doVoidPrevious(const int, const int, const double, const int, QString&, QString&, int&, ParameterList&);
+    virtual int doVoidPrevious(const int, const int, const double, const int, QString&, QString&, QString&, int&, ParameterList&);
     virtual int doTestConfiguration();
 
     virtual QString buildURL(const QString, const QString, const bool);
