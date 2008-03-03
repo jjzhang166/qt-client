@@ -1472,11 +1472,19 @@ void dspCustomerInformation::sPrintQuote()
   q.prepare( "SELECT findCustomerForm(quhead_cust_id, 'Q') AS reportname "
              "FROM quhead "
              "WHERE (quhead_id=:quheadid); " );
+  q.bindValue(":quheadid", _quote->id());
+  q.exec();
+  if (q.first())
+  {
+    ParameterList params;
+    params.append("quhead_id", _quote->id());
 
-  ParameterList params;
-  params.append("quhead_id", _quote->id());
-
-  orReport report(q.value("reportname").toString(), params);
+    orReport report(q.value("reportname").toString(), params);
+    if (report.isValid())
+      report.print();
+    else
+      report.reportError(this);
+  }
 }
 
 void dspCustomerInformation::sPrintInvoice()
