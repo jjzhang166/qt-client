@@ -75,7 +75,7 @@ class CreditCardProcessor : public QObject
     static CreditCardProcessor	*getProcessor(const QString = QString());
 
     // these are the primary transaction handlers and should not be overridden:
-    virtual int	    authorize(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, int&, QString, int&);
+    virtual int     authorize(const int pccardid, const int pcvv, const double pamount, double ptax, bool ptaxexempt, double pfreight, double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid);
     virtual int	    charge(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, QString, int&);
     virtual int	    chargePreauthorized(const int, const double, const int, QString&, QString&, int&);
     virtual int	    credit(const int, const int, const double, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int, QString&, QString&, int&, QString, int&);

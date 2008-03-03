@@ -256,12 +256,12 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
   return processor;
 }
 
-int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const double pamount, double ptax, bool ptaxexempt, double pfreight, double pduty, const int pcurrid, QString &porder, int &pccpayid, QString preftype, int &prefid)
+int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const double pamount, double ptax, bool ptaxexempt, double pfreight, double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid)
 {
   if (DEBUG)
-    qDebug("CCP:authorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %d, %s, %d)",
+    qDebug("CCP:authorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %s, %d, %s, %d)",
 	   pccardid, pcvv, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid,
-	   porder.toAscii().data(), pccpayid,
+	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid,
 	   preftype.toAscii().data(), prefid);
   reset();
 
@@ -292,7 +292,7 @@ int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const dou
   }
 
   ParameterList dbupdateinfo;
-  returnVal = doAuthorize(pccardid, pcvv, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid, porder, porder, pccpayid, dbupdateinfo);
+  returnVal = doAuthorize(pccardid, pcvv, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid, pneworder, preforder, pccpayid, dbupdateinfo);
   if (returnVal > 0)
     _errorMsg = errorMsg(4).arg(_errorMsg);
 

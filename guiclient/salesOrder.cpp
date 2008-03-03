@@ -3164,14 +3164,15 @@ void salesOrder::sAuthorizeCC()
   _charge->setEnabled(false);
 
   int ccpayid   = -1;
-  QString ordernum = _orderNumber->text();
+  QString sonumber = _orderNumber->text();
+  QString ponumber = _custPONumber->text();
   int returnVal = cardproc->authorize(_cc->id(), _CCCVV->text().toInt(),
 				      _CCAmount->localValue(),
 				      _tax->localValue(),
 				      (_tax->isZero() && _taxAuth->id() == -1),
 				      _freight->localValue(), 0,
 				      _CCAmount->id(),
-				      ordernum, ccpayid,
+				      sonumber, ponumber, ccpayid,
 				      QString("cohead"), _soheadid);
   if (returnVal < 0)
     QMessageBox::critical(this, tr("Credit Card Processing Error"),

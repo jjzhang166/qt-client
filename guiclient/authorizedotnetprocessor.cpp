@@ -660,7 +660,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   pparams.append("reforder",    (preforder.isEmpty()) ? pneworder : preforder);
   pparams.append("status",      status);
   pparams.append("avs",         r_avs);
-  pparams.append("ordernum",    (preforder.isEmpty()) ? pneworder : preforder);
+  pparams.append("ordernum",    (pneworder.isEmpty()) ? preforder : pneworder);
   pparams.append("error",       r_error);
   pparams.append("approved",    r_approved);
   pparams.append("code",        r_code);
