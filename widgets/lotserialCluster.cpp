@@ -142,7 +142,7 @@ void LotserialLineEdit::setItemId(const int itemid)
   else
   {
     _itemid = itemid;
-    _extraClause = QString(" AND (item_id=%1) ").arg(itemid);
+    _extraClause = QString(" (item_id=%1) ").arg(itemid);
   }
 }
 
@@ -166,7 +166,9 @@ void LotserialLineEdit::sParse()
         else
         {
             XSqlQuery numQ;
-            numQ.prepare(_query + _numClause + _extraClause + QString(";"));
+            numQ.prepare(_query + _numClause +
+                         (_extraClause.isEmpty() ? "" : " AND " + _extraClause) +
+                         QString(";"));
             numQ.bindValue(":number", stripped);
             numQ.exec();
             if (numQ.first())
