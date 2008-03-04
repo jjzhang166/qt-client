@@ -514,8 +514,7 @@ int CreditCardProcessor::chargePreauthorized(const int pcvv, const double pamoun
   }
 
   XSqlQuery ccq;
-  ccq.prepare("SELECT ccpay_amount, ccpay_curr_id, ccpay_order_number,"
-	    "       ccpay_ccard_id,"
+  ccq.prepare("SELECT *,"
 	    "       currToCurr(ccpay_curr_id, :curr_id, ccpay_amount,"
 	    "                  CURRENT_DATE) AS ccpay_amount_converted "
 	    "FROM ccpay "
@@ -551,7 +550,7 @@ int CreditCardProcessor::chargePreauthorized(const int pcvv, const double pamoun
   }
 
   int ccardid = ccq.value("ccpay_ccard_id").toInt();
-  preforder = ccq.value("ccpay_order_number").toString();
+  preforder = ccq.value("ccpay_r_ordernum").toString();
 
   ccq.prepare("SELECT * FROM payco WHERE (payco_ccpay_id=:ccpayid)");
   ccq.bindValue(":ccpayid", pccpayid);
@@ -1385,7 +1384,7 @@ int CreditCardProcessor::updateCCPay(int &pccpayid, ParameterList &pparams)
 	   "    COALESCE(<? value(\"next_seq\") ?>, 1),"
 	   "    <? value(\"approved\") ?>, <? value(\"avs\") ?>,"
 	   "    <? value(\"code\") ?>,     <? value(\"error\") ?>,"
-	   "    <? value(\"message\") ?>,  <? value(\"reforder\") ?>,"
+	   "    <? value(\"message\") ?>,  <? value(\"ordernum\") ?>,"
 	   "    <? value(\"ref\") ?>,"
 	   "<? if exists(\"score\") ?>    <? value(\"score\") ?>,   <? endif ?>"
 	   "<? if exists(\"shipping\") ?> <? value(\"shipping\") ?>,<? endif ?>"

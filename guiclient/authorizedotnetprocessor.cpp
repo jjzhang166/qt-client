@@ -460,7 +460,7 @@ int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const int pcvv,
   if (returnValue != 0)
     return returnValue;
 
-  APPENDFIELD(request, "x_trans_id", papproval);
+  APPENDFIELD(request, "x_trans_id", preforder);
 
   QString response;
 
@@ -525,6 +525,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   QString r_error;
   QString r_message;
   QString r_ordernum;
+  QString r_reason;     // not stored
   QString r_ref;
   QString r_shipping;
   QString r_tax;
@@ -556,14 +557,14 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
 
   // fieldValue(responseFields, 2);				// subcode
 
-  returnValue = fieldValue(responseFields, 3, r_code);		// reason code
+  returnValue = fieldValue(responseFields, 3, r_reason);	// reason code
   if (returnValue < 0)
     return returnValue;
   returnValue = fieldValue(responseFields, 4, r_message);	// reason text
   if (returnValue < 0)
     return returnValue;
 
-  returnValue = fieldValue(responseFields, 5, r_ref);	 	// approval code
+  returnValue = fieldValue(responseFields, 5, r_code);	 	// approval code
   if (returnValue < 0)
     return returnValue;
   returnValue = fieldValue(responseFields, 6, r_avs);	 	// avs result
@@ -606,7 +607,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
    */
   if (r_approved == "APPROVED" || r_approved == "HELDFORREVIEW")
   {
-    _errorMsg = errorMsg(0).arg(r_ref);
+    _errorMsg = errorMsg(0).arg(r_code);
     if (ptype == "A")
       status = "A";	// Authorized
     else if (ptype == "V")
@@ -642,11 +643,11 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   }
 
   // always use the AVS checking configured on the gateway
-  _passedAvs = ((r_code.toInt() != 27) &&
-	        (r_code.toInt() != 127));
+  _passedAvs = ((r_reason.toInt() != 27) &&
+	        (r_reason.toInt() != 127));
 
   // always use the CVV checking configured on the gateway
-  _passedCvv = (r_code.toInt() != 78);
+  _passedCvv = (r_reason.toInt() != 78);
 
   if (DEBUG)
     qDebug("AN:%s _passedAvs %d\t%s _passedCvv %d",
@@ -660,7 +661,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   pparams.append("reforder",    (preforder.isEmpty()) ? pneworder : preforder);
   pparams.append("status",      status);
   pparams.append("avs",         r_avs);
-  pparams.append("ordernum",    (pneworder.isEmpty()) ? preforder : pneworder);
+  pparams.append("ordernum",    r_ordernum);
   pparams.append("error",       r_error);
   pparams.append("approved",    r_approved);
   pparams.append("code",        r_code);
