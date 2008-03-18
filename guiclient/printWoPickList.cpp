@@ -129,7 +129,7 @@ enum SetResponse printWoPickList::set(const ParameterList &pParams)
 
 void printWoPickList::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
 
   ParameterList params;
   params.append("wo_id", _wo->id());

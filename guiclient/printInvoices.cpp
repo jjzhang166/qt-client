@@ -164,7 +164,7 @@ void printInvoices::sPrint()
   if (invoices.first())
   {
     XSqlQuery local;
-    QPrinter  printer;
+    QPrinter  printer(QPrinter::HighResolution);
     bool      setupPrinter = TRUE;
     bool userCanceled = false;
     if (orReport::beginMultiPrint(&printer, userCanceled) == false)

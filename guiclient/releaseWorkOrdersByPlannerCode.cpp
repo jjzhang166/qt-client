@@ -159,7 +159,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
       return;
     }
 
-    QPrinter  printer;
+    QPrinter  printer(QPrinter::HighResolution);
     bool      setupPrinter = TRUE;
     bool      userCanceled = false;
 

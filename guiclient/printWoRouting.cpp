@@ -129,7 +129,7 @@ enum SetResponse printWoRouting::set(const ParameterList &pParams)
 
 void printWoRouting::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
 
   ParameterList params;
   params.append("wo_id", _wo->id());

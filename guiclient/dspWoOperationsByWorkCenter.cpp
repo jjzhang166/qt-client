@@ -424,7 +424,7 @@ void dspWoOperationsByWorkCenter::sPostOperations()
 
 void dspWoOperationsByWorkCenter::sPrintPickLists()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   int counter = 0;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)

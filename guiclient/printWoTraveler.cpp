@@ -205,7 +205,7 @@ void printWoTraveler::sHandleOptions(int pWoid)
 
 void printWoTraveler::sPrint()
 {
-  QPrinter  printer;
+  QPrinter  printer(QPrinter::HighResolution);
   bool      setupPrinter = TRUE;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)

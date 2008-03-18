@@ -286,7 +286,7 @@ void printShippingForm::sPrint()
   q.exec();
   if (q.first())
   {
-    QPrinter printer;
+    QPrinter printer(QPrinter::HighResolution);
     bool     setupPrinter = TRUE;
     bool userCanceled = false;
 

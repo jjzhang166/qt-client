@@ -133,7 +133,7 @@ void reprintCreditMemos::init()
 
 void reprintCreditMemos::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
 
   bool userCanceled = false;

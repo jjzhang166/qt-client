@@ -147,7 +147,7 @@ void reprintInvoices::sQuery()
 
 void reprintInvoices::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
 
   bool userCanceled = false;

@@ -134,7 +134,7 @@ void printPurchaseOrdersByAgent::sPrint()
   pohead.exec();
   if (pohead.first())
   {
-    QPrinter  *printer = new QPrinter();
+    QPrinter  *printer = new QPrinter(QPrinter::HighResolution);
     bool      setupPrinter = TRUE;
 
     bool userCanceled = false;

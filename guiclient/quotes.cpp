@@ -161,7 +161,7 @@ void quotes::sPopulateMenu(QMenu *pMenu)
 
 void quotes::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   bool setupPrinter = TRUE;
   q.prepare( "SELECT findCustomerForm(quhead_cust_id, 'Q') AS reportname "
              "FROM quhead "

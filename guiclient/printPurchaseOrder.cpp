@@ -150,7 +150,7 @@ void printPurchaseOrder::sPrint()
     return;
   }
 
-  QPrinter  *printer = new QPrinter();
+  QPrinter  *printer = new QPrinter(QPrinter::HighResolution);
   bool      setupPrinter = TRUE;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(printer, userCanceled) == false)

@@ -179,7 +179,7 @@ void printShippingForms::sPrint()
   reports.exec(sql);
   if (reports.first())
   {
-    QPrinter printer;
+    QPrinter printer(QPrinter::HighResolution);
 
     bool     setupPrinter = TRUE;
     bool userCanceled = false;

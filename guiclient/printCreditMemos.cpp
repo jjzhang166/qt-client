@@ -139,7 +139,7 @@ void printCreditMemos::sPrint()
                     " AND (NOT cmhead_printed) );");
   if (cmhead.first())
   {
-    QPrinter printer;
+    QPrinter printer(QPrinter::HighResolution);
     bool     setupPrinter  = TRUE;
     int      itemlocSeries = 0;
     bool userCanceled = false;

@@ -136,7 +136,7 @@ void packingListBatch::languageChange()
 
 void packingListBatch::sPrintBatch()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
 
   XSqlQuery updateq;

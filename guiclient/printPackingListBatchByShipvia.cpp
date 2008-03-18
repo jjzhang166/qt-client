@@ -96,7 +96,7 @@ void printPackingListBatchByShipvia::languageChange()
 
 void printPackingListBatchByShipvia::sPrint()
 {
-  QPrinter printer;
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
 
   XSqlQuery prtd;
