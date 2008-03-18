@@ -692,7 +692,8 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
   pparams.append("reforder",    preforder.isEmpty() ? pneworder : preforder);
   pparams.append("status",      status);
   pparams.append("avs",         r_avs);
-  pparams.append("ordernum",    r_ordernum.isEmpty() ? pneworder : r_ordernum);
+  pparams.append("ordernum",    pneworder);
+  pparams.append("xactionid",   r_ordernum.isEmpty() ? pneworder : r_ordernum);
   pparams.append("error",       r_error);
   pparams.append("approved",    r_approved);
   pparams.append("code",        r_code);

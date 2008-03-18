@@ -1384,7 +1384,7 @@ int CreditCardProcessor::updateCCPay(int &pccpayid, ParameterList &pparams)
 	   "    COALESCE(<? value(\"next_seq\") ?>, 1),"
 	   "    <? value(\"approved\") ?>, <? value(\"avs\") ?>,"
 	   "    <? value(\"code\") ?>,     <? value(\"error\") ?>,"
-	   "    <? value(\"message\") ?>,  <? value(\"ordernum\") ?>,"
+	   "    <? value(\"message\") ?>,  <? value(\"xactionid\") ?>,"
 	   "    <? value(\"ref\") ?>,"
 	   "<? if exists(\"score\") ?>    <? value(\"score\") ?>,   <? endif ?>"
 	   "<? if exists(\"shipping\") ?> <? value(\"shipping\") ?>,<? endif ?>"
