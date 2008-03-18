@@ -57,15 +57,7 @@
 
 #include "version.h"
 
-#if defined Q_WS_WIN
-QString _Name = " Client for Windows";
-#elif defined Q_WS_X11
-QString _Name = " Client for Linux";
-#elif defined Q_WS_MAC
-QString _Name = " Client for OS X";
-#else
-QString _Name = " Client";
-#endif
+QString _Name = "xTuple ERP: %1 Edition";
 
 #ifndef __USEALTVERSION__
 QString _Version   = "2.3.1";

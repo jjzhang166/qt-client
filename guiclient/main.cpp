@@ -266,17 +266,17 @@ int main(int argc, char *argv[])
   if(!metric.first() || (metric.value("metric_value").toString() == "OpenMFG"))
   {
     _splash->setPixmap(QPixmap(":/images/splashOpenMFG.png"));
-    _Name.prepend("OpenMFG");
+    _Name = _Name.arg("OpenMFG");
   }
   else if(!metric.first() || (metric.value("metric_value").toString() == "xTupleERP"))
   {
     _splash->setPixmap(QPixmap(":/images/splashxTupleERP.png"));
-    _Name.prepend("xTupleERP");
+    _Name = _Name.arg("Standard");
   }
   else
   {
     _splash->setPixmap(QPixmap(":/images/splashPostBooks.png"));
-    _Name.prepend("PostBooks");
+    _Name = _Name.arg("PostBooks");
   }
 
   metric.exec("SELECT metric_value"
@@ -432,11 +432,11 @@ int main(int argc, char *argv[])
     // Check for the gain/loss and discrep accounts
     q.prepare("SELECT COALESCE((SELECT TRUE"
               "                   FROM accnt, metric"
-              "                  WHERE ((accnt_id=metric_value)"
+              "                  WHERE ((CAST(accnt_id AS text)=metric_value)"
               "                    AND  (metric_name='CurrencyGainLossAccount'))), FALSE)"
               "   AND COALESCE((SELECT TRUE"
               "                   FROM accnt, metric"
-              "                  WHERE ((accnt_id=metric_value)"
+              "                  WHERE ((CAST(accnt_id AS text)=metric_value)"
               "                    AND  (metric_name='GLSeriesDiscrepancyAccount'))), FALSE) AS result; ");
     q.exec();
     if(q.first() && q.value("result").toBool() != true)

@@ -485,16 +485,15 @@ void OpenMFGGUIClient::setCaption()
     QString protocol;
     QString database;
     QString port;
-    QString name;
     parseDatabaseURL(_databaseURL, protocol, server, database, port);
 
     if (_evaluation)
-      QMainWindow::setCaption( tr("%1 Evaluation Version %2 - Logged on as %3")
+      QMainWindow::setCaption( tr("%1 Evaluation %2 - Logged on as %3")
                                .arg(_Name)
                                .arg(_Version)
                                .arg(_q.value("username").toString()) );
     else
-      QMainWindow::setCaption( tr("%1 Version %2 - %3 on %4/%5 AS %6")
+      QMainWindow::setCaption( tr("%1 %2 - %3 on %4/%5 AS %6")
                                .arg(_Name)
                                .arg(_Version)
                                .arg(name)
