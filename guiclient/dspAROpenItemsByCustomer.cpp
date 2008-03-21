@@ -21,7 +21,7 @@
  * If left blank, the Original Developer is the Initial Developer. 
  * The Initial Developer of the Original Code is OpenMFG, LLC, 
  * d/b/a xTuple. All portions of the code written by xTuple are Copyright 
- * (c) 1999-2007 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
+ * (c) 1999-2008 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
  * 
  * Contributor(s): ______________________.
  * 
@@ -39,7 +39,7 @@
  * EXHIBIT B.  Attribution Information
  * 
  * Attribution Copyright Notice: 
- * Copyright (c) 1999-2007 by OpenMFG, LLC, d/b/a xTuple
+ * Copyright (c) 1999-2008 by OpenMFG, LLC, d/b/a xTuple
  * 
  * Attribution Phrase: 
  * Powered by PostBooks, an open source solution from xTuple
@@ -72,7 +72,7 @@
  *
  */
 dspAROpenItemsByCustomer::dspAROpenItemsByCustomer(QWidget* parent, const char* name, Qt::WFlags fl)
-    : QMainWindow(parent, name, fl)
+    : XMainWindow(parent, name, fl)
 {
   setupUi(this);
 
@@ -173,7 +173,7 @@ void dspAROpenItemsByCustomer::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pIte
   int menuItem;
 
   menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privleges->check("EditAROpenItem"))
+  if (!_privileges->check("EditAROpenItem"))
     pMenu->setItemEnabled(menuItem, FALSE);
 
   pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
@@ -193,7 +193,7 @@ void dspAROpenItemsByCustomer::sEdit()
   arOpenItem newdlg(this, "", TRUE);
   newdlg.set(params);
 
-  if (newdlg.exec() != QDialog::Rejected)
+  if (newdlg.exec() != XDialog::Rejected)
     sFillList();
 }
 
@@ -205,7 +205,7 @@ void dspAROpenItemsByCustomer::sView()
   arOpenItem newdlg(this, "", TRUE);
   newdlg.set(params);
 
-  if (newdlg.exec() != QDialog::Rejected)
+  if (newdlg.exec() != XDialog::Rejected)
     sFillList();
 }
 
@@ -253,30 +253,33 @@ void dspAROpenItemsByCustomer::sFillList()
              "       formatDate(aropen_docdate) AS f_docdate,"
              "       formatDate(aropen_duedate) AS f_duedate,"
              "       formatMoney(aropen_amount) AS f_amount,"
-             "       formatMoney(arapplied(aropen_id,:asofdate)) AS f_paid,"
-             "       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - arapplied(aropen_id,:asofdate)) * -1)"
-             "            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - arapplied(aropen_id,:asofdate))"
-             "            ELSE (aropen_amount - arapplied(aropen_id,:asofdate))"
+             "       formatMoney(aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate))) AS f_paid,"
+             "       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate))) * -1)"
+             "            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))"
+             "            ELSE (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))"
              "       END AS balance,"
-	         "       currConcat(aropen_curr_id) AS currAbbr,"
+             "       currConcat(aropen_curr_id) AS currAbbr,"
              "       currToBase(aropen_curr_id,"
-	         "       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - arapplied(aropen_id,:asofdate)) * -1)"
-             "            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - arapplied(aropen_id,:asofdate))"
-             "            ELSE (aropen_amount - arapplied(aropen_id,:asofdate))"
+             "       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate))) * -1)"
+             "            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))"
+             "            ELSE (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))"
              "       END, aropen_docdate) AS base_balance "
              "  FROM aropen "
+             "  LEFT OUTER JOIN arapply ON (((aropen_id=arapply_source_aropen_id) "
+             "                              OR (aropen_id=arapply_target_aropen_id)) "
+             "                             AND (arapply_distdate>:asofdate)) "
              " WHERE ( (COALESCE(aropen_closedate,date :asofdate + integer '1')>:asofdate) "
              "   AND   (aropen_docdate<=:asofdate)"
              "   AND   (aropen_cust_id=:cust_id) "
-             "   AND   (aropen_duedate BETWEEN :startDate AND :endDate) "
-             "   AND   ((currtobase(aropen_curr_id,aropen_amount,:asofdate) - arapplied(aropen_id,:asofdate)) > 0)) "
+             "   AND   (aropen_duedate BETWEEN :startDate AND :endDate)) "
+             " GROUP BY aropen_id,aropen_docnumber,aropen_ordernumber,aropen_doctype,aropen_docdate,aropen_duedate,aropen_amount,aropen_curr_id,aropen_paid "
              " ORDER BY aropen_docdate;" );
   _dates->bindValue(q);
   q.bindValue(":cust_id", _cust->id());
-  q.bindValue(":creditMemo", tr("C/M"));
-  q.bindValue(":debitMemo", tr("D/M"));
+  q.bindValue(":creditMemo", tr("Credit Memo"));
+  q.bindValue(":debitMemo", tr("Debit Memo"));
   q.bindValue(":invoice", tr("Invoice"));
-  q.bindValue(":cashdeposit", tr("C/D"));
+  q.bindValue(":cashdeposit", tr("Cash Deposit"));
   q.bindValue(":asofdate", _asOf->date());
   q.exec();
   if (q.first())

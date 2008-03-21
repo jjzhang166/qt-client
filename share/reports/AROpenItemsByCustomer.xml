@@ -29,25 +29,99 @@
        formatDate(aropen_docdate) AS f_docdate,
        formatDate(aropen_duedate) AS f_duedate,
        formatMoney(aropen_amount) AS f_amount,
-       formatMoney(arapplied(aropen_id,&lt;? value("asofDate") ?>)) AS f_paid,
-       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN formatMoney((aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>) * -1))
-            WHEN (aropen_doctype IN ('I', 'D')) THEN formatMoney(aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>))
-            ELSE formatMoney(aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>))
+       formatMoney(aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate))) AS f_paid,
+       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN formatMoney((aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)) * -1))
+            WHEN (aropen_doctype IN ('I', 'D')) THEN formatMoney(aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))
+            ELSE formatMoney(aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))
        END AS f_balance,
-       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>)) * -1)
-            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>))
-            ELSE (aropen_amount - arapplied(aropen_id,&lt;? value("asofDate") ?>))
+       CASE WHEN (aropen_doctype IN ('C', 'R')) THEN ((aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate))) * -1)
+            WHEN (aropen_doctype IN ('I', 'D')) THEN (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))
+            ELSE (aropen_amount - aropen_paid + SUM(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)))
        END AS balance
   FROM aropen
+    LEFT OUTER JOIN arapply ON (((aropen_id=arapply_source_aropen_id) 
+                              OR (aropen_id=arapply_target_aropen_id)) 
+                             AND (arapply_distdate > &lt;? value("asofDate") ?>)) 
   WHERE ( (COALESCE(aropen_closedate,date &lt;? value("asofDate") ?> + integer '1')>&lt;? value("asofDate") ?>)
         AND   (aropen_docdate&lt;=&lt;? value("asofDate") ?>)
         AND   (aropen_cust_id=&lt;? value("cust_id") ?>) 
-        AND   (aropen_duedate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>) 
-        AND   ((currtobase(aropen_curr_id,aropen_amount,&lt;? value("asofDate") ?>) - arapplied(aropen_id,&lt;? value("asofDate") ?>)) > 0))
+        AND   (aropen_duedate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>) )
+GROUP BY aropen_id,aropen_docnumber,aropen_ordernumber,aropen_doctype,aropen_docdate,aropen_duedate,aropen_amount,aropen_curr_id,aropen_paid
 ORDER BY aropen_docdate;</sql>
  </querysource>
  <rpthead>
   <height>176</height>
+  <label>
+   <rect>
+    <x>665</x>
+    <y>155</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Balance</string>
+  </label>
+  <label>
+   <rect>
+    <x>30</x>
+    <y>65</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Customer:</string>
+  </label>
+  <label>
+   <rect>
+    <x>325</x>
+    <y>155</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Doc. Date</string>
+  </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>170</ystart>
+   <xend>745</xend>
+   <yend>170</yend>
+   <weight>2</weight>
+  </line>
+  <label>
+   <rect>
+    <x>442</x>
+    <y>115</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>As of Date:</string>
+  </label>
   <field>
    <rect>
     <x>135</x>
@@ -69,9 +143,25 @@ ORDER BY aropen_docdate;</sql>
   </field>
   <label>
    <rect>
-    <x>665</x>
+    <x>345</x>
+    <y>5</y>
+    <width>400</width>
+    <height>40</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>18</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>A/R Open Items By Customer</string>
+  </label>
+  <label>
+   <rect>
+    <x>90</x>
     <y>155</y>
-    <width>80</width>
+    <width>100</width>
     <height>15</height>
    </rect>
    <font>
@@ -79,26 +169,29 @@ ORDER BY aropen_docdate;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Balance</string>
+   <string>Doc. #</string>
   </label>
-  <label>
+  <field>
    <rect>
-    <x>442</x>
-    <y>115</y>
-    <width>100</width>
+    <x>135</x>
+    <y>85</y>
+    <width>300</width>
     <height>20</height>
    </rect>
    <font>
     <face>Arial</face>
     <size>10</size>
-    <weight>normal</weight>
+    <weight>bold</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
-   <string>As of Date:</string>
-  </label>
+   <data>
+    <query>head</query>
+    <column>cust_name</column>
+   </data>
+  </field>
   <label>
    <rect>
     <x>407</x>
@@ -114,6 +207,38 @@ ORDER BY aropen_docdate;</sql>
    <hcenter/>
    <vcenter/>
    <string>Due Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>492</x>
+    <y>155</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Amount</string>
+  </label>
+  <label>
+   <rect>
+    <x>442</x>
+    <y>65</y>
+    <width>100</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Start Date:</string>
   </label>
   <field>
    <rect>
@@ -136,19 +261,19 @@ ORDER BY aropen_docdate;</sql>
   </field>
   <label>
    <rect>
-    <x>442</x>
-    <y>65</y>
+    <x>195</x>
+    <y>155</y>
     <width>100</width>
-    <height>20</height>
+    <height>15</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>10</size>
+    <size>8</size>
     <weight>normal</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
-   <string>Start Date:</string>
+   <string>Order #</string>
   </label>
   <label>
    <rect>
@@ -165,54 +290,6 @@ ORDER BY aropen_docdate;</sql>
    <hcenter/>
    <vcenter/>
    <string>Doc. Type</string>
-  </label>
-  <label>
-   <rect>
-    <x>90</x>
-    <y>155</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Doc. #</string>
-  </label>
-  <label>
-   <rect>
-    <x>492</x>
-    <y>155</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Amount</string>
-  </label>
-  <label>
-   <rect>
-    <x>345</x>
-    <y>5</y>
-    <width>400</width>
-    <height>40</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>A/R Open Items By Customer</string>
   </label>
   <field>
    <rect>
@@ -233,80 +310,6 @@ ORDER BY aropen_docdate;</sql>
     <column>enddate</column>
    </data>
   </field>
-  <label>
-   <rect>
-    <x>325</x>
-    <y>155</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Doc. Date</string>
-  </label>
-  <field>
-   <rect>
-    <x>135</x>
-    <y>85</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>cust_name</column>
-   </data>
-  </field>
-  <line>
-   <xstart>5</xstart>
-   <ystart>170</ystart>
-   <xend>745</xend>
-   <yend>170</yend>
-   <weight>2</weight>
-  </line>
-  <label>
-   <rect>
-    <x>195</x>
-    <y>155</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Order #</string>
-  </label>
-  <label>
-   <rect>
-    <x>580</x>
-    <y>155</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Paid</string>
-  </label>
   <field>
    <rect>
     <x>550</x>
@@ -328,19 +331,19 @@ ORDER BY aropen_docdate;</sql>
   </field>
   <label>
    <rect>
-    <x>30</x>
-    <y>65</y>
-    <width>100</width>
-    <height>20</height>
+    <x>580</x>
+    <y>155</y>
+    <width>80</width>
+    <height>15</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>10</size>
+    <size>8</size>
     <weight>normal</weight>
    </font>
-   <right/>
+   <hcenter/>
    <vcenter/>
-   <string>Customer:</string>
+   <string>Paid</string>
   </label>
   <label>
    <rect>
@@ -367,7 +370,7 @@ ORDER BY aropen_docdate;</sql>
   <height>26</height>
   <label>
    <rect>
-    <x>492</x>
+    <x>5</x>
     <y>5</y>
     <width>80</width>
     <height>15</height>
@@ -379,31 +382,8 @@ ORDER BY aropen_docdate;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Amount</string>
+   <string>Doc. Type</string>
   </label>
-  <label>
-   <rect>
-    <x>195</x>
-    <y>5</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Order #</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>20</ystart>
-   <xend>745</xend>
-   <yend>20</yend>
-   <weight>2</weight>
-  </line>
   <label>
    <rect>
     <x>90</x>
@@ -438,22 +418,6 @@ ORDER BY aropen_docdate;</sql>
   </label>
   <label>
    <rect>
-    <x>5</x>
-    <y>5</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Doc. Type</string>
-  </label>
-  <label>
-   <rect>
     <x>325</x>
     <y>5</y>
     <width>80</width>
@@ -467,6 +431,22 @@ ORDER BY aropen_docdate;</sql>
    <hcenter/>
    <vcenter/>
    <string>Doc. Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>580</x>
+    <y>5</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Paid</string>
   </label>
   <label>
    <rect>
@@ -484,9 +464,16 @@ ORDER BY aropen_docdate;</sql>
    <vcenter/>
    <string>Due Date</string>
   </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>20</ystart>
+   <xend>745</xend>
+   <yend>20</yend>
+   <weight>2</weight>
+  </line>
   <label>
    <rect>
-    <x>580</x>
+    <x>492</x>
     <y>5</y>
     <width>80</width>
     <height>15</height>
@@ -498,7 +485,23 @@ ORDER BY aropen_docdate;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Paid</string>
+   <string>Amount</string>
+  </label>
+  <label>
+   <rect>
+    <x>195</x>
+    <y>5</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Order #</string>
   </label>
  </pghead>
  <section>
@@ -529,9 +532,9 @@ ORDER BY aropen_docdate;</sql>
    </field>
    <field>
     <rect>
-     <x>407</x>
+     <x>90</x>
      <y>0</y>
-     <width>80</width>
+     <width>100</width>
      <height>15</height>
     </rect>
     <font>
@@ -539,30 +542,11 @@ ORDER BY aropen_docdate;</sql>
      <size>8</size>
      <weight>bold</weight>
     </font>
-    <hcenter/>
+    <left/>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_duedate</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>665</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_balance</column>
+     <column>aropen_docnumber</column>
     </data>
    </field>
    <field>
@@ -586,7 +570,7 @@ ORDER BY aropen_docdate;</sql>
    </field>
    <field>
     <rect>
-     <x>492</x>
+     <x>665</x>
      <y>0</y>
      <width>80</width>
      <height>15</height>
@@ -600,26 +584,7 @@ ORDER BY aropen_docdate;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_amount</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>5</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>aropen_doctype</column>
+     <column>f_balance</column>
     </data>
    </field>
    <field>
@@ -643,9 +608,9 @@ ORDER BY aropen_docdate;</sql>
    </field>
    <field>
     <rect>
-     <x>90</x>
+     <x>492</x>
      <y>0</y>
-     <width>100</width>
+     <width>80</width>
      <height>15</height>
     </rect>
     <font>
@@ -653,17 +618,90 @@ ORDER BY aropen_docdate;</sql>
      <size>8</size>
      <weight>bold</weight>
     </font>
-    <left/>
+    <right/>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>aropen_docnumber</column>
+     <column>f_amount</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>407</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <hcenter/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_duedate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>5</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <hcenter/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>aropen_doctype</column>
     </data>
    </field>
   </detail>
  </section>
  <pgfoot>
   <height>16</height>
+  <field>
+   <rect>
+    <x>705</x>
+    <y>0</y>
+    <width>40</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Context Query</query>
+    <column>page_number</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>600</x>
+    <y>0</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Page:</string>
+  </label>
   <field>
    <rect>
     <x>102</x>
@@ -685,22 +723,6 @@ ORDER BY aropen_docdate;</sql>
   </field>
   <label>
    <rect>
-    <x>600</x>
-    <y>0</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Page:</string>
-  </label>
-  <label>
-   <rect>
     <x>0</x>
     <y>0</y>
     <width>100</width>
@@ -715,25 +737,6 @@ ORDER BY aropen_docdate;</sql>
    <vcenter/>
    <string>Report Date:</string>
   </label>
-  <field>
-   <rect>
-    <x>705</x>
-    <y>0</y>
-    <width>40</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>Context Query</query>
-    <column>page_number</column>
-   </data>
-  </field>
  </pgfoot>
  <rptfoot>
   <height>16</height>

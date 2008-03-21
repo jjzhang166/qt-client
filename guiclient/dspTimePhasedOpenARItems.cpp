@@ -21,7 +21,7 @@
  * If left blank, the Original Developer is the Initial Developer. 
  * The Initial Developer of the Original Code is OpenMFG, LLC, 
  * d/b/a xTuple. All portions of the code written by xTuple are Copyright 
- * (c) 1999-2007 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
+ * (c) 1999-2008 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
  * 
  * Contributor(s): ______________________.
  * 
@@ -39,7 +39,7 @@
  * EXHIBIT B.  Attribution Information
  * 
  * Attribution Copyright Notice: 
- * Copyright (c) 1999-2007 by OpenMFG, LLC, d/b/a xTuple
+ * Copyright (c) 1999-2008 by OpenMFG, LLC, d/b/a xTuple
  * 
  * Attribution Phrase: 
  * Powered by PostBooks, an open source solution from xTuple
@@ -75,7 +75,7 @@
  *
  */
 dspTimePhasedOpenARItems::dspTimePhasedOpenARItems(QWidget* parent, const char* name, Qt::WFlags fl)
-    : QMainWindow(parent, name, fl)
+    : XMainWindow(parent, name, fl)
 {
   setupUi(this);
 
@@ -127,7 +127,7 @@ void dspTimePhasedOpenARItems::languageChange()
 
 void dspTimePhasedOpenARItems::sPrint()
 {
-  if ((_custom->isChecked() && _periods->isPeriodSelected()) || (!_custom->isChecked() && _asOf->isValid()))
+  if ((_custom->isChecked() && _periods->isPeriodSelected()) || (!_custom->isChecked()))
   {
     QString reportName;
     if(_custom->isChecked())
@@ -151,7 +151,7 @@ void dspTimePhasedOpenARItems::sPrint()
 
 void dspTimePhasedOpenARItems::sSubmit()
 {
-  if ((_custom->isChecked() && _periods->isPeriodSelected()) || (!_custom->isChecked() && _asOf->isValid()))
+  if ((_custom->isChecked() && _periods->isPeriodSelected()) || (!_custom->isChecked()))
   {
     ParameterList params(buildParameters());
     if(_custom->isChecked())
