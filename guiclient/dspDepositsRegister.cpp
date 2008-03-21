@@ -69,7 +69,7 @@
  *
  */
 dspDepositsRegister::dspDepositsRegister(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XMainWindow(parent, name, fl)
+    : QMainWindow(parent, name, fl)
 {
   setupUi(this);
 
