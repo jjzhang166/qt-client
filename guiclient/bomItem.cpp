@@ -370,7 +370,8 @@ void bomItem::sSave()
 void bomItem::sSaveClick()
 {
   sSave();
-  done(_bomitemid);
+  if (_saved)
+    done(_bomitemid);
 }
 
 void bomItem::sClose()
