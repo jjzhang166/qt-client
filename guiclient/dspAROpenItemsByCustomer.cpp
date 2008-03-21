@@ -72,7 +72,7 @@
  *
  */
 dspAROpenItemsByCustomer::dspAROpenItemsByCustomer(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XMainWindow(parent, name, fl)
+    : QMainWindow(parent, name, fl)
 {
   setupUi(this);
 
@@ -173,7 +173,7 @@ void dspAROpenItemsByCustomer::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pIte
   int menuItem;
 
   menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("EditAROpenItem"))
+  if (!_privleges->check("EditAROpenItem"))
     pMenu->setItemEnabled(menuItem, FALSE);
 
   pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
@@ -193,7 +193,7 @@ void dspAROpenItemsByCustomer::sEdit()
   arOpenItem newdlg(this, "", TRUE);
   newdlg.set(params);
 
-  if (newdlg.exec() != XDialog::Rejected)
+  if (newdlg.exec() != QDialog::Rejected)
     sFillList();
 }
 
@@ -205,7 +205,7 @@ void dspAROpenItemsByCustomer::sView()
   arOpenItem newdlg(this, "", TRUE);
   newdlg.set(params);
 
-  if (newdlg.exec() != XDialog::Rejected)
+  if (newdlg.exec() != QDialog::Rejected)
     sFillList();
 }
 
