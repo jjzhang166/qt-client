@@ -14,24 +14,24 @@
   <sql>SELECT cust_name,
        cust_address1,
        cust_address2,
-       formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;warehous_id&quot;) ?>
+       formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("warehous_id") ?>
          (SELECT warehous_code
             FROM warehous
-           WHERE (warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>) )
+           WHERE (warehous_id=&lt;? value("warehous_id") ?>) )
        &lt;? else ?>
          text('All Warehouses')
        &lt;? endif ?>
        AS warehouse,
-       &lt;? if exists(&quot;showPrices&quot;) ?>
+       &lt;? if exists("showPrices") ?>
          text('Amount $')
        &lt;? else ?>
          text('')
        &lt;? endif ?>
        AS lbl_amount
 FROM cust
-WHERE (cust_id=&lt;? value(&quot;cust_id&quot;) ?>);</sql>
+WHERE (cust_id=&lt;? value("cust_id") ?>);</sql>
  </querysource>
  <querysource>
   <name>detail</name>
@@ -44,34 +44,34 @@ WHERE (cust_id=&lt;? value(&quot;cust_id&quot;) ?>);</sql>
        formatQty(coitem_qtyshipped) AS f_qtyship,
        formatPrice(coitem_price) AS f_unitprice,
        formatQty(noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned)) AS f_balance,
-       &lt;? if exists(&quot;showPrices&quot;) ?>
+       &lt;? if exists("showPrices") ?>
          formatMoney(round((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio),2))
        &lt;? else ?>
          text('')
        &lt;? endif ?>
        AS f_amount,
-       &lt;? if exists(&quot;showPrices&quot;) ?>
+       &lt;? if exists("showPrices") ?>
          round((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio),2)
        &lt;? else ?>
          0
        &lt;? endif ?>
        AS backlog,
-       &lt;? if exists(&quot;showPrices&quot;) ?>
+       &lt;? if exists("showPrices") ?>
          round((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio),2)
        &lt;? else ?>
          0
        &lt;? endif ?>
        AS total_backlog  
-FROM cohead, coitem, itemsite, item, uom_name
+FROM cohead, coitem, itemsite, item, uom
 WHERE ((coitem_cohead_id=cohead_id)
  AND (coitem_itemsite_id=itemsite_id)
  AND (itemsite_item_id=item_id)
  AND (item_inv_uom_id=uom_id)
  AND (coitem_status NOT IN ('C','X'))
- AND (cohead_cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
- AND (coitem_scheddate BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-&lt;? if exists(&quot;warehous_id&quot;) ?>
- AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
+ AND (cohead_cust_id=&lt;? value("cust_id") ?>)
+ AND (coitem_scheddate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+&lt;? if exists("warehous_id") ?>
+ AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>)
 &lt;? endif ?>
 )
 ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
@@ -80,25 +80,25 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   <height>221</height>
   <label>
    <rect>
-    <x>165</x>
-    <y>185</y>
-    <width>80</width>
-    <height>15</height>
+    <x>408</x>
+    <y>90</y>
+    <width>130</width>
+    <height>20</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>8</size>
+    <size>10</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <right/>
    <vcenter/>
-   <string>Ordered</string>
+   <string>End Date:</string>
   </label>
   <label>
    <rect>
-    <x>509</x>
+    <x>10</x>
     <y>185</y>
-    <width>75</width>
+    <width>60</width>
     <height>15</height>
    </rect>
    <font>
@@ -106,15 +106,31 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Qty. Ordered</string>
+   <string>S/O #</string>
+  </label>
+  <label>
+   <rect>
+    <x>30</x>
+    <y>140</y>
+    <width>104</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Warehouse:</string>
   </label>
   <field>
    <rect>
-    <x>545</x>
-    <y>90</y>
-    <width>200</width>
+    <x>140</x>
+    <y>113</y>
+    <width>300</width>
     <height>20</height>
    </rect>
    <font>
@@ -126,30 +142,46 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    <vcenter/>
    <data>
     <query>head</query>
-    <column>enddate</column>
+    <column>cust_address2</column>
    </data>
   </field>
   <label>
    <rect>
-    <x>409</x>
-    <y>70</y>
-    <width>130</width>
-    <height>20</height>
+    <x>260</x>
+    <y>10</y>
+    <width>465</width>
+    <height>37</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
+    <size>18</size>
+    <weight>bold</weight>
    </font>
    <right/>
    <vcenter/>
-   <string>Start Date:</string>
+   <string>Backlog By Customer</string>
   </label>
-  <field>
+  <label>
    <rect>
-    <x>670</x>
+    <x>250</x>
+    <y>200</y>
+    <width>106</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Description</string>
+  </label>
+  <label>
+   <rect>
+    <x>433</x>
     <y>185</y>
-    <width>75</width>
+    <width>50</width>
     <height>15</height>
    </rect>
    <font>
@@ -158,12 +190,9 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <weight>normal</weight>
    </font>
    <hcenter/>
-   <top/>
-   <data>
-    <query>head</query>
-    <column>lbl_amount</column>
-   </data>
-  </field>
+   <vcenter/>
+   <string>UOM</string>
+  </label>
   <field>
    <rect>
     <x>140</x>
@@ -185,60 +214,9 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>5</x>
-    <y>70</y>
-    <width>130</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Customer:</string>
-  </label>
-  <field>
-   <rect>
-    <x>140</x>
-    <y>114</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>cust_address2</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>30</x>
-    <y>140</y>
-    <width>105</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Warehouse:</string>
-  </label>
-  <label>
-   <rect>
-    <x>165</x>
+    <x>508</x>
     <y>200</y>
-    <width>80</width>
+    <width>75</width>
     <height>15</height>
    </rect>
    <font>
@@ -248,106 +226,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Scheduled</string>
-  </label>
-  <label>
-   <rect>
-    <x>434</x>
-    <y>185</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>UOM</string>
-  </label>
-  <field>
-   <rect>
-    <x>545</x>
-    <y>70</y>
-    <width>200</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>startdate</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>250</x>
-    <y>185</y>
-    <width>106</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Item Number</string>
-  </label>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>185</y>
-    <width>60</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>S/O #</string>
-  </label>
-  <label>
-   <rect>
-    <x>434</x>
-    <y>200</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Unit Price</string>
-  </label>
-  <label>
-   <rect>
-    <x>260</x>
-    <y>10</y>
-    <width>465</width>
-    <height>38</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Backlog By Customer</string>
+   <string>Qty. Shipped</string>
   </label>
   <field>
    <rect>
@@ -370,8 +249,56 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>250</x>
+    <x>165</x>
+    <y>185</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Ordered</string>
+  </label>
+  <label>
+   <rect>
+    <x>165</x>
     <y>200</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Scheduled</string>
+  </label>
+  <label>
+   <rect>
+    <x>85</x>
+    <y>185</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>#</string>
+  </label>
+  <label>
+   <rect>
+    <x>250</x>
+    <y>185</y>
     <width>106</width>
     <height>15</height>
    </rect>
@@ -382,8 +309,113 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </font>
    <left/>
    <vcenter/>
-   <string>Description</string>
+   <string>Item Number</string>
   </label>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>70</y>
+    <width>130</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Customer:</string>
+  </label>
+  <label>
+   <rect>
+    <x>408</x>
+    <y>70</y>
+    <width>130</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Start Date:</string>
+  </label>
+  <label>
+   <rect>
+    <x>433</x>
+    <y>200</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Unit Price</string>
+  </label>
+  <field>
+   <rect>
+    <x>545</x>
+    <y>90</y>
+    <width>200</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>enddate</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>670</x>
+    <y>185</y>
+    <width>75</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <top/>
+   <data>
+    <query>head</query>
+    <column>lbl_amount</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>545</x>
+    <y>70</y>
+    <width>200</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>startdate</column>
+   </data>
+  </field>
   <field>
    <rect>
     <x>140</x>
@@ -405,24 +437,8 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>85</x>
+    <x>508</x>
     <y>185</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>#</string>
-  </label>
-  <label>
-   <rect>
-    <x>509</x>
-    <y>200</y>
     <width>75</width>
     <height>15</height>
    </rect>
@@ -433,23 +449,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Qty. Shipped</string>
-  </label>
-  <label>
-   <rect>
-    <x>409</x>
-    <y>90</y>
-    <width>130</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>End Date:</string>
+   <string>Qty. Ordered</string>
   </label>
   <label>
    <rect>
@@ -481,38 +481,6 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
  </pghead>
  <pghead>
   <height>36</height>
-  <label>
-   <rect>
-    <x>250</x>
-    <y>15</y>
-    <width>106</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Description</string>
-  </label>
-  <label>
-   <rect>
-    <x>509</x>
-    <y>15</y>
-    <width>75</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Qty. Shipped</string>
-  </label>
   <line>
    <xstart>5</xstart>
    <ystart>30</ystart>
@@ -523,7 +491,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   <label>
    <rect>
     <x>165</x>
-    <y>15</y>
+    <y>0</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -534,7 +502,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Scheduled</string>
+   <string>Ordered</string>
   </label>
   <field>
    <rect>
@@ -557,6 +525,86 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   </field>
   <label>
    <rect>
+    <x>250</x>
+    <y>0</y>
+    <width>106</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Item Number</string>
+  </label>
+  <label>
+   <rect>
+    <x>433</x>
+    <y>15</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Unit Price</string>
+  </label>
+  <label>
+   <rect>
+    <x>508</x>
+    <y>0</y>
+    <width>75</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Qty. Ordered</string>
+  </label>
+  <label>
+   <rect>
+    <x>508</x>
+    <y>15</y>
+    <width>75</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Qty. Shipped</string>
+  </label>
+  <label>
+   <rect>
+    <x>165</x>
+    <y>15</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Scheduled</string>
+  </label>
+  <label>
+   <rect>
     <x>590</x>
     <y>0</y>
     <width>75</width>
@@ -574,7 +622,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   <label>
    <rect>
     <x>250</x>
-    <y>0</y>
+    <y>15</y>
     <width>106</width>
     <height>15</height>
    </rect>
@@ -585,13 +633,13 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </font>
    <left/>
    <vcenter/>
-   <string>Item Number</string>
+   <string>Description</string>
   </label>
   <label>
    <rect>
-    <x>165</x>
+    <x>10</x>
     <y>0</y>
-    <width>80</width>
+    <width>60</width>
     <height>15</height>
    </rect>
    <font>
@@ -599,9 +647,9 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Ordered</string>
+   <string>S/O #</string>
   </label>
   <label>
    <rect>
@@ -621,23 +669,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
   </label>
   <label>
    <rect>
-    <x>434</x>
-    <y>15</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Unit Price</string>
-  </label>
-  <label>
-   <rect>
-    <x>434</x>
+    <x>433</x>
     <y>0</y>
     <width>50</width>
     <height>15</height>
@@ -650,38 +682,6 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    <hcenter/>
    <vcenter/>
    <string>UOM</string>
-  </label>
-  <label>
-   <rect>
-    <x>509</x>
-    <y>0</y>
-    <width>75</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Qty. Ordered</string>
-  </label>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>0</y>
-    <width>60</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>S/O #</string>
   </label>
  </pghead>
  <section>
@@ -711,6 +711,13 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
      </data>
      <tracktotal subtotal="true" builtin="true" >money</tracktotal>
     </field>
+    <line>
+     <xstart>5</xstart>
+     <ystart>15</ystart>
+     <xend>745</xend>
+     <yend>15</yend>
+     <weight>2</weight>
+    </line>
     <label>
      <rect>
       <x>475</x>
@@ -727,13 +734,6 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
      <vcenter/>
      <string>Order Backlog $:</string>
     </label>
-    <line>
-     <xstart>5</xstart>
-     <ystart>15</ystart>
-     <xend>745</xend>
-     <yend>15</yend>
-     <weight>2</weight>
-    </line>
    </foot>
   </group>
   <detail>
@@ -743,7 +743,45 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    <height>51</height>
    <field>
     <rect>
-     <x>509</x>
+     <x>508</x>
+     <y>0</y>
+     <width>75</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_qtyord</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>419</x>
+     <y>15</y>
+     <width>75</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_unitprice</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>508</x>
      <y>15</y>
      <width>75</width>
      <height>15</height>
@@ -763,7 +801,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    <field>
     <rect>
      <x>250</x>
-     <y>15</y>
+     <y>30</y>
      <width>250</width>
      <height>15</height>
     </rect>
@@ -776,7 +814,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>item_descrip1</column>
+     <column>item_descrip2</column>
     </data>
    </field>
    <field>
@@ -798,11 +836,18 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
      <column>coitem_linenumber</column>
     </data>
    </field>
+   <line>
+    <xstart>5</xstart>
+    <ystart>45</ystart>
+    <xend>745</xend>
+    <yend>45</yend>
+    <weight>0</weight>
+   </line>
    <field>
     <rect>
      <x>250</x>
-     <y>0</y>
-     <width>160</width>
+     <y>15</y>
+     <width>250</width>
      <height>15</height>
     </rect>
     <font>
@@ -814,7 +859,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>item_number</column>
+     <column>item_descrip1</column>
     </data>
    </field>
    <field>
@@ -838,7 +883,45 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>509</x>
+     <x>165</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_orderdate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>250</x>
+     <y>0</y>
+     <width>160</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>item_number</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>670</x>
      <y>0</y>
      <width>75</width>
      <height>15</height>
@@ -852,26 +935,7 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_qtyord</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>165</x>
-     <y>15</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_scheddate</column>
+     <column>f_amount</column>
     </data>
    </field>
    <field>
@@ -895,9 +959,9 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>420</x>
+     <x>165</x>
      <y>15</y>
-     <width>75</width>
+     <width>80</width>
      <height>15</height>
     </rect>
     <font>
@@ -909,12 +973,12 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_unitprice</column>
+     <column>f_scheddate</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>434</x>
+     <x>433</x>
      <y>0</y>
      <width>50</width>
      <height>15</height>
@@ -931,74 +995,42 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
      <column>uom_name</column>
     </data>
    </field>
-   <field>
-    <rect>
-     <x>670</x>
-     <y>0</y>
-     <width>75</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_amount</column>
-    </data>
-   </field>
-   <line>
-    <xstart>5</xstart>
-    <ystart>45</ystart>
-    <xend>745</xend>
-    <yend>45</yend>
-    <weight>0</weight>
-   </line>
-   <field>
-    <rect>
-     <x>165</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_orderdate</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>250</x>
-     <y>30</y>
-     <width>250</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>item_descrip2</column>
-    </data>
-   </field>
   </detail>
  </section>
  <pgfoot>
   <height>18</height>
+  <label>
+   <rect>
+    <x>615</x>
+    <y>0</y>
+    <width>85</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Page:</string>
+  </label>
+  <label>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>85</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Report Date:</string>
+  </label>
   <field>
    <rect>
     <x>90</x>
@@ -1018,22 +1050,6 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <column>report_date</column>
    </data>
   </field>
-  <label>
-   <rect>
-    <x>615</x>
-    <y>0</y>
-    <width>85</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Page:</string>
-  </label>
   <field>
    <rect>
     <x>705</x>
@@ -1053,22 +1069,6 @@ ORDER BY coitem_scheddate, cohead_number, coitem_linenumber;</sql>
     <column>page_number</column>
    </data>
   </field>
-  <label>
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>85</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Report Date:</string>
-  </label>
  </pgfoot>
  <rptfoot>
   <height>26</height>
