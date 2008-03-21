@@ -21,7 +21,7 @@
  * If left blank, the Original Developer is the Initial Developer. 
  * The Initial Developer of the Original Code is OpenMFG, LLC, 
  * d/b/a xTuple. All portions of the code written by xTuple are Copyright 
- * (c) 1999-2007 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
+ * (c) 1999-2008 OpenMFG, LLC, d/b/a xTuple. All Rights Reserved. 
  * 
  * Contributor(s): ______________________.
  * 
@@ -39,7 +39,7 @@
  * EXHIBIT B.  Attribution Information
  * 
  * Attribution Copyright Notice: 
- * Copyright (c) 1999-2007 by OpenMFG, LLC, d/b/a xTuple
+ * Copyright (c) 1999-2008 by OpenMFG, LLC, d/b/a xTuple
  * 
  * Attribution Phrase: 
  * Powered by PostBooks, an open source solution from xTuple
@@ -70,7 +70,7 @@
 #include "scrapWoMaterialFromWIP.h"
 
 postOperations::postOperations(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : QDialog(parent, name, modal, fl)
+    : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
@@ -96,10 +96,10 @@ postOperations::postOperations(QWidget* parent, const char* name, bool modal, Qt
   _wo->setType(cWoExploded | cWoReleased | cWoIssued);
   _wooper->setAllowNull(TRUE);
 
-  _receiveInventory->setEnabled(_privleges->check("ChangeReceiveInventory"));
-  _postStandardSutime->setEnabled(_privleges->check("OverrideWOTCTime"));
-  _postStandardRntime->setEnabled(_privleges->check("OverrideWOTCTime"));
-  _specifiedRntime->setEnabled(_privleges->check("OverrideWOTCTime"));
+  _receiveInventory->setEnabled(_privileges->check("ChangeReceiveInventory"));
+  _postStandardSutime->setEnabled(_privileges->check("OverrideWOTCTime"));
+  _postStandardRntime->setEnabled(_privileges->check("OverrideWOTCTime"));
+  _specifiedRntime->setEnabled(_privileges->check("OverrideWOTCTime"));
 
   _qty->setValidator(omfgThis->qtyVal());
 
@@ -347,7 +347,7 @@ void postOperations::sHandleWooperid(int)
         _issueComponents->setChecked(FALSE);
       }
 
-	  _closeWO->setDisabled((w.value("item_type").toString() == "J" || !_privleges->check("CloseWorkOrders")));
+	  _closeWO->setDisabled((w.value("item_type").toString() == "J" || !_privileges->check("CloseWorkOrders")));
 
       sHandleQty();
     }
@@ -417,6 +417,9 @@ void postOperations::sHandleWooperid(int)
 
 void postOperations::sHandleQty()
 {
+  double qty = _qty->toDouble();
+  _markRnComplete->setChecked(qty >= _qtyBalance->text().toDouble());
+  
   if (_wooper->id() == -1)
   {
     _standardRntime->clear();
@@ -426,14 +429,11 @@ void postOperations::sHandleQty()
   }
   else if (_closeWO->isEnabled())
   {
-    double qty = _qty->toDouble();
-
     if (_productionUOM->isChecked())
       _standardRntime->setText(formatQty(_rnqtyper * qty));
     else
       _standardRntime->setText(formatQty(_rnqtyper / _invProdUOMRatio * qty));
 
-    _markRnComplete->setChecked(qty >= _qtyBalance->text().toDouble());
     _closeWO->setChecked(FALSE);
 
     if(qty >= _balance)
@@ -521,7 +521,7 @@ void postOperations::sPost()
 	     .arg(sutime) .arg(rntime) .arg(sutime+rntime) .arg(_wotcTime)
 	     .arg(sutime + rntime - _wotcTime));
     */
-    if (_privleges->check("OverrideWOTCTime"))
+    if (_privileges->check("OverrideWOTCTime"))
     {
       if (QMessageBox::question(this, tr("Work Times Mismatch"),
 			    tr("<p>The specified setup and run times do not equal "
@@ -791,7 +791,7 @@ void postOperations::sPost()
 
     relocateInventory newdlg(this, "", true);
     newdlg.set(params);
-    if(newdlg.exec() == QDialog::Rejected)
+    if(newdlg.exec() == XDialog::Rejected)
       return;
   }
 
@@ -830,7 +830,7 @@ void postOperations::sPost()
     {
       if (qty > 0.0)
       {
-        if (distributeInventory::SeriesAdjust(q.value("result").toInt(), this) == QDialog::Rejected)
+        if (distributeInventory::SeriesAdjust(q.value("result").toInt(), this) == XDialog::Rejected)
         {
           rollback.exec();
           QMessageBox::information( this, tr("Post Operation"), tr("Transaction Canceled") );
@@ -913,7 +913,7 @@ void postOperations::sHandlePostRunTime(bool)
   _rntimeGroup->setEnabled(_postRntime->isChecked());
   _specifiedRntime->setEnabled(_postRntime->isChecked() && 
 			       _postSpecifiedRntime->isChecked() &&
-			       _privleges->check("OverrideWOTCTime"));
+			       _privileges->check("OverrideWOTCTime"));
 }
 
 
@@ -932,7 +932,7 @@ void postOperations::sSetupChanged()
 {
   if (_wotcTime > 0)
   {
-    if (! _privleges->check("OverrideWOTCTime") &&
+    if (! _privileges->check("OverrideWOTCTime") &&
         _specifiedSutime->text().toDouble() > _wotcTime)
       _specifiedSutime->setText(QString::number(_wotcTime));
     else
