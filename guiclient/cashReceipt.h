@@ -74,6 +74,7 @@ public:
 
 public slots:
     virtual SetResponse set(const ParameterList & pParams );
+    virtual void close();
     virtual void populate();
     virtual void sAdd();
     virtual void sApply();
@@ -81,7 +82,6 @@ public slots:
     virtual void sApplyToBalance();
     virtual void sChangeCurrency( int newId );
     virtual void sClear();
-    virtual void sClose();
     virtual void sDelete();
     virtual void sEdit();
     virtual void sEditCreditCard();

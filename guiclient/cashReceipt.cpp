@@ -79,7 +79,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_cust, SIGNAL(newId(int)), this, SLOT(sPopulateCustomerInfo(int)));
   connect(_received, SIGNAL(lostFocus()), this, SLOT(sUpdateBalance()));
@@ -158,6 +158,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   }
 
   _overapplied = false;
+  _cashrcptid = -1;
 }
 
 cashReceipt::~cashReceipt()
@@ -431,9 +432,9 @@ void cashReceipt::sDelete()
   sFillMiscList();
 }
 
-void cashReceipt::sClose()
+void cashReceipt::close()
 {
-  if (_mode == cNew)
+  if (_mode == cNew && _cashrcptid >= 0)
   {
     q.prepare("SELECT deleteCashRcpt(:cashrcpt_id) AS result;");
     q.bindValue(":cashrcpt_id", _cashrcptid);
@@ -454,7 +455,7 @@ void cashReceipt::sClose()
     }
   }
 
-  close();
+  QMainWindow::close();
 }
 
 void cashReceipt::sSave()
@@ -578,6 +579,7 @@ void cashReceipt::sSave()
   }
 
   omfgThis->sCashReceiptsUpdated(_cashrcptid, TRUE);
+  _cashrcptid = -1;
 
   close();
 }
