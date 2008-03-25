@@ -356,8 +356,10 @@ void shipOrder::sShip()
 
     if (_metrics->boolean("MultiWhs"))
       params.append("MultiWhs");
-    params.append("tohead_id", _toNumber->id());
-    params.append("ordertype", "TO");
+    params.append("tohead_id",   _toNumber->id());
+    params.append("orderid",     _toNumber->id());
+    params.append("ordertype",   "TO");
+    params.append("shiphead_id", _shipment->id());
 
     MetaSQLQuery recvm = mqlLoad(":/sr/enterReceipt/ReceiveAll.mql");
     shipq = recvm.toQuery(params);
