@@ -71,8 +71,24 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-const char *_fundsTypes[] = { "C", "T", "M", "V", "A", "D", "R", "K", "W", "O" };
-const int _fundsTypeCount = 9;
+#define TR(a)	QObject::tr(a)
+
+const struct {
+  QString full;
+  QString abbr;
+  bool    cc;
+} _fundsTypes[] = {
+  { TR("Check"),            "C", false },
+  { TR("Certified Check"),  "T", false },
+  { TR("Master Card"),      "M", true  },
+  { TR("Visa"),             "V", true  },
+  { TR("American Express"), "A", true  },
+  { TR("Discover Card"),    "D", true  },
+  { TR("Other Credit Card"),"R", true  },
+  { TR("Cash"),             "K", false },
+  { TR("Wire Transfer"),    "W", false },
+  { TR("Other"),            "O", false }
+};
 
 cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
     : QMainWindow(parent, name, fl)
@@ -141,6 +157,15 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   _cc->addColumn(tr("Active"),          _itemColumn,  Qt::AlignLeft );
   _cc->addColumn(tr("Name"),            _itemColumn,  Qt::AlignLeft );
   _cc->addColumn(tr("Expiration Date"), -1,           Qt::AlignLeft );
+
+  for (unsigned int i = 0; i < sizeof(_fundsTypes) / sizeof(_fundsTypes[1]); i++)
+  {
+    // only show credit card funds types if the user can process cc transactions
+    if (! _fundsTypes[i].cc ||
+        (_fundsTypes[i].cc && _metrics->boolean("CCAccept") &&
+         _privleges->check("ProcessCreditCards")) )
+      _fundsType->addItem(_fundsTypes[i].full, _fundsTypes[i].abbr);
+  }
 
   if (!_metrics->boolean("CCAccept") && ! _privleges->check("ProcessCreditCards"))
     _tab->removeTab(_tab->indexOf(_creditCardTab));
@@ -505,7 +530,7 @@ void cashReceipt::sSave()
     return;
   }
 
-  QString fundsType = QString(*(_fundsTypes + _fundsType->currentItem()));
+  QString fundsType = _fundsType->itemData(_fundsType->currentIndex()).toString();
   if (!_ccEdit &&
       (fundsType == "A" || fundsType == "D" || fundsType == "M" || fundsType == "V"))
   {
@@ -560,7 +585,7 @@ void cashReceipt::sSave()
   q.bindValue(":cashrcpt_id", _cashrcptid);
   q.bindValue(":cashrcpt_cust_id", _cust->id());
   q.bindValue(":cashrcpt_amount", _received->localValue());
-  q.bindValue(":cashrcpt_fundstype", QString(*(_fundsTypes + _fundsType->currentItem())));
+  q.bindValue(":cashrcpt_fundstype", fundsType);
   q.bindValue(":cashrcpt_docnumber", _docNumber->text());
   q.bindValue(":cashrcpt_bankaccnt_id", _bankaccnt->id());
   q.bindValue(":cashrcpt_distdate", _distDate->date());
@@ -737,11 +762,8 @@ void cashReceipt::populate()
     else
       _balCreditMemo->setChecked(true);
 
-    for (int counter = 0; counter < _fundsType->count(); counter++)
-      if (QString(q.value("cashrcpt_fundstype").toString()[0]) == _fundsTypes[counter])
-        {
-          _fundsType->setCurrentItem(counter);
-        }
+    _fundsType->setCurrentItem( _fundsType->findData(q.value("cashrcpt_fundstype"),
+                                                    Qt::UserRole));
 
     _origFunds = q.value("cashrcpt_fundstype").toString();
     _cust->setId(q.value("cashrcpt_cust_id").toInt());
@@ -831,7 +853,7 @@ void cashReceipt::setCreditCard()
              " AND   (ccard_active)"
              "ORDER BY ccard_seq;" );
   q.bindValue(":cust_id",    _cust->id());
-  q.bindValue(":ccard_type", QString(*(_fundsTypes + _fundsType->currentItem())));
+  q.bindValue(":ccard_type", _fundsType->itemData(_fundsType->currentIndex()));
   q.bindValue(":masterCard", tr("MasterCard"));
   q.bindValue(":visa",       tr("VISA"));
   q.bindValue(":americanExpress", tr("American Express"));

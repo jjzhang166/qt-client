@@ -248,56 +248,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <item>
-                 <property name="text" >
-                  <string>Check</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Certified Check</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Master Card</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Visa</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>American Express</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Discover Card</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Other Credit Card</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Cash</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Wire Transfer</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Other</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
