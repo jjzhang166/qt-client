@@ -74,6 +74,7 @@ public:
 
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
+    virtual void setParams(ParameterList & params);
     virtual void sFillListWhereUsed();
     virtual void sFillListItemloc();
     virtual void sFillListInvhist();

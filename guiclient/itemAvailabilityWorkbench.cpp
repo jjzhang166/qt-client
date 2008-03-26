@@ -59,7 +59,9 @@
 
 #include <QMessageBox>
 #include <QVariant>
+#include <QSqlError>
 
+#include <metasql.h>
 #include <openreports.h>
 
 #include "adjustmentTrans.h"
@@ -88,6 +90,12 @@
 #include "transactionInformation.h"
 #include "transferTrans.h"
 #include "workOrder.h"
+#include "mqlutil.h"
+
+#define ORDERTYPE_COL		0
+#define ORDERNUM_COL		1
+#define DUEDATE_COL		3
+#define RUNNINGAVAIL_COL	7
 
 itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char* name, Qt::WFlags fl)
     : QMainWindow(parent, name, fl)
@@ -132,7 +140,8 @@ itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char
   //  _item->setType(ItemLineEdit::cGeneralComponents | ItemLineEdit::cActive);
   
   // Running Availability
-  _availability->addColumn(tr("Order Type/#"),       _itemColumn, Qt::AlignLeft  );
+  _availability->addColumn(tr("Order Type"),        _itemColumn, Qt::AlignLeft  );
+  _availability->addColumn(tr("Order #"),           _itemColumn, Qt::AlignLeft  );
   _availability->addColumn(tr("Source/Destination"), -1,          Qt::AlignLeft  );
   _availability->addColumn(tr("Due Date"),           _dateColumn, Qt::AlignLeft  );
   _availability->addColumn(tr("Ordered"),            _qtyColumn,  Qt::AlignRight );
@@ -284,6 +293,29 @@ enum SetResponse itemAvailabilityWorkbench::set( const ParameterList & pParams )
     _item->setId(param.toInt());
 
   return NoError;
+}
+
+void itemAvailabilityWorkbench::setParams(ParameterList & params)
+{
+  params.append("item_id",	_item->id());
+  params.append("warehous_id",	_warehouse->id());
+
+  params.append("firmPo",	tr("Planned P/O (firmed)"));
+  params.append("plannedPo",	tr("Planned P/O"));
+  params.append("firmWo",	tr("Planned W/O (firmed)"));
+  params.append("plannedWo",	tr("Planned W/O"));
+  params.append("firmWoReq",	tr("Planned W/O Req. (firmed)"));
+  params.append("plannedWoReq",	tr("Planned W/O Req."));
+  params.append("pr",		tr("Purchase Request"));
+
+  if (_showPlanned->isChecked())
+    params.append("showPlanned");
+
+  if (_metrics->boolean("MultiWhs"))
+    params.append("MultiWhs");
+
+  if (_metrics->value("Application") == "OpenMFG")
+    params.append("showMRPplan");
 }
 
 void itemAvailabilityWorkbench::sFillListWhereUsed()
@@ -798,236 +830,48 @@ void itemAvailabilityWorkbench::sFillListRunning()
       _orderMultiple->setText(q.value("f_multorderqty").toString());
       _orderToQty->setText(q.value("f_ordertoqty").toString());
 
-      bool    primed              = FALSE;
-      int     itemsiteid          = q.value("itemsite_id").toInt();
       double  reorderLevel        = q.value("reorderlevel").toDouble();
       double  runningAvailability = q.value("itemsite_qtyonhand").toDouble();
       QString itemType            = q.value("item_type").toString();
-      bool    itemSold            = q.value("item_sold").toBool();
       QString sql;
 
-      if (itemType == "M")
+      MetaSQLQuery mql = mqlLoad(":/ms/displays/RunningAvailability/FillListDetail.mql");
+      ParameterList params;
+      setParams(params);
+      q = mql.toQuery(params);
+      XTreeWidgetItem *last = 0;
+      while (q.next())
       {
-        primed = TRUE;
-        sql = "SELECT wo_id AS orderid, -1 AS altorderid,"
-              "       ('W/O-' || formatWoNumber(wo_id)) AS ordernumber,"
-              "       1 AS sequence,"
-              "       '' AS item_number,"
-              "       formatDate(wo_duedate) AS duedate,"
-              "       wo_duedate AS r_duedate,"
-              "       (wo_duedate < CURRENT_DATE) AS late,"
-              "       formatQty(wo_qtyord) AS f_qtyordered,"
-              "       formatQty(wo_qtyrcv) AS f_qtyreceived,"
-              "       formatQty(noNeg(wo_qtyord - wo_qtyrcv)) AS f_balance,"
-              "       noNeg(wo_qtyord - wo_qtyrcv) AS balance "
-              "FROM wo "
-              "WHERE ( (wo_status<>'C')"
-              " AND (wo_itemsite_id=:itemsite_id) ) ";
+	runningAvailability += q.value("balance").toDouble();
+
+	last = new XTreeWidgetItem(_availability, last,
+				   q.value("orderid").toInt(),
+				   q.value("altorderid").toInt(),
+				   q.value("ordertype"),
+				   q.value("ordernumber"),
+				   q.value("item_number"),
+				   q.value("duedate"),
+				   q.value("f_qtyordered"),
+				   q.value("f_qtyreceived"),
+				   q.value("f_balance"),
+				   formatQty(runningAvailability) );
+
+	if (q.value("late").toBool())
+	  last->setTextColor(DUEDATE_COL, "red");
+
+	if (runningAvailability < 0.0)
+	  last->setTextColor(RUNNINGAVAIL_COL, "red");
+	else if (runningAvailability < reorderLevel)
+	  last->setTextColor(RUNNINGAVAIL_COL, "orange");
+
+	if (last->text(ORDERTYPE_COL).contains("Planned P/O") ||
+	    last->text(ORDERTYPE_COL).contains("Planned W/O") )
+	  last->setTextColor("blue");
       }
-
-      if ( (itemType == "C") || (itemType == "Y") )
+      if (q.lastError().type() != QSqlError::None)
       {
-        if (primed)
-          sql += "UNION ";
-        else
-          primed = TRUE;
-       
-        sql = "SELECT wo_id AS orderid, -1 AS altorderid,"
-              "       ('W/O-' || formatWoNumber(wo_id)) AS ordernumber,"
-              "       1 AS sequence,"
-              "       item_number,"
-              "       formatDate(wo_duedate) AS duedate,"
-              "       wo_duedate AS r_duedate,"
-              "       (wo_duedate < CURRENT_DATE) AS late,"
-              "       formatQty(wo_qtyord * brddist_stdqtyper) AS f_qtyordered,"
-              "       formatQty(wo_qtyrcv * brddist_stdqtyper) AS f_qtyreceived,"
-              "       formatQty(noNeg((wo_qtyord - wo_qtyrcv) * brddist_stdqtyper)) AS f_balance,"
-              "       noNeg((wo_qtyord - wo_qtyrcv) * brddist_stdqtyper) AS balance "
-              "FROM brddist, wo, itemsite, item "
-              "WHERE ( (wo_status<>'C')"
-              " AND (brddist_wo_id=wo_id)"
-              " AND (wo_itemsite_id=itemsite_id) ) "
-              " AND (itemsite_item_id=item_id)"
-              " AND (brddist_itemsite_id=:itemsite_id)";
-      }
-
-      if ( (itemType == "P") || (itemType == "M") || (itemType == "C") || (itemType == "O") )
-      {
-        if (primed)
-          sql += "UNION ";
-        else
-          primed = TRUE;
-       
-        sql += "SELECT wo_id AS orderid, womatl_id AS altorderid,"
-               "       ('W/O-' || formatWoNumber(wo_id)) AS ordernumber,"
-               "       2 AS sequence,"
-               "       item_number,"
-               "       formatDate(womatl_duedate) AS duedate,"
-               "       womatl_duedate AS r_duedate,"
-               "       (FALSE) AS late,"
-               "       formatQty(itemuomtouom(matis.itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq)) AS f_qtyordered,"
-               "       formatQty(itemuomtouom(matis.itemsite_item_id, womatl_uom_id, NULL, womatl_qtyiss)) AS f_qtyreceived,"
-               "       formatQty((noNeg(itemuomtouom(matis.itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq - womatl_qtyiss)) * -1)) AS f_balance,"
-               "       (noNeg(itemuomtouom(matis.itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq - womatl_qtyiss)) * -1) AS balance "
-               "FROM womatl, wo, itemsite AS wois, item, itemsite AS matis "
-               "WHERE ( (wo_status<>'C')"
-               " AND (wo_itemsite_id=wois.itemsite_id)"
-               " AND (womatl_wo_id=wo_id)"
-               " AND (wois.itemsite_item_id=item_id)"
-               " AND (womatl_itemsite_id=matis.itemsite_id)"
-               " AND (womatl_itemsite_id=:itemsite_id) ) ";
-      }
-
-      if ( (itemType == "P") || (itemType == "O") )
-      {
-        if (primed)
-          sql += "UNION ";
-        else
-          primed = TRUE;
-       
-
-        sql += "SELECT pohead_id AS orderid, poitem_id AS altorderid,"
-               "       ('P/O-' || pohead_number) AS ordernumber,"
-               "       1 AS sequence,"
-               "       '' AS item_number,"
-               "       formatDate(poitem_duedate) AS duedate,"
-               "       poitem_duedate AS r_duedate,"
-               "       (poitem_duedate < CURRENT_DATE) AS late,"
-               "       formatQty(poitem_qty_ordered * poitem_invvenduomratio) AS f_qtyordered,"
-               "       formatQty(poitem_qty_received * poitem_invvenduomratio) AS f_qtyreceived,"
-               "       formatQty(noNeg(poitem_qty_ordered - poitem_qty_received) * poitem_invvenduomratio) AS f_balance,"
-               "       (noNeg(poitem_qty_ordered - poitem_qty_received) * poitem_invvenduomratio) AS balance "
-               "FROM pohead, poitem "
-               "WHERE ( (poitem_pohead_id=pohead_id)"
-               " AND (poitem_status <> 'C')"
-               " AND (poitem_itemsite_id=:itemsite_id) ) ";
-      }
-
-      if (itemSold)
-      {
-        if (primed)
-          sql += "UNION ";
-        else
-          primed = TRUE;
-       
-
-        sql += "SELECT cohead_id AS orderid, coitem_id AS altorderid,"
-               "       ('S/O-' || TEXT(cohead_number)) AS ordernumber,"
-               "       2 AS sequence,"
-               "       cust_name AS item_number,"
-               "       formatDate(coitem_scheddate) AS duedate,"
-               "       coitem_scheddate AS r_duedate,"
-               "       (coitem_scheddate < CURRENT_DATE) AS late,"
-               "       formatQty(coitem_qtyord) AS f_qtyordered,"
-               "       formatQty(coitem_qtyshipped - coitem_qtyreturned + qtyAtShipping(coitem_id)) AS f_qtyreceived,"
-               "       formatQty((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned - qtyAtShipping(coitem_id)) * -1)) AS f_balance,"
-               "       (noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned - qtyAtShipping(coitem_id)) * -1) AS balance "
-               "FROM coitem, cohead, cust "
-               "WHERE ( (coitem_status='O')"
-               " AND (cohead_cust_id=cust_id)"
-               " AND (coitem_cohead_id=cohead_id)"
-               " AND (coitem_itemsite_id=:itemsite_id) ) ";
-      }
-
-      if (_showPlanned->isChecked())
-      {
-        if (primed)
-          sql += "UNION ";
-        else
-          primed = TRUE;
-       
-        sql += "SELECT planord_id AS orderid, -1 AS altorderid,"
-               "       CASE WHEN (planord_firm) THEN :firmPo"
-               "            ELSE :plannedPo"
-               "       END AS ordernumber,"
-               "       1 AS sequence,"
-               "       '' AS item_number,"
-               "       formatDate(planord_duedate) AS duedate,"
-               "       planord_duedate AS r_duedate,"
-               "       FALSE AS late,"
-               "       formatQty(planord_qty) AS f_qtyordered,"
-               "       '' AS f_qtyreceived,"
-               "       formatQty(planord_qty) AS f_balance,"
-               "       planord_qty AS balance "
-               "FROM planord "
-               "WHERE ( (planord_type='P')"
-               " AND (planord_itemsite_id=:itemsite_id) ) "
-
-               "UNION SELECT planord_id AS orderid, -1 AS altorderid,"
-               "             CASE WHEN (planord_firm) THEN :firmWo"
-               "                  ELSE :plannedWo"
-               "             END AS ordernumber,"
-               "             1 AS sequence,"
-               "             '' AS item_number,"
-               "             formatDate(planord_duedate) AS duedate,"
-               "             planord_duedate AS r_duedate,"
-               "             FALSE AS late,"
-               "             formatQty(planord_qty) AS f_qtyordered,"
-               "             '' AS f_qtyreceived,"
-               "             formatQty(planord_qty) AS f_balance,"
-               "             planord_qty AS balance "
-               "FROM planord "
-               "WHERE ( (planord_type='W')"
-               " AND (planord_itemsite_id=:itemsite_id) ) "
-
-               "UNION SELECT planreq_id AS orderid, -1 AS altorderid,"
-               "             CASE WHEN (planord_firm) THEN :firmWoReq"
-               "                  ELSE :plannedWoReq"
-               "             END AS ordernumber,"
-               "             1 AS sequence,"
-               "             item_number,"
-               "             formatDate(planord_startdate) AS duedate,"
-               "             planord_startdate AS r_duedate,"
-               "             FALSE AS late,"
-               "             formatQty(planreq_qty) AS f_qtyordered,"
-               "             '' AS f_qtyreceived,"
-               "             formatQty(planreq_qty * -1) AS f_balance,"
-               "             (planreq_qty * -1) AS balance "
-               "FROM planreq, planord, itemsite, item "
-               "WHERE ( (planreq_source='P')"
-               " AND (planreq_source_id=planord_id)"
-               " AND (planord_itemsite_id=itemsite_id)"
-               " AND (itemsite_item_id=item_id)"
-               " AND (planreq_itemsite_id=:itemsite_id) ) ";
-      }
-
-      sql += "ORDER BY r_duedate, sequence";
-
-      q.prepare(sql);
-      q.bindValue(":itemsite_id", itemsiteid);
-      q.bindValue(":firmPo", tr("Planned P/O (firmed)"));
-      q.bindValue(":plannedPo", tr("Planned P/O"));
-      q.bindValue(":firmWo", tr("Planned W/O (firmed)"));
-      q.bindValue(":plannedWo", tr("Planned W/O"));
-      q.bindValue(":firmWoReq", tr("Planned W/O Req. (firmed)"));
-      q.bindValue(":plannedWoReq", tr("Planned W/O Req."));
-      q.exec();
-      if (q.first())
-      {
-        XTreeWidgetItem *last = 0;
-        do
-        {
-          runningAvailability += q.value("balance").toDouble();
-
-          last = new XTreeWidgetItem( _availability, last,
-			                           q.value("orderid").toInt(), q.value("altorderid").toInt(),
-                                                   q.value("ordernumber"), q.value("item_number"),
-                                                   q.value("duedate"), q.value("f_qtyordered"),
-                                                   q.value("f_qtyreceived"), q.value("f_balance"),
-                                                   formatQty(runningAvailability) );
-
-          if (q.value("late").toBool())
-            last->setTextColor(2, "red");
-
-          if (runningAvailability < 0.0)
-            last->setTextColor(6, "red");
-          else if (runningAvailability < reorderLevel)
-            last->setTextColor(6, "orange");
-
-          if ((last->text(0).contains("Planned P/O")) ||  (last->text(0).contains("Planned W/O")))
-            last->setTextColor("blue");
-        }
-        while (q.next());
+	systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+	return;
       }
     }
   }
