@@ -458,7 +458,7 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
   else
   {
     if (item->altId() == 1)
-      q.prepare( "UPDATE porecv "
+      q.prepare( "UPDATE recv "
                  "SET recv_vohead_id=NULL,recv_voitem_id=NULL "
                  "WHERE ((recv_id=:target_id)"
                  "  AND  (recv_vohead_id=:vohead_id));" );
