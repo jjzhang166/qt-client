@@ -111,6 +111,8 @@ dspWoBufferStatusByParameterList::dspWoBufferStatusByParameterList(QWidget* pare
   _wo->addColumn(tr("Received"),      _qtyColumn,    Qt::AlignRight  );
   _wo->addColumn(tr("Buffer Type"),   _uomColumn,    Qt::AlignCenter  );
   _wo->addColumn(tr("Buffer Status"), _uomColumn,    Qt::AlignRight  );
+  
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 /*

@@ -122,6 +122,7 @@ packingListBatch::packingListBatch(QWidget* parent, const char* name, Qt::WFlags
   _addTO->setVisible(_metrics->boolean("MultiWhs"));
 
   sFillList();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 packingListBatch::~packingListBatch()

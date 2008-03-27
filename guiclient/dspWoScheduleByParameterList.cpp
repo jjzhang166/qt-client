@@ -126,6 +126,7 @@ dspWoScheduleByParameterList::dspWoScheduleByParameterList(QWidget* parent, cons
   
   if (!_metrics->boolean("Routings"))
     _postOperations->hide();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 dspWoScheduleByParameterList::~dspWoScheduleByParameterList()

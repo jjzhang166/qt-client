@@ -147,6 +147,7 @@ todoList::todoList(QWidget* parent, const char* name, Qt::WFlags fl)
 
   handlePrivs();
   sFillList();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 void todoList::languageChange()

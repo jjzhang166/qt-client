@@ -115,6 +115,7 @@ dspWoEffortByUser::dspWoEffortByUser(QWidget* parent, const char* name, Qt::WFla
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 
   _user->setFocus();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 /*

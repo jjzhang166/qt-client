@@ -117,6 +117,7 @@ dspWoScheduleByItem::dspWoScheduleByItem(QWidget* parent, const char* name, Qt::
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 
   _item->setFocus();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 dspWoScheduleByItem::~dspWoScheduleByItem()

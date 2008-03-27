@@ -133,8 +133,7 @@ dspInventoryAvailabilityBySalesOrder::dspInventoryAvailabilityBySalesOrder(QWidg
       sHandleReservationNetting(true);
   }
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillList()));
-  if(_autoupdate->isChecked())
-    sAutoUpdateToggled(true);
+  sAutoUpdateToggled(_autoupdate->isChecked());
 }
 
 /*

@@ -111,6 +111,7 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char* name, Qt::WFlags f
   connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 
   sFillList();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 openSalesOrders::~openSalesOrders()

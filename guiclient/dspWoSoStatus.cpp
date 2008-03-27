@@ -96,6 +96,7 @@ dspWoSoStatus::dspWoSoStatus(QWidget* parent, const char* name, Qt::WFlags fl)
   _wo->addColumn(tr("Due Date"),    _dateColumn,   Qt::AlignCenter );
 
   sFillList();
+  sHandleAutoUpdate(_autoUpdate->isChecked());
 }
 
 /*
