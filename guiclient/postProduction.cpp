@@ -299,7 +299,7 @@ void postProduction::sPost()
               q.exec();
             }
 
-            if (distributeInventory::SeriesAdjust(q.value("result").toInt(), this) == QDialog::Rejected)
+            if (distributeInventory::SeriesAdjust(itemlocSeries, this) == QDialog::Rejected)
             {
               rollback.exec();
               QMessageBox::information( this, tr("Post Production"), tr("Transaction Canceled") );
