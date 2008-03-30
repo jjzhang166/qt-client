@@ -76,11 +76,10 @@ configureSR::configureSR(QWidget* parent, const char* name, bool modal, Qt::WFla
       _shipmentNumGeneration->setCurrentItem(0);
 
     _nextShipmentNum->setValidator(omfgThis->orderVal());
-    q.exec("SELECT orderseq_number "
-	   "FROM orderseq "
-	   "WHERE (orderseq_name='ShipmentNumber');");
+    q.exec("SELECT setval('shipment_number_seq', nextval('shipment_number_seq') -1); "
+           "SELECT currval('shipment_number_seq') AS shipment_number;");
     if (q.first())
-      _nextShipmentNum->setText(q.value("orderseq_number"));
+      _nextShipmentNum->setText(q.value("shipment_number"));
     else if (q.lastError().type() != QSqlError::None)
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
 
@@ -139,7 +138,7 @@ void configureSR::sSave()
   _metrics->set("WarnIfReceiptQtyDiffers", _warnIfReceiptDiffers->isChecked());
   _metrics->set("ReceiptQtyTolerancePct", _tolerance->text());
 
-  q.prepare("SELECT setNextShipmentNumber(:shipmentnumber);");
+  q.prepare("SELECT setval('shipment_number_seq', :shipmentnumber);");
   q.bindValue(":shipmentnumber", _nextShipmentNum->text().toInt());
   q.exec();
   if (q.lastError().type() != QSqlError::None)
