@@ -79,6 +79,7 @@ voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_uninvoiced, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(sToggleReceiving(QTreeWidgetItem*)));
   connect(_uninvoiced, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem*)));
   connect(this, SIGNAL(rejected()), this, SLOT(sReject()));
+  connect(_freightToVoucher, SIGNAL(lostFocus()), this, SLOT(sFillList()));
 
   _item->setReadOnly(TRUE);
   _qtyToVoucher->setValidator(omfgThis->qtyVal());
@@ -272,13 +273,20 @@ void voucherItem::sSave()
   }
 
 //  Update the qty vouchered
-  q.prepare( "UPDATE vodist "
+  q.prepare( "UPDATE voitem "
+             "SET voitem_close=:voitem_close,"
+             "    voitem_freight=:voitem_freight "
+             "WHERE (voitem_id=:voitem_id);"
+             "UPDATE vodist "
              "SET vodist_qty=:qty "
              "WHERE ((vodist_vohead_id=:vohead_id)"
              " AND (vodist_poitem_id=:poitem_id) );" );
   q.bindValue(":qty", _qtyToVoucher->toDouble());
   q.bindValue(":poitem_id", _poitemid);
+  q.bindValue(":voitem_id", _voitemid);
   q.bindValue(":vohead_id", _voheadid);
+  q.bindValue(":voitem_close", QVariant(_closePoitem->isChecked(), 0));
+  q.bindValue(":voitem_freight", _freightToVoucher->localValue());
   q.exec();
 
   q.exec("COMMIT;");
@@ -416,8 +424,7 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
   if (_voitemid != -1)
   {
     q.prepare( "UPDATE voitem "
-               "SET voitem_close=:voitem_close, voitem_qty=:voitem_qty,"
-               "    voitem_freight=:voitem_freight "
+               "SET voitem_qty=:voitem_qty,"
                "WHERE (voitem_id=:voitem_id);" );
     q.bindValue(":voitem_id", _voitemid);
   }
