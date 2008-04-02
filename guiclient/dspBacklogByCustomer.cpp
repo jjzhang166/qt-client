@@ -67,7 +67,7 @@
 #include "salesOrderItem.h"
 #include "printPackingList.h"
 
-#define	AMOUNT_COL	7
+#define	AMOUNT_COL	8
 
 dspBacklogByCustomer::dspBacklogByCustomer(QWidget* parent, const char* name, Qt::WFlags fl)
     : QMainWindow(parent, name, fl)
