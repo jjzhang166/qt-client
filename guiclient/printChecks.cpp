@@ -118,6 +118,7 @@ void printChecks::sPrint()
 
   bool setup = true;
 
+  QList<ORODocument*> singleCheckPrerendered;
   XSqlQuery checks;
   checks.prepare( "SELECT checkhead_id, checkhead_number, report_name "
                   "FROM checkhead, bankaccnt, form, report "
@@ -132,22 +133,11 @@ void printChecks::sPrint()
   checks.bindValue(":bankaccnt_id", _bankaccnt->id());
   checks.bindValue(":numtoprint", _numberOfChecks->value());
   checks.exec();
-/*
-  bool userCanceled = false;
-  if (orReport::beginMultiPrint(&printer, userCanceled) == false)
-  {
-    if(!userCanceled)
-      systemError(this, tr("<p>Could not initialize printing system for "
-			   "multiple reports."));
-    return;
-  }
-*/
   QDomDocument docReport;
-  QPrinter printer(QPrinter::HighResolution);
-  ORPrintRender render;
+
   while (checks.next())
   {
-    if(setup)
+    if (setup)
     {
       // get the report definition out of the database
       // this should somehow be condensed into a common code call or something
@@ -164,7 +154,7 @@ void printChecks::sPrint()
       {
         QString errorMessage;
         int     errorLine;
-  
+
         if (!docReport.setContent(report.value("report_source").toString(), &errorMessage, &errorLine))
         {
           systemError(this, errorMessage, __FILE__, __LINE__);
@@ -221,19 +211,6 @@ void printChecks::sPrint()
     pre.setParamList(params);
     ORODocument * doc = pre.generate();
 
-    if(setup)
-    {
-      render.setupPrinter(doc, &printer);
-
-      QPrintDialog pd(&printer);
-      pd.setMinMax(1, doc->pages());
-      if(pd.exec() != QDialog::Accepted)
-        return;
-      render.setPrinter(&printer);
-      setup = false;
-    }
-
-    render.render(doc);
     printedChecks.append(checks.value("checkhead_id").toInt());
 
     int page_num = 1;
@@ -265,8 +242,8 @@ void printChecks::sPrint()
         systemError(this, "Received error but will continue anyway:\n"+qq.lastError().databaseText(), __FILE__, __LINE__);
       }
     }
+    singleCheckPrerendered.append(doc);
   }
-  //orReport::endMultiPrint(&printer);
   if (checks.lastError().type() != QSqlError::None)
   {
     systemError(this, checks.lastError().databaseText(), __FILE__, __LINE__);
@@ -275,6 +252,26 @@ void printChecks::sPrint()
 
   if(!printedChecks.empty())
   {
+    QPrinter printer(QPrinter::HighResolution);
+    ORODocument entireCheckRunPrerendered;
+    for (int j = 0; j < singleCheckPrerendered.size(); j++)
+    {
+      for (int i = 0; i < singleCheckPrerendered.at(j)->pages(); i++)
+      {
+        entireCheckRunPrerendered.addPage(singleCheckPrerendered.at(j)->page(i));
+      }
+    }
+
+    ORPrintRender render;
+    render.setupPrinter(&entireCheckRunPrerendered, &printer);
+
+    QPrintDialog pd(&printer);
+    pd.setMinMax(1, entireCheckRunPrerendered.pages());
+    if(pd.exec() != QDialog::Accepted)
+      return;
+    render.setPrinter(&printer);
+    render.render(&entireCheckRunPrerendered);
+
     QList<int>::iterator it;
 
     if ( QMessageBox::question(this, tr("All Checks Printed"),
