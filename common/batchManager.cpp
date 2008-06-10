@@ -197,7 +197,10 @@ void batchManager::setDatabase( QSqlDatabase db )
   //if(_db.isValid())
   //  connect(&_db, SIGNAL(destroyed()), this, SLOT(close()));
 
-  _usr->setType(XComboBox::Users);
+  XSqlQuery users( "SELECT usr_id, usr_username, usr_username"
+                   "  FROM usr "
+                   " ORDER BY usr_username", _db );
+  _usr->populate(users);
   
   sFillList();
 }
