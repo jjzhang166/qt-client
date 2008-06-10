@@ -29,5 +29,5 @@ CONFIG += release thread
 
 QT += qt3support
 macx {
-  CONFIG += x86
+  CONFIG += x86 ppc
 }
