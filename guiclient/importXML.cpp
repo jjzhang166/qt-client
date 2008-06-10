@@ -95,7 +95,7 @@ void importXML::setVisible(bool visible)
 		     "Have an administrator configure XML Import before "
 		     "trying to import data."),
 		  __FILE__, __LINE__);
-      close();
+      deleteLater();
     }
     else if (QMessageBox::question(this, tr("Setup required"),
 			      tr("<p>You must set up the application to "
@@ -106,7 +106,7 @@ void importXML::setVisible(bool visible)
 	     configureIE(this, "", true).exec() == XDialog::Accepted)
       XMainWindow::setVisible(true);
     else
-      close();
+      deleteLater();
   }
   else
     XMainWindow::setVisible(true);
