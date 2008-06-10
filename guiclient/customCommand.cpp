@@ -258,6 +258,7 @@ void customCommand::populate()
 {
   q.prepare("SELECT cmd_module, cmd_title,"
             "       cmd_descrip, cmd_privname,"
+            "       cmd_name,"
             "       cmd_executable"
             "  FROM cmd"
             " WHERE (cmd_id=:cmd_id);");
@@ -269,6 +270,7 @@ void customCommand::populate()
     _title->setText(q.value("cmd_title").toString());
     _oldPrivname = q.value("cmd_privname").toString();
     _privname->setText(q.value("cmd_privname").toString());
+    _name->setText(q.value("cmd_name").toString());
     _executable->setText(q.value("cmd_executable").toString());
     _description->setText(q.value("cmd_descrip").toString());
 
