@@ -64,6 +64,7 @@
 
 #include "storedProcErrorLookup.h"
 #include "todoItem.h"
+#include "returnAuthorization.h"
 
 /*
  *  Constructs a incident as a child of 'parent', with the
@@ -89,6 +90,7 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 	    this,	SLOT(sPopulateTodoMenu(QMenu*)));
   connect(_todoList,	SIGNAL(valid(bool)),	this, SLOT(sHandleTodoPrivs()));
   connect(_viewTodoItem, SIGNAL(clicked()),	this,	SLOT(sViewTodoItem()));
+  connect(_return,      SIGNAL(clicked()),      this, SLOT(sReturn()));
 
   _incdtid = -1;
 
@@ -131,6 +133,9 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   else
     _lotserial->setVisible(false);
 
+  // because this causes a pop-behind situation we are hiding for now.
+  _return->hide();
+
   _saved = false;
 }
 
@@ -139,7 +144,7 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
  */
 incident::~incident()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 /*
@@ -148,7 +153,7 @@ incident::~incident()
  */
 void incident::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
 enum SetResponse incident::set(const ParameterList &pParams)
@@ -665,3 +670,33 @@ void incident::sHandleTodoPrivs()
     connect(_todoList,	SIGNAL(itemSelected(int)), _viewTodoItem, SLOT(animateClick()));
   }
 }
+
+void incident::sReturn()
+{
+  if (! save(true))
+    return;
+
+  ParameterList params;
+  q.prepare("SELECT rahead_id FROM rahead WHERE rahead_incdt_id=:incdt_id");
+  q.bindValue(":incdt_id", _incdtid);
+  q.exec();
+  if(q.first())
+  {
+    params.append("mode", "edit");
+    params.append("rahead_id", q.value("rahead_id").toInt());
+  }
+  else
+  {
+    params.append("mode", "new");
+    params.append("incdt_id", _incdtid);
+  }
+
+  returnAuthorization * newdlg = new returnAuthorization();
+  if(newdlg->set(params) == NoError)
+    omfgThis->handleNewWindow(newdlg);
+  else
+    QMessageBox::critical(this, tr("Could Not Open Window"),
+                          tr("The new Return Authorization could not be created"));
+  
+}
+

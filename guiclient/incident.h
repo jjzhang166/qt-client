@@ -89,6 +89,7 @@ public slots:
     virtual void sSave();
     virtual void sViewTodoItem();
     virtual bool save(bool);
+    virtual void sReturn();
 
 protected slots:
     virtual void languageChange();

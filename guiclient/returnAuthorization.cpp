@@ -332,6 +332,10 @@ enum SetResponse returnAuthorization::set(const ParameterList &pParams)
     }
   }
 
+  param = pParams.value("incdt_id", &valid);
+  if (valid)
+    _incident->setId(param.toInt());
+
   param = pParams.value("rahead_id", &valid);
   if (valid)
   {
