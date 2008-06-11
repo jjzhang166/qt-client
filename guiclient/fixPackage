@@ -54,12 +54,12 @@ collectAndRenameLibs() {
 
 collectAndRenameLibs $APPROOT/Contents/MacOS/xtuple             || exit 2
 
-[ -d "$APPROOT/Contents/plugins/sqldrivers" ] || mkdir -p $APPROOT/Contents/plugins/sqldrivers || exit 2
-[ -d "$APPROOT/Contents/plugins/imageformats" ] || mkdir -p $APPROOT/Contents/plugins/imageformats || exit 2
-
 for PLUGIN in sqldrivers/libqsqlpsql.dylib sqldrivers/libqsqlodbc.dylib \
-              imageformats/libqgif.dylib imageformats/libqjpeg.dylib \
-              imageformats/libqmng.dylib ; do
+              imageformats/libqgif.dylib imageformats/libqjpeg.dylib    \
+              imageformats/libqmng.dylib                                \
+              designer/libxtuplewidgets.dylib ; do
+  [ -d $APPROOT/Contents/plugins/`dirname $PLUGIN` ] || \
+    mkdir -p $APPROOT/Contents/plugins/`dirname $PLUGIN`        || exit 2
   cp $QTDIR/plugins/$PLUGIN $APPROOT/Contents/plugins/$PLUGIN   || exit 2
   collectAndRenameLibs $APPROOT/Contents/plugins/$PLUGIN        || exit 2
 done
