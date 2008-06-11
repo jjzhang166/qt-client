@@ -688,10 +688,13 @@ void transferOrder::sHandleOrderNumber()
         populateOrderNumber();
       else
       {
+        if(!_close->hasFocus())
+        {
         QMessageBox::warning( this, tr("Enter T/O #"),
                               tr("<p>You must enter a T/O # for this Transfer "
 				 "Order before you may continue." ) );
         _orderNumber->setFocus();
+        }
         return;
       }
     }
