@@ -121,7 +121,7 @@ class ScriptToolbox : public QObject
     void layoutStackedInsertWidget(QObject *, int index, QWidget *);
 
     QObject * menuAddAction(QObject * menu, const QString & text);
-    QObject * menuAddMenu(QObject * menu, const QString & text, const QString & text = QString());
+    QObject * menuAddMenu(QObject * menu, const QString & text, const QString & name = QString());
 
     QWidget * tabWidget(QWidget * tab, int idx);
     int       tabInsertTab(QWidget * tab, int idx, QWidget * page, const QString & text);
