@@ -88,6 +88,8 @@ lotSerialRegistration::lotSerialRegistration(QWidget* parent, const char* name, 
   _cntct->setActiveVisible(FALSE);
 
   _so->setType(cSoReleased);
+
+  _qty->setValidator(omfgThis->qtyVal());
   
   resize(minimumSize());
 }
@@ -231,19 +233,20 @@ void lotSerialRegistration::sDeleteCharass()
 
 void lotSerialRegistration::sFillList()
 {
-  q.prepare( "SELECT charass_id, char_name, charass_value "
+  XSqlQuery chq;
+  chq.prepare( "SELECT charass_id, char_name, charass_value "
              "FROM charass, char "
              "WHERE ((charass_target_type='LSR')"
              " AND   (charass_char_id=char_id)"
              " AND   (charass_target_id=:lsreg_id) ) "
              "ORDER BY char_name;" );
-  q.bindValue(":lsreg_id", _lsregid);
-  q.exec();
+  chq.bindValue(":lsreg_id", _lsregid);
+  chq.exec();
   _charass->clear();
-  _charass->populate(q);
-  if (q.lastError().type() != QSqlError::None)
+  _charass->populate(chq);
+  if (chq.lastError().type() != QSqlError::None)
   {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    systemError(this, chq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -261,7 +264,7 @@ void lotSerialRegistration::populate()
     _regNumber->setText(q.value("lsreg_number").toString());
     _type->setId(q.value("lsreg_regtype_id").toInt());
     _lotSerial->setId(q.value("lsreg_ls_id").toInt());
-    _qty->setText(q.value("lsreg_qty").toString());
+    _qty->setDouble(q.value("lsreg_qty").toDouble());
     _item->setId(q.value("ls_item_id").toInt());
     _regDate->setDate(q.value("lsreg_regdate").toDate());
     _soldDate->setDate(q.value("lsreg_solddate").toDate());
@@ -321,6 +324,16 @@ void lotSerialRegistration::sSave()
     return;
   }
   
+  _cntct->check();
+  // TODO: start explicit transaction?
+  // TODO: make contactcluster smart enough to check its own change() state?
+  if (_cntct->change() == "CHANGEONE")
+    _cntct->save(AddressCluster::CHANGEONE);
+  else if (_cntct->change() == "CHANGEALL")
+    _cntct->save(AddressCluster::CHANGEALL);
+  else
+    _cntct->save();
+
   if (_cntct->id() == -1)
   {
     QMessageBox::warning(this, windowTitle(), "You must provide a contact.");
@@ -391,14 +404,15 @@ void lotSerialRegistration::sDateUpdated()
   if(date.isNull())
     return;
 
-  q.prepare("SELECT item_warrdays"
-            "  FROM item"
-            " WHERE(item_id=:item_id);");
-  q.bindValue(":item_id", _item->id());
-  q.exec();
-  if(q.first())
+  XSqlQuery dq;
+  dq.prepare("SELECT item_warrdays"
+             "  FROM item"
+             " WHERE(item_id=:item_id);");
+  dq.bindValue(":item_id", _item->id());
+  dq.exec();
+  if(dq.first())
   {
-    date.addDays(q.value("item_warrdays").toInt());
+    date.addDays(dq.value("item_warrdays").toInt());
     _expireDate->setDate(date);
   }
 }
@@ -407,19 +421,20 @@ void lotSerialRegistration::sSetSoCustId()
 {
   if (_crmacct->id() != -1)
   {
-    q.prepare("SELECT crmacct_cust_id "
-              "FROM crmacct "
-	      "WHERE (crmacct_id=:crmacct_id);");
-    q.bindValue(":crmacct_id", _crmacct->id());
-    q.exec();
-    if (q.first())
+    XSqlQuery cq;
+    cq.prepare("SELECT crmacct_cust_id "
+               "FROM crmacct "
+	       "WHERE (crmacct_id=:crmacct_id);");
+    cq.bindValue(":crmacct_id", _crmacct->id());
+    cq.exec();
+    if (cq.first())
     {
       _so->setType(cSoCustomer);
-      _so->setCustId(q.value("crmacct_cust_id").toInt()); 
+      _so->setCustId(cq.value("crmacct_cust_id").toInt()); 
     }
-    else if(q.lastError().type() != QSqlError::None)
+    else if(cq.lastError().type() != QSqlError::None)
     { 
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      systemError(this, cq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }     
   }
@@ -429,4 +444,3 @@ void lotSerialRegistration::sSetSoCustId()
     _so->setType(cSoReleased);
   }
 }
-
