@@ -15,7 +15,7 @@
  * the License for the specific language governing rights and limitations 
  * under the License. 
  * 
- * The Original Code is PostBooks Accounting, ERP, and CRM Suite. 
+ * The Original Code is xTuple ERP: PostBooks Edition 
  * 
  * The Original Developer is not the Initial Developer and is __________. 
  * If left blank, the Original Developer is the Initial Developer. 
@@ -42,7 +42,7 @@
  * Copyright (c) 1999-2008 by OpenMFG, LLC, d/b/a xTuple
  * 
  * Attribution Phrase: 
- * Powered by PostBooks, an open source solution from xTuple
+ * Powered by xTuple ERP: PostBooks Edition
  * 
  * Attribution URL: www.xtuple.org 
  * (to be included in the "Community" menu of the application if possible)
@@ -53,18 +53,6 @@
  * Display of Attribution Information is required in Larger Works which 
  * are defined in the CPAL as a work which combines Covered Code or 
  * portions thereof with code not governed by the terms of the CPAL.
- */
-
-/*
- * $Id: qbase64encode.h,v 2.1 2007/08/01 15:29:49 cryan Exp $
- *
- *     Header containing the prototypes of the Base64Encode and
- * the Base64Decode functions.
- *
- * Creator: Chris Ryan
- * Created: 05/13/2003
- *
- * PLACE COPYRIGHT INFO HERE
  */
 
 #ifndef __QBASE64ENCODE_H__

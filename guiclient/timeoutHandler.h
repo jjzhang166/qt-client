@@ -15,7 +15,7 @@
  * the License for the specific language governing rights and limitations 
  * under the License. 
  * 
- * The Original Code is PostBooks Accounting, ERP, and CRM Suite. 
+ * The Original Code is xTuple ERP: PostBooks Edition 
  * 
  * The Original Developer is not the Initial Developer and is __________. 
  * If left blank, the Original Developer is the Initial Developer. 
@@ -42,7 +42,7 @@
  * Copyright (c) 1999-2008 by OpenMFG, LLC, d/b/a xTuple
  * 
  * Attribution Phrase: 
- * Powered by PostBooks, an open source solution from xTuple
+ * Powered by xTuple ERP: PostBooks Edition
  * 
  * Attribution URL: www.xtuple.org 
  * (to be included in the "Community" menu of the application if possible)
@@ -56,8 +56,6 @@
  */
 
 /*
- * $Id: timeoutHandler.h,v 2.1 2007/07/31 18:37:33 cryan Exp $
- *
  *     This class attaches itself to the qApp event filter
  * and listens for events to come across.  In addition it
  * listens for a timer that fires once a minute and no user
@@ -65,9 +63,6 @@
  * by the user preferences value then a dialog will be popped up
  * notifing the user that they have 60 secs to cancel the shutdown
  * Sequence or their client will be terminated.
- *
- * Creator: Chris Ryan
- * Created: 07/25/2002
  */
 #ifndef __TIMEOUT_H__
 #define __TIMEOUT_H__
