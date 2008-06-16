@@ -60,6 +60,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QSqlError>
 #include <parameter.h>
 #include "itemPricingSchedule.h"
 
@@ -158,15 +159,24 @@ void itemPricingSchedules::sEdit()
 
 void itemPricingSchedules::sCopy()
 {
-  ParameterList params;
-  params.append("mode", "copy");
-  params.append("ipshead_id", _ipshead->id());
+  q.prepare("SELECT copypricingschedule(:ipshead_id) AS result;");
+  q.bindValue(":ipshead_id", _ipshead->id());
+  q.exec();
+  if (q.first())
+  {
+    ParameterList params;
+    params.append("mode", "copy");
+    params.append("ipshead_id", q.value("result").toInt());
 
-  itemPricingSchedule newdlg(this, "", TRUE);
-  newdlg.set(params);
-  newdlg.exec();
+    itemPricingSchedule newdlg(this, "", TRUE);
+    newdlg.set(params);
+    newdlg.exec();
 
-  sFillList();
+    sFillList();
+  }
+  else if (q.lastError().type() != QSqlError::None)
+	systemError(this,q.lastError().databaseText(),
+                  __FILE__, __LINE__);
 }
 
 void itemPricingSchedules::sView()
