@@ -178,9 +178,8 @@ enum SetResponse itemPricingSchedule::set(const ParameterList &pParams)
     connect(_ipsitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }
 
-  if ( (_mode == cNew) || (_mode == cCopy) )
+  if ( (_mode == cNew) )
   {
-    int oldIpsheadid = _ipsheadid;
     q.exec("SELECT NEXTVAL('ipshead_ipshead_id_seq') AS ipshead_id;");
     if (q.first())
       _ipsheadid = q.value("ipshead_id").toInt();
@@ -190,38 +189,6 @@ enum SetResponse itemPricingSchedule::set(const ParameterList &pParams)
                   __FILE__, __LINE__);
         reject();
         return UndefinedError;
-    }
-
-    if(_mode == cCopy)
-    {
-      q.prepare(" INSERT "
-                "   INTO ipsitem "
-                "       (ipsitem_ipshead_id, ipsitem_item_id, "
-                "        ipsitem_qtybreak, ipsitem_price,"
-                "        ipsitem_qty_uom_id, ipsitem_price_uom_id) "
-                " SELECT :ipshead_id, ipsitem_item_id, "
-                "        ipsitem_qtybreak, ipsitem_price,"
-                "        ipsitem_qty_uom_id, ipsitem_price_uom_id "
-                "   FROM ipsitem "
-                "  WHERE (ipsitem_ipshead_id=:oldipshead_id); "
-                " INSERT "
-                "   INTO ipsprodcat "
-                "       (ipsprodcat_ipshead_id, ipsprodcat_prodcat_id, "
-                "        ipsprodcat_qtybreak, ipsprodcat_discntprcnt) "
-                " SELECT :ipshead_id, ipsprodcat_prodcat_id, "
-                "        ipsprodcat_qtybreak, ipsprodcat_discntprcnt "
-                "   FROM ipsprodcat "
-                "  WHERE (ipsprodcat_ipshead_id=:oldipshead_id); ");
-      q.bindValue(":ipshead_id", _ipsheadid);
-      q.bindValue(":oldipshead_id", oldIpsheadid);
-      q.exec();
-      if (q.lastError().type() != QSqlError::None)
-      {
-        systemError(this, _rejectedMsg.arg(q.lastError().databaseText()),
-                    __FILE__, __LINE__);
-        reject();
-        return UndefinedError;
-      }
     }
   }
 
@@ -254,7 +221,7 @@ void itemPricingSchedule::sSave(bool p)
     return;
   }
 
-  if ( (_mode == cNew) || (_mode == cCopy) ) 
+  if (_mode == cNew) 
     q.prepare( "INSERT INTO ipshead "
                "( ipshead_id, ipshead_name, ipshead_descrip,"
                "  ipshead_effective, ipshead_expires, "
@@ -263,7 +230,7 @@ void itemPricingSchedule::sSave(bool p)
                "( :ipshead_id, :ipshead_name, :ipshead_descrip,"
                "  :ipshead_effective, :ipshead_expires, "
 	       "  :ipshead_curr_id, CURRENT_DATE );" );
-  else if (_mode == cEdit)
+  else if ( (_mode == cEdit) || (_mode == cCopy) )
     q.prepare( "UPDATE ipshead "
                "SET ipshead_name=:ipshead_name, ipshead_descrip=:ipshead_descrip,"
                "    ipshead_effective=:ipshead_effective, ipshead_expires=:ipshead_expires, "
@@ -427,12 +394,8 @@ void itemPricingSchedule::populate()
   pop.exec();
   if (pop.first())
   {
-    if (_mode != cCopy)
-    {
-      _name->setText(pop.value("ipshead_name").toString());
-      _descrip->setText(pop.value("ipshead_descrip").toString());
-    }
-
+    _name->setText(pop.value("ipshead_name").toString());
+    _descrip->setText(pop.value("ipshead_descrip").toString());
     _dates->setStartDate(pop.value("ipshead_effective").toDate());
     _dates->setEndDate(pop.value("ipshead_expires").toDate());
     _currency->setId(pop.value("ipshead_curr_id").toInt());
@@ -454,5 +417,12 @@ void itemPricingSchedule::populate()
 void itemPricingSchedule::reject()
 {
   q.exec("ROLLBACK;");
+  if(_mode == cCopy) 
+  {
+    q.prepare("DELETE FROM ipshead WHERE (ipshead_id=:ipshead_id);");
+    q.bindValue(":ipshead_id", _ipsheadid);
+    q.exec();
+  }
+  
   XDialog::reject();
 }
