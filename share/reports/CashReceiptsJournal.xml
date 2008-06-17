@@ -23,7 +23,7 @@
        formatBoolYN(arapply_closed) AS f_closed
   FROM arapply LEFT OUTER JOIN cust ON (arapply_cust_id=cust_id)
  WHERE ((arapply_postdate = CURRENT_DATE)
-   AND  (arapply_journalnumber=&lt;? value("journalNumber") ?>)
+   AND  (arapply_journalnumber=text(&lt;? value("journalNumber") ?>))
 )
 UNION
 SELECT cust_number,
