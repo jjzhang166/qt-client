@@ -120,7 +120,7 @@
      </property>
      <widget class="QWidget" name="_char" >
       <attribute name="title" >
-       <string>Characterstics</string>
+       <string>Characteristics</string>
       </attribute>
       <layout class="QGridLayout" >
        <item row="0" column="1" >
