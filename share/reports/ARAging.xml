@@ -46,26 +46,7 @@ FROM araging(&lt;? value("relDate") ?>)
 &lt;? endif ?>;</sql>
  </querysource>
  <rpthead>
-  <height>79</height>
-  <field>
-   <rect>
-    <x>60</x>
-    <y>40</y>
-    <width>110</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <top/>
-   <data>
-    <query>Parameter Query</query>
-    <column>relDate</column>
-   </data>
-  </field>
+  <height>80</height>
   <label>
    <rect>
     <x>5</x>
@@ -79,9 +60,28 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>bold</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
    <string>As of:</string>
   </label>
+  <field>
+   <rect>
+    <x>60</x>
+    <y>40</y>
+    <width>110</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Parameter Query</query>
+    <column>relDate</column>
+   </data>
+  </field>
   <label>
    <rect>
     <x>5</x>
@@ -107,42 +107,10 @@ FROM araging(&lt;? value("relDate") ?>)
    <pagebreak when="after foot" />
    <head>
     <height>113</height>
-    <label>
-     <rect>
-      <x>125</x>
-      <y>85</y>
-      <width>60</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Doc Date</string>
-    </label>
-    <label>
-     <rect>
-      <x>215</x>
-      <y>85</y>
-      <width>60</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Due Date</string>
-    </label>
     <field>
      <rect>
       <x>125</x>
-      <y>10</y>
+      <y>40</y>
       <width>220</width>
       <height>11</height>
      </rect>
@@ -152,12 +120,28 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
+     <vcenter/>
      <data>
       <query>detail</query>
-      <column>araging_cust_name</column>
+      <column>araging_terms_descrip</column>
      </data>
     </field>
+    <label>
+     <rect>
+      <x>5</x>
+      <y>10</y>
+      <width>102</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>bold</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Customer Name:</string>
+    </label>
     <label>
      <rect>
       <x>825</x>
@@ -171,33 +155,14 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <right/>
-     <top/>
+     <vcenter/>
      <string>61-90 Days</string>
     </label>
-    <field>
-     <rect>
-      <x>125</x>
-      <y>40</y>
-      <width>220</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_terms_descrip</column>
-     </data>
-    </field>
     <label>
      <rect>
-      <x>35</x>
+      <x>570</x>
       <y>85</y>
-      <width>85</width>
+      <width>75</width>
       <height>11</height>
      </rect>
      <font>
@@ -205,15 +170,15 @@ FROM araging(&lt;? value("relDate") ?>)
       <size>8</size>
       <weight>normal</weight>
      </font>
-     <left/>
-     <top/>
-     <string>Invoice#</string>
+     <right/>
+     <vcenter/>
+     <string>0+Days</string>
     </label>
-    <field>
+    <label>
      <rect>
-      <x>125</x>
-      <y>25</y>
-      <width>220</width>
+      <x>650</x>
+      <y>85</y>
+      <width>75</width>
       <height>11</height>
      </rect>
      <font>
@@ -221,84 +186,17 @@ FROM araging(&lt;? value("relDate") ?>)
       <size>8</size>
       <weight>normal</weight>
      </font>
-     <left/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_cust_number</column>
-     </data>
-    </field>
+     <right/>
+     <vcenter/>
+     <string>0-30 Days</string>
+    </label>
     <line>
      <xstart>0</xstart>
-     <ystart>5</ystart>
-     <xend>967</xend>
-     <yend>5</yend>
+     <ystart>100</ystart>
+     <xend>980</xend>
+     <yend>100</yend>
      <weight>0</weight>
     </line>
-    <label>
-     <rect>
-      <x>490</x>
-      <y>75</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Original</string>
-    </label>
-    <label>
-     <rect>
-      <x>5</x>
-      <y>25</y>
-      <width>102</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Customer Number:</string>
-    </label>
-    <label>
-     <rect>
-      <x>5</x>
-      <y>40</y>
-      <width>102</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Terms:</string>
-    </label>
-    <label>
-     <rect>
-      <x>0</x>
-      <y>85</y>
-      <width>25</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Type</string>
-    </label>
     <label>
      <rect>
       <x>740</x>
@@ -312,13 +210,96 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <right/>
-     <top/>
+     <vcenter/>
      <string>31-60 Days</string>
+    </label>
+    <field>
+     <rect>
+      <x>125</x>
+      <y>25</y>
+      <width>220</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_cust_number</column>
+     </data>
+    </field>
+    <label>
+     <rect>
+      <x>490</x>
+      <y>75</y>
+      <width>80</width>
+      <height>15</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Original</string>
+    </label>
+    <label>
+     <rect>
+      <x>35</x>
+      <y>65</y>
+      <width>85</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Credit/</string>
+    </label>
+    <label>
+     <rect>
+      <x>35</x>
+      <y>85</y>
+      <width>85</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Invoice#</string>
+    </label>
+    <label>
+     <rect>
+      <x>125</x>
+      <y>85</y>
+      <width>60</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Doc Date</string>
     </label>
     <label>
      <rect>
       <x>5</x>
-      <y>10</y>
+      <y>40</y>
       <width>102</width>
       <height>11</height>
      </rect>
@@ -328,8 +309,8 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>bold</weight>
      </font>
      <left/>
-     <top/>
-     <string>Customer Name:</string>
+     <vcenter/>
+     <string>Terms:</string>
     </label>
     <label>
      <rect>
@@ -344,30 +325,30 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <right/>
-     <top/>
+     <vcenter/>
      <string>90+ Days</string>
     </label>
     <label>
      <rect>
-      <x>650</x>
-      <y>85</y>
-      <width>75</width>
+      <x>5</x>
+      <y>25</y>
+      <width>102</width>
       <height>11</height>
      </rect>
      <font>
       <face>Arial</face>
       <size>8</size>
-      <weight>normal</weight>
+      <weight>bold</weight>
      </font>
-     <right/>
-     <top/>
-     <string>0-30 Days</string>
+     <left/>
+     <vcenter/>
+     <string>Customer Number:</string>
     </label>
-    <label>
+    <field>
      <rect>
-      <x>490</x>
-      <y>85</y>
-      <width>80</width>
+      <x>125</x>
+      <y>10</y>
+      <width>220</width>
       <height>11</height>
      </rect>
      <font>
@@ -376,25 +357,12 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
-     <string>Doc Amount</string>
-    </label>
-    <label>
-     <rect>
-      <x>570</x>
-      <y>85</y>
-      <width>75</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <top/>
-     <string>0+Days</string>
-    </label>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_cust_name</column>
+     </data>
+    </field>
     <label>
      <rect>
       <x>35</x>
@@ -408,8 +376,31 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
+     <vcenter/>
      <string>Debit Memo/</string>
+    </label>
+    <line>
+     <xstart>0</xstart>
+     <ystart>5</ystart>
+     <xend>967</xend>
+     <yend>5</yend>
+     <weight>0</weight>
+    </line>
+    <label>
+     <rect>
+      <x>490</x>
+      <y>85</y>
+      <width>80</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Doc Amount</string>
     </label>
     <label>
      <rect>
@@ -424,21 +415,14 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
+     <vcenter/>
      <string>PO Number</string>
     </label>
-    <line>
-     <xstart>0</xstart>
-     <ystart>100</ystart>
-     <xend>980</xend>
-     <yend>100</yend>
-     <weight>0</weight>
-    </line>
     <label>
      <rect>
-      <x>35</x>
-      <y>65</y>
-      <width>85</width>
+      <x>215</x>
+      <y>85</y>
+      <width>60</width>
       <height>11</height>
      </rect>
      <font>
@@ -447,17 +431,14 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
-     <string>Credit/</string>
+     <vcenter/>
+     <string>Due Date</string>
     </label>
-   </head>
-   <foot>
-    <height>110</height>
-    <field>
+    <label>
      <rect>
-      <x>650</x>
-      <y>5</y>
-      <width>75</width>
+      <x>0</x>
+      <y>85</y>
+      <width>25</width>
       <height>11</height>
      </rect>
      <font>
@@ -465,14 +446,20 @@ FROM araging(&lt;? value("relDate") ?>)
       <size>8</size>
       <weight>normal</weight>
      </font>
-     <right/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_thirty_val</column>
-     </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
-    </field>
+     <left/>
+     <vcenter/>
+     <string>Type</string>
+    </label>
+   </head>
+   <foot>
+    <height>111</height>
+    <line>
+     <xstart>237</xstart>
+     <ystart>31</ystart>
+     <xend>237</xend>
+     <yend>31</yend>
+     <weight>0</weight>
+    </line>
     <label>
      <rect>
       <x>570</x>
@@ -486,147 +473,9 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <left/>
-     <top/>
+     <vcenter/>
      <string>All amounts are in base currency as of the Relative Date provided when the report</string>
     </label>
-    <line>
-     <xstart>237</xstart>
-     <ystart>31</ystart>
-     <xend>237</xend>
-     <yend>31</yend>
-     <weight>0</weight>
-    </line>
-    <label>
-     <rect>
-      <x>5</x>
-      <y>35</y>
-      <width>135</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>Total For Customer</string>
-    </label>
-    <label>
-     <rect>
-      <x>570</x>
-      <y>85</y>
-      <width>440</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <left/>
-     <top/>
-     <string>is run.</string>
-    </label>
-    <field>
-     <rect>
-      <x>740</x>
-      <y>5</y>
-      <width>70</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_sixty_val</column>
-     </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
-    </field>
-    <field>
-     <rect>
-      <x>5</x>
-      <y>50</y>
-      <width>220</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>cust_name</column>
-     </data>
-    </field>
-    <field>
-     <rect>
-      <x>250</x>
-      <y>50</y>
-      <width>75</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_total_val</column>
-     </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
-    </field>
-    <field>
-     <rect>
-      <x>570</x>
-      <y>5</y>
-      <width>75</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_cur_val</column>
-     </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
-    </field>
-    <field>
-     <rect>
-      <x>900</x>
-      <y>5</y>
-      <width>70</width>
-      <height>11</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <top/>
-     <data>
-      <query>detail</query>
-      <column>araging_plus_val</column>
-     </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
-    </field>
     <label>
      <rect>
       <x>570</x>
@@ -640,9 +489,68 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>bold</weight>
      </font>
      <left/>
-     <top/>
+     <vcenter/>
      <string>Note:</string>
     </label>
+    <field>
+     <rect>
+      <x>5</x>
+      <y>50</y>
+      <width>220</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>bold</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>cust_name</column>
+     </data>
+    </field>
+    <field>
+     <rect>
+      <x>650</x>
+      <y>5</y>
+      <width>75</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_thirty_val</column>
+     </data>
+     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+    </field>
+    <field>
+     <rect>
+      <x>825</x>
+      <y>5</y>
+      <width>70</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_ninety_val</column>
+     </data>
+     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+    </field>
     <label>
      <rect>
       <x>-37</x>
@@ -659,6 +567,78 @@ FROM araging(&lt;? value("relDate") ?>)
      <top/>
      <string></string>
     </label>
+    <field>
+     <rect>
+      <x>570</x>
+      <y>5</y>
+      <width>75</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_cur_val</column>
+     </data>
+     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+    </field>
+    <label>
+     <rect>
+      <x>570</x>
+      <y>85</y>
+      <width>440</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>is run.</string>
+    </label>
+    <field>
+     <rect>
+      <x>250</x>
+      <y>50</y>
+      <width>75</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_total_val</column>
+     </data>
+     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+    </field>
+    <label>
+     <rect>
+      <x>5</x>
+      <y>35</y>
+      <width>135</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>bold</weight>
+     </font>
+     <left/>
+     <vcenter/>
+     <string>Total For Customer</string>
+    </label>
     <line>
      <xstart>0</xstart>
      <ystart>5</ystart>
@@ -668,7 +648,7 @@ FROM araging(&lt;? value("relDate") ?>)
     </line>
     <field>
      <rect>
-      <x>825</x>
+      <x>740</x>
       <y>5</y>
       <width>70</width>
       <height>11</height>
@@ -679,10 +659,30 @@ FROM araging(&lt;? value("relDate") ?>)
       <weight>normal</weight>
      </font>
      <right/>
-     <top/>
+     <vcenter/>
      <data>
       <query>detail</query>
-      <column>araging_ninety_val</column>
+      <column>araging_sixty_val</column>
+     </data>
+     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+    </field>
+    <field>
+     <rect>
+      <x>900</x>
+      <y>5</y>
+      <width>70</width>
+      <height>11</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>normal</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>araging_plus_val</column>
      </data>
      <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
     </field>
@@ -693,44 +693,6 @@ FROM araging(&lt;? value("relDate") ?>)
     <query>detail</query>
    </key>
    <height>18</height>
-   <field>
-    <rect>
-     <x>570</x>
-     <y>0</y>
-     <width>75</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_cur_amt</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>650</x>
-     <y>0</y>
-     <width>75</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_thirty_amt</column>
-    </data>
-   </field>
    <field>
     <rect>
      <x>340</x>
@@ -744,86 +706,10 @@ FROM araging(&lt;? value("relDate") ?>)
      <weight>normal</weight>
     </font>
     <left/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
      <column>araging_ponumber</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>25</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <left/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_doctype</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>480</x>
-     <y>0</y>
-     <width>80</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_aropen_amount</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>120</x>
-     <y>0</y>
-     <width>85</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <left/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_docdate</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>825</x>
-     <y>0</y>
-     <width>70</width>
-     <height>11</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <top/>
-    <data>
-     <query>detail</query>
-     <column>araging_ninety_amt</column>
     </data>
    </field>
    <field>
@@ -839,10 +725,86 @@ FROM araging(&lt;? value("relDate") ?>)
      <weight>normal</weight>
     </font>
     <right/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
      <column>araging_sixty_amt</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>120</x>
+     <y>0</y>
+     <width>85</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_docdate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>25</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_doctype</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>570</x>
+     <y>0</y>
+     <width>75</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_cur_amt</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>910</x>
+     <y>0</y>
+     <width>55</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_plus_amt</column>
     </data>
    </field>
    <field>
@@ -858,7 +820,7 @@ FROM araging(&lt;? value("relDate") ?>)
      <weight>normal</weight>
     </font>
     <left/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
      <column>araging_duedate</column>
@@ -866,9 +828,9 @@ FROM araging(&lt;? value("relDate") ?>)
    </field>
    <field>
     <rect>
-     <x>911</x>
+     <x>650</x>
      <y>0</y>
-     <width>55</width>
+     <width>75</width>
      <height>11</height>
     </rect>
     <font>
@@ -877,10 +839,48 @@ FROM araging(&lt;? value("relDate") ?>)
      <weight>normal</weight>
     </font>
     <right/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
-     <column>araging_plus_amt</column>
+     <column>araging_thirty_amt</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>480</x>
+     <y>0</y>
+     <width>80</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_aropen_amount</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>825</x>
+     <y>0</y>
+     <width>70</width>
+     <height>11</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>araging_ninety_amt</column>
     </data>
    </field>
    <field>
@@ -896,7 +896,7 @@ FROM araging(&lt;? value("relDate") ?>)
      <weight>normal</weight>
     </font>
     <left/>
-    <top/>
+    <vcenter/>
     <data>
      <query>detail</query>
      <column>araging_docnumber</column>
@@ -906,12 +906,19 @@ FROM araging(&lt;? value("relDate") ?>)
  </section>
  <pgfoot>
   <lastpage/>
-  <height>105</height>
-  <field>
+  <height>104</height>
+  <line>
+   <xstart>1</xstart>
+   <ystart>1</ystart>
+   <xend>967</xend>
+   <yend>1</yend>
+   <weight>2</weight>
+  </line>
+  <label>
    <rect>
-    <x>440</x>
-    <y>75</y>
-    <width>41</width>
+    <x>570</x>
+    <y>65</y>
+    <width>440</width>
     <height>11</height>
    </rect>
    <font>
@@ -920,11 +927,44 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>normal</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
+   <string>All amounts are in base currency as of the Relative Date provided when the report</string>
+  </label>
+  <label>
+   <rect>
+    <x>165</x>
+    <y>5</y>
+    <width>170</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Report Totals:</string>
+  </label>
+  <field>
+   <rect>
+    <x>910</x>
+    <y>5</y>
+    <width>55</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
    <data>
-    <query>Context Query</query>
-    <column>page_number</column>
+    <query>detail</query>
+    <column>araging_plus_val</column>
    </data>
+   <tracktotal builtin="true" >qty</tracktotal>
   </field>
   <label>
    <rect>
@@ -939,9 +979,140 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>bold</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
    <string>Total For All Customers</string>
   </label>
+  <field>
+   <rect>
+    <x>740</x>
+    <y>5</y>
+    <width>70</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>detail</query>
+    <column>araging_sixty_val</column>
+   </data>
+   <tracktotal builtin="true" >qty</tracktotal>
+  </field>
+  <label>
+   <rect>
+    <x>385</x>
+    <y>75</y>
+    <width>35</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Page: </string>
+  </label>
+  <field>
+   <rect>
+    <x>650</x>
+    <y>5</y>
+    <width>75</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>detail</query>
+    <column>araging_thirty_val</column>
+   </data>
+   <tracktotal builtin="true" >qty</tracktotal>
+  </field>
+  <field>
+   <rect>
+    <x>440</x>
+    <y>75</y>
+    <width>41</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Context Query</query>
+    <column>page_number</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>570</x>
+    <y>5</y>
+    <width>75</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>detail</query>
+    <column>araging_cur_val</column>
+   </data>
+   <tracktotal builtin="true" >qty</tracktotal>
+  </field>
+  <label>
+   <rect>
+    <x>570</x>
+    <y>75</y>
+    <width>440</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>is run.</string>
+  </label>
+  <field>
+   <rect>
+    <x>250</x>
+    <y>50</y>
+    <width>75</width>
+    <height>11</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>detail</query>
+    <column>araging_total_val</column>
+   </data>
+   <tracktotal builtin="true" >qty</tracktotal>
+  </field>
   <field>
    <rect>
     <x>825</x>
@@ -955,7 +1126,7 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>normal</weight>
    </font>
    <right/>
-   <top/>
+   <vcenter/>
    <data>
     <query>detail</query>
     <column>araging_ninety_val</column>
@@ -975,180 +1146,9 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>bold</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
    <string>Note:</string>
   </label>
-  <label>
-   <rect>
-    <x>165</x>
-    <y>5</y>
-    <width>170</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>Report Totals:</string>
-  </label>
-  <label>
-   <rect>
-    <x>570</x>
-    <y>75</y>
-    <width>440</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>is run.</string>
-  </label>
-  <label>
-   <rect>
-    <x>570</x>
-    <y>65</y>
-    <width>440</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>All amounts are in base currency as of the Relative Date provided when the report</string>
-  </label>
-  <label>
-   <rect>
-    <x>385</x>
-    <y>75</y>
-    <width>35</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>Page: </string>
-  </label>
-  <field>
-   <rect>
-    <x>570</x>
-    <y>5</y>
-    <width>75</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <top/>
-   <data>
-    <query>detail</query>
-    <column>araging_cur_val</column>
-   </data>
-   <tracktotal builtin="true" >qty</tracktotal>
-  </field>
-  <field>
-   <rect>
-    <x>911</x>
-    <y>5</y>
-    <width>55</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <top/>
-   <data>
-    <query>detail</query>
-    <column>araging_plus_val</column>
-   </data>
-   <tracktotal builtin="true" >qty</tracktotal>
-  </field>
-  <field>
-   <rect>
-    <x>650</x>
-    <y>5</y>
-    <width>75</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <top/>
-   <data>
-    <query>detail</query>
-    <column>araging_thirty_val</column>
-   </data>
-   <tracktotal builtin="true" >qty</tracktotal>
-  </field>
-  <field>
-   <rect>
-    <x>250</x>
-    <y>50</y>
-    <width>75</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <top/>
-   <data>
-    <query>detail</query>
-    <column>araging_total_val</column>
-   </data>
-   <tracktotal builtin="true" >qty</tracktotal>
-  </field>
-  <line>
-   <xstart>1</xstart>
-   <ystart>1</ystart>
-   <xend>967</xend>
-   <yend>1</yend>
-   <weight>2</weight>
-  </line>
-  <field>
-   <rect>
-    <x>740</x>
-    <y>5</y>
-    <width>70</width>
-    <height>11</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <top/>
-   <data>
-    <query>detail</query>
-    <column>araging_sixty_val</column>
-   </data>
-   <tracktotal builtin="true" >qty</tracktotal>
-  </field>
  </pgfoot>
  <pgfoot>
   <height>57</height>
@@ -1165,7 +1165,7 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>normal</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
    <string>Page: </string>
   </label>
   <field>
@@ -1181,7 +1181,7 @@ FROM araging(&lt;? value("relDate") ?>)
     <weight>normal</weight>
    </font>
    <left/>
-   <top/>
+   <vcenter/>
    <data>
     <query>Context Query</query>
     <column>page_number</column>
