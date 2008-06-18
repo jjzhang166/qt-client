@@ -11,15 +11,15 @@
  <leftmargin>50</leftmargin>
  <querysource>
   <name>head</name>
-  <sql>SELECT formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;source&quot;) ?>
-         text(&lt;? value(&quot;source&quot;) ?>)
+  <sql>SELECT formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("source") ?>
+         text(&lt;? value("source") ?>)
        &lt;? else ?>
          text('All Sources')
        &lt;? endif  ?>
        AS source,
-       &lt;? if exists(&quot;showUsernames&quot;) ?>
+       &lt;? if exists("showUsernames") ?>
          text('Username')
        &lt;? else ?>
          text('')
@@ -42,7 +42,7 @@
        gltrans_notes,
        f_debitdetail,
        f_creditdetail,
-       &lt;? if exists(&quot;showUsernames&quot;) ?>
+       &lt;? if exists("showUsernames") ?>
          gltrans_username
        &lt;? else ?>
          text('')
@@ -61,9 +61,9 @@
                                   END ) ) AS f_credit
            FROM gltrans, accnt
           WHERE ( (gltrans_accnt_id=accnt_id)
-            AND (gltrans_date BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-         &lt;? if exists(&quot;source&quot;) ?>
-            AND (gltrans_source=&lt;? value(&quot;source&quot;) ?>)
+            AND (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+         &lt;? if exists("source") ?>
+            AND (gltrans_source=&lt;? value("source") ?>)
          &lt;? endif ?>
          )
          GROUP BY accnt_id, accnt_number, accnt_profit, accnt_sub, accnt_descrip
@@ -84,13 +84,13 @@
                 END AS f_creditdetail
            FROM gltrans, accnt
           WHERE ((gltrans_accnt_id=accnt_id)
-            AND (gltrans_date BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-         &lt;? if exists(&quot;source&quot;) ?>
-            AND (gltrans_source=&lt;? value(&quot;source&quot;) ?>)
+            AND (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+         &lt;? if exists("source") ?>
+            AND (gltrans_source=&lt;? value("source") ?>)
          &lt;? endif ?>
-         &lt;? if exists(&quot;unpostedTransactions&quot;) ?>
+         &lt;? if exists("unpostedTransactions") ?>
             AND (NOT gltrans_posted)
-         &lt;? elseif exists(&quot;postedTransactions&quot;) ?>
+         &lt;? elseif exists("postedTransactions") ?>
             AND (gltrans_posted)
          &lt;? endif ?>
                 )
@@ -98,7 +98,49 @@
 ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_created;</sql>
  </querysource>
  <rpthead>
-  <height>205</height>
+  <height>201</height>
+  <label>
+   <rect>
+    <x>375</x>
+    <y>185</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Doc. Type</string>
+  </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>200</ystart>
+   <xend>745</xend>
+   <yend>200</yend>
+   <weight>2</weight>
+  </line>
+  <field>
+   <rect>
+    <x>545</x>
+    <y>90</y>
+    <width>200</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>enddate</column>
+   </data>
+  </field>
   <label>
    <rect>
     <x>120</x>
@@ -114,22 +156,6 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    <left/>
    <vcenter/>
    <string>Decription/Notes</string>
-  </label>
-  <label>
-   <rect>
-    <x>510</x>
-    <y>185</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Debit</string>
   </label>
   <field>
    <rect>
@@ -152,7 +178,58 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
   </field>
   <label>
    <rect>
-    <x>425</x>
+    <x>409</x>
+    <y>70</y>
+    <width>130</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Start Date:</string>
+  </label>
+  <field>
+   <rect>
+    <x>665</x>
+    <y>185</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>f_username</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>330</x>
+    <y>185</y>
+    <width>36</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Source</string>
+  </label>
+  <label>
+   <rect>
+    <x>595</x>
     <y>185</y>
     <width>80</width>
     <height>15</height>
@@ -164,7 +241,39 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Doc. #</string>
+   <string>Credit</string>
+  </label>
+  <label>
+   <rect>
+    <x>409</x>
+    <y>90</y>
+    <width>130</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>End Date:</string>
+  </label>
+  <label>
+   <rect>
+    <x>260</x>
+    <y>10</y>
+    <width>465</width>
+    <height>38</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>18</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Summarized G/L Transactions</string>
   </label>
   <field>
    <rect>
@@ -185,99 +294,6 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
     <column>startdate</column>
    </data>
   </field>
-  <field>
-   <rect>
-    <x>670</x>
-    <y>185</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>f_username</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>409</x>
-    <y>90</y>
-    <width>130</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>End Date:</string>
-  </label>
-  <label>
-   <rect>
-    <x>340</x>
-    <y>185</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Doc. Type</string>
-  </label>
-  <label>
-   <rect>
-    <x>5</x>
-    <y>70</y>
-    <width>130</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Source:</string>
-  </label>
-  <field>
-   <rect>
-    <x>545</x>
-    <y>90</y>
-    <width>200</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>enddate</column>
-   </data>
-  </field>
-  <line>
-   <xstart>5</xstart>
-   <ystart>200</ystart>
-   <xend>745</xend>
-   <yend>200</yend>
-   <weight>2</weight>
-  </line>
   <label>
    <rect>
     <x>10</x>
@@ -296,121 +312,8 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
   </label>
   <label>
    <rect>
-    <x>260</x>
-    <y>10</y>
-    <width>465</width>
-    <height>38</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Summarized G/L Transactions</string>
-  </label>
-  <label>
-   <rect>
-    <x>409</x>
-    <y>70</y>
-    <width>130</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Start Date:</string>
-  </label>
-  <label>
-   <rect>
-    <x>275</x>
+    <x>509</x>
     <y>185</y>
-    <width>60</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Source</string>
-  </label>
-  <label>
-   <rect>
-    <x>595</x>
-    <y>185</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Credit</string>
-  </label>
- </rpthead>
- <pghead>
-  <firstpage/>
-  <height>8</height>
- </pghead>
- <pghead>
-  <height>28</height>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>5</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Account/Date</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>20</ystart>
-   <xend>745</xend>
-   <yend>20</yend>
-   <weight>2</weight>
-  </line>
-  <field>
-   <rect>
-    <x>670</x>
-    <y>5</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>f_username</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>510</x>
-    <y>5</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -425,7 +328,46 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
   </label>
   <label>
    <rect>
-    <x>595</x>
+    <x>5</x>
+    <y>70</y>
+    <width>130</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Source:</string>
+  </label>
+  <label>
+   <rect>
+    <x>434</x>
+    <y>185</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Doc. #</string>
+  </label>
+ </rpthead>
+ <pghead>
+  <firstpage/>
+  <height>17</height>
+ </pghead>
+ <pghead>
+  <height>28</height>
+  <label>
+   <rect>
+    <x>434</x>
     <y>5</y>
     <width>80</width>
     <height>15</height>
@@ -435,41 +377,9 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <right/>
    <vcenter/>
-   <string>Credit</string>
-  </label>
-  <label>
-   <rect>
-    <x>340</x>
-    <y>5</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Doc. Type</string>
-  </label>
-  <label>
-   <rect>
-    <x>275</x>
-    <y>5</y>
-    <width>60</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Source</string>
+   <string>Doc. #</string>
   </label>
   <label>
    <rect>
@@ -489,7 +399,23 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
   </label>
   <label>
    <rect>
-    <x>420</x>
+    <x>10</x>
+    <y>5</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Account/Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>595</x>
     <y>5</y>
     <width>80</width>
     <height>15</height>
@@ -501,7 +427,81 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Doc. #</string>
+   <string>Credit</string>
+  </label>
+  <label>
+   <rect>
+    <x>375</x>
+    <y>5</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Doc. Type</string>
+  </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>20</ystart>
+   <xend>745</xend>
+   <yend>20</yend>
+   <weight>2</weight>
+  </line>
+  <field>
+   <rect>
+    <x>665</x>
+    <y>5</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>f_username</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>509</x>
+    <y>5</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Debit</string>
+  </label>
+  <label>
+   <rect>
+    <x>330</x>
+    <y>5</y>
+    <width>60</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Source</string>
   </label>
  </pghead>
  <section>
@@ -510,26 +510,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    <name>detail</name>
    <column>accnt_id</column>
    <head>
-    <height>20</height>
-    <field>
-     <rect>
-      <x>510</x>
-      <y>0</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>f_debit</column>
-     </data>
-    </field>
+    <height>23</height>
     <field>
      <rect>
       <x>10</x>
@@ -572,7 +553,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <rect>
       <x>120</x>
       <y>0</y>
-      <width>150</width>
+      <width>305</width>
       <height>15</height>
      </rect>
      <font>
@@ -587,18 +568,47 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
       <column>accnt_descrip</column>
      </data>
     </field>
+    <field>
+     <rect>
+      <x>509</x>
+      <y>0</y>
+      <width>80</width>
+      <height>15</height>
+     </rect>
+     <font>
+      <face>Arial</face>
+      <size>8</size>
+      <weight>bold</weight>
+     </font>
+     <right/>
+     <vcenter/>
+     <data>
+      <query>detail</query>
+      <column>f_debit</column>
+     </data>
+    </field>
    </head>
+   <foot>
+    <height>14</height>
+    <line>
+     <xstart>112</xstart>
+     <ystart>5</ystart>
+     <xend>744</xend>
+     <yend>5</yend>
+     <weight>0</weight>
+    </line>
+   </foot>
   </group>
   <detail>
    <key>
     <query>detail</query>
    </key>
-   <height>18</height>
+   <height>24</height>
    <field>
     <rect>
-     <x>275</x>
+     <x>10</x>
      <y>0</y>
-     <width>60</width>
+     <width>100</width>
      <height>15</height>
     </rect>
     <font>
@@ -606,11 +616,30 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <size>8</size>
      <weight>bold</weight>
     </font>
-    <hcenter/>
-    <vcenter/>
+    <right/>
+    <top/>
     <data>
      <query>detail</query>
-     <column>gltrans_source</column>
+     <column>transdate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>375</x>
+     <y>0</y>
+     <width>50</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <top/>
+    <data>
+     <query>detail</query>
+     <column>gltrans_doctype</column>
     </data>
    </field>
    <field>
@@ -626,7 +655,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <weight>bold</weight>
     </font>
     <right/>
-    <vcenter/>
+    <top/>
     <data>
      <query>detail</query>
      <column>f_creditdetail</column>
@@ -634,28 +663,9 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    </field>
    <field>
     <rect>
-     <x>425</x>
+     <x>330</x>
      <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>gltrans_docnumber</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>120</x>
-     <y>0</y>
-     <width>150</width>
+     <width>36</width>
      <height>15</height>
     </rect>
     <font>
@@ -664,17 +674,17 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <weight>bold</weight>
     </font>
     <left/>
-    <vcenter/>
+    <top/>
     <data>
      <query>detail</query>
-     <column>gltrans_notes</column>
+     <column>gltrans_source</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>680</x>
+     <x>434</x>
      <y>0</y>
-     <width>70</width>
+     <width>80</width>
      <height>15</height>
     </rect>
     <font>
@@ -683,7 +693,46 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <weight>bold</weight>
     </font>
     <right/>
-    <vcenter/>
+    <top/>
+    <data>
+     <query>detail</query>
+     <column>gltrans_docnumber</column>
+    </data>
+   </field>
+   <text>
+    <rect>
+     <x>120</x>
+     <y>0</y>
+     <width>200</width>
+     <height>15</height>
+    </rect>
+    <bottompad>5</bottompad>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <top/>
+    <data>
+     <query>detail</query>
+     <column>gltrans_notes</column>
+    </data>
+   </text>
+   <field>
+    <rect>
+     <x>665</x>
+     <y>0</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <top/>
     <data>
      <query>detail</query>
      <column>f_username</column>
@@ -691,7 +740,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    </field>
    <field>
     <rect>
-     <x>510</x>
+     <x>509</x>
      <y>0</y>
      <width>80</width>
      <height>15</height>
@@ -702,70 +751,16 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
      <weight>bold</weight>
     </font>
     <right/>
-    <vcenter/>
+    <top/>
     <data>
      <query>detail</query>
      <column>f_debitdetail</column>
     </data>
    </field>
-   <field>
-    <rect>
-     <x>340</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>gltrans_doctype</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>100</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>transdate</column>
-    </data>
-   </field>
   </detail>
  </section>
  <pgfoot>
-  <height>18</height>
-  <label>
-   <rect>
-    <x>615</x>
-    <y>0</y>
-    <width>85</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Page:</string>
-  </label>
+  <height>26</height>
   <field>
    <rect>
     <x>90</x>
@@ -787,7 +782,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
   </field>
   <label>
    <rect>
-    <x>0</x>
+    <x>615</x>
     <y>0</y>
     <width>85</width>
     <height>15</height>
@@ -799,7 +794,7 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
    </font>
    <right/>
    <vcenter/>
-   <string>Report Date:</string>
+   <string>Page:</string>
   </label>
   <field>
    <rect>
@@ -820,5 +815,21 @@ ORDER BY accnt_number, accnt_profit, accnt_sub, gltrans_date DESC, gltrans_creat
     <column>page_number</column>
    </data>
   </field>
+  <label>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>85</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Report Date:</string>
+  </label>
  </pgfoot>
 </report>
