@@ -614,6 +614,12 @@ void arWorkBench::sgetCCAmount()
 void arWorkBench::sPostPreauth()
 {
   CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
+  if (! cardproc)
+  {
+    QMessageBox::critical(this, tr("Credit Card Processing Error"),
+                          CreditCardProcessor::errorMsg());
+    return;
+  }
   if (! cardproc->errorMsg().isEmpty())
   {
     QMessageBox::warning( this, tr("Credit Card Error"), cardproc->errorMsg() );
@@ -653,6 +659,13 @@ void arWorkBench::sPostPreauth()
 void arWorkBench::sVoidPreauth()
 {
   CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
+  if (! cardproc)
+  {
+    QMessageBox::critical(this, tr("Credit Card Processing Error"),
+                          CreditCardProcessor::errorMsg());
+    return;
+  }
+
   if (! cardproc->errorMsg().isEmpty())
   {
     QMessageBox::warning( this, tr("Credit Card Error"), cardproc->errorMsg() );

@@ -538,6 +538,13 @@ void cashReceipt::sSave()
       (fundsType == "A" || fundsType == "D" || fundsType == "M" || fundsType == "V"))
   {
     CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
+    if (! cardproc)
+    {
+      QMessageBox::critical(this, tr("Credit Card Processing Error"),
+                            CreditCardProcessor::errorMsg());
+      return;
+    }
+
     _save->setEnabled(false);
     int ccpayid = -1;
     QString ordernum = _docNumber->text().isEmpty() ?
