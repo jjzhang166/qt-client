@@ -264,6 +264,7 @@ void createLotSerial::sAssign()
 		  "WHERE ((itemloc_itemsite_id=:itemsite_id)"
                   "  AND (itemloc_itemsite_id=itemsite_id)"
                   "  AND (itemsite_item_id=ls_item_id)"
+                  "  AND (itemloc_ls_id=ls_id)"
 		  "  AND (ls_number=:lotserial))"
 		  "UNION "
 		  "SELECT itemlocdist_id "
