@@ -209,10 +209,11 @@ void dspPricesByCustomerType::sFillList()
         sql += ", (actcost(ipsprice_item_id) * iteminvpricerat(item_id)) AS cost ";
     }
 
-    sql += "FROM ipsass, ipshead, ipsprice, item, custtype "
+    sql += "FROM ipsass, ipshead, ipsprice, item, custtype, uom "
            "WHERE ( (ipsass_ipshead_id=ipshead_id)"
            " AND (ipsprice_ipshead_id=ipshead_id)"
            " AND (ipsprice_item_id=item_id)"
+           " AND (item_price_uom_id=uom_id)"
            " AND (coalesce(length(ipsass_custtype_pattern), 0) > 0)"
            " AND (custtype_code ~ ipsass_custtype_pattern)" 
            " AND (custtype_id=:custtype_id)";
