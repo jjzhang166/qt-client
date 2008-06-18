@@ -124,7 +124,7 @@ void XMainWindow::closeEvent(QCloseEvent *event)
   QString objName = objectName();
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
   settings.setValue(objName + "/geometry/size", size());
-  if(omfgThis->showTopLevel())
+  if(omfgThis->showTopLevel() || isModal())
     settings.setValue(objName + "/geometry/pos", pos());
   else
     settings.setValue(objName + "/geometry/pos", parentWidget()->pos());
@@ -137,9 +137,10 @@ void XMainWindow::showEvent(QShowEvent *event)
   if(!_private->_shown)
   {
     _private->_shown = true;
+qDebug("isModal() %s", isModal()?"true":"false");
 
     QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    if(!omfgThis->showTopLevel())
+    if(!omfgThis->showTopLevel() && !isModal())
       availableGeometry = omfgThis->workspace()->geometry();
 
     QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
@@ -151,7 +152,7 @@ void XMainWindow::showEvent(QShowEvent *event)
       resize(lsize);
 
     setAttribute(Qt::WA_DeleteOnClose);
-    if(omfgThis->showTopLevel())
+    if(omfgThis->showTopLevel() || isModal())
     {
       omfgThis->_windowList.append(this);
       statusBar()->show();

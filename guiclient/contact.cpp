@@ -793,9 +793,7 @@ void contact::sEditCRMAccount()
   ParameterList params;
   params.append("mode", "edit");
   params.append("crmacct_id",	_uses->id());
-  crmaccount *newdlg = new crmaccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg, Qt::WindowModal);
+  crmaccount::doDialog(this, params);
 }
 
 void contact::sViewCRMAccount()
@@ -803,9 +801,7 @@ void contact::sViewCRMAccount()
   ParameterList params;
   params.append("mode", "view");
   params.append("crmacct_id",	_uses->id());
-  crmaccount *newdlg = new crmaccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg, Qt::WindowModal);
+  crmaccount::doDialog(this, params);
 }
 
 void contact::sEditCustomer()

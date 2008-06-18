@@ -1285,7 +1285,7 @@ void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
   qDebug() << "GUIClient::handleNewWindow() called on object that doesn't inherit XMainWindow: " << w->objectName();
 
   QRect availableGeometry = QApplication::desktop()->availableGeometry();
-  if(!_showTopLevel)
+  if(!_showTopLevel && !w->isModal())
     availableGeometry = _workspace->geometry();
 
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
@@ -1296,7 +1296,8 @@ void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
   if(size.isValid() && settings.value(objName + "/geometry/rememberSize", true).toBool())
     w->resize(size);
 
-  if(_showTopLevel)
+  bool wIsModal = w->isModal();
+  if(_showTopLevel || wIsModal)
   {
     _windowList.append(w);
     w->setWindowFlags(Qt::WDestructiveClose);
@@ -1321,7 +1322,8 @@ void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
       fw->setFocus();
   }
 
-  w->installEventFilter(__saveSizePositionEventFilter);
+  if(!wIsModal)
+    w->installEventFilter(__saveSizePositionEventFilter);
 }
 
 QMenuBar *GUIClient::menuBar()
