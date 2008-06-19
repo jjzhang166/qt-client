@@ -868,6 +868,7 @@ void ContactList::sFillList()
   do {
     last = new XTreeWidgetItem(_listTab, last,
 			     query.value("cntct_id").toInt(), 0,
+                             query.value("cntct_number"),
 			     query.value("cntct_first_name"),
 			     query.value("cntct_last_name"),
 			     query.value("crmacct_name"));

@@ -575,6 +575,7 @@ void AddressList::sFillList()
     do {
       last = new XTreeWidgetItem(_listTab, last,
                                query.value("addr_id").toInt(), 0,
+                               query.value("addr_number"),
                                query.value("addr_line1"),
                                query.value("addr_line2"),
                                query.value("addr_line3"),
