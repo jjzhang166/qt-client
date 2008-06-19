@@ -90,7 +90,7 @@ dspPlannedOrdersByPlannerCode::dspPlannedOrdersByPlannerCode(QWidget* parent, co
   _planord->addColumn(tr("Start Date"),  _dateColumn,  Qt::AlignCenter,true, "planord_startdate");
   _planord->addColumn(tr("Due Date"),    _dateColumn,  Qt::AlignCenter,true, "planord_duedate");
   _planord->addColumn(tr("Qty"),         _qtyColumn,   Qt::AlignRight, true, "planord_qty");
-  _planord->addColumn(tr("Firm"),        _ynColumn,    Qt::AlignCenter );
+  _planord->addColumn(tr("Firm"),        _ynColumn,    Qt::AlignCenter,true, "firmed");
 
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 }
@@ -243,7 +243,7 @@ void dspPlannedOrdersByPlannerCode::sFillList()
                "       (item_descrip1 || ' ' || item_descrip2) AS item_descrip,"
                "       planord_startdate,"
                "       planord_duedate,"
-               "       planord_qty, formatBoolYN(planord_firm),"
+               "       planord_qty, formatBoolYN(planord_firm) AS firmed,"
                "       'qty' AS planord_qty "
                "FROM planord, itemsite, warehous, item "
                "WHERE ( (planord_itemsite_id=itemsite_id)"
