@@ -79,9 +79,15 @@ lotSerialRegistration::lotSerialRegistration(QWidget* parent, const char* name, 
   _lsregid = -1;
 
   // signals and slots connections
-  connect(_save,	SIGNAL(clicked()),	this,	SLOT(sSave()));
-  connect(_soldDate, SIGNAL(newDate(const QDate&)), this, SLOT(sDateUpdated()));
-  connect(_crmacct, SIGNAL(newId(int)), this, SLOT(sSetSoCustId()));
+  connect(_save,	SIGNAL(clicked()),              this, SLOT(sSave()));
+  connect(_soldDate,    SIGNAL(newDate(const QDate&)),  this, SLOT(sDateUpdated()));
+  connect(_crmacct,     SIGNAL(newId(int)),             this, SLOT(sSetSoCustId()));
+  connect(_deleteChar,  SIGNAL(clicked()),              this, SLOT(sDeleteCharass()));
+  connect(_editChar,    SIGNAL(clicked()),              this, SLOT(sEditCharass()));
+  connect(_newChar,     SIGNAL(clicked()),              this, SLOT(sNewCharass()));
+  
+  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft );
+  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft );
  
   _lotSerial->setStrict(true);
   _cntct->setAccountVisible(FALSE);
@@ -233,20 +239,19 @@ void lotSerialRegistration::sDeleteCharass()
 
 void lotSerialRegistration::sFillList()
 {
-  XSqlQuery chq;
-  chq.prepare( "SELECT charass_id, char_name, charass_value "
+  q.prepare( "SELECT charass_id, char_name, charass_value "
              "FROM charass, char "
              "WHERE ((charass_target_type='LSR')"
              " AND   (charass_char_id=char_id)"
              " AND   (charass_target_id=:lsreg_id) ) "
              "ORDER BY char_name;" );
-  chq.bindValue(":lsreg_id", _lsregid);
-  chq.exec();
+  q.bindValue(":lsreg_id", _lsregid);
+  q.exec();
   _charass->clear();
-  _charass->populate(chq);
-  if (chq.lastError().type() != QSqlError::None)
+  _charass->populate(q);
+  if (q.lastError().type() != QSqlError::None)
   {
-    systemError(this, chq.lastError().databaseText(), __FILE__, __LINE__);
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -276,6 +281,7 @@ void lotSerialRegistration::populate()
       _so->setId(q.value("lsreg_cohead_id").toInt());
     if(!q.value("lsreg_shiphead_id").isNull())
       _shipment->setId(q.value("lsreg_shiphead_id").toInt());
+    sFillList();
   }
   else if(q.lastError().type() != QSqlError::None)
   {
