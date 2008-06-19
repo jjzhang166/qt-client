@@ -204,7 +204,8 @@ void unpostedInvoices::sPrint()
 
     if (!newdlg.isSetup())
     {
-      newdlg.exec();
+      if(newdlg.exec() == QDialog::Rejected)
+        break;
       newdlg.setSetup(TRUE);
     }
   }
