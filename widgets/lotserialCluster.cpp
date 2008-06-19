@@ -144,13 +144,13 @@ void LotserialLineEdit::setItemId(const int itemid)
   {
     _itemid = -1;
     _extraClause = "";
-    VirtualClusterLineEdit::clear();
   }
   else
   {
     _itemid = itemid;
     _extraClause = QString(" (item_id=%1) ").arg(itemid);
   }
+  VirtualClusterLineEdit::clear();
 }
 
 void LotserialLineEdit::clear()
