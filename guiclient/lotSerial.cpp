@@ -116,8 +116,8 @@ void lotSerial::populate()
                               QMessageBox::No) == QMessageBox::Yes)
     {
       disconnect(_lotSerial, SIGNAL(valid(bool)), this, SLOT(populate()));
-      _lotSerial->setId(_lsidCache);
       _item->setId(_itemidCache);
+      _lotSerial->setId(_lsidCache);
       connect(_lotSerial, SIGNAL(valid(bool)), this, SLOT(populate()));
       return;
     }
@@ -158,9 +158,9 @@ void lotSerial::sSave()
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+  _notes->clear();
   _changed=false;
   _item->setId(-1);
-  _notes->clear();
 }
 
 void lotSerial::sChanged()
