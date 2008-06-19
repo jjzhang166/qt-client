@@ -226,8 +226,18 @@ void LotserialLineEdit::sParse()
               }
               else
               {
+                int lsid;
                 numQ.exec("SELECT nextval('ls_ls_id_seq') AS ls_id;");
-                int lsid= numQ.value("ls_id").toInt();
+                if (numQ.first())
+                  lsid= numQ.value("ls_id").toInt();
+                else if (numQ.lastError().type() != QSqlError::None)
+                {
+                  QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
+                                                .arg(__FILE__)
+                                                .arg(__LINE__),
+                                        numQ.lastError().databaseText());
+                  return;
+                }
                 numQ.prepare("INSERT INTO ls (ls_id,ls_item_id,ls_number) "
                              "VALUES (:ls_id,:item_id,:number)");
                 numQ.bindValue(":ls_id", lsid);
