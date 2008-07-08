@@ -123,7 +123,8 @@ void ItemCharacteristicDelegate::setModelData(QWidget *editor, QAbstractItemMode
   QModelIndex priceidx = index.sibling(index.row(), PRICE);
   QVariant charVars;
   QVariantList listVars;
-  charVars.setValue(priceidx.model()->data(priceidx, Qt::UserRole).toList());
+  if (priceidx.model())
+    charVars.setValue(priceidx.model()->data(priceidx, Qt::UserRole).toList());
   listVars=charVars.toList();
   
   q.prepare("SELECT formatprice(itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective)) AS price;");
