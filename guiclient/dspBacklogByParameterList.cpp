@@ -96,7 +96,7 @@ dspBacklogByParameterList::dspBacklogByParameterList(QWidget* parent, const char
   _soitem->addColumn(tr("Shipped"),              _qtyColumn,   Qt::AlignRight  );
   _soitem->addColumn(tr("Balance"),              _qtyColumn,   Qt::AlignRight  );
   if (_privileges->check("ViewCustomerPrices") || _privileges->check("MaintainCustomerPrices"))
-    _soitem->addColumn(tr("Amount $"),           _moneyColumn, Qt::AlignRight  );
+    _soitem->addColumn(tr("Amount (base)"),           _moneyColumn, Qt::AlignRight  );
 
   _showPrices->setEnabled(_privileges->check("ViewCustomerPrices") || _privileges->check("MaintainCustomerPrices"));
 
@@ -370,13 +370,8 @@ void dspBacklogByParameterList::sFillList()
                  "       formatQty(coitem_qtyshipped) AS f_shipped,"
                  "       formatQty(noNeg(coitem_qtyord - coitem_qtyshipped + "
 		 "                       coitem_qtyreturned)) AS f_balance, "
-                 "       formatMoney(round((noNeg(coitem_qtyord - "
-		 "                               coitem_qtyshipped + "
-		 "                               coitem_qtyreturned) * coitem_qty_invuomratio) * "
-		 "                         (coitem_price / coitem_price_invuomratio), 2)) AS f_backlog,"
-                 "       round((noNeg(coitem_qtyord - coitem_qtyshipped + "
-		 "                   coitem_qtyreturned) * coitem_qty_invuomratio) * "
-		 "             (coitem_price / coitem_price_invuomratio),2) AS backlog "
+                 "       formatMoney(round((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) * coitem_qty_invuomratio) * (currtobase(cohead_curr_id,coitem_price,current_date) / coitem_price_invuomratio),2)) AS f_backlog,"
+                 "       round((noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) * coitem_qty_invuomratio) * (currtobase(cohead_curr_id,coitem_price,current_date) / coitem_price_invuomratio),2) AS backlog "
                  "FROM cohead, coitem, itemsite, item, cust, uom "
                  "WHERE ((coitem_cohead_id=cohead_id)"
                  " AND (cohead_cust_id=cust_id)"
