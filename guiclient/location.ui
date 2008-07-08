@@ -54,9 +54,6 @@
       <layout class="QHBoxLayout" >
        <item>
         <widget class="WComboBox" name="_warehouse" >
-         <property name="allowNull" >
-          <bool>true</bool>
-         </property>
          <property name="type" >
           <enum>WComboBox::NonTransit</enum>
          </property>

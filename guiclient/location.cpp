@@ -77,7 +77,7 @@ location::location(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _locitem->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft );
   _locitem->addColumn(tr("Description"), -1,          Qt::AlignLeft );
 
-  //If not multi-warehouse hide whs control
+  _warehouse->setAllowNull(_metrics->boolean("MultiWhs"));
   if (!_metrics->boolean("MultiWhs"))
   {
     _warehouseLit->hide();
@@ -85,10 +85,7 @@ location::location(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     sHandleWarehouse(_warehouse->id());
   }
   else
-  {
-    _warehouse->setAllowNull(TRUE);
     _warehouse->setNull();
-  }
 
 }
 
