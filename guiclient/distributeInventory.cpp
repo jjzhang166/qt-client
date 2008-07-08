@@ -576,12 +576,15 @@ void distributeInventory::sBcDistribute()
 	     "WHERE ((itemlocdist_itemsite_id=itemloc_itemsite_id)"
 	     "  AND  (itemloc_itemsite_id=itemsite_id)"
              "  AND  (itemsite_controlmethod IN ('L', 'S'))"
-             "  AND  (itemsite_item_number=ls_item_id"
+             "  AND  (itemsite_item_id=ls_item_id)"
+             "  AND  (itemloc_ls_id=ls_id)"
+             "  AND  (itemsite_warehous_id=:warehous_id)"
 	     "  AND  (ls_number=:lotserial)"
 	     "  AND  (itemlocdist_id=:itemlocdist_id));");
 
   q.bindValue(":itemlocdist_id", _itemlocdistid);
   q.bindValue(":lotserial",      _bc->text());
+  q.bindValue(":warehous_id",    _warehouse->id());
   q.exec();
 
   if(!q.first())
