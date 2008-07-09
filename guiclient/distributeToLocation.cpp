@@ -204,12 +204,20 @@ void distributeToLocation::sDistribute()
   }
   else if (_mode == cLocation)
   {
-    q.prepare( "SELECT itemlocdist_id "
-               "FROM itemlocdist, ls "
-               "WHERE ( (itemlocdist_itemlocdist_id=:itemlocdist_id)"
-               " AND (itemlocdist_source_type='L')"
-               " AND (itemlocdist_source_id=:location_id)"
-               " AND (formatlotserialnumber(itemlocdist_ls_id)=:lotSerial) );" );
+    if (_metrics->boolean("LotSerialControl"))
+      q.prepare( "SELECT itemlocdist_id "
+                 "FROM itemlocdist, ls "
+                 "WHERE ( (itemlocdist_itemlocdist_id=:itemlocdist_id)"
+                 " AND (itemlocdist_source_type='L')"
+                 " AND (itemlocdist_source_id=:location_id)"
+                 " AND (formatlotserialnumber(itemlocdist_ls_id)=:lotSerial) );" );
+    else
+      q.prepare( "SELECT itemlocdist_id "
+                 "FROM itemlocdist "
+                 "WHERE ( (itemlocdist_itemlocdist_id=:itemlocdist_id)"
+                 " AND (itemlocdist_source_type='L')"
+                 " AND (itemlocdist_source_id=:location_id)"
+                 "  );" );
     q.bindValue(":itemlocdist_id", _sourceItemlocdistid);
     q.bindValue(":location_id", _locationid);
     q.bindValue(":lotSerial", _lotSerial);
