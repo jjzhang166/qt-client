@@ -101,6 +101,7 @@ public slots:
     virtual void populateCMInfo();
     virtual void populateCCInfo();
     virtual void sTaxAuthChanged();
+    virtual void sHandleShipchrg( int pShipchrgid );
 
 protected:
     virtual void keyPressEvent( QKeyEvent * e );

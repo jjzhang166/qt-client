@@ -70,6 +70,8 @@
 #include "storedProcErrorLookup.h"
 #include "taxBreakdown.h"
 
+#define cViewQuote (0x20 | cView)
+
 invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
     : XMainWindow(parent, fl)
 {
@@ -112,6 +114,7 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_invcitem, SIGNAL(valid(bool)),     _delete, SLOT(setEnabled(bool)));
   connect(_invcitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   connect(_taxauth,  SIGNAL(newID(int)),	 this, SLOT(sTaxAuthChanged()));
+  connect(_shipChrgs, SIGNAL(newID(int)), this, SLOT(sHandleShipchrg(int)));
 
   statusBar()->hide();
 
@@ -205,12 +208,12 @@ enum SetResponse invoice::set(const ParameterList &pParams)
 	        "    invchead_id, invchead_invcnumber, invchead_orderdate,"
 		"    invchead_invcdate, invchead_cust_id, invchead_posted,"
 		"    invchead_printed, invchead_commission, invchead_freight,"
-		"    invchead_tax, invchead_misc_amount"
+		"    invchead_tax, invchead_misc_amount, invchead_shipchrg_id "
 		") VALUES ("
 		"    :invchead_id, :invchead_invcnumber, :invchead_orderdate, "
 		"    :invchead_invcdate, -1, false,"
 		"    false, 0, 0,"
-		"    0, 0"
+		"    0, 0, -1"
 		");");
       q.bindValue(":invchead_id",	 _invcheadid);
       q.bindValue(":invchead_invcnumber",_invoiceNumber->text());
@@ -273,6 +276,7 @@ enum SetResponse invoice::set(const ParameterList &pParams)
       _save->hide();
       _delete->hide();
       _project->setEnabled(false);
+      _shipChrgs->setEnabled(FALSE);
 
       disconnect(_invcitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
       disconnect(_invcitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
@@ -521,7 +525,7 @@ void invoice::sSave()
 	     "    invchead_shipto_city=:invchead_shipto_city, invchead_shipto_state=:invchead_shipto_state,"
 	     "    invchead_shipto_zipcode=:invchead_shipto_zipcode, invchead_shipto_phone=:invchead_shipto_phone,"
 	     "    invchead_shipto_country=:invchead_shipto_country,"
-	     "    invchead_tax_id=:invchead_tax_id, invchead_salesrep_id=:invchead_salesrep_id,"
+	     "    invchead_salesrep_id=:invchead_salesrep_id,"
 	     "    invchead_terms_id=:invchead_terms_id, invchead_commission=:invchead_commission,"
 	     "    invchead_misc_amount=:invchead_misc_amount, invchead_misc_descrip=:invchead_misc_descrip,"
 	     "    invchead_misc_accnt_id=:invchead_misc_accnt_id,"
@@ -541,7 +545,8 @@ void invoice::sSave()
              "    invchead_recurring_interval=:invchead_recurring_interval,"
              "    invchead_recurring_type=:invchead_recurring_type,"
              "    invchead_recurring_until=:invchead_recurring_until,"
-	     "    invchead_prj_id=:invchead_prj_id "
+	     "    invchead_prj_id=:invchead_prj_id, "
+             "    invchead_shipchrg_id=:invchead_shipchrg_id "
 	     "WHERE (invchead_id=:invchead_id);" );
 
   q.bindValue(":invchead_id",			_invcheadid);
@@ -590,6 +595,7 @@ void invoice::sSave()
   q.bindValue(":invchead_fob",		_fob->text());
   q.bindValue(":invchead_notes",	_notes->text());
   q.bindValue(":invchead_prj_id",	_project->id());
+  q.bindValue(":invchead_shipchrg_id",	_shipChrgs->id());
   q.bindValue(":invchead_recurring", QVariant(_recurring->isChecked(), 0));
   if(_recurring->isChecked()) // only set the following if it's recurring otherwise they end upp null
   {
@@ -685,12 +691,20 @@ void invoice::sDelete()
 void invoice::populate()
 {
   q.prepare( "SELECT invchead.*, "
-             "       COALESCE(invchead_taxauth_id, -1) AS taxauth_id,"
+             "    COALESCE(invchead_taxauth_id, -1) AS taxauth_id,"
              "    currToCurr(invchead_tax_curr_id, invchead_curr_id, "
              "               invchead_tax, invchead_invcdate) AS invccurrtax, "
              "    COALESCE(cust_taxauth_id, -1) AS cust_taxauth_id,"
-	     "    cust_ffbillto, cust_ffshipto "
-             "FROM invchead, custinfo "
+	     "    cust_ffbillto, cust_ffshipto, "
+	     "    invchead_shipchrg_id, invchead_ordernumber, "
+             "    CASE WHEN invchead_shipchrg_id = -1 AND cohead_shipchrg_id = -1 THEN -1  "
+             "    WHEN NOT(invchead_shipchrg_id = -1) THEN invchead_shipchrg_id "
+             "    ELSE cohead_shipchrg_id "
+             "    END AS shipchrg_id "
+             "FROM invchead "
+             "LEFT OUTER JOIN cohead "
+             "ON cohead.cohead_number = invchead.invchead_ordernumber, "
+             "custinfo "
              "WHERE ( (invchead_cust_id=cust_id)"
              " AND (invchead_id=:invchead_id) );" );
   q.bindValue(":invchead_id", _invcheadid);
@@ -721,6 +735,7 @@ void invoice::populate()
     _poNumber->setText(q.value("invchead_ponumber").toString());
     _shipVia->setText(q.value("invchead_shipvia").toString());
     _fob->setText(q.value("invchead_fob").toString());
+    _shipChrgs->setId(q.value("shipchrg_id").toInt());
 
     if(q.value("invchead_recurring").toBool())
     {
@@ -1317,3 +1332,29 @@ void invoice::sTaxAuthChanged()
 
   sFreightChanged();
 }
+
+void invoice::sHandleShipchrg(int pShipchrgid)
+{
+  if ( (_mode == cView) || (_mode == cViewQuote) )
+    _freight->setEnabled(FALSE);
+  else
+  {
+    XSqlQuery query;
+    query.prepare( "SELECT shipchrg_custfreight "
+                   "FROM shipchrg "
+                   "WHERE (shipchrg_id=:shipchrg_id);" );
+    query.bindValue(":shipchrg_id", pShipchrgid);
+    query.exec();
+    if (query.first())
+    {
+      if (query.value("shipchrg_custfreight").toBool())
+        _freight->setEnabled(TRUE);
+      else
+      {
+        _freight->setEnabled(FALSE);
+        _freight->clear();
+      }
+    }
+  }
+}
+
