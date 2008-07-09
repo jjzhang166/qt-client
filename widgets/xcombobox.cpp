@@ -261,7 +261,7 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case AccountingPeriods:
-      query.exec( "SELECT period_id, (formatDate(period_start) || '-' || formatDate(period_end), (formatDate(period_start) || '-' || formatDate(period_end)) "
+      query.exec( "SELECT period_id, (formatDate(period_start) || '-' || formatDate(period_end)), (formatDate(period_start) || '-' || formatDate(period_end)) "
                   "FROM period "
                   "ORDER BY period_start DESC;" );
       break;
