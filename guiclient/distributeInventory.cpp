@@ -269,7 +269,7 @@ enum SetResponse distributeInventory::set(const ParameterList &pParams)
   bool     valid;
 
   param = pParams.value("includeLotSerialDetail", &valid);
-  if (valid)
+  if (valid && _metrics->boolean("LotSerialControl"))
   {
     _mode = cIncludeLotSerial;
   }
