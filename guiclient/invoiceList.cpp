@@ -119,22 +119,25 @@ enum SetResponse invoiceList::set(ParameterList &pParams)
 
   param = pParams.value("invoiceNumber", &valid);
   if (valid)
-    _invoiceNumber = param.toInt();
+    _invoiceNumber = param.toString();
   else
-    _invoiceNumber = -1;
+    _invoiceNumber = "";
 
   param = pParams.value("cust_id", &valid);
   if (valid)
     _cust->setId(param.toInt());
-  else if (_invoiceNumber != -1)
+  else if (! _invoiceNumber.isEmpty())
   {
-    q.prepare( "SELECT invchead_cust_id "
+    q.prepare( "SELECT invchead_id, invchead_cust_id "
                "FROM invchead "
                "WHERE (invchead_invcnumber=:invoiceNumber) ;" );
     q.bindValue(":invoiceNumber", _invoiceNumber);
     q.exec();
     if (q.first())
+    {
+      _invoiceid = q.value("invchead_id").toInt();
       _cust->setId(q.value("invchead_cust_id").toInt());
+    }
   }
 
   return NoError;
@@ -152,7 +155,7 @@ void invoiceList::sSelect()
 
 void invoiceList::sFillList()
 {
-  q.prepare( "SELECT DISTINCT invchead_invcnumber, invchead_invcnumber, formatDate(invchead_invcdate),"
+  q.prepare( "SELECT DISTINCT invchead_id, invchead_invcnumber, formatDate(invchead_invcdate),"
              "                invchead_ordernumber, formatDate(invchead_shipdate),"
              "                COALESCE(invchead_ponumber, '') "
              "FROM invchead "
@@ -163,6 +166,6 @@ void invoiceList::sFillList()
   q.bindValue(":cust_id", _cust->id());
   _dates->bindValue(q);
   q.exec();
-  _invoice->populate(q, _invoiceNumber);
+  _invoice->populate(q, _invoiceid);
 }
 

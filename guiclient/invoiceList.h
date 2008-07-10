@@ -84,7 +84,8 @@ protected slots:
     virtual void languageChange();
 
 private:
-    int _invoiceNumber;
+    int     _invoiceid;
+    QString _invoiceNumber;
 
 };
 
