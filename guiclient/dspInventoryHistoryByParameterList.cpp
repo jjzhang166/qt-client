@@ -483,7 +483,7 @@ void dspInventoryHistoryByParameterList::sFillList()
 				    q.value("invdetail_id").toInt(),
 				    "", "", "", "", "",
 				    q.value("locationname"),
-				    "", q.value("detailqty") );
+				    "", "", q.value("detailqty") );
 
         if (q.value("invhist_posted").toBool())
         {
