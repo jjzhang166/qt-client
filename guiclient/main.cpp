@@ -93,6 +93,7 @@
 #include "metricsenc.h"
 
 #include "woTimeClock.h"
+#include "sysLocale.h"
 
 #include "splashconst.h"
 
@@ -478,6 +479,26 @@ int main(int argc, char *argv[])
   }
   
   initializePlugin(_preferences, _metrics, _privileges, omfgThis->workspace());
+
+// START code for updating the locale settings if they haven't been already
+  XSqlQuery lc;
+  lc.exec("SELECT count(*) FROM metric WHERE metric_name='AutoUpdateLocaleHasRun';");
+  lc.first();
+  if(lc.value(0).toInt() == 0)
+  {
+    lc.exec("INSERT INTO metric (metric_name, metric_value) values('AutoUpdateLocaleHasRun', 't');");
+    lc.exec("SELECT locale_id from locale;");
+    while(lc.next())
+    {
+      ParameterList params;
+      params.append("mode","edit");
+      params.append("locale_id", lc.value(0));
+      sysLocale lcdlg;
+      lcdlg.set(params);
+      lcdlg.sSave();
+    }
+  }
+// END code for updating locale settings
 
   if (omfgThis->_singleWindow.isEmpty())
   {
