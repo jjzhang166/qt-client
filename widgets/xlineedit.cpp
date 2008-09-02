@@ -112,7 +112,8 @@ void XLineEdit::sParse()
 
 double XLineEdit::toDouble(bool *pIsValid)
 {
-  return QLocale().toDouble(text(), pIsValid);
+  QString strippedText = text().remove(QLocale().groupSeparator());
+  return QLocale().toDouble(strippedText, pIsValid);
 }
 
 void XLineEdit::setDataWidgetMap(XDataWidgetMapper* m)

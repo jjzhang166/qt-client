@@ -272,7 +272,8 @@ void sysLocale::sSave()
                                   " " + convert(sampleLocale.timeFormat(QLocale::ShortFormat)));
   q.bindValue(":locale_intervalformat", convert(sampleLocale.timeFormat(QLocale::ShortFormat).remove("ap", Qt::CaseInsensitive)));
   q.bindValue(":locale_qtyformat",      QString(sampleLocale.decimalPoint()) +
-                                        QString(sampleLocale.negativeSign()));
+                                        QString(sampleLocale.negativeSign()) +
+                                        QString(sampleLocale.groupSeparator()));
   q.exec();
   if (q.lastError().type() != QSqlError::None)
   {
