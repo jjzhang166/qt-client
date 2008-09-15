@@ -71,8 +71,6 @@ public:
     standardJournal(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~standardJournal();
 
-    virtual void destroy();
-
 public slots:
     virtual enum SetResponse set( ParameterList & pParams );
     virtual void sSave();
@@ -82,6 +80,7 @@ public slots:
     virtual void sView();
     virtual void sDelete();
     virtual void sFillList();
+    virtual void sReject();
     virtual void populate();
 
 protected slots:

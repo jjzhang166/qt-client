@@ -77,6 +77,7 @@ standardJournal::standardJournal(QWidget* parent, const char* name, bool modal, 
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(this, SIGNAL(rejected()), this, SLOT(sReject()));
 
   _stdjrnlitem->addColumn(tr("Account"), 200,          Qt::AlignLeft  );
   _stdjrnlitem->addColumn(tr("Notes"),   -1,           Qt::AlignLeft  );
@@ -102,7 +103,7 @@ void standardJournal::languageChange()
   retranslateUi(this);
 }
 
-void standardJournal::destroy()
+void standardJournal::sReject()
 {
   if (_mode == cNew)
   {
