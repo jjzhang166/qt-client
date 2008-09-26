@@ -167,7 +167,7 @@ void accountSearch::sClear()
 void accountSearch::sFillList()
 {
   QString sql("SELECT * "
-              "FROM accnt JOIN company ON (accnt_company=company_number) ");
+              "FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number) ");
 
   QStringList types;
   QStringList where;
@@ -196,7 +196,7 @@ void accountSearch::sFillList()
     where << "((accnt_descrip ~* :descrip) OR (accnt_extref ~* :descrip))";
 
   if (! _showExternal)
-    where << "(NOT company_external)";
+    where << "(NOT COALESCE(company_external, false))";
 
   if (!where.isEmpty())
     sql += " WHERE " + where.join(" AND ");

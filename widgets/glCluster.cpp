@@ -218,8 +218,8 @@ void GLCluster::setId(int pId)
                    " WHERE (accnt_id=:accnt_id);" );
   else
     _query.prepare("SELECT *, formatGLAccount(accnt_id) AS f_accnt "
-                   "  FROM accnt JOIN company ON (accnt_company=company_number)"
-                   " WHERE (NOT company_external AND (accnt_id=:accnt_id));" );
+                   "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
+                   " WHERE (NOT COALESCE(company_external, false) AND (accnt_id=:accnt_id));" );
   _query.bindValue(":accnt_id", pId);
   _query.exec();
   if (_query.first())
