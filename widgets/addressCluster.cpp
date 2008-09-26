@@ -527,13 +527,15 @@ AddressList::AddressList(QWidget* pParent, const char* pName, bool, Qt::WFlags)
     _id = _parent->_id;
     setCaption(_parent->_titlePlural);
 
-    _listTab->addColumn(tr("Line 1"),      -1, Qt::AlignLeft );
-    _listTab->addColumn(tr("Line 2"),      75, Qt::AlignLeft );
-    _listTab->addColumn(tr("Line 3"),      75, Qt::AlignLeft );
-    _listTab->addColumn(tr("City"),        75, Qt::AlignLeft );
-    _listTab->addColumn(tr("State"),       50, Qt::AlignLeft );
-    _listTab->addColumn(tr("Country"),     50, Qt::AlignLeft );
-    _listTab->addColumn(tr("Postal Code"), 50, Qt::AlignLeft );
+    _listTab->setColumnCount(0);
+
+    _listTab->addColumn(tr("Line 1"),      -1, Qt::AlignLeft, true, "addr_line1");
+    _listTab->addColumn(tr("Line 2"),      75, Qt::AlignLeft, true, "addr_line2");
+    _listTab->addColumn(tr("Line 3"),      75, Qt::AlignLeft, true, "addr_line3");
+    _listTab->addColumn(tr("City"),        75, Qt::AlignLeft, true, "addr_city");
+    _listTab->addColumn(tr("State"),       50, Qt::AlignLeft, true, "addr_state");
+    _listTab->addColumn(tr("Country"),     50, Qt::AlignLeft, true, "addr_country");
+    _listTab->addColumn(tr("Postal Code"), 50, Qt::AlignLeft, true, "addr_postalcode");
 
     resize(700, size().height());
 
@@ -573,19 +575,7 @@ void AddressList::sFillList()
       }
     }
 
-    XTreeWidgetItem *last = NULL;
-    do {
-      last = new XTreeWidgetItem(_listTab, last,
-                               query.value("addr_id").toInt(), 0,
-                               query.value("addr_number"),
-                               query.value("addr_line1"),
-                               query.value("addr_line2"),
-                               query.value("addr_line3"),
-                               query.value("addr_city"),
-                               query.value("addr_state"),
-                               query.value("addr_country"),
-                               query.value("addr_postalcode"));
-    } while (query.next());
+    _listTab->populate(query);
 }
 
 /* do this differently than VirtualList::sSearch(QString&):
@@ -655,13 +645,13 @@ AddressSearch::AddressSearch(QWidget* pParent, Qt::WindowFlags pFlags)
     connect(_searchPostalCode, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
     connect(_searchInactive,   SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
-    _listTab->addColumn(tr("Line 1"),      -1, Qt::AlignLeft );
-    _listTab->addColumn(tr("Line 2"),      75, Qt::AlignLeft );
-    _listTab->addColumn(tr("Line 3"),      75, Qt::AlignLeft );
-    _listTab->addColumn(tr("City"),        75, Qt::AlignLeft );
-    _listTab->addColumn(tr("State"),       50, Qt::AlignLeft );
-    _listTab->addColumn(tr("Country"),     50, Qt::AlignLeft );
-    _listTab->addColumn(tr("Postal Code"), 50, Qt::AlignLeft );
+    _listTab->addColumn(tr("Line 1"),      -1, Qt::AlignLeft, true, "addr_line1");
+    _listTab->addColumn(tr("Line 2"),      75, Qt::AlignLeft, true, "addr_line2");
+    _listTab->addColumn(tr("Line 3"),      75, Qt::AlignLeft, true, "addr_line3");
+    _listTab->addColumn(tr("City"),        75, Qt::AlignLeft, true, "addr_city");
+    _listTab->addColumn(tr("State"),       50, Qt::AlignLeft, true, "addr_state");
+    _listTab->addColumn(tr("Country"),     50, Qt::AlignLeft, true, "addr_country");
+    _listTab->addColumn(tr("Postal Code"), 50, Qt::AlignLeft, true, "addr_postalcode");
 
     resize(700, size().height());
 
@@ -735,18 +725,7 @@ void AddressSearch::sFillList()
     MetaSQLQuery mql(sql);
     XSqlQuery query = mql.toQuery(params);
     query.exec();
-    XTreeWidgetItem *last = 0;
-    while (query.next()) {
-      last = new XTreeWidgetItem(_listTab, last,
-                               query.value("addr_id").toInt(), 0,
-                               query.value("addr_line1"),
-                               query.value("addr_line2"),
-                               query.value("addr_line3"),
-                               query.value("addr_city"),
-                               query.value("addr_state"),
-                               query.value("addr_country"),
-                               query.value("addr_postalcode"));
-    }
+    _listTab->populate(query);
     if (query.lastError().type() != QSqlError::None)
     {
       QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
@@ -757,4 +736,3 @@ void AddressSearch::sFillList()
     }
 
 }
-

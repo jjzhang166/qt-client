@@ -864,9 +864,11 @@ ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WFlags)
         setName(pName);
     setCaption(_parent->_titlePlural);
 
-    _listTab->addColumn(tr("First Name"),	80, Qt::AlignLeft  );
-    _listTab->addColumn(tr("Last Name"),	-1, Qt::AlignLeft  );
-    _listTab->addColumn(tr("CRM Account"),	100, Qt::AlignLeft  );
+    _listTab->setColumnCount(0);
+
+    _listTab->addColumn(tr("First Name"),   80, Qt::AlignLeft, true, "cntct_first_name");
+    _listTab->addColumn(tr("Last Name"),    -1, Qt::AlignLeft, true, "cntct_last_name");
+    _listTab->addColumn(tr("CRM Account"), 100, Qt::AlignLeft, true, "crmacct_name");
 
     resize(500, size().height());
 
@@ -909,15 +911,7 @@ void ContactList::sFillList()
     }
   }
 
-  XTreeWidgetItem *last = 0;
-  do {
-    last = new XTreeWidgetItem(_listTab, last,
-			     query.value("cntct_id").toInt(), 0,
-                             query.value("cntct_number"),
-			     query.value("cntct_first_name"),
-			     query.value("cntct_last_name"),
-			     query.value("crmacct_name"));
-  } while (query.next());
+  _listTab->populate(query);
 }
 
 /* do this differently than VirtualList::sSearch(QString&):
@@ -991,15 +985,15 @@ ContactSearch::ContactSearch(QWidget* pParent, Qt::WindowFlags pFlags)
     connect(_searchWebAddr,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
     connect(_searchInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
-    _listTab->addColumn(tr("First Name"),     80, Qt::AlignLeft);
-    _listTab->addColumn(tr("Last Name"),      -1, Qt::AlignLeft);
-    _listTab->addColumn(tr("CRM Account"),   100, Qt::AlignLeft);
-    _listTab->addColumn(tr("Title"),         100, Qt::AlignLeft);
-    _listTab->addColumn(tr("Phone"),	      75, Qt::AlignLeft);
-    _listTab->addColumn(tr("Alt. Phone"),     75, Qt::AlignLeft);
-    _listTab->addColumn(tr("Fax"),	      75, Qt::AlignLeft);
-    _listTab->addColumn(tr("Email Address"), 100, Qt::AlignLeft);
-    _listTab->addColumn(tr("Web Address"),   100, Qt::AlignLeft);
+    _listTab->addColumn(tr("First Name"),     80, Qt::AlignLeft, true, "cntct_first_name");
+    _listTab->addColumn(tr("Last Name"),      -1, Qt::AlignLeft, true, "cntct_last_name");
+    _listTab->addColumn(tr("CRM Account"),   100, Qt::AlignLeft, true, "crmacct_name");
+    _listTab->addColumn(tr("Title"),         100, Qt::AlignLeft, true, "cntct_honorific");
+    _listTab->addColumn(tr("Phone"),	      75, Qt::AlignLeft, true, "cntct_phone");
+    _listTab->addColumn(tr("Alt. Phone"),     75, Qt::AlignLeft, true, "cntct_phone2");
+    _listTab->addColumn(tr("Fax"),	      75, Qt::AlignLeft, true, "cntct_fax");
+    _listTab->addColumn(tr("Email Address"), 100, Qt::AlignLeft, true, "cntct_email");
+    _listTab->addColumn(tr("Web Address"),   100, Qt::AlignLeft, true, "cntct_webaddr");
 
     resize(800, size().height());
 
@@ -1113,21 +1107,5 @@ void ContactSearch::sFillList()
 //      }
 //    }
 
-    XTreeWidgetItem *last = 0;
-    while (query.next())
-    {
-      last = new XTreeWidgetItem(_listTab, last,
-			 query.value("cntct_id").toInt(), 0,
-			 query.value("cntct_first_name"),
-			 query.value("cntct_last_name"),
-			 query.value("crmacct_name"),
-			 query.value("cntct_title"),
-			 query.value("cntct_phone"),
-			 query.value("cntct_phone2"),
-			 query.value("cntct_fax"),
-			 query.value("cntct_email"),
-			 query.value("cntct_webaddr"));
-    }
+    _listTab->populate(query);
 }
-
-

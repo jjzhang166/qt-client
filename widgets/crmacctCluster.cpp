@@ -142,16 +142,16 @@ CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WFlags p
 
   _listTab->setColumnCount(0);
 
-  _listTab->addColumn(tr("Number"),      80, Qt::AlignCenter );
-  _listTab->addColumn(tr("Name"),        75, Qt::AlignLeft   );
-  _listTab->addColumn(tr("First"),      100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Last"),       100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Phone"),      100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Address"),    100, Qt::AlignLeft|Qt::AlignTop );
-  _listTab->addColumn(tr("City"),        75, Qt::AlignLeft   );
-  _listTab->addColumn(tr("State"),       50, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Country"),    100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Postal Code"), 75, Qt::AlignLeft   );
+  _listTab->addColumn(tr("Number"),      80, Qt::AlignCenter,true, "number");
+  _listTab->addColumn(tr("Name"),        75, Qt::AlignLeft,  true, "name"  );
+  _listTab->addColumn(tr("First"),      100, Qt::AlignLeft,  true, "cntct_first_name");
+  _listTab->addColumn(tr("Last"),       100, Qt::AlignLeft,  true, "cntct_last_name");
+  _listTab->addColumn(tr("Phone"),      100, Qt::AlignLeft,  true, "cntct_phone");
+  _listTab->addColumn(tr("Address"),    100, Qt::AlignLeft|Qt::AlignTop,true,"street");
+  _listTab->addColumn(tr("City"),        75, Qt::AlignLeft,  true, "addr_city");
+  _listTab->addColumn(tr("State"),       50, Qt::AlignLeft,  true, "addr_state");
+  _listTab->addColumn(tr("Country"),    100, Qt::AlignLeft,  true, "addr_country");
+  _listTab->addColumn(tr("Postal Code"), 75, Qt::AlignLeft,  true, "addr_postalcode");
 
   _showInactive = false;	// must be before inherits() checks
 
@@ -230,9 +230,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
   case CRMAcctLineEdit::Cust:
     setCaption(tr("Search For Customer"));
     _query =
-	"SELECT addr.*, "
+	"SELECT cust_id AS id, cust_number AS number, cust_name AS name,"
+        "       addr.*, "
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       cust_id AS id, cust_number AS number, cust_name AS name,"
 	"       cntct.* "
 	"    FROM custinfo LEFT OUTER JOIN"
 	"         cntct ON (cust_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -246,9 +246,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
   case CRMAcctLineEdit::Prospect:
     setCaption(tr("Search For Prospect"));
     _query =
-	"SELECT addr.*,"
+	"SELECT prospect_id AS id, prospect_number AS number, prospect_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       prospect_id AS id, prospect_number AS number, prospect_name AS name,"
 	"       cntct.* "
 	"    FROM prospect LEFT OUTER JOIN"
 	"         cntct ON (prospect_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -265,9 +265,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
     _listTab->hideColumn(3);
     _listTab->hideColumn(4);
     _query =
-	"SELECT addr.*,"
+	"SELECT taxauth_id AS id, taxauth_code AS number, taxauth_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       taxauth_id AS id, taxauth_code AS number, taxauth_name AS name,"
 	"       '' AS cntct_first_name, '' AS cntct_last_name, "
 	"       '' AS cntct_phone "
 	"    FROM taxauth LEFT OUTER JOIN"
@@ -281,12 +281,12 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
     break;
 
   case CRMAcctLineEdit::Vend:
-    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft);
+    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
     setCaption(tr("Search For Vendor"));
     _query =
-	"SELECT addr.*,"
+	"SELECT vend_id AS id, vend_number AS number, vend_name AS name, vendtype_code AS type,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       vend_id AS id, vend_number AS number, vend_name AS name, vendtype_code AS type,"
 	"       cntct.* "
 	"    FROM vendtype JOIN vendinfo"
         "           ON (vend_vendtype_id=vendtype_id) LEFT OUTER JOIN"
@@ -301,9 +301,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
   case CRMAcctLineEdit::CustAndProspect:
     setCaption(tr("Search For Customer or Prospect"));
     _query =
-	"SELECT addr.*, "
+	"SELECT cust_id AS id, cust_number AS number, cust_name AS name,"
+        "       addr.*, "
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       cust_id AS id, cust_number AS number, cust_name AS name,"
 	"       cntct.* "
 	"    FROM custinfo LEFT OUTER JOIN"
 	"         cntct ON (cust_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -312,9 +312,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
 	"WHERE cust_active "
 	"<? endif ?>"
 	"UNION "
-	"SELECT addr.*,"
+	"SELECT prospect_id AS id, prospect_number AS number, prospect_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       prospect_id AS id, prospect_number AS number, prospect_name AS name,"
 	"       cntct.* "
 	"    FROM prospect LEFT OUTER JOIN"
 	"         cntct ON (prospect_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -331,9 +331,9 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
   default:
     setCaption(tr("Search For CRM Account"));
     _query =
-	"SELECT addr.*,"
+	"SELECT crmacct_id AS id, crmacct_number AS number, crmacct_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       crmacct_id AS id, crmacct_number AS number, crmacct_name AS name,"
 	"       cntct.* "
 	"    FROM crmacct LEFT OUTER JOIN"
 	"         cntct ON (crmacct_cntct_id_1=cntct_id) LEFT OUTER JOIN"
@@ -357,27 +357,7 @@ void CRMAcctList::sFillList()
 
   XSqlQuery fillq = mql.toQuery(params);
 
-  XTreeWidgetItem* last = 0;
-  _listTab->clear();
-
-  while (fillq.next())
-  {
-    last = new XTreeWidgetItem(_listTab, last,
-			     fillq.value("id").toInt(),
-			     fillq.value("id").toInt(),
-			     fillq.value("number"),
-			     fillq.value("name"),
-			     fillq.value("cntct_first_name"),
-			     fillq.value("cntct_last_name"),
-			     fillq.value("cntct_phone"),
-			     fillq.value("street"),
-			     fillq.value("addr_city"),
-			     fillq.value("addr_state"),
-			     fillq.value("addr_country"),
-			     fillq.value("addr_postalcode"));
-    if(_subtype == CRMAcctLineEdit::Vend)
-      last->setText(10, fillq.value("type"));
-  }
+  _listTab->populate(fillq);
   if (fillq.lastError().type() != QSqlError::None)
   {
     QMessageBox::critical(this, tr("A System Error Occurred at %1::%2")
@@ -458,16 +438,16 @@ CRMAcctSearch::CRMAcctSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
   selectorsLyt->addWidget(_searchCountry,	5, 2);
   selectorsLyt->addWidget(_showInactive,	5, 3);
 
-  _listTab->addColumn(tr("Number"),      80, Qt::AlignCenter );
-  _listTab->addColumn(tr("Name"),        75, Qt::AlignLeft   );
-  _listTab->addColumn(tr("First"),      100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Last"),       100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Phone"),      100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Address"),    100, Qt::AlignLeft|Qt::AlignTop );
-  _listTab->addColumn(tr("City"),        75, Qt::AlignLeft   );
-  _listTab->addColumn(tr("State"),       50, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Country"),    100, Qt::AlignLeft   );
-  _listTab->addColumn(tr("Postal Code"), 75, Qt::AlignLeft   );
+  _listTab->addColumn(tr("Number"),      80, Qt::AlignCenter,true, "number");
+  _listTab->addColumn(tr("Name"),        75, Qt::AlignLeft,  true, "name"  );
+  _listTab->addColumn(tr("First"),      100, Qt::AlignLeft,  true, "cntct_first_name");
+  _listTab->addColumn(tr("Last"),       100, Qt::AlignLeft,  true, "cntct_last_name");
+  _listTab->addColumn(tr("Phone"),      100, Qt::AlignLeft,  true, "cntct_phone");
+  _listTab->addColumn(tr("Address"),    100, Qt::AlignLeft|Qt::AlignTop,true,"street");
+  _listTab->addColumn(tr("City"),        75, Qt::AlignLeft,  true, "addr_city");
+  _listTab->addColumn(tr("State"),       50, Qt::AlignLeft,  true, "addr_state");
+  _listTab->addColumn(tr("Country"),    100, Qt::AlignLeft,  true, "addr_country");
+  _listTab->addColumn(tr("Postal Code"), 75, Qt::AlignLeft,  true, "addr_postalcode");
 
   setTabOrder(_search,		_searchNumber);
   setTabOrder(_searchNumber,	_searchName);
@@ -617,7 +597,7 @@ void CRMAcctSearch::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
     _searchNumber->setText(tr("Vendor Number"));
     _searchName->setText(tr("Vendor Name"));
     _addressLit->setText(tr("Main Address:"));
-    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft);
+    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
     break;
 
   case CRMAcctLineEdit::CustAndProspect:
@@ -647,16 +627,15 @@ void CRMAcctSearch::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
 
 void CRMAcctSearch::sFillList()
 {
-  _listTab->clear();
   if (_search->text().stripWhiteSpace().length() == 0)
     return;
 
   QString sql;
 
   sql = "<? if exists(\"custAndProspect\") ?>"
-	"SELECT addr.*,"
+	"SELECT cust_id AS id, cust_number AS number, cust_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       cust_id AS id, cust_number AS number, cust_name AS name,"
 	"       cntct.* "
 	"    FROM custinfo LEFT OUTER JOIN"
 	"         cntct ON (cust_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -696,9 +675,9 @@ void CRMAcctSearch::sFillList()
 	"    <? endif ?>"
 	") "
 	"UNION "
-	"SELECT addr.*,"
+	"SELECT prospect_id AS id, prospect_number AS number, prospect_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       prospect_id AS id, prospect_number AS number, prospect_name AS name,"
 	"       cntct.* "
 	"    FROM prospect LEFT OUTER JOIN"
 	"         cntct ON (prospect_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -737,9 +716,9 @@ void CRMAcctSearch::sFillList()
 	"       OR (UPPER(addr_country) ~ <? value(\"searchString\") ?>)"
 	"    <? endif ?>"
 	"<? elseif exists(\"crmacct\") ?>"
-	"SELECT addr.*,"
+	"SELECT crmacct_id AS id, crmacct_number AS number, crmacct_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       crmacct_id AS id, crmacct_number AS number, crmacct_name AS name,"
 	"       cntct.* "
 	"    FROM crmacct LEFT OUTER JOIN"
 	"         cntct ON (crmacct_cntct_id_1=cntct_id) LEFT OUTER JOIN"
@@ -754,9 +733,9 @@ void CRMAcctSearch::sFillList()
 	"       OR (UPPER(crmacct_name) ~ <? value(\"searchString\") ?>)"
 	"    <? endif ?>"
 	"<? elseif exists(\"cust\") ?>"
-	"SELECT addr.*,"
+	"SELECT cust_id AS id, cust_number AS number, cust_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       cust_id AS id, cust_number AS number, cust_name AS name,"
 	"       cntct.* "
 	"    FROM custinfo LEFT OUTER JOIN"
 	"         cntct ON (cust_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -771,9 +750,9 @@ void CRMAcctSearch::sFillList()
 	"       OR (UPPER(cust_name) ~ <? value(\"searchString\") ?>)"
 	"    <? endif ?>"
 	"<? elseif exists(\"prospect\") ?>"
-	"SELECT addr.*,"
+	"SELECT prospect_id AS id, prospect_number AS number, prospect_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       prospect_id AS id, prospect_number AS number, prospect_name AS name,"
 	"       cntct.* "
 	"    FROM prospect LEFT OUTER JOIN"
 	"         cntct ON (prospect_cntct_id=cntct_id) LEFT OUTER JOIN"
@@ -788,9 +767,9 @@ void CRMAcctSearch::sFillList()
 	"       OR (UPPER(prospect_name) ~ <? value(\"searchString\") ?>)"
 	"    <? endif ?>"
 	"<? elseif exists(\"taxauth\") ?>"
-	"SELECT addr.*,"
+	"SELECT taxauth_id AS id, taxauth_code AS number, taxauth_name AS name,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       taxauth_id AS id, taxauth_code AS number, taxauth_name AS name,"
 	"       '' AS cntct_first_name, '' AS cntct_last_name, "
 	"       '' AS cntct_phone "
 	"    FROM taxauth LEFT OUTER JOIN"
@@ -804,9 +783,9 @@ void CRMAcctSearch::sFillList()
 	"       OR (UPPER(taxauth_name) ~ <? value(\"searchString\") ?>)"
 	"    <? endif ?>"
 	"<? elseif exists(\"vend\") ?>"
-	"SELECT addr.*,"
+	"SELECT vend_id AS id, vend_number AS number, vend_name AS name, vendtype_code AS type,"
+        "       addr.*,"
 	"       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-	"       vend_id AS id, vend_number AS number, vend_name AS name, vendtype_code AS type,"
 	"       cntct.* "
 	"    FROM vendtype, vendinfo LEFT OUTER JOIN"
 	"         cntct ON (vend_cntct1_id=cntct_id) LEFT OUTER JOIN"
@@ -925,26 +904,8 @@ void CRMAcctSearch::sFillList()
     params.append("combo_id", _comboCombo->id());
 
   XSqlQuery fillq = mql.toQuery(params);
-  XTreeWidgetItem *last = 0;
 
-  while (fillq.next())
-  {
-    last = new XTreeWidgetItem(_listTab, last,
-			     fillq.value("id").toInt(),
-			     fillq.value("id").toInt(),
-			     fillq.value("number"),
-			     fillq.value("name"),
-			     fillq.value("cntct_first_name"),
-			     fillq.value("cntct_last_name"),
-			     fillq.value("cntct_phone"),
-			     fillq.value("street"),
-			     fillq.value("addr_city"),
-			     fillq.value("addr_state"),
-			     fillq.value("addr_country"),
-			     fillq.value("addr_postalcode"));
-    if(_subtype == CRMAcctLineEdit::Vend)
-      last->setText(10, fillq.value("type"));
-  }
+  _listTab->populate(fillq);
   if (fillq.lastError().type() != QSqlError::None)
   {
     QMessageBox::critical(this, tr("A System Error Occurred at %1::%2")
