@@ -1298,9 +1298,9 @@ void returnAuthorization::sTaxDetail()
   XSqlQuery taxq;
   taxq.prepare("UPDATE rahead SET rahead_taxauth_id=:taxauth,"
                "  rahead_freight=:freight,"
-               "  rahead_freighttax_ratea=:freighta,"
-               "  rahead_freighttax_rateb=:freightb,"
-               "  rahead_freighttax_ratec=:freightc,"
+//               "  rahead_freighttax_ratea=:freighta,"
+//               "  rahead_freighttax_rateb=:freightb,"
+//               "  rahead_freighttax_ratec=:freightc,"
                "  rahead_authdate=:docdate "
                "WHERE (rahead_id=:rahead_id);");
   if (_taxauth->isValid())
