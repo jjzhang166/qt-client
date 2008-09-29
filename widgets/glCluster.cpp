@@ -287,8 +287,8 @@ void GLCluster::sParse()
                   " WHERE (formatGLAccount(accnt_id)=:searchString);");
     else
       qgl.prepare("SELECT DISTINCT accnt_id"
-                  "  FROM accnt JOIN company ON (accnt_company=company_number)"
-                  " WHERE (NOT company_external"
+                  "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
+                  " WHERE (NOT COALESCE(company_external, false)"
                   "   AND  (formatGLAccount(accnt_id)=:searchString));");
     qgl.bindValue(":searchString", _main->text().trimmed());
     qgl.exec();
@@ -331,8 +331,8 @@ void GLCluster::setNumber(QString number)
                 " WHERE (formatGLAccount(accnt_id)=:number);");
   else
     qgl.prepare("SELECT DISTINCT accnt_id"
-                "  FROM accnt JOIN company ON (accnt_company=company_number)"
-                " WHERE (NOT company_external"
+                "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
+                " WHERE (NOT COALESCE(company_external, false)"
                 "   AND  (formatGLAccount(accnt_id)=:number));");
   qgl.bindValue(":number", number);
   qgl.exec();
