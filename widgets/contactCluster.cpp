@@ -926,8 +926,10 @@ void ContactList::sSearch(const QString& pTarget)
   {
     target = _listTab->topLevelItem(i);
     if (target == NULL ||
-	target->text(0).startsWith(pTarget, Qt::CaseInsensitive) ||
-	target->text(1).startsWith(pTarget, Qt::CaseInsensitive))
+        target->text(0).startsWith(pTarget.upper(), Qt::CaseInsensitive) ||
+        target->text(1).startsWith(pTarget.upper(), Qt::CaseInsensitive) ||
+        target->text(2).startsWith(pTarget.upper(), Qt::CaseInsensitive) ||
+        target->text(3).startsWith(pTarget.upper(), Qt::CaseInsensitive))
       break;
   }
 

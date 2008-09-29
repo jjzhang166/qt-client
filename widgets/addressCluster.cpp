@@ -592,7 +592,8 @@ void AddressList::sSearch(const QString& pTarget)
     if (target == NULL ||
         (target->text(0) + " " + target->text(1) + " " +
          target->text(2) + " " + target->text(3) + " " +
-         target->text(4) + " " + target->text(5)).contains(pTarget.upper(),
+         target->text(4) + " " + target->text(5) + " " +
+         target->text(6) + " " + target->text(7)).contains(pTarget.upper(),
                                                            Qt::CaseInsensitive))
       break;
   }

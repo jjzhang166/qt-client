@@ -714,7 +714,7 @@ void itemAvailabilityWorkbench::sFillListCosted()
                      "ORDER BY bomwork_parent_seqnumber, bomwork_seqnumber, item_number;" );
 
     q = mql.toQuery(params);
-    _bomitem->populate(q);
+    _bomitem->populate(q, true);
     if (q.lastError().type() != QSqlError::None)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);

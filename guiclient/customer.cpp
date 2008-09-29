@@ -680,26 +680,6 @@ bool customer::sSave(bool partial)
    
 void customer::sSave()
 {
-  if (!sSave(false))
-    return;
-  
-  //Check to see if this is a prospect with quotes
-  bool convertQuotes = false;
-  
-  q.prepare("SELECT * FROM prospect, quhead "
-            " WHERE ((prospect_id=quhead_cust_id) "
-            " AND (prospect_id=:prospect_id)); ");
-  q.bindValue(":prospect_id", _custid);
-  q.exec();
-  if (q.first())
-    if (_privileges->check("ConvertQuotes") &&
-        QMessageBox::question(this, tr("Convert"),
-                              tr("<p>Do you want to convert all of the Quotes "
-                                 "for the Prospect to Sales Orders?"),
-                              QMessageBox::Yes | QMessageBox::Default,
-                              QMessageBox::No) == QMessageBox::Yes)
-      convertQuotes = true;
-
   if (! q.exec("BEGIN"))
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
@@ -728,6 +708,28 @@ void customer::sSave()
       return;
     }
   }
+  
+  if (!sSave(false))
+    return;
+  
+  //Check to see if this is a prospect with quotes
+  bool convertQuotes = false;
+  
+  q.prepare("SELECT * FROM prospect, quhead "
+            " WHERE ((prospect_id=quhead_cust_id) "
+            " AND (prospect_id=:prospect_id)); ");
+  q.bindValue(":prospect_id", _custid);
+  q.exec();
+  if (q.first())
+    if (_privileges->check("ConvertQuotes") &&
+        QMessageBox::question(this, tr("Convert"),
+                              tr("<p>Do you want to convert all of the Quotes "
+                                 "for the Prospect to Sales Orders?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No) == QMessageBox::Yes)
+      convertQuotes = true;
+
+
 
   //Save characteristics
   if (_widgetStack->currentIndex() == 1)

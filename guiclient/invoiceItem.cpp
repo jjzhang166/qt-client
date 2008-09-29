@@ -134,7 +134,27 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
 
   param = pParams.value("invchead_id", &valid);
   if (valid)
+  {
     _invcheadid = param.toInt();
+
+    q.prepare("SELECT taxauth_id, "
+              "       COALESCE(taxauth_curr_id, invchead_curr_id) AS curr_id "
+              "FROM invchead, taxauth "
+              "WHERE ((invchead_taxauth_id=taxauth_id)"
+              "  AND  (invchead_id=:invchead_id));");
+    q.bindValue(":invchead_id", _invcheadid);
+    q.exec();
+    if (q.first())
+    {
+      _taxauthid = q.value("taxauth_id").toInt();
+      _tax->setId(q.value("curr_id").toInt());
+    }
+    else if (q.lastError().type() != QSqlError::None)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return UndefinedError;
+    }
+  }
 
   param = pParams.value("invoiceNumber", &valid);
   if (valid)
@@ -212,24 +232,6 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
 
       _close->setFocus();
     }
-  }
-
-  q.prepare("SELECT taxauth_id, "
-	    "       COALESCE(taxauth_curr_id, invchead_curr_id) AS curr_id "
-	    "FROM invchead, taxauth "
-	    "WHERE ((invchead_taxauth_id=taxauth_id)"
-	    "  AND  (invchead_id=:invchead_id));");
-  q.bindValue(":invchead_id", _invcheadid);
-  q.exec();
-  if (q.first())
-  {
-    _taxauthid = q.value("taxauth_id").toInt();
-    _tax->setId(q.value("curr_id").toInt());
-  }
-  else if (q.lastError().type() != QSqlError::None)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return UndefinedError;
   }
 
   return NoError;
@@ -414,8 +416,13 @@ void invoiceItem::populate()
   invcitem.prepare( "SELECT invcitem.*,"
                     "       CASE WHEN (item_id IS NULL) THEN :na"
                     "            ELSE item_listprice"
-                    "       END AS f_listprice "
-                    "FROM invcitem LEFT OUTER JOIN item ON (invcitem_item_id=item_id) " 
+                    "       END AS f_listprice,"
+                    "       taxauth_id,"
+                    "       COALESCE(taxauth_curr_id, invchead_curr_id) AS taxcurrid "
+                    "FROM invcitem JOIN "
+                    "     invchead ON (invcitem_invchead_id=invchead_id) LEFT OUTER JOIN"
+                    "     item ON (invcitem_item_id=item_id) LEFT OUTER JOIN " 
+                    "     taxauth ON (invchead_taxauth_id=taxauth_id) "
                     "WHERE (invcitem_id=:invcitem_id);" );
   invcitem.bindValue(":invcitem_id", _invcitemid);
   invcitem.exec();
@@ -443,6 +450,13 @@ void invoiceItem::populate()
     _pricingUOM->setId(invcitem.value("invcitem_price_uom_id").toInt());
     _priceinvuomratio = invcitem.value("invcitem_price_invuomratio").toDouble();
 
+    // do tax stuff before invcitem_price and _tax_* to avoid signal cascade problems
+    if (! invcitem.value("taxauth_id").isNull())
+      _taxauthid = invcitem.value("taxauth_id").toInt();
+    _tax->setId(invcitem.value("taxcurr_id").toInt());
+    _taxcode->setId(invcitem.value("invcitem_tax_id").toInt());
+    _taxtype->setId(invcitem.value("invcitem_taxtype_id").toInt());
+
     _ordered->setDouble(invcitem.value("invcitem_ordered").toDouble());
     _billed->setDouble(invcitem.value("invcitem_billed").toDouble());
     _price->setLocalValue(invcitem.value("invcitem_price").toDouble());
@@ -451,10 +465,6 @@ void invoiceItem::populate()
 
     _custPn->setText(invcitem.value("invcitem_custpn").toString());
     _notes->setText(invcitem.value("invcitem_notes").toString());
-
-    // do taxcode/taxtype before invcitem_tax_* to avoid signal cascade problems
-    _taxcode->setId(invcitem.value("invcitem_tax_id").toInt());
-    _taxtype->setId(invcitem.value("invcitem_taxtype_id").toInt());
 
     _cachedPctA  = invcitem.value("invcitem_tax_pcta").toDouble();
     _cachedPctB  = invcitem.value("invcitem_tax_pctb").toDouble();
