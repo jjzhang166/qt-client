@@ -126,6 +126,7 @@ itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char
   connect(_invhistQuery,SIGNAL(clicked()), this, SLOT(sFillListInvhist()));
   connect(_item,	SIGNAL(newId(int)), this, SLOT(sFillListCosted()));
   connect(_item,	SIGNAL(newId(int)), this, SLOT(sFillListWhereUsed()));
+  connect(_item,	SIGNAL(newId(int)), this, SLOT(sClearQueries()));
   connect(_itemloc,	SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenuLocation(QMenu*,QTreeWidgetItem*)));
   connect(_itemlocQuery,SIGNAL(clicked()), this, SLOT(sFillListItemloc()));
   connect(_locPrint,	SIGNAL(clicked()), this, SLOT(sPrintLocation()));
@@ -135,11 +136,6 @@ itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char
   connect(_warehouse,	SIGNAL(newID(int)), this, SLOT(sFillListRunning()));
   connect(_wherePrint,	SIGNAL(clicked()), this, SLOT(sPrintWhereUsed()));
   connect(_whereused,	SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenuWhereUsed(QMenu*,QTreeWidgetItem*)));
-
-  //if (_metrics->boolean("AllowInactiveBomItems"))
-  //  _item->setType(ItemLineEdit::cGeneralComponents);
-  //else
-  //  _item->setType(ItemLineEdit::cGeneralComponents | ItemLineEdit::cActive);
   
   // Running Availability
   _availability->addColumn(tr("Order Type"),    _itemColumn, Qt::AlignLeft,  true, "ordertype");
@@ -154,45 +150,45 @@ itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillListRunning()));
   
   // Inventory Availability
-  _invAvailability->addColumn(tr("Site"),         -1,         Qt::AlignCenter );
-  _invAvailability->addColumn(tr("LT"),           _whsColumn, Qt::AlignCenter );
-  _invAvailability->addColumn(tr("QOH"),          _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("Allocated"),    _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("Unallocated"),  _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("On Order"),     _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("Reorder Lvl."), _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("OUT Level"),    _qtyColumn, Qt::AlignRight  );
-  _invAvailability->addColumn(tr("Available"),    _qtyColumn, Qt::AlignRight  );
+  _invAvailability->addColumn(tr("Site"),         -1,         Qt::AlignCenter, true, "warehous_code" );
+  _invAvailability->addColumn(tr("LT"),           _whsColumn, Qt::AlignCenter, true, "itemsite_leadtime" );
+  _invAvailability->addColumn(tr("QOH"),          _qtyColumn, Qt::AlignRight , true, "qoh" );
+  _invAvailability->addColumn(tr("Allocated"),    _qtyColumn, Qt::AlignRight , true, "allocated" );
+  _invAvailability->addColumn(tr("Unallocated"),  _qtyColumn, Qt::AlignRight , true, "unallocated" );
+  _invAvailability->addColumn(tr("On Order"),     _qtyColumn, Qt::AlignRight , true, "ordered" );
+  _invAvailability->addColumn(tr("Reorder Lvl."), _qtyColumn, Qt::AlignRight , true, "reorderlevel" );
+  _invAvailability->addColumn(tr("OUT Level"),    _qtyColumn, Qt::AlignRight , true, "outlevel" );
+  _invAvailability->addColumn(tr("Available"),    _qtyColumn, Qt::AlignRight , true, "available" );
 
   connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillListAvail()));
                                                                      
   // Costed BOM
   _bomitem->setRootIsDecorated(TRUE);
-  _bomitem->addColumn(tr("Seq #"),                80, Qt::AlignCenter,true, "bomwork_seqnumber");
-  _bomitem->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft,  true, "item_number");
-  _bomitem->addColumn(tr("Description"),          -1, Qt::AlignLeft,  true, "itemdescription");
-  _bomitem->addColumn(tr("UOM"),          _uomColumn, Qt::AlignCenter,true, "uom_name");
-  _bomitem->addColumn(tr("Ext. Qty. Per"),_qtyColumn, Qt::AlignRight, true, "bomwork_qtyper");
-  _bomitem->addColumn(tr("Scrap %"),    _prcntColumn, Qt::AlignRight, true, "scrap");
-  _bomitem->addColumn(tr("Effective"),   _dateColumn, Qt::AlignCenter,true, "bomwork_effective");
-  _bomitem->addColumn(tr("Expires"),     _dateColumn, Qt::AlignCenter,true, "bomwork_expires");
+  _bomitem->addColumn(tr("Seq #"),       _itemColumn, Qt::AlignLeft,  true, "bomdata_bomwork_seqnumber");
+  _bomitem->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft,  true, "bomdata_item_number");
+  _bomitem->addColumn(tr("Description"),          -1, Qt::AlignLeft,  true, "bomdata_item_descrip");
+  _bomitem->addColumn(tr("UOM"),          _uomColumn, Qt::AlignCenter,true, "bomdata_uom_name");
+  _bomitem->addColumn(tr("Ext. Qty. Per"),_qtyColumn, Qt::AlignRight, true, "bomdata_bomwork_qtyper");
+  _bomitem->addColumn(tr("Scrap %"),    _prcntColumn, Qt::AlignRight, true, "bomdata_scrap");
+  _bomitem->addColumn(tr("Effective"),   _dateColumn, Qt::AlignCenter,true, "bomdata_effective");
+  _bomitem->addColumn(tr("Expires"),     _dateColumn, Qt::AlignCenter,true, "bomdata_expires");
   _bomitem->addColumn(tr("Unit Cost"),   _costColumn, Qt::AlignRight, true, "unitcost");
-  _bomitem->addColumn(tr("Ext'd Cost"), _priceColumn, Qt::AlignRight, true, "extendedcost");
+  _bomitem->addColumn(tr("Ext Cost"), _priceColumn, Qt::AlignRight, true, "extendedcost");
   _bomitem->setIndentation(10);
   
   // Invhist
   _invhist->setRootIsDecorated(TRUE);
-  _invhist->addColumn(tr("Time"),          (_dateColumn + 30),   Qt::AlignLeft,   true,  "invhist_transdate"   );
-  _invhist->addColumn(tr("User"),          _orderColumn,         Qt::AlignCenter );
-  _invhist->addColumn(tr("Type"),          _transColumn,         Qt::AlignCenter );
-  _invhist->addColumn(tr("Site"),          _whsColumn,           Qt::AlignCenter );
-  _invhist->addColumn(tr("Order #/Location-Lot/Serial #"), -1,   Qt::AlignLeft   );
-  _invhist->addColumn(tr("UOM"),           _uomColumn,           Qt::AlignCenter );
-  _invhist->addColumn(tr("Trans-Qty"),     _qtyColumn,           Qt::AlignRight  );
-  _invhist->addColumn(tr("From Area"),     _orderColumn,         Qt::AlignLeft   );
-  _invhist->addColumn(tr("QOH Before"),    _qtyColumn,           Qt::AlignRight  );
-  _invhist->addColumn(tr("To Area"),       _orderColumn,         Qt::AlignLeft   );
-  _invhist->addColumn(tr("QOH After"),     _qtyColumn,           Qt::AlignRight  );
+  _invhist->addColumn(tr("Time"),          (_dateColumn + 30),   Qt::AlignLeft,   true,  "f_invhist_transdate"   );
+  _invhist->addColumn(tr("User"),          _orderColumn,         Qt::AlignCenter, true,  "invhist_user" );
+  _invhist->addColumn(tr("Type"),          _transColumn,         Qt::AlignCenter, true,  "f_invhist_transtype" );
+  _invhist->addColumn(tr("Site"),          _whsColumn,           Qt::AlignCenter, true,  "warehous_code" );
+  _invhist->addColumn(tr("Order #/Location-Lot/Serial #"), -1,   Qt::AlignLeft,   true,  "ordernumber"   );
+  _invhist->addColumn(tr("UOM"),           _uomColumn,           Qt::AlignCenter, true,  "invhist_invuom" );
+  _invhist->addColumn(tr("Trans-Qty"),     _qtyColumn,           Qt::AlignRight,  true,  "invhist_invqty"  );
+  _invhist->addColumn(tr("From Area"),     _orderColumn,         Qt::AlignLeft,   true,  "locfrom"   );
+  _invhist->addColumn(tr("QOH Before"),    _qtyColumn,           Qt::AlignRight,  true,  "invhist_qoh_before"  );
+  _invhist->addColumn(tr("To Area"),       _orderColumn,         Qt::AlignLeft,   true,  "locto"   );
+  _invhist->addColumn(tr("QOH After"),     _qtyColumn,           Qt::AlignRight,  true,  "invhist_qoh_after"  );
 
   _transType->append(cTransAll,       tr("All Transactions")       );
   _transType->append(cTransReceipts,  tr("Receipts")               );
@@ -463,20 +459,17 @@ void itemAvailabilityWorkbench::sFillListInvhist()
 
   if (_item->isValid())
   {
-    QString sql( "SELECT invhist_id,"
-                 "       invhist_transdate, formatDateTime(invhist_transdate) AS transdate,"
-                 "       invhist_user, invhist_transtype, whs1.warehous_code AS warehous_code,"
-                 "       formatQty(invhist_invqty) AS transqty,"
+    QString sql( "SELECT invhist_id, 0 AS xtindentrole, "
+                 "       invhist_transdate, invhist_transdate AS f_invhist_transdate,"
+                 "       invhist_user, invhist_transtype, invhist_transtype AS f_invhist_transtype, whs1.warehous_code AS warehous_code,"
+                 "       invhist_invqty,"
                  "       invhist_invuom,"
                  "       CASE WHEN (invhist_ordtype NOT LIKE '') THEN (invhist_ordtype || '-' || invhist_ordnumber)"
                  "            ELSE invhist_ordnumber"
                  "       END AS ordernumber,"
-                 "       formatQty(invhist_qoh_before) AS qohbefore,"
-                 "       formatQty(invhist_qoh_after) AS qohafter,"
-                 "       invhist_posted,"
+                 "       invhist_qoh_before,"
+                 "       invhist_qoh_after,"
                  "       0 AS invdetail_id, '' AS locationname,"
-                 "       '' AS detailqty,"
-                 "       '' AS locationqtybefore, '' AS locationqtyafter,"
                  "       CASE WHEN (invhist_transtype='TW') THEN whs1.warehous_code"
                  "            WHEN (invhist_transtype='IB') THEN whs1.warehous_code"
                  "            WHEN (invhist_transtype='IM') THEN whs1.warehous_code"
@@ -506,10 +499,13 @@ void itemAvailabilityWorkbench::sFillListInvhist()
                  "            WHEN (invhist_transtype='SI') THEN 'SCRAP'"
                  "            WHEN (invhist_transtype='SV') THEN 'SHIP'"
                  "            ELSE ''"
-                 "       END AS locto "
+                 "       END AS locto, "
+                 "       'qty' AS invhist_invqty_xtnumericrole, "
+                 "       'qty' AS invhist_qoh_before_xtnumericrole, "
+                 "       'qty' AS invhist_qoh_after_xtnumericrole, "
+                 "        CASE WHEN (NOT invhist_posted) THEN 'warning' END AS qtforegroundrole "
                  "FROM itemsite, item, warehous AS whs1, invhist LEFT OUTER JOIN warehous AS whs2 ON (invhist_xfer_warehous_id=whs2.warehous_id) "
-                 "WHERE ( (NOT invhist_hasdetail)"
-                 " AND (invhist_itemsite_id=itemsite_id)"
+                 "WHERE ( (invhist_itemsite_id=itemsite_id)"
                  " AND (itemsite_item_id=item_id)"
                  " AND (itemsite_warehous_id=whs1.warehous_id)"
                  " AND (itemsite_item_id=:item_id)"
@@ -520,58 +516,29 @@ void itemAvailabilityWorkbench::sFillListInvhist()
       sql += " AND (itemsite_warehous_id=:warehous_id)";
 
     sql += " ) "
-           "UNION SELECT invhist_id,"
-           "             invhist_transdate, formatDateTime(invhist_transdate) AS transdate,"
-           "             invhist_user, invhist_transtype, whs1.warehous_code AS warehous_code,"
-           "             formatQty(invhist_invqty) AS transqty,"
-           "             invhist_invuom,"
+           "UNION SELECT invhist_id, 1 AS xtindentrole,"
+           "             invhist_transdate, NULL as f_invhist_transdate,"
+           "             '' AS invhist_user, invhist_transtype, '' AS f_invhist_transtype, '' AS warehous_code,"
+           "             invdetail_qty AS invhist_invqty,"
+           "             '' AS invhist_invuom,"
            "             CASE WHEN (invhist_ordtype NOT LIKE '') THEN (invhist_ordtype || '-' || invhist_ordnumber)"
            "                  ELSE invhist_ordnumber"
            "             END AS ordernumber,"
-           "             formatQty(invhist_qoh_before) AS qohbefore,"
-           "             formatQty(invhist_qoh_after) AS qohafter,"
-           "             invhist_posted,"
+           "             invdetail_qty_before AS invhist_qoh_before,"
+           "             invdetail_qty_after AS invhist_qoh_after,"
            "             invdetail_id,"
            "             CASE WHEN (invdetail_location_id=-1) THEN formatlotserialnumber(invdetail_ls_id)"
            "                  WHEN (invdetail_ls_id IS NULL) THEN formatLocationName(invdetail_location_id)"
            "                  ELSE (formatLocationName(invdetail_location_id) || '-' || formatlotserialnumber(invdetail_ls_id))"
            "             END AS locationname,"
-           "             formatQty(invdetail_qty) AS detailqty,"
-           "             formatQty(invdetail_qty_before) AS locationqtybefore,"
-           "             formatQty(invdetail_qty_after) AS locationqtyafter,"
-           "             CASE WHEN (invhist_transtype='TW') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='IB') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='IM') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='IT') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RB') THEN 'WIP'"
-           "                  WHEN (invhist_transtype='RM') THEN 'WIP'"
-           "                  WHEN (invhist_transtype='RP') THEN 'PURCH'"
-           "                  WHEN (invhist_transtype='RS') THEN 'SHIP'"
-           "                  WHEN (invhist_transtype='SH') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='SI') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='SV') THEN whs1.warehous_code"
-           "                  ELSE ''"
-           "             END AS locfrom,"
-           "             CASE WHEN (invhist_transtype='TW') THEN whs2.warehous_code"
-           "                  WHEN (invhist_transtype='AD') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='CC') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='IB') THEN 'WIP'"
-           "                  WHEN (invhist_transtype='IM') THEN 'WIP'"
-           "                  WHEN (invhist_transtype='NN') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RB') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RM') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RP') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RS') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RT') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='RX') THEN whs1.warehous_code"
-           "                  WHEN (invhist_transtype='SH') THEN 'SHIP'"
-           "                  WHEN (invhist_transtype='SI') THEN 'SCRAP'"
-           "                  WHEN (invhist_transtype='SV') THEN 'SHIP'"
-           "                  ELSE ''"
-           "             END AS locto "
+           "             '' AS locfrom,"
+           "             '' AS locto, "
+           "            'qty' AS invhist_invqty_xtnumericrole, "
+           "            'qty' AS invhist_qoh_before_xtnumericrole, "
+           "            'qty' AS invhist_qoh_after_xtnumericrole, "
+           "             CASE WHEN (NOT invhist_posted) THEN 'warning' END AS qtforegroundrole "
            "FROM itemsite, item, warehous AS whs1, invdetail, invhist LEFT OUTER JOIN warehous AS whs2 ON (invhist_xfer_warehous_id=whs2.warehous_id) "
-           "WHERE ( (invhist_hasdetail)"
-           " AND (invhist_itemsite_id=itemsite_id)"
+           "WHERE ( (invhist_itemsite_id=itemsite_id)"
            " AND (itemsite_item_id=item_id)"
            " AND (itemsite_warehous_id=whs1.warehous_id)"
            " AND (invdetail_invhist_id=invhist_id)"
@@ -583,7 +550,7 @@ void itemAvailabilityWorkbench::sFillListInvhist()
       sql += " AND (itemsite_warehous_id=:warehous_id)";
 
     sql += ") "
-           "ORDER BY invhist_transdate DESC, invhist_transtype, locationname;";
+           "ORDER BY invhist_transdate DESC, invhist_transtype, invhist_id, xtindentrole, locationname;";
 
     q.prepare(sql);
     _dates->bindValue(q);
@@ -591,53 +558,7 @@ void itemAvailabilityWorkbench::sFillListInvhist()
     q.bindValue(":transactionType", _transType->id());
     _invhistWarehouse->bindValue(q);
     q.exec();
-    if (q.first())
-    {
-      XTreeWidgetItem *parentItem = NULL;
-      int           invhistid   = 0;
-
-      do
-      {
-        if (q.value("invhist_id").toInt() != invhistid)
-        {
-          invhistid = q.value("invhist_id").toInt();
-
-          parentItem = new XTreeWidgetItem( _invhist, parentItem,
-                                          q.value("invhist_id").toInt(), q.value("invdetail_id").toInt(),
-                                          q.value("transdate"), q.value("invhist_user"),
-                                          q.value("invhist_transtype"), q.value("warehous_code"),
-                                          q.value("ordernumber"), q.value("invhist_invuom"),
-                                          q.value("transqty") );
-
-          if (q.value("invhist_posted").toBool())
-          {
-            parentItem->setText(7, q.value("locfrom").toString());
-            parentItem->setText(8, q.value("qohbefore").toString());
-            parentItem->setText(9, q.value("locto").toString());
-            parentItem->setText(10, q.value("qohafter").toString());
-          }
-          else
-            parentItem->setTextColor("orange");
-        }
-
-        if (q.value("invdetail_id").toInt())
-        {
-          XTreeWidgetItem *child = new XTreeWidgetItem( parentItem, q.value("invhist_id").toInt(), q.value("invdetail_id").toInt(),
-                                                    "", "", "", "",
-                                                    q.value("locationname"), "",
-                                                    q.value("detailqty") );
-
-          if (q.value("invhist_posted").toBool())
-          {
-            child->setText(8, q.value("locationqtybefore").toString());
-            child->setText(10, q.value("locationqtyafter").toString());
-          }
-          else
-            child->setTextColor("orange");
-        }
-      }
-      while (q.next());
-    }
+    _invhist->populate(q,TRUE);
   }
 }
 
@@ -646,114 +567,84 @@ void itemAvailabilityWorkbench::sFillListCosted()
   if (! _item->isValid())
     return;
 
+  MetaSQLQuery mql( "SELECT bomdata_bomwork_id AS id,"
+                    "       CASE WHEN bomdata_bomwork_parent_id = -1 AND "
+                    "                 bomdata_bomwork_id = -1 THEN"
+                    "                     -1"
+                    "            ELSE bomdata_item_id"
+                    "       END AS altid,"
+                    "       *,"
+                    "<? if exists(\"useStandardCosts\") ?>"
+                    "       bomdata_stdunitcost AS unitcost,"
+                    "       bomdata_stdextendedcost AS extendedcost, "
+                    "<? elseif exists(\"useActualCosts\") ?>"
+                    "       bomdata_actunitcost AS unitcost,"
+                    "       bomdata_actextendedcost AS extendedcost, "
+                    "<? endif ?>"
+                    "       'qtyper' AS bomdata_qtyper_xtnumericrole,"
+                    "       'percent' AS bomdata_scrap_xtnumericrole,"
+                    "       'cost' AS unitcost_xtnumericrole,"
+                    "       'cost' AS extendedcost_xtnumericrole,"
+                    "       CASE WHEN COALESCE(bomdata_effective, startOfTime()) <= startOfTime() THEN <? value(\"always\") ?> END AS bomdata_effective_qtdisplayrole,"
+                    "       CASE WHEN COALESCE(bomdata_expires, endOfTime()) <= endOfTime() THEN <? value(\"never\") ?> END AS bomdata_expires_qtdisplayrole,"
+                    "       CASE WHEN bomdata_expired THEN 'expired'"
+                    "            WHEN bomdata_future  THEN 'future'"
+                    "       END AS qtforegroundrole,"
+                    "       bomdata_bomwork_level - 1 AS xtindentrole "
+                    "FROM indentedbom(<? value(\"item_id\") ?>,"
+                    "                 <? value(\"revision_id\") ?>,0,0)");
   ParameterList params;
   if (! setParamsCosted(params))
     return;
-  MetaSQLQuery ibomq("SELECT indentedBOM(<? value(\"item_id\") ?>) AS bomwork_set_id;");
-  q = ibomq.toQuery(params);
-  if (q.first())
+  q = mql.toQuery(params);
+  _bomitem->populate(q, true);
+  if (q.lastError().type() != QSqlError::None)
   {
-    int worksetid = q.value("bomwork_set_id").toInt();
-    params.append("bomwork_set_id", worksetid);
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
 
-    MetaSQLQuery mql("SELECT *, "
-                     "       bomwork_scrap * 100 AS scrap,"
-                     " <? if exists(\"useStandardCosts\") ?>"
-                     "       bomwork_stdunitcost AS unitcost,"
-                     "       (bomwork_qtyper * (1 + bomwork_scrap) *"
-                     "                      bomwork_stdunitcost) AS extendedcost,"
-                     "<? elseif exists(\"useActualCosts\") ?>"
-                     "       bomwork_actunitcost AS unitcost,"
-                     "       (bomwork_qtyper * (1 + bomwork_scrap) *"
-                     "                      bomwork_actunitcost) AS extendedcost,"
-                     "<? else ?>"
-                     "       NULL AS unitcost,"
-                     "       0 AS extendedcost,"
-                     "<? endif ?>"
-                     "      'qtyper' AS bomwork_qtyper_xtnumericrole,"
-                     "      'percent' AS scrap_xtnumericrole,"
-                     "      CASE WHEN COALESCE(bomwork_effective,"
-                     "                         startOfTime()) <= startOfTime() THEN"
-                     "                         <? value(\"always\") ?>"
-                     "      END AS bomwork_effective_qtdisplayrole,"
-                     "      CASE WHEN COALESCE(bomwork_expires,"
-                     "                         endOfTime()) >= endOfTime() THEN"
-                     "                         <? value(\"never\") ?>"
-                     "      END AS bomwork_effective_qtdisplayrole,"
-                     "      'cost' AS unitcost_xtnumericrole,"
-                     "      'cost' AS extendedcost_xtnumericrole,"
-                     "      0 AS extendedcost_xttotalrole,"
-                     "      bomwork_level - 1 AS xtindentrole "
-                     " FROM ("
-                     " SELECT bomwork_id, item_id, bomwork_parent_id,"
-                     "       bomwork_parent_seqnumber, bomwork_seqnumber, bomwork_level, "
-                     "       item_number, uom_name,"
-                     "       (item_descrip1 || ' ' || item_descrip2) AS itemdescription,"
-                     "       bomwork_qtyper, bomwork_scrap, bomwork_effective, bomwork_expires,"
-                     "       bomwork_stdunitcost,"
-                     "       bomwork_actunitcost "
-                     "FROM bomwork, item, uom "
-                     "WHERE ((bomwork_item_id=item_id)"
-                     " AND (item_inv_uom_id=uom_id)"
-                     " AND (bomwork_set_id=<? value(\"bomwork_set_id\") ?>)"
-                     " AND (CURRENT_DATE BETWEEN bomwork_effective AND (bomwork_expires - 1))) "
-                     "UNION "
-                     "SELECT -1, -1, -1,"
-                     "       99999, 99999, 1,"
-                     "       costelem_type, '',"
-                     "       '',"
-                     "       NULL, NULL, NULL, NULL,"
-                     "       itemcost_stdcost AS bomwork_stdunitcost,"
-                     "       currToBase(itemcost_curr_id, itemcost_actcost,"
-                     "                  CURRENT_DATE) AS bomwork_actunitcost "
-                     "FROM itemcost, costelem "
-                     "WHERE ( (itemcost_costelem_id=costelem_id)"
-                     " AND (NOT itemcost_lowlevel)"
-                     " AND (itemcost_item_id=<? value(\"item_id\") ?>) ) "
-                     ") AS dummy "
-                     "ORDER BY bomwork_parent_seqnumber, bomwork_seqnumber, item_number;" );
-
-    q = mql.toQuery(params);
-    _bomitem->populate(q, true);
-    if (q.lastError().type() != QSqlError::None)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-
-    if(_costsGroup->isChecked())
+  if(_costsGroup->isChecked())
+  {
+    _bomitem->showColumn(8);
+    _bomitem->showColumn(9);
+    q.prepare("SELECT formatCost(SUM(bomdata_actextendedcost)) AS actextendedcost,"
+              "       formatCost(SUM(bomdata_stdextendedcost)) AS stdextendedcost,"
+              "       formatCost(actcost(:item_id)) AS actual,"
+              "       formatCost(stdcost(:item_id)) AS standard "
+              "FROM indentedbom(:item_id,"
+              "                 getActiveRevId('BOM',:item_id),0,0)"
+              "WHERE (bomdata_bomwork_level=1) "
+              "GROUP BY actual, standard;" );
+    q.bindValue(":item_id", _item->id());
+    q.exec();
+    if (q.first())
     {
       XTreeWidgetItem *last = new XTreeWidgetItem(_bomitem, -1, -1);
-      q.prepare( "SELECT formatCost(actcost(:item_id)) AS actual,"
-                 "       formatCost(stdcost(:item_id)) AS standard;" );
-      q.bindValue(":item_id", _item->id());
-      q.exec();
-      if (q.first())
-      {
-        last = new XTreeWidgetItem(_bomitem, -1, -1);
-        last->setText(1, tr("Actual Cost"));
-        last->setText(9, q.value("actual").toString());
+      last->setText(0, tr("Total Cost"));
+      if(_useStandardCosts->isChecked())
+        last->setText(9, q.value("stdextendedcost").toString());
+      else
+        last->setText(9, q.value("actextendedcost").toString());
 
-        last = new XTreeWidgetItem( _bomitem, last, -1, -1);
-        last->setText(1, tr("Standard Cost"));
-        last->setText(9, q.value("standard").toString());
-      }
-      else if (q.lastError().type() != QSqlError::None)
-      {
-        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-        return;
-      }
+      last = new XTreeWidgetItem( _bomitem, -1, -1);
+      last->setText(0, tr("Actual Cost"));
+      last->setText(9, q.value("actual").toString());
+
+      last = new XTreeWidgetItem( _bomitem, -1, -1);
+      last->setText(0, tr("Standard Cost"));
+      last->setText(9, q.value("standard").toString());
     }
-
-    q.prepare( "DELETE FROM bomwork "
-               "WHERE (bomwork_set_id=:bomwork_set_id);" );
-    q.bindValue(":bomwork_set_id", worksetid);
-    q.exec();
-    if (q.lastError().type() != QSqlError::None)
+    else if (q.lastError().type() != QSqlError::None)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
+  }
+  else
+  {
+    _bomitem->hideColumn(8);
+    _bomitem->hideColumn(9);
   }
 }
 
@@ -766,7 +657,6 @@ void itemAvailabilityWorkbench::sFillListRunning()
   {
     q.prepare( "SELECT item_type, item_sold,"
                "       itemsite_id, itemsite_qtyonhand,"
-               "       itemsite_qtyonhand, itemsite_qtyonhand,"
                "       CASE WHEN(itemsite_useparams) THEN itemsite_reorderlevel ELSE 0.0 END AS reorderlevel,"
                "       CASE WHEN(itemsite_useparams) THEN itemsite_ordertoqty ELSE 0.0 END AS ordertoqty,"
                "       CASE WHEN(itemsite_useparams) THEN itemsite_multordqty ELSE 0.0 END AS multorderqty "
@@ -848,24 +738,33 @@ void itemAvailabilityWorkbench::sFillListAvail()
   }
 
   QString sql( "SELECT itemsite_id, itemtype, warehous_id, warehous_code, itemsite_leadtime,"
-               "       formatQty(qoh) AS f_qoh,"
-               "       formatQty(noNeg(qoh - allocated)) AS f_unallocated,"
-               "       formatQty(allocated) AS f_allocated,"
-               "       formatQty(ordered) AS f_ordered,"
-               "       formatQty(reorderlevel) AS f_reorderlevel,"
-               "       formatQty(outlevel) AS f_outlevel,"
+               "       qoh,"
+               "       noNeg(qoh - allocated) AS unallocated,"
+               "       allocated,"
+               "       ordered,"
+               "       reorderlevel,"
+               "       outlevel,"
                "       (qoh - allocated + ordered) AS available,"
-               "       formatQty(qoh - allocated + ordered) AS f_available,"
-               "       ((qoh - allocated + ordered) < 0) AS stockout,"
-               "       ((qoh - allocated + ordered) <= reorderlevel) AS reorder "
+               "       CASE WHEN (NOT :byLeadtime) THEN 'grey' END AS itemsite_leadtime_qtforegroundrole, "
+               "       CASE "
+               "         WHEN ((qoh - allocated + ordered) < 0) THEN 'error' "
+               "         WHEN ((qoh - allocated + ordered) <= reorderlevel) THEN 'warning' "
+               "       END AS available_qtforegroundrole, "
+               "       'qty' AS qoh_xtnumericrole, "
+               "       'qty' AS unallocated_xtnumericrole, "
+               "       'qty' AS allocated_xtnumericrole, "
+               "       'qty' AS ordered_xtnumericrole, "
+               "       'qty' AS reorderlevel_xtnumericrole, "
+               "       'qty' AS outlevel_xtnumericrole, "
+               "       'qty' AS available_xtnumericrole "
                "FROM ( SELECT itemsite_id,"
                "              CASE WHEN (item_type IN ('P', 'O')) THEN 1"
                "                   WHEN (item_type IN ('M')) THEN 2"
                "                   ELSE 0"
                "              END AS itemtype,"
                "              warehous_id, warehous_code, itemsite_leadtime,"
-               "              CASE WHEN(itemsite_useparams) THEN itemsite_reorderlevel ELSE 0.0 END AS reorderlevel,"
-               "              CASE WHEN(itemsite_useparams) THEN itemsite_ordertoqty ELSE 0.0 END AS outlevel,"
+               "              CASE WHEN(itemsite_useparams) THEN itemsite_reorderlevel ELSE 0 END AS reorderlevel,"
+               "              CASE WHEN(itemsite_useparams) THEN itemsite_ordertoqty ELSE 0 END AS outlevel,"
                "              itemsite_qtyonhand AS qoh," );
 
   if (_leadTime->isChecked())
@@ -916,27 +815,10 @@ void itemAvailabilityWorkbench::sFillListAvail()
   q.bindValue(":startDate", _startDate->date());
   q.bindValue(":endDate", _endDate->date());
   q.bindValue(":item_id", _item->id());
+  q.bindValue(":byLeadtime",QVariant(_leadTime->isChecked(), 0));
   _invWarehouse->bindValue(q);
   q.exec();
-  XTreeWidgetItem *last = 0;
-  while (q.next())
-  {
-    last = new XTreeWidgetItem( _invAvailability, last,
-                                             q.value("itemsite_id").toInt(), q.value("itemtype").toInt(),
-                                             q.value("warehous_code"), q.value("itemsite_leadtime"),
-                                             q.value("f_qoh"), q.value("f_allocated"),
-                                             q.value("f_unallocated"), q.value("f_ordered"),
-                                             q.value("f_reorderlevel"), q.value("f_outlevel"),
-                                             q.value("f_available") );
-
-    if (_byDates->isChecked())
-      last->setTextColor(2, "grey");
-
-    if (q.value("stockout").toBool())
-      last->setTextColor(8, "red");
-    else if (q.value("reorder").toBool())
-      last->setTextColor(8, "orange");
-  }
+  _invAvailability->populate(q,TRUE);
 }
 
 void itemAvailabilityWorkbench::sPrintRunning()
@@ -1695,6 +1577,13 @@ void itemAvailabilityWorkbench::sViewInventoryHistory()
   dspInventoryHistoryByItem *newdlg = new dspInventoryHistoryByItem();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
+}
+
+void itemAvailabilityWorkbench::sClearQueries()
+{
+  _invAvailability->clear();
+  _invhist->clear();
+  _itemloc->clear();
 }
 
 

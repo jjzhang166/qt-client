@@ -123,6 +123,7 @@ public slots:
     virtual void sEditBOO();
     virtual void sEditItem();
     virtual void sViewInventoryHistory();
+    virtual void sClearQueries();
 
 protected slots:
     virtual void languageChange();
