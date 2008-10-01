@@ -84,6 +84,7 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_locationControl, SIGNAL(toggled(bool)), this, SLOT(sDefaultLocChanged()));
 
   _itemType = 0;
+  _qohCache = 0;
 
   _captive = FALSE;
   _updates = TRUE;
