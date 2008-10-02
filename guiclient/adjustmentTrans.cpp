@@ -381,6 +381,15 @@ void adjustmentTrans::sPopulateQty()
     }
     else
       _afterQty->clear();
+
+    bool neg = (_afterQty->toDouble() < _cachedQOH);
+    if(neg)
+      _costCalculated->setChecked(true);
+    _costManual->setEnabled(!neg);
+    _cost->setEnabled(!neg);
+    _lblCost->setEnabled(!neg);
+    _unitCost->setEnabled(!neg);
+    _unitCostLit->setEnabled(!neg);
   }
 }
 
