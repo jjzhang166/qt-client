@@ -87,6 +87,7 @@ private:
     double _cachedQOH;
     bool _captive;
     QButtonGroup* _adjustmentTypeGroupInt;
+    QString _costMethod;
 
 };
 

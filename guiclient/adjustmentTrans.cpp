@@ -239,6 +239,9 @@ void adjustmentTrans::sPost()
     { _costAdjust->isEnabled() && _costAdjust->isChecked() && _costManual->isChecked() && (_cost->text().length() == 0 || cost == 0),
       tr("<p>You must enter a total cost value for the inventory to be transacted."),
       _cost },
+    { _costMethod == "A" && _afterQty->toDouble() < 0,
+      tr("<p>Average cost adjustments may not result in a negative quantity on hand."),
+      _qty },
     { true, "", NULL }
   };
  
@@ -348,6 +351,7 @@ void adjustmentTrans::sPopulateQOH(int pWarehousid)
       _beforeQty->setDouble(q.value("itemsite_qtyonhand").toDouble());
       _costAdjust->setChecked(true);
       _costAdjust->setEnabled(q.value("itemsite_costmethod").toString() == "A");
+      _costMethod = q.value("itemsite_costmethod").toString();
 
       if (q.value("itemsite_freeze").toBool())
         _absolute->setPaletteForegroundColor(QColor("red"));
@@ -371,6 +375,7 @@ void adjustmentTrans::sPopulateQty()
 {
   if (_mode == cNew)
   {
+    
     if (_qty->text().stripWhiteSpace().length())
     {
       if (_absolute->isChecked())
@@ -382,7 +387,7 @@ void adjustmentTrans::sPopulateQty()
     else
       _afterQty->clear();
 
-    bool neg = (_afterQty->toDouble() < _cachedQOH);
+    bool neg = ((_afterQty->toDouble() < _cachedQOH) || (_afterQty->toDouble() == 0));
     if(neg)
       _costCalculated->setChecked(true);
     _costManual->setEnabled(!neg);
@@ -390,6 +395,14 @@ void adjustmentTrans::sPopulateQty()
     _lblCost->setEnabled(!neg);
     _unitCost->setEnabled(!neg);
     _unitCostLit->setEnabled(!neg);
+    
+    if (_afterQty->toDouble() == 0)
+    {
+      _costAdjust->setChecked(true);
+      _costAdjust->setEnabled(false);
+    }
+    else
+      _costAdjust->setEnabled(_costMethod == "A");
   }
 }
 
