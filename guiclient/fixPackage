@@ -12,10 +12,21 @@ fi
 
 if [ $# -lt 1 ] ; then
   APPROOT=../bin/xtuple.app
+  EXECNAME=xtuple
 elif [ $# -eq 1 ] ; then
   APPROOT=$1
-else
-  echo "$PROG: ../bin/xtuple.app does not exist so either rebuild or specify a .app directory"
+  EXECNAME=`basename $APPROOT .app`
+elif [ $# -eq 2 ] ; then
+  APPROOT=$1
+  EXECNAME=$2
+fi
+
+if ! [ -d "$APPROOT" ] ; then
+  echo "$PROG: $APPROOT does not exist so either rebuild or specify a .app directory"
+  exit 1
+elif ! [ -f "$APPROOT/Contents/MacOS/$EXECNAME" ] ; then
+  echo "$PROG: $APPROOT/Contents/MacOS/$EXECNAME does not exist so rebuild, "
+  echo "       specify a proper .app directory, or name the executable as well as the .app"
   exit 1
 fi
 
@@ -27,7 +38,7 @@ collectAndRenameLibs() {
     echo "$PROG collectAndRenameLibs() expected 1 args and got $#: $*"
     return 1
   fi
-  if expr "$1" : '\/' ; then
+  if expr "$1" : '\/' > /dev/null ; then
     FILE="$1"
   else
     FILE="`pwd`/$1"
@@ -52,7 +63,7 @@ collectAndRenameLibs() {
   return 0
 }
 
-collectAndRenameLibs $APPROOT/Contents/MacOS/xtuple             || exit 2
+collectAndRenameLibs $APPROOT/Contents/MacOS/$EXECNAME              || exit 2
 
 for PLUGIN in sqldrivers/libqsqlpsql.dylib sqldrivers/libqsqlodbc.dylib \
               imageformats/libqgif.dylib imageformats/libqjpeg.dylib    \
@@ -66,30 +77,32 @@ done
 
 while [ `otool -L $APPROOT/Contents/Frameworks/* | egrep "($QTDIR|$PGDIR)" | wc -l` -gt 0 ] ; do
   for LIB in $APPROOT/Contents/Frameworks/* ; do
-    collectAndRenameLibs $LIB                                   || exit 2
+    collectAndRenameLibs $LIB                              || exit 2
   done
 done
 
-cd $APPROOT/Contents/Resources                                  || exit 3
+cd $APPROOT/Contents/Resources                             || exit 3
 
 echo "[Paths]" > qt.conf
 echo "Prefix = .." >> qt.conf
 
-if ! cp -r $QTDIR/bin/assistant.app .           ; then exit 3 ; fi
-if ! cd assistant.app/Contents/MacOS            ; then exit 3 ; fi
-for RENAME in Xml Gui Network Core ; do
-  install_name_tool -change $QTDIR/lib/libQt${RENAME}.4.dylib @executable_path/../Frameworks/libQt${RENAME}.4.dylib assistant
-done
+cp -r $QTDIR/bin/Assistant_adp.app .                       ||  exit 3
+collectAndRenameLibs Assistant_adp.app/Contents/MacOS/Assistant_adp
+#for RENAME in Xml Gui Network Core ; do
+#install_name_tool -change $QTDIR/lib/libQt${RENAME}.4.dylib @executable_path/../Frameworks/libQt${RENAME}.4.dylib Assistant_adp || exit 3
+#done
 
-if ! cd ../Resources                            ; then exit 3 ; fi
+cd ../Resources                                            ||  exit 3
 # create/copy a qt.conf file pointing to the plugins directory
 echo "[Paths]" > qt.conf
 echo "Prefix = .." >> qt.conf
 
-if ! cd ..                                      ; then exit 4 ; fi
-if [ -L Frameworks ] && ! rm Frameworks         ; then exit 4 ; fi
-if ! ln -s ../../../Frameworks                  ; then exit 4 ; fi
-if [ -L plugins ] && ! rm plugins               ; then exit 4 ; fi
-if ! ln -s ../../../plugins                     ; then exit 4 ; fi
+cd ..                                                           ||  exit 4
+if [ -L Frameworks ] ; then
+  rm Frameworks && ln -s ../../../Frameworks ||  exit 4
+fi
+if [ -L plugins ] ; then
+  rm plugins    && ln -s ../../../plugins    ||  exit 4
+fi
 
 exit 0
