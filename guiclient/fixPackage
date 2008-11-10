@@ -75,29 +75,25 @@ for PLUGIN in sqldrivers/libqsqlpsql.dylib sqldrivers/libqsqlodbc.dylib \
   collectAndRenameLibs $APPROOT/Contents/plugins/$PLUGIN        || exit 2
 done
 
-while [ `otool -L $APPROOT/Contents/Frameworks/* | egrep "($QTDIR|$PGDIR)" | wc -l` -gt 0 ] ; do
-  for LIB in $APPROOT/Contents/Frameworks/* ; do
-    collectAndRenameLibs $LIB                              || exit 2
-  done
-done
-
-cd $APPROOT/Contents/Resources                             || exit 3
-
+cp -r $QTDIR/bin/Assistant_adp.app $APPROOT/Contents/Resources/Assistant_adp.app                || exit 3
+collectAndRenameLibs $APPROOT/Contents/Resources/Assistant_adp.app/Contents/MacOS/Assistant_adp || exit 3
+cd $APPROOT/Contents/Resources/Assistant_adp.app/Contents       || exit 3
+ln -s ../../../Frameworks .                                     || exit 3
 echo "[Paths]" > qt.conf
 echo "Prefix = .." >> qt.conf
 
-cp -r $QTDIR/bin/Assistant_adp.app .                       ||  exit 3
-collectAndRenameLibs Assistant_adp.app/Contents/MacOS/Assistant_adp
-#for RENAME in Xml Gui Network Core ; do
-#install_name_tool -change $QTDIR/lib/libQt${RENAME}.4.dylib @executable_path/../Frameworks/libQt${RENAME}.4.dylib Assistant_adp || exit 3
-#done
+while [ `otool -L $APPROOT/Contents/Frameworks/* | egrep "($QTDIR|$PGDIR)" | wc -l` -gt 0 ] ; do
+  for LIB in $APPROOT/Contents/Frameworks/* ; do
+    collectAndRenameLibs $LIB                || exit 4
+  done
+done
 
-cd ../Resources                                            ||  exit 3
+cd $APPROOT/Contents/Resources               ||  exit 4
 # create/copy a qt.conf file pointing to the plugins directory
 echo "[Paths]" > qt.conf
 echo "Prefix = .." >> qt.conf
 
-cd ..                                                           ||  exit 4
+cd ..                                        ||  exit 4
 if [ -L Frameworks ] ; then
   rm Frameworks && ln -s ../../../Frameworks ||  exit 4
 fi
