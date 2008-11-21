@@ -617,8 +617,8 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   }
   else if (r_approved == "DECLINED")
   {
-    _errorMsg = errorMsg(12).arg(r_message);
-    returnValue = 12;
+    _errorMsg = errorMsg(-92).arg(r_message);
+    returnValue = -92;
     status = "D";
   }
   else if (r_approved == "ERROR")

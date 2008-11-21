@@ -224,10 +224,24 @@ int ExternalCCProcessor::handleTrans(const int pccardid, const QString &ptype, c
       _passedCvv = param.toBool();
 
     param = pparams.value("approved", &valid);
-    if (valid && param.toString() == "ERROR")
+    if (valid)
     {
-      _errorMsg = errorMsg(-12).arg(tr("User reported that an error occurred."));
-      returnValue = -12;
+      if (param.toString() == "ERROR")
+      {
+        _errorMsg = errorMsg(-12).arg(tr("User reported that an error occurred."));
+        returnValue = -12;
+      }
+      else if (param.toString() == "DECLINED")
+      {
+        _errorMsg = errorMsg(-92).arg("");
+        returnValue = -92;
+      } 
+      else if (param.toString().isEmpty())
+      {
+        _errorMsg = errorMsg(-100).arg(tr("The 'approved' parameter is empty; "
+                                          "this should never happen."));
+        returnValue = -100;
+      }
     }
   }
 

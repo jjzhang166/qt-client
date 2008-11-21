@@ -633,29 +633,29 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
 
   else if (r_approved == "DENIED")
   {
-    _errorMsg = errorMsg(10).arg(r_message);
-    returnValue = 10;
+    _errorMsg = errorMsg(-90).arg(r_message);
+    returnValue = -90;
     status = "D";
   }
 
   else if (r_approved == "DUPLICATE")
   {
-    _errorMsg = errorMsg(11).arg(r_message);
-    returnValue = 11;
+    _errorMsg = errorMsg(-91).arg(r_message);
+    returnValue = -91;
     status = "D";
   }
 
   else if (r_approved == "DECLINED")
   {
-    _errorMsg = errorMsg(12).arg(r_error);
-    returnValue = 12;
+    _errorMsg = errorMsg(-92).arg(r_error);
+    returnValue = -92;
     status = "D";
   }
 
   else if (r_approved == "FRAUD")
   {
-    _errorMsg = errorMsg(13).arg(r_error);
-    returnValue = 13;
+    _errorMsg = errorMsg(-93).arg(r_error);
+    returnValue = -93;
     status = "D";
   }
 

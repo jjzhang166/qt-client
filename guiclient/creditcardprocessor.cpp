@@ -153,6 +153,13 @@ static struct {
   // voids
   { -60, TR("Could not find the Credit Card transaction to void.")	},
 
+  // transaction was processed fine but was not successful
+  { -90, TR("This Credit Card transaction was denied.\n%1")		},
+  { -91, TR("This Credit Card transaction is a duplicate.\n%1")		},
+  { -92, TR("This Credit Card transaction was declined.\n%1")		},
+  { -93, TR("This Credit Card transaction was denied "
+	    "because of possible fraud.\n%1")				},
+
   // other misc errors
   { -95, TR("The Credit Card Processor returned an error: %1")		},
   { -96, TR("This transaction failed the CVV check.")			},
@@ -175,11 +182,6 @@ static struct {
             "Credit Card processing transactions may fail.")            },
   {   7, TR("The Port is %2 and is expected to be %3 in %1 mode. "
             "Credit Card processing transactions may fail.")            },
-  {  10, TR("This Credit Card transaction was denied.\n%1")		},
-  {  11, TR("This Credit Card transaction is a duplicate.\n%1")		},
-  {  12, TR("This Credit Card transaction was declined.\n%1")		},
-  {  13, TR("This Credit Card transaction was denied "
-	    "because of possible fraud.\n%1")				},
   {  20, TR("User chose not to process the preauthorization.")		},
   {  30, TR("User chose not to post-authorize process the charge.")	},
   {  40, TR("User chose not to process the charge.")			},
