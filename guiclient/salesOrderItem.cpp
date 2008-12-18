@@ -2318,7 +2318,7 @@ void salesOrderItem::populate()
         "       0 AS coship_qty,"
         "       quitem_tax_id AS coitem_tax_id,"
         "       getItemTaxType(item_id, quhead_taxauth_id) AS coitem_taxtype_id, locale_qty_scale"
-        "  FROM item, uom, quhead, locale LEFT OUTER JOIN usr ON (usr_username = 'nmonday'), quitem LEFT OUTER JOIN (itemsite JOIN warehous ON (itemsite_warehous_id=warehous_id)) ON (quitem_itemsite_id=itemsite_id) "
+        "  FROM item, uom, quhead, locale LEFT OUTER JOIN usr ON (usr_username = CURRENT_USER), quitem LEFT OUTER JOIN (itemsite JOIN warehous ON (itemsite_warehous_id=warehous_id)) ON (quitem_itemsite_id=itemsite_id) "
         " WHERE ( (quitem_item_id=item_id)"
         "   AND   (item_inv_uom_id=uom_id)"
         "   AND   (quhead_id=quitem_quhead_id)"
