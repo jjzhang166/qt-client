@@ -180,11 +180,13 @@ void todoListCalendar::handlePrivs()
   if (editTodoPriv)
   {
     disconnect(_list,SIGNAL(itemSelected(int)), this, SLOT(sView()));
+    disconnect(_list,SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
     connect(_list,   SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   }
   else if (viewTodoPriv)
   {
     disconnect(_list,SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+    disconnect(_list,SIGNAL(itemSelected(int)), this, SLOT(sView()));
     connect(_list,   SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 }
