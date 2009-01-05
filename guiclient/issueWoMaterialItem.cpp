@@ -125,6 +125,14 @@ enum SetResponse issueWoMaterialItem::set(const ParameterList &pParams)
     _issue->setFocus();
   }
 
+  param = pParams.value("womatl_id", &valid);
+  if (valid)
+    _womatl->setId(param.toInt());
+
+  param = pParams.value("qty", &valid);
+  if (valid)
+    _qtyToIssue->setDouble(param.toDouble());
+
   return NoError;
 }
 

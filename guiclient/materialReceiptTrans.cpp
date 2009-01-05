@@ -64,6 +64,7 @@
 
 #include "inputManager.h"
 #include "distributeInventory.h"
+#include "issueWoMaterialItem.h"
 #include "storedProcErrorLookup.h"
 
 materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt::WFlags fl)
@@ -218,6 +219,68 @@ void materialReceiptTrans::sPost()
     error[errIndex].widget->setFocus();
     return;
   }
+  
+  XSqlQuery rollback;
+  rollback.prepare("ROLLBACK;");
+
+  q.exec("BEGIN;");	// because of possible distribution cancelations
+  q.prepare( "SELECT invReceipt(itemsite_id, :qty, '', :docNumber,"
+             "                  :comments, :date, :cost) AS result "
+             "FROM itemsite "
+             "WHERE ( (itemsite_item_id=:item_id)"
+             " AND (itemsite_warehous_id=:warehous_id) );" );
+  q.bindValue(":qty", _qty->toDouble());
+  q.bindValue(":docNumber", _documentNum->text());
+  q.bindValue(":comments", _notes->toPlainText());
+  q.bindValue(":item_id", _item->id());
+  q.bindValue(":warehous_id", _warehouse->id());
+  q.bindValue(":date",        _transDate->date());
+  if(!_costAdjust->isChecked())
+    q.bindValue(":cost", 0.0);
+  else if(_costManual->isChecked())
+    q.bindValue(":cost", cost);
+  q.exec();
+  if (q.first())
+  {
+    int result = q.value("result").toInt();
+    if (result < 0)
+    {
+      rollback.exec();
+      systemError(this, storedProcErrorLookup("invReceipt", result),
+                  __FILE__, __LINE__);
+      return;
+    }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+
+    if (distributeInventory::SeriesAdjust(q.value("result").toInt(), this) == XDialog::Rejected)
+    {
+      rollback.exec();
+      QMessageBox::information(this, tr("Enter Receipt"),
+                               tr("Transaction Canceled") );
+      return;
+    }
+
+    q.exec("COMMIT;");
+  } 
+  else if (q.lastError().type() != QSqlError::NoError)
+  {
+    rollback.exec();
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+  else
+  {
+    rollback.exec();
+    systemError( this,
+                tr("<p>No transaction was done because Item %1 "
+                   "was not found at Site %2.")
+                .arg(_item->itemNumber()).arg(_warehouse->currentText()));
+    return;
+  }
 
   if (_issueToWo->isChecked())
   {
@@ -237,148 +300,32 @@ void materialReceiptTrans::sPost()
       if ( (q.value("womatl_issuemethod").toString() == "S") ||
            (q.value("womatl_issuemethod").toString() == "M") )
       {
-        int womatlid = q.value("womatl_id").toInt();
-
-	q.prepare( "SELECT invReceiptIssueToWomatl(itemsite_id, :qty, :docNumber, :womatl_id, :comments) AS result "
-                   "FROM itemsite "
-                   "WHERE ( (itemsite_item_id=:item_id)"
-                   " AND (itemsite_warehous_id=:warehous_id) );" );
-        q.bindValue(":qty", _qty->toDouble());
-        q.bindValue(":docNumber", _documentNum->text());
-        q.bindValue(":womatl_id", womatlid);
-        q.bindValue(":comments", _notes->toPlainText());
-        q.bindValue(":item_id", _item->id());
-        q.bindValue(":warehous_id", _warehouse->id());
-        q.exec();
-        if (q.first())
-        {
-          int result = q.value("result").toInt();
-          if (result < 0)
-          {
-            systemError(this,
-                        storedProcErrorLookup("invReceiptIssueToWomatl", result),
-                        __FILE__, __LINE__);
-            return;
-          }
-        }
-        else if (q.lastError().type() != QSqlError::NoError)
-        {
-          systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-          return;
-        }
-
-        if (_captive)
-          close();
-        else
-        {
-          _close->setText(tr("&Close"));
-          _item->setId(-1);
-          _qty->clear();
-          _beforeQty->clear();
-          _afterQty->clear();
-          _documentNum->clear();
-          _issueToWo->setChecked(FALSE);
-          _wo->setId(-1);
-          _notes->clear();
-          _transDate->setDate(omfgThis->dbDate());
-
-          _item->setFocus();
-        }
+        issueWoMaterialItem newdlg(this);
+        ParameterList params;
+        params.append("wo_id", _wo->id());
+        params.append("womatl_id", q.value("womatl_id").toInt());
+        params.append("qty", _qty->toDouble());
+        if (newdlg.set(params) == NoError)
+          newdlg.exec();
       }
-      else
-        QMessageBox::critical(this, tr("Cannot Receive and Issue Material"),
-                              tr("<p>The select Item may not be issued againt "
-                                 "the selected W/O as the W/O Material "
-                                 "Requirement Issue Method is Pull. Material "
-                                 "is issued to this W/O Material Requirement "
-                                 "via a Backflush." ) );
     }
-    else
-      QMessageBox::critical(this, tr("Cannot Receive and Issue Material"),
-                            tr("The select Item may not be issued againt the "
-                               "selected W/O as there there isn't a W/O "
-                               "Material Requirement for the selected W/O/Item "
-                               "combination." ) );
   }
+
+  if (_captive)
+    close();
   else
   {
-    XSqlQuery rollback;
-    rollback.prepare("ROLLBACK;");
+    _close->setText(tr("&Close"));
+    _item->setId(-1);
+    _qty->clear();
+    _beforeQty->clear();
+    _afterQty->clear();
+    _documentNum->clear();
+    _issueToWo->setChecked(FALSE);
+    _wo->setId(-1);
+    _notes->clear();
 
-    q.exec("BEGIN;");	// because of possible distribution cancelations
-    q.prepare( "SELECT invReceipt(itemsite_id, :qty, '', :docNumber,"
-               "                  :comments, :date, :cost) AS result "
-               "FROM itemsite "
-               "WHERE ( (itemsite_item_id=:item_id)"
-               " AND (itemsite_warehous_id=:warehous_id) );" );
-    q.bindValue(":qty", _qty->toDouble());
-    q.bindValue(":docNumber", _documentNum->text());
-    q.bindValue(":comments", _notes->toPlainText());
-    q.bindValue(":item_id", _item->id());
-    q.bindValue(":warehous_id", _warehouse->id());
-    q.bindValue(":date",        _transDate->date());
-    if(!_costAdjust->isChecked())
-      q.bindValue(":cost", 0.0);
-    else if(_costManual->isChecked())
-      q.bindValue(":cost", cost);
-    q.exec();
-    if (q.first())
-    {
-      int result = q.value("result").toInt();
-      if (result < 0)
-      {
-        rollback.exec();
-        systemError(this, storedProcErrorLookup("invReceipt", result),
-                    __FILE__, __LINE__);
-        return;
-      }
-      else if (q.lastError().type() != QSqlError::NoError)
-      {
-        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-        return;
-      }
-
-      if (distributeInventory::SeriesAdjust(q.value("result").toInt(), this) == XDialog::Rejected)
-      {
-        rollback.exec();
-        QMessageBox::information(this, tr("Enter Receipt"),
-                                 tr("Transaction Canceled") );
-        return;
-      }
-
-      q.exec("COMMIT;");
-
-      if (_captive)
-        close();
-      else
-      {
-        _close->setText(tr("&Close"));
-        _item->setId(-1);
-        _qty->clear();
-        _beforeQty->clear();
-        _afterQty->clear();
-        _documentNum->clear();
-        _issueToWo->setChecked(FALSE);
-        _wo->setId(-1);
-        _notes->clear();
-
-        _item->setFocus();
-      }
-    } 
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      rollback.exec();
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-    else
-    {
-      rollback.exec();
-      systemError( this,
-                  tr("<p>No transaction was done because Item %1 "
-                     "was not found at Site %2.")
-                  .arg(_item->itemNumber()).arg(_warehouse->currentText()));
-    }
+    _item->setFocus();
   }
 }
 
