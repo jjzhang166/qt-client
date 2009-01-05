@@ -101,11 +101,11 @@ void uiforms::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  uiform newdlg(this, "", TRUE);
-  newdlg.set(params);
+  uiform *newdlg = new uiform(this, "");
+  newdlg->set(params);
 
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
+  omfgThis->handleNewWindow(newdlg);
+  sFillList();
 }
 
 void uiforms::sEdit()
@@ -114,11 +114,11 @@ void uiforms::sEdit()
   params.append("mode", "edit");
   params.append("uiform_id", _uiform->id());
 
-  uiform newdlg(this, "", TRUE);
-  newdlg.set(params);
+  uiform *newdlg = new uiform(this, "");
+  newdlg->set(params);
 
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
+  omfgThis->handleNewWindow(newdlg);
+  sFillList();
 }
 
 void uiforms::sDelete()

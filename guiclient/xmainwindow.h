@@ -70,13 +70,20 @@ class XMainWindow : public QMainWindow
     XMainWindow(QWidget * parent, const char * name, Qt::WindowFlags flags = 0);
     virtual ~XMainWindow();
 
+    Q_INVOKABLE QAction *action() const;
+
   protected:
-    virtual void closeEvent ( QCloseEvent * event );
-    virtual void showEvent ( QShowEvent * event );
+    virtual void closeEvent(QCloseEvent *);
+    virtual void showEvent(QShowEvent *);
+    virtual void hideEvent(QHideEvent *);
+    virtual void changeEvent(QEvent *);
 
   private:
     friend class XMainWindowPrivate;
     XMainWindowPrivate *_private;
+
+  private slots:
+    void showMe(bool);
 };
 
 #endif // __XMAINWINDOW_H__

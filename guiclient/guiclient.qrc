@@ -1,6 +1,7 @@
 
 <RCC version="1.0">
   <qresource>
+    <file>newForm.ui</file>
     <file>images/icon.xpm</file>
     <file>images/dspEvents.png</file>
     <file>images/dspError.png</file>

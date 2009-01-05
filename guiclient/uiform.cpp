@@ -57,31 +57,34 @@
 
 #include "uiform.h"
 
+#include <QBuffer>
+#include <QFile>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QVariant>
 #include <QTextStream>
-#include <QFileDialog>
-#include <QFile>
+#include <QVariant>
 
-#include "scriptEditor.h"
 #include "customCommand.h"
+#include "scriptEditor.h"
+#include "xTupleDesigner.h"
 
-uiform::uiform(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+uiform::uiform(QWidget* parent, const char* name, Qt::WFlags fl)
+    : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_import, SIGNAL(clicked()), this, SLOT(sImport()));
-  connect(_export, SIGNAL(clicked()), this, SLOT(sExport()));
-  connect(_name, SIGNAL(lostFocus()), this, SLOT(sFillList()));
-  connect(_cmdNew, SIGNAL(clicked()), this, SLOT(sCmdNew()));
-  connect(_cmdEdit, SIGNAL(clicked()), this, SLOT(sCmdEdit()));
-  connect(_cmdDelete, SIGNAL(clicked()), this, SLOT(sCmdDelete()));
-  connect(_scriptNew, SIGNAL(clicked()), this, SLOT(sScriptNew()));
-  connect(_scriptEdit, SIGNAL(clicked()), this, SLOT(sScriptEdit()));
+  connect(_cmdDelete,    SIGNAL(clicked()), this, SLOT(sCmdDelete()));
+  connect(_cmdEdit,      SIGNAL(clicked()), this, SLOT(sCmdEdit()));
+  connect(_cmdNew,       SIGNAL(clicked()), this, SLOT(sCmdNew()));
+  connect(_edit,         SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_export,       SIGNAL(clicked()), this, SLOT(sExport()));
+  connect(_import,       SIGNAL(clicked()), this, SLOT(sImport()));
+  connect(_name,       SIGNAL(lostFocus()), this, SLOT(sFillList()));
+  connect(_save,         SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_scriptDelete, SIGNAL(clicked()), this, SLOT(sScriptDelete()));
+  connect(_scriptEdit,   SIGNAL(clicked()), this, SLOT(sScriptEdit()));
+  connect(_scriptNew,    SIGNAL(clicked()), this, SLOT(sScriptNew()));
 
   _script->addColumn(tr("Name"), _itemColumn, Qt::AlignLeft,  true, "script_name");
   _script->addColumn(tr("Description"),   -1, Qt::AlignLeft,  true, "script_notes");
@@ -92,6 +95,9 @@ uiform::uiform(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _commands->addColumn(tr("Module"),_itemColumn, Qt::AlignCenter,true, "cmd_module");
   _commands->addColumn(tr("Menu Label"),     -1, Qt::AlignLeft,  true, "cmd_title");
   _commands->addColumn(tr("Package"), _ynColumn, Qt::AlignCenter,false,"nspname");
+
+  _uiformid = -1;
+  _changed = false;
 }
 
 uiform::~uiform()
@@ -112,7 +118,6 @@ enum SetResponse uiform::set(const ParameterList &pParams)
   param = pParams.value("mode", &valid);
   if (valid)
   {
-
     if (param.toString() == "new")
       setMode(cNew);
     else if (param.toString() == "edit")
@@ -166,6 +171,29 @@ void uiform::setMode(const int pmode)
   _mode = pmode;
 }
 
+void uiform::close()
+{
+  if (cView != _mode && changed())
+  {
+    switch (QMessageBox::question(this, tr("Save first?"),
+                      tr("The screen appears to have changed. Do you "
+                         "want to save your changes?"),
+                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                      QMessageBox::Yes))
+    {
+      case QMessageBox::Cancel:
+        return;
+      case QMessageBox::No:
+        break;
+      case QMessageBox::Yes:
+      default:
+        sSave();
+        return;
+    }
+  }
+  XWidget::close();
+}
+
 void uiform::sSave()
 {
   if (_name->text().length() == 0)
@@ -183,7 +211,7 @@ void uiform::sSave()
     return;
   }
 
-  if (_mode == cNew)
+  if (_mode == cNew && _uiformid == -1)
   {
     q.exec("SELECT NEXTVAL('uiform_uiform_id_seq') AS _uiform_id");
     if (q.first())
@@ -200,7 +228,7 @@ void uiform::sSave()
                "(:uiform_id, :uiform_name, :uiform_notes, :uiform_order, :uiform_enabled, :uiform_source);" );
 
   }
-  else if (_mode == cEdit)
+  else if (_mode != cView)
     q.prepare( "UPDATE uiform "
                "SET uiform_name=:uiform_name, uiform_notes=:uiform_notes,"
                "    uiform_order=:uiform_order, uiform_enabled=:uiform_enabled,"
@@ -221,7 +249,8 @@ void uiform::sSave()
     return;
   }
 
-  done(_uiformid);
+  _changed = false;
+  close();
 }
 
 void uiform::populate()
@@ -266,6 +295,28 @@ void uiform::sImport()
   QTextStream ts(&file);
   _source=ts.readAll();
   file.close();
+  _changed = true;
+}
+
+void uiform::sEdit()
+{
+  xTupleDesigner *designer = new xTupleDesigner(this, "xTupleDesigner", Qt::Window);
+  designer->setFormEnabled(_enabled->isChecked());
+  designer->setFormId(_uiformid);
+  designer->setOrder(_order->value());
+  if (_source.isEmpty())
+    designer->setSource(new QFile(":newForm.ui"));
+  else
+    designer->setSource(new QBuffer(new QByteArray(_source.toAscii()), this));
+
+  connect(designer, SIGNAL(formEnabledChanged(bool)),_enabled,SLOT(setChecked(bool)));
+  connect(designer, SIGNAL(formIdChanged(int)),      this,    SLOT(setFormId(int)));
+  //connect(designer, SIGNAL(nameChanged(QString)),    _name,   SLOT(setText(QString)));
+  connect(designer, SIGNAL(notesChanged(QString)),   _notes,  SLOT(setText(QString)));
+  //connect(designer, SIGNAL(orderChanged(int)),       _order,  SLOT(setValue(int)));
+  connect(designer, SIGNAL(sourceChanged(QString)),  this,    SLOT(setSource(QString)));
+
+  omfgThis->handleNewWindow(designer);
 }
 
 void uiform::sExport()
@@ -416,4 +467,21 @@ void uiform::sFillList()
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+}
+
+void uiform::setFormId(int p)
+{
+  _uiformid = p;
+  _changed = true;
+}
+
+void uiform::setSource(QString p)
+{
+  _source = p;
+  _changed = true;
+}
+
+bool uiform::changed()
+{
+  return _changed;
 }

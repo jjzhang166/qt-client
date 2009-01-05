@@ -6,7 +6,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../common ../widgets ../widgets/tmp/lib .
 DEPENDPATH  += ../common ../widgets ../widgets/tmp/lib
-LIBS        += -L../lib -L../$${OPENRPT_DIR}/lib -lxtuplecommon -lxtuplewidgets -lwrtembed -lcommon -lrenderer
+LIBS        += -L../lib -L../$${OPENRPT_DIR}/lib -lxtuplecommon -lxtuplewidgets -lwrtembed -lcommon -lrenderer -lQtDesignerComponents
 #LIBS        += -L../../payflowpro/win32/lib -lpfpro
 
 win32 {
@@ -672,7 +672,8 @@ HEADERS      = version.h inputManager.h guiclient.h timeoutHandler.h            
 	       creditcardprocessor.h authorizedotnetprocessor.h verisignprocessor.h                   \
 	       yourpayprocessor.h externalccprocessor.h externalCCTransaction.h                       \
                xmainwindow.h xdialog.h xuiloader.h xwidget.h                                          \
-               idleShutdown.h xdateinputdialog.h xsltMap.h
+               idleShutdown.h xdateinputdialog.h xsltMap.h                                            \
+               xTupleDesigner.h xTupleDesignerActions.h
 
 
 SOURCES      = main.cpp inputManager.cpp guiclient.cpp timeoutHandler.cpp                             \
@@ -1001,7 +1002,8 @@ SOURCES      = main.cpp inputManager.cpp guiclient.cpp timeoutHandler.cpp       
 	       creditcardprocessor.cpp authorizedotnetprocessor.cpp verisignprocessor.cpp             \
 	       yourpayprocessor.cpp externalccprocessor.cpp externalCCTransaction.cpp                 \
                xmainwindow.cpp xdialog.cpp xuiloader.cpp xwidget.cpp                                  \
-               idleShutdown.cpp xdateinputdialog.cpp xsltMap.cpp
+               idleShutdown.cpp xdateinputdialog.cpp xsltMap.cpp                                            \
+               xTupleDesigner.cpp xTupleDesignerActions.cpp
 
 QT += xml sql script network
 

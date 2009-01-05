@@ -55,68 +55,87 @@
  * portions thereof with code not governed by the terms of the CPAL.
  */
 
-#ifndef UIFORM_H
-#define UIFORM_H
+#ifndef XTUPLEDESIGNER_H
+#define XTUPLEDESIGNER_H
 
 #include "guiclient.h"
-#include "xwidget.h"
-#include <parameter.h>
+#include "xmainwindow.h"
 
-#include "ui_uiform.h"
-
-class QDesignerFormWindowManagerInterface;
+class QDesignerFormEditorInterface;
 class QDesignerFormWindowInterface;
+class QDesignerFormWindowManagerInterface;
+class QDesignerIntegrationInterface;
 class QDesignerObjectInspectorInterface;
 class QDesignerPropertyEditorInterface;
 class QDesignerWidgetBoxInterface;
-class XWidget;
+class QIODevice;
+class QMenu;
+class WidgetBoxWindow;
+class xTupleDesignerActions;
 
-class uiform : public XWidget, public Ui::uiform
+class xTupleDesigner : public XMainWindow
 {
     Q_OBJECT
 
-public:
-    uiform(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~uiform();
-    virtual bool changed();
+  public:
+    xTupleDesigner(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+    ~xTupleDesigner();
+    QDesignerFormEditorInterface *formeditor()     { return _formeditor;  }
+    virtual bool                  formEnabled()    { return _formEnabled; }
+    virtual int                   formId()         { return _formId;      }
+    QDesignerFormWindowInterface *formwindow()     { return _formwindow;  }
+    virtual QString               name();
+    virtual QString               notes() const    { return _notes;       }
+    virtual int                   order()          { return _order;       }
+    virtual XMainWindow          *objinspwindow()  { return _objinspwindow;  }
+    virtual XMainWindow          *propinspwindow() { return _propinspwindow; }
+    virtual XMainWindow          *slotedwindow()   { return _slotedwindow;   }
+    virtual QString               source();
+    virtual XMainWindow          *widgetwindow()   { return _widgetwindow;   }
 
-public slots:
-    virtual enum SetResponse set(const ParameterList & pParams );
-    virtual void populate();
-    virtual void close();
-    virtual void sCmdDelete();
-    virtual void sCmdEdit();
-    virtual void sCmdNew();
-    virtual void sEdit();
-    virtual void sExport();
-    virtual void sFillList();
-    virtual void sImport();
-    virtual void sSave();
-    virtual void sScriptDelete();
-    virtual void sScriptEdit();
-    virtual void sScriptNew();
-    virtual void setFormId(int);
+  public slots:
+    virtual void setFormEnabled(bool p);
+    virtual void setFormId(int p);
+    virtual void setNotes(QString p);
+    virtual void setOrder(int p);
+    virtual void setSource(QIODevice *, QString = QString());
     virtual void setSource(QString);
+    virtual void sRevert()              { setSource(_source); }
 
-protected slots:
-    virtual void languageChange();
-    virtual void setMode(const int);
+  signals:
+    void formEnabledChanged(bool);
+    void formIdChanged(int);
+    void nameChanged(QString);
+    void notesChanged(QString);
+    void orderChanged(int);
+    void sourceChanged(QString);
 
-private:
-    bool                                 _changed;
+  protected:
+    virtual void closeEvent(QCloseEvent *);
+
+  private:
+    friend class WidgetBoxWindow;
     QWidget                             *_designer;
-    QDesignerFormWindowManagerInterface *_designerwm;
-    XWidget                             *_editor;
+    QDesignerFormEditorInterface        *_formeditor;
+    bool                                 _formEnabled;
+    int                                  _formId;
     QDesignerFormWindowInterface        *_formwindow;
-    int                                  _mode;
-    QDesignerObjectInspectorInterface   *_objinsp;
-    QDesignerPropertyEditorInterface    *_propeditor;
-    QWidget                             *_sloteditor;
-    QString                              _source;
-    int                                  _uiformid;
-    QDesignerWidgetBoxInterface         *_widgetbox;
+    QDesignerIntegrationInterface       *_integration;
+    QString                              _notes;
+    XMainWindow                         *_objinspwindow;
+    int                                  _order;
+    XMainWindow                         *_propinspwindow;
+    XMainWindow                         *_slotedwindow;
+    QIODevice                           *_source;
+    XMainWindow                         *_widgetwindow;
 
+    QMenuBar                            *_menubar;
+    QMenu                               *_editmenu;
+    QMenu                               *_filemenu;
+    QMenu                               *_formmenu;
+    QMenu                               *_toolmenu;
 
+    xTupleDesignerActions               *_actions;
 };
 
-#endif // UIFORM_H
+#endif // XTUPLEDESIGNER_H

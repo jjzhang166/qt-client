@@ -83,24 +83,35 @@ class XMainWindowPrivate
 
     bool _shown;
     QScriptEngine * _engine;
+    QAction *_action;
 };
 
 XMainWindowPrivate::XMainWindowPrivate()
 {
   _shown = false;
   _engine = 0;
+  _action = 0;
 }
 
 XMainWindowPrivate::~XMainWindowPrivate()
 {
   if(_engine)
     delete _engine;
+  if(_action)
+    delete _action;
 }
 
 XMainWindow::XMainWindow(QWidget * parent, Qt::WindowFlags flags)
   : QMainWindow(parent, flags)
 {
   _private = new XMainWindowPrivate();
+
+  _private->_action = new QAction(this);
+  _private->_action->setShortcutContext(Qt::ApplicationShortcut);
+  _private->_action->setText(windowTitle());
+  _private->_action->setCheckable(true);
+  connect(_private->_action, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
+
   ScriptToolbox::setLastWindow(this);
 }
 
@@ -111,6 +122,12 @@ XMainWindow::XMainWindow(QWidget * parent, const char * name, Qt::WindowFlags fl
     setObjectName(name);
 
   _private = new XMainWindowPrivate();
+
+  _private->_action = new QAction(this);
+  _private->_action->setShortcutContext(Qt::ApplicationShortcut);
+  _private->_action->setText(windowTitle());
+  _private->_action->setCheckable(true);
+  connect(_private->_action, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
 }
 
 XMainWindow::~XMainWindow()
@@ -208,5 +225,51 @@ qDebug("isModal() %s", isModal()?"true":"false");
       }
     }
   }
+
+  bool blocked = _private->_action->blockSignals(true);
+  _private->_action->setChecked(true);
+  _private->_action->blockSignals(blocked);
+
   QMainWindow::showEvent(event);
 }
+
+void XMainWindow::hideEvent(QHideEvent * event)
+{
+  bool blocked = _private->_action->blockSignals(true);
+  _private->_action->setChecked(false);
+  _private->_action->blockSignals(blocked);
+
+  QMainWindow::hideEvent(event);
+}
+
+QAction *XMainWindow::action() const
+{
+  return _private->_action;
+}
+
+void XMainWindow::changeEvent(QEvent *e)
+{
+  switch (e->type())
+  {
+    case QEvent::WindowTitleChange:
+        _private->_action->setText(windowTitle());
+        break;
+    case QEvent::WindowIconChange:
+        _private->_action->setIcon(windowIcon());
+        break;
+    default:
+        break;
+  }
+  QMainWindow::changeEvent(e);
+}
+
+void XMainWindow::showMe(bool v)
+{
+  QWidget *target = parentWidget() == 0 ? this : parentWidget();
+
+  if (v)
+    target->setWindowState(target->windowState() & ~Qt::WindowMinimized);
+
+  target->setVisible(v);
+}
+

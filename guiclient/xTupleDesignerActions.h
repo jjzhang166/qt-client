@@ -55,68 +55,50 @@
  * portions thereof with code not governed by the terms of the CPAL.
  */
 
-#ifndef UIFORM_H
-#define UIFORM_H
+#ifndef XTUPLEDESIGNERACTIONS_H
+#define XTUPLEDESIGNERACTIONS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
-#include <parameter.h>
+#include <QObject>
 
-#include "ui_uiform.h"
-
-class QDesignerFormWindowManagerInterface;
+class QAction;
+class QActionGroup;
 class QDesignerFormWindowInterface;
-class QDesignerObjectInspectorInterface;
-class QDesignerPropertyEditorInterface;
-class QDesignerWidgetBoxInterface;
-class XWidget;
+class xTupleDesigner;
 
-class uiform : public XWidget, public Ui::uiform
+class xTupleDesignerActions : QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    uiform(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~uiform();
-    virtual bool changed();
+  public:
+    xTupleDesignerActions(xTupleDesigner *parent);
 
-public slots:
-    virtual enum SetResponse set(const ParameterList & pParams );
-    virtual void populate();
-    virtual void close();
-    virtual void sCmdDelete();
-    virtual void sCmdEdit();
-    virtual void sCmdNew();
-    virtual void sEdit();
-    virtual void sExport();
-    virtual void sFillList();
-    virtual void sImport();
-    virtual void sSave();
-    virtual void sScriptDelete();
-    virtual void sScriptEdit();
-    virtual void sScriptNew();
-    virtual void setFormId(int);
-    virtual void setSource(QString);
+    virtual QActionGroup *editActions()   { return _editActions;   }
+    virtual QActionGroup *fileActions()   { return _fileActions;   }
+    virtual QActionGroup *formActions()   { return _formActions;   }
+    virtual QActionGroup *toolActions()   { return _toolActions;   }
 
-protected slots:
-    virtual void languageChange();
-    virtual void setMode(const int);
+  public slots:
+    virtual void sActiveFormWindowChanged(QDesignerFormWindowInterface*);
+    virtual bool sClose();
+    virtual void sEditBuddies();
+    virtual void sEditSignalSlot();
+    virtual void sEditTabOrder();
+    virtual void sEditWidgets();
+    virtual void sOpen();
+    virtual void sRevert();
+    virtual bool sSave();
+    virtual bool sSaveAs();
+    virtual bool sSaveFile();
+    virtual bool sSaveToDB();
 
-private:
-    bool                                 _changed;
-    QWidget                             *_designer;
-    QDesignerFormWindowManagerInterface *_designerwm;
-    XWidget                             *_editor;
-    QDesignerFormWindowInterface        *_formwindow;
-    int                                  _mode;
-    QDesignerObjectInspectorInterface   *_objinsp;
-    QDesignerPropertyEditorInterface    *_propeditor;
-    QWidget                             *_sloteditor;
-    QString                              _source;
-    int                                  _uiformid;
-    QDesignerWidgetBoxInterface         *_widgetbox;
+  protected:
+    xTupleDesigner *_designer;
 
+    QActionGroup *_editActions;
+    QActionGroup *_fileActions;
+    QActionGroup *_formActions;
+    QActionGroup *_toolActions;
 
 };
 
-#endif // UIFORM_H
+#endif
