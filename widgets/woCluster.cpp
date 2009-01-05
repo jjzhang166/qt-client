@@ -799,7 +799,7 @@ void WomatlCluster::setId(int pWomatlid)
                  "       (abs(list.womatl_qtyreq)) AS qtyreq, "
                  "       (abs(list.womatl_qtyiss)) AS qtyiss, "
                  "       (list.womatl_qtywipscrap) AS qtywipscrap "
-                 "FROM womatl AS list, womatl AS target, wo, itemsite, item uom "
+                 "FROM womatl AS list, womatl AS target, wo, itemsite, item, uom "
                  "WHERE ( (list.womatl_wo_id=wo_id)"
                  " AND (target.womatl_wo_id=wo_id)"
                  " AND (list.womatl_itemsite_id=itemsite_id)"
