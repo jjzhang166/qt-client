@@ -225,7 +225,7 @@ void XDateEdit::parseDate()
              qPrintable(dateFormatStr));
 
     QDate tmp = QDate::fromString(dateString, dateFormatStr);
-    bool twodigitformat = dateFormatStr.indexOf(QRegExp("y{2}[^y]")) >= 0;
+    bool twodigitformat = !(dateFormatStr.indexOf(QRegExp("y{4}")) >= 0);
     if (tmp.isValid())
     {
       if (twodigitformat && tmp.year() < 1950) // Qt docs say 2-digit years are 1900-based so
