@@ -165,7 +165,7 @@ void assignLotSerial::sNew()
   if (newdlg.exec() != XDialog::Rejected)
   {
     sFillList();
-    if (_qtyBalance->text().toDouble() > 0)
+    if (_qtyBalance->toDouble() > 0)
       sNew();
   }
 }
@@ -207,7 +207,7 @@ void assignLotSerial::sClose()
 
 void assignLotSerial::sAssign()
 {
-  if (_qtyBalance->text().toDouble() != 0.0)
+  if (_qtyBalance->toDouble() != 0.0)
   {
     QMessageBox::warning( this, tr("Incomplete Assignment"),
                           tr( "<p>You must assign a Lot/Serial # to the "
