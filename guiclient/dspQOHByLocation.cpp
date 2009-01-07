@@ -218,59 +218,62 @@ void dspQOHByLocation::sFillList()
       _restricted->setText(q.value("restricted").toString());
     }
 
-    XSqlQuery itemlocrsrv;
-    itemlocrsrv.prepare( "SELECT (itemlocrsrv_source || '-' || formatSOItemNumber(itemlocrsrv_source_id)) AS f_source,"
-						 "       formatQty(itemlocrsrv_qty) AS f_reserved "
-                         "FROM itemlocrsrv "
-                         "WHERE ( (itemlocrsrv_source='SO')"
-					     "  AND   (itemlocrsrv_itemloc_id=:itemloc_id) ) "
-						 "ORDER BY formatSOItemNumber(itemlocrsrv_source_id);" );
+    QString sql( "SELECT itemloc_id, warehous_code, item_number,"
+                 "       f_descrip, f_lotserial, uom_name,"
+                 "       qty, reservedqty,"
+                 "       'qty' AS qty_xtnumericrole,"
+                 "       'qty' AS reservedqty_xtnumericrole,"
+                 "       level AS xtindentrole "
+                 "FROM ( "
+                 "SELECT itemloc_id, 0 AS level, item_number AS sortkey, warehous_code, item_number,"
+                 "       (item_descrip1 || ' ' || item_descrip2) AS f_descrip,"
+                 "       formatlotserialnumber(itemloc_ls_id) AS f_lotserial, uom_name,"
+                 "       itemloc_qty AS qty,"
+                 "       CASE WHEN (:reservations) THEN qtyReservedLocation(itemloc_id)"
+                 "            ELSE 0"
+                 "       END AS reservedqty "
+                 "FROM itemloc, itemsite, warehous, item, uom "
+                 "WHERE ( (itemloc_itemsite_id=itemsite_id)"
+                 " AND (itemsite_item_id=item_id)"
+                 " AND (item_inv_uom_id=uom_id)"
+                 " AND (itemsite_warehous_id=warehous_id)"
+                 " AND (itemloc_location_id=:location_id) ) "
+                 "UNION "
+                 "SELECT -1 AS itemloc_id, 0 AS level, item_number AS sortkey, warehous_code, item_number,"
+                 "       (item_descrip1 || ' ' || item_descrip2) AS f_descrip,"
+                 "       :na AS f_lotserial, uom_name,"
+                 "       itemsite_qtyonhand AS qty,"
+                 "       0 AS reservedqty "
+                 "FROM itemsite, warehous, item, uom "
+                 "WHERE ((itemsite_item_id=item_id)"
+                 " AND (item_inv_uom_id=uom_id)"
+                 " AND (itemsite_warehous_id=warehous_id)"
+                 " AND (NOT itemsite_loccntrl)"
+                 " AND (itemsite_location_id=:location_id)) " );
 
-    q.prepare( "SELECT itemloc_id, warehous_code, item_number,"
-               "       f_descrip, f_lotserial, uom_name,"
-               "       qty, reservedqty,"
-               "       'qty' AS qty_xtnumericrole,"
-               "       'qty' AS reservedqty_xtnumericrole,"
-               "       level AS xtindentrole "
-               "FROM ( "
-               "SELECT itemloc_id, 0 AS level, item_number AS sortkey, warehous_code, item_number,"
-               "       (item_descrip1 || ' ' || item_descrip2) AS f_descrip,"
-               "       formatlotserialnumber(itemloc_ls_id) AS f_lotserial, uom_name,"
-               "       itemloc_qty AS qty,"
-               "       qtyReservedLocation(itemloc_id) AS reservedqty "
-               "FROM itemloc, itemsite, warehous, item, uom "
-               "WHERE ( (itemloc_itemsite_id=itemsite_id)"
-               " AND (itemsite_item_id=item_id)"
-               " AND (item_inv_uom_id=uom_id)"
-               " AND (itemsite_warehous_id=warehous_id)"
-               " AND (itemloc_location_id=:location_id) ) "
-               "UNION "
-               "SELECT -1 AS itemloc_id, 0 AS level, item_number AS sortkey, warehous_code, item_number,"
-               "       (item_descrip1 || ' ' || item_descrip2) AS f_descrip,"
-               "       :na AS f_lotserial, uom_name,"
-               "       itemsite_qtyonhand AS qty,"
-               "       0 AS qtyreserved "
-               "FROM itemsite, warehous, item, uom "
-               "WHERE ((itemsite_item_id=item_id)"
-               " AND (item_inv_uom_id=uom_id)"
-               " AND (itemsite_warehous_id=warehous_id)"
-               " AND (NOT itemsite_loccntrl)"
-               " AND (itemsite_location_id=:location_id)) "
-               "UNION "
-               "SELECT itemloc_id, 1 AS level, item_number AS sortkey, '' AS warehous_code, '' AS item_number,"
-               "       (itemlocrsrv_source || '-' || formatSOItemNumber(itemlocrsrv_source_id)) AS f_descrip,"
-               "       '' AS f_lotserial, '' AS uom_name,"
-               "       NULL AS qty,"
-               "       itemlocrsrv_qty AS qtyreserved "
-               "FROM itemlocrsrv, itemloc, itemsite, item "
-               "WHERE ( (itemlocrsrv_itemloc_id=itemloc_id) "
-               "  AND   (itemsite_id=itemloc_itemsite_id) "
-               "  ANd   (item_id=itemsite_item_id) "
-               "  AND   (itemloc_location_id=:location_id) ) "
-               "    ) AS data "
-               "ORDER BY sortkey, itemloc_id, level;" );
+    if(_metrics->boolean("EnableSOReservationsByLocation"))
+      sql +=     "UNION "
+                 "SELECT itemloc_id, 1 AS level, item_number AS sortkey, '' AS warehous_code, '' AS item_number,"
+                 "       (itemlocrsrv_source || '-' || formatSOItemNumber(itemlocrsrv_source_id)) AS f_descrip,"
+                 "       '' AS f_lotserial, '' AS uom_name,"
+                 "       NULL AS qty,"
+                 "       itemlocrsrv_qty AS reservedqty "
+                 "FROM itemlocrsrv, itemloc, itemsite, item "
+                 "WHERE ( (itemlocrsrv_itemloc_id=itemloc_id) "
+                 "  AND   (itemsite_id=itemloc_itemsite_id) "
+                 "  AND   (item_id=itemsite_item_id) "
+                 "  AND   (itemloc_location_id=:location_id) ) ";
+               
+    sql +=       "    ) AS data "
+                 "ORDER BY sortkey, itemloc_id, level;";
+                 
+    q.prepare(sql);
     q.bindValue(":location_id", _location->id());
     q.bindValue(":na", tr("N/A"));
+    if(_metrics->boolean("EnableSOReservationsByLocation"))
+      q.bindValue(":reservations", true);
+    else
+      q.bindValue(":reservations", false);
     q.exec();
     if (q.lastError().type() != QSqlError::NoError)
     {
