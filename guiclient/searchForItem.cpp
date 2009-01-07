@@ -140,14 +140,17 @@ void searchForItem::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
     hasBOM = q.value("hasBOM").toBool();
 
   bool hasBOO = false;
-  q.prepare("SELECT (count(*) != 0) AS hasBOO"
-            "  FROM boohead"
-            " WHERE (boohead_item_id=:item_id); ");
-  q.bindValue(":item_id", _item->id());
-  q.exec();
-  if(q.first())
-    hasBOO = q.value("hasBOO").toBool();
-
+  if (_metrics->value("Application") == "OpenMFG")
+  {
+    q.prepare("SELECT (count(*) != 0) AS hasBOO"
+              "  FROM boohead"
+              " WHERE (boohead_item_id=:item_id); ");
+    q.bindValue(":item_id", _item->id());
+    q.exec();
+    if(q.first())
+      hasBOO = q.value("hasBOO").toBool();
+  }
+  
   menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
 
   menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
