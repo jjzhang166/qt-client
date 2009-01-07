@@ -84,7 +84,7 @@ dspJobCosting::dspJobCosting(QWidget* parent, const char* name, Qt::WFlags fl)
                   "       formatQtyPer(wo_qtyrcv) AS received, "
                   "       formatQtyPer(noNeg(wo_qtyord - wo_qtyrcv)) AS balance,"
                   "       (item_descrip1 || ' ' || item_descrip2) AS descrip,"
-                  "       warehous_id "
+                  "       itemsite_warehous_id "
                   "FROM wo, itemsite, item, warehous, uom "
                   "WHERE ((wo_itemsite_id=itemsite_id)"
                   " AND (itemsite_item_id=item_id)"
