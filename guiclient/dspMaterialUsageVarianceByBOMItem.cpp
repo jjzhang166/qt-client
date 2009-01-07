@@ -81,6 +81,7 @@ dspMaterialUsageVarianceByBOMItem::dspMaterialUsageVarianceByBOMItem(QWidget* pa
   connect(_womatlvar, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_componentItem, SIGNAL(newID(int)), this, SLOT(sFillList()));
+  connect(_warehouse, SIGNAL(updated()), this, SLOT(sFillList()));
   connect(_item, SIGNAL(newId(int)), this, SLOT(sPopulateComponentItems(int)));
 
   _item->setType(ItemLineEdit::cGeneralManufactured);

@@ -273,6 +273,38 @@
   </connection>
   <connection>
    <sender>_item</sender>
+   <signal>warehouseIdChanged(int)</signal>
+   <receiver>_warehouse</receiver>
+   <slot>setId(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>317</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_item</sender>
+   <signal>newId(int)</signal>
+   <receiver>_warehouse</receiver>
+   <slot>findItemSites(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>317</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_item</sender>
    <signal>valid(bool)</signal>
    <receiver>_print</receiver>
    <slot>setEnabled(bool)</slot>
