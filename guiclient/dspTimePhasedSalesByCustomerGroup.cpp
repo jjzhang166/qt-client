@@ -248,14 +248,14 @@ void dspTimePhasedSalesByCustomerGroup::sSubmit()
   if (_periods->isPeriodSelected())
   {
     ParameterList params(buildParameters());
-    params.append("report_name", "TimePhasedSalesHistoryByCustomer");
+    params.append("report_name", "TimePhasedSalesHistoryByCustomerGroup");
     
     submitReport newdlg(this, "", TRUE);
     newdlg.set(params);
 
     if (newdlg.check() == cNoReportDefinition)
       QMessageBox::critical( this, tr("Report Definition Not Found"),
-                             tr( "The report defintions for this report, \"TimePhasedSalesHistoryByCustomer\" cannot be found.\n"
+                             tr( "The report defintions for this report, \"TimePhasedSalesHistoryByCustomerGroup\" cannot be found.\n"
                                  "Please contact your Systems Administrator and report this issue." ) );
     else
       newdlg.exec();
