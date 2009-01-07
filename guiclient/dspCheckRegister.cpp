@@ -102,6 +102,7 @@ dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WFlags
   sHandleButtons();
   _recipGroup->setChecked(false);
 
+  _total->setPrecision(omfgThis->moneyVal());
   if (omfgThis->singleCurrency())
   {
     _check->hideColumn("currAbbr");
