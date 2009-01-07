@@ -153,12 +153,12 @@ void dspQuotesByItem::sPopulateMenu(QMenu *menuThis)
 
 void dspQuotesByItem::sEditOrder()
 {
-  if (!checkSitePrivs(_so->id()))
+  if (!checkSitePrivs(_so->altId()))
     return;
     
   ParameterList params;
   params.append("mode", "editQuote");
-  params.append("quhead_id", _so->id());
+  params.append("quhead_id", _so->altId());
       
   salesOrder *newdlg = new salesOrder();
   newdlg->set(params);
@@ -167,12 +167,12 @@ void dspQuotesByItem::sEditOrder()
 
 void dspQuotesByItem::sViewOrder()
 {
-  if (!checkSitePrivs(_so->id()))
+  if (!checkSitePrivs(_so->altId()))
     return;
     
   ParameterList params;
   params.append("mode", "viewQuote");
-  params.append("quhead_id", _so->id());
+  params.append("quhead_id", _so->altId());
       
   salesOrder *newdlg = new salesOrder();
   newdlg->set(params);
@@ -191,7 +191,7 @@ void dspQuotesByItem::sFillList()
     params.append("item_id", _item->id());
 
     q = mql.toQuery(params);
-    _so->populate(q);
+    _so->populate(q, true);
   }
 }
 
