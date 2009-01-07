@@ -61,6 +61,8 @@
 #include <QSqlError>
 #include <QVariant>
 
+#include <metasql.h>
+#include "mqlutil.h"
 #include <openreports.h>
 
 #include "editICMWatermark.h"
@@ -77,9 +79,10 @@ reprintInvoices::reprintInvoices(QWidget* parent, const char* name, bool modal, 
   connect(_numOfCopies, SIGNAL(valueChanged(int)), this, SLOT(sHandleInvoiceCopies(int)));
   connect(_watermarks, SIGNAL(itemSelected(int)), this, SLOT(sEditWatermark()));
 
-  _invoice->addColumn( tr("Invoice #"), _orderColumn, Qt::AlignRight, true, "invchead_invcnumber");
-  _invoice->addColumn( tr("Doc. Date"), _dateColumn,  Qt::AlignCenter,true, "invchead_invcdate");
-  _invoice->addColumn( tr("Customer"),  -1,           Qt::AlignLeft,  true, "customer");
+  _invoice->addColumn( tr("Invoice #"),    _orderColumn,    Qt::AlignRight, true, "invchead_invcnumber");
+  _invoice->addColumn( tr("Doc. Date"),    _dateColumn,     Qt::AlignCenter,true, "invchead_invcdate");
+  _invoice->addColumn( tr("Customer"),     -1,              Qt::AlignLeft,  true, "customer");
+  _invoice->addColumn( tr("Total Amount"), _bigMoneyColumn, Qt::AlignRight, true, "extprice" );
   _invoice->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   _watermarks->addColumn( tr("Copy #"),      _dateColumn, Qt::AlignCenter );
@@ -109,26 +112,11 @@ void reprintInvoices::languageChange()
 
 void reprintInvoices::sQuery()
 {
-  QString sql( "SELECT * FROM ("
-               "  SELECT invchead_id, cust_id,"
-               "       invchead_invcnumber, invchead_invcdate,"
-               "       (TEXT(cust_number) || ' - ' || cust_name) AS customer "
-               "  FROM invchead, cust "
-               " WHERE ( (invchead_cust_id=cust_id)" );
-
-  if(_dates->allValid())
-    sql +=     "   AND   (invchead_invcdate BETWEEN :startDate AND :endDate) ";
-
-  if(!_invoicePattern->text().trimmed().isEmpty())
-    sql +=     "   AND   (invchead_invcnumber ~ :invc_pattern)";
-
-  sql +=       " )) AS data"
-               " WHERE   (checkInvoiceSitePrivs(invchead_id))"
-               " ORDER BY invchead_invcdate DESC;";
-  q.prepare(sql);
-  q.bindValue(":invc_pattern", _invoicePattern->text().trimmed());
-  _dates->bindValue(q);
-  q.exec();
+  MetaSQLQuery mql = mqlLoad("invoices", "detail");
+  ParameterList params;
+  params.append("invc_pattern", _invoicePattern->text().trimmed());
+  _dates->appendValue(params);
+  q = mql.toQuery(params);
   _invoice->populate(q, true);
   if (q.lastError().type() != QSqlError::NoError)
   {
