@@ -444,41 +444,45 @@ void issueToShipping::sIssueAllBalance()
   if (! sufficientInventory(orderid))
     return;
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  q.exec("BEGIN");
-  q.prepare("SELECT issueAllBalanceToShipping(:ordertype, :order_id, 0, :ts) AS result;");
-  q.bindValue(":ordertype", _order->type());
-  q.bindValue(":order_id",  orderid);
-  q.bindValue(":ts",        _transDate->date());
-  q.exec();
-  if (q.first())
+  for (int i = 0; i < _soitem->topLevelItemCount(); i++)
   {
-    int result = q.value("result").toInt();
-    if (result < 0)
-    {
-      rollback.exec();
-      systemError(this, storedProcErrorLookup("issueAllBalanceToShipping", result),
-                  __FILE__, __LINE__);
+    XTreeWidgetItem *cursor = (XTreeWidgetItem*)_soitem->topLevelItem(i);
+    if (! sufficientItemInventory(cursor->id()))
       return;
-    }
-    else
+
+    XSqlQuery rollback;
+    rollback.prepare("ROLLBACK;");
+
+    q.exec("BEGIN;");
+    q.prepare("SELECT issueLineBalanceToShipping(:ordertype, :soitem_id, :ts) AS result;");
+    q.bindValue(":ordertype", _order->type());
+    q.bindValue(":soitem_id", cursor->id());
+    q.bindValue(":ts",        _transDate->date());
+    q.exec();
+    if (q.first())
     {
-      if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
+      int result = q.value("result").toInt();
+      if (result < 0)
+      {
+        rollback.exec();
+        systemError(this, storedProcErrorLookup("issueLineBalanceToShipping", result),
+              __FILE__, __LINE__);
+        return;
+      }
+      else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
       {
         rollback.exec();
         QMessageBox::information( this, tr("Issue to Shipping"), tr("Issue Canceled") );
         return;
       }
-      q.exec("COMMIT;"); 
+      q.exec("COMMIT;");
     }
-  }
-  else if (q.lastError().type() != QSqlError::NoError)
-  {
-    rollback.exec();
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      rollback.exec();
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
 
   sFillList();
