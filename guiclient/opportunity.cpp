@@ -92,7 +92,7 @@ opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_editCharacteristic, SIGNAL(clicked()), this, SLOT(sEditCharacteristic()));
   connect(_deleteCharacteristic, SIGNAL(clicked()), this, SLOT(sDeleteCharacteristic()));
 
-  _probability->setValidator(omfgThis->percentVal());
+  _probability->setValidator(0);
   
   _opheadid = -1;
 
