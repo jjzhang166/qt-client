@@ -1500,7 +1500,7 @@ void salesOrderItem::sDeterminePrice(bool p)
       _charVars.replace(QTY, _qtyOrdered->toDouble() * _qtyinvuomratio);
         
       QModelIndex idx1, idx2, idx3;
-      q.prepare("SELECT formatprice(itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective)) AS price;");
+      q.prepare("SELECT itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective)::numeric(16,4) AS price;");
 
       for(int i = 0; i < _itemchar->rowCount(); i++)
       {

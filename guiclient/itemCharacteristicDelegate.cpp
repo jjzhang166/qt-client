@@ -129,7 +129,7 @@ void ItemCharacteristicDelegate::setModelData(QWidget *editor, QAbstractItemMode
   
   if (listVars.value(CUST_ID).toInt())
   {
-    q.prepare("SELECT formatprice(itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective)) AS price;");
+    q.prepare("SELECT itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective)::numeric(16,4) AS price;");
     
     q.bindValue(":item_id"  , listVars.value(ITEM_ID).toInt());
     q.bindValue(":char_id"  , charidx.model()->data(charidx, Qt::UserRole));
