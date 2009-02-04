@@ -68,8 +68,9 @@ void forwardUpdateAccounts::sUpdate()
   else if(_typeSelected->isChecked())
   {
     q.prepare("SELECT forwardUpdateAccount(accnt_id) AS result"
-              "  FROM accnt JOIN company ON ( (company_number=accnt_company) AND (NOT company_external) )"
-              " WHERE (accnt_type=:accnt_type);");
+              "  FROM accnt LEFT OUTER JOIN company ON (company_number=accnt_company)"
+              " WHERE((accnt_type=:accnt_type)"
+              "   AND (NOT COALESCE(company_external,false)));");
     if (_type->currentIndex() == 0)
       q.bindValue(":accnt_type", "A");
     else if (_type->currentIndex() == 1)
@@ -83,7 +84,8 @@ void forwardUpdateAccounts::sUpdate()
   }
   else
     q.prepare("SELECT forwardUpdateAccount(accnt_id) AS result"
-              "  FROM accnt JOIN company ON ( (company_number=accnt_company) AND (NOT company_external) );");
+              "  FROM accnt LEFT OUTER JOIN company ON (company_number=accnt_company)"
+              " WHERE (NOT COALESCE(company_external,false));");
   
   q.exec();
 }
