@@ -50,12 +50,17 @@ XTreeView::XTreeView(QWidget *parent) :
 
   _mapper = new XDataWidgetMapper(this);
   _model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  
+  _windowName = window()->objectName();
 }
 
 XTreeView::~XTreeView()
 {
+  // window()->objectName() isn't available here, at least for scripted windows!
+  QString settingsPrefix = _windowName + "/" + objectName();
+
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
-  settings.setValue(_settingsName + "/isForgetful", _forgetful);
+  settings.setValue(settingsPrefix + "/isForgetful", _forgetful);
   QString savedString;
   if(!_forgetful)
   {
@@ -76,7 +81,7 @@ XTreeView::~XTreeView()
                            QString::number(header()->sectionSize(i)) + "|");
     }
     if (DEBUG) qDebug("saving %s", qPrintable(savedString));
-    settings.setValue(_settingsName + "/columnWidths", savedString);
+    settings.setValue(settingsPrefix + "/columnWidths", savedString);
   }
   if(_x_preferences)
   {
@@ -86,9 +91,9 @@ XTreeView::~XTreeView()
       savedString.append(QString::number(i) + "," + (header()->isSectionHidden(i)?"off":"on") + "|");
     }
     if(!savedString.isEmpty())
-      _x_preferences->set(_settingsName + "/columnsShown", savedString);
+      _x_preferences->set(settingsPrefix + "/columnsShown", savedString);
     else
-      _x_preferences->remove(_settingsName + "/columnsShown");
+      _x_preferences->remove(settingsPrefix + "/columnsShown");
   }
 }
 
@@ -295,12 +300,6 @@ void XTreeView::setDataWidgetMap(XDataWidgetMapper* mapper)
   _mapper=mapper; 
 }
 
-void XTreeView::setObjectName(const QString &name)
-{
-  _settingsName = window()->objectName() + "/" + name;
-  QObject::setObjectName(name);
-}
-
 void XTreeView::setTable()
 {
   if (_model.tableName() == _tableName)
@@ -362,17 +361,18 @@ void XTreeView::setModel(XSqlTableModel * model)
 
   if (! _settingsLoaded)
   {
+    QString settingsPrefix = _windowName + "/" + objectName();
     _settingsLoaded = true;
 
     QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
-    _forgetful = settings.value(_settingsName + "/isForgetful").toBool();
+    _forgetful = settings.value(settingsPrefix + "/isForgetful").toBool();
     QString savedString;
     QStringList savedParts;
     QString part, key, val;
     bool b1 = false, b2 = false;
     if(!_forgetful)
     {
-      savedString = settings.value(_settingsName + "/columnWidths").toString();
+      savedString = settings.value(settingsPrefix + "/columnWidths").toString();
       savedParts = savedString.split("|", QString::SkipEmptyParts);
       for(int i = 0; i < savedParts.size(); i++)
       {
@@ -401,7 +401,7 @@ void XTreeView::setModel(XSqlTableModel * model)
     // Load any previously saved column hidden/visible information
     if(_x_preferences)
     {
-      savedString = _x_preferences->value(_settingsName + "/columnsShown");
+      savedString = _x_preferences->value(settingsPrefix + "/columnsShown");
       savedParts = savedString.split("|", QString::SkipEmptyParts);
       for(int i = 0; i < savedParts.size(); i++)
       {
@@ -566,7 +566,7 @@ void XTreeView::setColumn(const QString &label, int width, int alignment, bool v
   cp->alignment    = alignment;
 
   if (cp->fromSettings)
-    cp->stretchy   = (width == -1 && cp->savedWidth == -1);
+    cp->stretchy   = (width == -1 || cp->savedWidth == -1);
   else
   {
     cp->savedWidth = -1;
