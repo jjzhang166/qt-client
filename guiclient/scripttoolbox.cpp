@@ -277,6 +277,14 @@ QObject * ScriptToolbox::menuAddMenu(QObject * menu, const QString & text, const
   return nm;
 }
 
+int ScriptToolbox::tabCount(QWidget * tab)
+{
+  QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
+  if(tw)
+    return tw->count();
+  return 0;
+}
+
 QWidget * ScriptToolbox::tabWidget(QWidget * tab, int idx)
 {
   QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
@@ -295,11 +303,26 @@ int ScriptToolbox::tabInsertTab(QWidget * tab, int idx, QWidget * page, const QS
   return i;
 }
 
+int ScriptToolbox::tabTabIndex(QWidget * tab, QWidget * page)
+{
+  QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
+  if(tw)
+    return tw->indexOf(page);
+  return 0;
+}
+
 void ScriptToolbox::tabRemoveTab(QWidget * tab, int idx)
 {
   QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
   if(tw)
     tw->removeTab(idx);
+}
+
+void ScriptToolbox::tabSetTabEnabled(QWidget * tab, int idx, bool enable)
+{
+  QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
+  if(tw)
+    tw->setTabEnabled(idx, enable);
 }
 
 void ScriptToolbox::tabSetTabText(QWidget * tab, int idx, const QString & text)

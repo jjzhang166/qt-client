@@ -116,9 +116,12 @@ class ScriptToolbox : public QObject
     QObject * menuAddAction(QObject * menu, const QString & text);
     QObject * menuAddMenu(QObject * menu, const QString & text, const QString & name = QString());
 
+    int       tabCount(QWidget * tab);
     QWidget * tabWidget(QWidget * tab, int idx);
     int       tabInsertTab(QWidget * tab, int idx, QWidget * page, const QString & text);
+    int       tabTabIndex(QWidget * tab, QWidget * page);
     void      tabRemoveTab(QWidget * tab, int idx);
+    void      tabSetTabEnabled(QWidget * tab, int idx, bool enable);
     void      tabSetTabText(QWidget * tab, int idx, const QString & text);
     QString   tabtabText(QWidget * tab, int idx);
 
