@@ -2527,10 +2527,13 @@ void salesOrder::sFillItemList()
       return;
     }
 
-    sql = "SELECT ROUND(((COALESCE(SUM(coship_qty),0)-coitem_qtyshipped) *"
+    sql = "SELECT ROUND(((COALESCE(SUM(shipitem_qty),0)-coitem_qtyshipped) *"
           "                  coitem_qty_invuomratio) *"
           "           (coitem_price / coitem_price_invuomratio),2) AS shippingAmount "
-          "  FROM coitem LEFT OUTER JOIN coship ON (coship_coitem_id=coitem_id) "
+          "  FROM coitem LEFT OUTER JOIN "
+          "       (shipitem JOIN shiphead ON (shipitem_shiphead_id=shiphead_id"
+          "                               AND shiphead_order_id=:cohead_id"
+          "                               AND shiphead_order_type='SO')) ON (shipitem_orderitem_id=coitem_id)"
           " WHERE ((coitem_cohead_id=:cohead_id)" ;
 
     if (!_showCanceled->isChecked())
