@@ -255,12 +255,15 @@ void ScriptToolbox::layoutStackedInsertWidget(QObject * obj, int index, QWidget 
     layout->insertWidget(index, widget);
 }
 
-QObject * ScriptToolbox::menuAddAction(QObject * menu, const QString & text)
+QObject * ScriptToolbox::menuAddAction(QObject * menu, const QString & text, const bool enabled)
 {
   QMenu * m = qobject_cast<QMenu*>(menu);
   QAction * act = 0;
   if(m)
+  {
     act = m->addAction(text);
+    act->setEnabled(enabled);
+  }
   return act;
 }
 
@@ -282,6 +285,86 @@ int ScriptToolbox::tabCount(QWidget * tab)
   QTabWidget *tw = qobject_cast<QTabWidget*>(tab);
   if(tw)
     return tw->count();
+  return 0;
+}
+
+QObject * ScriptToolbox::menuAddSeparator(QObject * menu)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  QAction * na = 0;
+  if(m)
+    na = m->addSeparator();
+  return na;
+}
+
+QObject * ScriptToolbox::menuInsertAction(QObject * menu, QObject * before, const QString & name, const bool enabled)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  QAction * ba = qobject_cast<QAction*>(before);
+  QAction * na = new QAction(name,m);
+  na->setEnabled(enabled);
+  if(m && ba && na)
+  {
+    m->insertAction(ba, na);
+    return na;
+  }
+  return 0;
+}
+
+QObject * ScriptToolbox::menuInsertMenu(QObject * menu, QObject * before, const QString & name)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  QAction * ba = qobject_cast<QAction*>(before);
+  QMenu * nm = new QMenu(name);
+
+  if (!ba && nm)
+  {
+    QMenu * bm =  qobject_cast<QMenu*>(before);
+    if (bm)
+      ba = bm->menuAction();
+  }
+  if (ba && nm)
+    m->insertMenu(ba, nm);
+  return nm;
+}
+
+QObject * ScriptToolbox::menuInsertSeparator(QObject * menu, QObject * before)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  QAction * ba = qobject_cast<QAction*>(before);
+  if (!ba)
+  {
+    QMenu * bm = qobject_cast<QMenu*>(before);
+    ba = bm->menuAction();
+  }
+  QAction * na = new QAction(m);
+  if(m && ba && na)
+  {
+    na->setSeparator(true);
+    m->insertAction(ba, na);
+    return na;
+  }
+  return 0;
+}
+
+void ScriptToolbox::menuRemove(QObject * menu, QObject * action)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  QAction * act = qobject_cast<QAction*>(action);
+  if (!act)
+  {
+    QMenu * ma = qobject_cast<QMenu*>(action);
+    act = ma->menuAction();
+  }
+  if(m && act)
+    m->removeAction(act);
+}
+
+int ScriptToolbox::menuActionCount(QObject * menu)
+{
+  QMenu * m = qobject_cast<QMenu*>(menu);
+  if (m)
+    return m->actions().count();
   return 0;
 }
 

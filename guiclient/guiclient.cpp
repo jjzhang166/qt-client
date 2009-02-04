@@ -1045,7 +1045,10 @@ void GUIClient::populateCustomMenu(QMenu * menu, const QString & module)
   while(qry.next())
   {
     if(customMenu == 0)
+    {
       customMenu = menu->addMenu(tr("Custom"));
+      customMenu->setObjectName("menu." + module.toLower() + ".custom");
+    }
 
     bool allowed = true;
     QString privname = qry.value("cmd_privname").toString();

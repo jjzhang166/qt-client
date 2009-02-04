@@ -113,8 +113,14 @@ class ScriptToolbox : public QObject
     void layoutGridAddWidget(QObject *, QWidget *, int fromRow, int fromColumn, int rowSpan, int columnSpan, int alignment = 0);
     void layoutStackedInsertWidget(QObject *, int index, QWidget *);
 
-    QObject * menuAddAction(QObject * menu, const QString & text);
+    QObject * menuAddAction(QObject * menu, const QString & text, const bool enabled = true);
     QObject * menuAddMenu(QObject * menu, const QString & text, const QString & name = QString());
+    QObject * menuAddSeparator(QObject * menu);
+    QObject * menuInsertAction(QObject * menu, QObject * before, const QString & name = QString(), const bool enabled = true);
+    QObject * menuInsertMenu(QObject * menu, QObject * before, const QString & name);
+    QObject * menuInsertSeparator(QObject * menu, QObject * before);
+    void      menuRemove(QObject * menu, QObject * action);
+    int       menuActionCount(QObject * menu);
 
     int       tabCount(QWidget * tab);
     QWidget * tabWidget(QWidget * tab, int idx);
