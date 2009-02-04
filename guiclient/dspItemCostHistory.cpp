@@ -25,7 +25,7 @@ dspItemCostHistory::dspItemCostHistory(QWidget* parent, const char* name, Qt::WF
   connect(_item, SIGNAL(newId(int)), this, SLOT(sFillList()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _itemcost->addColumn(tr("Element"),              -1, Qt::AlignLeft,  true, "cost_elem_type");
+  _itemcost->addColumn(tr("Element"),              -1, Qt::AlignLeft,  true, "costelem_type");
   _itemcost->addColumn(tr("Lower"),       _costColumn, Qt::AlignCenter,true, "lowlevel");
   _itemcost->addColumn(tr("Type"),        _costColumn, Qt::AlignLeft,  true, "type");
   _itemcost->addColumn(tr("Time"),    _timeDateColumn, Qt::AlignCenter,true, "costhist_date");
