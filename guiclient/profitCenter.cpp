@@ -148,15 +148,15 @@ void profitCenter::sSave()
     q.prepare( "UPDATE accnt "
                "SET accnt_profit=:prftcntr_number "
                "WHERE (accnt_profit=:old_prftcntr_number);" );
-  }
 
-  q.bindValue(":prftcntr_number", _number->text());
-  q.bindValue(":old_prftcntr_number", _cachedNumber);
-  q.exec();
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    q.bindValue(":prftcntr_number", _number->text());
+    q.bindValue(":old_prftcntr_number", _cachedNumber);
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
 
   done(_prftcntrid);
