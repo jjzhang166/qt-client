@@ -1310,8 +1310,10 @@ void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
 
   connect(w, SIGNAL(destroyed(QObject*)), this, SLOT(windowDestroyed(QObject*)));
 
-  if(w->inherits("XMainWindow") || w->inherits("XWidget"))
+  if(w->inherits("XMainWindow") || w->inherits("XWidget") || w->inherits("XDialog"))
   {
+    if(w->inherits("XDialog"))
+      qDebug() << "warning: " << w->objectName() << " inherts XDialog and was passed to handleNewWindow()";
     w->show();
     return;
   }
