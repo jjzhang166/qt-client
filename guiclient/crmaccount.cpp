@@ -1257,9 +1257,9 @@ void crmaccount::sTaxAuth()
     params.append("mode", "view");
   }
 
-  taxAuthority *newdlg = new taxAuthority(this);
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  taxAuthority newdlg(this);
+  newdlg.set(params);
+  newdlg.exec();
 }
 
 void crmaccount::sVendor()
