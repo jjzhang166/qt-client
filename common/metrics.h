@@ -38,12 +38,12 @@ class Parameters : public QObject
     QString value(const char *);
     bool    boolean(const char *);
 
-    void set(const char *, bool);
-    void set(const QString &, bool);
-    void set(const char *, int);
-    void set(const QString &, int);
-    void set(const char *, const QString &);
-    void set(const QString &, const QString &);
+    Q_INVOKABLE void set(const char *, bool);
+    Q_INVOKABLE void set(const QString &, bool);
+    Q_INVOKABLE void set(const char *, int);
+    Q_INVOKABLE void set(const QString &, int);
+    Q_INVOKABLE void set(const char *, const QString &);
+    Q_INVOKABLE void set(const QString &, const QString &);
 
     QString parent(const QString &);
 
