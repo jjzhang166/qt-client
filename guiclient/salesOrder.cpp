@@ -3863,10 +3863,6 @@ void salesOrder::recalculateTax()
     return;
   }
 
-  _taxCache[A][Total] = _taxCache[A][Line] + _taxCache[A][Freight] + _taxCache[A][Adj];
-  _taxCache[B][Total] = _taxCache[B][Line] + _taxCache[B][Freight] + _taxCache[B][Adj];
-  _taxCache[C][Total] = _taxCache[C][Line] + _taxCache[C][Freight] + _taxCache[C][Adj];
-
   //  Determine the freight tax
   XSqlQuery freightq;
   freightq.prepare("SELECT calculateTax(:tax_id, :freight, 0, 'A') AS freighta,"
@@ -3886,6 +3882,10 @@ void salesOrder::recalculateTax()
     systemError(this, freightq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
+  _taxCache[A][Total] = _taxCache[A][Line] + _taxCache[A][Freight] + _taxCache[A][Adj];
+  _taxCache[B][Total] = _taxCache[B][Line] + _taxCache[B][Freight] + _taxCache[B][Adj];
+  _taxCache[C][Total] = _taxCache[C][Line] + _taxCache[C][Freight] + _taxCache[C][Adj];
 
   _tax->setLocalValue(_taxCache[A][Total] + _taxCache[B][Total] + _taxCache[C][Total]);
   sCalculateTotal();
