@@ -171,8 +171,14 @@ bool dspGLTransactions::setParams(ParameterList &params)
       double beginning = 0;
       QDate  periodStart = _dates->startDate();
       XSqlQuery begq;
-      begq.prepare("SELECT trialbal_beginning, period_start "
-                   "FROM trialbal, period "
+      begq.prepare("SELECT "
+                   "  CASE WHEN accnt_type IN ('A','E') THEN "
+                   "    trialbal_beginning * -1 "
+                   "  ELSE trialbal_beginning END AS trialbal_beginning,"
+                   "  period_start "
+                   "FROM trialbal "
+                   "  JOIN accnt ON (trialbal_accnt_id=accnt_id), "
+                   "  period "
                    "WHERE ((trialbal_period_id=period_id)"
                    "  AND  (trialbal_accnt_id=:accnt_id)"
                    "  AND  (:start BETWEEN period_start AND period_end));");
@@ -190,10 +196,14 @@ bool dspGLTransactions::setParams(ParameterList &params)
 	return false;
       }
       XSqlQuery glq;
-      glq.prepare("SELECT COALESCE(SUM(gltrans_amount),0) AS glamount "
+      glq.prepare("SELECT CASE WHEN accnt_type IN ('A','E') THEN "
+                  "         COALESCE(SUM(gltrans_amount),0) * -1"
+                  "       ELSE COALESCE(SUM(gltrans_amount),0) END AS glamount "
                   "FROM gltrans "
+                  "  JOIN accnt ON (gltrans_accnt_id=accnt_id) "
                   "WHERE ((gltrans_date BETWEEN :periodstart AND date :querystart - interval '1 day')"
-                  "  AND  (gltrans_accnt_id=:accnt_id));");
+                  "  AND  (gltrans_accnt_id=:accnt_id)) "
+                  "GROUP BY accnt_type;");
       glq.bindValue(":periodstart", periodStart);
       glq.bindValue(":querystart",  _dates->startDate());
       glq.bindValue(":accnt_id",    _account->id());
@@ -246,7 +256,9 @@ void dspGLTransactions::sFillList()
                    "       CASE WHEN (gltrans_amount > 0) THEN gltrans_amount"
                    "            ELSE NULL"
                    "       END AS credit,"
-                   "       gltrans_amount AS running,"
+                   "       CASE WHEN accnt_type IN ('A','E') THEN "
+                   "         gltrans_amount * -1 "
+                   "       ELSE gltrans_amount END AS running,"
                    "       'curr' AS debit_xtnumericrole,"
                    "       'curr' AS credit_xtnumericrole,"
                    "       'curr' AS running_xtnumericrole,"

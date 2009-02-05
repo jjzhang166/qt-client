@@ -60,6 +60,9 @@
        gltrans_amount * -1 as balance_amt,
 --
        gltrans_amount,
+       CASE WHEN accnt_type IN ('A','E') THEN 
+         gltrans_amount * -1
+       ELSE gltrans_amount END AS running,
        formatBoolYN(gltrans_posted) AS f_posted,
        gltrans_username AS f_username,
        gltrans_sequence
@@ -97,6 +100,7 @@
              ELSE 0
         END,
         &lt;? value("beginningBalance") ?> * -1,
+        &lt;? value("beginningBalance") ?>,
         &lt;? value("beginningBalance") ?>,
         NULL,
         NULL,
@@ -800,7 +804,7 @@ ORDER BY gltrans_created &lt;? if not exists("beginningBalance") ?> DESC &lt;? e
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>gltrans_amount</column>
+     <column>running</column>
     </data>
     <tracktotal builtin="true" >qty</tracktotal>
    </field>
