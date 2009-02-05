@@ -502,11 +502,11 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   if (r_response.toInt() == 1)
     r_approved = "APPROVED";
   else if (r_response.toInt() == 2)
-    r_approved == "DECLINED";
+    r_approved = "DECLINED";
   else if (r_response.toInt() == 3)
-    r_approved == "ERROR";
+    r_approved = "ERROR";
   else if (r_response.toInt() == 4)
-    r_approved == "HELDFORREVIEW";
+    r_approved = "HELDFORREVIEW";
 
   // fieldValue(responseFields, 2);				// subcode
 
