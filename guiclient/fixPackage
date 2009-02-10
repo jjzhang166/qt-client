@@ -67,7 +67,8 @@ collectAndRenameLibs $APPROOT/Contents/MacOS/$EXECNAME              || exit 2
 
 for PLUGIN in sqldrivers/libqsqlpsql.dylib sqldrivers/libqsqlodbc.dylib \
               imageformats/libqgif.dylib imageformats/libqjpeg.dylib    \
-              imageformats/libqmng.dylib ; do
+              imageformats/libqmng.dylib \
+              designer/libqwebview.dylib ; do
   [ -d $APPROOT/Contents/plugins/`dirname $PLUGIN` ] || \
     mkdir -p $APPROOT/Contents/plugins/`dirname $PLUGIN`        || exit 2
   cp $QTDIR/plugins/$PLUGIN $APPROOT/Contents/plugins/$PLUGIN   || exit 2
