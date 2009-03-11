@@ -90,7 +90,7 @@ WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>);</sql>
                           invchead_tax +
                           COALESCE(SUM(ROUND(((invcitem_billed * invcitem_qty_invuomratio) *
                                               (invcitem_price / COALESCE(invcitem_price_invuomratio,1))),2)), 0) -
-                          MAX(total_allocated)) ) AS f_totaldue,
+                          total_allocated) ) AS f_totaldue,
       formatMoney(invchead_misc_amount) AS f_misc,
       formatMoney(invchead_tax) AS f_tax,
       formatMoney(invchead_freight) AS f_freight,
@@ -100,13 +100,13 @@ WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>);</sql>
                         invchead ON (arapply_target_docnumber = invchead_invcnumber)
                    WHERE ((invchead_id = &lt;? value("invchead_id") ?>)
                       AND (arapply_source_doctype = 'K')))) AS f_payment,
-      formatMoney(MAX(total_allocated)) AS f_allocated,
+      formatMoney(total_allocated) AS f_allocated,
       invchead_notes,
       invchead_misc_descrip
 FROM invchead
      LEFT OUTER JOIN invcitem ON (invcitem_invchead_id=invchead_id)
      LEFT OUTER JOIN item ON (invcitem_item_id=item_id),
-    (SELECT COALESCE(SUM(CASE WHEN((aropen_amount - aropen_paid) >=
+    (SELECT MAX(total_allocated) AS total_allocated FROM (SELECT COALESCE(SUM(CASE WHEN((aropen_amount - aropen_paid) >=
                        currToCurr(aropenco_curr_id, aropen_curr_id,
                           aropenco_amount, aropen_docdate))
            THEN currToCurr(aropenco_curr_id, invchead_curr_id,
@@ -132,10 +132,10 @@ FROM invchead
       AND   (arapply_source_aropen_id=s.aropen_id)
       AND   (invchead_posted)
       AND   (invchead_id=&lt;? value("invchead_id") ?>) )
-    ) AS totalalloc
+    ) AS data) AS totalalloc
 WHERE (invchead_id=&lt;? value("invchead_id") ?>)
 GROUP BY invchead_freight, invchead_misc_amount, invchead_tax, invchead_payment,
-         invchead_notes, invchead_misc_descrip
+         invchead_notes, invchead_misc_descrip, total_allocated
 ;</sql>
  </querysource>
  <querysource>
