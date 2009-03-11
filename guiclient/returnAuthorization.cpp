@@ -1745,6 +1745,8 @@ void returnAuthorization::sRefund()
   if (! sSave(true))
     return;
 
+  q.exec("BEGIN;");
+
   bool _post = _disposition->currentIndex() == 0 && _timing->currentItem() == 0 &&
                 _creditBy->currentIndex() == 3;
 
@@ -1758,8 +1760,10 @@ void returnAuthorization::sRefund()
     if (result < 0)
     {
       systemError(this, storedProcErrorLookup("createRaCreditMemo", result), __FILE__, __LINE__);
+      q.exec("ROLLBACK;");
       return;
     }
+
     ParameterList ccp;
     ccp.append("cmhead_id", result);
     MetaSQLQuery ccm = mqlLoad("creditMemoCreditCards", "detail");
@@ -1779,7 +1783,23 @@ void returnAuthorization::sRefund()
       {
         QString docnum = ccq.value("cmhead_number").toString();
         QString refnum = ccq.value("cohead_number").toString();
-        int refid;
+        QString reftype;
+        int refid = -1; // TODO: set this to some appropriate value
+        if(_post)
+        {
+          reftype = "aropen";
+          q.prepare("SELECT aropen_id FROM aropen WHERE aropen_doctype='C' AND aropen_docnumber=:cmhead_number;");
+          q.bindValue(":cmhead_number", docnum);
+          q.exec();
+          if(q.first())
+            refid = q.value("aropen_id").toInt();
+          else
+          {
+            systemError(this, ccq.lastError().databaseText(), __FILE__, __LINE__);
+            q.exec("ROLLBACK;");
+            return;
+          }
+        }
         int returnValue = cardproc->credit(ccq.value("ccard_id").toInt(),
                                        (_CCCVV->text().isEmpty()) ? -1 :
                                                         _CCCVV->text().toInt(),
@@ -1789,10 +1809,14 @@ void returnAuthorization::sRefund()
                                        ccq.value("cmhead_freight").toDouble(),
                                        0,
                                        ccq.value("cmhead_curr_id").toInt(),
-                                       docnum, refnum, ccpayid, QString(), refid);
+                                       docnum, refnum, ccpayid, reftype, refid);
         if (returnValue < 0)
+        {
           QMessageBox::critical(this, tr("Credit Card Processing Error"),
                                 cardproc->errorMsg());
+          q.exec("ROLLBACK;");
+          return;
+        }
         else if (returnValue > 0)
           QMessageBox::warning(this, tr("Credit Card Processing Warning"),
                                cardproc->errorMsg());
@@ -1804,6 +1828,7 @@ void returnAuthorization::sRefund()
     else if (ccq.lastError().type() != QSqlError::NoError)
     {
       systemError(this, ccq.lastError().databaseText(), __FILE__, __LINE__);
+      q.exec("ROLLBACK;");
       return;
     }
     else
@@ -1811,14 +1836,17 @@ void returnAuthorization::sRefund()
       QMessageBox::critical(this, tr("Credit Card Processing Error"),
                             tr("Could not find a Credit Card to use for "
                                "this Credit transaction."));
+      q.exec("ROLLBACK;");
       return;
     }
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    q.exec("ROLLBACK;");
     return;
   }
+  q.exec("COMMIT;");
 }
 
 void returnAuthorization::sPopulateMenu( QMenu * pMenu,  QTreeWidgetItem *selected)
