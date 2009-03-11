@@ -579,6 +579,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
     r_error = r_message;
     _errorMsg = errorMsg(-12).arg(r_error);
     returnValue = -12;
+    status = "X";
   }
 
   else if (r_approved.isEmpty() && ! r_message.isEmpty())
