@@ -2,7 +2,7 @@
 <report>
  <title>Purchase Order</title>
  <name>PurchaseOrder</name>
- <description>This is an example Purchase Order report that can be used an example for creating customized Purchase Order reports for customers.</description>
+ <description></description>
  <watermark>
   <data>
    <query>Head</query>
@@ -10,32 +10,44 @@
   </data>
   <opacity>25</opacity>
  </watermark>
- <size>letter</size>
+ <size>Letter</size>
  <portrait/>
  <topmargin>28</topmargin>
  <bottommargin>28</bottommargin>
- <rightmargin>0</rightmargin>
- <leftmargin>0</leftmargin>
+ <rightmargin>20</rightmargin>
+ <leftmargin>20</leftmargin>
  <querysource>
   <name>Head</name>
   <sql>SELECT pohead_number,
        formatDate(pohead_orderdate) AS f_orderdate,
        pohead_fob,
        pohead_shipvia,
+       terms_descrip,
        vend_number,
        vend_name,
-       formatAddr(vend_address1, vend_address2, vend_address3, (vend_city || '  '  || vend_state || '  ' || vend_zip), vend_country) AS f_address,
+       vend_address1,
+       vend_address2,
+       vend_address3,
+       (vend_city || '  '  || vend_state || '  ' || vend_zip) AS vendcitystatezip,
+       formataddr(vend_address1, vend_address2, vend_address3, (vend_city || '  '  || vend_state || '   ' || vend_zip), vend_country) as vend_address,
        warehous_descrip,
-       formatAddr(warehous_addr1, warehous_addr2, warehous_addr3, (warehous_city || '  '  || warehous_state || '  ' || warehous_zip), warehous_country) AS f_shiptoaddress,
-       CASE WHEN(pohead_terms_id IS NULL OR pohead_terms_id = -1) THEN text('N/A')
-            ELSE (SELECT terms_code FROM terms WHERE (terms_id=pohead_terms_id) )
-       END AS f_terms,
+       addr_line1 as warehous_addr1,
+       addr_line2 as warehous_addr2,
+       addr_line3 as warehous_addr3,
+       addr_city  as warehous_addr4,
+       addr_postalcode as zip,
+       addr_state,
+       addr_country,
+       formataddr(addr_line1, addr_line2, addr_line3, (addr_city || ' ' || addr_state || ' ' || addr_postalcode), addr_country) as warehouse_address,
        pohead_agent_username AS username,
        pohead_comments,
        text(&lt;? value("title") ?>) AS title
-  FROM pohead, vend, warehous
+ FROM pohead
+   LEFT OUTER JOIN terms ON (pohead_terms_id = terms_id),
+   vend, whsinfo
+   LEFT OUTER JOIN addr ON (warehous_addr_id = addr_id)
  WHERE ((pohead_vend_id=vend_id)
-   AND (pohead_warehous_id=warehous_id)
+   AND (pohead_warehous_id = warehous_id)
    AND (pohead_id=&lt;? value("pohead_id") ?>) );</sql>
  </querysource>
  <querysource>
@@ -44,9 +56,10 @@
        poitem_comments,
        poitem_linenumber AS f_line,
        item_number,
-       poitem_vend_item_number,
-       CASE WHEN (poitem_vend_item_descrip LIKE '') THEN (item_descrip1 || ' ' || item_descrip2)
-            ELSE (poitem_vend_item_descrip)
+       poitem_vend_item_number, 
+       CASE WHEN (LENGTH(TRIM(BOTH '	' FROM poitem_vend_item_descrip)) &lt;= 0) THEN
+          (item_descrip1 || '' || item_descrip2)
+       ELSE (poitem_vend_item_descrip)
        END AS itemdescription,
        formatQty(poitem_qty_ordered) AS f_ordered,
        CASE WHEN (poitem_vend_uom LIKE '') THEN (uom_name)
@@ -54,46 +67,123 @@
        END AS itemuom,
        formatPrice(poitem_unitprice) AS f_price,
        formatExtPrice(poitem_unitprice * poitem_qty_ordered) AS f_extended,
-       formatDate(poitem_duedate) AS f_duedate
-  FROM poitem LEFT OUTER JOIN
-         ( itemsite JOIN item
-           ON (itemsite_item_id=item_id) JOIN uom ON (item_inv_uom_id=uom_id))
-         ON (poitem_itemsite_id=itemsite_id)
- WHERE (poitem_pohead_id=&lt;? value("pohead_id") ?>)
+       formatDate(poitem_duedate) AS f_duedate,
+       characteristicsToString('PI', poitem_id, '=', ', ') AS poitem_characteristics
+FROM poitem
+	LEFT OUTER JOIN itemsite ON (poitem_itemsite_id = itemsite_id)
+	LEFT OUTER JOIN (item JOIN uom ON (item_inv_uom_id=uom_id)) ON (itemsite_item_id = item_id)
+WHERE 	(poitem_pohead_id=&lt;? value("pohead_id") ?>) 
 ORDER BY poitem_linenumber;</sql>
  </querysource>
  <querysource>
   <name>Foot</name>
-  <sql>SELECT formatExtPrice(COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)) AS f_totaldue
-  FROM poitem
- WHERE (poitem_pohead_id=&lt;? value("pohead_id") ?>);</sql>
+  <sql>SELECT formatExtPrice(COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)) AS f_subtotal,
+       formatExtPrice(COALESCE(SUM(poitem_freight)+pohead_freight,0)) AS f_totalfreight,
+       formatExtPrice(COALESCE(pohead_tax,0)) AS f_tax,
+       formatExtPrice(COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)+COALESCE(SUM(poitem_freight)+pohead_freight,0)+COALESCE(pohead_tax,0)) AS f_totaldue
+  FROM poitem, pohead
+ WHERE ( (poitem_pohead_id=&lt;? value("pohead_id") ?>)
+  AND (pohead_id=poitem_pohead_id) )
+ GROUP BY pohead_freight, pohead_tax;</sql>
  </querysource>
  <querysource>
   <name>Logo</name>
-  <sql>SELECT image_data
-  FROM image
- WHERE (image_name='NSILogo');</sql>
+  <sql>SELECT image_data 
+FROM image 
+WHERE ((image_name='logo'));</sql>
  </querysource>
  <querysource>
-  <name>FootExt</name>
-  <sql>SELECT formatExtPrice(pohead_freight + pohead_tax +
-         ( SELECT COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)
-             FROM poitem
-            WHERE (poitem_pohead_id=&lt;? value("pohead_id") ?>)
-         )) AS f_total,
-       formatExtPrice(pohead_tax) AS f_tax,
-       formatExtPrice(pohead_freight) AS f_freight
-  FROM pohead
- WHERE (pohead_id=&lt;? value("pohead_id") ?>)</sql>
+  <name>Currency</name>
+  <sql>SELECT
+ curr_symbol
+FROM
+    pohead,
+    curr_symbol
+WHERE (pohead_id = &lt;? value("pohead_id") ?>) AND
+      pohead_curr_id = curr_id;</sql>
+ </querysource>
+ <querysource>
+  <name>Address</name>
+  <sql>SELECT
+     warehous_descrip,
+     formatAddr(addr_line1, addr_line2, addr_line3, ( addr_city || '  ' || addr_state || '  ' || addr_postalcode), addr_country) AS warehouse_address
+FROM
+     whsinfo, 
+     addr, 
+     pohead
+WHERE 
+     addr_id = warehous_addr_id
+     and pohead_warehous_id = warehous_id
+     AND pohead_id=&lt;? value("pohead_id") ?> ;</sql>
  </querysource>
  <pghead>
-  <height>363</height>
+  <height>376</height>
   <label>
    <rect>
-    <x>455</x>
-    <y>135</y>
-    <width>38</width>
-    <height>17</height>
+    <x>550</x>
+    <y>65</y>
+    <width>42</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>DATE</string>
+  </label>
+  <line>
+   <xstart>0</xstart>
+   <ystart>130</ystart>
+   <xend>270</xend>
+   <yend>130</yend>
+   <weight>0</weight>
+  </line>
+  <line>
+   <xstart>5</xstart>
+   <ystart>315</ystart>
+   <xend>805</xend>
+   <yend>315</yend>
+   <weight>0</weight>
+  </line>
+  <label>
+   <rect>
+    <x>550</x>
+    <y>45</y>
+    <width>80</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>P/O NUMBER</string>
+  </label>
+  <line>
+   <xstart>535</xstart>
+   <ystart>130</ystart>
+   <xend>810</xend>
+   <yend>130</yend>
+   <weight>0</weight>
+  </line>
+  <line>
+   <xstart>535</xstart>
+   <ystart>0</ystart>
+   <xend>535</xend>
+   <yend>130</yend>
+   <weight>0</weight>
+  </line>
+  <label>
+   <rect>
+    <x>680</x>
+    <y>325</y>
+    <width>100</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -102,14 +192,104 @@ ORDER BY poitem_linenumber;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>SHIP</string>
+   <string>EXTENDED PRICE</string>
   </label>
   <label>
    <rect>
-    <x>550</x>
-    <y>335</y>
-    <width>85</width>
+    <x>675</x>
+    <y>345</y>
+    <width>100</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>REQ. DATE</string>
+  </label>
+  <field>
+   <rect>
+    <x>75</x>
+    <y>140</y>
+    <width>267</width>
     <height>17</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>12</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Head</query>
+    <column>vend_name</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>232</x>
+    <y>325</y>
+    <width>135</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>ITEM DESCRIPTION</string>
+  </label>
+  <field>
+   <rect>
+    <x>645</x>
+    <y>60</y>
+    <width>92</width>
+    <height>17</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>12</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Context Query</query>
+    <column>report_date</column>
+   </data>
+  </field>
+  <text>
+   <rect>
+    <x>500</x>
+    <y>160</y>
+    <width>300</width>
+    <height>17</height>
+   </rect>
+   <bottompad>10</bottompad>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Head</query>
+    <column>warehouse_address</column>
+   </data>
+  </text>
+  <label>
+   <rect>
+    <x>530</x>
+    <y>325</y>
+    <width>85</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -120,19 +300,58 @@ ORDER BY poitem_linenumber;</sql>
    <vcenter/>
    <string>UNIT PRICE</string>
   </label>
+  <text>
+   <rect>
+    <x>5</x>
+    <y>25</y>
+    <width>265</width>
+    <height>17</height>
+   </rect>
+   <bottompad>10</bottompad>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <top/>
+   <data>
+    <query>Address</query>
+    <column>warehouse_address</column>
+   </data>
+  </text>
   <field>
    <rect>
-    <x>650</x>
-    <y>65</y>
-    <width>126</width>
-    <height>20</height>
+    <x>5</x>
+    <y>5</y>
+    <width>267</width>
+    <height>17</height>
    </rect>
    <font>
     <face>Arial</face>
     <size>12</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Address</query>
+    <column>warehous_descrip</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>645</x>
+    <y>40</y>
+    <width>126</width>
+    <height>17</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>12</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
    <vcenter/>
    <data>
     <query>Head</query>
@@ -141,10 +360,130 @@ ORDER BY poitem_linenumber;</sql>
   </field>
   <field>
    <rect>
-    <x>180</x>
-    <y>285</y>
-    <width>385</width>
-    <height>20</height>
+    <x>500</x>
+    <y>140</y>
+    <width>300</width>
+    <height>17</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>12</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Head</query>
+    <column>warehous_descrip</column>
+   </data>
+  </field>
+  <line>
+   <xstart>5</xstart>
+   <ystart>360</ystart>
+   <xend>805</xend>
+   <yend>360</yend>
+   <weight>0</weight>
+  </line>
+  <label>
+   <rect>
+    <x>50</x>
+    <y>335</y>
+    <width>80</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>YOUR ITEM #</string>
+  </label>
+  <text>
+   <rect>
+    <x>75</x>
+    <y>160</y>
+    <width>300</width>
+    <height>17</height>
+   </rect>
+   <bottompad>10</bottompad>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>Head</query>
+    <column>vend_address</column>
+   </data>
+  </text>
+  <line>
+   <xstart>270</xstart>
+   <ystart>0</ystart>
+   <xend>270</xend>
+   <yend>130</yend>
+   <weight>0</weight>
+  </line>
+  <label>
+   <rect>
+    <x>455</x>
+    <y>325</y>
+    <width>85</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>CURRENCY</string>
+  </label>
+  <label>
+   <rect>
+    <x>610</x>
+    <y>345</y>
+    <width>80</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>UOM</string>
+  </label>
+  <field>
+   <rect>
+    <x>5</x>
+    <y>290</y>
+    <width>187</width>
+    <height>17</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>11</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <data>
+    <query>Head</query>
+    <column>pohead_fob</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>202</x>
+    <y>290</y>
+    <width>252</width>
+    <height>17</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -160,10 +499,90 @@ ORDER BY poitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>25</x>
-    <y>315</y>
-    <width>38</width>
-    <height>17</height>
+    <x>290</x>
+    <y>265</y>
+    <width>75</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>SHIP VIA:</string>
+  </label>
+  <label>
+   <rect>
+    <x>520</x>
+    <y>345</y>
+    <width>85</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>QTY. ORDERED</string>
+  </label>
+  <label>
+   <rect>
+    <x>580</x>
+    <y>0</y>
+    <width>252</width>
+    <height>32</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>14</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Purchase Order</string>
+  </label>
+  <label>
+   <rect>
+    <x>455</x>
+    <y>155</y>
+    <width>17</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <bottom/>
+   <string>TO:</string>
+  </label>
+  <label>
+   <rect>
+    <x>540</x>
+    <y>265</y>
+    <width>37</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>TERMS</string>
+  </label>
+  <label>
+   <rect>
+    <x>5</x>
+    <y>320</y>
+    <width>37</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -174,31 +593,25 @@ ORDER BY poitem_linenumber;</sql>
    <vcenter/>
    <string>LINE</string>
   </label>
-  <field>
+  <image>
    <rect>
-    <x>500</x>
-    <y>130</y>
-    <width>300</width>
-    <height>20</height>
+    <x>290</x>
+    <y>10</y>
+    <width>225</width>
+    <height>75</height>
    </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
+   <mode>stretch</mode>
    <data>
-    <query>Head</query>
-    <column>warehous_descrip</column>
+    <query>Logo</query>
+    <column>image_data</column>
    </data>
-  </field>
+  </image>
   <label>
    <rect>
-    <x>665</x>
-    <y>45</y>
-    <width>95</width>
-    <height>17</height>
+    <x>65</x>
+    <y>265</y>
+    <width>60</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -207,21 +620,14 @@ ORDER BY poitem_linenumber;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>P/O NUMBER</string>
+   <string>F.O.B.</string>
   </label>
-  <line>
-   <xstart>30</xstart>
-   <ystart>355</ystart>
-   <xend>805</xend>
-   <yend>355</yend>
-   <weight>0</weight>
-  </line>
   <field>
    <rect>
-    <x>680</x>
-    <y>285</y>
-    <width>120</width>
-    <height>20</height>
+    <x>655</x>
+    <y>290</y>
+    <width>117</width>
+    <height>17</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -235,28 +641,12 @@ ORDER BY poitem_linenumber;</sql>
     <column>username</column>
    </data>
   </field>
-  <label>
-   <rect>
-    <x>40</x>
-    <y>35</y>
-    <width>405</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Building 1, Suite 2</string>
-  </label>
   <field>
    <rect>
-    <x>30</x>
-    <y>285</y>
-    <width>190</width>
-    <height>20</height>
+    <x>442</x>
+    <y>290</y>
+    <width>202</width>
+    <height>17</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -267,208 +657,89 @@ ORDER BY poitem_linenumber;</sql>
    <vcenter/>
    <data>
     <query>Head</query>
-    <column>pohead_fob</column>
+    <column>terms_descrip</column>
    </data>
   </field>
   <label>
    <rect>
-    <x>95</x>
-    <y>260</y>
-    <width>60</width>
-    <height>17</height>
+    <x>45</x>
+    <y>145</y>
+    <width>17</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
     <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>F.O.B.</string>
-  </label>
-  <label>
-   <rect>
-    <x>705</x>
-    <y>320</y>
-    <width>100</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>EXTENDED PRICE</string>
-  </label>
-  <label>
-   <rect>
-    <x>260</x>
-    <y>320</y>
-    <width>135</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
+    <weight>bold</weight>
    </font>
    <left/>
-   <vcenter/>
-   <string>ITEM DESCRIPTION</string>
-  </label>
-  <label>
-   <rect>
-    <x>705</x>
-    <y>335</y>
-    <width>100</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>REQ. DATE</string>
+   <top/>
+   <string>TO:</string>
   </label>
   <field>
    <rect>
-    <x>785</x>
-    <y>65</y>
+    <x>645</x>
+    <y>85</y>
     <width>35</width>
-    <height>17</height>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
     <size>12</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <top/>
    <data>
     <query>Context Query</query>
     <column>page_number</column>
    </data>
   </field>
-  <field>
-   <rect>
-    <x>550</x>
-    <y>65</y>
-    <width>95</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <data>
-    <query>Context Query</query>
-    <column>report_date</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>465</x>
-    <y>150</y>
-    <width>20</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>TO:</string>
-  </label>
-  <label>
-   <rect>
-    <x>575</x>
-    <y>45</y>
-    <width>45</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>DATE</string>
-  </label>
-  <label>
-   <rect>
-    <x>570</x>
-    <y>5</y>
-    <width>254</width>
-    <height>33</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>14</size>
-    <weight>bold</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Purchase Order</string>
-  </label>
-  <label>
-   <rect>
-    <x>785</x>
-    <y>45</y>
-    <width>35</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <top/>
-   <string>PAGE</string>
-  </label>
   <line>
-   <xstart>30</xstart>
-   <ystart>280</ystart>
+   <xstart>5</xstart>
+   <ystart>285</ystart>
    <xend>805</xend>
-   <yend>280</yend>
+   <yend>285</yend>
    <weight>0</weight>
   </line>
-  <text>
+  <label>
    <rect>
-    <x>500</x>
-    <y>150</y>
-    <width>300</width>
-    <height>19</height>
+    <x>50</x>
+    <y>320</y>
+    <width>80</width>
+    <height>16</height>
    </rect>
-   <bottompad>0</bottompad>
    <font>
     <face>Arial</face>
-    <size>12</size>
+    <size>8</size>
     <weight>normal</weight>
    </font>
    <left/>
    <vcenter/>
-   <data>
-    <query>Head</query>
-    <column>f_shiptoaddress</column>
-   </data>
-  </text>
+   <string>OUR ITEM #</string>
+  </label>
   <label>
    <rect>
-    <x>705</x>
-    <y>260</y>
-    <width>70</width>
-    <height>17</height>
+    <x>550</x>
+    <y>85</y>
+    <width>35</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>PAGE</string>
+  </label>
+  <label>
+   <rect>
+    <x>680</x>
+    <y>265</y>
+    <width>67</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -481,244 +752,19 @@ ORDER BY poitem_linenumber;</sql>
   </label>
   <label>
    <rect>
-    <x>550</x>
-    <y>320</y>
-    <width>85</width>
-    <height>17</height>
+    <x>455</x>
+    <y>145</y>
+    <width>37</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
     <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>QTY. ORDERED</string>
-  </label>
-  <line>
-   <xstart>30</xstart>
-   <ystart>310</ystart>
-   <xend>805</xend>
-   <yend>310</yend>
-   <weight>0</weight>
-  </line>
-  <field>
-   <rect>
-    <x>535</x>
-    <y>285</y>
-    <width>120</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>11</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <data>
-    <query>Head</query>
-    <column>f_terms</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>45</x>
-    <y>135</y>
-    <width>20</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <top/>
-   <string>TO:</string>
-  </label>
-  <label>
-   <rect>
-    <x>570</x>
-    <y>260</y>
-    <width>38</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>TERMS</string>
-  </label>
-  <label>
-   <rect>
-    <x>60</x>
-    <y>330</y>
-    <width>80</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>YOUR ITEM #</string>
-  </label>
-  <label>
-   <rect>
-    <x>40</x>
-    <y>15</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
+    <weight>bold</weight>
    </font>
    <left/>
    <vcenter/>
-   <string>Your Company Name</string>
-  </label>
-  <label>
-   <rect>
-    <x>40</x>
-    <y>95</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>(800) 555-1234</string>
-  </label>
-  <field>
-   <rect>
-    <x>75</x>
-    <y>130</y>
-    <width>270</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>Head</query>
-    <column>vend_name</column>
-   </data>
-  </field>
-  <text>
-   <rect>
-    <x>75</x>
-    <y>150</y>
-    <width>300</width>
-    <height>19</height>
-   </rect>
-   <bottompad>0</bottompad>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>Head</query>
-    <column>f_address</column>
-   </data>
-  </text>
-  <label>
-   <rect>
-    <x>40</x>
-    <y>55</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>123 Nowhere Lane</string>
-  </label>
-  <label>
-   <rect>
-    <x>65</x>
-    <y>315</y>
-    <width>80</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>OUR ITEM #</string>
-  </label>
-  <label>
-   <rect>
-    <x>40</x>
-    <y>75</y>
-    <width>300</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>12</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Someplace, State 12345-6789</string>
-  </label>
-  <label>
-   <rect>
-    <x>320</x>
-    <y>260</y>
-    <width>75</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>SHIP VIA:</string>
-  </label>
-  <label>
-   <rect>
-    <x>635</x>
-    <y>320</y>
-    <width>80</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>PRICE UNIT</string>
+   <string>SHIP</string>
   </label>
  </pghead>
  <section>
@@ -727,13 +773,13 @@ ORDER BY poitem_linenumber;</sql>
    <key>
     <query>Detail</query>
    </key>
-   <height>73</height>
+   <height>107</height>
    <field>
     <rect>
-     <x>70</x>
-     <y>5</y>
-     <width>95</width>
-     <height>20</height>
+     <x>625</x>
+     <y>25</y>
+     <width>55</width>
+     <height>16</height>
     </rect>
     <font>
      <face>Arial</face>
@@ -741,120 +787,6 @@ ORDER BY poitem_linenumber;</sql>
      <weight>normal</weight>
     </font>
     <left/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>item_number</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>555</x>
-     <y>5</y>
-     <width>75</width>
-     <height>20</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>f_ordered</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>690</x>
-     <y>25</y>
-     <width>100</width>
-     <height>20</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>f_duedate</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>50</x>
-     <y>25</y>
-     <width>225</width>
-     <height>20</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>9</size>
-     <weight>normal</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>poitem_vend_item_number</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>35</x>
-     <y>5</y>
-     <width>36</width>
-     <height>20</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>f_line</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>555</x>
-     <y>25</y>
-     <width>75</width>
-     <height>17</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>f_price</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>635</x>
-     <y>5</y>
-     <width>70</width>
-     <height>20</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <hcenter/>
     <vcenter/>
     <data>
      <query>Detail</query>
@@ -863,30 +795,10 @@ ORDER BY poitem_linenumber;</sql>
    </field>
    <text>
     <rect>
-     <x>165</x>
-     <y>5</y>
-     <width>390</width>
-     <height>20</height>
-    </rect>
-    <bottompad>0</bottompad>
-    <font>
-     <face>Arial</face>
-     <size>10</size>
-     <weight>normal</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>Detail</query>
-     <column>itemdescription</column>
-    </data>
-   </text>
-   <text>
-    <rect>
-     <x>100</x>
-     <y>50</y>
+     <x>50</x>
+     <y>65</y>
      <width>605</width>
-     <height>20</height>
+     <height>17</height>
     </rect>
     <bottompad>0</bottompad>
     <font>
@@ -903,10 +815,29 @@ ORDER BY poitem_linenumber;</sql>
    </text>
    <field>
     <rect>
-     <x>695</x>
-     <y>5</y>
-     <width>95</width>
+     <x>700</x>
+     <y>25</y>
+     <width>100</width>
      <height>17</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>f_duedate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>700</x>
+     <y>5</y>
+     <width>92</width>
+     <height>16</height>
     </rect>
     <font>
      <face>Arial</face>
@@ -920,17 +851,170 @@ ORDER BY poitem_linenumber;</sql>
      <column>f_extended</column>
     </data>
    </field>
+   <field>
+    <rect>
+     <x>50</x>
+     <y>45</y>
+     <width>750</width>
+     <height>17</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>9</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>poitem_characteristics</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>545</x>
+     <y>25</y>
+     <width>75</width>
+     <height>16</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>f_ordered</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>555</x>
+     <y>5</y>
+     <width>75</width>
+     <height>16</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>f_price</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>505</x>
+     <y>5</y>
+     <width>25</width>
+     <height>16</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <right/>
+    <bottom/>
+    <data>
+     <query>Currency</query>
+     <column>curr_symbol</column>
+    </data>
+   </field>
+   <text>
+    <rect>
+     <x>150</x>
+     <y>5</y>
+     <width>350</width>
+     <height>17</height>
+    </rect>
+    <bottompad>0</bottompad>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>itemdescription</column>
+    </data>
+   </text>
+   <field>
+    <rect>
+     <x>50</x>
+     <y>25</y>
+     <width>225</width>
+     <height>17</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>9</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>poitem_vend_item_number</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>50</x>
+     <y>5</y>
+     <width>92</width>
+     <height>17</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>item_number</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>10</x>
+     <y>5</y>
+     <width>36</width>
+     <height>17</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>10</size>
+     <weight>normal</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>Detail</query>
+     <column>f_line</column>
+    </data>
+   </field>
   </detail>
  </section>
  <pgfoot>
   <lastpage/>
-  <height>73</height>
+  <height>113</height>
   <field>
    <rect>
-    <x>675</x>
-    <y>35</y>
-    <width>100</width>
-    <height>17</height>
+    <x>670</x>
+    <y>85</y>
+    <width>25</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -938,72 +1022,18 @@ ORDER BY poitem_linenumber;</sql>
     <weight>normal</weight>
    </font>
    <right/>
-   <vcenter/>
+   <bottom/>
    <data>
-    <query>FootExt</query>
-    <column>f_freight</column>
-   </data>
-  </field>
-  <field>
-   <rect>
-    <x>675</x>
-    <y>20</y>
-    <width>100</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>FootExt</query>
-    <column>f_tax</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>610</x>
-    <y>50</y>
-    <width>60</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Total:</string>
-  </label>
-  <field>
-   <rect>
-    <x>675</x>
-    <y>5</y>
-    <width>100</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>Foot</query>
-    <column>f_totaldue</column>
+    <query>Currency</query>
+    <column>curr_symbol</column>
    </data>
   </field>
   <text>
    <rect>
-    <x>40</x>
-    <y>5</y>
+    <x>35</x>
+    <y>10</y>
     <width>530</width>
-    <height>20</height>
+    <height>17</height>
    </rect>
    <bottompad>14</bottompad>
    <font>
@@ -1018,12 +1048,28 @@ ORDER BY poitem_linenumber;</sql>
     <column>pohead_comments</column>
    </data>
   </text>
+  <label>
+   <rect>
+    <x>580</x>
+    <y>12</y>
+    <width>60</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <string>SUB TOTAL</string>
+  </label>
   <field>
    <rect>
-    <x>675</x>
-    <y>50</y>
+    <x>705</x>
+    <y>55</y>
     <width>100</width>
-    <height>17</height>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -1031,69 +1077,197 @@ ORDER BY poitem_linenumber;</sql>
     <weight>normal</weight>
    </font>
    <right/>
-   <vcenter/>
+   <bottom/>
    <data>
-    <query>FootExt</query>
-    <column>f_total</column>
+    <query>Foot</query>
+    <column>f_tax</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>705</x>
+    <y>85</y>
+    <width>100</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <data>
+    <query>Foot</query>
+    <column>f_totaldue</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>670</x>
+    <y>12</y>
+    <width>25</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <data>
+    <query>Currency</query>
+    <column>curr_symbol</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>670</x>
+    <y>55</y>
+    <width>25</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <data>
+    <query>Currency</query>
+    <column>curr_symbol</column>
+   </data>
+  </field>
+  <line>
+   <xstart>585</xstart>
+   <ystart>75</ystart>
+   <xend>806</xend>
+   <yend>75</yend>
+   <weight>0</weight>
+  </line>
+  <label>
+   <rect>
+    <x>580</x>
+    <y>35</y>
+    <width>60</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <string>FREIGHT</string>
+  </label>
+  <label>
+   <rect>
+    <x>580</x>
+    <y>55</y>
+    <width>60</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <string>TAX</string>
+  </label>
+  <field>
+   <rect>
+    <x>705</x>
+    <y>35</y>
+    <width>100</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <data>
+    <query>Foot</query>
+    <column>f_totalfreight</column>
+   </data>
+  </field>
+  <line>
+   <xstart>10</xstart>
+   <ystart>5</ystart>
+   <xend>805</xend>
+   <yend>5</yend>
+   <weight>0</weight>
+  </line>
+  <field>
+   <rect>
+    <x>705</x>
+    <y>12</y>
+    <width>100</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <data>
+    <query>Foot</query>
+    <column>f_subtotal</column>
    </data>
   </field>
   <label>
    <rect>
-    <x>610</x>
+    <x>580</x>
+    <y>85</y>
+    <width>60</width>
+    <height>16</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <bottom/>
+   <string>TOTAL</string>
+  </label>
+  <field>
+   <rect>
+    <x>670</x>
     <y>35</y>
-    <width>60</width>
-    <height>17</height>
+    <width>25</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>8</size>
+    <size>10</size>
     <weight>normal</weight>
    </font>
    <right/>
-   <vcenter/>
-   <string>Freight:</string>
-  </label>
-  <label>
-   <rect>
-    <x>610</x>
-    <y>20</y>
-    <width>60</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Tax:</string>
-  </label>
-  <label>
-   <rect>
-    <x>610</x>
-    <y>5</y>
-    <width>60</width>
-    <height>17</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Sub Total:</string>
-  </label>
+   <bottom/>
+   <data>
+    <query>Currency</query>
+    <column>curr_symbol</column>
+   </data>
+  </field>
  </pgfoot>
  <pgfoot>
-  <height>81</height>
+  <height>57</height>
   <label>
    <rect>
-    <x>33</x>
-    <y>38</y>
-    <width>38</width>
-    <height>17</height>
+    <x>32</x>
+    <y>37</y>
+    <width>37</width>
+    <height>16</height>
    </rect>
    <font>
     <face>Arial</face>
