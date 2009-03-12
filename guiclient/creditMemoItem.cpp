@@ -226,7 +226,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
                               " AND (invcitem_item_id=item_id)"
                               " AND (item_inv_uom_id=uom_id)"
                               " AND (invchead_invcnumber=%1) ) "
-                              "ORDER BY item_number;" )
+                              "ORDER BY item_number" )
                      .arg(_invoiceNumber) );
   else
     _item->setQuery( QString( "SELECT DISTINCT item_id, item_number, item_descrip1, item_descrip2,"
@@ -238,7 +238,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
                               " AND (itemsite_active)"
                               " AND (item_active)"
                               " AND (customerCanPurchase(item_id, %1, %2)) ) "
-                              "ORDER BY item_number;" )
+                              "ORDER BY item_number" )
                      .arg(_custid).arg(_shiptoid) );
 
   return NoError;
@@ -381,6 +381,7 @@ void creditMemoItem::sPopulateItemInfo()
                 "  FROM item"
                 " WHERE (item_id=:item_id);" );
   item.bindValue(":item_id", _item->id());
+  item.bindValue(":taxauth", _taxauthid);
   item.exec();
   if (item.first())
   {
