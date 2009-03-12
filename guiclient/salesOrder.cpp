@@ -2749,6 +2749,16 @@ bool salesOrder::deleteForCancel()
     }
     else if (query.lastError().type() != QSqlError::NoError)
       systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
+
+    if((_metrics->value("CONumberGeneration") == "A") ||
+       (_metrics->value("CONumberGeneration") == "O")) 
+    {	
+      query.prepare( "SELECT releaseSONumber(:orderNumber);" );
+      query.bindValue(":orderNumber", _orderNumber->text().toInt());
+      query.exec();
+      if (query.lastError().type() != QSqlError::NoError)
+        systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
+    }
   }
   else if (_mode == cNewQuote)
   {
@@ -2760,6 +2770,20 @@ bool salesOrder::deleteForCancel()
       systemError(this, tr("Could not delete Quote."), __FILE__, __LINE__);
     else if (query.lastError().type() != QSqlError::NoError)
       systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
+
+    if((_metrics->value("QUNumberGeneration") == "S") ||
+       (_metrics->value("QUNumberGeneration") == "A") ||
+       (_metrics->value("QUNumberGeneration") == "O")) 
+    {	
+      if(_metrics->value("QUNumberGeneration") == "S")
+        query.prepare( "SELECT releaseSoNumber(:orderNumber);" );
+      else
+        query.prepare( "SELECT releaseQUNumber(:orderNumber);" );
+      query.bindValue(":orderNumber", _orderNumber->text().toInt());
+      query.exec();
+      if (query.lastError().type() != QSqlError::NoError)
+        systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
+    }
   }
 
   if(cView != _mode)
