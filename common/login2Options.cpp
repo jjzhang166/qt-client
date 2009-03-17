@@ -71,6 +71,11 @@ void login2Options::sSave()
   
   if (_saveSettings)
   {
+    QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
+    ini.writeEntry("/xTuple/_databaseURL", _databaseURL);
+    ini.writeEntry("/xTuple/_enhancedAuthentication", (bool)_enhancedAuth->isChecked());
+    ini.writeEntry("/xTuple/_requireSSL", (bool)_requireSSL->isChecked());
+    
     QSettings setting(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
     setting.writeEntry("/OpenMFG/_databaseURL", _databaseURL);
     setting.writeEntry("/OpenMFG/_enhancedAuthentication", (bool)_enhancedAuth->isChecked());

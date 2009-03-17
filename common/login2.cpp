@@ -48,11 +48,12 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   _password->setEchoMode(QLineEdit::Password);
 
+  QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
-  _databaseURL = settings.readEntry("/OpenMFG/_databaseURL", "pgsql://:5432/");
-  _enhancedAuth = settings.readBoolEntry("/OpenMFG/_enhancedAuthentication", false);
-  _requireSSL = settings.readBoolEntry("/OpenMFG/_requireSSL", false);
-  if(settings.readBoolEntry("/OpenMFG/_demoOption", false))
+  _databaseURL = ini.readEntry("/xTuple/_databaseURL", settings.readEntry("/OpenMFG/_databaseURL", "pgsql://:5432/"));
+  _enhancedAuth = ini.readBoolEntry("/xTuple/_enhancedAuthentication",settings.readBoolEntry("/OpenMFG/_enhancedAuthentication", false));
+  _requireSSL = ini.readBoolEntry("/xTuple/_requireSSL",settings.readBoolEntry("/OpenMFG/_requireSSL", false));
+  if(ini.readBoolEntry("/xTuple/_demoOption",settings.readBoolEntry("/OpenMFG/_demoOption", false)))
     _demoOption->setChecked(true);
 }
 
@@ -260,7 +261,9 @@ void login2::sLogin()
     return;
   }
 
+  QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
   QSettings settings(QSettings::UserScope, "OpenMFG.com", "OpenMFG");
+  ini.writeEntry("/xTuple/_demoOption", (bool)_demoOption->isChecked());
   settings.writeEntry("/OpenMFG/_demoOption", (bool)_demoOption->isChecked());
 
   if (_splash)
