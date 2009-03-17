@@ -686,7 +686,7 @@ HEADERS      = version.h inputManager.h guiclient.h timeoutHandler.h            
                xTupleDesigner.h xTupleDesignerActions.h                                               \
 
 
-SOURCES      = main.cpp inputManager.cpp guiclient.cpp timeoutHandler.cpp                             \
+SOURCES      = main.cpp inputManager.cpp guiclient.cpp timeoutHandler.cpp collectMetrics.cpp          \
                menuProducts.cpp menuInventory.cpp menuSchedule.cpp menuPurchase.cpp                   \
                menuManufacture.cpp menuCRM.cpp menuSales.cpp menuAccounting.cpp menuSystem.cpp        \
                taxCache.cpp xmessagebox.cpp                                                           \

@@ -112,6 +112,8 @@ static SaveSizePositionEventFilter * __saveSizePositionEventFilter = 0;
 static int __interval = 0;
 static int __intervalCount = 0;
 
+void collectMetrics();
+
 Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
                 QObject *pTarget, const char *pActivateSlot,
                 QWidget *pAddTo, bool pEnabled ) :
@@ -448,6 +450,8 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
       pos.setY(0);                                                                                             
     move(pos);                                                                                                 
   }
+
+  collectMetrics();
 }
 
 bool GUIClient::singleCurrency()
