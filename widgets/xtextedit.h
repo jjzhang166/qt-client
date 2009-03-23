@@ -32,9 +32,14 @@ class XTUPLEWIDGETS_EXPORT XTextEdit : public QTextEdit
     virtual void setDataWidgetMap(XDataWidgetMapper* m);
     virtual void setDefaultText(QString p)  { _default = p; };
     virtual void setFieldName(QString p) { _fieldName = p; };
+    virtual void updateMapperData();
+
+  protected:
+    XDataWidgetMapper *_mapper;
 
   private:
     QString _default;
-    QString _fieldName;};
+    QString _fieldName;
+};
 
 #endif

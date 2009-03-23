@@ -13,13 +13,26 @@
 XTextEdit::XTextEdit(QWidget *pParent) :
   QTextEdit(pParent)
 {
+  _mapper = 0;
 }
 
 void XTextEdit::setDataWidgetMap(XDataWidgetMapper* m)
 {
-  m->addMapping(this, _fieldName, "text", "defaultText");
+  disconnect(this, SIGNAL(lostFocus()), this, SLOT(updateMapperData()));
+  if (acceptRichText())
+    m->addMapping(this, _fieldName, "html", "defaultText");
+  else
+    m->addMapping(this, _fieldName, "plainText", "defaultText");
+  _mapper = m;
+  connect(this, SIGNAL(lostFocus()), this, SLOT(updateMapperData()));
 }
 
-
-
-
+void XTextEdit::updateMapperData()
+{
+  if (_mapper->model() &&
+      _mapper->model()->data(_mapper->model()->index(_mapper->currentIndex(),
+                     _mapper->mappedSection(this))).toString() != toPlainText())
+      _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),
+                                                        _mapper->mappedSection(this)),
+                                toPlainText()); 
+}
