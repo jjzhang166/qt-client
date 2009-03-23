@@ -192,6 +192,9 @@ void ContactCluster::init()
     connect(_middle, SIGNAL(requestList()),	this, SLOT(sList()));
     connect(_last, SIGNAL(requestList()),	this, SLOT(sList()));
     connect(_suffix, SIGNAL(requestList()),	this, SLOT(sList()));
+    
+    connect(_first, SIGNAL(lostFocus()), this, SLOT(findDuplicates()));
+    connect(_last, SIGNAL(lostFocus()), this, SLOT(findDuplicates()));
 
     setFocusPolicy(Qt::StrongFocus);
     setFocusProxy(_honorific);
@@ -211,6 +214,9 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
 
 void ContactCluster::findDuplicates()
 {
+  if (_first->text().isEmpty() && _last->text().isEmpty())
+    return;
+    
   QString msg;
   XSqlQuery r;
   
@@ -725,6 +731,7 @@ void ContactCluster::layout()
   _grid->addItem(_nameBox,	1, 1, 1, -1);
   _grid->addWidget(_initialsLit,2, 0, 1, 1);
   _grid->addItem(_initialsBox,  2, 1, 1, -1);
+  _grid->addWidget(_active,       2, 2, 1, -1);
   _grid->addItem(_buttonBox,	3, 0, 1, -1);
   _grid->addWidget(_titleLit,   4, 0, 1, 1);
   _grid->addItem(_titleBox,	4, 1, 1, -1);
