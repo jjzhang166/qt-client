@@ -95,8 +95,8 @@ void ItemCharacteristicDelegate::setModelData(QWidget *editor, QAbstractItemMode
     q.exec();
     if (q.first())
       model->setData(priceidx, q.value("price").toString());
-    model->setData(index, comboBox->currentText());
   }
+  model->setData(index, comboBox->currentText());
 }
 
 void ItemCharacteristicDelegate::updateEditorGeometry(QWidget *editor,
