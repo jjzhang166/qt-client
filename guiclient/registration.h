@@ -34,12 +34,15 @@ public slots:
     virtual void sSent(int, int);
     virtual void sState(int);
     virtual void reject();
+    virtual void sChkDone(bool);
+    virtual void sCheck();
 
 protected slots:
     virtual void languageChange();
 
 protected:
     QHttp *_postreq;
+    QHttp *_userchk;
     QString encodedPair(const QString, const QString);
 };
 

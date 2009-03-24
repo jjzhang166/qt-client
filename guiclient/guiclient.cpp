@@ -726,7 +726,8 @@ void GUIClient::sTick()
       if ( (_metrics->value("Application") != "OpenMFG")
         && (_metrics->value("Application") != "xTupleERP") )
       {
-        if(_metrics->value("Registered") != "Yes")
+        QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
+        if(_metrics->value("Registered") != "Yes" && ini.readEntry("/xTuple/Registered","no") != "Yes")
         {
           if (_registerButton)
             _registerButton->setVisible(true);
@@ -764,8 +765,9 @@ void GUIClient::sTick()
 
 void GUIClient::sNewErrorMessage()
 {
+  QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
   if (_errorButton)
-    _errorButton->setVisible(_metrics->value("Registered") != "Yes");
+    _errorButton->setVisible(_metrics->value("Registered") != "Yes" && ini.readEntry("/xTuple/Registered","no") != "Yes");
   else
   {
     _errorButton = new QPushButton(QIcon(":/images/dspError.png"), "", statusBar());

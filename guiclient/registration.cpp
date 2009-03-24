@@ -10,6 +10,7 @@
 
 #include "registration.h"
 
+#include <QSettings>
 #include <QMessageBox>
 #include <QUrl>
 
@@ -24,8 +25,13 @@ registration::registration(QWidget* parent, Qt::WindowFlags fl)
   connect(_cancel,   SIGNAL(clicked()), this, SLOT(sCancel()));
   connect(_next,     SIGNAL(clicked()), this, SLOT(sNext()));
   connect(_register, SIGNAL(clicked()), this, SLOT(sRegister()));
+  connect(_contact,  SIGNAL(changed()), this, SLOT(sCheck()));
+  connect(_username, SIGNAL(editingFinished()), this, SLOT(sCheck()));
+
+  _next->setEnabled(false);
 
   _postreq = 0;
+  _userchk = 0;
   _contact->setAccountVisible(false);
   _contact->setActiveVisible(false);
   _contact->setInitialsVisible(false);
@@ -45,9 +51,22 @@ registration::~registration()
   if (_postreq)
   {
     while (_postreq->hasPendingRequests())
+    {
+      QApplication::processEvents();
       qDebug("~registration() waiting for _postreq's last request");
+    }
     delete _postreq;
     _postreq = 0;
+  }
+  if(_userchk)
+  {
+    while (_userchk->hasPendingRequests())
+    {
+      QApplication::processEvents();
+      qDebug("~registration() waiting for _userchk's last request");
+    }
+    delete _userchk;
+    _userchk = 0;
   }
 }
 
@@ -411,6 +430,8 @@ void registration::sDone(bool perror)
   _progressLit->setText(tr("Done!"));
   // TODO: check if the registration failed and handle it here
   _metrics->set("Registered", QString("Yes"));
+  QSettings ini(QSettings::IniFormat, QSettings::UserScope, "xTuple.com", "xTuple");
+  ini.writeEntry("/xTuple/Registered", QString("Yes"));
   QMessageBox::information(this, tr("Thanks for registering!"),
                            tr("<p>The registration server responded with:<p>%1")
                            .arg(result));
@@ -436,3 +457,65 @@ void registration::sCancel()
     }
   }
 }
+
+void registration::sCheck()
+{
+  if(_username->text().isEmpty() || _contact->emailAddress().isEmpty())
+    return;
+
+  if(_userchk == 0)
+  {
+    _userchk = new QHttp();
+    connect(_userchk, SIGNAL(done(bool)), this, SLOT(sChkDone(bool)));
+    _userchk->setHost("www.xtuple.com");
+  }
+  if(_userchk->hasPendingRequests())
+    return;
+
+  QString url("/webservice/registration/%1/%2");
+  _userchk->get(url.arg(_username->text()).arg(_contact->emailAddress()));
+}
+
+void registration::sChkDone(bool error)
+{
+  if(_userchk == 0)
+    return;
+
+  if(error)
+  {
+    QMessageBox::warning(this, tr("Username/Email Check Failed"),
+      tr("The check for your username and email has failed to communicate with the servers.") );
+    return;
+  }
+
+  QString result = QString(_userchk->readAll());
+
+  int err = 0;
+  if(result.indexOf("<username></username>") < 0)
+    err += 1;
+  if(result.indexOf("<email></email>") < 0)
+    err += 2;
+
+  if(err > 0)
+  {
+    QString msg;
+    switch(err)
+    {
+      case 1:
+        msg = tr("The username you have choosen is already in use. Please select a different username to continue.");
+        break;
+      case 2:
+        msg = tr("The email address you have choosen is already in use. Please select a different email address.");
+        break;
+      case 3:
+        msg = tr("Both the username and email address you have choosen is already in use. Please select a different username and email address.");
+        break;
+    }
+    QMessageBox::warning(this, tr("Username/Email Check Failed"), msg);
+  }
+  else
+  {
+    _next->setEnabled(true);
+  }
+}  
+
