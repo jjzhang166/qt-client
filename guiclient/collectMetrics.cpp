@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include <QProcess>
 #include <QApplication>
+#include <QDir>
 
 #include "guiclient.h"
 #include "version.h"
@@ -121,39 +122,105 @@ void collectMetrics()
     value.appendChild(t2);
   }
 
+  QString ns_agent_config_path;
+  QString ns_agent_binary_path;
+  QString ns_agent_shared_config;
+
+  QString path = QApplication::applicationDirPath();
+  QFile f(path+"/network.cfg");
+  if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return; // We don't need to do anything if we can't open the file
+  }
+  QTextStream in(&f);
+  QString line = in.readLine(); 
+  while(!line.isNull())
+  {
+    int p = line.indexOf("=");
+    if(p >= 0)
+    {
+      QString key, val;
+      key = line.section("=", 0, 0);
+      val = line.section("=", 1);
+      if(key == "ns_agent_config_path")
+        ns_agent_config_path = val;
+      else if(key == "ns_agent_binary_path")
+        ns_agent_binary_path = val;
+      else if(key == "ns_agent_shared_config")
+        ns_agent_shared_config = val;
+    }
+    line = in.readLine();
+  }
+  f.close();
+
+  
+  QString appdata = "";
+#if defined Q_WS_WIN
+  TCHAR szPath[MAX_PATH];
+  if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) 
+    appdata = QString(szPath);
+#endif
+  ns_agent_config_path.replace("%APPDATA%", appdata);
+  ns_agent_binary_path.replace("%APPDATA%", appdata);
+  ns_agent_shared_config.replace("%APPDATA%", appdata);
+
+  QString home = QDir::toNativeSeparators(QDir::homePath());
+  ns_agent_config_path.replace("$HOME", home);
+  ns_agent_binary_path.replace("$HOME", home);
+  ns_agent_shared_config.replace("$HOME", home);
+  ns_agent_config_path.replace("~", home);
+  ns_agent_binary_path.replace("~", home);
+  ns_agent_shared_config.replace("~", home);
+  
+  if(!ns_agent_config_path.startsWith("/"))
+    ns_agent_config_path.prepend(QCoreApplication::applicationDirPath() + "/");
+  if(!ns_agent_binary_path.startsWith("/"))
+    ns_agent_binary_path.prepend(QCoreApplication::applicationDirPath() + "/");
+  if(!ns_agent_shared_config.startsWith("/"))
+    ns_agent_shared_config.prepend(QCoreApplication::applicationDirPath() + "/");
+
+  QDir conf(ns_agent_config_path);
+  if(!conf.exists())
+  {
+    conf.makeAbsolute();
+    conf.mkpath(conf.path());
+    QFile cp(ns_agent_shared_config);
+    if(!cp.copy(ns_agent_config_path + "/agent.conf"))
+      qDebug("Error copying agent config.");
+  }
+
   // write the xml to a file
-  QFile file("xtuple-ns-metrics.xml");
+  QFile file(ns_agent_config_path + "/xtuple-ns-metrics.xml");
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    qDebug("whoops");
+    qDebug("whoops"); // TODO: should do something better here or nothing at all
     return;
   }
 
   QTextStream out(&file);
   out << doc.toString();
-
   file.close();
 
-  QString path = QApplication::applicationDirPath();
-  QFile f(path+"/network.cfg");
-  if(f.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    QTextStream in(&f);
-    in >> path;
-    f.close();
-  }
-  QString exe = path + "/agent";
+
+  QString exe = ns_agent_binary_path + "/agent";
 #if defined Q_WS_X11
   exe.append(".bin");
 #endif
   QProcess * proc = new QProcess();
-#if defined Q_WS_MACX
+
   QStringList arguments;
+/*
+// Since we are passing arguments we can't use open on mac
+#if defined Q_WS_MACX
   arguments << exe;
-  proc->start("open", arguments);
-#else
-  proc->start(exe);
+  exe = "open";
 #endif
-  
-  
+*/
+
+  // TODO: add additional arguments here
+  arguments << "--pid-file=" + ns_agent_config_path + "/agent.pid";
+  arguments << "--log-file=" + ns_agent_config_path + "/agent.log";
+  arguments << "--config-file=" + ns_agent_config_path + "/agent.conf";
+
+  proc->start(exe, arguments);
 }
