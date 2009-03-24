@@ -756,9 +756,9 @@ void GUIClient::sTick()
     _tick.singleShot(60000, this, SLOT(sTick()));
   }
   else
-    systemError(this, tr("<p>Your application was probably left idle too long "
-                          "and has been disconnected from the database server."
-                          "Try exiting the application and starting it again."
+    systemError(this, tr("<p>You have been disconnected from the database server.  "
+                          "This is usually caused by an interruption in your "
+                          "network.  Please exit the application and restart."
                           "<br><pre>%1</pre>" )
                       .arg(tickle.lastError().databaseText()));
 }
