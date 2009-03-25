@@ -239,12 +239,12 @@ int main(int argc, char *argv[])
            " WHERE (metric_name = 'Application')" );
   if(!metric.first() || (metric.value("metric_value").toString() == "OpenMFG"))
   {
-    _splash->setPixmap(QPixmap(":/images/splashOpenMFG.png"));
+    _splash->setPixmap(QPixmap(":/images/splashMfgEdition.png"));
     _Name = _Name.arg("Manufacturing");
   }
   else if(!metric.first() || (metric.value("metric_value").toString() == "xTupleERP"))
   {
-    _splash->setPixmap(QPixmap(":/images/splashxTupleERP.png"));
+    _splash->setPixmap(QPixmap(":/images/splashStdEdition.png"));
     _Name = _Name.arg("Standard");
   }
   else
