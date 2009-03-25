@@ -13,9 +13,11 @@
   <name>detail</name>
   <sql>SELECT gltrans_id, formatDate(gltrans_date) AS f_date,
        gltrans_docnumber,
-       formatMoney(gltrans_amount * -1) AS f_amount 
+       formatMoney(currtolocal(bankaccnt_curr_id,gltrans_amount,gltrans_date) * -1) AS f_amount 
   FROM gltrans, bankrecitem 
- WHERE ((bankrecitem_bankrec_id=&lt;? value(&quot;bankrec_id&quot;) ?>)
+    JOIN bankrec ON (bankrecitem_bankrec_id=bankrec_id)
+    JOIN bankaccnt ON (bankaccnt_id=bankrec_bankaccnt_id)
+ WHERE ((bankrecitem_bankrec_id=&lt;? value("bankrec_id") ?>)
    AND (bankrecitem_source='GL')
    AND (bankrecitem_source_id=gltrans_id) ) 
  ORDER BY gltrans_date, gltrans_id;</sql>
@@ -33,7 +35,7 @@
        text('Ending Balance') AS f_enddescrip
   FROM bankrec, bankaccnt
  WHERE ((bankrec_bankaccnt_id=bankaccnt_id)
-   AND  (bankrec_id=&lt;? value(&quot;bankrec_id&quot;) ?>));</sql>
+   AND  (bankrec_id=&lt;? value("bankrec_id") ?>));</sql>
  </querysource>
  <rpthead>
   <height>138</height>
