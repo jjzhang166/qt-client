@@ -13,6 +13,11 @@
 #include <QApplication>
 #include <QDir>
 
+#if defined Q_WS_WIN
+#include <windows.h>
+#include <shlobj.h>
+#endif
+
 #include "guiclient.h"
 #include "version.h"
 
@@ -158,7 +163,13 @@ void collectMetrics()
 #if defined Q_WS_WIN
   TCHAR szPath[MAX_PATH];
   if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) 
-    appdata = QString(szPath);
+  {
+#ifdef UNICODE
+    appdata = QString::fromUtf16((ushort*)szPath);
+#else
+    appdata = QString::fromLocal8Bit(szPath);
+#endif
+  }
 #endif
   ns_agent_config_path.replace("%APPDATA%", appdata);
   ns_agent_binary_path.replace("%APPDATA%", appdata);
@@ -218,9 +229,14 @@ void collectMetrics()
 */
 
   // TODO: add additional arguments here
-  arguments << "--pid-file=" + ns_agent_config_path + "/agent.pid";
-  arguments << "--log-file=" + ns_agent_config_path + "/agent.log";
-  arguments << "--config-file=" + ns_agent_config_path + "/agent.conf";
+  arguments << "--run";
+  arguments << "--enable-gui";
+  arguments << "--pid-file";
+  arguments << ns_agent_config_path + "/agent.pid";
+  arguments << "--log-file";
+  arguments << ns_agent_config_path + "/agent.log";
+  arguments << "--config-file";
+  arguments << ns_agent_config_path + "/agent.conf";
 
   proc->start(exe, arguments);
 }
