@@ -235,18 +235,18 @@ menuSystem::menuSystem(GUIClient *Pparent) :
   // Community
   communityMenu = new QMenu();
   actionProperties community[] = {
-    { "community.home",        tr("xTuple.org &Home"),          SLOT(sCommunityHome()),        communityMenu, true, NULL, NULL, true },
-    { "separator",	       NULL,				NULL,		communityMenu, true,	NULL, NULL, true	},
-    { "community.register",    tr("&Register"),      SLOT(sRegister()),             communityMenu, true, new QPixmap(":images/dspRegister.png"), NULL, _metrics->value("Application") != "OpenMFG" },
-    { "community.newAccount",  tr("&New Account"),   SLOT(sCommunityNewAccount()),  communityMenu, true, NULL, NULL, true },
-    { "community.editAccount", tr("&Edit Account"),  SLOT(sCommunityEditAccount()), communityMenu, true, NULL, NULL, true },
-    { "separator",	       NULL,				NULL,		communityMenu, true,	NULL, NULL, true	},
-    { "community.forums",      tr("Discussion &Forums"),  SLOT(sCommunityForums()),      communityMenu, true, NULL, NULL, true },
-    { "community.blogs",       tr("Bl&ogs"),              SLOT(sCommunityBlogs()),       communityMenu, true, NULL, NULL, true },
-    { "community.issues",      tr("&Bugs and Feature Requests"), SLOT(sCommunityIssues()),      communityMenu, true, NULL, NULL, true },
-    { "community.wiki",        tr("&Wiki"),               SLOT(sCommunityWiki()),      communityMenu, true, NULL, NULL, true },
-    { "separator",	       NULL,				NULL,		communityMenu, true,	NULL, NULL, true	},
-    { "community.downloads",   tr("&Downloads"),     SLOT(sCommunityDownloads()),   communityMenu, true, NULL, NULL, true },
+    { "community.home",        tr("xTuple.org &Home"),             SLOT(sCommunityHome()),        communityMenu, true, NULL, NULL, true },
+    { "separator",             NULL,                               NULL,                          communityMenu, true, NULL, NULL, true },
+    { "community.register",    tr("&Register"),      SLOT(sRegister()),                           communityMenu, true, new QPixmap(":images/dspRegister.png"), NULL, _metrics->value("Application") != "Manufacturing" },
+    { "community.editAccount", tr("My Online User &Account"),      SLOT(sCommunityEditAccount()), communityMenu, true, NULL, NULL, true },
+    { "community.support",     tr("Online Customer &Support"),     SLOT(sCommunitySupport()),     communityMenu, true, NULL, NULL, true },
+    { "community.wiki",        tr("Online Documentation / &Wiki"), SLOT(sCommunityWiki()),        communityMenu, true, NULL, NULL, true },
+    { "separator",             NULL,                               NULL,                          communityMenu, true, NULL, NULL, true },
+    { "community.forums",      tr("Discussion &Forums"),           SLOT(sCommunityForums()),      communityMenu, true, NULL, NULL, true },
+    { "community.issues",      tr("&Bugs and Feature Requests"),   SLOT(sCommunityIssues()),      communityMenu, true, NULL, NULL, true },
+    { "community.downloads",   tr("&Downloads"),                   SLOT(sCommunityDownloads()),   communityMenu, true, NULL, NULL, true },
+    { "community.blogs",       tr("Bl&ogs"),                       SLOT(sCommunityBlogs()),       communityMenu, true, NULL, NULL, true },
+    { "community.translation", tr("&Translation Portal"),          SLOT(sCommunityTranslation()), communityMenu, true, NULL, NULL, true },
   };
   addActionsToMenu(community, sizeof(community) / sizeof(community[0]));
   parent->menuBar()->insertItem(tr("C&ommunity"), communityMenu);
@@ -746,39 +746,50 @@ void menuSystem::sRegister()
   newdlg.exec();
 }
 
+/*
 void menuSystem::sCommunityNewAccount()
 {
   omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/index.php?option=com_registration&task=register");
 }
+*/
 
 void menuSystem::sCommunityEditAccount()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/index.php?option=com_user&task=UserDetails&Itemid=21");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/user");
 }
 
 void menuSystem::sCommunityForums()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/phpBB2/");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/phpBB3");
 }
 
 void menuSystem::sCommunityBlogs()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/index.php?option=com_content&task=blogsection&id=0&Itemid=9");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/blog");
 }
 
 void menuSystem::sCommunityIssues()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/index.php?option=com_mantis&Itemid=26");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/bug_zapper/view_all_bug_page.php");
 }
 
 void menuSystem::sCommunityWiki()
 {
-  omfgThis->launchBrowser(omfgThis, "http://wiki.xtuple.org");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/docs");
 }
-
 
 void menuSystem::sCommunityDownloads()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/index.php?option=com_docman&Itemid=50");
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.com/docs/download");
+}
+
+void menuSystem::sCommunitySupport()
+{
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/support");
+}
+
+void menuSystem::sCommunityTranslation()
+{
+  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/translate");
 }
 
