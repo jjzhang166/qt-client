@@ -250,7 +250,7 @@ QString xTupleDesigner::name()
   QDomDocument xmldoc("UIFile");
   _source->reset();
   xmldoc.setContent(_source);
-  QDomNode classnode = xmldoc.firstChild().firstChild();
+  QDomNode classnode = xmldoc.firstChild().firstChildElement("class");
   if (classnode.isNull())
   {
     qWarning("xTupleDesigner::name() classnode is null");
