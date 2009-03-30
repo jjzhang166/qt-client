@@ -12,6 +12,7 @@ LANGUAGE    =  C++
 DEPENDPATH += ../common
 
 dynamic {
+  CONFIG += dll # this is technically redundant as plugin implies dll however it fixes a cross-compile problem
   DESTDIR = $$[QT_INSTALL_PLUGINS]/designer
 
   LIBS += -L../lib -L../$$OPENRPT_DIR/lib -lxtuplecommon -lwrtembed -lrenderer -lcommon
