@@ -183,11 +183,11 @@ void collectMetrics()
   ns_agent_binary_path.replace("~", home);
   ns_agent_shared_config.replace("~", home);
   
-  if(!ns_agent_config_path.startsWith("/"))
+  if(!ns_agent_config_path.startsWith("/") && ns_agent_config_path.at(1) != ':')
     ns_agent_config_path.prepend(QCoreApplication::applicationDirPath() + "/");
-  if(!ns_agent_binary_path.startsWith("/"))
+  if(!ns_agent_binary_path.startsWith("/") && ns_agent_binary_path.at(1) != ':')
     ns_agent_binary_path.prepend(QCoreApplication::applicationDirPath() + "/");
-  if(!ns_agent_shared_config.startsWith("/"))
+  if(!ns_agent_shared_config.startsWith("/") && ns_agent_shared_config.at(1) != ':')
     ns_agent_shared_config.prepend(QCoreApplication::applicationDirPath() + "/");
 
   QDir conf(ns_agent_config_path);
@@ -197,7 +197,9 @@ void collectMetrics()
     conf.mkpath(conf.path());
     QFile cp(ns_agent_shared_config);
     if(!cp.copy(ns_agent_config_path + "/agent.conf"))
+    {
       qDebug("Error copying agent config.");
+    }
   }
 
   // write the xml to a file
@@ -216,6 +218,9 @@ void collectMetrics()
   QString exe = ns_agent_binary_path + "/agent";
 #if defined Q_WS_X11
   exe.append(".bin");
+#endif
+#if defined Q_WS_WIN
+  exe.append(".exe");
 #endif
   QProcess * proc = new QProcess();
 
