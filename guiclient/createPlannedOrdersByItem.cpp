@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include <QSqlError>
 
 createPlannedOrdersByItem::createPlannedOrdersByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -76,16 +77,21 @@ void createPlannedOrdersByItem::sCreate()
 
   if(!_explodeChildren->isChecked())
   {
-  q.prepare( "SELECT createPlannedOrders(itemsite_id, :cutOffDate, :deleteFirmed, FALSE) "
-             "FROM itemsite "
-             "WHERE ( (itemsite_item_id=:item_id)"
-             " AND (itemsite_active)"
-             " AND (itemsite_warehous_id=:warehous_id) );" );
-  q.bindValue(":cutOffDate", _cutOffDate->date());
-  q.bindValue(":deleteFirmed", QVariant(_deleteFirmed->isChecked()));
-  q.bindValue(":item_id", _item->id());
-  q.bindValue(":warehous_id", _warehouse->id());
-  q.exec();
+    q.prepare( "SELECT createPlannedOrders(itemsite_id, :cutOffDate, :deleteFirmed, FALSE) "
+               "FROM itemsite "
+               "WHERE ( (itemsite_item_id=:item_id)"
+               " AND (itemsite_active)"
+               " AND (itemsite_warehous_id=:warehous_id) );" );
+    q.bindValue(":cutOffDate", _cutOffDate->date());
+    q.bindValue(":deleteFirmed", QVariant(_deleteFirmed->isChecked()));
+    q.bindValue(":item_id", _item->id());
+    q.bindValue(":warehous_id", _warehouse->id());
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
   else
   {
@@ -99,6 +105,11 @@ void createPlannedOrdersByItem::sCreate()
     q.bindValue(":item_id", _item->id());
     q.bindValue(":warehous_id", _warehouse->id());
     q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }   
 
   if (_captive)
