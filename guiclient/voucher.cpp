@@ -666,23 +666,24 @@ void voucher::sFillMiscList()
 
 void voucher::sPopulatePoInfo()
 {
-  q.prepare( "SELECT pohead_terms_id, pohead_taxzone_id, vend_1099, "
+  XSqlQuery po;
+  po.prepare( "SELECT pohead_terms_id, pohead_taxzone_id, vend_1099, "
              "       pohead_curr_id, vend_id "
              "FROM pohead JOIN vendinfo ON (pohead_vend_id=vend_id)"
              "WHERE (pohead_id=:pohead_id);" );
-  q.bindValue(":pohead_id", _poNumber->id());
-  q.exec();
-  if (q.first())
+  po.bindValue(":pohead_id", _poNumber->id());
+  po.exec();
+  if (po.first())
   {
-    bool gets1099 = q.value("vend_1099").toBool();
+    bool gets1099 = po.value("vend_1099").toBool();
 
     _flagFor1099->setChecked(gets1099);
-    _terms->setId(q.value("pohead_terms_id").toInt());
-    _taxzone->setId(q.value("pohead_taxzone_id").toInt());
-    _amountToDistribute->setId(q.value("pohead_curr_id").toInt());
-    _vendor->setId(q.value("vend_id").toInt());
+    _terms->setId(po.value("pohead_terms_id").toInt());
+    _taxzone->setId(po.value("pohead_taxzone_id").toInt());
+    _amountToDistribute->setId(po.value("pohead_curr_id").toInt());
+    _vendor->setId(po.value("vend_id").toInt());
   }
-  else if (q.lastError().type() != QSqlError::NoError)
+  else if (po.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
