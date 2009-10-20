@@ -60,7 +60,7 @@ financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool
   _sub->append(-1,tr("All"));
   _sub->setText(tr("All"));
 
-  q.prepare( "SELECT DISTINCT 1, accnt_number "
+  q.prepare( "SELECT DISTINCT accnt_id, accnt_number "
                   "FROM accnt "
                   "ORDER BY accnt_number;" );
   q.exec();
