@@ -74,9 +74,6 @@ to be bound by its terms.</comment>
          <property name="text" >
           <string>Close &amp;P/O</string>
          </property>
-         <property name="autoRepeat" >
-          <bool>true</bool>
-         </property>
          <property name="autoDefault" >
           <bool>true</bool>
          </property>
