@@ -41,9 +41,6 @@ miscVoucher::miscVoucher(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _miscDistrib->addColumn(tr("Account"), -1,           Qt::AlignLeft,   true,  "account"  );
   _miscDistrib->addColumn(tr("Amount"),  _moneyColumn, Qt::AlignRight,  true,  "vodist_amount" );
-
-  _inTransaction = TRUE;
-  q.exec("BEGIN;"); //Lot's of things can happen in here that can cause problems if cancelled out.  Let's make it easy to roll it back.
 }
 
 miscVoucher::~miscVoucher()
@@ -241,9 +238,6 @@ void miscVoucher::sSave()
   omfgThis->sVouchersUpdated();
 
   _voheadid = -1;
-
-  q.exec("COMMIT;");
-  _inTransaction = false;
 
   if(cNew != _mode)
   {
@@ -471,10 +465,6 @@ void miscVoucher::populate()
   }
 }
 
-void miscVoucher::clear()
-{
-}
-
 void miscVoucher::closeEvent(QCloseEvent *pEvent)
 {
   if ( (_mode == cNew) && (_voheadid != -1) )
@@ -490,8 +480,6 @@ void miscVoucher::closeEvent(QCloseEvent *pEvent)
     q.bindValue(":voucherNumber", _voucherNumber->text().toInt());
     q.exec();
   }
-  else if(_mode == cEdit && _inTransaction)
-  	q.exec("ROLLBACK;");
    
   pEvent->accept();
 }

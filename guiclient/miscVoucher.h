@@ -38,7 +38,6 @@ public slots:
     virtual void sPopulateBalanceDue();
     virtual void populateNumber();
     virtual void populate();
-    virtual void clear();
     virtual void closeEvent( QCloseEvent * pEvent );
     virtual void sPopulateDistDate();
     virtual void sPopulateDueDate();
@@ -53,7 +52,6 @@ private:
     int _voheadid;
     double _cachedAmountDistributed;
     int _mode;
-	bool _inTransaction;
 };
 
 #endif // MISCVOUCHER_H
