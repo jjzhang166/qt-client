@@ -38,7 +38,7 @@ enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_save,	SIGNAL(clicked()),	this, SLOT(sSave()));
   connect(_orderitem, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem*)));
   connect(_printLabel, SIGNAL(clicked()), this, SLOT(sPrintItemLabel()));
-  connect(_orderitem, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
+//  connect(_orderitem, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
 
   _order->setAllowedStatuses(OrderLineEdit::Open);
   _order->setAllowedTypes(OrderLineEdit::Purchase |
@@ -239,7 +239,7 @@ void enterPoReceipt::sPost()
   XSqlQuery qi = itemsm.toQuery(params);
   while(qi.next())
   {
-    if(!gotlot && qi.value("itemsite_controlmethod").toString() == "L")
+    if(_singleLot->isChecked() && !gotlot && qi.value("itemsite_controlmethod").toString() == "L")
     {
       getLotInfo newdlg(this, "", TRUE);
       newdlg.enableExpiration(qi.value("itemsite_perishable").toBool());
