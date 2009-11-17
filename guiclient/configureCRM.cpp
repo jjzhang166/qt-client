@@ -10,10 +10,14 @@
 
 #include "configureCRM.h"
 
+#include <QMessageBox>
+#include <QSqlError>
 #include <QVariant>
-#include <QValidator>
+
+#include <metasql.h>
 
 #include "guiclient.h"
+#include "mqlutil.h"
 
 configureCRM::configureCRM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -53,6 +57,13 @@ configureCRM::configureCRM(QWidget* parent, const char* name, bool modal, Qt::WF
   if (! _metrics->value("DefaultAddressCountry").isEmpty())
     _country->setCurrentText(_metrics->value("DefaultAddressCountry"));
 
+  _strictCountries->setChecked(_metrics->boolean("StrictAddressCountry"));
+  _strictCountries->setEnabled(! _strictCountries->isChecked());
+  if (! _strictCountries->isChecked())
+  {
+    connect(_strictCountries, SIGNAL(toggled(bool)), this, SLOT(sStrictCountryChanged(bool)));
+  }
+
   if (_metrics->boolean("EnableBatchManager"))
   {
     _incdtEmailProfile->populate("SELECT ediprofile_id, ediprofile_name "
@@ -71,7 +82,7 @@ configureCRM::configureCRM(QWidget* parent, const char* name, bool modal, Qt::WF
     _incdtEmailProfile->hide();
     _incdtDelGroup->hide();
   }
-      
+
   adjustSize();
 }
 
@@ -107,6 +118,8 @@ void configureCRM::sSave()
     _metrics->set("DefaultAddressCountry", _country->currentText());
   else
     _metrics->set("DefaultAddressCountry", "");
+
+  _metrics->set("StrictAddressCountry", _strictCountries->isChecked());
   
   if (_metrics->boolean("EnableBatchManager"))
   {
@@ -121,4 +134,87 @@ void configureCRM::sSave()
   _metrics->load();
 
   accept();
+}
+
+/* TODO: introduced option in 3.4.0beta2.
+   deprecate it in the future with strict as the standard.
+ */
+void configureCRM::sStrictCountryChanged(bool p)
+{
+  if (p)
+  {
+    bool mqlloaded;
+    MetaSQLQuery mql = mqlLoad("crm", "strictcountrycheck", &mqlloaded);
+    if (! mqlloaded)
+    {
+      QMessageBox::critical(this, tr("Query Not Found"),
+                            tr("<p>The application could not find the MetaSQL "
+                               "query crm-strictcountrycheck."));
+      _strictCountries->setChecked(false);
+      return;
+    }
+
+    ParameterList params;
+    params.append("count");
+    XSqlQuery activeq = mql.toQuery(params);
+
+    params.append("showAll");
+    XSqlQuery allq = mql.toQuery(params);
+
+    if (activeq.first())
+    {
+      int result = activeq.value("counter").toInt();
+      if (result > 0)
+      {
+        QMessageBox::warning(this, tr("Invalid Countries"),
+                             tr("<p>The database contains invalid countries in "
+                                "active records, such as addresses and open "
+                                "sales orders. Please correct these records "
+                                "before turning on strict country checking. "
+                                "You may download and install the "
+                                "fixCountry.gz package "
+                                "to help with this task."));
+        _strictCountries->setChecked(false);
+        return;
+      }
+    }
+    else if (activeq.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, activeq.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+
+    if (allq.first())
+    {
+      int result = allq.value("counter").toInt();
+      if (result > 0)
+      {
+        QMessageBox::StandardButton answer =
+          QMessageBox::question(this, tr("Invalid Countries"),
+                                tr("<p>The database contains invalid countries "
+                                   "in historical records, such as closed "
+                                   "sales orders and posted invoices. If you "
+                                   "do not correct these countries before "
+                                   "turning on strict country checking, you "
+                                   "may lose country values if you open these "
+                                   "documents and save them again. You may "
+                                   "download and install the fixCountry.gz "
+                                   "package to help update your records."
+                                   "<p>Are you sure you want to turn on "
+                                   "strict country checking?"),
+                               QMessageBox::Yes | QMessageBox::No,
+                               QMessageBox::No);
+        if (answer == QMessageBox::No)
+        {
+          _strictCountries->setChecked(false);
+          return;
+        }
+      }
+    }
+    else if (allq.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, allq.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
 }

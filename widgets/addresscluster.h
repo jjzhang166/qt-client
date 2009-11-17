@@ -136,7 +136,7 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
 	virtual void        setActiveVisible(const bool p);
         virtual void        setAddrChange(QString p);
 	inline virtual void setCity(const QString& p)	{ _city->setText(p); };
-	inline virtual void setCountry(const QString& p) { _country->setText(p); };
+	virtual void        setCountry(const QString& p);
 	inline virtual void setDescription(const QString&) { };
 	inline virtual void setLabel(const QString& p)  { _label->setText(p); _label->setHidden(_label->text().isEmpty()); };
 	inline virtual void setLine1(const QString& p)	{ _addr1->setText(p); };
@@ -174,6 +174,9 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
     signals:
 	void newId(int);
 	void changed();
+
+    protected slots:
+        void sHandleCountryEdit(const QString&);
 
     protected:
 	QString		_query;	

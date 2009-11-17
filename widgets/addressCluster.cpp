@@ -64,6 +64,13 @@ void AddressCluster::init()
     _stateLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     _state->setEditable(true);
     _country->setMaximumWidth(250);
+    _country->setEditable(! (_x_metrics &&
+                             _x_metrics->boolean("StrictAddressCountry")));
+    if (DEBUG)
+      qDebug("%s::_country.isEditable() = %d",
+             (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
+             _country->isEditable());
+
     _postalcodeLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     _countryLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
@@ -109,6 +116,7 @@ void AddressCluster::init()
     connect(_state, SIGNAL(editTextChanged(const QString&)), this, SIGNAL(changed()));
     connect(_state,                      SIGNAL(newID(int)), this, SIGNAL(changed()));
     connect(_postalcode,SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+    connect(_country,SIGNAL(editTextChanged(const QString&)),this, SLOT(sHandleCountryEdit(const QString&)));
     connect(_country,                    SIGNAL(newID(int)), this, SIGNAL(changed()));
     connect(_country,                    SIGNAL(newID(int)), this, SLOT(populateStateComboBox()));
 
@@ -134,13 +142,18 @@ void AddressCluster::populateStateComboBox()
 
   QString tmpstate = _state->currentText();
   if (DEBUG)
-    qDebug("%s::populateStateComboBox() entered country %d/%s tmp %s",
+    qDebug("%s::populateStateComboBox() entered country %d/%s (matching id = %d) with state %s",
            (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
            _country->id(), qPrintable(_country->currentText()),
+           _country->id() == _country->id(_country->findText(_country->currentText(),
+                                                             Qt::MatchExactly)),
            qPrintable(tmpstate));
   _state->clear();
 
-  if (_country->id() >= 0)
+  XSqlQuery stateq;
+  if (_country->id() >= 0 &&
+      _country->id() == _country->id(_country->findText(_country->currentText(),
+                                                        Qt::MatchExactly)))
   {
     MetaSQLQuery state("SELECT DISTINCT state_id,"
                        "       CASE WHEN state_abbr IS NULL THEN state_name"
@@ -155,16 +168,28 @@ void AddressCluster::populateStateComboBox()
     ParameterList params;
     params.append("country_id", _country->id());
 
-    XSqlQuery stateq = state.toQuery(params);
+    stateq = state.toQuery(params);
     _state->populate(stateq);
+
+    _state->setEditable(_state->findText(tmpstate, Qt::MatchExactly) < 0 ||
+                        _state->count() <= 1);
+  }
+  else
+  {
+    XSqlQuery stateq;
+    stateq.exec("SELECT MIN(addr_id), addr_state, addr_state"
+                "  FROM addr"
+                " GROUP BY addr_state"
+                " ORDER BY addr_state;");
+    _state->populate(stateq);
+    _state->setEditable(true);
   }
 
-  _state->setEditable(_state->findText(tmpstate, Qt::MatchExactly) < 0 ||
-                      _state->count() <= 1);
   if (_state->isEditable())
     _state->setEditText(tmpstate);
   else
     _state->setText(tmpstate);
+
   if (DEBUG)
     qDebug("%s::populateStateComboBox() returning id %d, text %s, tmpstate %s",
            (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
@@ -237,16 +262,26 @@ void AddressCluster::silentSetId(const int pId)
         _city->setText(idQ.value("addr_city").toString());
         _postalcode->setText(idQ.value("addr_postalcode").toString());
 
-        /* set country before state.
-           otherwise populateStateComboBox will clear the old state */
-        _country->setText(idQ.value("addr_country").toString());
+        // set country before state or populateStateComboBox may clear the state
+        int matchid = _country->id(_country->findText(idQ.value("addr_country").toString(),
+                                            Qt::MatchExactly));
+        if (matchid >= 0)
+        {
+          if (DEBUG) qDebug("found matching country");
+          _country->setId(matchid);
+        }
+        else
+        {
+          _country->setEditable(true);
+          _country->setId(-1);
+          _country->setEditText(idQ.value("addr_country").toString());
+        }
 
         if (_state->findText(idQ.value("addr_state").toString(),
                              Qt::MatchExactly) >= 0)
           _state->setText(idQ.value("addr_state").toString());
         else // invalid state?
         {
-          _country->setId(-1);
           _state->setEditable(true);
           _state->setEditText(idQ.value("addr_state").toString());
         }
@@ -286,6 +321,24 @@ void AddressCluster::silentSetId(const int pId)
   }
 
     // _parsed = TRUE;
+}
+
+void AddressCluster::setCountry(const QString& p)
+{
+  int matchid = _country->id(_country->findText(p, Qt::MatchExactly));
+  if (matchid >= 0)
+  {
+    if (DEBUG) qDebug("%s::setCountry(%s) found matching country",
+           (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
+           qPrintable(p));
+    _country->setId(matchid);
+  }
+  else
+  {
+    _country->setEditable(true);
+    _country->setId(-1);
+    _country->setEditText(p);
+  }
 }
 
 void AddressCluster::clear()
@@ -350,6 +403,15 @@ int AddressCluster::save(enum SaveFlags flag)
   {
     silentSetId(-1);
     return 0;
+  }
+  if (_x_metrics && _x_metrics->boolean("StrictAddressCountry") &&
+      _country->isEditable() && !_country->currentText().isEmpty())
+  {
+    QMessageBox::critical(this, tr("Error"),
+                          tr("<p>This address appears to have a non-standard "
+                             "country. Please select a country from the list "
+                             "before saving."));
+    return -3;
   }
   
   XSqlQuery datamodQ;
@@ -761,4 +823,17 @@ void AddressCluster::setMode(Mode p)
   if (p == Select)
     _list->setEnabled(true);
   _info->setEnabled(true);
+}
+
+void AddressCluster::sHandleCountryEdit(const QString &p)
+{
+  if (DEBUG)
+    qDebug("%s::sHandleCountryEdit(%s) entered",
+           (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
+           qPrintable(p));
+  int matchingid = _country->id(_country->findText(p, Qt::MatchExactly));
+  //disconnect(_country,SIGNAL(editTextChanged(const QString&)),this, SLOT(sHandleCountryEdit(const QString&)));
+  if (matchingid > 0)
+     _country->setId(matchingid);
+  //connect(_country,SIGNAL(editTextChanged(const QString&)),this, SLOT(sHandleCountryEdit(const QString&)));
 }
