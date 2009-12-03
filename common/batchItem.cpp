@@ -80,6 +80,8 @@ int batchItem::view(int pBatchid, QWidget *pParent, QSqlDatabase pDb)
   newdlg._scheduledDate->setEnabled(false);
   newdlg._scheduledTime->setEnabled(false);
   newdlg._email->setEnabled(false);
+  newdlg._reschedule->setEnabled(false);
+  newdlg._interval->setEnabled(false);
 
   return newdlg.exec();
 }
