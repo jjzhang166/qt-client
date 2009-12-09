@@ -718,7 +718,7 @@ ORDER BY custtype_code, warehous_code;</sql>
     <query>detail</query>
     <column>totalsales</column>
    </data>
-   <format>money</format>
+   <format builtin="true" >money</format>
    <tracktotal/>
   </field>
  </rptfoot>
