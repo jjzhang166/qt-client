@@ -2052,61 +2052,61 @@ Address:</source>
     <message>
         <location filename="../../widgets/addressCluster.cpp" line="225"/>
         <location filename="../../widgets/addressCluster.cpp" line="317"/>
-        <location filename="../../widgets/addressCluster.cpp" line="513"/>
-        <location filename="../../widgets/addressCluster.cpp" line="532"/>
-        <location filename="../../widgets/addressCluster.cpp" line="551"/>
+        <location filename="../../widgets/addressCluster.cpp" line="525"/>
+        <location filename="../../widgets/addressCluster.cpp" line="544"/>
+        <location filename="../../widgets/addressCluster.cpp" line="563"/>
         <source>A System Error Occurred at %1::%2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="516"/>
+        <location filename="../../widgets/addressCluster.cpp" line="528"/>
         <source>%1::sInfo() not yet defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="535"/>
+        <location filename="../../widgets/addressCluster.cpp" line="547"/>
         <source>Could not instantiate a List Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="554"/>
+        <location filename="../../widgets/addressCluster.cpp" line="566"/>
         <source>Could not instantiate a Search Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="472"/>
+        <location filename="../../widgets/addressCluster.cpp" line="484"/>
         <source>Question Saving Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="473"/>
+        <location filename="../../widgets/addressCluster.cpp" line="485"/>
         <source>There are multiple Contacts sharing this Address.
 What would you like to do?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="475"/>
+        <location filename="../../widgets/addressCluster.cpp" line="487"/>
         <source>Change This One</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="476"/>
+        <location filename="../../widgets/addressCluster.cpp" line="488"/>
         <source>Change Address for All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="410"/>
-        <location filename="../../widgets/addressCluster.cpp" line="488"/>
+        <location filename="../../widgets/addressCluster.cpp" line="422"/>
+        <location filename="../../widgets/addressCluster.cpp" line="500"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="411"/>
+        <location filename="../../widgets/addressCluster.cpp" line="423"/>
         <source>&lt;p&gt;This address appears to have a non-standard country. Please select a country from the list before saving.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="488"/>
+        <location filename="../../widgets/addressCluster.cpp" line="500"/>
         <source>There was an error checking this Address (%1).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2114,43 +2114,43 @@ What would you like to do?</source>
 <context>
     <name>AddressList</name>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="599"/>
+        <location filename="../../widgets/addressCluster.cpp" line="611"/>
         <source>Line 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="600"/>
+        <location filename="../../widgets/addressCluster.cpp" line="612"/>
         <source>Line 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="601"/>
+        <location filename="../../widgets/addressCluster.cpp" line="613"/>
         <source>Line 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="602"/>
+        <location filename="../../widgets/addressCluster.cpp" line="614"/>
         <source>City</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="603"/>
+        <location filename="../../widgets/addressCluster.cpp" line="615"/>
         <source>State</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="604"/>
+        <location filename="../../widgets/addressCluster.cpp" line="616"/>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="605"/>
+        <location filename="../../widgets/addressCluster.cpp" line="617"/>
         <source>Postal Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="623"/>
-        <location filename="../../widgets/addressCluster.cpp" line="637"/>
+        <location filename="../../widgets/addressCluster.cpp" line="635"/>
+        <location filename="../../widgets/addressCluster.cpp" line="649"/>
         <source>A System Error Occurred at %1::%2.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2158,72 +2158,72 @@ What would you like to do?</source>
 <context>
     <name>AddressSearch</name>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="694"/>
+        <location filename="../../widgets/addressCluster.cpp" line="706"/>
         <source>Search Street Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="695"/>
+        <location filename="../../widgets/addressCluster.cpp" line="707"/>
         <source>Search City</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="696"/>
+        <location filename="../../widgets/addressCluster.cpp" line="708"/>
         <source>Search State</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="697"/>
+        <location filename="../../widgets/addressCluster.cpp" line="709"/>
         <source>Search Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="698"/>
+        <location filename="../../widgets/addressCluster.cpp" line="710"/>
         <source>Search Postal Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="699"/>
+        <location filename="../../widgets/addressCluster.cpp" line="711"/>
         <source>Show Inactive Addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="722"/>
+        <location filename="../../widgets/addressCluster.cpp" line="734"/>
         <source>Line 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="723"/>
+        <location filename="../../widgets/addressCluster.cpp" line="735"/>
         <source>Line 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="724"/>
+        <location filename="../../widgets/addressCluster.cpp" line="736"/>
         <source>Line 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="725"/>
+        <location filename="../../widgets/addressCluster.cpp" line="737"/>
         <source>City</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="726"/>
+        <location filename="../../widgets/addressCluster.cpp" line="738"/>
         <source>State</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="727"/>
+        <location filename="../../widgets/addressCluster.cpp" line="739"/>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="728"/>
+        <location filename="../../widgets/addressCluster.cpp" line="740"/>
         <source>Postal Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/addressCluster.cpp" line="805"/>
+        <location filename="../../widgets/addressCluster.cpp" line="817"/>
         <source>A System Error Occurred at %1::%2.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6132,12 +6132,12 @@ Report this to your Systems Administrator.</source>
 <context>
     <name>XSqlTableModel</name>
     <message>
-        <location filename="../../widgets/xsqltablemodel.cpp" line="227"/>
+        <location filename="../../widgets/xsqltablemodel.cpp" line="228"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xsqltablemodel.cpp" line="227"/>
+        <location filename="../../widgets/xsqltablemodel.cpp" line="228"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6185,37 +6185,37 @@ Report this to your Systems Administrator.</source>
 <context>
     <name>XTreeView</name>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="652"/>
+        <location filename="../../widgets/xtreeview.cpp" line="654"/>
         <source>Export Contents...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="672"/>
+        <location filename="../../widgets/xtreeview.cpp" line="674"/>
         <source>Reset this Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="675"/>
+        <location filename="../../widgets/xtreeview.cpp" line="677"/>
         <source>Reset all Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="678"/>
+        <location filename="../../widgets/xtreeview.cpp" line="680"/>
         <source>Remember Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="680"/>
+        <location filename="../../widgets/xtreeview.cpp" line="682"/>
         <source>Do Not Remember Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="250"/>
+        <location filename="../../widgets/xtreeview.cpp" line="252"/>
         <source>Error Saving %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreeview.cpp" line="251"/>
+        <location filename="../../widgets/xtreeview.cpp" line="253"/>
         <source>Error saving %1 at %2::%3
 
 %4</source>
@@ -10559,8 +10559,8 @@ Are you sure that you want to save this change?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/batchItem.cpp" line="130"/>
-        <location filename="../../common/batchItem.cpp" line="140"/>
+        <location filename="../../common/batchItem.cpp" line="132"/>
+        <location filename="../../common/batchItem.cpp" line="142"/>
         <source>Error Rescheduling Batch Item at %1::%2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -51779,6 +51779,16 @@ Do you wish to convert %1 %2 at the rate effective on %3?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../guiclient/glTransaction.ui" line="88"/>
+        <source>Distribution Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/glTransaction.ui" line="121"/>
+        <source>Document Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../guiclient/glTransaction.ui" line="298"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
@@ -51826,16 +51836,6 @@ Do you wish to convert %1 %2 at the rate effective on %3?</source>
     <message>
         <location filename="../../guiclient/glTransaction.cpp" line="112"/>
         <source>Cannot Post G/L Journal Entry</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/glTransaction.ui" line="88"/>
-        <source>Disribution Date:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/glTransaction.ui" line="121"/>
-        <source>Doument Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
