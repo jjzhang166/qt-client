@@ -125,6 +125,8 @@ QString XTreeView::columnNameFromLogicalIndex(const int logicalIndex) const
 int XTreeView::currentIndex()
 {
   QModelIndexList idx = selectedIndexes();
+  if(idx.isEmpty())
+    return -1;
   return idx.at(0).row();
 }
 

@@ -74,12 +74,13 @@ void XSqlTableModel::setColumnRole(int column, int role, const QVariant value)
   
   // Remove any previous value for this column/role pair
   QMultiHash<int, QPair<QVariant, int> >::iterator i = _columnRoles.find(column);
-  while (i != _columnRoles.end() && i.key() ==column && !found) {
+  while (i != _columnRoles.end() && i.key() == column && !found) {
      if (i.value().second == role) {
        values.first = i.value().first;
        values.second = i.value().second;
        _columnRoles.remove(column, values);
        found = true;
+       break;
      }
      ++i;
   }
