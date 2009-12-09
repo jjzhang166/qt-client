@@ -326,11 +326,22 @@ void AddressCluster::silentSetId(const int pId)
 void AddressCluster::setCountry(const QString& p)
 {
   int matchid = _country->id(_country->findText(p, Qt::MatchExactly));
-  if (matchid >= 0)
+  if (p.isEmpty())
+  {
+    if (DEBUG) qDebug("%s::setCountry() handling empty country",
+                      (objectName().isEmpty() ? "AddressCluster" :
+                                                qPrintable(objectName())));
+    _country->setEditable(! (_x_metrics &&
+                             _x_metrics->boolean("StrictAddressCountry")));
+     _country->setId(-1);
+  }
+  else if (matchid >= 0)
   {
     if (DEBUG) qDebug("%s::setCountry(%s) found matching country",
            (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
            qPrintable(p));
+    _country->setEditable(! (_x_metrics &&
+                             _x_metrics->boolean("StrictAddressCountry")));
     _country->setId(matchid);
   }
   else
@@ -405,7 +416,8 @@ int AddressCluster::save(enum SaveFlags flag)
     return 0;
   }
   if (_x_metrics && _x_metrics->boolean("StrictAddressCountry") &&
-      _country->isEditable() && !_country->currentText().isEmpty())
+      !_country->currentText().isEmpty() &&
+      _country->findText(_country->currentText(), Qt::MatchExactly) < 0)
   {
     QMessageBox::critical(this, tr("Error"),
                           tr("<p>This address appears to have a non-standard "
