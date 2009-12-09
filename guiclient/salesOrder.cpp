@@ -1056,7 +1056,7 @@ qDebug("saving...");
   q.bindValue(":shipto_cntct_phone", _shipToCntct->phone());
   q.bindValue(":shipto_cntct_title", _shipToCntct->title());
   q.bindValue(":shipto_cntct_fax", _shipToCntct->fax());
-  q.bindValue(":shipto_cntct_email ", _shipToCntct->emailAddress());
+  q.bindValue(":shipto_cntct_email", _shipToCntct->emailAddress());
 
   if (_billToCntct->isValid())
     q.bindValue(":billto_cntct_id", _billToCntct->id());
