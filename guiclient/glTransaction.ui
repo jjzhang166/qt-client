@@ -85,7 +85,7 @@ to be bound by its terms.</comment>
        <item row="1" column="0" >
         <widget class="QLabel" name="_distDateLit" >
          <property name="text" >
-          <string>Disribution Date:</string>
+          <string>Distribution Date:</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -118,7 +118,7 @@ to be bound by its terms.</comment>
        <item row="2" column="0" >
         <widget class="QLabel" name="_docTypeLit" >
          <property name="text" >
-          <string>Doument Type:</string>
+          <string>Document Type:</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
