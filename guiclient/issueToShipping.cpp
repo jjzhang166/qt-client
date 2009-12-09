@@ -115,7 +115,7 @@ enum SetResponse issueToShipping::set(const ParameterList &pParams)
 
 void issueToShipping::sHandleButtons()
 {
-  if (_soitem->currentItem()->rawValue("atshipping").toDouble() > 0)
+  if (_soitem->currentItem() && _soitem->currentItem()->rawValue("atshipping").toDouble() > 0)
     _returnStock->setEnabled(true);
   else
     _returnStock->setEnabled(false);
