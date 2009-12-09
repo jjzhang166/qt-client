@@ -117,7 +117,7 @@ void configureCRM::sSave()
   if (_country->isValid())
     _metrics->set("DefaultAddressCountry", _country->currentText());
   else
-    _metrics->set("DefaultAddressCountry", "");
+    _metrics->set("DefaultAddressCountry", QString(""));
 
   _metrics->set("StrictAddressCountry", _strictCountries->isChecked());
   
