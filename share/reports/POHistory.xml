@@ -3,50 +3,72 @@
  <title>P/O History</title>
  <name>POHistory</name>
  <description></description>
+ <parameter default="529" active="true" listtype="dynamic" type="string" name="pohead_id" >
+  <description></description>
+  <query>select pohead_id, pohead_number from pohead order by pohead_number desc;</query>
+ </parameter>
  <size>Letter</size>
- <portrait/>
+ <landscape/>
  <topmargin>50</topmargin>
  <bottommargin>50</bottommargin>
  <rightmargin>50</rightmargin>
  <leftmargin>50</leftmargin>
  <querysource>
   <name>head</name>
-  <sql>SELECT pohead_number,
-       vend_name
-  FROM pohead, vend
- WHERE ((pohead_id=&lt;? value(&quot;pohead_id&quot;) ?>)
+  <sql>SELECT pohead_number,&#xd;
+       vend_name&#xd;
+  FROM pohead, vend&#xd;
+ WHERE ((pohead_id=&lt;? value("pohead_id") ?>)&#xd;
   AND  (pohead_vend_id=vend_id));</sql>
  </querysource>
  <querysource>
   <name>detail</name>
-  <sql>SELECT poitem_linenumber as f_number,
-       item_number as f_item, uom_name as f_uom1,
-       formatDate(poitem_duedate) as f_duedate,
-       poitem_vend_item_number as f_vend_item,
-       poitem_vend_uom as f_uom2,
-       formatQty(poitem_qty_ordered) as f_ordered,
-       formatqty(poitem_qty_received) as f_received
-  FROM poitem, itemsite, item, uom
- WHERE ((poitem_itemsite_id=itemsite_id)
-   AND (itemsite_item_id=item_id)
-   AND (item_inv_uom_id=uom_id)
-   AND (poitem_pohead_id=&lt;? value(&quot;pohead_id&quot;) ?>)) 
-ORDER BY poitem_linenumber;</sql>
+  <sql>SELECT &#xd;
+poitem_linenumber as f_number, &#xd;
+item_number as f_item, &#xd;
+uom_name as f_uom1,&#xd;
+formatDate(poitem_duedate) as f_duedate,&#xd;
+poitem_vend_item_number as f_vend_item,&#xd;
+poitem_vend_uom as f_uom2,&#xd;
+formatQty(poitem_qty_ordered) as f_ordered,&#xd;
+formatqty(poitem_qty_received) as f_received&#xd;
+FROM poitem, itemsite, item, uom&#xd;
+WHERE ((poitem_itemsite_id=itemsite_id)&#xd;
+AND (itemsite_item_id=item_id)&#xd;
+AND (item_inv_uom_id=uom_id)&#xd;
+AND (poitem_pohead_id=&lt;? value("pohead_id") ?>)) &#xd;
+&#xd;
+UNION&#xd;
+&#xd;
+SELECT &#xd;
+poitem_linenumber as f_number, &#xd;
+poitem_vend_item_number as f_item, &#xd;
+expcat_code as f_uom1,&#xd;
+formatDate(poitem_duedate) as f_duedate,&#xd;
+poitem_vend_item_descrip as f_vend_item,&#xd;
+expcat_descrip as f_uom2,&#xd;
+formatQty(poitem_qty_ordered) as f_ordered,&#xd;
+formatqty(poitem_qty_received) as f_received&#xd;
+FROM poitem, expcat&#xd;
+WHERE ((poitem_expcat_id = expcat_id)&#xd;
+AND (poitem_pohead_id=&lt;? value("pohead_id") ?>)) &#xd;
+&#xd;
+ORDER BY f_number;</sql>
  </querysource>
  <rpthead>
   <height>205</height>
   <line>
    <xstart>5</xstart>
    <ystart>200</ystart>
-   <xend>745</xend>
+   <xend>990</xend>
    <yend>200</yend>
    <weight>2</weight>
   </line>
   <label>
    <rect>
-    <x>665</x>
+    <x>940</x>
     <y>185</y>
-    <width>80</width>
+    <width>50</width>
     <height>15</height>
    </rect>
    <font>
@@ -54,14 +76,14 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
    <string>Received</string>
   </label>
   <label>
    <rect>
-    <x>195</x>
-    <y>10</y>
+    <x>455</x>
+    <y>5</y>
     <width>530</width>
     <height>38</height>
    </rect>
@@ -76,9 +98,9 @@ ORDER BY poitem_linenumber;</sql>
   </label>
   <label>
    <rect>
-    <x>275</x>
+    <x>730</x>
     <y>185</y>
-    <width>90</width>
+    <width>50</width>
     <height>15</height>
    </rect>
    <font>
@@ -86,13 +108,13 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Due/Received</string>
+   <string>Due Date</string>
   </label>
   <label>
    <rect>
-    <x>370</x>
+    <x>525</x>
     <y>185</y>
     <width>106</width>
     <height>15</height>
@@ -108,7 +130,7 @@ ORDER BY poitem_linenumber;</sql>
   </label>
   <label>
    <rect>
-    <x>10</x>
+    <x>5</x>
     <y>185</y>
     <width>35</width>
     <height>15</height>
@@ -124,7 +146,7 @@ ORDER BY poitem_linenumber;</sql>
   </label>
   <field>
    <rect>
-    <x>140</x>
+    <x>105</x>
     <y>120</y>
     <width>385</width>
     <height>20</height>
@@ -153,14 +175,30 @@ ORDER BY poitem_linenumber;</sql>
     <size>10</size>
     <weight>normal</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
    <string>Vendor:</string>
   </label>
   <label>
    <rect>
-    <x>525</x>
-    <y>185</y>
+    <x>325</x>
+    <y>175</y>
+    <width>85</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Vendor UOM or</string>
+  </label>
+  <label>
+   <rect>
+    <x>180</x>
+    <y>175</y>
     <width>50</width>
     <height>15</height>
    </rect>
@@ -169,29 +207,13 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>UOM</string>
+   <string>UOM or</string>
   </label>
   <label>
    <rect>
-    <x>220</x>
-    <y>185</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>UOM</string>
-  </label>
-  <label>
-   <rect>
-    <x>65</x>
+    <x>45</x>
     <y>185</y>
     <width>106</width>
     <height>15</height>
@@ -203,11 +225,11 @@ ORDER BY poitem_linenumber;</sql>
    </font>
    <left/>
    <vcenter/>
-   <string>Item/Doc. #</string>
+   <string>Item</string>
   </label>
   <field>
    <rect>
-    <x>140</x>
+    <x>105</x>
     <y>100</y>
     <width>385</width>
     <height>20</height>
@@ -226,9 +248,9 @@ ORDER BY poitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>580</x>
+    <x>840</x>
     <y>185</y>
-    <width>80</width>
+    <width>50</width>
     <height>15</height>
    </rect>
    <font>
@@ -236,7 +258,7 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
    <string>Ordered</string>
   </label>
@@ -252,37 +274,14 @@ ORDER BY poitem_linenumber;</sql>
     <size>10</size>
     <weight>normal</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
    <string>P/O #:</string>
   </label>
- </rpthead>
- <pghead>
-  <firstpage/>
-  <height>8</height>
- </pghead>
- <pghead>
-  <height>22</height>
   <label>
    <rect>
-    <x>65</x>
-    <y>0</y>
-    <width>106</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Item/Doc. #</string>
-  </label>
-  <label>
-   <rect>
-    <x>580</x>
-    <y>0</y>
+    <x>180</x>
+    <y>185</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -291,14 +290,37 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <hcenter/>
+   <left/>
    <vcenter/>
-   <string>Ordered</string>
+   <string>Exp. Cat. Code</string>
   </label>
   <label>
    <rect>
-    <x>370</x>
-    <y>0</y>
+    <x>325</x>
+    <y>185</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Exp. Cat. Descrip.</string>
+  </label>
+ </rpthead>
+ <pghead>
+  <firstpage/>
+  <height>8</height>
+ </pghead>
+ <pghead>
+  <height>42</height>
+  <label>
+   <rect>
+    <x>40</x>
+    <y>22</y>
     <width>106</width>
     <height>15</height>
    </rect>
@@ -309,83 +331,12 @@ ORDER BY poitem_linenumber;</sql>
    </font>
    <left/>
    <vcenter/>
-   <string>Vend. Item #</string>
-  </label>
-  <line>
-   <xstart>5</xstart>
-   <ystart>15</ystart>
-   <xend>745</xend>
-   <yend>15</yend>
-   <weight>2</weight>
-  </line>
-  <label>
-   <rect>
-    <x>670</x>
-    <y>0</y>
-    <width>75</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Received</string>
+   <string>Item</string>
   </label>
   <label>
    <rect>
-    <x>525</x>
-    <y>0</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>UOM</string>
-  </label>
-  <label>
-   <rect>
-    <x>220</x>
-    <y>0</y>
-    <width>50</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>UOM</string>
-  </label>
-  <label>
-   <rect>
-    <x>275</x>
-    <y>0</y>
-    <width>90</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Due/Received</string>
-  </label>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>0</y>
+    <x>0</x>
+    <y>22</y>
     <width>35</width>
     <height>15</height>
    </rect>
@@ -398,6 +349,141 @@ ORDER BY poitem_linenumber;</sql>
    <vcenter/>
    <string>#</string>
   </label>
+  <label>
+   <rect>
+    <x>175</x>
+    <y>22</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Exp. Cat. Code</string>
+  </label>
+  <label>
+   <rect>
+    <x>320</x>
+    <y>22</y>
+    <width>100</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Exp. Cat. Descrip.</string>
+  </label>
+  <label>
+   <rect>
+    <x>525</x>
+    <y>22</y>
+    <width>106</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Vend. Item #</string>
+  </label>
+  <label>
+   <rect>
+    <x>725</x>
+    <y>22</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Due Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>835</x>
+    <y>22</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Ordered</string>
+  </label>
+  <label>
+   <rect>
+    <x>935</x>
+    <y>22</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Received</string>
+  </label>
+  <line>
+   <xstart>5</xstart>
+   <ystart>37</ystart>
+   <xend>990</xend>
+   <yend>37</yend>
+   <weight>2</weight>
+  </line>
+  <label>
+   <rect>
+    <x>175</x>
+    <y>12</y>
+    <width>50</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>UOM or</string>
+  </label>
+  <label>
+   <rect>
+    <x>320</x>
+    <y>12</y>
+    <width>85</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Vendor UOM or</string>
+  </label>
  </pghead>
  <section>
   <name>detail</name>
@@ -408,7 +494,7 @@ ORDER BY poitem_linenumber;</sql>
    <height>18</height>
    <field>
     <rect>
-     <x>65</x>
+     <x>45</x>
      <y>0</y>
      <width>150</width>
      <height>15</height>
@@ -427,7 +513,7 @@ ORDER BY poitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>580</x>
+     <x>805</x>
      <y>0</y>
      <width>80</width>
      <height>15</height>
@@ -446,28 +532,9 @@ ORDER BY poitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>525</x>
+     <x>900</x>
      <y>0</y>
-     <width>50</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_uom2</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>665</x>
-     <y>0</y>
-     <width>80</width>
+     <width>90</width>
      <height>15</height>
     </rect>
     <font>
@@ -484,28 +551,9 @@ ORDER BY poitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>220</x>
+     <x>180</x>
      <y>0</y>
-     <width>50</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_uom1</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>370</x>
-     <y>0</y>
-     <width>150</width>
+     <width>145</width>
      <height>15</height>
     </rect>
     <font>
@@ -517,12 +565,12 @@ ORDER BY poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_vend_item</column>
+     <column>f_uom1</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>10</x>
+     <x>5</x>
      <y>0</y>
      <width>35</width>
      <height>15</height>
@@ -541,9 +589,9 @@ ORDER BY poitem_linenumber;</sql>
    </field>
    <field>
     <rect>
-     <x>275</x>
+     <x>730</x>
      <y>0</y>
-     <width>90</width>
+     <width>55</width>
      <height>15</height>
     </rect>
     <font>
@@ -551,21 +599,61 @@ ORDER BY poitem_linenumber;</sql>
      <size>8</size>
      <weight>bold</weight>
     </font>
-    <hcenter/>
+    <left/>
     <vcenter/>
     <data>
      <query>detail</query>
      <column>f_duedate</column>
     </data>
    </field>
+   <text>
+    <rect>
+     <x>525</x>
+     <y>0</y>
+     <width>195</width>
+     <height>15</height>
+    </rect>
+    <bottompad>1</bottompad>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <top/>
+    <data>
+     <query>detail</query>
+     <column>f_vend_item</column>
+    </data>
+   </text>
+   <text>
+    <rect>
+     <x>325</x>
+     <y>0</y>
+     <width>190</width>
+     <height>15</height>
+    </rect>
+    <bottompad>1</bottompad>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <top/>
+    <data>
+     <query>detail</query>
+     <column>f_uom2</column>
+    </data>
+   </text>
   </detail>
  </section>
  <pgfoot>
-  <height>18</height>
+  <height>32</height>
   <label>
    <rect>
-    <x>625</x>
-    <y>0</y>
+    <x>860</x>
+    <y>17</y>
     <width>75</width>
     <height>15</height>
    </rect>
@@ -580,8 +668,8 @@ ORDER BY poitem_linenumber;</sql>
   </label>
   <field>
    <rect>
-    <x>705</x>
-    <y>0</y>
+    <x>945</x>
+    <y>17</y>
     <width>40</width>
     <height>15</height>
    </rect>
@@ -600,7 +688,7 @@ ORDER BY poitem_linenumber;</sql>
   <field>
    <rect>
     <x>85</x>
-    <y>0</y>
+    <y>17</y>
     <width>100</width>
     <height>15</height>
    </rect>
@@ -618,8 +706,8 @@ ORDER BY poitem_linenumber;</sql>
   </field>
   <label>
    <rect>
-    <x>5</x>
-    <y>0</y>
+    <x>10</x>
+    <y>17</y>
     <width>75</width>
     <height>15</height>
    </rect>
@@ -628,7 +716,7 @@ ORDER BY poitem_linenumber;</sql>
     <size>8</size>
     <weight>normal</weight>
    </font>
-   <right/>
+   <left/>
    <vcenter/>
    <string>Report Date:</string>
   </label>
