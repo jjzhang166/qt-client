@@ -71,7 +71,7 @@ void printCreditMemos::sPrint()
                     "FROM ( SELECT cmhead_id, cmhead_number, cmhead_cust_id "
                     "       FROM cmhead "
                     "       WHERE ( (NOT cmhead_hold)"
-                    "         AND   (NOT cmhead_printed) ) ) AS data "
+                    "         AND   (NOT COALESCE(cmhead_printed,false)) ) ) AS data "
                     "WHERE (checkCreditMemoSitePrivs(cmhead_id));" );
   if (cmhead.first())
   {
