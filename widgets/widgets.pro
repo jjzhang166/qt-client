@@ -165,6 +165,7 @@ SOURCES    += widgets.cpp \
               xspinbox.cpp \
               xitemdelegate.cpp \
               xtableview.cpp \
+	      docAttach.cpp
 
 HEADERS    += widgets.h \
               addresscluster.h contactcluster.h crmacctcluster.h \
@@ -224,6 +225,7 @@ HEADERS    += widgets.h \
               xspinbox.h \
               xitemdelegate.h \
               xtableview.h \
+              docAttach.h
 
 FORMS += accountSearch.ui \
          customerselector.ui \
@@ -233,7 +235,8 @@ FORMS += accountSearch.ui \
          file.ui \
          alarms.ui alarmMaint.ui \
          vendorgroup.ui \
-         womatlcluster.ui
+         womatlcluster.ui \
+         docAttach.ui
 
 
 RESOURCES += widgets.qrc
