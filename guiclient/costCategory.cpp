@@ -250,7 +250,7 @@ void costCategory::sSave()
                "  :costcat_adjustment_accnt_id, :costcat_scrap_accnt_id, :costcat_mfgscrap_accnt_id,"
                "  :costcat_transform_accnt_id, :costcat_wip_accnt_id,"
                "  :costcat_purchprice_accnt_id,"
-               "  :costcat_shipasset_accnt_id, :costcat_toliability_accnt_id "
+               "  :costcat_shipasset_accnt_id, :costcat_toliability_accnt_id,"
                "  :costcat_exp_accnt_id);" );
   }
   else if (_mode == cEdit)
