@@ -151,7 +151,10 @@ void LotserialLineEdit::sParse()
       {
           QString stripped = text().trimmed().toUpper();
           if (stripped.length() == 0)
+          {
+              _parsed = true;
               setId(-1);
+          }
           else
           {
               XSqlQuery numQ;
