@@ -1427,6 +1427,11 @@ bool transferOrder::deleteForCancel()
   XSqlQuery query;
   bool deleteTo = false;
 
+  if (cNew == _mode && _toitem->topLevelItemCount()== 0)
+  {
+    deleteTo = true;
+  }
+
   if (cNew == _mode && _toitem->topLevelItemCount() > 0)
   {
     if (QMessageBox::question(this, tr("Delete Transfer Order?"),
@@ -1435,8 +1440,8 @@ bool transferOrder::deleteForCancel()
                               QMessageBox::Yes,
                               QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
       return false;
-	else
-	  deleteTo = true;
+    else
+      deleteTo = true;
   }
 
   if (cNew != _mode && _toitem->topLevelItemCount() == 0)
@@ -1447,8 +1452,8 @@ bool transferOrder::deleteForCancel()
                               QMessageBox::Yes,
                               QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
       return false;
-	else
-	  deleteTo = true;
+    else
+      deleteTo = true;
   }
 
   if (deleteTo)
