@@ -115,7 +115,7 @@ void contacts::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem*)
   }
   if (chk.first() && !chk.value("inUse").toBool()) {
     menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("DeleteContacts"))
+    if (!_privileges->check("MaintainContacts"))
       pMenu->setItemEnabled(menuItem, FALSE);
   }
 }
@@ -325,6 +325,6 @@ void contacts::sHandleButtons()
     systemError(this, chk.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-  _delete->setEnabled(!chk.value("inUse").toBool());
+  _delete->setEnabled(_privileges->check("MaintainContacts") && !chk.value("inUse").toBool());
 }
 
