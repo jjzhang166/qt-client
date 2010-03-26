@@ -327,35 +327,6 @@ void shipTo::sPopulateNumber()
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
-    if (_mode == cNew)
-    {
-      q.exec("SELECT NEXTVAL('shipto_shipto_id_seq') AS shipto_id;");
-      if (q.first())
-        _shiptoid = q.value("shipto_id").toInt();
-      else if (q.lastError().type() != QSqlError::NoError)
-      {
-        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-        return;
-      }
-
-      q.prepare( "INSERT INTO shiptoinfo "
-                 "( shipto_id, shipto_cust_id, shipto_active, shipto_num, shipto_commission ) "
-                 "VALUES "
-                 "( :shipto_id, :shipto_cust_id, :shipto_active, :shipto_num, :shipto_commission );" );
-
-      q.bindValue(":shipto_id", _shiptoid);
-      q.bindValue(":shipto_active", QVariant(_active->isChecked()));
-      q.bindValue(":shipto_cust_id", _custid);
-      q.bindValue(":shipto_num", _shipToNumber->text().trimmed());
-      q.bindValue(":shipto_commission", (_commission->toDouble() / 100));
-      q.exec();
-      if (q.lastError().type() != QSqlError::NoError)
-      {
-        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-        return;
-      }
-      _save->setEnabled(true);
-    }
   }
   else
   {
@@ -381,6 +352,36 @@ void shipTo::sPopulateNumber()
       return;
     }
   }
+
+  if (_mode == cNew)
+  {
+    q.exec("SELECT NEXTVAL('shipto_shipto_id_seq') AS shipto_id;");
+    if (q.first())
+      _shiptoid = q.value("shipto_id").toInt();
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+
+    q.prepare( "INSERT INTO shiptoinfo "
+               "( shipto_id, shipto_cust_id, shipto_active, shipto_num, shipto_commission ) "
+               "VALUES "
+               "( :shipto_id, :shipto_cust_id, :shipto_active, :shipto_num, :shipto_commission );" );
+
+    q.bindValue(":shipto_id", _shiptoid);
+    q.bindValue(":shipto_active", QVariant(_active->isChecked()));
+    q.bindValue(":shipto_cust_id", _custid);
+    q.bindValue(":shipto_num", _shipToNumber->text().trimmed());
+    q.bindValue(":shipto_commission", (_commission->toDouble() / 100));
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
+  _save->setEnabled(true);
 }
 
 void shipTo::sPopulateCommission(int pSalesrepid)
