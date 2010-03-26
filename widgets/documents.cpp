@@ -355,24 +355,27 @@ void Documents::sAttachDoc()
 void Documents::sDetachDoc()
 {
   XSqlQuery q;
-  if ( _doc->currentItem()->rawValue("target_type") == "IMG" )
-  {
-    q.prepare( "DELETE FROM imageass "
-               "WHERE (imageass_id = :docid );" );
-  }
-  else if ( _doc->currentItem()->rawValue("target_type") == "URL"  )
-  {
-    q.prepare( "DELETE FROM url "
-               "WHERE (url_id = :docid );" );
-  }
-  else
-  {
-    q.prepare( "DELETE FROM docass "
-               "WHERE (docass_id = :docid );" );
-  }
-  q.bindValue(":docid", _doc->id());
-  q.exec();
-  refresh();
+	if (_doc->id() < 0)
+		return;
+
+	if ( _doc->currentItem()->rawValue("target_type") == "IMG" )
+	{
+	  q.prepare( "DELETE FROM imageass "
+	             "WHERE (imageass_id = :docid );" );
+	}
+	else if ( _doc->currentItem()->rawValue("target_type") == "URL"  )
+	{
+	  q.prepare( "DELETE FROM url "
+	             "WHERE (url_id = :docid );" );
+	}
+	else
+	{
+	  q.prepare( "DELETE FROM docass "
+	             "WHERE (docass_id = :docid );" );
+	}
+	q.bindValue(":docid", _doc->id());
+	q.exec();
+	refresh();
 }
 
 void Documents::refresh()
