@@ -22,6 +22,7 @@
 #include "mqlutil.h"
 
 #include "documents.h"
+#include "imageview.h"
 #include "imageAssignment.h"
 #include "docAttach.h"
 
@@ -227,8 +228,15 @@ void Documents::sOpenDoc(QString mode)
   //image -- In the future this needs to be changed to use docass instead of imageass
   if (docType == "IMG")
   {
-    params.append("imageass_id", _doc->id());
-    imageAssignment newdlg(this, "", TRUE);
+    XSqlQuery img;
+    img.prepare("SELECT imageass_image_id "
+                "FROM imageass "
+                "WHERE (imageass_id=:imageass_id); ");
+    img.bindValue(":imageass_id", _doc->id());
+    img.exec();
+    img.first();
+    params.append("image_id", img.value("imageass_image_id").toInt());
+    imageview newdlg(this, "", TRUE);
     newdlg.set(params);
 
     if (newdlg.exec() != QDialog::Rejected)
