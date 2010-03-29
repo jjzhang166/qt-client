@@ -1282,7 +1282,7 @@ int XComboBox::id(int pIndex) const
 
 int XComboBox::id() const
 {
-  if (_ids.count())
+  if (_ids.count() && currentItem() != -1)
   {
     if ( (allowNull()) && (currentItem() <= 0) )
       return -1;
