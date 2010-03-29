@@ -484,7 +484,11 @@ void ItemLineEdit::sHandleCompleter()
   XSqlQuery numQ;
 
   if (_useQuery)
-    numQ.prepare(QString(_sql).remove(";").append(" LIMIT 10;"));
+  {
+    numQ.prepare(QString("SELECT * FROM (%1) data WHERE (item_number ~* :number) LIMIT 10")
+                 .arg(QString(_sql)).remove(";"));
+    numQ.bindValue(":number", "^" + stripped);
+  }
   else
   {
     QString pre( "SELECT DISTINCT item_id, item_number, "
