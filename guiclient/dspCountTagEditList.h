@@ -46,6 +46,7 @@ public slots:
     virtual void sSearch( const QString & pTarget );
     virtual void sFillList();
     virtual void sHandleAutoUpdate( bool pAutoUpdate );
+    virtual void sHandleButtons(bool);
     virtual void sParameterTypeChanged();
 
 protected slots:

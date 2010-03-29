@@ -72,7 +72,7 @@ dspCountTagEditList::dspCountTagEditList(QWidget* parent, const char* name, Qt::
   if (_privileges->check("EnterCountTags"))
   {
     connect(_cnttag, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    connect(_cnttag, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+    connect(_cnttag, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
   }
 
   if (_privileges->check("DeleteCountTags"))
@@ -168,9 +168,12 @@ void dspCountTagEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected
   }
   else
   {
-    menuItem = pMenu->insertItem("Edit Count Slip...", this, SLOT(sEdit()), 0);
-    if (!_privileges->check("EnterCountSlips"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    if (pSelected->text(3) == tr("Unposted"))
+    {
+      menuItem = pMenu->insertItem("Edit Count Slip...", this, SLOT(sEdit()), 0);
+      if (!_privileges->check("EnterCountSlips"))
+        pMenu->setItemEnabled(menuItem, FALSE);
+    }
   }
 }
 
@@ -669,6 +672,22 @@ void dspCountTagEditList::sHandleAutoUpdate(bool pAutoUpdate)
     connect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
   else
     disconnect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
+}
+
+void dspCountTagEditList::sHandleButtons(bool valid)
+{
+  if (valid)
+  {
+    // Handle Edit Button
+    if (_cnttag->currentItem()->altId() == -1) // count tag
+      _edit->setEnabled(true);
+    else if (_cnttag->currentItem()->rawValue("item_number") == tr("Unposted")) // unposted count slip
+      _edit->setEnabled(true);
+    else
+      _edit->setEnabled(false);
+  }
+  else
+    _edit->setEnabled(false);
 }
 
 void dspCountTagEditList::sParameterTypeChanged()
