@@ -36,6 +36,8 @@ createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const ch
   _mpsTimeFence->hide();
   _mpsTimeFenceDaysLit->hide();
 
+  _orderGroup->setMinimum(1);
+
   if(_metrics->value("Application") == "PostBooks")
   {
     _planningType->setCurrentIndex(0);
@@ -223,7 +225,7 @@ void createItemSitesByClassCode::sSave()
                "  itemsite_posupply, itemsite_wosupply,"
                "  itemsite_createpr, itemsite_createwo,"
                "  itemsite_sold, itemsite_soldranking,"
-               "  itemsite_stocked, itemsite__disallowblankwip,"
+               "  itemsite_stocked, itemsite_disallowblankwip,"
                "  itemsite_controlmethod, itemsite_perishable, itemsite_active,"
                "  itemsite_loccntrl, itemsite_location_id, itemsite_location,"
                "  itemsite_location_comments, itemsite_notes,"
@@ -258,7 +260,7 @@ void createItemSitesByClassCode::sSave()
                "       :itemsite_posupply, :itemsite_wosupply,"
                "       :itemsite_createpr, :itemsite_createwo,"
                "       :itemsite_sold, :itemsite_soldranking,"
-			   "       :itemsite_stocked, :itemsite__disallowblankwip"
+               "       :itemsite_stocked, :itemsite_disallowblankwip,"
                "       :itemsite_controlmethod, :itemsite_perishable, TRUE,"
                "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') "
                "                 THEN FALSE "
