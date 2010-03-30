@@ -469,15 +469,15 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
       _unitCost->setBaseValue(q.value("f_unitcost").toDouble());
       _taxtype->setId(q.value("taxtype_id").toInt());
       if (q.value("item_fractional").toBool())
-	  {
-        _ordered->setValidator(new XDoubleValidator(this));
-        _billed->setValidator(new XDoubleValidator(this));
-	  }
+      {
+        _ordered->setValidator(omfgThis->qtyVal());
+        _billed->setValidator(omfgThis->qtyVal());
+      }
       else
-	  {
-        _ordered->setValidator(new QIntValidator(this));
-        _billed->setValidator(new QIntValidator(this));
-	  }
+      {
+        _ordered->setValidator(new XDoubleValidator(0, 999999, 0, this));
+        _billed->setValidator(new XDoubleValidator(0, 999999, 0, this));
+      }
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
