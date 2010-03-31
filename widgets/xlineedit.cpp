@@ -47,7 +47,7 @@ XLineEdit::XLineEdit(QWidget *parent, const char *name) :
   addAction(_listAct);
 
   _searchAct = new QAction(tr("Search..."), this);
-  _searchAct->setShortcut(QKeySequence(tr("Ctrl+Shift+S")));
+  _searchAct->setShortcut(QKeySequence(tr("Ctrl+Shift+Space")));
   _searchAct->setShortcutContext(Qt::WidgetShortcut);
   _searchAct->setToolTip(tr("Search on specific criteria"));
   connect(_searchAct, SIGNAL(triggered()), this, SIGNAL(requestSearch()));
