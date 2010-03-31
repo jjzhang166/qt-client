@@ -439,23 +439,25 @@ bool importXML::importOne(const QString &pFileName)
     if (ignoreErr)
       q.exec("SAVEPOINT " + savepointName + ";");
 
+    QRegExp apos("\\\\*'");
+
     for (QDomElement columnElem = viewElem.firstChildElement();
          ! columnElem.isNull();
          columnElem = columnElem.nextSiblingElement())
     {
+      QString value = columnElem.attribute("value").isEmpty() ?
+                              columnElem.text() : columnElem.attribute("value");
+
       columnNameList.append(columnElem.tagName());
-      if (columnElem.attribute("value") == "[NULL]")
+
+      if (value.trimmed() == "[NULL]")
         columnValueList.append("NULL");
-      else if (! columnElem.attribute("value").isEmpty())
-        columnValueList.append("'" + columnElem.attribute("value").replace("'", "''") + "'");
-      else if (columnElem.text().trimmed().startsWith("SELECT"))
-        columnValueList.append("(" + columnElem.text() + ")");
-      else if (columnElem.text().trimmed() == "[NULL]")
-        columnValueList.append("NULL");
+      else if (value.trimmed().startsWith("SELECT"))
+        columnValueList.append("(" + value.trimmed() + ")");
       else if (columnElem.attribute("quote") == "false")
-        columnValueList.append(columnElem.text());
+        columnValueList.append(value);
       else
-        columnValueList.append("'" + columnElem.text().replace("'", "''") + "'");
+        columnValueList.append("'" + value.replace(apos, "''") + "'");
     }
 
     QString sql;
