@@ -1481,6 +1481,8 @@ bool SaveSizePositionEventFilter::eventFilter(QObject *obj, QEvent *event)
 
 void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
 {
+  // TO DO:  This function should be replaced by a centralized openWindow function
+  // used by toolbox, guiclient interface, and core windows
   if(!w->isModal())
   {
     if (w->parentWidget())
@@ -1488,7 +1490,13 @@ void GUIClient::handleNewWindow(QWidget * w, Qt::WindowModality m)
       if (w->parentWidget()->window()->isModal())
         w->setWindowModality(Qt::ApplicationModal);
       else
+      {
         w->setWindowModality(m);
+        // Remove the parent because this is not a behavior we want unless
+        // window is modal.  Does, however, completely eliminate ability
+        // to set a parent on non-modal window with this implementation
+        w->setParent(0);
+      }
     }
     else
       w->setWindowModality(m);

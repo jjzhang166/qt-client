@@ -1310,11 +1310,9 @@ void purchaseOrder::closeEvent(QCloseEvent *pEvent)
     if (q.lastError().type() != QSqlError::NoError)
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
   }
-
-  if (_mode != cNew)
+  else if (_mode == cEdit && _poitem->topLevelItemCount() == 0)
   {
-    if (_poitem->topLevelItemCount() == 0 &&
-        QMessageBox::question(this, tr("Delete Purchase Order?"),
+    if (QMessageBox::question(this, tr("Delete Purchase Order?"),
 			      tr("<p>This Purchase Order does not have any line items.  "
 				  "Are you sure you want to delete this Purchase Order?"),
 				  QMessageBox::Yes,

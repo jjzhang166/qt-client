@@ -700,12 +700,12 @@ bool salesOrder::save(bool partial)
 	q.exec();
 	if (q.first())
 	{
-	  if (q.value("crmacct_cust_id").toInt() == 0 || q.value("crmacct_prospect_id").toInt() == 0)
+	  if (q.value("crmacct_cust_id").toInt() == 0 && q.value("crmacct_prospect_id").toInt() == 0)
 	  {
-        QMessageBox::warning( this, tr("Cannot Save Sales Order"),
-                              tr("Only opportunities from Customers or Prospects can be related.") );
-        _opportunity->setFocus();
-        return FALSE;
+            QMessageBox::warning( this, tr("Cannot Save Sales Order"),
+                                  tr("Only opportunities from Customers or Prospects can be related.") );
+            _opportunity->setFocus();
+            return FALSE;
 	  }
     }
     else if (q.lastError().type() != QSqlError::NoError)

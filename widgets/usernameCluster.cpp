@@ -65,7 +65,6 @@ void UsernameLineEdit::setId(const int pId)
   {
     _id = -1;
     _valid = false;
-    _username = QString();
     _name = QString();
     _description = QString();
   }

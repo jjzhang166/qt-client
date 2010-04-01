@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>325</width>
-    <height>100</height>
+    <width>327</width>
+    <height>136</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
@@ -15,100 +15,117 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="_headerLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="_filterListLit">
-       <property name="text">
-        <string>Apply Filter:</string>
+      <layout class="QHBoxLayout" name="_headerLayout">
+       <item>
+        <widget class="QLabel" name="_filterListLit">
+         <property name="text">
+          <string>Apply Filter:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="XComboBox" name="_filterList"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="_filterButton">
+         <property name="text">
+          <string>More</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="_headerSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="_filterGroup">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
+       <property name="title">
+        <string>Filter</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="_footerLayout">
+          <item>
+           <widget class="QPushButton" name="_saveButton">
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="_manageButton">
+            <property name="text">
+             <string>Manage</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="_footerSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="_addFilterRow">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <layout class="QGridLayout" name="_filtersLayout"/>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="XComboBox" name="_filterList"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_filterButton">
-       <property name="text">
-        <string>More</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="_headerSpacer">
+      <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>20</width>
+         <height>0</height>
         </size>
        </property>
       </spacer>
      </item>
     </layout>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="_filterGroup">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Filter</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="_footerLayout">
-        <item>
-         <widget class="QPushButton" name="_saveButton">
-          <property name="text">
-           <string>Save</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="_manageButton">
-          <property name="text">
-           <string>Manage</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="_footerSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QToolButton" name="_addFilterRow">
-          <property name="text">
-           <string>+</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <layout class="QGridLayout" name="_filtersLayout"/>
-      </item>
-     </layout>
-    </widget>
    </item>
   </layout>
  </widget>

@@ -89,6 +89,7 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _maximumOrder->setValidator(omfgThis->qtyVal());
   _orderMultiple->setValidator(omfgThis->qtyVal());
   _safetyStock->setValidator(omfgThis->qtyVal());
+  _orderGroup->setMinimum(1);
     
   _restricted->addColumn(tr("Location"), _itemColumn, Qt::AlignLeft, true, "location_name" );
   _restricted->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "location_descrip" );
@@ -539,16 +540,6 @@ void itemSite::sSave()
         tr("Cannot find Supplied From Item Site.") );
       return;
     }
-  }
-
-  if (_orderGroup->value() == 0)
-  {
-    if (_metrics->value("Application") != "PostBooks")
-	{
-		QMessageBox::warning( this, tr("Cannot Save Item Site"),
-          tr("The Group Planned Orders days can't be 0.") );
-      return;
-	}
   }
 
   XSqlQuery newItemSite;

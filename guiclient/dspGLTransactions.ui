@@ -52,7 +52,7 @@ to be bound by its terms.</comment>
                    <string>All Accounts</string>
                   </property>
                   <property name="checked">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -65,7 +65,7 @@ to be bound by its terms.</comment>
                    <string>Selected Account:</string>
                   </property>
                   <property name="checked">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>

@@ -51,9 +51,17 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char* name, Qt::WFla
   parameterWidget->setType(tr("CRM Account"), "crmAccountId", ParameterWidget::Crmacct);
   parameterWidget->setType(tr("Contact"),"cntct_id", ParameterWidget::Contact);
   parameterWidget->setXComboBoxType(tr("Severity"), "severity_id", XComboBox::IncidentSeverity);
-  parameterWidget->setXComboBoxType(tr("Category"), "category_id", XComboBox::IncidentCategory);
-  parameterWidget->setXComboBoxType(tr("Status is"), "status_equal", qryStatus);
-  parameterWidget->setXComboBoxType(tr("Hide Status above"), "status_above", qryStatus, 4);
+  //parameterWidget->setXComboBoxType(tr("Category"), "category_id", XComboBox::IncidentCategory);
+  parameterWidget->setType(tr("Category"), "categorylist",
+                           ParameterWidget::Multiselect, 0,
+                           "SELECT incdtcat_id, incdtcat_name"
+                           "  FROM incdtcat"
+                           " ORDER BY incdtcat_name;");
+	parameterWidget->setType(tr("Status"), "statuslist",
+                           ParameterWidget::Multiselect, 0,
+                           qryStatus);
+  //parameterWidget->setXComboBoxType(tr("Status is"), "status_equal", qryStatus);
+  parameterWidget->setXComboBoxType(tr("Status Above"), "status_above", qryStatus, 4);
 
   _closeAct = new QAction(tr("Close"), this);
   _closeAct->setShortcut(QKeySequence::Close);

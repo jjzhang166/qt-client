@@ -22,6 +22,7 @@
 #include "mqlutil.h"
 
 #include "documents.h"
+#include "imageview.h"
 #include "imageAssignment.h"
 #include "docAttach.h"
 
@@ -227,8 +228,15 @@ void Documents::sOpenDoc(QString mode)
   //image -- In the future this needs to be changed to use docass instead of imageass
   if (docType == "IMG")
   {
-    params.append("imageass_id", _doc->id());
-    imageAssignment newdlg(this, "", TRUE);
+    XSqlQuery img;
+    img.prepare("SELECT imageass_image_id "
+                "FROM imageass "
+                "WHERE (imageass_id=:imageass_id); ");
+    img.bindValue(":imageass_id", _doc->id());
+    img.exec();
+    img.first();
+    params.append("image_id", img.value("imageass_image_id").toInt());
+    imageview newdlg(this, "", TRUE);
     newdlg.set(params);
 
     if (newdlg.exec() != QDialog::Rejected)
@@ -355,24 +363,27 @@ void Documents::sAttachDoc()
 void Documents::sDetachDoc()
 {
   XSqlQuery q;
-  if ( _doc->currentItem()->rawValue("target_type") == "IMG" )
-  {
-    q.prepare( "DELETE FROM imageass "
-               "WHERE (imageass_id = :docid );" );
-  }
-  else if ( _doc->currentItem()->rawValue("target_type") == "URL"  )
-  {
-    q.prepare( "DELETE FROM url "
-               "WHERE (url_id = :docid );" );
-  }
-  else
-  {
-    q.prepare( "DELETE FROM docass "
-               "WHERE (docass_id = :docid );" );
-  }
-  q.bindValue(":docid", _doc->id());
-  q.exec();
-  refresh();
+	if (_doc->id() < 0)
+		return;
+
+	if ( _doc->currentItem()->rawValue("target_type") == "IMG" )
+	{
+	  q.prepare( "DELETE FROM imageass "
+	             "WHERE (imageass_id = :docid );" );
+	}
+	else if ( _doc->currentItem()->rawValue("target_type") == "URL"  )
+	{
+	  q.prepare( "DELETE FROM url "
+	             "WHERE (url_id = :docid );" );
+	}
+	else
+	{
+	  q.prepare( "DELETE FROM docass "
+	             "WHERE (docass_id = :docid );" );
+	}
+	q.bindValue(":docid", _doc->id());
+	q.exec();
+	refresh();
 }
 
 void Documents::refresh()

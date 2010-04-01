@@ -23,6 +23,7 @@
 #include "ui_parameterwidget.h"
 
 class ParameterList;
+class QTableWidgetItem;
 
 class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::ParameterWidget
 {
@@ -33,7 +34,7 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
   public:
     enum ParameterWidgetTypes
     {
-      Crmacct, User, Text, Date, XComBox, Contact
+      Crmacct, User, Text, Date, XComBox, Contact, Multiselect
     };
 
     ParameterWidget(QWidget *pParent, const char * = 0);
@@ -51,14 +52,14 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
     void save();
     void setSavedFilters(int defaultId = -1);
     void setSavedFiltersIndex(QString);
-    void setType(QString, QString, enum ParameterWidgetTypes = Text, QVariant pDefault = 0);
+    void setType(QString, QString, enum ParameterWidgetTypes = Text, QVariant pDefault = 0, QVariant extraInfo =  QVariant());
     void setXComboBoxType(QString, QString, enum XComboBox::XComboBoxTypes, QVariant pDefault = 0);
     void setXComboBoxType(QString, QString, QString, QVariant pDefault = 0);
     void sManageFilters();
-    void storeFilterValue(QDate);
     void storeFilterValue(int pId = -1, QObject* filter = 0);
     void setFiltersVisabiltyPreference();
     void toggleSave();
+		void setFiltersDefault();
 
 
   signals:
@@ -73,18 +74,30 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
     QSignalMapper *_filterSignalMapper;
     QMap<QString, QPair<QString, ParameterWidgetTypes> > _types;
     QMap<int, QString > _usedTypes;
-    QString _settingsName;
+    QString _settingsName, _settingsName2;
     QMap<int, QPair<QString, QVariant > > _filterValues;
     QMap<QString, XComboBox::XComboBoxTypes > _comboTypes;
-    QMap<QString, QString > _comboQuery;
-		QMap<QString, QVariant > _defaultTypes;
+    QMap<QString, QString > _query;
+    QMap<QString, QVariant > _defaultTypes;
     bool _initialized;
     bool _shared;
 
-    QString getParameterTypeKey(QString);
+  protected:
+    int      getFilterIndex(const QWidget *filterwidget);
+    QWidget *getFilterWidget(const int index);
+    QString  getParameterTypeKey(QString);
     void setSelectedFilter(int filter_id);
-    void repopulateComboboxes();
+    
     bool containsUsedType(QString);
+
+
+	private slots:
+		void repopulateComboboxes();
+		void addUsedType();
+
+  protected slots:
+    void     resetMultiselect(QTableWidgetItem* item);
+
 
 };
 

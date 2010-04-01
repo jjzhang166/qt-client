@@ -304,7 +304,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     connect(_searchAct, SIGNAL(triggered()), this, SLOT(sSearch()));
 
     _infoAct = new QAction(tr("Info..."), this);
-    _infoAct->setShortcut(QKeySequence(tr("Ctrl+Alt+I")));
+    _infoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+I")));
     _infoAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _infoAct->setToolTip(tr("View record information"));
     _infoAct->setEnabled(false);
@@ -312,7 +312,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     addAction(_infoAct);
 
     _openAct = new QAction(tr("Open..."), this);
-    _openAct->setShortcut(QKeySequence(tr("Ctrl+Alt+O")));
+    _openAct->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
     _openAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _openAct->setToolTip(tr("Open record detail"));
     _openAct->setEnabled(false);
@@ -320,7 +320,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     addAction(_openAct);
 
     _newAct = new QAction(tr("New..."), this);
-    _newAct->setShortcut(QKeySequence(tr("Ctrl+Alt+N")));
+    _newAct->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
     _newAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _newAct->setToolTip(tr("Create new record"));
     _newAct->setEnabled(false);
