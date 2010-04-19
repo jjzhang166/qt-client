@@ -101,7 +101,7 @@ WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>);</sql>
        formatMoney(noNeg(invchead_freight + invchead_misc_amount + tax +
                          itemtotal - total_allocated)) AS f_totaldue,
        formatMoney(noNeg(invchead_freight + invchead_misc_amount + tax +
-                         itemtotal - total_allocated) - (invchead_payment+applied)) AS f_netdue,
+                         itemtotal - total_allocated)) AS f_netdue,
        formatMoney(total_allocated) AS f_allocated
  FROM (SELECT invchead_misc_amount, invchead_freight,
               invchead_payment, invchead_notes, invchead_misc_descrip,
@@ -116,7 +116,6 @@ WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>);</sql>
                                  invcitem_price /
                                  COALESCE(invcitem_price_invuomratio,1), 2), 0))
               AS itemtotal,
-              SUM(COALESCE(arapply_applied, 0)) AS applied,
               COALESCE(
               CASE WHEN invchead_posted THEN
                  (SELECT SUM(COALESCE(currToCurr(arapply_curr_id, t.aropen_curr_id,
@@ -146,7 +145,6 @@ WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>);</sql>
               END, 0) AS total_allocated
        FROM invchead
             LEFT OUTER JOIN invcitem ON (invcitem_invchead_id=invchead_id)
-            LEFT OUTER JOIN arapply ON (arapply_target_docnumber=invchead_invcnumber AND arapply_source_doctype='K')
        WHERE (invchead_id=&lt;? value("invchead_id") ?>)
        GROUP BY invchead_freight, invchead_misc_amount, tax,
                 invchead_payment, invchead_notes, invchead_misc_descrip,
