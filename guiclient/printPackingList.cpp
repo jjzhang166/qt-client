@@ -26,7 +26,7 @@ printPackingList::printPackingList(QWidget* parent, const char* name, bool modal
     setupUi(this);
 
     connect(_print,	     SIGNAL(clicked()),   this, SLOT(sPrint()));
-    connect(_reprint,	   SIGNAL(clicked()),   this, SLOT(sHandleReprint()));
+    connect(_reprint,	   SIGNAL(toggled(bool)),   this, SLOT(sHandleReprint()));
     connect(_shipment,	 SIGNAL(newId(int)),  this, SLOT(sHandleShipment()));
     connect(_order,      SIGNAL(valid(bool)), this, SLOT(sPopulate()));
 
@@ -34,9 +34,7 @@ printPackingList::printPackingList(QWidget* parent, const char* name, bool modal
     _order->setAllowedTypes(OrderLineEdit::Sales |
                             OrderLineEdit::Transfer);
     _order->setFromSitePrivsEnforced(TRUE);
-
-    _shipment->setType(ShipmentClusterLineEdit::SalesOrder);
-    _shipment->limitToOrder(1);
+    _shipment->setStatus(ShipmentClusterLineEdit::Unshipped);
 
     _captive	= FALSE;
 
@@ -227,13 +225,13 @@ void printPackingList::sPrint()
 
 void printPackingList::sPopulate()
 {
-  if (_order->isSO())
+  if (_order->isSO() && _order->isValid())
   {
     _headtype = "SO";
     _shipment->setType(ShipmentClusterLineEdit::SalesOrder);
     _shipment->limitToOrder(_order->id());
   }
-  else if (_order->isTO())
+  else if (_order->isTO() && _order->isValid())
   {
     _headtype = "TO";
     _shipment->setType(ShipmentClusterLineEdit::TransferOrder);
@@ -249,7 +247,7 @@ void printPackingList::sPopulate()
 // qDebug("sPopulate: _headtype %s, _shipment %d, _order %d",
 // _headtype.toAscii().data(), _shipment->id(), _order->id());
 
-  _print->setEnabled(_order->isValid());
+  _print->setEnabled(_shipment->isValid());
 
   if (! _headtype.isEmpty())
   {
@@ -395,7 +393,13 @@ void printPackingList::sHandleShipment()
 void printPackingList::sHandleReprint()
 {
   if (_reprint->isChecked())
+  {
     _order->setAllowedStatuses(OrderLineEdit::AnyStatus);
+    _shipment->setStatus(ShipmentClusterLineEdit::AllStatus);
+  }
   else
+  {
     _order->setAllowedStatuses(OrderLineEdit::Open);
+    _shipment->setStatus(ShipmentClusterLineEdit::Unshipped);
+  }
 }
