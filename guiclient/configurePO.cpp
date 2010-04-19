@@ -164,8 +164,8 @@ void configurePO::sSave()
   _metrics->set("VendorChangeLog", _vendorChangeLog->isChecked());
   _metrics->set("UseEarliestAvailDateOnPOItem", _earliestPO->isChecked());
   _metrics->set("DefaultPrintPOOnSave", _printPO->isChecked());
-  _metrics->set("EnableDropShipments", _enableDropShip->isChecked());
-  _metrics->set("BillDropShip", (_billDropShip->isChecked() && _billDropShip->isEnabled()));
+  _metrics->set("EnableDropShipments",  _enableDropShip->isChecked());
+  _metrics->set("BillDropShip",         _billDropShip->isChecked());
  
   _metrics->set("POVendor", _vendorCopy->isChecked());
   _metrics->set("RequireStdCostForPOItem", _requirePoitemStdCost->isChecked());
