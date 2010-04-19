@@ -134,7 +134,7 @@ friend class ItemLineEditDelegate;
       
       // Groups of Item Types
       cGeneralManufactured = cManufactured | cBreeder,
-      cGeneralPurchased    = cPurchased | cOutsideProcess,
+      cGeneralPurchased    = cPurchased | cOutsideProcess | cTooling,
       cGeneralComponents   = cManufactured | cPhantom | cCoProduct | cPurchased | cOutsideProcess | cReference | cTooling,
       cGeneralInventory    = cAllItemTypes_Mask ^ cReference,
       cKitComponents       = cSold | (cAllItemTypes_Mask ^ cKit)
