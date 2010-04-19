@@ -86,6 +86,16 @@ configureIM::configureIM(QWidget* parent, const char* name, bool modal, Qt::WFla
   else if (countSlipAuditing == "B")
     _checkOnAll->setChecked(TRUE);
     
+  QString avgCostingMethod = _metrics->value("CountAvgCostMethod");
+  if (avgCostingMethod == "STD")
+    _useStdCost->setChecked(TRUE);
+  else if (avgCostingMethod == "ACT")
+    _useActCost->setChecked(TRUE);
+  else if (avgCostingMethod == "AVG")
+    _useAvgCost->setChecked(TRUE);
+  else
+    _useStdCost->setChecked(TRUE);
+    
   if(_metrics->value("Application") != "PostBooks")
   {
     q.exec("SELECT DISTINCT itemsite_controlmethod "
@@ -247,6 +257,13 @@ void configureIM::sSave()
   else if (_checkOnAll->isChecked())
     _metrics->set("CountSlipAuditing", QString("B"));
     
+  if (_useStdCost->isChecked())
+    _metrics->set("CountAvgCostMethod", QString("STD"));
+  else if (_useActCost->isChecked())
+    _metrics->set("CountAvgCostMethod", QString("ACT"));
+  else if (_useAvgCost->isChecked())
+    _metrics->set("CountAvgCostMethod", QString("AVG"));
+
   //Shipping and Receiving
   const char *numberGenerationTypes[] = { "A" };
 

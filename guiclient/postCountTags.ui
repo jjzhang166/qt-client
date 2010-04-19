@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>494</width>
-    <height>516</height>
+    <width>480</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -102,7 +102,7 @@ to be bound by its terms.</comment>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="3" column="0">
           <widget class="QCheckBox" name="_thaw">
            <property name="minimumSize">
             <size>
@@ -116,62 +116,6 @@ to be bound by its terms.</comment>
            <property name="checked">
             <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QGroupBox" name="_avgCostGroup">
-           <property name="title">
-            <string>Average Cost Items</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QRadioButton" name="_useStdCost">
-              <property name="text">
-               <string>Use Standard Cost</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="_useAvgCost">
-              <property name="text">
-               <string>Use Average Cost</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="_useActCost">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Use Actual Cost if no Average Cost</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
@@ -292,22 +236,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_useAvgCost</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>_useActCost</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>416</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>213</x>
-     <y>446</y>
     </hint>
    </hints>
   </connection>

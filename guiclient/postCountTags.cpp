@@ -48,7 +48,7 @@ void postCountTags::languageChange()
 
 void postCountTags::sPost()
 {
-  QString sql( "SELECT MIN(postCountTag(invcnt_id, :thaw, :avgCostingMethod)) AS result "
+  QString sql( "SELECT MIN(postCountTag(invcnt_id, :thaw)) AS result "
                "FROM invcnt, itemsite, item "
                "WHERE ( (invcnt_itemsite_id=itemsite_id)"
                " AND (invcnt_qoh_after IS NOT NULL)"
@@ -71,12 +71,6 @@ void postCountTags::sPost()
   
   q.prepare(sql);
   q.bindValue(":thaw", QVariant(_thaw->isChecked()));
-  if (_useStdCost->isChecked())
-    q.bindValue(":avgCostingMethod", "STD");
-  else if (_useActCost->isChecked())
-    q.bindValue(":avgCostingMethod", "ACT");
-  else
-    q.bindValue(":avgCostingMethod", "AVG");
   _warehouse->bindValue(q);
   _parameter->bindValue(q);
   q.exec();
