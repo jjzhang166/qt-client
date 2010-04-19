@@ -741,6 +741,7 @@ void salesOrderItem::clear()
   _warehouse->setType(WComboBox::Sold);
   _overridePoPrice->clear();
   _originalQtyOrd = 0.0;
+  _orderQtyCache = 0.0;
   _modified = false;
   _updateItemsite = false;
   _baseUnitPrice->clear();
