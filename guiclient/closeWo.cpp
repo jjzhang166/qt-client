@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "inputManager.h"
+#include "returnWoMaterialItem.h"
 
 closeWo::closeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -76,29 +77,28 @@ bool closeWo::okToSave()
     _transDate->setFocus();
     return false;
   }
-  
+
+  // Return any tools that have been issued  
   XSqlQuery tool;
-  tool.prepare( "SELECT (count(womatl_id) > 0) AS disttool"
-                " FROM womatl "
+  tool.prepare( "SELECT womatl_id"
+                "  FROM womatl "
                 "  JOIN itemsite ON (womatl_itemsite_id = itemsite_id) "
-                "  JOIN item ON (itemsite_item_id = item_id) "
+                "  JOIN item ON ((itemsite_item_id = item_id) AND (item_type = 'T')) "
                 " WHERE ((womatl_wo_id=:wo_id)"
-                " AND (item_type = 'T' ) "
-                " AND (womatl_qtyiss > 0 ) "
-                " AND ((itemsite_controlmethod IN ('L','S') "
-                "      OR (itemsite_loccntrl)))); ");
+                "   AND  (womatl_qtyiss > 0 ));");
   tool.bindValue(":wo_id", _wo->id());
   tool.exec();
   if (tool.first())
   {
-    if (tool.value("disttool").toBool())
+    do
     {
-      QMessageBox::critical(this, tr("Controlled Tool"),
-                            tr("<p>A controlled tooling item still resides on this work order. "
-                               "You must return the tooling item before closing it.") );
-      _wo->setFocus();
-      return false;
+      returnWoMaterialItem newdlg(this);
+      ParameterList params;
+      params.append("womatl_id", tool.value("womatl_id").toInt());
+      if (newdlg.set(params) == NoError)
+        newdlg.exec();
     }
+    while (tool.next());
   }
 
   XSqlQuery type;
@@ -122,9 +122,11 @@ bool closeWo::okToSave()
     else
     {
       q.prepare("SELECT wo_qtyrcv, womatl_issuemethod, womatl_qtyiss "
-                "FROM wo, womatl "
-                "WHERE ((womatl_wo_id=wo_id)"
-                "   AND (wo_id=:wo_id));" );
+                "  FROM wo "
+                "  JOIN womatl ON (womatl_wo_id = wo_id) "
+                "  JOIN itemsite ON (womatl_itemsite_id = itemsite_id) "
+                "  JOIN item ON ((itemsite_item_id = item_id) AND (NOT item_type = 'T')) "
+                " WHERE (wo_id=:wo_id);" );
       q.bindValue(":wo_id", _wo->id());
       q.exec();
       if (q.first())
