@@ -31,8 +31,6 @@ cashReceiptItem::cashReceiptItem(QWidget* parent, const char* name, bool modal, 
   // signals and slots connections
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_openAmount, SIGNAL(idChanged(int)), _amountToApply, SLOT(setId(int)));
-  connect(_openAmount, SIGNAL(effectiveChanged(const QDate&)), _amountToApply, SLOT(setEffective(const QDate&)));
   connect(_discount, SIGNAL(clicked()),      this, SLOT(sDiscount()));
 
   _cust->setReadOnly(TRUE);
@@ -171,26 +169,27 @@ void cashReceiptItem::populate()
   {
     query.prepare( "SELECT aropen_cust_id, aropen_docnumber, aropen_doctype, "
                    "       aropen_docdate, aropen_duedate, "
+                   "       cashrcpt_curr_id, cashrcpt_distdate, "
                    "       currToCurr(aropen_curr_id, cashrcpt_curr_id, (aropen_amount - aropen_paid), "
                    "       cashrcpt_distdate) AS f_amount, "
-				   "       COALESCE(cashrcptitem_discount, 0.00) AS discount "
+                   "       COALESCE(cashrcptitem_discount, 0.00) AS discount "
                    "FROM cashrcpt, aropen LEFT OUTER JOIN cashrcptitem ON (aropen_id=cashrcptitem_aropen_id) "
                    "WHERE ( (aropen_id=:aropen_id)"
                    " AND (cashrcpt_id=:cashrcpt_id))" );
-	query.bindValue(":aropen_id", _aropenid);
+    query.bindValue(":aropen_id", _aropenid);
     query.bindValue(":cashrcpt_id", _cashrcptid);
     query.exec();
-	if (query.first())
+    if (query.first())
     {
-	  _cust->setId(query.value("aropen_cust_id").toInt());
+      _cust->setId(query.value("aropen_cust_id").toInt());
       _docNumber->setText(query.value("aropen_docnumber").toString());
       _docType->setText(query.value("aropen_doctype").toString());
       _docDate->setDate(query.value("aropen_docdate").toDate(), true);
       _dueDate->setDate(query.value("aropen_duedate").toDate());
       _discountAmount->setLocalValue(query.value("discount").toDouble());
       _openAmount->set(query.value("f_amount").toDouble(),
-		       _openAmount->id(),
-		       query.value("aropen_docdate").toDate(), false);
+                       query.value("cashrcpt_curr_id").toInt(),
+                       query.value("cashrcpt_distdate").toDate(), false);
     } 
   }
   else if (_mode == cEdit)
@@ -199,8 +198,8 @@ void cashReceiptItem::populate()
                    "       aropen_docdate, aropen_duedate, "
                    "       currToCurr(aropen_curr_id, cashrcpt_curr_id, (aropen_amount - aropen_paid), "
                    "       cashrcpt_distdate) AS balance, "
-                   "       cashrcptitem_amount, cashrcpt_curr_id, "
-				   "       cashrcptitem_discount AS discount "
+                   "       cashrcptitem_amount, cashrcpt_curr_id, cashrcpt_distdate,  "
+                   "       cashrcptitem_discount AS discount "
                    "FROM cashrcptitem, cashrcpt, aropen "
                    "WHERE ( (cashrcptitem_cashrcpt_id=cashrcpt_id)"
                    " AND (cashrcptitem_aropen_id=aropen_id)"
@@ -216,7 +215,7 @@ void cashReceiptItem::populate()
       _dueDate->setDate(query.value("aropen_duedate").toDate());
       _openAmount->set(query.value("balance").toDouble(),
 		       query.value("cashrcpt_curr_id").toInt(),
-		       query.value("aropen_docdate").toDate(), false);
+                       query.value("cashrcpt_distdate").toDate(), false);
       _amountToApply->setLocalValue(query.value("cashrcptitem_amount").toDouble());
       _discountAmount->setLocalValue(query.value("discount").toDouble());
     }

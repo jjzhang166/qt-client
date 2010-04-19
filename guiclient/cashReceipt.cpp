@@ -605,6 +605,9 @@ bool cashReceipt::save(bool partial)
     }
   }
 
+  if (!_distDate->isValid())
+    _distDate->setDate(omfgThis->dbDate());
+
   if (_mode == cNew)
     q.prepare( "INSERT INTO cashrcpt "
                "( cashrcpt_id, cashrcpt_cust_id, cashrcpt_distdate, cashrcpt_amount,"
