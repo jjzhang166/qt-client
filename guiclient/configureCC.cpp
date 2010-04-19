@@ -41,6 +41,17 @@ configureCC::configureCC(QWidget* parent, const char* name, bool modal, Qt::WFla
 		    tr("<p>Cannot read encrypted information from database."));
   }
 
+  _ccCompany->addItem("Authorize.Net");
+  _ccCompany->addItem("YourPay");
+  _ccCompany->addItem("Paymentech");
+  _ccCompany->addItem("External");
+
+  if (! _metrics->boolean("CCEnablePaymentech"))
+  {
+    _ccCompany->removeItem(PTINDEX);
+    _ccWidgetStack->removeWidget(_ccWidgetStack->widget(PTINDEX));
+  }
+
   _ccAccept->setChecked(_metrics->boolean("CCAccept"));
   _ccTest->setChecked(_metrics->boolean("CCTest"));
   _ccValidDays->setValue(_metrics->value("CCValidDays").toInt());

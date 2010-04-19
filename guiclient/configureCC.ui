@@ -79,26 +79,6 @@ to be bound by its terms.</comment>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <item>
-                <property name="text">
-                 <string>Authorize.Net</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>YourPay</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Paymentech</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>External</string>
-                </property>
-               </item>
               </widget>
              </item>
              <item>
