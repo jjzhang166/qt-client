@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>848</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -240,7 +240,7 @@ to be bound by its terms.</comment>
          <item row="0" column="1">
           <widget class="QStackedWidget" name="_whsTypeStack">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="_standardWhsStack">
             <layout class="QGridLayout" name="gridLayout_15">
