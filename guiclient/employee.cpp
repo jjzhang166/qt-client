@@ -198,6 +198,7 @@ enum SetResponse employee::set(const ParameterList &pParams)
       _mode = cNew;
       _user->setEnabled(_createUsers);
       _salesrep->setEnabled(_privileges->check("MaintainSalesReps"));
+	  _vendor->setEnabled(_privileges->check("MaintainVendors"));
       _code->setFocus();
     }
     else if (param.toString() == "edit")
@@ -391,6 +392,52 @@ void employee::sSave(const bool pClose)
     }
   }
 
+  if (_vendor->isChecked() && pClose)
+  {
+	q.prepare("SELECT vend_id FROM vendinfo WHERE upper(vend_number)=upper(:number);");
+    q.bindValue(":number", _number->text());
+    q.exec();
+    if (q.first())
+    {
+      // OK
+    }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+    else if (_privileges->check("MaintainVendors")) // not found
+    {
+      if (QMessageBox::question(this, tr("No Corresponding Vendor"),
+                            tr("There is no Vendor named %1. Would you "
+                               "like to create one now?<p>If you answer 'No' "
+                               "then you should either Cancel creating this "
+                               "Employee, uncheck the Vendor check box, or "
+                               "use a different Employee Code.")
+                            .arg(_code->text()),
+                            QMessageBox::Yes | QMessageBox::Default,
+                            QMessageBox::No) == QMessageBox::Yes)
+      {
+		ParameterList params;
+		params.append("crmacct_number", _number->text());
+		params.append("crmacct_name", _code->text().lower());
+		params.append("mode", "new");
+		vendor *newdlg = new vendor(this);
+		newdlg->set(params);
+		omfgThis->handleNewWindow(newdlg);
+      }
+      return;
+    }
+    else // not found
+    {
+      systemError(this, tr("There is no User named %1. Either Cancel creating "
+                           "this Employee or use a different Employee Code.")
+                         .arg(_code->text()));
+      return;
+    }
+  }
+
+
   _contact->check();
 
   if (_mode == cNew)
@@ -404,7 +451,7 @@ void employee::sSave(const bool pClose)
               " country, address_change,"
               " site, manager_code,"
               " wage_type, wage, wage_currency, wage_period,"
-              " department, shift, is_user, is_salesrep, notes, image, "
+              " department, shift, is_user, is_salesrep, is_vendor, notes, image, "
 			  " rate, billing_currency, billing_period"
               ") VALUES ("
 			  " :code, :number, :active, :start_date,"
@@ -416,7 +463,7 @@ void employee::sSave(const bool pClose)
               " :country, :addrmode,"
               " :site, :mgrcode,"
               " :wagetype, :wage, :wagecurr, :wageper,"
-			  " :dept, :shift, :isusr, :isrep, :notes, :image, :rate, :billing_currency, :billing_period);");
+			  " :dept, :shift, :isusr, :isrep, :isvendor, :notes, :image, :rate, :billing_currency, :billing_period);");
 
   else if (_mode == cEdit)
     q.prepare("UPDATE api.employee SET"
@@ -454,6 +501,7 @@ void employee::sSave(const bool pClose)
               " shift=:shift,"
               " is_user=:isusr,"
               " is_salesrep=:isrep,"
+			  " is_vendor=:isvendor,"
               " notes=:notes,"
               " image=:image,"
 			  " rate=:rate,"
@@ -495,6 +543,7 @@ void employee::sSave(const bool pClose)
   q.bindValue(":shift",       _shift->number());
   q.bindValue(":isusr",       _user->isChecked());
   q.bindValue(":isrep",       _salesrep->isChecked());
+  q.bindValue(":isvendor",    _vendor->isChecked());
   q.bindValue(":notes",       _notes->text());
   q.bindValue(":origcode",    _empcode);
   q.bindValue(":image",       _image->number());
@@ -803,7 +852,7 @@ void employee::sVendor()
   {
     srq.prepare("SELECT vend_id "
                 "FROM vendinfo "
-                "WHERE (vend_number=:number);");
+                "WHERE (upper(vend_number)=upper(:number));");
     srq.bindValue(":number", _number->text());
   }
 
@@ -995,4 +1044,20 @@ void employee::sHandleButtons()
     systemError(this, usrq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
+  XSqlQuery vendq;
+  vendq.prepare("SELECT vend_id FROM vendinfo WHERE upper(vend_number)=upper(:number);");
+  vendq.bindValue(":number", _number->text());
+  vendq.exec();
+  if (vendq.first())
+  {
+	_vendor->setChecked(true);
+    _vendorButton->setEnabled(_privileges->check("MaintainVendors"));
+  }
+  else if (vendq.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, vendq.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+
 }
