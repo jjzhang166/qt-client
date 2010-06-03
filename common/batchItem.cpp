@@ -93,9 +93,6 @@ void batchItem::sSave()
     if (cp == RecurrenceWidget::NoPolicy)
       return;
 
-    if (_recur->isRecurring() && _recur->parentId() < 0)
-      _recur->setParent(_batchid, _recur->parentType());
-
     XSqlQuery beginq("BEGIN;");
     XSqlQuery rollbackq;
     rollbackq.prepare("ROLLBACK;");
@@ -169,10 +166,8 @@ void batchItem::populate()
     _completedDate->setDate(batch.value("completed_date").toDate());
     _completedTime->setTime(batch.value("completed_time").toTime());
 
-    if (batch.value("batch_recurring_batch_id").isNull())
-      _recur->setParent(-1, batch.value("batch_action").toString());
-    else
-      _recur->setParent(batch.value("batch_recurring_batch_id").toInt(),
-                        batch.value("batch_action").toString());
+    _recur->setParent(batch.value("batch_recurring_batch_id").isNull() ?
+                      _batchid : batch.value("batch_recurring_batch_id").toInt(),
+                      batch.value("batch_action").toString());
   }
 }
