@@ -934,21 +934,36 @@ void purchaseOrder::sEdit()
 
 void purchaseOrder::sDelete()
 {
-  if (QMessageBox::question(this, tr("Delete Purchase Order Item?"),
-			                      tr("<p>Are you sure you want to delete this "
-				                     "Purchase Order Line Item?"),
-	  QMessageBox::Yes,
-	  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
-    return;
-
-  q.prepare( "DELETE FROM poitem "
-             "WHERE (poitem_id=:poitem_id);" );
-  q.bindValue(":poitem_id", _poitem->id());
-  q.exec();
-  if (q.lastError().type() != QSqlError::NoError)
+  if (_deleteMode == cDelete)
   {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    if (QMessageBox::question(this, tr("Delete Purchase Order Item?"),
+                                              tr("<p>Are you sure you want to delete this "
+				                     "Purchase Order Line Item?"),
+           QMessageBox::Yes,
+            QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+      return;
+
+    q.prepare( "DELETE FROM poitem "
+               "WHERE (poitem_id=:poitem_id);" );
+    q.bindValue(":poitem_id", _poitem->id());
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
+  else
+  {
+    q.prepare( "UPDATE poitem SET poitem_status='C' "
+               "WHERE (poitem_id=:poitem_id);" );
+    q.bindValue(":poitem_id", _poitem->id());
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
 
   sFillList();
