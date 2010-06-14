@@ -34,7 +34,7 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WFla
   _routing->setValidator(_routingValidator);
   _federalReserveDest->setValidator(_routingValidator);
 
-  _assetAccount->setType(GLCluster::cAsset);
+  _assetAccount->setType(GLCluster::cAsset | GLCluster::cLiability);
   _currency->setType(XComboBox::Currencies);
   _currency->setLabel(_currencyLit);
 
