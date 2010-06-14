@@ -332,7 +332,7 @@ void Comments::refresh()
       lclHtml += "\">edit</a>";
     }
     lclHtml += "<p>\n<blockquote>";
-    lclHtml += comment.value("comment_text").toString().replace(br,"<br>\n").replace("<", "&lt;");
+    lclHtml += comment.value("comment_text").toString().replace("<", "&lt;").replace(br,"<br>\n");
     lclHtml += "</pre></blockquote>\n<hr>\n";
   }
   lclHtml += "</body>";
