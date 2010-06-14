@@ -127,7 +127,7 @@ void dspVendorAPHistory::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
       if (!_privileges->check("ViewVouchers"))
         pMenu->setItemEnabled(menuItem, FALSE);
 
-      if(item->text(7)==item->text(8))
+      if(item->rawValue("amount")==item->rawValue("balance"))
       {
         pMenu->insertSeparator();
   
