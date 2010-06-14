@@ -250,25 +250,6 @@ void incident::sCancel()
 {
   if (cNew == _mode)
   {
-    q.prepare("SELECT releaseNumber('IncidentNumber', :number) AS result;");
-    q.bindValue(":number", _number->text());
-    q.exec();
-    if (q.first())
-    {
-      int result = q.value("result").toInt();
-      if (result < 0)
-      {
-        systemError(this, storedProcErrorLookup("releaseNumber", result),
-                    __FILE__, __LINE__);
-        return;
-      }
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-
     q.prepare("SELECT deleteIncident(:incdt_id) AS result;");
     q.bindValue(":incdt_id", _incdtid);
     q.exec();
