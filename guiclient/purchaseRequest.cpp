@@ -145,7 +145,7 @@ enum SetResponse purchaseRequest::set(ParameterList &pParams)
       _dueDate->setEnabled(FALSE);
 
       q.prepare( "SELECT planord_itemsite_id, planord_duedate,"
-                 "       planord_qty "
+                 "       planord_qty, planord_comments "
                  "FROM planord "
                  "WHERE (planord_id=:planord_id);" );
       q.bindValue(":planord_id", _planordid);
@@ -155,6 +155,7 @@ enum SetResponse purchaseRequest::set(ParameterList &pParams)
         _item->setItemsiteid(q.value("planord_itemsite_id").toInt());
         _qty->setDouble(q.value("planord_qty").toDouble());
         _dueDate->setDate(q.value("planord_duedate").toDate());
+        _notes->setText(q.value("planord_comments").toString());
 
         populateNumber();
       }

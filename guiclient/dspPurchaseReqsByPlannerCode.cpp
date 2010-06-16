@@ -133,6 +133,8 @@ void dspPurchaseReqsByPlannerCode::sRelease()
     omfgThis->handleNewWindow(newdlg);
   else
     delete newdlg;
+
+  sFillList();
 }
 
 void dspPurchaseReqsByPlannerCode::sDelete()
