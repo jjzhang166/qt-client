@@ -150,8 +150,12 @@ void dspTimePhasedOpenAPItems::sViewOpenItems()
   params.append("vend_id", _apopen->id());
   if (_custom->isChecked())
   {
-    params.append("startDate", _columnDates[_column - 2].startDate);
-    params.append("endDate", _columnDates[_column - 2].endDate);
+    QDate checkDate = _columnDates[_column - 2].startDate;
+    if (checkDate.isValid())
+    {
+      params.append("startDate", _columnDates[_column - 2].startDate);
+      params.append("endDate", _columnDates[_column - 2].endDate);
+    }
   }
   else
   {
@@ -239,6 +243,7 @@ void dspTimePhasedOpenAPItems::sFillCustom()
   }
 
   _apopen->addColumn(tr("Total"), _bigMoneyColumn, Qt::AlignRight, true, "linetotal");
+  _columnDates.append(DatePair());
   sql += ", " + linetotal.join("+") + " AS linetotal,"
          " 'curr' AS linetotal_xtnumericrole,"
          " 0 AS linetotal_xttotalrole,"
