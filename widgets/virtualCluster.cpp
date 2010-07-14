@@ -266,6 +266,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     _valid  = false;
     _parsed = true;
     _strict = true;
+    _completer = 0;
 
     setTableAndColumnNames(pTabName, pIdColumn, pNumberColumn, pNameColumn, pDescripColumn, pActiveColumn);
 
