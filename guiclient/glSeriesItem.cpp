@@ -104,7 +104,7 @@ void glSeriesItem::sSave()
     amount *= -1;
 
   if (_mode == cNew)
-    q.prepare("SELECT insertIntoGLSeries(:glsequence, 'G/L', :doctype, :docnumber, :accnt_id, :amount, CURRENT_DATE) AS result;");
+    q.prepare("SELECT insertIntoGLSeries(:glsequence, 'G/L', :doctype, :docnumber, :accnt_id, :amount, :distdate) AS result;");
   else if (_mode == cEdit)
     q.prepare( "UPDATE glseries "
                "SET glseries_accnt_id=:accnt_id,"
@@ -117,6 +117,7 @@ void glSeriesItem::sSave()
   q.bindValue(":docnumber",     _docnumber);
   q.bindValue(":accnt_id",	_account->id());
   q.bindValue(":amount",	amount);
+  q.bindValue(":distdate",	_amount->effective());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)
   {
