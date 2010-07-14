@@ -446,6 +446,22 @@ bool returnAuthorization::sSave(bool partial)
     return false;
   }
 
+  if ( !_warehouse->isValid() )
+  {
+    QMessageBox::warning( this, tr("Invalid Receiving Site"),
+                         tr("<p>You must enter a valid Receiving Site." ) );
+    _warehouse->setFocus();
+    return false;
+  }
+
+  if ( !_shipWhs->isValid() )
+  {
+    QMessageBox::warning( this, tr("Invalid Shipping Site"),
+                         tr("<p>You must enter a valid Shipping Site." ) );
+    _shipWhs->setFocus();
+    return false;
+  }
+
   // save address info in case someone wants to use 'em again later
   // but don't make any global changes to the data and ignore errors
   _billToAddr->save(AddressCluster::CHANGEONE);
@@ -642,11 +658,26 @@ void returnAuthorization::sOrigSoChanged()
   }
   if (!_ignoreSoSignals) 
   {
-    sSave(true);
-    sFillList();
-
     if (_origso->isValid())
     {
+      if ( !_warehouse->isValid() )
+      {
+        QMessageBox::warning( this, tr("Invalid Receiving Site"),
+                             tr("<p>You must enter a valid Receiving Site." ) );
+        _warehouse->setFocus();
+        _origso->setId(-1);
+        return;
+      }
+
+      if ( !_shipWhs->isValid() )
+      {
+        QMessageBox::warning( this, tr("Invalid Shipping Site"),
+                             tr("<p>You must enter a valid Shipping Site." ) );
+        _shipWhs->setFocus();
+        _origso->setId(-1);
+        return;
+      }
+
       XSqlQuery sohead;
       sohead.prepare( "SELECT cohead.*,custinfo.*, custtype_code, "
                       "       cohead_commission, "
@@ -708,6 +739,7 @@ void returnAuthorization::sOrigSoChanged()
         _shipToAddr->setEnabled(_ffShipto);
         _ignoreShiptoSignals = FALSE;
         sSave(true);
+        sFillList();
       }
       else if (sohead.lastError().type() != QSqlError::NoError)
       {
