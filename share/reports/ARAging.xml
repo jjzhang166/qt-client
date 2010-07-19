@@ -31,13 +31,13 @@
 	araging_plus_val,  formatMoney(araging_plus_val)   AS araging_plus_amt,
 	araging_total_val, formatMoney(araging_total_val)  AS araging_total_amt
 FROM araging(&lt;? value("relDate") ?>, &lt;? value("useDocDate") ?>)
-      LEFT OUTER JOIN custgrpitem ON (araging_cust_id=custgrpitem_cust_id)
 &lt;? if exists("cust_id") ?>
    WHERE (araging_cust_id=&lt;? value("cust_id") ?>)
 &lt;? elseif exists("custtype_id") ?>
    WHERE (araging_cust_custtype_id=&lt;? value("custtype_id") ?>)
 &lt;? elseif exists("custgrp_id") ?>
-WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
+   LEFT OUTER JOIN custgrpitem ON (araging_cust_id=custgrpitem_cust_id)
+   WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
 &lt;? elseif exists("custtype_pattern") ?>
    WHERE (araging_custtype_code ~ &lt;? value("custtype_pattern") ?>)
 &lt;? endif ?>;</sql>
@@ -101,7 +101,7 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
   <group>
    <name>Customer</name>
    <column>araging_cust_number</column>
-   <pagebreak when="after foot" />
+   <pagebreak when="after foot"/>
    <head>
     <height>113</height>
     <label>
@@ -468,7 +468,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_ninety_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <field>
      <rect>
@@ -488,7 +489,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_sixty_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <field>
      <rect>
@@ -508,7 +510,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_total_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <field>
      <rect>
@@ -528,7 +531,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_cur_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <field>
      <rect>
@@ -548,7 +552,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_thirty_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <label>
      <rect>
@@ -610,7 +615,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
       <query>detail</query>
       <column>araging_plus_val</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <label>
      <rect>
@@ -922,7 +928,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_thirty_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
   <field>
    <rect>
@@ -942,7 +949,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_sixty_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
   <label>
    <rect>
@@ -994,7 +1002,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_cur_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
   <field>
    <rect>
@@ -1014,7 +1023,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_plus_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
   <line>
    <xstart>1</xstart>
@@ -1060,7 +1070,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_total_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
   <label>
    <rect>
@@ -1112,7 +1123,8 @@ WHERE (custgrpitem_custgrp_id=&lt;? value("custgrp_id") ?>)
     <query>detail</query>
     <column>araging_ninety_val</column>
    </data>
-   <tracktotal builtin="true" >qty</tracktotal>
+   <format builtin="true">qty</format>
+   <tracktotal/>
   </field>
  </pgfoot>
  <pgfoot>
