@@ -97,6 +97,10 @@ returnAuthorizationItem::returnAuthorizationItem(QWidget* parent, const char* na
   _raitemls->addColumn(tr("Authorized"),  _qtyColumn,   Qt::AlignRight, true, "raitemls_qtyauthorized"  );
   _raitemls->addColumn(tr("Received"),    _qtyColumn,   Qt::AlignRight, true, "raitemls_qtyreceived"  );
 
+  _item->setType(ItemLineEdit::cSold | ItemLineEdit::cActive);
+  _item->addExtraClause( QString("(itemsite_active)") );  // ItemLineEdit::cActive doesn't compare against the itemsite record
+  _item->addExtraClause( QString("(itemsite_sold)") );    // ItemLineEdit::cSold doesn't compare against the itemsite record
+
   _orderQty->setValidator(omfgThis->qtyVal());
   _qtyAuth->setValidator(omfgThis->qtyVal());
   _discountFromSale->setValidator(omfgThis->negPercentVal());
