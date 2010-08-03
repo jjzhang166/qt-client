@@ -311,6 +311,8 @@ bool voucher::sSave()
 
   _voheadid = -1;
 
+  setWindowModified(false);
+
   if (cNew != _mode)
   {
     close();
@@ -334,7 +336,6 @@ bool voucher::sSave()
   ParameterList params;
   params.append("mode", "new");
   set(params);
-  setWindowModified(false);
   return true;
 }
 
