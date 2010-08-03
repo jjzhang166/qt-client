@@ -39,6 +39,7 @@ protected:
 
 protected slots:
     virtual void languageChange();
+    virtual void sNewItem();
 
 };
 

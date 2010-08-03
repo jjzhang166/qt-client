@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>606</width>
     <height>600</height>
    </rect>
   </property>
@@ -900,14 +900,14 @@ to be bound by its terms.</comment>
                    <layout class="QHBoxLayout">
                     <item>
                      <widget class="CurrCluster" name="_priceFreight">
-                      <property name="format">
-                       <enum>CurrDisplay::Cost</enum>
-                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>160</width>
                         <height>0</height>
                        </size>
+                      </property>
+                      <property name="format">
+                       <enum>CurrDisplay::Cost</enum>
                       </property>
                       <property name="currencyDisabled">
                        <bool>true</bool>
@@ -1196,16 +1196,36 @@ to be bound by its terms.</comment>
  <tabstops>
   <tabstop>_itemSelected</tabstop>
   <tabstop>_prodcatSelected</tabstop>
+  <tabstop>_freightSelected</tabstop>
   <tabstop>_item</tabstop>
+  <tabstop>_tab</tabstop>
   <tabstop>_qtyBreak</tabstop>
-  <tabstop>_qtyUOM</tabstop>
   <tabstop>_price</tabstop>
+  <tabstop>_qtyUOM</tabstop>
   <tabstop>_priceUOM</tabstop>
+  <tabstop>_prodcat</tabstop>
+  <tabstop>_qtyBreakCat</tabstop>
+  <tabstop>_discount</tabstop>
+  <tabstop>_fixedAmtDiscount</tabstop>
+  <tabstop>_qtyBreakFreight</tabstop>
+  <tabstop>_priceFreight</tabstop>
+  <tabstop>_flatRateFreight</tabstop>
+  <tabstop>_perUOMFreight</tabstop>
+  <tabstop>_allShipViasFreight</tabstop>
+  <tabstop>_selectedShipViaFreight</tabstop>
+  <tabstop>_shipViaFreight</tabstop>
+  <tabstop>_allZonesFreight</tabstop>
+  <tabstop>_selectedZoneFreight</tabstop>
+  <tabstop>_zoneFreight</tabstop>
+  <tabstop>_allFreightClasses</tabstop>
+  <tabstop>_selectedFreightClass</tabstop>
+  <tabstop>_freightClass</tabstop>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
-  <tabstop>_prodcat</tabstop>
-  <tabstop>_discount</tabstop>
-  <tabstop>_qtyBreakCat</tabstop>
+  <tabstop>_edit</tabstop>
+  <tabstop>_delete</tabstop>
+  <tabstop>_new</tabstop>
+  <tabstop>_charprice</tabstop>
  </tabstops>
  <resources/>
  <connections>
