@@ -69607,118 +69607,128 @@ post Vouchers.</source>
 <context>
     <name>priceList</name>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="29"/>
+        <location filename="../../guiclient/priceList.cpp" line="30"/>
         <source>Schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="30"/>
+        <location filename="../../guiclient/priceList.cpp" line="31"/>
         <source>Source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="31"/>
+        <location filename="../../guiclient/priceList.cpp" line="32"/>
         <source>Qty. Break</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="32"/>
+        <location filename="../../guiclient/priceList.cpp" line="33"/>
         <source>Qty. UOM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="33"/>
+        <location filename="../../guiclient/priceList.cpp" line="34"/>
         <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="34"/>
+        <location filename="../../guiclient/priceList.cpp" line="35"/>
         <source>Price UOM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="35"/>
+        <location filename="../../guiclient/priceList.cpp" line="36"/>
+        <source>Discount %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/priceList.cpp" line="37"/>
+        <source>Fixed Discount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/priceList.cpp" line="38"/>
         <source>Currency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="36"/>
-        <source>Price (in curr)</source>
+        <location filename="../../guiclient/priceList.cpp" line="39"/>
+        <source>Price (in Base)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="97"/>
-        <source>?????</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/priceList.cpp" line="98"/>
+        <location filename="../../guiclient/priceList.cpp" line="99"/>
         <source>Price
 (in %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="296"/>
+        <location filename="../../guiclient/priceList.cpp" line="218"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="297"/>
+        <location filename="../../guiclient/priceList.cpp" line="219"/>
         <source>Customer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="298"/>
+        <location filename="../../guiclient/priceList.cpp" line="220"/>
         <source>Cust. Ship-To</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="300"/>
+        <location filename="../../guiclient/priceList.cpp" line="222"/>
         <source>Cust. Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="301"/>
+        <location filename="../../guiclient/priceList.cpp" line="223"/>
         <source>Cust. Type Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="302"/>
+        <location filename="../../guiclient/priceList.cpp" line="224"/>
         <source>Sale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="303"/>
+        <location filename="../../guiclient/priceList.cpp" line="225"/>
         <source>List Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.ui" line="22"/>
+        <location filename="../../guiclient/priceList.ui" line="21"/>
         <source>Price List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.ui" line="82"/>
+        <location filename="../../guiclient/priceList.ui" line="47"/>
         <source>Quantity:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.ui" line="157"/>
+        <location filename="../../guiclient/priceList.ui" line="76"/>
+        <source>List Price:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/priceList.ui" line="106"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.ui" line="167"/>
+        <location filename="../../guiclient/priceList.ui" line="116"/>
         <source>&amp;Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.ui" line="223"/>
+        <location filename="../../guiclient/priceList.ui" line="147"/>
         <source>&amp;Items:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/priceList.cpp" line="299"/>
+        <location filename="../../guiclient/priceList.cpp" line="221"/>
         <source>Cust. Ship-To Pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -77890,65 +77900,65 @@ You must Recall this Work Order before Rescheduling it.</source>
 <context>
     <name>returnAuthorizationItem</name>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="309"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="313"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="437"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="441"/>
         <source>Item site not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="438"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="442"/>
         <source>&lt;p&gt;No valid item site record was found for the selected item at the selected shipping site.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="503"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="507"/>
         <source>Reschedule W/O?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="504"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="508"/>
         <source>&lt;p&gt;The Scheduled Date for this Line Item has been changed.  Should the W/O for this Line Item be Re-Scheduled to reflect this change?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="539"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="543"/>
         <source>Change W/O Quantity?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="540"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="544"/>
         <source>&lt;p&gt;The quantity authorized for this Return Authorization Line Item has been changed. Should the quantity required for the associated Work Order be changed to reflect this?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="754"/>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1388"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="758"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1392"/>
         <source>&lt;p&gt;Only Items Sites using the Job cost method may have a Disposition of Service.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1035"/>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1073"/>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1760"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1039"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1077"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1764"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1043"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1047"/>
         <source>In %1:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1496"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1500"/>
         <source>Delete Work Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1497"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1501"/>
         <source>&lt;p&gt;You are requesting to delete the Work Order created for the Sales Order Item linked to this Return. Are you sure you want to do this?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -78216,28 +78226,28 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="351"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="355"/>
         <source>Over Authorize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="352"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="356"/>
         <source>&lt;p&gt;The authorized quantity exceeds the original sold quantity on the original Sales Order.  Do you want to correct the quantity?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="753"/>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1387"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="757"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1391"/>
         <source>Cannot use Service Disposition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1401"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1405"/>
         <source>Cannot change Disposition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1402"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="1406"/>
         <source>&lt;p&gt;A work order is associated with this Return. First delete the work order, then change this disposition.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -78267,7 +78277,7 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="345"/>
+        <location filename="../../guiclient/returnAuthorizationItem.cpp" line="349"/>
         <source>&lt;p&gt;You must enter a valid Schedule Date.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -95481,27 +95491,27 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="349"/>
+        <location filename="../../guiclient/voucher.cpp" line="350"/>
         <source>Enter Voucher Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="382"/>
+        <location filename="../../guiclient/voucher.cpp" line="383"/>
         <source>Voucher for P/O #</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="817"/>
+        <location filename="../../guiclient/voucher.cpp" line="818"/>
         <source>Save Voucher?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="818"/>
+        <location filename="../../guiclient/voucher.cpp" line="819"/>
         <source>Do you want to save this voucher?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="884"/>
+        <location filename="../../guiclient/voucher.cpp" line="885"/>
         <source>View P/O Item...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -95636,27 +95646,27 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="633"/>
+        <location filename="../../guiclient/voucher.cpp" line="634"/>
         <source>Closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="634"/>
+        <location filename="../../guiclient/voucher.cpp" line="635"/>
         <source>Unposted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="635"/>
+        <location filename="../../guiclient/voucher.cpp" line="636"/>
         <source>Partial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="636"/>
+        <location filename="../../guiclient/voucher.cpp" line="637"/>
         <source>Received</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="637"/>
+        <location filename="../../guiclient/voucher.cpp" line="638"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -95676,7 +95686,7 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="844"/>
+        <location filename="../../guiclient/voucher.cpp" line="845"/>
         <source>Error deleting temporary Voucher.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -95726,7 +95736,7 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/voucher.cpp" line="350"/>
+        <location filename="../../guiclient/voucher.cpp" line="351"/>
         <source>&lt;p&gt;You must enter a valid Voucher Number before continuing</source>
         <translation type="unfinished"></translation>
     </message>
