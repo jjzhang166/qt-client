@@ -3846,12 +3846,12 @@ Report this to your Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="74"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="75"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="75"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="76"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5328,83 +5328,82 @@ Report this to your Systems Administrator.</source>
 <context>
     <name>XTreeWidget</name>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1314"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1430"/>
         <source>Export Contents...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1346"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1462"/>
         <source>Remember Sort Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1348"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1464"/>
         <source>Do Not Remember Sort Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1373"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1489"/>
         <source>Export Save Filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1335"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1451"/>
         <source>Reset this Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="235"/>
-        <source>Populate on XTreeWidget Multiple Times</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="235"/>
-        <source>The Populate function on XTreeWidget was called multiple times. This should not happen and could cause problems. Additional calls will be ignored while original query is still being processed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1310"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1426"/>
         <source>Copy All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1311"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1427"/>
         <source>Copy Row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1312"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1428"/>
         <source>Copy Cell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1338"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1454"/>
         <source>Reset all Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1341"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1457"/>
         <source>Remember Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1343"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1459"/>
         <source>Do Not Remember Widths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1374"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1490"/>
         <source>Text CSV (*.csv);;Text (*.txt);;ODF Text Document (*.odt);;HTML Document (*.html)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1100"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1208"/>
         <source>Total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/xtreewidget.cpp" line="1100"/>
+        <location filename="../../widgets/xtreewidget.cpp" line="1208"/>
         <source>Totals</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>XTreeWidgetProgress</name>
+    <message>
+        <location filename="../../widgets/xtreewidgetprogress.cpp" line="41"/>
+        <location filename="../../widgets/xtreewidgetprogress.cpp" line="171"/>
+        <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -83514,6 +83513,7 @@ Would you like to save them now?</source>
     </message>
     <message>
         <location filename="../../guiclient/selectPayments.cpp" line="293"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="312"/>
         <source>Can not do Payment</source>
         <translation type="unfinished"></translation>
     </message>
@@ -83523,29 +83523,33 @@ Would you like to save them now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/selectPayments.cpp" line="547"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="312"/>
+        <source>apopen not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/selectPayments.cpp" line="552"/>
         <source>Voucher</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/selectPayments.cpp" line="580"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="585"/>
         <source>On Hold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/selectPayments.cpp" line="588"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="590"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/selectPayments.cpp" line="614"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="613"/>
         <source>Can not change Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../guiclient/selectPayments.cpp" line="614"/>
-        <source>You cannot set this item as On Hold.
-This Item is already selected for payment.</source>
+        <source>&lt;p&gt;You cannot set this item as On Hold. This Item is already selected for payment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -83619,7 +83623,7 @@ This Item is already selected for payment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/selectPayments.cpp" line="548"/>
+        <location filename="../../guiclient/selectPayments.cpp" line="553"/>
         <source>Debit Memo</source>
         <translation type="unfinished"></translation>
     </message>
