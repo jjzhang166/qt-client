@@ -149,6 +149,7 @@ SOURCES    += widgets.cpp \
               datecluster.cpp \
               virtualCluster.cpp deptCluster.cpp shiftCluster.cpp \
               xtreewidget.cpp \
+              xtreewidgetprogress.cpp \
               lotserialCluster.cpp \
               lotserialseqcluster.cpp \
               shipmentCluster.cpp \
@@ -217,6 +218,7 @@ HEADERS    += widgets.h \
               datecluster.h \
               virtualCluster.h deptcluster.h shiftcluster.h \
               xtreewidget.h \
+              xtreewidgetprogress.h \
               lotserialCluster.h \
               lotserialseqcluster.h \
               shipmentcluster.h \
