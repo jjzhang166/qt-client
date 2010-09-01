@@ -25,6 +25,8 @@
 #include <QMenu>
 #include <QMimeData>
 #include <QMouseEvent>
+#include <QProgressBar>
+#include <QPushButton>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QTextCharFormat>
@@ -38,11 +40,15 @@
 #include <QtScript>
 #include <QMessageBox>
 
+#include "xtreewidgetprogress.h"
 #include "xtsettings.h"
 #include "xsqlquery.h"
 #include "format.h"
 
 #define DEBUG false
+
+#define WORKERINTERVAL 0
+#define WORKERROWS     100
 
 /* make sure the colroles are kept in sync with
    QStringList knownroles in populate() below,
@@ -65,11 +71,6 @@
 #define COLROLE_ID            14
 // make sure COLROLE_COUNT = last COLROLE + 1
 #define COLROLE_COUNT         15
-
-#define ROWROLE_INDENT        0
-#define ROWROLE_HIDDEN        1
-// make sure ROWROLE_COUNT = last ROWROLE + 1
-#define ROWROLE_COUNT         2
 
 static QString  yesStr = QObject::tr("Yes");
 static QString  noStr  = QObject::tr("No");
@@ -110,18 +111,24 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
   _savedId = false; // was -1;
   _scol    = -1;
   _sord    = Qt::AscendingOrder;
-  _working = false;
-  _deleted = false;
   _linear  = false;
-  _workingTimer.setInterval(1);
-  _workingTimer.setSingleShot(true);
   _alwaysLinear = true;
+
+  _colIdx     = 0;  // querycol = _colIdx[xtreecol]
+  _colRole    = 0;  // querycol = _colRole[xtreecol][roleid]
+  _fieldCount = 0;
+  _last       = 0;
+  for (int i = 0; i < ROWROLE_COUNT; i++)
+    _rowRole[i] = 0;
+  _progress = 0;
+  _subtotals = 0;
 
   setContextMenuPolicy(Qt::CustomContextMenu);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   header()->setStretchLastSection(false);
   header()->setClickable(true);
-  // setMultiSelection(FALSE);
+  if (_x_preferences)
+    setAlternatingRowColors(!_x_preferences->boolean("NoAlternatingRowColors"));
 
   connect(header(),       SIGNAL(sectionClicked(int)),                                      this, SLOT(sHeaderClicked(int)));
   connect(this,           SIGNAL(itemSelectionChanged()),                                   this, SLOT(sSelectionChanged()));
@@ -133,7 +140,7 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
   connect(this,           SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem *)),  SLOT(sCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem *)));
   connect(this,           SIGNAL(itemChanged(QTreeWidgetItem*, int)),                       SLOT(sItemChanged(QTreeWidgetItem*, int)));
   connect(this,           SIGNAL(itemClicked(QTreeWidgetItem*, int)),                       SLOT(sItemClicked(QTreeWidgetItem*, int)));
-  connect(&_workingTimer, SIGNAL(timeout()),                                                this, SLOT(populateWorker()));
+  connect(&_workingTimer, SIGNAL(timeout()), this, SLOT(populateWorker()));
 
   emit valid(FALSE);
   setColumnCount(0);
@@ -149,7 +156,21 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
 
 XTreeWidget::~XTreeWidget()
 {
-  _deleted = true;
+  qApp->restoreOverrideCursor();
+
+  cleanupAfterPopulate();
+
+  if (_subtotals)
+  {
+    for (int i = 0; i < _subtotals->size(); i++)
+    {
+      delete (*_subtotals)[i];
+      _subtotals->replace(i, 0);
+    }
+    delete _subtotals;
+    _subtotals = 0;
+  }
+
   if (_x_preferences)
   {
       xtsettingsSetValue( _settingsName + "/isForgetful",       _forgetful);
@@ -183,22 +204,14 @@ XTreeWidget::~XTreeWidget()
 
 void XTreeWidget::populate(const QString &pSql, bool pUseAltId)
 {
-  qApp->setOverrideCursor(Qt::waitCursor);
-
   XSqlQuery query(pSql);
   populate(query, pUseAltId);
-
-  qApp->restoreOverrideCursor();
 }
 
 void XTreeWidget::populate(const QString &pSql, int pIndex, bool pUseAltId)
 {
-  qApp->setOverrideCursor(Qt::waitCursor);
-
   XSqlQuery query(pSql);
   populate(query, pIndex, pUseAltId);
-
-  qApp->restoreOverrideCursor();
 }
 
 void XTreeWidget::populate(XSqlQuery pQuery, bool pUseAltId, PopulateStyle popstyle)
@@ -217,448 +230,536 @@ void XTreeWidget::populate(XSqlQuery pQuery, int pIndex, bool pUseAltId, Populat
     _workingParams.clear();
   _workingParams.append(args);
 
-  if (_alwaysLinear || (_guiClientInterface &&
-                        _guiClientInterface->globalQ()->result() == pQuery.result()))
-  {
-    _linear  = true;
+  _linear = _alwaysLinear || (_guiClientInterface &&
+                              _guiClientInterface->globalQ()->result() == pQuery.result());
+  if (_linear)
     populateWorker();
-    _linear  = false;
-  }
-  else if (!_working)
-    _workingTimer.start();
+  else if (! _workingTimer.isActive())
+    _workingTimer.start(WORKERINTERVAL);
 }
 
 void XTreeWidget::populateWorker()
 {
-  if (_working)
-  {
-    QMessageBox::critical(this, tr("Populate on XTreeWidget Multiple Times"), tr("The Populate function on XTreeWidget was called multiple times. This should not happen and could cause problems. Additional calls will be ignored while original query is still being processed.") );
-    return;
-  }
   if (_workingParams.isEmpty())
   {
-    qDebug("populateWorker called when no arguments where given.");
+    if (DEBUG) qDebug("populateWorker called when no arguments were given.");
+    if (_workingTimer.isActive())
+      _workingTimer.stop();
     return;
   }
-  _working = true;
-  XTreeWidgetPopulateParams args = _workingParams.takeFirst();
+
+  XTreeWidgetPopulateParams args = _workingParams.first();
   XSqlQuery     pQuery     = args._workingQuery;
   int           pIndex     = args._workingIndex;
   bool          pUseAltId  = args._workingUseAlt;
   PopulateStyle popstyle   = args._workingPopstyle;
 
-  qApp->setOverrideCursor(Qt::waitCursor);
+  if (_linear)
+    qApp->setOverrideCursor(Qt::WaitCursor);
 
   if (pIndex < 0)
     pIndex = id();
 
-  if (popstyle == Replace)
-    clear();
-
-  if (pQuery.first())
+  // TODO: remove this? i've only found one usage
+  if (_roles.size() <= 0)  // old-style populate by column/result order
   {
-    int fieldCount = pQuery.count();
-    if (fieldCount > 1)
+    if (DEBUG)
+      qDebug("%s::populate() old-style", qPrintable(objectName()));
+    if (pQuery.first())
     {
-      XTreeWidgetItem *last = NULL;
-
-      if (_roles.size() > 0)  // xtreewidget columns are tied to query columns
+      _fieldCount = pQuery.count();
+      do
       {
-        QVector<int> colIdx(_roles.size());
-        // TODO: rewrite code to use a qmap or some other structure that doesn't
-        //       require the initializing a Vector or new'd array values.
-        QVector<int *> colRole(fieldCount, 0);
-        for (int ref = 0; ref < fieldCount; ++ref)
-          colRole[ref] = new int[COLROLE_COUNT];
-        int         rowRole[ROWROLE_COUNT];
-
-        QSqlRecord  currRecord = pQuery.record();
-
-        // apply indent and hidden roles to col 0 if the caller requested them
-        // keep synchronized with #define ROWROLE_* above
-        if (rootIsDecorated())
-        {
-          rowRole[ROWROLE_INDENT] = currRecord.indexOf("xtindentrole");
-          if (rowRole[ROWROLE_INDENT] < 0)
-            rowRole[ROWROLE_INDENT] = 0;
-        }
+        if (pUseAltId)
+          _last = new XTreeWidgetItem(this, _last, pQuery.value(0).toInt(),
+                                     pQuery.value(1).toInt(),
+                                     pQuery.value(2).toString());
         else
-          rowRole[ROWROLE_INDENT] = 0;
+          _last = new XTreeWidgetItem(this, _last, pQuery.value(0).toInt(),
+                                     pQuery.value(1));
 
-        rowRole[ROWROLE_HIDDEN] = currRecord.indexOf("xthiddenrole");
-        if (rowRole[ROWROLE_HIDDEN] < 0)
-          rowRole[ROWROLE_HIDDEN] = 0;
-
-        // keep synchronized with #define COLROLE_* above
-        // TODO: get rid of COLROLE_* above and replace this QStringList
-        // with a map or vector of known roles and their Qt:: role or XTRole
-        // enum values
-        QStringList knownroles;
-        knownroles << "qtdisplayrole"      << "qttextalignmentrole"<<
-        "qtbackgroundrole"   << "qtforegroundrole"<<
-        "qttooltiprole"      << "qtstatustiprole"<<
-        "qtfontrole" << "xtkeyrole"<<
-        "xtrunningrole"      << "xtrunninginit"<<
-        "xtgrouprunningrole" << "xttotalrole"<<
-        "xtnumericrole" << "xtnullrole"<<
-        "xtidrole";
-        for (int wcol = 0; wcol < _roles.size(); wcol++)
-        {
-          QVariantMap *role = _roles.value(wcol);
-          if (!role)
-          {
-            qWarning("XTreeWidget::populate() there is no role for column %d", wcol);
-            continue;
-          }
-          QString colname = role->value("qteditrole").toString();
-          colIdx[wcol] = currRecord.indexOf(colname);
-
-          for (int k = 0; k < knownroles.size(); k++)
-          {
-            // apply Qt roles to a whole row by applying to each column
-            colRole[wcol][k] = knownroles.at(k).startsWith("qt") ?
-                               currRecord.indexOf(knownroles.at(k)) :
-                               0;
-            if (colRole[wcol][k] > 0)
-            {
-              role->insert(knownroles.at(k),
-                            QString(knownroles.at(k)));
-            }
-            else
-              colRole[wcol][k] = 0;
-
-            // apply column-specific roles second to override entire row settings
-            if (currRecord.indexOf(colname + "_" + knownroles.at(k)) >=0)
-            {
-              colRole[wcol][k] = currRecord.indexOf(colname + "_" + knownroles.at(k));
-              role->insert(knownroles.at(k),
-                            QString(colname + "_" + knownroles.at(k)));
-              if (knownroles.at(k) == "xtrunningrole")
-                            headerItem()->setData(wcol, Qt::UserRole, "xtrunningrole");
-              else if (knownroles.at(k) == "xttotalrole")
-                            headerItem()->setData(wcol, Qt::UserRole, "xttotalrole");
-            }
-          }
-
-          // Negative NUMERIC ROLE => default for column instead of column index
-          // see below
-          if (!colRole[wcol][COLROLE_NUMERIC] &&
-                            headerItem()->data(wcol, ScaleRole).isValid())
-          {
-            bool  ok;
-            int   tmpscale = headerItem()->data(wcol, ScaleRole).toInt(&ok);
-            if (ok)
-            {
-              if (DEBUG)
-                qDebug("setting colRole[%d][COLROLE_NUMERIC]: %d", wcol, 0-tmpscale);
-              colRole[wcol][COLROLE_NUMERIC] = 0 - tmpscale;
-            }
-          }
-        }
-
-        if (rowRole[ROWROLE_INDENT])
-          setIndentation( 10);
-        else
-          setIndentation( 0);
-
-        int defaultScale = decimalPlaces("");
-        int cnt = 0;
-        do
-        {
-          ++cnt;
-          if (!_linear && cnt % 100 == 0)
-          {
-            qApp->processEvents();
-            if (_deleted)
-            {
-              qApp->restoreOverrideCursor();
-              return;
-            }
-          }
-
-          int id         = pQuery.value(0).toInt();
-          int altId      = (pUseAltId) ? pQuery.value(1).toInt() : -1;
-          int indent     = 0;
-          int lastindent = 0;
-          if (rowRole[ROWROLE_INDENT])
-          {
-            indent = pQuery.value(rowRole[ROWROLE_INDENT]).toInt();
-            if (indent < 0)
-              indent = 0;
-            if (last)
-            {
-              lastindent = last->data(0, IndentRole).toInt();
-              if (DEBUG)
-                    qDebug("getting xtindentrole from %p of %d", last, lastindent);
-            }
-          }
-          if (DEBUG)
-                    qDebug("%s::populate() with id %d altId %d indent %d lastindent %d",
-                    qPrintable(objectName()), id, altId, indent, lastindent);
-
-          if (indent == 0)
-            last = new XTreeWidgetItem(this, id, altId);
-          else if (lastindent < indent)
-            last = new XTreeWidgetItem(last, id, altId);
-          else if (lastindent == indent)
-            last = new XTreeWidgetItem((XTreeWidgetItem *)(last->QTreeWidgetItem::parent()), id, altId);
-          else if (lastindent > indent)
-          {
-            XTreeWidgetItem *prev = (XTreeWidgetItem *)(last->QTreeWidgetItem::parent());
-            while (prev &&
-                   prev->data(0, IndentRole).toInt() >= indent)
-              prev = (XTreeWidgetItem *)(prev->QTreeWidgetItem::parent());
-            if (prev)
-              last = new XTreeWidgetItem(prev, id, altId);
-            else
-              last = new XTreeWidgetItem(this, id, altId);
-          }
-          else
-            last = new XTreeWidgetItem(this, last, id, altId);
-
-          if (rowRole[ROWROLE_INDENT])
-            last->setData(0, IndentRole, indent);
-
-          if (rowRole[ROWROLE_HIDDEN])
-          {
-            if (DEBUG)
-              qDebug("%s::populate() found xthiddenrole, value = %s",
-                      qPrintable( objectName()),
-                      qPrintable( pQuery.value(rowRole[ROWROLE_HIDDEN]).toString()));
-            last->setHidden(pQuery.value(rowRole[ROWROLE_HIDDEN]).toBool());
-          }
-
-          bool allNull = (indent > 0);
-          for (int col = 0; col < _roles.size(); col++)
-          {
-            QVariantMap *role = _roles.value(col);
-            if (!role)
-            {
-              qWarning("XTreeWidget::populate() there is no role for column %d", col);
-              continue;
-            }
-            QVariant rawValue = pQuery.value(colIdx[col]);
-            last->setData(col, RawRole, rawValue);
-
-            // TODO: this isn't necessary for all columns so do less often?
-            int     scale        = defaultScale;
-            QString numericrole  = "";
-            if (colRole[col][COLROLE_NUMERIC])
-            {
-              // Negative NUMERIC ROLE => default for column instead of column index
-              // see above
-              if (colRole[col][COLROLE_NUMERIC] < 0)
-                scale = 0 - colRole[col][COLROLE_NUMERIC];
-              else
-              {
-                numericrole  = pQuery.value(colRole[col][COLROLE_NUMERIC]).toString();
-                scale        = decimalPlaces(numericrole);
-              }
-            }
-
-            if (colRole[col][COLROLE_NUMERIC] ||
-                colRole[col][COLROLE_RUNNING] ||
-                colRole[col][COLROLE_TOTAL])
-              last->setData(col, ScaleRole, scale);
-
-            /* if qtdisplayrole IS NULL then let the raw value shine through.
-               this allows UNIONS to do interesting things, like put dates and
-               text into the same visual column without SQL errors.
-            */
-            if (colRole[col][COLROLE_DISPLAY] &&
-                !pQuery.value(colRole[col][COLROLE_DISPLAY]).isNull())
-            {
-              /* this might not handle PostgreSQL NUMERICs properly
-                 but at least it will try to handle INTEGERs and DOUBLEs
-                 and it will avoid formatting sales order numbers with decimal
-                 and group separators
-              */
-              QVariant field = pQuery.value(colRole[col][COLROLE_DISPLAY]);
-              if (field.type() == QVariant::Int)
-                last->setData(col, Qt::DisplayRole,
-                              QLocale().toString(field.toInt()));
-              else if (field.type() == QVariant::Double)
-                last->setData(col, Qt::DisplayRole,
-                              QLocale().toString(field.toDouble(),
-                                                 'f', scale));
-              else
-                last->setData(col, Qt::DisplayRole, field.toString());
-            }
-            else if (rawValue.isNull())
-            {
-              last->setData(col, Qt::DisplayRole,
-                            colRole[col][COLROLE_NULL] ?
-                            pQuery.value(colRole[col][COLROLE_NULL]).toString() :
-                            "");
-            }
-            else if (colRole[col][COLROLE_NUMERIC] &&
-                     ((numericrole == "percent") ||
-                      (numericrole == "scrap")))
-            {
-              last->setData(col, Qt::DisplayRole,
-                              QLocale().toString(rawValue.toDouble() * 100.0,
-                                               'f', scale));
-            }
-            else if (colRole[col][COLROLE_NUMERIC] || rawValue.type() == QVariant::Double)
-            {
-              // Issue #8897
-              last->setData(col, Qt::DisplayRole,
-                              QLocale().toString(round(rawValue.toDouble(), scale),
-                                               'f', scale));
-            }
-            else if (rawValue.type() == QVariant::Bool)
-            {
-              last->setData(col, Qt::DisplayRole,
-                            rawValue.toBool() ? yesStr : noStr);
-            }
-            else
-            {
-              last->setData(col, Qt::EditRole, rawValue);
-            }
-
-            if (indent)
-            {
-              if (!colRole[col][COLROLE_DISPLAY] ||
-                  (colRole[col][COLROLE_DISPLAY] &&
-                   pQuery.value(colRole[col][COLROLE_DISPLAY]).isNull()))
-                allNull &= (rawValue.isNull() || rawValue.toString().isEmpty());
-              else
-                allNull &= pQuery.value(colRole[col][COLROLE_DISPLAY]).isNull() ||
-                           pQuery.value(colRole[col][COLROLE_DISPLAY]).toString().isEmpty();
-
-              if (DEBUG)
-                qDebug("%s::populate() allNull = %d at %d for rawValue %s",
-                        qPrintable( objectName()), allNull, col,
-                        qPrintable( rawValue.toString()));
-            }
-
-            if (colRole[col][COLROLE_FOREGROUND])
-            {
-              QVariant fg = pQuery.value(colRole[col][COLROLE_FOREGROUND]);
-              if (!fg.isNull())
-                last->setData(col, Qt::ForegroundRole, namedColor(fg.toString()));
-            }
-
-            if (colRole[col][COLROLE_BACKGROUND])
-            {
-              QVariant bg = pQuery.value(colRole[col][COLROLE_BACKGROUND]);
-              if (!bg.isNull())
-                last->setData(col, Qt::BackgroundRole, namedColor(bg.toString()));
-            }
-
-            if (colRole[col][COLROLE_TEXTALIGNMENT])
-            {
-              QVariant alignment = pQuery.value(colRole[col][COLROLE_TEXTALIGNMENT]);
-              if (!alignment.isNull())
-                last->setData(col, Qt::TextAlignmentRole, alignment);
-            }
-
-            if (colRole[col][COLROLE_TOOLTIP])
-            {
-              QVariant tooltip = pQuery.value(colRole[col][COLROLE_TOOLTIP]);
-              if (!tooltip.isNull() )
-                last->setData(col, Qt::ToolTipRole, tooltip);
-            }
-
-            if (colRole[col][COLROLE_STATUSTIP])
-            {
-              QVariant statustip = pQuery.value(colRole[col][COLROLE_STATUSTIP]);
-              if (!statustip.isNull())
-                last->setData(col, Qt::StatusTipRole, statustip);
-            }
-
-            if (colRole[col][COLROLE_FONT])
-            {
-              QVariant font = pQuery.value(colRole[col][COLROLE_FONT]);
-              if (!font.isNull())
-                last->setData(col, Qt::FontRole, font);
-            }
-
-            // TODO: can & should we move runninginit out of the nested loops?
-            if (colRole[col][COLROLE_RUNNINGINIT])
-            {
-              QVariant runninginit = pQuery.value(colRole[col][COLROLE_RUNNINGINIT]);
-              if (!runninginit.isNull())
-                last->setData(col, RunningInitRole, runninginit);
-            }
-
-            if (colRole[col][COLROLE_ID])
-            {
-              QVariant id = pQuery.value(colRole[col][COLROLE_ID]);
-              if (!id.isNull())
-                last->setData(col, IdRole, id);
-            }
-
-            if (colRole[col][COLROLE_RUNNING])
-            {
-              last->setData(col, RunningSetRole,
-                            pQuery.value(colRole[col][COLROLE_RUNNING]).toInt());
-            }
-
-            if (colRole[col][COLROLE_TOTAL])
-            {
-              last->setData(col, TotalSetRole,
-                            pQuery.value(colRole[col][COLROLE_TOTAL]).toInt());
-            }
-
-            /*
-            if (colRole[col][COLROLE_KEY])
-              last->setData(col, KeyRole, pQuery.value(colRole[col][COLROLE_KEY]));
-            if (colRole[col][COLROLE_GROUPRUNNING])
-              last->setData(col, GroupRunningRole, pQuery.value(colRole[col][COLROLE_GROUPRUNNING]));
-            */
-          }
-
-          if (allNull && indent > 0)
-          {
-            qWarning("%s::populate() hiding indented row because it's empty",
-                     qPrintable(objectName()));
-            last->setHidden(true);
-          }
-        } while (pQuery.next());
-        populateCalculatedColumns();
-        if (sortColumn() >= 0 && header()->isSortIndicatorShown())
-          sortItems(sortColumn(), header()->sortIndicatorOrder());
-
-        // TODO: get rid of this when the code is rewritten
-        //       as per above's todo about the QVector<int*>
-        for (int ref = 0; ref < fieldCount; ++ref)
-        {
-          delete [] colRole[ref];
-          colRole[ref] = 0;
-        }
-      }
-      else  // assume xtreewidget columns are defined 1-to-1 with query columns
-      {
-        if (DEBUG)
-          qDebug("%s::populate() old-style", qPrintable(objectName()));
-        do
-        {
-          if (pUseAltId)
-            last = new XTreeWidgetItem(this, last, pQuery.value(0).toInt(), pQuery.value(1).toInt(), pQuery.value(2).toString());
-          else
-            last = new XTreeWidgetItem(this, last, pQuery.value(0).toInt(), pQuery.value(1));
-
-          if (fieldCount > ((pUseAltId) ? 3 : 2))
-            for (int counter = ((pUseAltId) ? 3 : 2); counter < fieldCount; counter++)
-              last->setText((counter - ((pUseAltId) ? 2 : 1)), pQuery.value(counter).toString());
-        } while (pQuery.next());
-      }
-
-      setId(pIndex);
-      emit valid(currentItem() != 0);
+        if (_fieldCount > ((pUseAltId) ? 3 : 2))
+          for (int col = ((pUseAltId) ? 3 : 2); col < _fieldCount; col++)
+            _last->setText((col - ((pUseAltId) ? 2 : 1)),
+                          pQuery.value(col).toString());
+      } while (pQuery.next());
     }
   }
-  else
-    emit valid(FALSE);
 
-  _working = false;
-  qApp->restoreOverrideCursor();
+  /* initialize if we haven't started reading data from the query,
+     taking into account that some places call xsqlquery::first() before
+     xtreewidget::populate()
+   */
+  if (pQuery.at() == QSql::BeforeFirstRow || (pQuery.at() == 0 && ! _colIdx))
+  {
+    if (popstyle == Replace)
+      clear();
 
-  if (!_workingParams.isEmpty())
-    _workingTimer.start();
+    if (pQuery.first())
+    {
+      cleanupAfterPopulate(); // plug memory leaks if last populate() never finished
 
-  emit populated();
+      _fieldCount = pQuery.count();
+      // TODO: rewrite code to use a qmap or some other structure that
+      //       doesn't require initializing a Vector or new'd array values
+      _colIdx = new QVector<int>(_roles.size());
+
+      _colRole = new QVector<int *>(_fieldCount, 0);
+      for (int ref = 0; ref < _fieldCount; ++ref)
+        (*_colRole)[ref] = new int[COLROLE_COUNT];
+
+      if (! _subtotals)
+      {
+        _subtotals = new QList<QMap<int, double> *>();
+        for (int i = 0; i < _fieldCount; i++)
+          _subtotals->append(new QMap<int, double>());
+      }
+
+      QSqlRecord  currRecord = pQuery.record();
+
+      // apply indent, hidden and delete roles to col 0 if the caller requested them
+      // keep synchronized with #define ROWROLE_* above
+      if (rootIsDecorated())
+      {
+        _rowRole[ROWROLE_INDENT] = currRecord.indexOf("xtindentrole");
+        if (_rowRole[ROWROLE_INDENT] < 0)
+          _rowRole[ROWROLE_INDENT] = 0;
+      }
+      else
+        _rowRole[ROWROLE_INDENT] = 0;
+
+      _rowRole[ROWROLE_HIDDEN] = currRecord.indexOf("xthiddenrole");
+      if (_rowRole[ROWROLE_HIDDEN] < 0)
+        _rowRole[ROWROLE_HIDDEN] = 0;
+
+      _rowRole[ROWROLE_DELETED] = currRecord.indexOf("xtdeletedrole");
+      if (_rowRole[ROWROLE_DELETED] < 0)
+        _rowRole[ROWROLE_DELETED] = 0;
+
+      // keep synchronized with #define COLROLE_* above
+      // TODO: get rid of COLROLE_* above and replace this QStringList
+      // with a map or vector of known roles and their Qt:: role or Xt
+      // enum values
+      QStringList knownroles;
+      knownroles << "qtdisplayrole"      << "qttextalignmentrole"<<
+      "qtbackgroundrole"   << "qtforegroundrole"<<
+      "qttooltiprole"      << "qtstatustiprole"<<
+      "qtfontrole" << "xtkeyrole"<<
+      "xtrunningrole"      << "xtrunninginit"<<
+      "xtgrouprunningrole" << "xttotalrole"<<
+      "xtnumericrole" << "xtnullrole"<<
+      "xtidrole";
+      for (int wcol = 0; wcol < _roles.size(); wcol++)
+      {
+        QVariantMap *role = _roles.value(wcol);
+        if (!role)
+        {
+          qWarning("XTreeWidget::populate() there is no role for column %d", wcol);
+          continue;
+        }
+        QString colname = role->value("qteditrole").toString();
+        (*_colIdx)[wcol] = currRecord.indexOf(colname);
+
+        for (int k = 0; k < knownroles.size(); k++)
+        {
+          // apply Qt roles to a whole row by applying to each column
+          (*_colRole)[wcol][k] = knownroles.at(k).startsWith("qt") ?
+                             currRecord.indexOf(knownroles.at(k)) :
+                             0;
+          if ((*_colRole)[wcol][k] > 0)
+          {
+            role->insert(knownroles.at(k),
+                          QString(knownroles.at(k)));
+          }
+          else
+            (*_colRole)[wcol][k] = 0;
+
+          // apply column-specific roles second to override entire row settings
+          if (currRecord.indexOf(colname + "_" + knownroles.at(k)) >=0)
+          {
+            (*_colRole)[wcol][k] = currRecord.indexOf(colname + "_" + knownroles.at(k));
+            role->insert(knownroles.at(k),
+                          QString(colname + "_" + knownroles.at(k)));
+            if (knownroles.at(k) == "xtrunningrole")
+              headerItem()->setData(wcol, Qt::UserRole, "xtrunningrole");
+            else if (knownroles.at(k) == "xttotalrole")
+                          headerItem()->setData(wcol, Qt::UserRole, "xttotalrole");
+          }
+        }
+
+        // Negative NUMERIC ROLE => default for column instead of column index
+        // see below
+        if (!(*_colRole)[wcol][COLROLE_NUMERIC] &&
+                          headerItem()->data(wcol, Xt::ScaleRole).isValid())
+        {
+          bool  ok;
+          int   tmpscale = headerItem()->data(wcol, Xt::ScaleRole).toInt(&ok);
+          if (ok)
+          {
+            if (DEBUG)
+              qDebug("setting _colRole[%d][COLROLE_NUMERIC]: %d", wcol, 0-tmpscale);
+            (*_colRole)[wcol][COLROLE_NUMERIC] = 0 - tmpscale;
+          }
+        }
+      }
+
+      if (_rowRole[ROWROLE_INDENT])
+        setIndentation( 10);
+      else
+        setIndentation( 0);
+
+      if (! _linear && ! _progress)
+      {
+        _progress = new XTreeWidgetProgress(this);
+        connect(_progress, SIGNAL(cancel()), &_workingTimer, SLOT(stop()));
+      }
+      if (_progress)
+      {
+        _progress->setValue(0);
+        _progress->setMaximum(pQuery.size());
+        _progress->show();
+      }
+    }
+  }
+
+  int defaultScale = decimalPlaces("");
+  int cnt = 0;
+
+  if (pQuery.at() >= 0) // if the query returned any rows at all
+    do
+    {
+      ++cnt;
+      if (!_linear && cnt % WORKERROWS == 0)
+      {
+        _progress->setValue(pQuery.at());
+        return;
+      }
+
+      int id         = pQuery.value(0).toInt();
+      int altId      = (pUseAltId) ? pQuery.value(1).toInt() : -1;
+      int indent     = 0;
+      int lastindent = 0;
+      if (_rowRole[ROWROLE_INDENT])
+      {
+        indent = pQuery.value(_rowRole[ROWROLE_INDENT]).toInt();
+        if (indent < 0)
+          indent = 0;
+        if (_last)
+        {
+          lastindent = _last->data(0, Xt::IndentRole).toInt();
+          if (DEBUG)
+                qDebug("getting Xt::IndentRole from %p of %d", _last, lastindent);
+        }
+      }
+      if (DEBUG)
+                qDebug("%s::populate() with id %d altId %d indent %d lastindent %d",
+                qPrintable(objectName()), id, altId, indent, lastindent);
+
+      QObject *parentItem = 0;
+      XTreeWidgetItem *previousItem = _last;
+      _last = new XTreeWidgetItem((XTreeWidgetItem*)0, id, altId);
+
+      if (indent == 0)
+        parentItem = this;
+      else if (lastindent < indent)
+        parentItem = previousItem;
+      else if (lastindent == indent)
+        parentItem = dynamic_cast<XTreeWidgetItem*>(previousItem->QTreeWidgetItem::parent());
+      else if (lastindent > indent)
+      {
+        XTreeWidgetItem *prev = (XTreeWidgetItem *)(previousItem->QTreeWidgetItem::parent());
+        while (prev &&
+               prev->data(0, Xt::IndentRole).toInt() >= indent)
+          prev = (XTreeWidgetItem *)(prev->QTreeWidgetItem::parent());
+        if (prev)
+          parentItem = prev;
+        else
+          parentItem = this;
+      }
+      else
+        parentItem = this;
+
+      if (_rowRole[ROWROLE_INDENT])
+        _last->setData(0, Xt::IndentRole, indent);
+
+      if (_rowRole[ROWROLE_HIDDEN])
+      {
+        if (DEBUG)
+          qDebug("%s::populate() found xthiddenrole, value = %s",
+                  qPrintable( objectName()),
+                  qPrintable( pQuery.value(_rowRole[ROWROLE_HIDDEN]).toString()));
+        _last->setHidden(pQuery.value(_rowRole[ROWROLE_HIDDEN]).toBool());
+      }
+
+      bool allNull = (indent > 0);
+      for (int col = 0; col < _roles.size(); col++)
+      {            
+        QVariantMap *role = _roles.value(col);
+        if (!role)
+        {
+          qWarning("XTreeWidget::populate() there is no role for column %d", col);
+          continue;
+        }
+        QVariant rawValue = pQuery.value(_colIdx->at(col));
+        _last->setData(col, Xt::RawRole, rawValue);
+
+        // TODO: this isn't necessary for all columns so do less often?
+        int     scale        = defaultScale;
+        QString numericrole  = "";
+        if ((*_colRole)[col][COLROLE_NUMERIC])
+        {
+          // Negative NUMERIC ROLE => default for column instead of column index
+          // see above
+          if ((*_colRole)[col][COLROLE_NUMERIC] < 0)
+            scale = 0 - (*_colRole)[col][COLROLE_NUMERIC];
+          else
+          {
+            numericrole  = pQuery.value((*_colRole)[col][COLROLE_NUMERIC]).toString();
+            scale        = decimalPlaces(numericrole);
+          }
+        }
+
+        if ((*_colRole)[col][COLROLE_NUMERIC] ||
+            (*_colRole)[col][COLROLE_RUNNING] ||
+            (*_colRole)[col][COLROLE_TOTAL])
+          _last->setData(col, Xt::ScaleRole, scale);
+
+        /* if qtdisplayrole IS NULL then let the raw value shine through.
+           this allows UNIONS to do interesting things, like put dates and
+           text into the same visual column without SQL errors.
+        */
+        if ((*_colRole)[col][COLROLE_DISPLAY] &&
+            !pQuery.value((*_colRole)[col][COLROLE_DISPLAY]).isNull())
+        {
+          /* this might not handle PostgreSQL NUMERICs properly
+             but at least it will try to handle INTEGERs and DOUBLEs
+             and it will avoid formatting sales order numbers with decimal
+             and group separators
+          */
+          QVariant field = pQuery.value((*_colRole)[col][COLROLE_DISPLAY]);
+          if (field.type() == QVariant::Int)
+            _last->setData(col, Qt::DisplayRole,
+                          QLocale().toString(field.toInt()));
+          else if (field.type() == QVariant::Double)
+            _last->setData(col, Qt::DisplayRole,
+                          QLocale().toString(field.toDouble(),
+                                             'f', scale));
+          else
+            _last->setData(col, Qt::DisplayRole, field.toString());
+        }
+        else if (rawValue.isNull())
+        {
+          _last->setData(col, Qt::DisplayRole,
+                        (*_colRole)[col][COLROLE_NULL] ?
+                        pQuery.value((*_colRole)[col][COLROLE_NULL]).toString() :
+                        "");
+        }
+        else if ((*_colRole)[col][COLROLE_NUMERIC] &&
+                 ((numericrole == "percent") ||
+                  (numericrole == "scrap")))
+        {
+          _last->setData(col, Qt::DisplayRole,
+                          QLocale().toString(rawValue.toDouble() * 100.0,
+                                           'f', scale));
+        }
+        else if ((*_colRole)[col][COLROLE_NUMERIC] || rawValue.type() == QVariant::Double)
+        {
+          // Issue #8897
+          _last->setData(col, Qt::DisplayRole,
+                          QLocale().toString(round(rawValue.toDouble(), scale),
+                                           'f', scale));
+        }
+        else if (rawValue.type() == QVariant::Bool)
+        {
+          _last->setData(col, Qt::DisplayRole,
+                        rawValue.toBool() ? yesStr : noStr);
+        }
+        else
+        {
+          _last->setData(col, Qt::EditRole, rawValue);
+        }
+
+        if (indent)
+        {
+          if (!(*_colRole)[col][COLROLE_DISPLAY] ||
+              ((*_colRole)[col][COLROLE_DISPLAY] &&
+               pQuery.value((*_colRole)[col][COLROLE_DISPLAY]).isNull()))
+            allNull &= (rawValue.isNull() || rawValue.toString().isEmpty());
+          else
+            allNull &= pQuery.value((*_colRole)[col][COLROLE_DISPLAY]).isNull() ||
+                       pQuery.value((*_colRole)[col][COLROLE_DISPLAY]).toString().isEmpty();
+
+          if (DEBUG)
+            qDebug("%s::populate() allNull = %d at %d for rawValue %s",
+                    qPrintable( objectName()), allNull, col,
+                    qPrintable( rawValue.toString()));
+        }
+
+        if ((*_colRole)[col][COLROLE_FOREGROUND])
+        {
+          QVariant fg = pQuery.value((*_colRole)[col][COLROLE_FOREGROUND]);
+          if (!fg.isNull())
+            _last->setData(col, Qt::ForegroundRole, namedColor(fg.toString()));
+        }
+
+        if ((*_colRole)[col][COLROLE_BACKGROUND])
+        {
+          QVariant bg = pQuery.value((*_colRole)[col][COLROLE_BACKGROUND]);
+          if (!bg.isNull())
+            _last->setData(col, Qt::BackgroundRole, namedColor(bg.toString()));
+        }
+
+        if ((*_colRole)[col][COLROLE_TEXTALIGNMENT])
+        {
+          QVariant alignment = pQuery.value((*_colRole)[col][COLROLE_TEXTALIGNMENT]);
+          if (!alignment.isNull())
+            _last->setData(col, Qt::TextAlignmentRole, alignment);
+        }
+        else
+          _last->setData(col, Qt::TextAlignmentRole, headerItem()->textAlignment(col));
+
+        if ((*_colRole)[col][COLROLE_TOOLTIP])
+        {
+          QVariant tooltip = pQuery.value((*_colRole)[col][COLROLE_TOOLTIP]);
+          if (!tooltip.isNull() )
+            _last->setData(col, Qt::ToolTipRole, tooltip);
+        }
+
+        if ((*_colRole)[col][COLROLE_STATUSTIP])
+        {
+          QVariant statustip = pQuery.value((*_colRole)[col][COLROLE_STATUSTIP]);
+          if (!statustip.isNull())
+            _last->setData(col, Qt::StatusTipRole, statustip);
+        }
+
+        if ((*_colRole)[col][COLROLE_FONT])
+        {
+          QVariant font = pQuery.value((*_colRole)[col][COLROLE_FONT]);
+          if (!font.isNull())
+            _last->setData(col, Qt::FontRole, font);
+        }
+
+        if ((*_colRole)[col][COLROLE_RUNNINGINIT])
+        {
+          QVariant runninginit = pQuery.value((*_colRole)[col][COLROLE_RUNNINGINIT]);
+          if (!runninginit.isNull())
+            _last->setData(col, Xt::RunningInitRole, runninginit);
+        }
+
+        if ((*_colRole)[col][COLROLE_ID])
+        {
+          QVariant id = pQuery.value((*_colRole)[col][COLROLE_ID]);
+          if (!id.isNull())
+            _last->setData(col, Xt::IdRole, id);
+        }
+
+        if ((*_colRole)[col][COLROLE_RUNNING])
+        {
+          int set = pQuery.value((*_colRole)[col][COLROLE_RUNNING]).toInt();
+          _last->setData(col, Xt::RunningSetRole, set);
+          if (! _subtotals->at(col)->contains(set))
+            (*_subtotals)[col]->insert(set, pQuery.value((*_colRole)[col][COLROLE_RUNNINGINIT]).toDouble());
+          (*(*_subtotals)[col])[set] += rawValue.toDouble();
+          _last->setData(col, Qt::DisplayRole,
+                         QLocale().toString((*_subtotals)[col]->value(set), 'f', scale));
+        }
+
+        if ((*_colRole)[col][COLROLE_TOTAL])
+        {
+          _last->setData(col, Xt::TotalSetRole,
+                        pQuery.value((*_colRole)[col][COLROLE_TOTAL]).toInt());
+        }
+
+        if (_rowRole[ROWROLE_DELETED])
+        {
+          if (DEBUG)
+            qDebug("%s::populate() found xtdeleterole, value = %s",
+                    qPrintable( objectName()),
+                    qPrintable( pQuery.value(_rowRole[ROWROLE_DELETED]).toString()));
+          if (pQuery.value(_rowRole[ROWROLE_DELETED]).toBool())
+          {
+            _last->setData(col,Xt::DeletedRole, QVariant(true));
+            QFont font = _last->font(col);
+            font.setStrikeOut(true);
+            _last->setFont(col, font);
+            _last->setTextColor(Qt::gray);
+          }
+        }
+        /*
+        if ((*_colRole)[col][COLROLE_KEY])
+          _last->setData(col, KeyRole, pQuery.value((*_colRole)[col][COLROLE_KEY]));
+        if ((*_colRole)[col][COLROLE_GROUPRUNNING])
+          _last->setData(col, GroupRunningRole, pQuery.value((*_colRole)[col][COLROLE_GROUPRUNNING]));
+        */
+      }
+
+      if (allNull && indent > 0)
+      {
+        qWarning("%s::populate() hiding indented row because it's empty",
+                 qPrintable(objectName()));
+        _last->setHidden(true);
+      }
+
+      if (qobject_cast<XTreeWidget*>(parentItem))
+        qobject_cast<XTreeWidget*>(parentItem)->addTopLevelItem(_last);
+      else if (qobject_cast<XTreeWidgetItem*>(parentItem))
+        qobject_cast<XTreeWidgetItem*>(parentItem)->addChild(_last);
+
+    } while (pQuery.next());
+
+  setId(pIndex);
+  emit valid(currentItem() != 0);
+
+  if (pQuery.at() == QSql::AfterLastRow)
+  {
+    _workingTimer.stop();
+
+    if (_workingParams.size())
+      _workingParams.takeFirst();
+
+    cleanupAfterPopulate();
+
+    populateCalculatedColumns();
+    if (sortColumn() >= 0 && header()->isSortIndicatorShown())
+      sortItems(sortColumn(), header()->sortIndicatorOrder());
+
+    if (DEBUG)
+      qDebug("%s::populateWorker() done", qPrintable(objectName()));
+    emit populated();
+  }
+
+  if (_linear)
+    qApp->restoreOverrideCursor();
+}
+
+void XTreeWidget::cleanupAfterPopulate()
+{
+  if (_progress)
+    _progress->hide();
+
+  for (unsigned int i = 0; i < sizeof(_rowRole) / sizeof(_rowRole[0]); i++)
+    _rowRole[i] = 0;
+
+  _last = 0;
+
+  // TODO: get rid of this when the code is rewritten
+  //       as per above's todo about the QVector<int*>
+  if (_colRole)
+  {
+    for (int ref = 0; ref < _fieldCount; ++ref)
+    {
+      if ((*_colRole)[ref])
+        delete [] (*_colRole)[ref];
+    }
+    delete _colRole;
+    _colRole = 0;
+  }
+
+  if (_colIdx)
+    delete _colIdx;
+  _colIdx = 0;
+
+  _fieldCount = 0;
 }
 
 void XTreeWidget::addColumn(const QString &pString, int pWidth, int pAlignment, bool pVisible, const QString pEditColumn, const QString pDisplayColumn, const int scale)
@@ -740,7 +841,7 @@ void XTreeWidget::addColumn(const QString &pString, int pWidth, int pAlignment, 
   hitem->setText(column, pString);
 #endif
   hitem->setTextAlignment(column, pAlignment);
-  hitem->setData(column, ScaleRole, scale);
+  hitem->setData(column, Xt::ScaleRole, scale);
 
   if (!pEditColumn.isEmpty())
   {
@@ -824,8 +925,8 @@ QString XTreeWidgetItem::toString() const
 
 bool XTreeWidgetItem::operator<(const XTreeWidgetItem &other) const
 {
-  QVariant  v1         = data(treeWidget()->sortColumn(), RawRole);
-  QVariant  v2         = other.data(other.treeWidget()->sortColumn(), RawRole);
+  QVariant  v1         = data(treeWidget()->sortColumn(), Xt::RawRole);
+  QVariant  v2         = other.data(other.treeWidget()->sortColumn(), Xt::RawRole);
 
   bool      returnVal  = false;
   switch (v1.type())
@@ -873,8 +974,8 @@ bool XTreeWidgetItem::operator<(const XTreeWidgetItem &other) const
 
 bool XTreeWidgetItem::operator==(const XTreeWidgetItem &other) const
 {
-  QVariant  v1         = data(treeWidget()->sortColumn(), RawRole);
-  QVariant  v2         = other.data(other.treeWidget()->sortColumn(), RawRole);
+  QVariant  v1         = data(treeWidget()->sortColumn(), Xt::RawRole);
+  QVariant  v2         = other.data(other.treeWidget()->sortColumn(), Xt::RawRole);
 
   bool      returnVal  = false;
   switch (v1.type())
@@ -1061,31 +1162,38 @@ void XTreeWidget::populateCalculatedColumns()
     if (headerItem()->data(col, Qt::UserRole).toString() == "xtrunningrole")
     {
       QMap<int, double> subtotals;
-      // assume that RunningSetRole exists if xtrunningrole exists
+      // assume that Xt::RunningSetRole exists if xtrunningrole exists
       for (int row = 0; row < topLevelItemCount(); row++)
       {
-        int set = topLevelItem(row)->data(col, RunningSetRole).toInt();
+        int set = topLevelItem(row)->data(col, Xt::RunningSetRole).toInt();
         if (!subtotals.contains(set))
-          subtotals[set] = topLevelItem(row)->data(col, RunningInitRole).toDouble();
-        subtotals[set] += topLevelItem(row)->data(col, RawRole).toDouble();
-        topLevelItem(row)->setData(col, Qt::DisplayRole,
-                                   QLocale().toString(subtotals[set], 'f',
-                                                      topLevelItem(row)->data(col, ScaleRole).toInt()));
+          subtotals[set] = topLevelItem(row)->data(col, Xt::RunningInitRole).toDouble();
+        subtotals[set] += topLevelItem(row)->data(col, Xt::RawRole).toDouble();
+        int scale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
+        float maxdiff = pow(10.0, 0 - scale);
+        if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) < maxdiff)
+        {
+          topLevelItem(row)->setData(col, Qt::DisplayRole,
+                                     QLocale().toString(subtotals[set], 'f', scale));
+          qDebug("'%f' != '%f'\t%f",
+                 subtotals[set], topLevelItem(row)->data(col, Qt::DisplayRole).toDouble(),
+                 subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble());
+        }
       }
     }
     else if (headerItem()->data(col, Qt::UserRole).toString() == "xttotalrole")
     {
       QMap<int, double> totalset;
       int colscale = -99999;
-      // assume that TotalSetRole exists if xttotalrole exists
+      // assume that Xt::TotalSetRole exists if xttotalrole exists
       for (int row = 0; row < topLevelItemCount(); row++)
       {
-        int set = topLevelItem(row)->data(col, TotalSetRole).toInt();
+        int set = topLevelItem(row)->data(col, Xt::TotalSetRole).toInt();
         if (!totalset.contains(set))
-          totalset[set] = topLevelItem(row)->data(col, TotalInitRole).toInt();
+          totalset[set] = topLevelItem(row)->data(col, Xt::TotalInitRole).toInt();
         totalset[set] += topLevelItem(row)->totalForItem(col, set);
-        if (topLevelItem(row)->data(col, ScaleRole).toInt() > colscale)
-          colscale = topLevelItem(row)->data(col, ScaleRole).toInt();
+        if (topLevelItem(row)->data(col, Xt::ScaleRole).toInt() > colscale)
+          colscale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
       }
       totals.insert(col, totalset);
       scales.insert(col, colscale);
@@ -1126,7 +1234,7 @@ int XTreeWidget::id(const QString p) const
   QList<XTreeWidgetItem *> items = selectedItems();
   if (items.count() > 0)
   {
-    int id = items.at(0)->data(column(p), IdRole).toInt();
+    int id = items.at(0)->data(column(p), Xt::IdRole).toInt();
     if (DEBUG)
       qDebug("XTreeWidget::id(%s - column %d) returning %d",
              qPrintable(p), column(p), id);
@@ -1254,8 +1362,18 @@ void XTreeWidget::clear()
 {
   if (DEBUG)
     qDebug("%s::clear()", qPrintable(objectName()));
-  if (!_working)
+  if (! _workingTimer.isActive())
     _workingParams.clear();
+  if (_subtotals)
+  {
+    for (int i = 0; i < _subtotals->size(); i++)
+    {
+      delete (*_subtotals)[i];
+      _subtotals->replace(i, 0);
+    }
+    delete _subtotals;
+    _subtotals = 0;
+  }
   emit valid(FALSE);
   _savedId = false; // was -1;
 
@@ -1304,17 +1422,15 @@ void XTreeWidget::sShowMenu(const QPoint &pntThis)
       disableExport = (_x_preferences->value("DisableExportContents")=="t");
     if (!disableExport)
     {
-      if (_menu->count())
-        _menu->insertSeparator();
-
-      _menu->insertItem(tr("Copy All"),  this, SLOT(sCopyVisibleToClipboard()));
-      _menu->insertItem(tr("Copy Row"),  this, SLOT(sCopyRowToClipboard()));
-      _menu->insertItem(tr("Copy Cell"),  this, SLOT(sCopyCellToClipboard()));
-      _menu->insertSeparator();
-      _menu->insertItem(tr("Export Contents..."),  this, SLOT(sExport()));
+      _menu->addSeparator();
+      _menu->addAction(tr("Copy All"),  this, SLOT(sCopyVisibleToClipboard()));
+      _menu->addAction(tr("Copy Row"),  this, SLOT(sCopyRowToClipboard()));
+      _menu->addAction(tr("Copy Cell"),  this, SLOT(sCopyCellToClipboard()));
+      _menu->addSeparator();
+      _menu->addAction(tr("Export Contents..."),  this, SLOT(sExport()));
     }
 
-    if (_menu->count())
+    if(! _menu->isEmpty())
       _menu->popup(mapToGlobal(pntThis));
   }
 }
@@ -1332,22 +1448,22 @@ void XTreeWidget::sShowHeaderMenu(const QPoint &pntThis)
       (_defaultColumnWidths.value(logicalIndex) != currentSize) )
   {
     _resetWhichWidth = logicalIndex;
-    _menu->insertItem(tr("Reset this Width"), this, SLOT(sResetWidth()));
+    _menu->addAction(tr("Reset this Width"), this, SLOT(sResetWidth()));
   }
 
-  _menu->insertItem(tr("Reset all Widths"), this, SLOT(sResetAllWidths()));
-  _menu->insertSeparator();
+  _menu->addAction(tr("Reset all Widths"), this, SLOT(sResetAllWidths()));
+  _menu->addSeparator();
   if (_forgetful)
-    _menu->insertItem(tr("Remember Widths"), this, SLOT(sToggleForgetfulness()));
+    _menu->addAction(tr("Remember Widths"), this, SLOT(sToggleForgetfulness()));
   else
-    _menu->insertItem(tr("Do Not Remember Widths"), this, SLOT(sToggleForgetfulness()));
+    _menu->addAction(tr("Do Not Remember Widths"), this, SLOT(sToggleForgetfulness()));
 
   if (_forgetfulOrder)
-    _menu->insertItem(tr("Remember Sort Order"), this, SLOT(sToggleForgetfulnessOrder()));
+    _menu->addAction(tr("Remember Sort Order"), this, SLOT(sToggleForgetfulnessOrder()));
   else
-    _menu->insertItem(tr("Do Not Remember Sort Order"), this, SLOT(sToggleForgetfulnessOrder()));
+    _menu->addAction(tr("Do Not Remember Sort Order"), this, SLOT(sToggleForgetfulnessOrder()));
 
-  _menu->insertSeparator();
+  _menu->addSeparator();
 
   QTreeWidgetItem *hitem = headerItem();
   for (int i = 0; i < header()->count(); i++)
@@ -1363,7 +1479,7 @@ void XTreeWidget::sShowHeaderMenu(const QPoint &pntThis)
     connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(popupMenuActionTriggered(QAction *)));
   }
 
-  if (_menu->count())
+  if(! _menu->isEmpty())
     _menu->popup(mapToGlobal(pntThis));
 }
 
@@ -1733,7 +1849,7 @@ void XTreeWidgetItem::constructor(int pId, int pAltId, QVariant v0,QVariant v1, 
 
 int XTreeWidgetItem::id(const QString p)
 {
-  int id = data(((XTreeWidget *)treeWidget())->column(p), IdRole).toInt();
+  int id = data(((XTreeWidget *)treeWidget())->column(p), Xt::IdRole).toInt();
   if (DEBUG)
     qDebug("XTreeWidgetItem::id(%s - column %d) returning %d",
            qPrintable(p), ((XTreeWidget *)treeWidget())->column(p), id);
@@ -1762,7 +1878,7 @@ QVariant XTreeWidgetItem::rawValue(const QString pName)
   if (colIdx < 0)
     return QVariant();
   else
-    return data(colIdx, RawRole);
+    return data(colIdx, Xt::RawRole);
 }
 
 /* Calculate the total for a particular XTreeWidgetItem, including any children.
@@ -1774,8 +1890,8 @@ double XTreeWidgetItem::totalForItem(const int pcol, const int pset) const
 {
   double total = 0.0;
 
-  if (pset == data(pcol, TotalSetRole).toInt())
-    total += data(pcol, RawRole).toDouble();
+  if (pset == data(pcol, Xt::TotalSetRole).toInt())
+    total += data(pcol, Xt::RawRole).toDouble();
   for (int i = 0; i < childCount(); i++)
     total += child(i)->totalForItem(pcol, pset);
   return total;
@@ -1810,9 +1926,20 @@ void XTreeWidgetItemListfromScriptValue(const QScriptValue &scriptlist, QList<XT
   }
 }
 
+QScriptValue XTreeWidgettoScriptValue(QScriptEngine *engine, XTreeWidget *const &item)
+{
+  return engine->newQObject(item);
+}
+
+void XTreeWidgetfromScriptValue(const QScriptValue &obj, XTreeWidget * &item)
+{
+  item = qobject_cast<XTreeWidget *>(obj.toQObject());
+}
+
 // script exposure of xtreewidgetitem /////////////////////////////////////////
 
 Q_DECLARE_METATYPE(QList<XTreeWidgetItem *>)
+Q_DECLARE_METATYPE(QList<XTreeWidget *>)
 
 QScriptValue constructXTreeWidgetItem(QScriptContext *context,QScriptEngine  *engine)
 {
@@ -1879,16 +2006,16 @@ QScriptValue constructXTreeWidgetItem(QScriptContext *context,QScriptEngine  *en
       if (DEBUG)
         qDebug("constructXTreeWidgetItem variant %d: type %d, value %s",
                i, var.type(), qPrintable(var.toString()));
-      obj->setData(i, RawRole, var);
+      obj->setData(i, Xt::RawRole, var);
       if (var.type() == QVariant::Int)
         obj->setData(i, Qt::DisplayRole, QLocale().toString(var.toInt()));
       else if (var.type() == QVariant::Double)
       {
-        int scale = header ? header->data(i, ScaleRole).toInt() :
+        int scale = header ? header->data(i, Xt::ScaleRole).toInt() :
                     decimalPlaces("unknown");
         if (DEBUG)
-          qDebug("constructXTreeWidgetItem header %p scalerole %d(%d) result %d",
-                 header, header ? header->data(i, ScaleRole).toInt() : -1,
+          qDebug("constructXTreeWidgetItem header %p Xt::ScaleRole %d(%d) result %d",
+                 header, header ? header->data(i, Xt::ScaleRole).toInt() : -1,
                  decimalPlaces("unknown"), scale);
 
         obj->setData(i, Qt::DisplayRole,
@@ -1919,6 +2046,8 @@ void setupXTreeWidget(QScriptEngine *engine)
 {
   QScriptValue glob = engine->newObject();
 
+  qScriptRegisterMetaType(engine, XTreeWidgettoScriptValue,     XTreeWidgetfromScriptValue);
+
   glob.setProperty("Replace", QScriptValue(engine, XTreeWidget::Replace), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   glob.setProperty("Append",  QScriptValue(engine, XTreeWidget::Append), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
@@ -1942,17 +2071,6 @@ void setupXTreeWidget(QScriptEngine *engine)
   glob.setProperty("ynColumn",       QScriptValue(engine, _ynColumn),      QScriptValue::ReadOnly | QScriptValue::Undeletable);
   glob.setProperty("docTypeColumn",  QScriptValue(engine, _docTypeColumn), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   glob.setProperty("currencyColumn", QScriptValue(engine, _currencyColumn),QScriptValue::ReadOnly | QScriptValue::Undeletable);
-
-  glob.setProperty("RawRole",         QScriptValue(engine, RawRole),         QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("ScaleRole",       QScriptValue(engine, ScaleRole),       QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("IdRole",          QScriptValue(engine, IdRole),          QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("RunningSetRole",  QScriptValue(engine, RunningSetRole),  QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("RunningInitRole", QScriptValue(engine, RunningInitRole), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("TotalSetRole",    QScriptValue(engine, TotalSetRole),    QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("TotalInitRole",   QScriptValue(engine, TotalInitRole),   QScriptValue::ReadOnly | QScriptValue::Undeletable);
-// glob.setProperty("KeyRole",         QScriptValue(engine, KeyRole),         QScriptValue::ReadOnly | QScriptValue::Undeletable);
-// glob.setProperty("GroupRunningRole",QScriptValue(engine, GroupRunningRole),QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("IndentRole",      QScriptValue(engine, IndentRole),      QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   engine->globalObject().setProperty("XTreeWidget", glob, QScriptValue::ReadOnly | QScriptValue::Undeletable);
 }
@@ -2274,16 +2392,18 @@ XTreeWidgetItem *XTreeWidget::itemAbove(const XTreeWidgetItem *item) const
   return dynamic_cast<XTreeWidgetItem *>(QTreeWidget::itemAbove(item));
 }
 
-QList<XTreeWidgetItem *> XTreeWidget::findItems(const QString &text, Qt::MatchFlags flags, int column) const
+QList<XTreeWidgetItem *> XTreeWidget::findItems(const QString &text, Qt::MatchFlags flags, int column, int role) const
 {
-  QList<QTreeWidgetItem *>  qlist  = QTreeWidget::findItems(text, flags, column);
-  QList<XTreeWidgetItem *>  *xlist = new QList<XTreeWidgetItem *>();
+  QModelIndexList indexes = model()->match(model()->index(0, column, QModelIndex()),
+                                           role, text, -1, flags);
 
-  for (int i = 0; i < qlist.size(); i++)
+  QList<XTreeWidgetItem *>  *xlist = new QList<XTreeWidgetItem *>();
+  for (int i = 0; i < indexes.size(); ++i)
   {
-    if (dynamic_cast<XTreeWidgetItem *>(qlist.at(i)))
-      xlist->append(dynamic_cast<XTreeWidgetItem *>(qlist.at(i)));
+    if (dynamic_cast<XTreeWidgetItem *>(itemFromIndex(indexes.at(i))))
+      xlist->append(dynamic_cast<XTreeWidgetItem *>(itemFromIndex(indexes.at(i))));
   }
+
   return *xlist;
 }
 
@@ -2357,4 +2477,18 @@ void XTreeWidget::sItemPressed(QTreeWidgetItem *item, int column)
 {
   if (dynamic_cast<XTreeWidgetItem *>(item))
     emit itemPressed(dynamic_cast<XTreeWidgetItem *>(item), column);
+}
+
+/*!
+  Returns the Raw Value of the first selected row on \a colname
+*/
+QVariant XTreeWidget::rawValue(const QString colname) const
+{
+    QList<XTreeWidgetItem *> items = selectedItems();
+    if (items.count() > 0)
+    {
+      XTreeWidgetItem *item = items.at(0);
+      return item->rawValue(colname);
+    }
+    return QVariant();
 }
