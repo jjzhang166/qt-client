@@ -1725,6 +1725,8 @@ void GUIClient::sFocusChanged(QWidget * /*old*/, QWidget * /*now*/)
     thisActive = qApp->activeWindow();
   if(thisActive == this)
     return;
+  if(thisActive && thisActive->inherits("QMessageBox"))
+    return;
   _activeWindow = thisActive;
 }
 
