@@ -30,6 +30,9 @@ selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, 
 
 //  (void)statusBar();
 
+  _so->setAllowedTypes(OrderLineEdit::Sales);
+  _so->setAllowedStatuses(OrderLineEdit::Open);
+
   connect(_cancel, SIGNAL(clicked()), this, SLOT(sCancelSelection()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEditOrder()));
   connect(_freight, SIGNAL(valueChanged()), this, SLOT(sFreightChanged()));
@@ -39,18 +42,10 @@ selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, 
   connect(_select, SIGNAL(clicked()), this, SLOT(sEditSelection()));
   connect(_selectBalance, SIGNAL(clicked()), this, SLOT(sSelectBalance()));
   connect(_showClosed, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_so, SIGNAL(newId(int)), this, SLOT(sPopulate(int)));
-  connect(_so, SIGNAL(requestList()), this, SLOT(sSoList()));
-  connect(_soList, SIGNAL(clicked()), this, SLOT(sSoList()));
+  connect(_so, SIGNAL(newId(int,QString)), this, SLOT(sPopulate(int)));
   connect(_salesTax,	SIGNAL(valueChanged()),	this, SLOT(sUpdateTotal()));
   connect(_subtotal,	SIGNAL(valueChanged()),	this, SLOT(sUpdateTotal()));
   connect(_taxZone,	SIGNAL(newID(int)),	this, SLOT(sTaxZoneChanged()));
-
-//  statusBar()->hide();
-
-#ifndef Q_WS_MAC
-  _soList->setMaximumWidth(25);
-#endif
   
   _cobmiscid = -1;
   _taxzoneidCache = -1;
@@ -87,13 +82,14 @@ selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, 
   else
   {
     connect(_soitem, SIGNAL(valid(bool)), _select, SLOT(setEnabled(bool)));
+    connect(_soitem, SIGNAL(valid(bool)), _selectBalance, SLOT(setEnabled(bool)));
     connect(_soitem, SIGNAL(valid(bool)), _cancel, SLOT(setEnabled(bool)));
   }
-  
-  _so->setSitePrivsEnforced(false);
 
   _paymentLit->hide();
-  _payment->hide(); // Issue 10254:  if no objections over time, we should ultimately remove this. 
+  _payment->hide(); // Issue 10254:  if no objections over time, we should ultimately remove this.
+
+  _miscChargeAccount->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
 
 selectOrderForBilling::~selectOrderForBilling()
@@ -152,7 +148,7 @@ void selectOrderForBilling::clear()
   _custName->clear();
   _poNumber->clear();
   _shipToName->clear();
-  _custCurrency->setId(-1);
+  _custCurrency->setCurrentIndex(0);
   _taxZone->setId(-1);
   _soitem->clear();
   _shipvia->clear();
@@ -163,8 +159,8 @@ void selectOrderForBilling::clear()
   _miscCharge->clear();
   _freight->clear();
   _salesTax->clear();
-  _total->clear();
   _payment->clear();
+  _total->clear();
 }
 
 void selectOrderForBilling::sSave()
@@ -498,6 +494,7 @@ void selectOrderForBilling::sFillList()
     params.append("sohead_id", _so->id());
     MetaSQLQuery mql(sql);
     q = mql.toQuery(params);
+    _soitem->populate(q);
     if (q.first())
     {
       double subtotal = 0.0;
@@ -505,8 +502,6 @@ void selectOrderForBilling::sFillList()
         subtotal += q.value("extended").toDouble();
       while (q.next());
       _subtotal->setLocalValue(subtotal);
-      
-      _soitem->populate(q);
     }
     else
     {
