@@ -226,6 +226,9 @@ void XTreeWidget::populate(XSqlQuery pQuery, int pIndex, bool pUseAltId, Populat
   args._workingIndex     = pIndex;
   args._workingUseAlt    = pUseAltId;
   args._workingPopstyle  = popstyle;
+
+  pQuery.seek(-1);
+
   if (popstyle == Replace)
     _workingParams.clear();
   _workingParams.append(args);
