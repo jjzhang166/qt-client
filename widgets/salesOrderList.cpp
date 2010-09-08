@@ -21,24 +21,35 @@
 
 #include "xtreewidget.h"
 #include "warehousegroup.h"
-#include "socluster.h"
 #include "xsqlquery.h"
 
-salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog( parent, name, modal, fl )
+salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog(parent, fl)
 {
-  if ( !name )
-    setObjectName( "salesOrderList" );
+  setObjectName(name ? name : "salesOrderList");
+  setModal(modal);
 
   _soheadid = -1;
   _type = (cSoOpen | cSoClosed | cSoReleased);
 
   setWindowTitle(tr("Sales Orders"));
 
-  QVBoxLayout *mainLayout = new QVBoxLayout(this, 5, 5, "mainLayout"); 
-  QVBoxLayout *warehouseLayout = new QVBoxLayout(0, 0, 0, "warehouseLayout"); 
-  QHBoxLayout *topLayout = new QHBoxLayout( 0, 0, 7, "topLayout"); 
-  QVBoxLayout *buttonsLayout = new QVBoxLayout(0, 0, 5, "buttonsLayout");
-  QVBoxLayout *listLayout = new QVBoxLayout( 0, 0, 0, "listLayout"); 
+  QVBoxLayout *mainLayout = new QVBoxLayout(this);
+  QVBoxLayout *warehouseLayout = new QVBoxLayout(0);
+  QHBoxLayout *topLayout = new QHBoxLayout(0);
+  QVBoxLayout *buttonsLayout = new QVBoxLayout(0);
+  QVBoxLayout *listLayout = new QVBoxLayout(0);
+
+  mainLayout->setContentsMargins(5, 5, 5, 5);
+  warehouseLayout->setContentsMargins(0, 0, 0, 0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
+  buttonsLayout->setContentsMargins(0, 0, 0, 0);
+  listLayout->setContentsMargins(0, 0, 0, 0);
+
+  mainLayout->setSpacing(5);
+  warehouseLayout->setSpacing(0);
+  topLayout->setSpacing(7);
+  buttonsLayout->setSpacing(5);
+  listLayout->setSpacing(0);
 
   _warehouse = new WarehouseGroup(this, "_warehouse");
   warehouseLayout->addWidget(_warehouse);
@@ -50,10 +61,12 @@ salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Q
   QSpacerItem* spacer_2 = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
   topLayout->addItem(spacer_2);
 
-  _close = new QPushButton(tr("&Cancel"), this, "_close");
+  _close = new QPushButton(tr("&Cancel"), this);
+  _close->setObjectName("_close");
   buttonsLayout->addWidget(_close);
 
-  _select = new QPushButton(tr("&Select"), this, "_select");
+  _select = new QPushButton(tr("&Select"), this);
+  _select->setObjectName("_select");
   _select->setEnabled( FALSE );
   _select->setDefault( TRUE );
   buttonsLayout->addWidget(_select);
@@ -61,7 +74,8 @@ salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Q
   topLayout->addLayout(buttonsLayout);
   mainLayout->addLayout(topLayout);
 
-  QLabel *_salesOrdersLit = new QLabel(tr("Sales Orders:"), this, "_salesOrdersLit");
+  QLabel *_salesOrdersLit = new QLabel(tr("Sales Orders:"), this);
+  _salesOrdersLit->setObjectName("_salesOrdersLit");
   listLayout->addWidget(_salesOrdersLit);
 
   _so = new XTreeWidget(this);

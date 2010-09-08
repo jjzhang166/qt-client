@@ -21,6 +21,14 @@ class QPushButton;
 class XTreeWidget;
 class ParameterList;
 
+//  Possible Customer Order Status
+#define cSoOpen               0x01
+#define cSoClosed             0x02
+#define cSoAtShipping         0x04
+#define cSoReleased           0x08
+#define cSoCustomer           0x16
+
+
 class XTUPLEWIDGETS_EXPORT salesOrderList : public QDialog
 {
     Q_OBJECT
