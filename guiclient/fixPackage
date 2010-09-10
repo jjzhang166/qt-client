@@ -82,10 +82,26 @@ if [ -f $APPROOT/../../../csvimp/plugins/libcsvimpplugin.dylib ] ; then
   collectAndRenameLibs $APPROOT/Contents/plugins/libcsvimpplugin.dylib || exit 2
 fi
 
+cd $APPROOT/Contents/MacOS
+for PDIR in sqldrivers imageformats ; do
+  if [ ! -e $PDIR ] ; then
+    if [ -L $PDIR ] ; then
+      rm $PDIR
+    fi
+    ln -s ../plugins/$PDIR          || exit 2
+  fi
+done
+cd $APPROOT
+
 cp -r $QTDIR/bin/Assistant_adp.app $APPROOT/Contents/Resources/Assistant_adp.app                || exit 3
 collectAndRenameLibs $APPROOT/Contents/Resources/Assistant_adp.app/Contents/MacOS/Assistant_adp || exit 3
 cd $APPROOT/Contents/Resources/Assistant_adp.app/Contents       || exit 3
-ln -s ../../../Frameworks .                                     || exit 3
+if [ ! -e Frameworks ] ; then
+  ln -s ../../../Frameworks .                                   || exit 3
+fi
+if [ ! -e imageformats ] ; then
+  ln -s ../../../plugins/imageformats        || exit 4
+fi
 echo "[Paths]" > qt.conf
 echo "Prefix = .." >> qt.conf
 
