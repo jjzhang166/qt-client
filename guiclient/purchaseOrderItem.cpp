@@ -378,32 +378,28 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
 
 void purchaseOrderItem::populate()
 {
-  q.prepare( "SELECT pohead_number, poitem_linenumber, pohead_taxzone_id, "  //  pohead_taxzone_id added
+  q.prepare( "SELECT pohead_number, poitem_linenumber, pohead_taxzone_id, "
              "       COALESCE(poitem_itemsite_id,-1) AS poitem_itemsite_id,"
              "       COALESCE(poitem_itemsrc_id,-1) AS poitem_itemsrc_id, "
              "       poitem_vend_item_number, poitem_vend_item_descrip,"
              "       poitem_vend_uom,"
              "       poitem_invvenduomratio,"
              "       COALESCE(poitem_expcat_id,-1) AS poitem_expcat_id, "
-			 "       COALESCE(pohead_cohead_id, -1) AS pohead_cohead_id, "
-			 "       COALESCE(poitem_wohead_id, -1) AS poitem_wohead_id, "
-             "       CASE WHEN (COALESCE(pohead_cohead_id, -1) != -1) THEN 'Sales Order #' "
-             "         ELSE CASE WHEN (COALESCE(poitem_wohead_id, -1) != -1) THEN 'Work Order #' "
-             "           ELSE '' "
-             "         END "
+	     "       COALESCE(pohead_cohead_id, -1) AS pohead_cohead_id, "
+	     "       COALESCE(poitem_wohead_id, -1) AS poitem_wohead_id, "
+             "       CASE WHEN (COALESCE(pohead_cohead_id, -1) != -1) THEN :sonum "
+             "            WHEN (COALESCE(poitem_wohead_id, -1) != -1) THEN :wonum "
+             "            ELSE '' "
              "       END AS demand_type, "
              "       CASE WHEN (COALESCE(pohead_cohead_id, -1) != -1) THEN cohead_number "
-             "         ELSE CASE WHEN (COALESCE(poitem_wohead_id, -1) != -1) THEN "
-             "           CAST(wo_number AS text) "
+             "            WHEN (COALESCE(poitem_wohead_id, -1) != -1) THEN CAST(wo_number AS text) "
              "         ELSE '' "
-             "         END "
              "       END AS order_number, "
-             "       CASE WHEN (COALESCE(pohead_cohead_id, -1) != -1) THEN "
-             "       CAST(coitem_linenumber AS text) "
-             "         ELSE CASE WHEN (COALESCE(poitem_wohead_id, -1) != -1) THEN "
-             "             CAST(wo_subnumber AS text) "
-             "           ELSE '' "
-             "         END "
+             "       CASE WHEN pohead_cohead_id IS NOT NULL THEN "
+             "              CAST(coitem_linenumber AS text) "
+             "            WHEN poitem_wohead_id IS NOT NULL THEN "
+             "              CAST(wo_subnumber AS text) "
+             "            ELSE '' "
              "       END AS orderline_number, "
              "       poitem_duedate,"
              "       poitem_qty_ordered,"
@@ -418,13 +414,14 @@ void purchaseOrderItem::populate()
              "       poitem_manuf_name, poitem_manuf_item_number, "
              "       poitem_manuf_item_descrip, "
              "       COALESCE(coitem_prcost, 0.0) AS overrideCost "
-             "FROM pohead, poitem LEFT OUTER JOIN (cohead JOIN coitem ON (cohead_id = coitem_cohead_id)) "
-             "       ON (poitem_soitem_id=coitem_id) "
-             "       LEFT OUTER JOIN "
-             "       wo ON (poitem_wohead_id = wo_id) "
-             "WHERE ( (poitem_pohead_id=pohead_id) "
-             " AND (poitem_id=:poitem_id) );" );
+             "  FROM pohead JOIN poitem ON (poitem_pohead_id=pohead_id)"
+             "  LEFT OUTER JOIN coitem  ON (poitem_soitem_id=coitem_id)"
+             "  LEFT OUTER JOIN cohead  ON (cohead_id = coitem_cohead_id)"
+             "  LEFT OUTER JOIN wo      ON (poitem_wohead_id = wo_id) "
+             "WHERE (poitem_id=:poitem_id);" );
   q.bindValue(":poitem_id", _poitemid);
+  q.bindValue(":sonum",     tr("Sales Order #")),
+  q.bindValue(":wonum",     tr("Work Order #")),
   q.exec();
   if (q.first())
   {
