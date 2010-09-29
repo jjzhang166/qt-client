@@ -64,6 +64,8 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
     virtual void          setAllowedType(const QString &);
     virtual void          setAllowedTypes(const OrderTypes);
     virtual void          setId(const int, const QString & = QString::null);
+    virtual void          sList();
+    virtual void          sSearch();
 
   signals:
     void newId(const int, const QString &);
@@ -160,6 +162,9 @@ class XTUPLEWIDGETS_EXPORT OrderList : public VirtualList
 
     QString type() const;
 
+  public slots:
+    virtual void sClose();
+
   protected:
     QList<XTreeWidgetItem*> selectedAtDone;
 
@@ -175,6 +180,9 @@ class XTUPLEWIDGETS_EXPORT OrderSearch : public VirtualSearch
     OrderSearch(QWidget*, Qt::WindowFlags = 0);
 
     QString     type() const;
+
+  public slots:
+    virtual void sClose();
 
   protected:
    QList<XTreeWidgetItem*> selectedAtDone;
