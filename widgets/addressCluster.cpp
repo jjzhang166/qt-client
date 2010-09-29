@@ -281,7 +281,7 @@ void AddressCluster::silentSetId(const int pId)
     {
       clear();
       XSqlQuery idQ;
-      idQ.prepare(_query + " WHERE addr_id = :id;");
+      idQ.prepare("SELECT * from addr WHERE addr_id = :id;");
       idQ.bindValue(":id", pId);
       idQ.exec();
       if (idQ.first())
