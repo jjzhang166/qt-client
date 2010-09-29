@@ -846,6 +846,7 @@ void initErrorLookupHash()
   { "issueAllBalanceToShipping", -13, "",	-13, "issueToShipping" },
   { "issueAllBalanceToShipping", -14, "",	-14, "issueToShipping" },
   { "issueAllBalanceToShipping", -15, "",	-15, "issueToShipping" },
+  { "issueAllBalanceToShipping", -20, "",	-20, "issueToShipping" },
 
   { "issueLineBalanceToShipping",  -1, "",	 -1, "issueToShipping" },
   { "issueLineBalanceToShipping", -10, "",	-10, "issueToShipping" },
@@ -853,6 +854,7 @@ void initErrorLookupHash()
   { "issueLineBalanceToShipping", -13, "",	-13, "issueToShipping" },
   { "issueLineBalanceToShipping", -14, "",	-14, "issueToShipping" },
   { "issueLineBalanceToShipping", -15, "",	-15, "issueToShipping" },
+  { "issueLineBalanceToShipping", -20, "",	-20, "issueToShipping" },
 
   { "issueToShipping",	-1, "",		 	 -1, "postInvTrans" },
   { "issueToShipping", -10, TR("The Next Shipment Number has not been set in "
@@ -872,6 +874,10 @@ void initErrorLookupHash()
 			       "The Customer Account does not have a Primary Contact. "
 			       "A Primary Contact must be assigned to this Customer Account before any inven"
 			       "tory may be issued to this Order."),	0, "" },
+  { "issueToShipping", -20, TR("There is not enough Inventory to "
+                                           "issue the amount required of one "
+                                           "of the Average Cost items requested.  "
+                                           "Average Cost items may not have a negative quantity on hand."),0, ""},
 
   { "login",  -1, TR("The specified Username does not exist in the specified "
                      "Database. Contact your Systems Administrator to report "
