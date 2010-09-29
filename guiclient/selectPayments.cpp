@@ -57,13 +57,13 @@ selectPayments::selectPayments(QWidget* parent, const char* name, Qt::WFlags fl)
   _apopen->addColumn(tr("Doc. Date"),      _dateColumn,  Qt::AlignCenter,        false, "apopen_docdate" );
   _apopen->addColumn(tr("Amount"),         _moneyColumn, Qt::AlignRight ,        true, "amount" );
   _apopen->addColumn(tr("Amount (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, false, "base_amount"  );
-  _apopen->addColumn(tr("Running Amount"), _moneyColumn, Qt::AlignRight, false, "running_amount" );
+  _apopen->addColumn(tr("Running Amount (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight,         false, "running_amount" );
   _apopen->addColumn(tr("Selected"),       _moneyColumn, Qt::AlignRight ,        true, "selected" );
   _apopen->addColumn(tr("Selected (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, false, "base_selected"  );
+  _apopen->addColumn(tr("Running Selected (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight,       true, "running_selected"  );
   _apopen->addColumn(tr("Discount"),       _moneyColumn, Qt::AlignRight ,        true, "discount" );
   _apopen->addColumn(tr("Discount (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, false, "base_discount"  );
   _apopen->addColumn(tr("Currency"),       _currencyColumn, Qt::AlignLeft,       true, "curr_concat" );
-  _apopen->addColumn(tr("Running (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, true, "running_selected"  );
   _apopen->addColumn(tr("Status"),         _currencyColumn, Qt::AlignCenter,     true, "apopen_status" );
 
   if (omfgThis->singleCurrency())
@@ -451,101 +451,6 @@ void selectPayments::sFillList()
       _currid = q.value("bankaccnt_curr_id").toInt();
   }
 
-  MetaSQLQuery mql(
-         "SELECT * FROM ( "
-         "SELECT apopen_id, COALESCE(apselect_id, -1) AS apselectid,"
-         "       (vend_number || '-' || vend_name) AS vendor,"
-         "       CASE WHEN (apopen_doctype='V') THEN <? value(\"voucher\") ?>"
-         "            When (apopen_doctype='D') THEN <? value(\"debitMemo\") ?>"
-         "       END AS doctype,"
-         "       apopen_docnumber, apopen_ponumber,"
-         "       apopen_duedate,"
-         "       apopen_docdate, apopen_status, "
-         "       CASE WHEN (apopen_status = 'H') THEN 'error' END AS qtforegroundrole, "
-         "       (apopen_amount - apopen_paid - "
-         "                   COALESCE((SELECT SUM(checkitem_amount + checkitem_discount) "
-         "                             FROM checkitem, checkhead "
-         "                             WHERE ((checkitem_checkhead_id=checkhead_id) "
-         "                              AND (checkitem_apopen_id=apopen_id) "
-         "                              AND (NOT checkhead_deleted) "
-         "                              AND (NOT checkhead_replaced) "
-         "                              AND (NOT checkhead_posted)) "
-         "                           ), 0)) AS amount,"
-         "       ((apopen_amount - apopen_paid - "
-         "                   COALESCE((SELECT SUM(checkitem_amount + checkitem_discount) "
-         "                             FROM checkitem, checkhead "
-         "                             WHERE ((checkitem_checkhead_id=checkhead_id) "
-         "                                AND (checkitem_apopen_id=apopen_id) "
-         "                                AND (NOT checkhead_deleted) "
-         "                                AND (NOT checkhead_replaced) "
-         "                                AND (NOT checkhead_posted)) "
-         "                            ), 0)) / apopen_curr_rate) AS base_amount, "
-         "       <? if exists(\"vend_id\") ?>"
-         "       COALESCE((apopen_amount - apopen_paid - "
-         "                   COALESCE((SELECT SUM(checkitem_amount + checkitem_discount) "
-         "                             FROM checkitem, checkhead "
-         "                             WHERE ((checkitem_checkhead_id=checkhead_id) "
-         "                              AND (checkitem_apopen_id=apopen_id) "
-         "                              AND (NOT checkhead_deleted) "
-         "                              AND (NOT checkhead_replaced) "
-         "                              AND (NOT checkhead_posted)) "
-         "                           ), 0)), 0) AS running_amount, "
-         "       <? endif ?>"
-         "       COALESCE(SUM(apselect_amount), 0) AS selected,"
-         "       (COALESCE(SUM(apselect_amount), 0) / apopen_curr_rate) AS base_selected, "
-         "       COALESCE(currToBase(apselect_curr_id, SUM(apselect_amount), CURRENT_DATE), 0) AS running_selected,"
-         "       COALESCE(SUM(apselect_discount),0) AS discount, "
-         "       (COALESCE(SUM(apselect_discount),0) / apopen_curr_rate)AS base_discount,"
-         "       CASE WHEN (apopen_duedate < CURRENT_DATE) THEN 'error' "
-                 "         ELSE CASE WHEN(apopen_duedate > CURRENT_DATE) THEN 'emphasis' "
-                 "           ELSE CASE WHEN(CURRENT_DATE <= (apopen_docdate + terms_discdays)) THEN 'altemphasis' "
-                 "           END "
-                 "         END "
-         "               END AS apopen_duedate_qtforegroundrole, "
-         "       apopen_invcnumber,"
-         "       currConcat(apopen_curr_id) AS curr_concat, "
-         "       'curr' AS amount_xtnumericrole, "
-         "       'curr' AS selected_xtnumericrole, "
-         "       'curr' AS running_selected_xtnumericrole, "
-         "       'curr' AS running_selected_xtrunningrole, "
-         "       'curr' AS discount_xtnumericrole, "
-         "       'curr' AS base_amount_xtnumericrole, "
-         "       'curr' AS base_selected_xtnumericrole, "
-         "       'curr' AS base_discount_xtnumericrole, "
-         "       'curr' AS base_amount_xttotalrole, "
-         "       'curr' AS base_selected_xttotalrole, "
-         "       'curr' AS base_discount_xttotalrole, "
-         "       'curr' AS running_amount_xtrunningrole "
-         "FROM vend, apopen LEFT OUTER JOIN apselect ON (apselect_apopen_id=apopen_id) "
-                 "LEFT OUTER JOIN terms ON (apopen_terms_id=terms_id) "
-         "WHERE ( (apopen_open)"
-         " AND (apopen_doctype IN ('V', 'D'))"
-         " AND (apopen_vend_id=vend_id)"
-         "<? if exists(\"vend_id\") ?>"
-         " AND (vend_id=<? value(\"vend_id\") ?>)"
-         "<? elseif exists(\"vendtype_id\") ?>"
-         " AND (vend_vendtype_id=<? value(\"vendtype_id\") ?>)"
-         "<? elseif exists(\"vendtype_pattern\") ?>"
-         " AND (vend_vendtype_id IN (SELECT vendtype_id"
-         "                           FROM vendtype"
-         "                           WHERE (vendtype_code ~ <? value(\"vendtype_pattern\") ?>)))"
-         "<? endif ?>"
-         "<? if exists(\"olderDate\") ?>"
-         " AND (apopen_duedate <= <? value(\"olderDate\") ?>)"
-         "<? elseif exists(\"startDate\") ?>"
-         " AND (apopen_duedate BETWEEN <? value(\"startDate\") ?> AND <? value(\"endDate\") ?>)"
-         "<? endif ?>"
-         "<? if exists(\"curr_id\") ?>"
-         " AND (apopen_curr_id=<? value(\"curr_id\") ?>)"
-         "<? endif ?>"
-         ") "
-         "GROUP BY apopen_id, apselect_id, vend_number, vend_name, apopen_curr_rate,"
-         "         apopen_doctype, apopen_docnumber, apopen_ponumber, vend_curr_id,"
-         "         apopen_duedate, apopen_docdate, apopen_amount, apopen_paid, "
-         "         curr_concat, apopen_curr_id, apselect_curr_id, apopen_invcnumber, apopen_status, terms.terms_discdays "
-         "ORDER BY apopen_duedate, (apopen_amount - apopen_paid) DESC) AS data "
-         "WHERE (amount != 0);");
-
   ParameterList params;
   if (! setParams(params))
     return;
@@ -561,7 +466,9 @@ void selectPayments::sFillList()
   if (_currid >= 0)
     params.append("curr_id", _currid);
 
+  MetaSQLQuery mql = mqlLoad("apOpenItems", "selectpayments");
   q = mql.toQuery(params);
+  q.exec();
   _apopen->populate(q,true);
   if (q.lastError().type() != QSqlError::NoError)
   {

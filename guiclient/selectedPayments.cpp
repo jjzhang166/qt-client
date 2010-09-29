@@ -9,6 +9,7 @@
  */
 
 #include "selectedPayments.h"
+#include "mqlutil.h"
 
 #include <QSqlError>
 #include <QVariant>
@@ -130,46 +131,12 @@ void selectedPayments::sFillList(int pBankaccntid)
 
 void selectedPayments::sFillList()
 {
-  QString sql( "SELECT apopen_id, apselect_id,"
-               "       (bankaccnt_name || '-' || bankaccnt_descrip) AS f_bank,"
-               "       (vend_number || '-' || vend_name) AS f_vendor,"
-               "       CASE WHEN (apopen_doctype='V') THEN <? value(\"voucher\") ?>"
-               "            When (apopen_doctype='D') THEN <? value(\"debitmemo\") ?>"
-               "       END AS doctype,"
-               "       apopen_docnumber, apopen_ponumber, apselect_amount,"
-	       "       apopen_invcnumber,"
-	       "       currToBase(apselect_curr_id, apselect_amount, "
-	       "		  CURRENT_DATE) AS apselect_amount_base, "
-	       "       currToBase(apselect_curr_id, apselect_amount, "
-	       "		  CURRENT_DATE) AS apselect_running_base, "
-	       "       currConcat(apselect_curr_id) AS currAbbr, "
-               "       'curr' AS apselect_amount_xtnumericrole, "
-               "       'curr' AS apselect_amount_base_xtnumericrole, "
-               "       'curr' AS apselect_running_base_xtnumericrole, "
-               "       0 AS apselect_running_base_xtrunningrole "
-               "FROM apopen, apselect, vend, bankaccnt "
-               "WHERE ( (apopen_vend_id=vend_id)"
-               "  AND   (apselect_apopen_id=apopen_id)"
-               "  AND   (apselect_bankaccnt_id=bankaccnt_id)" 
-	       "<? if exists(\"bankaccntid\") ?>"
-	       "  AND   (bankaccnt_id=<? value(\"bankaccntid\") ?>)"
-	       "<? endif ?>"
-               "<? if exists(\"vend_id\") ?>"
-               " AND (vend_id=<? value(\"vend_id\") ?>)"
-               "<? elseif exists(\"vendtype_id\") ?>"
-               " AND (vend_vendtype_id=<? value(\"vendtype_id\") ?>)"
-               "<? elseif exists(\"vendtype_pattern\") ?>"
-               " AND (vend_vendtype_id IN (SELECT vendtype_id"
-               "                           FROM vendtype"
-               "                           WHERE (vendtype_code ~ <? value(\"vendtype_pattern\") ?>)))"
-               "<? endif ?>"
-	       " ) "
-	       "ORDER BY bankaccnt_name, vend_number, apopen_docnumber;" );
   ParameterList params;
   if (! setParams(params))
     return;
-  MetaSQLQuery mql(sql);
+  MetaSQLQuery mql = mqlLoad("apOpenItems", "selectedpayments");
   q = mql.toQuery(params);
+  q.exec();
   _apselect->populate(q,true);
   if (q.lastError().type() != QSqlError::NoError)
   {
