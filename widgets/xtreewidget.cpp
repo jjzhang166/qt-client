@@ -230,7 +230,10 @@ void XTreeWidget::populate(XSqlQuery pQuery, int pIndex, bool pUseAltId, Populat
   pQuery.seek(-1);
 
   if (popstyle == Replace)
+  {
+    clear();
     _workingParams.clear();
+  }
   _workingParams.append(args);
 
   _linear = _alwaysLinear || (_guiClientInterface &&
@@ -255,7 +258,7 @@ void XTreeWidget::populateWorker()
   XSqlQuery     pQuery     = args._workingQuery;
   int           pIndex     = args._workingIndex;
   bool          pUseAltId  = args._workingUseAlt;
-  PopulateStyle popstyle   = args._workingPopstyle;
+  //PopulateStyle popstyle   = args._workingPopstyle;
 
   if (_linear)
     qApp->setOverrideCursor(Qt::WaitCursor);
@@ -295,9 +298,6 @@ void XTreeWidget::populateWorker()
    */
   if (pQuery.at() == QSql::BeforeFirstRow || (pQuery.at() == 0 && ! _colIdx))
   {
-    if (popstyle == Replace)
-      clear();
-
     if (pQuery.first())
     {
       cleanupAfterPopulate(); // plug memory leaks if last populate() never finished
@@ -1172,16 +1172,13 @@ void XTreeWidget::populateCalculatedColumns()
         if (!subtotals.contains(set))
           subtotals[set] = topLevelItem(row)->data(col, Xt::RunningInitRole).toDouble();
         subtotals[set] += topLevelItem(row)->data(col, Xt::RawRole).toDouble();
+
+        // only update if necessary, reducing (slow) calls to recalculate row height
         int scale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
         float maxdiff = pow(10.0, 0 - scale);
         if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) < maxdiff)
-        {
           topLevelItem(row)->setData(col, Qt::DisplayRole,
                                      QLocale().toString(subtotals[set], 'f', scale));
-          qDebug("'%f' != '%f'\t%f",
-                 subtotals[set], topLevelItem(row)->data(col, Qt::DisplayRole).toDouble(),
-                 subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble());
-        }
       }
     }
     else if (headerItem()->data(col, Qt::UserRole).toString() == "xttotalrole")
