@@ -738,7 +738,7 @@ void returnAuthorization::sOrigSoChanged()
         _shipToNumber->setEnabled(_ffShipto);
         _shipToAddr->setEnabled(_ffShipto);
         _ignoreShiptoSignals = FALSE;
-        sSave(false);
+        sSave(true);
         sFillList();
       }
       else if (sohead.lastError().type() != QSqlError::NoError)
