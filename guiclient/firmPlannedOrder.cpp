@@ -53,7 +53,7 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
 
     q.prepare( "SELECT planord.*,"
                "       itemsite_leadtime "
-               "FROM planord JOIN itemsite ON (itemsite_id=itemsite_id) "
+               "FROM planord JOIN itemsite ON (itemsite_id=planord_itemsite_id) "
                "WHERE (planord_id=:planord_id);" );
     q.bindValue(":planord_id", _planordid);
     q.exec();
