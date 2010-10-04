@@ -1006,7 +1006,9 @@ void XComboBox::setType(XComboBoxTypes pType)
     if (_x_privileges->check(priv))
     {
       insertSeparator(count());
-      append(-2,tr("Edit List"));
+      _ids.append(-2);
+      _codes.append(QString("separator"));
+      append(-3,tr("Edit List"));
     }
   }
 }
@@ -1372,11 +1374,11 @@ void XComboBox::append(int pId, const QString &pText, const QString &pCode)
 
   if (! _ids.contains(pId))
   {
-    if (_ids.contains(-2)) // Has edit list
+    if (_ids.contains(-3)) // Has edit list
     {
       insertItem(count()-2,pText);
-      _ids.insert(_ids.count()-1,pId);
-      _codes.insert(_codes.count()-1,pCode);
+      _ids.insert(_ids.count()-2,pId);
+      _codes.insert(_codes.count()-2,pCode);
     }
     else
     {
@@ -1451,7 +1453,7 @@ void XComboBox::sHandleNewIndex(int pIndex)
     qDebug("%s::sHandleNewIndex(%d)",objectName().toAscii().data(), pIndex);
 
   // See if request is to edit list
-  if (id() == -2 && _guiClientInterface)
+  if (id() == -3 && _guiClientInterface)
   {
     QString ui = _editorMap.value(type()).first;
     ParameterList params;
