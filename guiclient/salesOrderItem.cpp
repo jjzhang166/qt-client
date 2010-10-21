@@ -2516,7 +2516,8 @@ void salesOrderItem::sPopulateOrderInfo()
     checkpo.prepare( "SELECT pohead_id, poitem_id, poitem_status "
                      "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                      "            JOIN coitem ON (coitem_order_id = poitem_id) "
-                     "WHERE (coitem_id = :soitem_id);" );
+                     "WHERE ((coitem_id = :soitem_id) "
+                     "  AND  (coitem_order_type='P'));" );
     checkpo.bindValue(":soitem_id", _soitemid);
     checkpo.exec();
     if (checkpo.first())
