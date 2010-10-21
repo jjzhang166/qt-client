@@ -51,9 +51,8 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
     _planordid = param.toInt();
     _item->setReadOnly(TRUE);
 
-    q.prepare( "SELECT planord.*,"
-               "       itemsite_leadtime "
-               "FROM planord JOIN itemsite ON (itemsite_id=planord_itemsite_id) "
+    q.prepare( "SELECT planord.*, (planord_duedate - planord_startdate) AS leadtime "
+               "FROM planord "
                "WHERE (planord_id=:planord_id);" );
     q.bindValue(":planord_id", _planordid);
     q.exec();
@@ -65,7 +64,7 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
       _comments->setText(q.value("planord_comments").toString());
       _number = q.value("planord_number").toInt();
       _itemsiteid = q.value("planord_itemsite_id").toInt();
-      _leadTime = q.value("itemsite_leadtime").toInt();
+      _leadTime = q.value("leadtime").toInt();
 
       _type = q.value("planord_type").toString();  
       if (q.value("planord_type").toString() == "P")
