@@ -36,6 +36,7 @@ pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char
 
   _customerTypes->setType(XComboBox::CustomerTypes);
 
+  _ipshead->setAllowNull(true);
   _ipshead->populate( "SELECT ipshead_id, (ipshead_name || ' - ' || ipshead_descrip) "
                       "FROM ipshead "
                       "WHERE (CURRENT_DATE < ipshead_expires) "
@@ -105,6 +106,13 @@ enum SetResponse pricingScheduleAssignment::set(const ParameterList &pParams)
 
 void pricingScheduleAssignment::sAssign()
 {
+  if (!_ipshead->isValid())
+  {
+    QMessageBox::critical(this, tr("Cannot Save Pricing Schedule Assignment"),
+                          tr("<p>You must select a Pricing Schedule."));
+    return;
+  }
+
   if (_mode == cNew)
   {
     q.prepare( "SELECT ipsass_id "
