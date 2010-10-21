@@ -713,7 +713,7 @@ void XTreeWidget::populateWorker()
   setId(pIndex);
   emit valid(currentItem() != 0);
 
-  if (pQuery.at() == QSql::AfterLastRow)
+  // clean up. we won't reach here until the query is done, even if ! _linear
   {
     _workingTimer.stop();
 
