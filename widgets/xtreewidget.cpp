@@ -660,8 +660,15 @@ void XTreeWidget::populateWorker()
         {
           int set = pQuery.value((*_colRole)[col][COLROLE_RUNNING]).toInt();
           _last->setData(col, Xt::RunningSetRole, set);
+          /* performance hack - populateCalculatedColumns will repeat this
+             but only redraw if necessary. redraw is much slower than recalc. */
           if (! _subtotals->at(col)->contains(set))
-            (*_subtotals)[col]->insert(set, pQuery.value((*_colRole)[col][COLROLE_RUNNINGINIT]).toDouble());
+          {
+            if ((*_colRole)[col][COLROLE_RUNNINGINIT])
+              (*_subtotals)[col]->insert(set, pQuery.value((*_colRole)[col][COLROLE_RUNNINGINIT]).toDouble());
+            else
+              (*_subtotals)[col]->insert(set, 0.0);
+          }
           (*(*_subtotals)[col])[set] += rawValue.toDouble();
           _last->setData(col, Qt::DisplayRole,
                          QLocale().toString((*_subtotals)[col]->value(set), 'f', scale));
@@ -1176,7 +1183,7 @@ void XTreeWidget::populateCalculatedColumns()
         // only update if necessary, reducing (slow) calls to recalculate row height
         int scale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
         float maxdiff = pow(10.0, 0 - scale);
-        if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) < maxdiff)
+        if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) > maxdiff)
           topLevelItem(row)->setData(col, Qt::DisplayRole,
                                      QLocale().toString(subtotals[set], 'f', scale));
       }
