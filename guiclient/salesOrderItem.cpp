@@ -1014,9 +1014,9 @@ void salesOrderItem::sSave()
     if (_orderId != -1)
     {
       XSqlQuery checkPO;
-      checkPO.prepare("SELECT * FROM poitem JOIN coitem ON "
-                      "(coitem_order_id = poitem_id) "
-                      "WHERE (coitem_id = :soitem_id);");
+      checkPO.prepare("SELECT * FROM poitem JOIN coitem ON (coitem_order_id = poitem_id) "
+                      "WHERE ((coitem_id = :soitem_id) "
+                      "  AND  (coitem_order_type='P'));" );
       checkPO.bindValue(":soitem_id", _soitemid);
       checkPO.exec();
       if (checkPO.first())
@@ -1842,7 +1842,8 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
                            "poitem_unitprice, pohead_dropship "
                            "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                            "            JOIN coitem ON (coitem_order_id = poitem_id) "
-                           "WHERE (coitem_id = :soitem_id);");
+                           "WHERE ((coitem_id = :soitem_id) "
+                           "  AND  (coitem_order_type='P'));" );
           povalues.bindValue(":soitem_id", _soitemid);
           povalues.exec();
           if (povalues.first())
@@ -1897,7 +1898,8 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
           dropship.prepare("SELECT pohead_dropship "
                            "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                            "  RIGHT OUTER JOIN coitem ON (poitem_id = coitem_order_id) "
-                           "WHERE (coitem_id = :soitem_id);");
+                           "WHERE ((coitem_id = :soitem_id) "
+                           "  AND  (coitem_order_type='P'));" );
           dropship.bindValue(":soitem_id", _soitemid);
           dropship.exec();
           if (dropship.first())
@@ -3197,7 +3199,8 @@ void salesOrderItem::sCancel()
   {
     XSqlQuery existpo;
     existpo.prepare("SELECT * FROM poitem JOIN coitem ON (coitem_order_id = poitem_id) "
-                    "WHERE (coitem_id = :soitem_id);");
+                    "WHERE ((coitem_id = :soitem_id) "
+                    "  AND  (coitem_order_type='P'));" );
     existpo.bindValue(":soitem_id", _soitemid);
     existpo.exec();
     if (existpo.first())
@@ -3405,7 +3408,8 @@ void salesOrderItem::sHandleScheduleDate()
     checkpo.prepare( "SELECT pohead_id, poitem_id, poitem_status "
                      "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                      "            JOIN coitem ON (coitem_order_id = poitem_id) "
-                     "WHERE (coitem_id = :soitem_id);" );
+                     "WHERE ((coitem_id = :soitem_id) "
+                     "  AND  (coitem_order_type='P'));" );
     checkpo.bindValue(":soitem_id", _soitemid);
     checkpo.exec();
     if (checkpo.first())
