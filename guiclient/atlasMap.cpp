@@ -32,7 +32,7 @@ class AtlasMapMessageHandler : public QAbstractMessageHandler
   protected:
     virtual void handleMessage(QtMsgType type, const QString &description, const QUrl &identifier, const QSourceLocation &sourceLocation)
     {
-      QString msg = tr("<p>There was a problem reading the Atlas file, "
+      QString msg = atlasMap::tr("<p>There was a problem reading the Atlas file, "
                        "line %1 column %2: %3<br>(%4)")
                         .arg(sourceLocation.line())
                         .arg(sourceLocation.column())
@@ -41,15 +41,15 @@ class AtlasMapMessageHandler : public QAbstractMessageHandler
       switch (type)
       {
         case QtDebugMsg:
-          QMessageBox::information(0, tr("XML Error"), msg);
+          QMessageBox::information(0, atlasMap::tr("XML Error"), msg);
           break;
         case QtWarningMsg:
-          QMessageBox::warning(0, tr("XML Error"), msg);
+          QMessageBox::warning(0, atlasMap::tr("XML Error"), msg);
           break;
         case QtCriticalMsg:
         case QtFatalMsg:
         default:
-          QMessageBox::critical(0, tr("XML Error"), msg);
+          QMessageBox::critical(0, atlasMap::tr("XML Error"), msg);
           break;
       }
     }

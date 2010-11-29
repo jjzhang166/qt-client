@@ -57,7 +57,7 @@ WidgetBoxWindow::WidgetBoxWindow(xTupleDesigner *parent)
   _widgetbox = QDesignerComponents::createWidgetBox(parent->formeditor(), this);
   parent->formeditor()->setWidgetBox(_widgetbox);
   setCentralWidget(_widgetbox);
-  setWindowTitle(tr("Widget Box"));
+  setWindowTitle(xTupleDesigner::tr("Widget Box"));
 }
 
 void WidgetBoxWindow::closeEvent(QCloseEvent * event)
@@ -84,7 +84,7 @@ ObjectInspectorWindow::ObjectInspectorWindow(xTupleDesigner *parent)
                                                         this);
   parent->formeditor()->setObjectInspector(_objinsp);
   setCentralWidget(_objinsp);
-  setWindowTitle(tr("Object Inspector"));
+  setWindowTitle(xTupleDesigner::tr("Object Inspector"));
 }
 
 class PropertyEditorWindow : public XMainWindow
@@ -103,7 +103,7 @@ PropertyEditorWindow::PropertyEditorWindow(xTupleDesigner *parent)
                                                           this);
   parent->formeditor()->setPropertyEditor(_propeditor);
   setCentralWidget(_propeditor);
-  setWindowTitle(tr("Property Editor"));
+  setWindowTitle(xTupleDesigner::tr("Property Editor"));
 }
 
 class SignalSlotEditorWindow : public XMainWindow
@@ -121,7 +121,7 @@ SignalSlotEditorWindow::SignalSlotEditorWindow(xTupleDesigner *parent)
   _sloteditor = QDesignerComponents::createSignalSlotEditor(parent->formeditor(),
                                                           this);
   setCentralWidget(_sloteditor);
-  setWindowTitle(tr("Signal/Slot Editor"));
+  setWindowTitle(xTupleDesigner::tr("Signal/Slot Editor"));
 }
 
 xTupleDesigner::xTupleDesigner(QWidget* parent, const char* name, Qt::WFlags fl)

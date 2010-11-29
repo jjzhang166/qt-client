@@ -839,6 +839,7 @@ struct hentry * SfxEntry::get_next_homonym(struct hentry * he, int optflags, Pfx
 
 
 #if 0
+/*
 
 Appendix:  Understanding Affix Code
 
@@ -957,6 +958,6 @@ first two affentries for the suffix D described earlier.
      conds['y'] = (1 << 1)     (the last char must be a y)
      all other bits for all other entries in the conds array are zero
 
-
+*/
 #endif
 

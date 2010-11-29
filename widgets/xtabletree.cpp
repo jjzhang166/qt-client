@@ -91,7 +91,6 @@ void XTableTreeNode::load()
       // On to the next grand parent
       g.next();
     }
-  }
 }
 
 /* Saves the current model to the database*/

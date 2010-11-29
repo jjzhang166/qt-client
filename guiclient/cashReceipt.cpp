@@ -24,23 +24,23 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-#define TR(a)	QObject::tr(a)
+#define TR(a)	cashReceipt::tr(a)
 
 const struct {
-  QString full;
+  const char * full;
   QString abbr;
   bool    cc;
 } _fundsTypes[] = {
-  { TR("Check"),            "C", false },
-  { TR("Certified Check"),  "T", false },
-  { TR("Master Card"),      "M", true  },
-  { TR("Visa"),             "V", true  },
-  { TR("American Express"), "A", true  },
-  { TR("Discover Card"),    "D", true  },
-  { TR("Other Credit Card"),"R", true  },
-  { TR("Cash"),             "K", false },
-  { TR("Wire Transfer"),    "W", false },
-  { TR("Other"),            "O", false }
+  { QT_TRANSLATE_NOOP("cashReceipt", "Check"),            "C", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Certified Check"),  "T", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Master Card"),      "M", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Visa"),             "V", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "American Express"), "A", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Discover Card"),    "D", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Other Credit Card"),"R", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Cash"),             "K", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Wire Transfer"),    "W", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Other"),            "O", false }
 };
 
 cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
@@ -122,7 +122,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
     if (! _fundsTypes[i].cc ||
         (_fundsTypes[i].cc && _metrics->boolean("CCAccept") &&
          _privileges->check("ProcessCreditCards")) )
-      _fundsType->append(i, _fundsTypes[i].full, _fundsTypes[i].abbr);
+      _fundsType->append(i, tr(_fundsTypes[i].full), _fundsTypes[i].abbr);
   }
 
   if (!_metrics->boolean("CCAccept") && ! _privileges->check("ProcessCreditCards"))

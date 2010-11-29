@@ -12,6 +12,8 @@
 
 class XMessageBoxMessageHandler : public QAbstractMessageHandler
 {
+  Q_OBJECT
+
   public:
     XMessageBoxMessageHandler(QObject *p = 0);
     QString lastMessage() const;

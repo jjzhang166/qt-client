@@ -138,109 +138,108 @@
 QString			 CreditCardProcessor::_errorMsg = "";
 QHash<int, QString>	 CreditCardProcessor::_msgHash;
 
-#define TR(a)	QObject::tr(a)
 static struct {
     int		code;
-    QString	text;
+    const char*	text;
 } messages[] = {
 
-  {   0, TR("This transaction was approved.\n%1")			},
+  {   0, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction was approved.\n%1")			},
 
-  {  -1, TR("Database Error")						},
-  {  -2, TR("You don't have permission to process Credit Card transactions.") },
-  {  -3, TR("The application is not set up to process credit cards.")	},
-  {  -4, TR("The Bank Accounts are not set for all Credit Card types.") },
-  {  -5, TR("The encryption key is not defined.")			},
-  {  -6, TR("The login for the proxy server is not defined.")		},
-  {  -7, TR("The password for the proxy server is not defined.")	},
-  {  -8, TR("The proxy server is not defined.")				},
-  {  -9, TR("The port to use for the proxy server is not defined.")	},
-  { -10, TR("Credit Card %1 is not active. Make it active or select "
+  {  -1, QT_TRANSLATE_NOOP("CreditCardProcessor", "Database Error")						},
+  {  -2, QT_TRANSLATE_NOOP("CreditCardProcessor", "You don't have permission to process Credit Card transactions.") },
+  {  -3, QT_TRANSLATE_NOOP("CreditCardProcessor", "The application is not set up to process credit cards.")	},
+  {  -4, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Bank Accounts are not set for all Credit Card types.") },
+  {  -5, QT_TRANSLATE_NOOP("CreditCardProcessor", "The encryption key is not defined.")			},
+  {  -6, QT_TRANSLATE_NOOP("CreditCardProcessor", "The login for the proxy server is not defined.")		},
+  {  -7, QT_TRANSLATE_NOOP("CreditCardProcessor", "The password for the proxy server is not defined.")	},
+  {  -8, QT_TRANSLATE_NOOP("CreditCardProcessor", "The proxy server is not defined.")				},
+  {  -9, QT_TRANSLATE_NOOP("CreditCardProcessor", "The port to use for the proxy server is not defined.")	},
+  { -10, QT_TRANSLATE_NOOP("CreditCardProcessor", "Credit Card %1 is not active. Make it active or select "
 	    "another Credit Card.")					},
-  { -11, TR("Credit Card %1 has expired.")				},
-  { -12, TR("The Credit Card Processing Company reported an error:\n%1")		},
-  { -13, TR("The Credit Card configuration is inconsistent and the application "
+  { -11, QT_TRANSLATE_NOOP("CreditCardProcessor", "Credit Card %1 has expired.")				},
+  { -12, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card Processing Company reported an error:\n%1")		},
+  { -13, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card configuration is inconsistent and the application "
 	    "cannot determine whether to run in Test or Live mode.")	},
-  { -14, TR("Could not figure out which Credit Card Processing Company "
+  { -14, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not figure out which Credit Card Processing Company "
 	    "to set up (based on %1).")					},
-  { -15, TR("The digital certificate (.pem file) is not set.")		},
-  { -16, TR("Could not open digital certificate (.pem file) %1.")	},
-  { -17, TR("Could not find a Credit Card with internal ID %1.")	},
-  { -18, TR("Error with message transfer program:\n%1 %2\n\n%3")	},
-  { -19, TR("%1 is not implemented.")					},
-  { -20, TR("The application does not support either Credit Cards or "
+  { -15, QT_TRANSLATE_NOOP("CreditCardProcessor", "The digital certificate (.pem file) is not set.")		},
+  { -16, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not open digital certificate (.pem file) %1.")	},
+  { -17, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find a Credit Card with internal ID %1.")	},
+  { -18, QT_TRANSLATE_NOOP("CreditCardProcessor", "Error with message transfer program:\n%1 %2\n\n%3")	},
+  { -19, QT_TRANSLATE_NOOP("CreditCardProcessor", "%1 is not implemented.")					},
+  { -20, QT_TRANSLATE_NOOP("CreditCardProcessor", "The application does not support either Credit Cards or "
 	    "Checks with %1. Please choose a different company.")	}, 
   // preauthorizing charges
-  { -21, TR("The amount to charge must be greater than 0.00.")		},
-  { -24, TR("Could not generate a sequence number while preauthorizing.") },
+  { -21, QT_TRANSLATE_NOOP("CreditCardProcessor", "The amount to charge must be greater than 0.00.")		},
+  { -24, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a sequence number while preauthorizing.") },
 
   // processing charges based on a pre-authorization
-  { -30, TR("Could not find the Credit Card preauthorization to charge.") },
-  { -32, TR("You must select a preauthorization to charge.") 		},
-  { -33, TR("The preauthorization (for %1) is not sufficient to cover "
+  { -30, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find the Credit Card preauthorization to charge.") },
+  { -32, QT_TRANSLATE_NOOP("CreditCardProcessor", "You must select a preauthorization to charge.") 		},
+  { -33, QT_TRANSLATE_NOOP("CreditCardProcessor", "The preauthorization (for %1) is not sufficient to cover "
 		 "the desired transaction amount (%2).")		},
-  { -34, TR("No Preauthorization found")				},
-  { -35, TR("This preauthorization may not be charged. It was created "
+  { -34, QT_TRANSLATE_NOOP("CreditCardProcessor", "No Preauthorization found")				},
+  { -35, QT_TRANSLATE_NOOP("CreditCardProcessor", "This preauthorization may not be charged. It was created "
 	    "for a Sales Order which has been canceled.")	},
 
   // stand-alone charges
-  { -40, TR("Inconsistent data passed to charge(): [%1] [%2]")	},
-  { -44, TR("Could not generate a sequence number while charging.")	},
+  { -40, QT_TRANSLATE_NOOP("CreditCardProcessor", "Inconsistent data passed to charge(): [%1] [%2]")	},
+  { -44, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a sequence number while charging.")	},
 
   // credits
-  { -50, TR("Could not find original Credit Card payment to credit.")	},
+  { -50, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find original Credit Card payment to credit.")	},
 
   // voids
-  { -60, TR("Could not find the Credit Card transaction to void.")	},
+  { -60, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find the Credit Card transaction to void.")	},
 
   // user chose to cancel
-  { -70, TR("User chose not to process the preauthorization.")		},
-  { -71, TR("User chose not to post-authorize process the charge.")	},
-  { -72, TR("User chose not to process the charge.")			},
-  { -73, TR("User chose not to process the credit.")			},
-  { -74, TR("User chose not to process the void.")			},
-  { -75, TR("User chose not to proceed without CVV code.")		},
+  { -70, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the preauthorization.")		},
+  { -71, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to post-authorize process the charge.")	},
+  { -72, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the charge.")			},
+  { -73, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the credit.")			},
+  { -74, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the void.")			},
+  { -75, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to proceed without CVV code.")		},
 
   // scripting errors
-  { -81, TR("Scripting error in %1: Input parameter %2 is not a(n) %3") },
+  { -81, QT_TRANSLATE_NOOP("CreditCardProcessor", "Scripting error in %1: Input parameter %2 is not a(n) %3") },
 
   // transaction was processed fine but was not successful
-  { -90, TR("This Credit Card transaction was denied.\n%1")		},
-  { -91, TR("This Credit Card transaction is a duplicate.\n%1")		},
-  { -92, TR("This Credit Card transaction was declined.\n%1")		},
-  { -93, TR("This Credit Card transaction was denied "
+  { -90, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was denied.\n%1")		},
+  { -91, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction is a duplicate.\n%1")		},
+  { -92, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was declined.\n%1")		},
+  { -93, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was denied "
 	    "because of possible fraud.\n%1")				},
 
   // other misc errors
-  { -94, TR("The Bank Account is not set for Credit Card type %1. Either this "
+  { -94, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Bank Account is not set for Credit Card type %1. Either this "
             "card type is not accepted or the Credit Card configuration is not "
             "complete.")                                                },
-  { -95, TR("The Credit Card Processor returned an error: %1")		},
-  { -96, TR("This transaction failed the CVV check.")			},
-  { -97, TR("This transaction failed the Address Verification check.")	},
-  { -98, TR("You may not process this transaction without a CVV code. "
+  { -95, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card Processor returned an error: %1")		},
+  { -96, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the CVV check.")			},
+  { -97, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the Address Verification check.")	},
+  { -98, QT_TRANSLATE_NOOP("CreditCardProcessor", "You may not process this transaction without a CVV code. "
 	    "Please enter one and try again.")				},
-  { -99, TR("The CVV value is not valid.")				},
-  {-100, TR("No approval code was received:\n%1\n%2\n%3")		},
+  { -99, QT_TRANSLATE_NOOP("CreditCardProcessor", "The CVV value is not valid.")				},
+  {-100, QT_TRANSLATE_NOOP("CreditCardProcessor", "No approval code was received:\n%1\n%2\n%3")		},
 
   // positive values: credit card company successfully processed the
   // transaction but there was a local failure
-  {   1, TR("Database Error")						},
-  {   2, TR("Could not generate a unique key for the ccpay table.")	},
-  {   3, TR("Stored Procedure Error")					},
-  {   4, TR("The Credit Card transaction completed successfully but "
+  {   1, QT_TRANSLATE_NOOP("CreditCardProcessor", "Database Error")						},
+  {   2, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a unique key for the ccpay table.")	},
+  {   3, QT_TRANSLATE_NOOP("CreditCardProcessor", "Stored Procedure Error")					},
+  {   4, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card transaction completed successfully but "
 	    "it was not recorded correctly:\n%1")			},
-  {   5, TR("The Server is %2 and is expected to be %3 in %1 mode, "
+  {   5, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Server is %2 and is expected to be %3 in %1 mode, "
             "while the Port is %4 and is expected to be %5. Credit Card "
             "processing transactions may fail.")                        },
-  {   6, TR("The Server is %2 and is expected to be %3 in %1 mode."
+  {   6, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Server is %2 and is expected to be %3 in %1 mode."
             "Credit Card processing transactions may fail.")            },
-  {   7, TR("The Port is %2 and is expected to be %3 in %1 mode. "
+  {   7, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Port is %2 and is expected to be %3 in %1 mode. "
             "Credit Card processing transactions may fail.")            },
-  {  94, TR("There was a problem printing the credit card receipt.")    },
-  {  96, TR("This transaction failed the CVV check but will be "
+  {  94, QT_TRANSLATE_NOOP("CreditCardProcessor", "There was a problem printing the credit card receipt.")    },
+  {  96, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the CVV check but will be "
 	    "processed anyway.")					},
-  {  97, TR("This transaction failed the Address Verification check "
+  {  97, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the Address Verification check "
 	    "but will be processed anyway.")				},
 
 };
@@ -272,28 +271,28 @@ CreditCardProcessor::CreditCardProcessor()
   _http = 0;
 
   for (unsigned int i = 0; i < sizeof(messages) / sizeof(messages[0]); i++)
-    _msgHash.insert(messages[i].code, messages[i].text);
+    _msgHash.insert(messages[i].code, tr(messages[i].text));
 
-  _avsCodes.append(new FraudCheckResult('A', NoMatch  | PostalCode, TR("Street Address matches but not Postal Code")));
-  _avsCodes.append(new FraudCheckResult('B', NotAvail | Address,    TR("Address not provided for AVS check")));
-  _avsCodes.append(new FraudCheckResult('E', Invalid,               TR("Address Verification error")));
-  _avsCodes.append(new FraudCheckResult('G', Unsupported,           TR("Card issuing bank is not a U.S. bank")));
-  _avsCodes.append(new FraudCheckResult('N', NoMatch | Address | PostalCode, TR("No match on Street Address or Postal Code")));
-  _avsCodes.append(new FraudCheckResult('P', Unsupported,           TR("Address Verification does not apply to this transaction")));
-  _avsCodes.append(new FraudCheckResult('R', ServiceUnavailable,    TR("Retry - system unavailable or timed out")));
-  _avsCodes.append(new FraudCheckResult('S', Unsupported,           TR("Address Verification service not supported")));
-  _avsCodes.append(new FraudCheckResult('U', NotAvail | Address,    TR("Address information not available")));
-  _avsCodes.append(new FraudCheckResult('W', NoMatch  | Address,    TR("9-Digit Postal Code matches but not Street Address")));
-  _avsCodes.append(new FraudCheckResult('X', Match,                 TR("Street Address and 9-digit Postal Code match")));
-  _avsCodes.append(new FraudCheckResult('Y', Match,                 TR("Street Address and 5-digit Postal Code match")));
-  _avsCodes.append(new FraudCheckResult('Z', NoMatch  | Address,    TR("5-Digit Postal Code matches but not Street Address")));
+  _avsCodes.append(new FraudCheckResult('A', NoMatch  | PostalCode, tr("Street Address matches but not Postal Code")));
+  _avsCodes.append(new FraudCheckResult('B', NotAvail | Address,    tr("Address not provided for AVS check")));
+  _avsCodes.append(new FraudCheckResult('E', Invalid,               tr("Address Verification error")));
+  _avsCodes.append(new FraudCheckResult('G', Unsupported,           tr("Card issuing bank is not a U.S. bank")));
+  _avsCodes.append(new FraudCheckResult('N', NoMatch | Address | PostalCode, tr("No match on Street Address or Postal Code")));
+  _avsCodes.append(new FraudCheckResult('P', Unsupported,           tr("Address Verification does not apply to this transaction")));
+  _avsCodes.append(new FraudCheckResult('R', ServiceUnavailable,    tr("Retry - system unavailable or timed out")));
+  _avsCodes.append(new FraudCheckResult('S', Unsupported,           tr("Address Verification service not supported")));
+  _avsCodes.append(new FraudCheckResult('U', NotAvail | Address,    tr("Address information not available")));
+  _avsCodes.append(new FraudCheckResult('W', NoMatch  | Address,    tr("9-Digit Postal Code matches but not Street Address")));
+  _avsCodes.append(new FraudCheckResult('X', Match,                 tr("Street Address and 9-digit Postal Code match")));
+  _avsCodes.append(new FraudCheckResult('Y', Match,                 tr("Street Address and 5-digit Postal Code match")));
+  _avsCodes.append(new FraudCheckResult('Z', NoMatch  | Address,    tr("5-Digit Postal Code matches but not Street Address")));
 
-  _cvvCodes.append(new FraudCheckResult('M', Match,        TR("CVV matches")));
-  _cvvCodes.append(new FraudCheckResult('N', NoMatch,      TR("CVV does not match")));
-  _cvvCodes.append(new FraudCheckResult('P', NotProcessed, TR("CVV was not processed")));
-  _cvvCodes.append(new FraudCheckResult('S', NotAvail,     TR("CVV should be on the card but was not supplied")));
-  _cvvCodes.append(new FraudCheckResult('U', Unsupported,  TR("Card issuing bank was not certified for CVV")));
-  _cvvCodes.append(new FraudCheckResult('X', Unsupported,  TR("Card Verification is not supported for this processor or card type")));
+  _cvvCodes.append(new FraudCheckResult('M', Match,        tr("CVV matches")));
+  _cvvCodes.append(new FraudCheckResult('N', NoMatch,      tr("CVV does not match")));
+  _cvvCodes.append(new FraudCheckResult('P', NotProcessed, tr("CVV was not processed")));
+  _cvvCodes.append(new FraudCheckResult('S', NotAvail,     tr("CVV should be on the card but was not supplied")));
+  _cvvCodes.append(new FraudCheckResult('U', Unsupported,  tr("Card issuing bank was not certified for CVV")));
+  _cvvCodes.append(new FraudCheckResult('X', Unsupported,  tr("Card Verification is not supported for this processor or card type")));
 }
 
 CreditCardProcessor::~CreditCardProcessor()
