@@ -273,7 +273,7 @@ void userPreferences::sSave(bool close)
       if(!affFile.exists() || !dicFile.exists())
       {
         QMessageBox::warning( this, tr("Spell Dictionary Missing"),
-                   tr("The Follow Hunspell Files are Required for spell checking <p>")
+                   tr("The following Hunspell files are required for spell checking: <p>")
                    + fullPathWithoutExt + tr(".aff <p>") + fullPathWithoutExt + tr(".dic"));
       }
   }
