@@ -33,6 +33,9 @@ public:
   displayPrivate(::display * parent) : _parent(parent)
   {
     setupUi(_parent);
+    _print->hide();
+    _preview->hide();
+    _new->hide();
     _queryonstart->hide(); // hide until query on start enabled
     _autoupdate->hide(); // hide until auto update is enabled
     _parameterWidget->hide(); // hide until user shows manually
@@ -132,10 +135,7 @@ public:
     // Determine whether to show toolbar or buttons
     _toolBar->setVisible(useToolbar);
 
-    _new->setHidden(useToolbar);
     _close->setHidden(useToolbar);
-    _print->setHidden(useToolbar);
-    _preview->setHidden(useToolbar);
     _query->setHidden(useToolbar);
 
     if (useToolbar)
@@ -297,13 +297,13 @@ display::display(QWidget* parent, const char* name, Qt::WindowFlags flags)
   _data->_queryBtn->setToolTip(_data->_queryBtn->text() + " " + _data->_queryAct->shortcut().toString(QKeySequence::NativeText));
   _data->_printBtn->setToolTip(_data->_printBtn->text() + " " + _data->_printAct->shortcut().toString(QKeySequence::NativeText));
 
-  connect(_data->_newBtn, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_data->_closeBtn, SIGNAL(clicked()), this, SLOT(close()));
+  connect(_data->_newBtn, SIGNAL(clicked()), _data->_newAct, SLOT(trigger()));
+  connect(_data->_closeBtn, SIGNAL(clicked()), _data->_closeAct, SLOT(trigger()));
   connect(_data->_moreBtn, SIGNAL(clicked(bool)), _data->_parameterWidget, SLOT(setVisible(bool)));
   connect(_data->_moreBtn, SIGNAL(clicked(bool)), filterButton, SLOT(setChecked(bool)));
-  connect(_data->_printBtn, SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_data->_previewBtn, SIGNAL(clicked()), this, SLOT(sPreview()));
-  connect(_data->_queryBtn, SIGNAL(clicked()), this, SLOT(sFillList()));
+  connect(_data->_printBtn, SIGNAL(clicked()), _data->_printAct, SLOT(trigger()));
+  connect(_data->_previewBtn, SIGNAL(clicked()), _data->_previewAct, SLOT(trigger()));
+  connect(_data->_queryBtn, SIGNAL(clicked()), _data->_queryAct, SLOT(trigger()));
   // Connect these two simply so checkbox takes care of pref. memory.  Could separate out later.
   connect(_data->_autoupdate, SIGNAL(toggled(bool)), _data->_autoUpdateAct, SLOT(setChecked(bool)));
   connect(_data->_autoUpdateAct, SIGNAL(triggered(bool)), _data->_autoupdate, SLOT(setChecked(bool)));
@@ -434,9 +434,17 @@ bool display::setParams(ParameterList & params)
 void display::setReportName(const QString & reportName)
 {
   _data->reportName = reportName;
-  _data->_printAct->setVisible(!reportName.isEmpty());
-  _data->_previewAct->setVisible(!reportName.isEmpty());
-  _data->_sep3->setVisible(!reportName.isEmpty());
+  if (_metrics->boolean("DisplaysUseToolbar"))
+  {
+    _data->_printAct->setVisible(!reportName.isEmpty());
+    _data->_previewAct->setVisible(!reportName.isEmpty());
+    _data->_sep3->setVisible(!reportName.isEmpty());
+  }
+  else
+  {
+    _data->_print->setVisible(!reportName.isEmpty());
+    _data->_preview->setVisible(!reportName.isEmpty());
+  }
 }
 
 QString display::reportName() const
@@ -468,8 +476,13 @@ bool display::useAltId() const
 
 void display::setNewVisible(bool show)
 {
-  _data->_newAct->setVisible(show);
-  _data->_sep1->setVisible(show || _data->_closeAct->isVisible());
+  if (_metrics->boolean("DisplaysUseToolbar"))
+  {
+    _data->_newAct->setVisible(show);
+    _data->_sep1->setVisible(show || _data->_closeAct->isVisible());
+  }
+  else
+    _data->_new->setVisible(show);
 }
 
 bool display::newVisible() const
@@ -479,8 +492,13 @@ bool display::newVisible() const
 
 void display::setCloseVisible(bool show)
 {
-  _data->_closeAct->setVisible(show);
-  _data->_sep1->setVisible(show || _data->_newAct->isVisible());
+  if (_metrics->boolean("DisplaysUseToolbar"))
+  {
+    _data->_closeAct->setVisible(show);
+    _data->_sep1->setVisible(show || _data->_newAct->isVisible());
+  }
+  else
+    _data->_close->setVisible(show);
 }
 
 bool display::closeVisible() const
