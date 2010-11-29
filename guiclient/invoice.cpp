@@ -73,6 +73,7 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   _taxzoneidCache = -1;
   _loading = false;
   _freightCache = 0;
+  _posted = false;
 
   _shipTo->setNameVisible(false);
   _shipTo->setDescriptionVisible(false);
@@ -750,6 +751,26 @@ void invoice::populate()
     _miscAmount->setLocalValue(q.value("invchead_misc_amount").toDouble());
 
     _notes->setText(q.value("invchead_notes").toString());
+
+    _posted = q.value("invchead_posted").toBool();
+    if (_posted)
+    {
+      _new->setEnabled(false);
+      disconnect(_invcitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+      disconnect(_invcitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
+      _invoiceNumber->setEnabled(false);
+      _invoiceDate->setEnabled(false);
+      _terms->setEnabled(false);
+      _salesrep->setEnabled(false);
+      _commission->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _shipChrgs->setEnabled(false);
+      _project->setEnabled(false);
+      _miscChargeAccount->setEnabled(false);
+      _miscAmount->setEnabled(false);
+      _freight->setEnabled(false);
+    }
+
     _loading = false;
 
     sFillItemList();
@@ -847,7 +868,6 @@ void invoice::closeEvent(QCloseEvent *pEvent)
 
 void invoice::sTaxDetail()
 {
-  XSqlQuery taxq;
   if (_mode != cView)
   {
     if (!save())
@@ -858,7 +878,7 @@ void invoice::sTaxDetail()
   params.append("order_id", _invcheadid);
   params.append("order_type", "I");
 
-  if (_mode == cView)
+  if (_mode == cView || _posted)
     params.append("mode", "view");
   else if (_mode == cNew || _mode == cEdit)
     params.append("mode", "edit");

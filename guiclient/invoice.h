@@ -71,6 +71,7 @@ private:
     bool        _loading;
     double      _freightCache;
     bool        save();
+    bool        _posted;
 
 };
 
