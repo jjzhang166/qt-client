@@ -3402,8 +3402,9 @@ void salesOrderItem::setItemExtraClause()
 
 void salesOrderItem::sHandleScheduleDate()
 {
-  if ((!_scheduledDate->isValid() ||
-       (_scheduledDate->date() == _dateCache)))
+  if ((_metrics->value("soPriceEffective") != "ScheduleDate") ||
+      (!_scheduledDate->isValid() ||
+      (_scheduledDate->date() == _dateCache)))
     return;
 
   if (_createOrder->isChecked())
