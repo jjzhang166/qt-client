@@ -189,7 +189,7 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   _recurringBuffer->setValue(_metrics->value("RecurringInvoiceBuffer").toInt());
 
-  if (_metrics->boolean("UseJournal"))
+  if (_metrics->boolean("UseJournals"))
   {
     _journal->setChecked(true);
     XSqlQuery qry;
@@ -403,7 +403,7 @@ bool configureGL::sSave()
       subaccounts->setEnabled(FALSE);
   }
 
-  _metrics->set("UseJournal", _journal->isChecked());
+  _metrics->set("UseJournals", _journal->isChecked());
   _metrics->set("YearEndEquityAccount", _yearend->id());
 
   //if (! omfgThis->singleCurrency())
