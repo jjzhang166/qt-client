@@ -173,6 +173,13 @@ enum SetResponse BOM::set(const ParameterList &pParams)
 
 void BOM::sSave()
 {
+  if(_item->id() == -1)
+  {
+    QMessageBox::warning( this, tr("Item Number Required"),
+      tr("You must specify a valid item number to continue."));
+    return;
+  }
+  
   if(_batchSize->text().length() == 0)
     _batchSize->setDouble(1.0);
   else if(_batchSize->toDouble() == 0.0)
