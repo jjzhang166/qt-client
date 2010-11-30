@@ -453,7 +453,10 @@ void setup::save(bool close)
 void setup::setCurrentIndex(const QString &uiName)
 {
   if (_itemMap.contains(uiName) && _itemMap.value(uiName).id >= 0)
+  {
     _tree->setId(_itemMap.value(uiName).id);
+    setCurrentIndex(_tree->currentItem());
+  }
 }
 
 void setup::setCurrentIndex(XTreeWidgetItem* item)
