@@ -658,8 +658,9 @@ void item::sSave()
   if (cEdit == _mode && _itemtype->currentText() != _originalItemType)
   {
     if ((QString(_itemTypes[_itemtype->currentIndex()]) == "R") ||
-        (QString(_itemTypes[_itemtype->currentIndex()]) == "S"))
-	{
+        (QString(_itemTypes[_itemtype->currentIndex()]) == "S") ||
+        (QString(_itemTypes[_itemtype->currentIndex()]) == "T"))
+        {
       q.prepare( "SELECT itemsite_id "
                  "  FROM itemsite "
                  " WHERE ((itemsite_item_id=:item_id) "
