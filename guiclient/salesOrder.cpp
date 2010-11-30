@@ -2580,7 +2580,7 @@ void salesOrder::sFillItemList()
     QString sql = "SELECT coitem_id,"
                   "       CASE WHEN (coitem_status='C') THEN 1"
                   "            WHEN (coitem_status='X') THEN 4"
-                  "            WHEN ( (coitem_status='O') AND ( (COALESCE(SUM(shipitem_qty), 0) > 0) OR (coitem_qtyshipped > 0) ) ) THEN 2"
+                  "            WHEN ( (coitem_status='O') AND ( (qtyAtShipping('SO', coitem_id) > 0) OR (coitem_qtyshipped > 0) ) ) THEN 2"
                   "            ELSE 3"
                   "       END AS closestatus,"
                   "       coitem_scheddate, coitem_qtyord, coitem_price,"
@@ -2615,7 +2615,7 @@ void salesOrder::sFillItemList()
                   "       quom.uom_name AS qty_uom,"
                   "       noNeg(coitem_qtyshipped - coitem_qtyreturned) AS qtyshipped,"
                   "       noNeg(coitem_qtyord - coitem_qtyshipped + coitem_qtyreturned) AS balance,"
-                  "       (COALESCE(SUM(shipitem_qty),0)-coitem_qtyshipped) AS qtyatshipping,"
+                  "       qtyAtShipping('SO', coitem_id) AS qtyatshipping,"
                   "       puom.uom_name AS price_uom,"
                   "       ROUND((coitem_qtyord * coitem_qty_invuomratio) *"
                   "             (coitem_price / coitem_price_invuomratio),2) AS extprice,"
@@ -2627,10 +2627,10 @@ void salesOrder::sFillItemList()
                   "       'curr' AS extprice_xtnumericrole,"
                   "       CASE WHEN fetchMetricBool('EnableSOShipping') AND"
                   "                 coitem_scheddate > CURRENT_DATE AND"
-                  "                 (noNeg(coitem_qtyord) <> COALESCE(SUM(shipitem_qty), 0)) THEN"
+                  "                 (noNeg(coitem_qtyord) <> qtyAtShipping('SO', coitem_id)) THEN"
                   "                 'future'"
                   "            WHEN fetchMetricBool('EnableSOShipping') AND"
-                  "                 (noNeg(coitem_qtyord) <> COALESCE(SUM(shipitem_qty), 0)) THEN"
+                  "                 (noNeg(coitem_qtyord) <> qtyAtShipping('SO', coitem_id)) THEN"
                   "                 'expired'"
                   "            WHEN (coitem_status NOT IN ('C', 'X') AND"
                   "                  EXISTS(SELECT coitem_id"
@@ -2655,38 +2655,22 @@ void salesOrder::sFillItemList()
                   "           END"
                   "         END"
                   "       END AS ordrnumbr"
-                  "  FROM itemsite, item, whsinfo, uom AS quom, uom AS puom,"
-                  "       coitem LEFT OUTER JOIN"
-                  "       (shipitem JOIN shiphead ON (shipitem_shiphead_id=shiphead_id"
-                  "                               AND shiphead_order_id=:cohead_id"
-                  "                               AND shiphead_order_type='SO')) ON (shipitem_orderitem_id=coitem_id)"
+                  "  FROM coitem"
+                  "       JOIN itemsite ON (itemsite_id=coitem_itemsite_id)"
+                  "       JOIN item ON (item_id=itemsite_item_id)"
+                  "       JOIN whsinfo ON (warehous_id=itemsite_warehous_id)"
+                  "       JOIN uom AS quom ON (quom.uom_id=coitem_qty_uom_id)"
+                  "       JOIN uom AS puom ON (puom.uom_id=coitem_price_uom_id)"
                   "       LEFT OUTER JOIN wo ON (coitem_order_id = wo_id)"
                   "       LEFT OUTER JOIN pr ON (coitem_order_id = pr_id)"
                   "       LEFT OUTER JOIN (pohead JOIN poitem ON (pohead_id = poitem_pohead_id))"
-                  "         ON (coitem_order_id = poitem_id) "
-                  " WHERE ( (coitem_itemsite_id=itemsite_id)"
-                  "   AND   (coitem_qty_uom_id=quom.uom_id)"
-                  "   AND   (coitem_price_uom_id=puom.uom_id)"
-                  "   AND   (itemsite_item_id=item_id)"
-                  "   AND   (itemsite_warehous_id=warehous_id)";
+                  "         ON (coitem_order_id = poitem_id)"
+                  " WHERE (coitem_cohead_id=:cohead_id)";
 
     if (!_showCanceled->isChecked())
       sql += " AND (coitem_status != 'X') ";
 
-    sql += " AND (coitem_cohead_id=:cohead_id) ) "
-           "GROUP BY coitem_id, coitem_cohead_id, itemsite_id,"
-           "         itemsite_qtyonhand, coitem_qtyshipped,"
-           "         coitem_linenumber, coitem_subnumber, f_linenumber,"
-           "         item_id, item_number, item_descrip1, item_descrip2,"
-           "         warehous_id, warehous_code, coitem_status, coitem_firm,"
-           "         coitem_qtyord, coitem_qtyreturned,"
-           "         quom.uom_name, puom.uom_name,"
-           "         coitem_price, coitem_scheddate,"
-           "         coitem_qty_invuomratio, coitem_price_invuomratio,"
-           "         coitem_subnumber, coitem_order_type, item_type,"
-           "         wo_number, wo_subnumber, pohead_number,"
-           "         poitem_linenumber, pr_number, pr_subnumber "
-           "ORDER BY coitem_linenumber, coitem_subnumber;";
+    sql += "ORDER BY coitem_linenumber, coitem_subnumber;";
 
     XSqlQuery fl;
     fl.prepare(sql);
@@ -4132,6 +4116,8 @@ void salesOrder::sUnreserveStock()
       return;
     }
   }
+  
+  sFillItemList();
 }
 
 void salesOrder::sShowReservations()
