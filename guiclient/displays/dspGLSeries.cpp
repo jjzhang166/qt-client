@@ -46,6 +46,8 @@ dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WFlags fl)
   if (!_metrics->boolean("UseJournals"))
     _typeGroup->hide();
 
+  _isJournal = false;
+
   _journal->setEnabled(_privileges->boolean("ViewJournals"));
 }
 
@@ -79,7 +81,10 @@ enum SetResponse dspGLSeries::set(const ParameterList &pParams)
 
   param = pParams.value("journal", &valid);
   if(valid)
+  {
+    _typeGroup->show();
     _journal->setChecked(true);
+  }
 
   sFillList();
 
@@ -129,13 +134,16 @@ void dspGLSeries::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem*, int)
     }
   }
 
-  menuItem = pMenu->addAction(tr("Edit Journal..."), this, SLOT(sEdit()));
-  menuItem->setEnabled(editable);
+  if (!_isJournal)
+  {
+    menuItem = pMenu->addAction(tr("Edit Journal..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(editable);
 
-  menuItem = pMenu->addAction(tr("Delete Journal..."), this, SLOT(sDelete()));
-  menuItem->setEnabled(deletable);
+    menuItem = pMenu->addAction(tr("Delete Journal..."), this, SLOT(sDelete()));
+    menuItem->setEnabled(deletable);
 
-  pMenu->addSeparator();
+    pMenu->addSeparator();
+  }
 
   menuItem = pMenu->addAction(tr("Reverse Journal..."), this, SLOT(sReverse()));
   menuItem->setEnabled(reversible);
@@ -174,12 +182,14 @@ bool dspGLSeries::setParams(ParameterList &params)
   {
     params.append("title",tr("Journal Series"));
     params.append("table", "sltrans");
+    _isJournal=true;
   }
   else
   {
     params.append("title",tr("General Ledger Series"));
     params.append("gltrans", true);
     params.append("table", "gltrans");
+    _isJournal=false;
   }
 
   return true;

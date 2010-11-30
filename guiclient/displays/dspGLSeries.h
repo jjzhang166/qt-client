@@ -37,6 +37,9 @@ public slots:
 protected slots:
     virtual void languageChange();
 
+private:
+    bool _isJournal;
+
 };
 
 #endif // DSPGLSERIES_H

@@ -47,17 +47,21 @@ enum SetResponse reverseGLSeries::set( const ParameterList & pParams )
   {
     _glseries = param.toInt();
     
-    q.prepare("SELECT gltrans_journalnumber, gltrans_date "
+    q.prepare("SELECT gltrans_journalnumber AS journalnumber, gltrans_date AS transdate "
               "FROM gltrans "
-              "WHERE (gltrans_sequence=:glseries); " );
+              "WHERE (gltrans_sequence=:glseries) "
+              "UNION "
+              "SELECT sltrans_journalnumber AS journalnumber, sltrans_date AS transdate "
+              "FROM sltrans "
+              "WHERE (sltrans_sequence=:glseries); " );
     q.bindValue(":glseries", _glseries);
     q.exec();
     if(q.first())
     {
       _notes->setText(tr("Reversal for Journal #") +
-                      q.value("gltrans_journalnumber").toString());
-      _journalNum->setText(q.value("gltrans_journalnumber").toString());
-      _distDate->setDate(q.value("gltrans_date").toDate());
+                      q.value("journalnumber").toString());
+      _journalNum->setText(q.value("journalnumber").toString());
+      _distDate->setDate(q.value("transdate").toDate());
     }
     else
     {
