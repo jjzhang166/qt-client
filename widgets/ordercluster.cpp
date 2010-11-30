@@ -325,76 +325,63 @@ void OrderLineEdit::sParse()
 
     if (! _parsed)
     {
+      _parsed = TRUE;
       QString stripped = text().trimmed().toUpper();
       if (stripped.length() == 0)
       {
-        _parsed = TRUE;
         setId(-1);
       }
       else
-      {
-        XSqlQuery countQ;
-        countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (TRUE) " + _numClause +
-                        (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
-                        (_hasActive ? _activeClause : "" ) + QString(";"));
-        countQ.bindValue(":number", "^" + stripped);
-        countQ.exec(); 
-        if(countQ.first())
+      { 
+        XSqlQuery numQ;
+        numQ.prepare(_query + _numClause +
+                    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
+                    (_hasActive ? _activeClause : "" ) +
+                    QString("ORDER BY %1 LIMIT 1;").arg(_numColName));
+        numQ.bindValue(":number", "^" + stripped);
+        numQ.exec();
+        if(numQ.first())
         {
+          // Check for other active orders with the same number
+          XSqlQuery countQ;
+          countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (TRUE) " + _numClause +
+                          (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
+                          (_hasActive ? _activeClause : "" ) + QString(";"));
+          countQ.bindValue(":number", numQ.value("number").toString());
+          countQ.exec();
+          countQ.first();
           int result = countQ.value("count").toInt();
           if (result <= 0)
-            clear();
+            setId(-1);
           else if (result == 1)
           {
-
-            XSqlQuery numQ;
-            numQ.prepare(_query + _numClause +
-                        (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
-                        (_hasActive ? _activeClause : "" ) +
-                        QString("ORDER BY %1 LIMIT 1;").arg(_numColName));
-            numQ.bindValue(":number", "^" + stripped);
-            numQ.exec();
-            if (numQ.first())
-            {
-                _valid = true;
-                setId(numQ.value("id").toInt(), numQ.value("name").toString());
-                _name = (numQ.value("name").toString());
-                _description = numQ.value("description").toString();
-                _from = numQ.value("orderhead_from").toString();
-                _to	= numQ.value("orderhead_to").toString();
-            }
-            else
-            {
-              clear();
-              if (numQ.lastError().type() != QSqlError::NoError)
-                  QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-                                                .arg(__FILE__)
-                                                .arg(__LINE__),
-                          numQ.lastError().databaseText());
-            }
+            _valid = true;
+            setId(numQ.value("id").toInt(), numQ.value("name").toString());
+            _name = (numQ.value("name").toString());
+            _description = numQ.value("description").toString();
+            _from = numQ.value("orderhead_from").toString();
+            _to	= numQ.value("orderhead_to").toString();
           }
           else
           {
-            _extraClause += "AND (orderhead_number='" + stripped + "')";
+            setText(numQ.value("number").toString());
             sEllipses();
-            _extraClause += "AND (orderhead_type='" + type() + "')";
           }
         }
         else
         {
-          clear();
-          if (countQ.lastError().type() != QSqlError::NoError)
+          setId(-1);
+          if (numQ.lastError().type() != QSqlError::NoError)
               QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
                                             .arg(__FILE__)
                                             .arg(__LINE__),
-                      countQ.lastError().databaseText());
+                      numQ.lastError().databaseText());
         }
       }
       emit valid(_valid);
       emit parsed();
       emit numberChanged(text(), _name);
     }
-    _parsed = TRUE;
 }
 
 void OrderLineEdit::sList()
@@ -724,9 +711,6 @@ void OrderLineEdit::setCustId(int pId)
 
 void OrderLineEdit::setId(const int pId, const QString &pType)
 {
-  if (pId == _id && pType == _name)
-      return;
-
   // Release any previous lock
   unlock();
 
