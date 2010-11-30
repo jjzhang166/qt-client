@@ -354,6 +354,7 @@ FORMS =   absoluteCalendarItem.ui               \
           postCountTags.ui              \
           postCreditMemos.ui            \
           postInvoices.ui                       \
+          postJournals.ui                       \
           postMiscProduction.ui                 \
           postPoReturnCreditMemo.ui             \
           postProduction.ui                     \
@@ -361,7 +362,6 @@ FORMS =   absoluteCalendarItem.ui               \
           postPurchaseOrdersByAgent.ui          \
           postStandardJournal.ui                \
           postStandardJournalGroup.ui           \
-          postSubLedger.ui                      \
           postVouchers.ui                       \
           prepareCheckRun.ui                    \
           priceList.ui                          \
@@ -917,6 +917,7 @@ HEADERS = ../common/format.h                    \
           postCountTags.h               \
           postCreditMemos.h             \
           postInvoices.h                \
+          postJournals.h                \
           postMiscProduction.h          \
           postPoReturnCreditMemo.h      \
           postProduction.h              \
@@ -924,7 +925,6 @@ HEADERS = ../common/format.h                    \
           postPurchaseOrdersByAgent.h   \
           postStandardJournal.h         \
           postStandardJournalGroup.h    \
-          postSubLedger.h               \
           postVouchers.h                \
           prepareCheckRun.h             \
           priceList.h                   \
@@ -1501,6 +1501,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           postCountTags.cpp             \
           postCreditMemos.cpp           \
           postInvoices.cpp                      \
+          postJournals.cpp                      \
           postMiscProduction.cpp                \
           postPoReturnCreditMemo.cpp            \
           postProduction.cpp                    \
@@ -1508,7 +1509,6 @@ SOURCES = absoluteCalendarItem.cpp              \
           postPurchaseOrdersByAgent.cpp         \
           postStandardJournal.cpp               \
           postStandardJournalGroup.cpp          \
-          postSubLedger.cpp                     \
           postVouchers.cpp                      \
           prepareCheckRun.cpp                   \
           priceList.cpp                         \

@@ -32,7 +32,7 @@ public slots:
     virtual void sEdit();
     virtual void sDelete(bool edited = false);
     virtual void sPost();
-    virtual void sViewSubledger();
+    virtual void sViewJournal();
 
 protected slots:
     virtual void languageChange();

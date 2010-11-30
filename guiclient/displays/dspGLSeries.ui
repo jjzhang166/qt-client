@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>495</width>
-    <height>198</height>
+    <width>544</width>
+    <height>238</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,9 +196,9 @@ to be bound by its terms.</comment>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="1" column="0">
-             <widget class="QRadioButton" name="_subLedger">
+             <widget class="QRadioButton" name="_journal">
               <property name="text">
-               <string>Subledger</string>
+               <string>Journal</string>
               </property>
              </widget>
             </item>

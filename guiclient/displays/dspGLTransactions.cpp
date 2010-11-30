@@ -30,7 +30,7 @@
 #include "dspWoHistoryByNumber.h"
 #include "transactionInformation.h"
 #include "storedProcErrorLookup.h"
-#include "dspSubLedger.h"
+#include "dspJournals.h"
 
 dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WFlags fl)
   : display(parent, "dspGLTransactions", fl)
@@ -80,9 +80,9 @@ dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WFlags fl
 
   list()->addColumn(tr("Date"),      _dateColumn,    Qt::AlignCenter, true, "gltrans_date");
   list()->addColumn(tr("Source"),    _orderColumn,   Qt::AlignCenter, true, "gltrans_source");
-  list()->addColumn(tr("Doc. Type"), _docTypeColumn, Qt::AlignCenter, true, "gltrans_doctype");
+  list()->addColumn(tr("Doc. Type"), _docTypeColumn, Qt::AlignCenter, !_metrics->boolean("UseJournals"), "gltrans_doctype");
   list()->addColumn(tr("Doc. #"),    _orderColumn,   Qt::AlignCenter, true, "docnumber");
-  list()->addColumn(tr("Reference"), -1,             Qt::AlignLeft,   true, "notes");
+  list()->addColumn(tr("Reference"), -1,             Qt::AlignLeft,   !_metrics->boolean("UseJournals"), "notes");
   list()->addColumn(tr("Journal #"),  _orderColumn,   Qt::AlignLeft,   false,"gltrans_journalnumber");
   list()->addColumn(tr("Account"),   -1,             Qt::AlignLeft,   true, "account");
   list()->addColumn(tr("Debit"),     _moneyColumn,   Qt::AlignRight,  true, "debit");
@@ -200,8 +200,8 @@ void dspGLTransactions::sPopulateMenu(QMenu * menuThis, QTreeWidgetItem* pItem, 
     menuThis->addAction(tr("View Sales Order..."), this, SLOT(sViewDocument()));
   else if(item->rawValue("gltrans_doctype").toString() == "WO")
     menuThis->addAction(tr("View WO History..."), this, SLOT(sViewDocument()));
-  else if(item->rawValue("gltrans_doctype").toString() == "SL")
-    menuThis->addAction(tr("View Subledger..."), this, SLOT(sViewSubledger()));
+  else if(item->rawValue("gltrans_doctype").toString() == "JP")
+    menuThis->addAction(tr("View Journal..."), this, SLOT(sViewJournal()));
   else if(item->rawValue("gltrans_source").toString() == "I/M")
     menuThis->addAction(tr("View Inventory History..."), this, SLOT(sViewDocument()));
 }
@@ -537,7 +537,7 @@ void dspGLTransactions::sViewDocument()
   }
 }
 
-void dspGLTransactions::sViewSubledger()
+void dspGLTransactions::sViewJournal()
 {
   ParameterList params;
 
@@ -547,7 +547,7 @@ void dspGLTransactions::sViewSubledger()
   params.append("accnt_id", list()->altId());
   params.append("run");
 
-  dspSubLedger *newdlg = new dspSubLedger();
+  dspJournals *newdlg = new dspJournals();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }

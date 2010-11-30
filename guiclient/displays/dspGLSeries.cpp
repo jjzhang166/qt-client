@@ -21,7 +21,7 @@
 #include "mqlutil.h"
 
 #include "reverseGLSeries.h"
-#include "dspSubLedger.h"
+#include "dspJournals.h"
 
 dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WFlags fl)
   : display(parent, "dspGLSeries", fl)
@@ -43,10 +43,10 @@ dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Credit"),_bigMoneyColumn, Qt::AlignRight, true, "credit");
   list()->addColumn(tr("Posted"),      _ynColumn, Qt::AlignCenter,true, "posted");
 
-  if (!_metrics->boolean("UseSubLedger"))
+  if (!_metrics->boolean("UseJournals"))
     _typeGroup->hide();
 
-  _subLedger->setEnabled(_privileges->boolean("ViewSubLedger"));
+  _journal->setEnabled(_privileges->boolean("ViewJournals"));
 }
 
 void dspGLSeries::languageChange()
@@ -77,9 +77,9 @@ enum SetResponse dspGLSeries::set(const ParameterList &pParams)
     _endJrnlnum->setText(param.toString());
   }
 
-  param = pParams.value("subledger", &valid);
+  param = pParams.value("journal", &valid);
   if(valid)
-    _subLedger->setChecked(true);
+    _journal->setChecked(true);
 
   sFillList();
 
@@ -100,10 +100,10 @@ void dspGLSeries::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem*, int)
       item = (XTreeWidgetItem*)item->QTreeWidgetItem::parent();
     if(0 != item)
     {
-      if (_subLedger->isChecked() && !item->rawValue("posted").toBool())
+      if (_journal->isChecked() && !item->rawValue("posted").toBool())
       {
         menuItem = pMenu->addAction(tr("Post..."), this, SLOT(sPost()));
-        menuItem->setEnabled(_privileges->check("PostSubLedger"));
+        menuItem->setEnabled(_privileges->check("PostJournals"));
 
         return;
       }
@@ -123,7 +123,7 @@ void dspGLSeries::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem*, int)
           editable = _privileges->check("EditPostedJournals") &&
                      item->rawValue("doctype").toString() == "JE";
           deletable = (_privileges->check("DeletePostedJournals") &&
-                       (reversible || item->rawValue("doctype").toString() == "SL"));
+                       (reversible || item->rawValue("doctype").toString() == "JP"));
         }
       }
     }
@@ -140,11 +140,11 @@ void dspGLSeries::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem*, int)
   menuItem = pMenu->addAction(tr("Reverse Journal..."), this, SLOT(sReverse()));
   menuItem->setEnabled(reversible);
 
-  if (item->rawValue("doctype").toString() == "SL")
+  if (item->rawValue("doctype").toString() == "JP")
   {
     pMenu->addSeparator();
-    menuItem = pMenu->addAction(tr("View Subledger..."), this, SLOT(sViewSubledger()));
-    menuItem->setEnabled(_privileges->check("ViewSubLedger"));
+    menuItem = pMenu->addAction(tr("View Journal..."), this, SLOT(sViewJournal()));
+    menuItem->setEnabled(_privileges->check("ViewJournals"));
   }
 
 }
@@ -170,9 +170,9 @@ bool dspGLSeries::setParams(ParameterList &params)
     params.append("endJrnlnum", _endJrnlnum->text().toInt());
   }
 
-  if (_subLedger->isChecked())
+  if (_journal->isChecked())
   {
-    params.append("title",tr("Subledger Series"));
+    params.append("title",tr("Journal Series"));
     params.append("table", "sltrans");
   }
   else
@@ -261,7 +261,7 @@ void dspGLSeries::sPost()
 {
   ParameterList params;
   params.append("sequence", list()->id());
-  MetaSQLQuery mql = mqlLoad("glseries", "postsubledger");
+  MetaSQLQuery mql = mqlLoad("glseries", "postjournal");
   XSqlQuery qry = mql.toQuery(params);
   if (qry.lastError().type() != QSqlError::NoError)
   {
@@ -271,7 +271,7 @@ void dspGLSeries::sPost()
   sFillList();
 }
 
-void dspGLSeries::sViewSubledger()
+void dspGLSeries::sViewJournal()
 {
   ParameterList params;
 
@@ -286,7 +286,7 @@ void dspGLSeries::sViewSubledger()
   }
   params.append("run");
 
-  dspSubLedger *newdlg = new dspSubLedger();
+  dspJournals *newdlg = new dspJournals();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }

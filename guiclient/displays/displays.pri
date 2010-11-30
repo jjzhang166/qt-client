@@ -235,6 +235,7 @@ HEADERS += displays/dspAllocations.h \
            displays/dspItemSourcesByVendor.h \
            displays/dspItemsWithoutItemSources.h \
            displays/dspJobCosting.h \
+           displays/dspJournals.h \
            displays/dspMaterialUsageVarianceByBOMItem.h \
            displays/dspMaterialUsageVarianceByComponentItem.h \
            displays/dspMaterialUsageVarianceByItem.h \
@@ -293,7 +294,6 @@ HEADERS += displays/dspAllocations.h \
            displays/dspSingleLevelWhereUsed.h \
            displays/dspSlowMovingInventoryByClassCode.h \
            displays/dspStandardJournalHistory.h \
-           displays/dspSubLedger.h \
            displays/dspSubstituteAvailabilityByItem.h \
            displays/dspSummarizedBacklogByWarehouse.h \
            displays/dspSummarizedBankrecHistory.h \
@@ -417,6 +417,7 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspItemSourcesByVendor.cpp \
            displays/dspItemsWithoutItemSources.cpp \
            displays/dspJobCosting.cpp \
+           displays/dspJournals.cpp \
            displays/dspMaterialUsageVarianceByBOMItem.cpp \
            displays/dspMaterialUsageVarianceByComponentItem.cpp \
            displays/dspMaterialUsageVarianceByItem.cpp \
@@ -475,7 +476,6 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspSingleLevelWhereUsed.cpp \
            displays/dspSlowMovingInventoryByClassCode.cpp \
            displays/dspStandardJournalHistory.cpp \
-           displays/dspSubLedger.cpp \
            displays/dspSubstituteAvailabilityByItem.cpp \
            displays/dspSummarizedBacklogByWarehouse.cpp \
            displays/dspSummarizedBankrecHistory.cpp \

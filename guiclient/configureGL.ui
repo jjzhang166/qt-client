@@ -251,13 +251,13 @@ to be bound by its terms.</comment>
        <item row="2" column="0">
         <widget class="QGroupBox" name="_postGroup">
          <property name="title">
-          <string>Module Journals Post to</string>
+          <string>Transactions Post to</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_14">
           <item row="1" column="0">
-           <widget class="QRadioButton" name="_subLedger">
+           <widget class="QRadioButton" name="_journal">
             <property name="text">
-             <string>Subledger</string>
+             <string>Journal</string>
             </property>
            </widget>
           </item>
@@ -1313,7 +1313,7 @@ to be bound by its terms.</comment>
   <tabstop>_useSubaccounts</tabstop>
   <tabstop>_subaccountSize</tabstop>
   <tabstop>_ffSubaccounts</tabstop>
-  <tabstop>_subLedger</tabstop>
+  <tabstop>_journal</tabstop>
   <tabstop>_mandatoryNotes</tabstop>
   <tabstop>_manualFwdUpdate</tabstop>
   <tabstop>_yearend</tabstop>

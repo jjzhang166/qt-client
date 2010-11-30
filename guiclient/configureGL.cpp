@@ -189,9 +189,9 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   _recurringBuffer->setValue(_metrics->value("RecurringInvoiceBuffer").toInt());
 
-  if (_metrics->boolean("UseSubLedger"))
+  if (_metrics->boolean("UseJournal"))
   {
-    _subLedger->setChecked(true);
+    _journal->setChecked(true);
     XSqlQuery qry;
     qry.exec("SELECT count(sltrans_id) > 0 AS result FROM sltrans WHERE (NOT sltrans_posted);");
     qry.first();
@@ -403,7 +403,7 @@ bool configureGL::sSave()
       subaccounts->setEnabled(FALSE);
   }
 
-  _metrics->set("UseSubLedger", _subLedger->isChecked());
+  _metrics->set("UseJournal", _journal->isChecked());
   _metrics->set("YearEndEquityAccount", _yearend->id());
 
   //if (! omfgThis->singleCurrency())

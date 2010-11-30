@@ -33,7 +33,7 @@ public slots:
     virtual void sViewTrans();
     virtual void sViewSeries();
     virtual void sViewDocument();
-    virtual void sViewSubledger();
+    virtual void sViewJournal();
 
 protected slots:
     virtual void languageChange();

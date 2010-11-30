@@ -92,7 +92,7 @@
 #include "standardJournalGroups.h"
 #include "postStandardJournal.h"
 #include "postStandardJournalGroup.h"
-#include "postSubLedger.h"
+#include "postJournals.h"
 #include "dspStandardJournalHistory.h"
 
 #include "financialLayouts.h"
@@ -103,7 +103,7 @@
 #include "dspSummarizedGLTransactions.h"
 #include "dspGLSeries.h"
 #include "dspTrialBalances.h"
-#include "dspSubLedger.h"
+#include "dspJournals.h"
 
 #include "companies.h"
 #include "profitCenters.h"
@@ -360,8 +360,8 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "gl.postStandardJournal",	     tr("&Post..."),	   SLOT(sPostStandardJournal()),     glStandardJournalsMenu, "PostStandardJournals",	      NULL, NULL, true, NULL },
     { "gl.postStandardJournalGroup", tr("Post G&roup..."), SLOT(sPostStandardJournalGroup()),glStandardJournalsMenu, "PostStandardJournalGroups",    NULL, NULL, true, NULL },
 
-    { "separator",		     NULL,				   NULL,  glMenu, "true",					      NULL, NULL, _metrics->boolean("UseSubLedger"), NULL },
-    { "gl.postSubLedger",   tr("&Post Subledger..."),	   SLOT(sPostSubLedger()), glMenu, "PostSubLedger",	      NULL, NULL, _metrics->boolean("UseSubLedger"), NULL },
+    { "separator",		     NULL,				   NULL,  glMenu, "true",					      NULL, NULL, _metrics->boolean("UseJournals"), NULL },
+    { "gl.postJournals",   tr("&Post Journals to Ledger..."),	   SLOT(sPostJournals()), glMenu, "PostJournals",	      NULL, NULL, _metrics->boolean("UseJournals"), NULL },
 
 
     { "separator", NULL, NULL, glMenu, "true", NULL, NULL, true, NULL },
@@ -372,8 +372,8 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "gl.dspSummarizedGLTransactions",	tr("Su&mmarized Transactions..."),	SLOT(sDspSummarizedGLTransactions()),	glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
     { "gl.dspGLSeries",			tr("&Series..."),			SLOT(sDspGLSeries()),			glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
     { "gl.dspStandardJournalHistory",	tr("Standard &Journal History..."),	SLOT(sDspStandardJournalHistory()),	glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
-    { "separator", NULL, NULL, glReportsMenu, "true", NULL, NULL, _metrics->boolean("UseSubLedger"), NULL },
-    { "gl.dspSubLedger",	tr("Subledger..."),	SLOT(sDspSubLedger()),	glReportsMenu, "ViewSubLedger",	NULL, NULL, _metrics->boolean("UseSubLedger"), NULL },
+    { "separator", NULL, NULL, glReportsMenu, "true", NULL, NULL, _metrics->boolean("UseJournals"), NULL },
+    { "gl.dspJournals",	tr("Journals..."),	SLOT(sDspJournals()),	glReportsMenu, "ViewJournals",	NULL, NULL, _metrics->boolean("UseJournals"), NULL },
 
     { "menu",			tr("&Bank Reconciliation"), 	(char*)bankrecMenu,		mainMenu,    "true",						NULL, NULL, true, NULL },
     { "gl.reconcileBankaccnt",	tr("&Reconcile..."),SLOT(sReconcileBankaccount()),	bankrecMenu, "MaintainBankRec", QPixmap(":/images/bankReconciliation.png"), toolBar,  true, tr("Reconcile Bank Account") },
@@ -913,9 +913,9 @@ void menuAccounting::sPostStandardJournalGroup()
   postStandardJournalGroup(parent, "", TRUE).exec();
 }
 
-void menuAccounting::sPostSubLedger()
+void menuAccounting::sPostJournals()
 {
-  omfgThis->handleNewWindow(new postSubLedger());
+  omfgThis->handleNewWindow(new postJournals());
 }
 
 void menuAccounting::sSimpleEntry()
@@ -981,9 +981,9 @@ void menuAccounting::sDspGLSeries()
   omfgThis->handleNewWindow(new dspGLSeries());
 }
 
-void menuAccounting::sDspSubLedger()
+void menuAccounting::sDspJournals()
 {
-  omfgThis->handleNewWindow(new dspSubLedger());
+  omfgThis->handleNewWindow(new dspJournals());
 }
 
 void menuAccounting::sDspStandardJournalHistory()
