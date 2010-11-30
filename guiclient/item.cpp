@@ -48,6 +48,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   _notes->setSpellEnable(true); 
 
   _mode=0;
+  _itemid = -1;
   
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
