@@ -86,6 +86,8 @@ void unpostedPoReceipts::setParams(ParameterList & params)
   params.append("na",		tr("N/A"));
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
+  if (_metrics->boolean("EnableReturnAuth"))
+    params.append("EnableReturnAuth");
 }
 
 void unpostedPoReceipts::sPrint()

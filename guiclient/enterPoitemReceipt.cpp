@@ -176,6 +176,8 @@ void enterPoitemReceipt::populate()
 
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
+  if (_metrics->boolean("EnableReturnAuth"))
+    params.append("EnableReturnAuth");
 
   // NOTE: this crashes if popm is defined and toQuery() is called outside the blocks
   if (_mode == cNew)
