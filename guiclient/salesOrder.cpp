@@ -631,6 +631,14 @@ bool salesOrder::save(bool partial)
     return FALSE;
   }
 
+  if ( (!_shipDate->isValid()) && (_metrics->value("soPriceEffective") == "ScheduleDate") )
+  {
+    QMessageBox::warning( this, tr("Cannot Save Sales Order"),
+                              tr("You must enter an Scheduled Date for this order before you may save it.") );
+    _shipDate->setFocus();
+    return FALSE;
+  }
+
   if (!_cust->isValid())
   {
     QMessageBox::warning( this, tr("Cannot Save Sales Order"),
