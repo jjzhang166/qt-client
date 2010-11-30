@@ -870,7 +870,7 @@ void workOrder::sFillList()
     "    FROM indentedwo(:wo_id, :showops, :showmatl, :showindent) ");
   q.prepare(sql);
   q.bindValue(":wo_id", _woid);
-  q.bindValue(":showops", QVariant(_showOperations->isChecked()));
+  q.bindValue(":showops", QVariant(_showOperations->isVisible() && _showOperations->isChecked()));
   q.bindValue(":showmatl", QVariant(_showMaterials->isChecked()));
   q.bindValue(":showindent", QVariant(_indented->isChecked()));
   q.exec();
