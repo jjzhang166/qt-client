@@ -233,69 +233,68 @@ void dspMRPDetail::sFillMRPDetail()
 
   _mrp->setColumnCount(1);
 
-  ParameterList params;
-  int           counter = 1;
-  bool          show    = FALSE;
   QList<XTreeWidgetItem*> selected = _periods->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
     XTreeWidgetItem *cursor = (XTreeWidgetItem*)selected[i];
-    params.append("cursorId", cursor->id());
-    params.append("counter", counter);
-
-
     _mrp->addColumn(formatDate(((PeriodListViewItem *)cursor)->startDate()), _qtyColumn, Qt::AlignRight);
-    counter++;
-
-    show = TRUE;
   }
 
-  if (show)
+  XTreeWidgetItem *qoh;
+  XTreeWidgetItem *allocations;
+  XTreeWidgetItem *orders;
+  XTreeWidgetItem *availability;
+  XTreeWidgetItem *firmedAllocations;
+  XTreeWidgetItem *firmedOrders;
+  XTreeWidgetItem *firmedAvailability;
+  double        runningAvailability = 0.0;
+  double	runningFirmed = 0.0;
+  int           counter = 0;
+
+  for (int i = 0; i < selected.size(); i++)
   {
-    MetaSQLQuery mql = mqlLoad("mrpDetail", "detail");
+    XTreeWidgetItem *cursor = (XTreeWidgetItem*)selected[i];
+    counter++;
+    ParameterList params;
+    params.append("cursorId", cursor->id());
+    params.append("counter", counter);
     params.append("itemsite_id", _itemsite->id());
+
+    MetaSQLQuery mql = mqlLoad("mrpDetail", "detail");
     q = mql.toQuery(params);
     if (q.first())
     {
-      XTreeWidgetItem *qoh;
-      XTreeWidgetItem *allocations;
-      XTreeWidgetItem *orders;
-      XTreeWidgetItem *availability;
-      XTreeWidgetItem *firmedAllocations;
-      XTreeWidgetItem *firmedOrders;
-      XTreeWidgetItem *firmedAvailability;
-      double        runningAvailability;
-      double	    runningFirmed;
-
-      runningFirmed = q.value("firmedorders1").toDouble();
-      runningAvailability = (q.value("itemsite_qtyonhand").toDouble() - q.value("allocations1").toDouble() + q.value("orders1").toDouble());
-
-      qoh                = new XTreeWidgetItem(_mrp, 0, QVariant(tr("Projected QOH")), q.value("f_qoh"));
-      allocations        = new XTreeWidgetItem(_mrp, qoh, 0, QVariant(tr("Allocations")), formatQty(q.value("allocations1").toDouble()));
-      orders             = new XTreeWidgetItem(_mrp, allocations,  0, QVariant(tr("Orders")), formatQty(q.value("orders1").toDouble()));
-      availability       = new XTreeWidgetItem(_mrp, orders, 0, QVariant(tr("Availability")), formatQty(runningAvailability));
-      firmedAllocations  = new XTreeWidgetItem(_mrp, availability, 0, QVariant(tr("Firmed Allocations")), formatQty(q.value("firmedallocations1").toDouble()));
-      firmedOrders       = new XTreeWidgetItem(_mrp, firmedAllocations, 0, QVariant(tr("Firmed Orders")), formatQty(runningFirmed));
-      firmedAvailability = new XTreeWidgetItem(_mrp, firmedOrders, 0, QVariant(tr("Firmed Availability")), formatQty( runningAvailability -
-                                                                                                          q.value("firmedallocations1").toDouble() +
-                                                                                                          runningFirmed ) );
-                       
-      for (int bucketCounter = 2; bucketCounter < counter; bucketCounter++)
+      if (counter == 1)
       {
-        qoh->setText(bucketCounter, formatQty(runningAvailability));
-        allocations->setText(bucketCounter, formatQty(q.value(QString("allocations%1").arg(bucketCounter)).toDouble()));
-        orders->setText(bucketCounter, formatQty(q.value(QString("orders%1").arg(bucketCounter)).toDouble()));
+        runningFirmed = q.value("firmedorders1").toDouble();
+        runningAvailability = (q.value("itemsite_qtyonhand").toDouble() - q.value("allocations1").toDouble() + q.value("orders1").toDouble());
 
-        runningAvailability =  ( runningAvailability - q.value(QString("allocations%1").arg(bucketCounter)).toDouble() +
-                                                       q.value(QString("orders%1").arg(bucketCounter)).toDouble() );
-        availability->setText(bucketCounter, formatQty(runningAvailability));
+        qoh                = new XTreeWidgetItem(_mrp, 0, QVariant(tr("Projected QOH")), q.value("f_qoh"));
+        allocations        = new XTreeWidgetItem(_mrp, qoh, 0, QVariant(tr("Allocations")), formatQty(q.value("allocations1").toDouble()));
+        orders             = new XTreeWidgetItem(_mrp, allocations,  0, QVariant(tr("Orders")), formatQty(q.value("orders1").toDouble()));
+        availability       = new XTreeWidgetItem(_mrp, orders, 0, QVariant(tr("Availability")), formatQty(runningAvailability));
+        firmedAllocations  = new XTreeWidgetItem(_mrp, availability, 0, QVariant(tr("Firmed Allocations")), formatQty(q.value("firmedallocations1").toDouble()));
+        firmedOrders       = new XTreeWidgetItem(_mrp, firmedAllocations, 0, QVariant(tr("Firmed Orders")), formatQty(runningFirmed));
+        firmedAvailability = new XTreeWidgetItem(_mrp, firmedOrders, 0, QVariant(tr("Firmed Availability")), formatQty( runningAvailability -
+                                                                                                            q.value("firmedallocations1").toDouble() +
+                                                                                                            runningFirmed ) );
+      }
+      else
+      {
+        qoh->setText(counter, formatQty(runningAvailability));
+        allocations->setText(counter, formatQty(q.value(QString("allocations%1").arg(counter)).toDouble()));
+        orders->setText(counter, formatQty(q.value(QString("orders%1").arg(counter)).toDouble()));
 
-        firmedAllocations->setText(bucketCounter, formatQty(q.value(QString("firmedallocations%1").arg(bucketCounter)).toDouble()));
+        runningAvailability =  ( runningAvailability - q.value(QString("allocations%1").arg(counter)).toDouble() +
+                                                       q.value(QString("orders%1").arg(counter)).toDouble() );
+        availability->setText(counter, formatQty(runningAvailability));
 
-        runningFirmed += q.value(QString("firmedorders%1").arg(bucketCounter)).toDouble();
-        firmedOrders->setText(bucketCounter, formatQty(runningFirmed));
-        firmedAvailability->setText(bucketCounter, formatQty( runningAvailability -
-                                                              q.value(QString("firmedallocations%1").arg(bucketCounter)).toDouble() +
+        firmedAllocations->setText(counter, formatQty(q.value(QString("firmedallocations%1").arg(counter)).toDouble()));
+
+        runningFirmed += q.value(QString("firmedorders%1").arg(counter)).toDouble();
+        firmedOrders->setText(counter, formatQty(runningFirmed));
+        firmedAvailability->setText(counter, formatQty( runningAvailability -
+                                                              q.value(QString("firmedallocations%1").arg(counter)).toDouble() +
                                                               runningFirmed ) );
       }
     }
