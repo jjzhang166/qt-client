@@ -68,7 +68,7 @@ configureCRM::configureCRM(QWidget* parent, const char* name, bool /*modal*/, Qt
   if (_metrics->boolean("EnableBatchManager"))
   {
     _incdtEmailProfile->populate("SELECT ediprofile_id, ediprofile_name "
-                                 "FROM ediprofile "
+                                 "FROM xtbatch.ediprofile "
                                  "WHERE (ediprofile_type='email');");
     _incdtEmailProfile->setId(_metrics->value("CRMIncidentEmailProfile").toInt());
     _incdtCreated->setChecked(_metrics->boolean("CRMIncidentEmailCreated"));

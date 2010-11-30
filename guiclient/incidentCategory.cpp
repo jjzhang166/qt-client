@@ -39,7 +39,7 @@ incidentCategory::incidentCategory(QWidget* parent, const char* name, bool modal
     }
     else
       _ediprofile->populate("SELECT ediprofile_id, ediprofile_name "
-                            "FROM ediprofile "
+                            "FROM xtbatch.ediprofile "
                             "WHERE (ediprofile_type='email');");
 }
 
