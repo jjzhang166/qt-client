@@ -1204,12 +1204,10 @@ void XTreeWidget::populateCalculatedColumns()
           subtotals[set] = topLevelItem(row)->data(col, Xt::RunningInitRole).toDouble();
         subtotals[set] += topLevelItem(row)->data(col, Xt::RawRole).toDouble();
 
-        // only update if necessary, reducing (slow) calls to recalculate row height
-        int scale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
-        float maxdiff = pow(10.0, 0 - scale);
-        if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) > maxdiff)
-          topLevelItem(row)->setData(col, Qt::DisplayRole,
-                                     QLocale().toString(subtotals[set], 'f', scale));
+        // setData apparently knows if the value hasn't changed
+        topLevelItem(row)->setData(col, Qt::DisplayRole,
+                                   QLocale().toString(subtotals[set], 'f',
+                                                      topLevelItem(row)->data(col, Xt::ScaleRole).toInt()));
       }
     }
     else if (headerItem()->data(col, Qt::UserRole).toString() == "xttotalrole")
