@@ -1194,7 +1194,10 @@ void salesOrderItem::sSave()
       {
         idx1 = _itemchar->index(i, CHAR_ID);
         idx2 = _itemchar->index(i, CHAR_VALUE);
-        q.bindValue(":target_type", "W");
+        if (_createPO)
+          q.bindValue(":target_type", "PI");
+        else
+          q.bindValue(":target_type", "W");
         q.bindValue(":target_id", _orderId);
         q.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
         q.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
