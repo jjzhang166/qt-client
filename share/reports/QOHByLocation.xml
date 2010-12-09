@@ -14,32 +14,16 @@
   <sql>SELECT (location_name||'-'||firstLine(location_descrip)) AS f_location,
        formatBoolYN(location_netable) AS f_netable,
        formatBoolYN(location_restrict) AS f_restricted,
-       warehous_code
+       warehous_code,
+       formatDate(&lt;? value("asOf") ?>) AS asofdate
   FROM location, warehous
  WHERE ((location_warehous_id=warehous_id)
        AND (location_id=&lt;? value("location_id") ?>) );</sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT itemloc_id, warehous_code, item_number, item_descrip1, item_descrip2,
-       formatlotserialnumber(itemloc_ls_id) AS itemloc_lotserial, uom_name, formatQty(itemloc_qty) AS f_qoh
-FROM itemloc, itemsite, warehous, item, uom
-WHERE ((itemloc_itemsite_id=itemsite_id)
- AND (itemsite_item_id=item_id)
- AND (item_inv_uom_id=uom_id)
- AND (itemsite_warehous_id=warehous_id)
- AND (itemloc_location_id=&lt;? value("location_id") ?>))
-
-UNION SELECT -1, warehous_code, item_number, item_descrip1, item_descrip2,
-             'N/A', uom_name, formatQty(itemsite_qtyonhand)
-FROM itemsite, warehous, item, uom
-WHERE ((itemsite_item_id=item_id)
- AND (item_inv_uom_id=uom_id)
- AND (itemsite_warehous_id=warehous_id)
- AND (NOT itemsite_loccntrl)
- AND (itemsite_location_id=&lt;? value("location_id") ?>))
-
-ORDER BY item_number;</sql>
+  <mqlgroup>qoh</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>234</height>
@@ -302,6 +286,41 @@ ORDER BY item_number;</sql>
    <vcenter/>
    <string>Location:</string>
   </label>
+  <field>
+   <rect>
+    <x>130</x>
+    <y>160</y>
+    <width>200</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>asofdate</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>45</x>
+    <y>160</y>
+    <width>80</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>As of:</string>
+  </label>
  </rpthead>
  <pghead>
   <firstpage/>
@@ -422,25 +441,6 @@ ORDER BY item_number;</sql>
    <height>51</height>
    <field>
     <rect>
-     <x>85</x>
-     <y>30</y>
-     <width>400</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>item_descrip2</column>
-    </data>
-   </field>
-   <field>
-    <rect>
      <x>320</x>
      <y>0</y>
      <width>230</width>
@@ -455,7 +455,7 @@ ORDER BY item_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>itemloc_lotserial</column>
+     <column>f_lotserial</column>
     </data>
    </field>
    <field>
@@ -507,7 +507,7 @@ ORDER BY item_number;</sql>
     <rect>
      <x>85</x>
      <y>15</y>
-     <width>400</width>
+     <width>526</width>
      <height>15</height>
     </rect>
     <font>
@@ -519,7 +519,7 @@ ORDER BY item_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>item_descrip1</column>
+     <column>f_descrip</column>
     </data>
    </field>
    <field>
@@ -557,8 +557,9 @@ ORDER BY item_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_qoh</column>
+     <column>qoh</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
   </detail>
  </section>

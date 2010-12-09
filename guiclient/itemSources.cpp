@@ -10,63 +10,34 @@
 
 #include "itemSources.h"
 
-#include <QVariant>
-#include <QMessageBox>
-//#include <QStatusBar>
+#include <QAction>
 #include <QMenu>
+#include <QMessageBox>
+#include <QVariant>
+
 #include <metasql.h>
 #include <parameter.h>
 #include <openreports.h>
+
 #include "itemSource.h"
 
-/*
- *  Constructs a itemSources as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 itemSources::itemSources(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-//    (void)statusBar();
+  connect(_close,       SIGNAL(clicked()), this, SLOT(close()));
+  connect(_copy,        SIGNAL(clicked()), this, SLOT(sCopy()));
+  connect(_delete,      SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_edit,        SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_itemsrc, SIGNAL(populateMenu(QMenu*, XTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*)));
+  connect(_itemsrc,   SIGNAL(valid(bool)),_view, SLOT(setEnabled(bool)));
+  connect(_new,         SIGNAL(clicked()), this, SLOT(sNew()));
+  connect(_print,       SIGNAL(clicked()), this, SLOT(sPrint()));
+  connect(_searchFor, SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
+  connect(_showInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
 
-    // signals and slots connections
-    connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-    connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
-    connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(_itemsrc, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
-    connect(_searchFor, SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
-    connect(_showInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-itemSources::~itemSources()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void itemSources::languageChange()
-{
-    retranslateUi(this);
-}
-
-
-void itemSources::init()
-{
-//  statusBar()->hide();
-  
   _itemsrc->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft, true, "item_number" );
   _itemsrc->addColumn(tr("Description"), -1,          Qt::AlignLeft, true, "item_descrip" );
   _itemsrc->addColumn(tr("Vendor"),      _itemColumn, Qt::AlignLeft, true, "vend_name" );
@@ -89,6 +60,16 @@ void itemSources::init()
 
   sFillList();
   _searchFor->setFocus();
+}
+
+itemSources::~itemSources()
+{
+  // no need to delete child widgets, Qt does it all for us
+}
+
+void itemSources::languageChange()
+{
+  retranslateUi(this);
 }
 
 void itemSources::sPrint()
@@ -161,10 +142,12 @@ void itemSources::sDelete()
   {
     if (q.value("itemsrc_active").toBool())
     {
-      if (QMessageBox::question( this, tr("Delete Item Source"),
-                                    tr( "This item source is used by existing purchase order records"
-                                    " and may not be deleted.  Would you like to deactivate it instead?"),
-                                    tr("&Ok"), tr("&Cancel"), 0, 0, 1 ) == 0  )
+      if (QMessageBox::question(this, tr("Delete Item Source"),
+                                tr("<p>This item source is used by existing "
+                                   "purchase order records and may not be "
+                                   "deleted. Would you like to deactivate it "
+                                   "instead?"),
+                                QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
       {
         q.prepare( "UPDATE itemsrc SET "
                    "  itemsrc_active=false "
@@ -176,8 +159,9 @@ void itemSources::sDelete()
       }
     }
     else
-      QMessageBox::critical( this, tr("Delete Item Source"), tr("This item source is used by existing "
-                          "purchase order records and may not be deleted."));
+      QMessageBox::critical(this, tr("Delete Item Source"),
+                            tr("<p>This item source is used by existing "
+                               "purchase order records and may not be deleted."));
     return;
   }
             
@@ -189,10 +173,12 @@ void itemSources::sDelete()
   q.exec();
   if (q.first())
   {
-    if (QMessageBox::information( this, tr("Delete Item Source"),
-                                  tr( "Are you sure that you want to delete the Item Source for %1?")
+    if (QMessageBox::question(this, tr("Delete Item Source"),
+                              tr( "Are you sure that you want to delete the "
+                                 "Item Source for %1?")
                                   .arg(q.value("item_number").toString()),
-                                  tr("&Delete"), tr("&Cancel"), 0, 0, 1 ) == 0  )
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No) == QMessageBox::Yes)
     {
       q.prepare( "DELETE FROM itemsrc "
                  "WHERE (itemsrc_id=:itemsrc_id);"
@@ -208,19 +194,16 @@ void itemSources::sDelete()
 
 void itemSources::sPopulateMenu(QMenu *menuThis)
 {
-  int intMenuItem;
+  QAction *menuItem;
 
-  intMenuItem = menuThis->insertItem(tr("Edit Item Source..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainItemSource"))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = menuThis->addAction(tr("Edit Item Source..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
 
-  intMenuItem = menuThis->insertItem(tr("View Item Source..."), this, SLOT(sView()), 0);
-  if ((!_privileges->check("MaintainItemSource")) && (!_privileges->check("ViewItemSource")))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = menuThis->addAction(tr("View Item Source..."), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSources") || _privileges->check("ViewItemSource"));
 
-  intMenuItem = menuThis->insertItem(tr("Delete Item Source..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainItemSource"))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = menuThis->addAction(tr("Delete Item Source..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
 }
 
 void itemSources::sFillList()
@@ -242,11 +225,7 @@ void itemSources::sFillList()
 
   MetaSQLQuery mql(sql);
   q = mql.toQuery(params);
-
-  if (q.first())
-    _itemsrc->populate(q);
-  else
-    _itemsrc->clear();
+  _itemsrc->populate(q);
 }
 
 void itemSources::sSearch( const QString &pTarget )

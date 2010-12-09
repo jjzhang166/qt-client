@@ -146,9 +146,6 @@ class menuInventory : public QObject
 
     void sWarehouses();
     void sWarehouseLocations();
-    void sSiteTypes();
-    void sCostCategories();
-    void sExpenseCategories();
 
     void sDspUnbalancedQOHByClassCode();
     void sUpdateABCClass();
@@ -165,7 +162,8 @@ class menuInventory : public QObject
 
     void sCatchLocationContents(int);
     void sCatchCountTag(int);
-    void sCharacteristics();
+
+    void sSetup();
 
   private:
     GUIClient *parent;
@@ -199,7 +197,6 @@ class menuInventory : public QObject
     QMenu *reportsItemUsgMenu;
     QMenu *reportsBacklogMenu;
     QMenu *reportsShipmentsMenu;
-    QMenu *masterInfoMenu;
     QMenu *utilitiesMenu;
     QMenu *updateItemInfoMenu;
     QMenu *updateItemInfoReorderMenu;

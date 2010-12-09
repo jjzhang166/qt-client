@@ -146,35 +146,22 @@ class menuSales : public QObject
     void sPrintSASpecialCalendarForm();
 
     void sNewCustomer();
-    void sSearchForCustomer();
     void sCustomers();
     void sCustomerWorkbench();
     void sUpdateCreditStatusByCustomer();
     void sCustomerGroups();
-    void sCustomerTypes();
     void sNewProspect();
-    void sSearchForProspect();
     void sProspects();
-    void sSalesReps();
-    void sShippingZones();
-    void sShipVias();
-    void sShippingChargeTypes();
-    void sTaxCodes();
-    void sTerms();
-    void sShippingForms();
-    void sSalesAccountAssignments();
-    void sARAccountAssignments();
-    void sCustomerFormAssignments();
-    void sSalesCategories();
 
     void sDspCustomerInformationExport();
     void sReassignCustomerTypeByCustomerType();
-    void sCharacteristics();
     
     void sArchiveSalesHistory();
     void sRestoreSalesHistory();
 
     void sAllocateReservations();
+
+    void sSetup();
 
   private:
     GUIClient *parent;
@@ -209,7 +196,6 @@ class menuSales : public QObject
     QMenu *reportsCustomersMenu;
     QMenu *reportsInvAvailMenu;
     QMenu *reportsBacklogMenu;
-    QMenu *masterInfoMenu;
     QMenu *utilitiesMenu;
     
     void	addActionsToMenu(actionProperties [], unsigned int);

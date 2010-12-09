@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QSqlError>
 
 freightClass::freightClass(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
@@ -21,9 +22,9 @@ freightClass::freightClass(QWidget* parent, const char* name, bool modal, Qt::WF
 
 
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_freightClass, SIGNAL(lostFocus()), this, SLOT(sCheck()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 freightClass::~freightClass()
@@ -56,14 +57,14 @@ enum SetResponse freightClass::set(const ParameterList &pParams)
     {
       _mode = cNew;
 
-      _save->setEnabled(FALSE);
+      _buttonBox->button(QDialogButtonBox::Save)->setEnabled(FALSE);
       _freightClass->setFocus();
     }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -71,10 +72,9 @@ enum SetResponse freightClass::set(const ParameterList &pParams)
 
       _freightClass->setEnabled(FALSE);
       _description->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -146,7 +146,8 @@ void freightClass::sCheck()
       _freightClass->setEnabled(FALSE);
     }
   }
-  _save->setEnabled(TRUE);
+
+  _buttonBox->button(QDialogButtonBox::Save)->setEnabled(TRUE);
 }
 
 void freightClass::populate()

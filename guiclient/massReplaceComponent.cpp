@@ -65,6 +65,12 @@ void massReplaceComponent::sReplace()
 {
   if (_original->isValid() && _replacement->isValid() && _effective->isValid())
   {
+    if (_original->uom() != _replacement->uom())
+    {
+      QMessageBox::critical( this, tr("Mass Replace"),
+        tr("The original and replacement Items must have the same Unit of Measure.") );
+      return;
+    }
     if (_metrics->boolean("RevControl"))
     {
       q.prepare("SELECT * "

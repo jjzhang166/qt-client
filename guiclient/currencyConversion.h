@@ -25,7 +25,7 @@ public:
     currencyConversion(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~currencyConversion();
 
-    virtual SetResponse set( ParameterList & pParams );
+    virtual SetResponse set(const ParameterList & pParams);
 
 public slots:
     virtual void _sClose();

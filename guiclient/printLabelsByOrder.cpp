@@ -123,5 +123,5 @@ void printLabelsByOrder::sPrint()
 
 void printLabelsByOrder::sSetToMin(int pValue)
 {
-  _labelTo->setMinValue(pValue);
+  _labelTo->setMinimum(pValue);
 }

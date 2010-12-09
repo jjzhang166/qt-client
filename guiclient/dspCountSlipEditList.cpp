@@ -10,6 +10,7 @@
 
 #include "dspCountSlipEditList.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -18,6 +19,9 @@
 #include <openreports.h>
 #include "countTagList.h"
 #include "countSlip.h"
+
+#include <metasql.h>
+#include "mqlutil.h"
 
 dspCountSlipEditList::dspCountSlipEditList(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -109,20 +113,17 @@ void dspCountSlipEditList::sPrint()
 
 void dspCountSlipEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (((XTreeWidgetItem *)pSelected)->rawValue("cntslip_posted") == 0)
   {
-    menuItem = pMenu->insertItem("Edit Count Slip...", this, SLOT(sEdit()), 0);
+    menuItem = pMenu->addAction("Edit Count Slip...", this, SLOT(sEdit()));
     if (!_privileges->check("EnterCountSlips"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-  }
+      menuItem->setEnabled(false);
 
-  if (((XTreeWidgetItem *)pSelected)->altId() == 0)
-  {
-    menuItem = pMenu->insertItem("Post Count Slip...", this, SLOT(sPost()), 0);
+    menuItem = pMenu->addAction("Post Count Slip", this, SLOT(sPost()));
     if (!_privileges->check("PostCountSlips"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
   }
 }
 
@@ -220,30 +221,11 @@ void dspCountSlipEditList::populate()
 
 void dspCountSlipEditList::sFillList()
 {
-  q.prepare( "SELECT cntslip_id,"
-             "       CASE WHEN (cntslip_posted) THEN 1"
-             "            ELSE 0"
-             "       END,"
-             "       cntslip_username AS user, cntslip_number,"
-             "       CASE WHEN (cntslip_location_id=-1) THEN ''"
-             "            ELSE formatLocationName(cntslip_location_id)"
-             "       END AS locname,"
-             "       cntslip_lotserial, cntslip_posted,"
-             "       cntslip_entered, cntslip_qty,"
-             "       'qty' AS cntslip_qty_xtnumericrole "
-             "FROM cntslip, invcnt "
-             "WHERE ( (cntslip_cnttag_id=invcnt_id)"
-             "    AND (NOT invcnt_posted)"
-             "    AND (invcnt_id=:cnttag_id) ) "
-             "ORDER BY cntslip_number;" );
-  q.bindValue(":cnttag_id", _cnttagid);
-  q.exec();
-  _cntslip->populate(q, TRUE);
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
+  MetaSQLQuery mql = mqlLoad("countSlip", "detail");
+  ParameterList params;
+  params.append("cnttag_id", _cnttagid);
+  q = mql.toQuery(params);
+  _cntslip->populate(q);
 }
 
 void dspCountSlipEditList::sHandleButtons(bool valid)

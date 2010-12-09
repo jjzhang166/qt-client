@@ -3,6 +3,12 @@
  <title>Packing List</title>
  <name>PackingList</name>
  <description>Hybrid Packing List - use the shiphead_id if it is passed but use the order id and type if they're passed but not shiphead_id - Shows Lot/Serial</description>
+ <grid>
+  <snap/>
+  <show/>
+  <x>0.05</x>
+  <y>0.05</y>
+ </grid>
  <size>Letter</size>
  <portrait/>
  <topmargin>25</topmargin>
@@ -227,34 +233,72 @@ WHERE ((image_name='logo'));</sql>
  </querysource>
  <querysource>
   <name>lotdetail</name>
-  <sql>SELECT
-shiphead_number AS cosmisc_number,
-(orderhead_number || '-' || orderitem_linenumber) AS ordernumber,
-item_number,
-formatlotserialnumber(invdetail_ls_id) AS invdetail_lotserial,
-SUM(invdetail_qty) * -1 AS lotqty,
-SUM(invhist_invqty) as totalshipmentqty,
-invhist_transtype,
-formatdate(MAX(invhist_transdate)) AS invhistdate,
-formatdate(MAX(shipitem_transdate)) AS shiptransdate
-FROM shiphead,shipitem,invhist,invdetail,orderhead,orderitem,itemsite,item
-WHERE ( (shiphead_id = &lt;? value("cosmisc_id") ?> )
-AND (shipitem_shiphead_id=shiphead_id)
-AND (invhist_id=shipitem_invhist_id)
-AND (invdetail_invhist_id=invhist_id)
-AND (orderhead_type=shiphead_order_type)
-AND (orderhead_id=shiphead_order_id)
-AND (orderitem_orderhead_type=shiphead_order_type)
-AND (orderitem_id=shipitem_orderitem_id)
-AND (itemsite_id=orderitem_itemsite_id)
-AND (item_id=itemsite_item_id)
-)
-GROUP BY shiphead_number,orderhead_number,item_number,invdetail_ls_id,
-orderitem_linenumber,invhist_transtype
+  <sql>SELECT * FROM 
+(
+  SELECT
+    shiphead_number AS cosmisc_number,
+    (cohead_number || '-' || coitem_linenumber) AS ordernumber,
+    item_number,
+    formatlotserialnumber(invdetail_ls_id) AS invdetail_lotserial,
+    SUM(invdetail_qty) * -1 AS lotqty,
+    SUM(invhist_invqty) as totalshipmentqty,
+    invhist_transtype,
+    formatdate(MAX(invhist_transdate)) AS invhistdate,
+    formatdate(MAX(shipitem_transdate)) AS shiptransdate
+  FROM shiphead
+    JOIN shipitem ON (shipitem_shiphead_id=shiphead_id)
+    JOIN invhist ON (invhist_id=shipitem_invhist_id)
+    JOIN invdetail ON (invdetail_invhist_id=invhist_id)
+    JOIN cohead ON (cohead_id=shiphead_order_id)
+    JOIN coitem ON (coitem_id=shipitem_orderitem_id)
+    JOIN itemsite ON (itemsite_id=coitem_itemsite_id)
+    JOIN item ON (item_id=itemsite_item_id)
+  WHERE ( (shiphead_id = &lt;? value("shiphead_id") ?> )
+    AND ('SO'=shiphead_order_type) )
+  GROUP BY shiphead_number,cohead_number,item_number,invdetail_ls_id,
+    coitem_linenumber,invhist_transtype
+&lt;? if exists("MultiWhs") ?>
+UNION
+  SELECT
+    shiphead_number AS cosmisc_number,
+    (tohead_number || '-' || toitem_linenumber) AS ordernumber,
+    item_number,
+    formatlotserialnumber(invdetail_ls_id) AS invdetail_lotserial,
+    SUM(invdetail_qty) * -1 AS lotqty,
+    SUM(invhist_invqty) as totalshipmentqty,
+    invhist_transtype,
+    formatdate(MAX(invhist_transdate)) AS invhistdate,
+    formatdate(MAX(shipitem_transdate)) AS shiptransdate
+  FROM shiphead
+    JOIN shipitem ON (shipitem_shiphead_id=shiphead_id)
+    JOIN invhist ON (invhist_id=shipitem_invhist_id)
+    JOIN invdetail ON (invdetail_invhist_id=invhist_id)
+    JOIN tohead ON (tohead_id=shiphead_order_id)
+    JOIN toitem ON (toitem_id=shipitem_orderitem_id)
+    JOIN item ON (item_id=toitem_item_id)
+  WHERE ( (shiphead_id = &lt;? value("shiphead_id") ?> )
+    AND ('TO'=shiphead_order_type) )
+  GROUP BY shiphead_number,tohead_number,item_number,invdetail_ls_id,
+    toitem_linenumber,invhist_transtype
+&lt;? endif ?>
+) data
 ORDER BY ordernumber;</sql>
  </querysource>
  <rpthead>
   <height>451</height>
+  <image>
+   <rect>
+    <x>375</x>
+    <y>0</y>
+    <width>425</width>
+    <height>100</height>
+   </rect>
+   <mode>stretch</mode>
+   <data>
+    <query>logo</query>
+    <column>image_data</column>
+   </data>
+  </image>
   <barcode>
    <rect>
     <x>375</x>
@@ -411,19 +455,6 @@ ORDER BY ordernumber;</sql>
     <column>cust_number</column>
    </data>
   </barcode>
-  <image>
-   <rect>
-    <x>375</x>
-    <y>0</y>
-    <width>425</width>
-    <height>100</height>
-   </rect>
-   <mode>stretch</mode>
-   <data>
-    <query>logo</query>
-    <column>image_data</column>
-   </data>
-  </image>
   <text>
    <rect>
     <x>480</x>

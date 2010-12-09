@@ -3,7 +3,7 @@
  <title>Picking List SO With Locations</title>
  <name>PickingListSOLocsNoClosedLines</name>
  <description>This report definition shows location / lot / serial information on an SO Pick List.  If the item is not Location Controlled it shows the contents of its Location Comment in the corresponding Item Site record.</description>
- <parameter default="3349" active="true" listtype="static" type="string" name="sohead_id" >
+ <parameter default="3349" active="true" listtype="static" type="string" name="sohead_id">
   <description></description>
  </parameter>
  <size>Letter</size>
@@ -67,9 +67,11 @@
        formatlotserialnumber(itemloc_ls_id),
        formatDate(itemloc_expiration, 'N/A') AS expiration,
        itemloc_qty AS location_qty_qty,
-	   CASE WHEN (fetchMetricBool('EnableSOReservationsByLocation')) THEN formatQty(qtyReservedLocation(itemloc_id, 'SO', coitem_id))
-	        ELSE formatQty(0)
-       END AS location_reserved_qty,
+&lt;? if exists("EnableSOReservationsByLocation") 
+       formatQty(qtyReservedLocation(itemloc_id, 'SO', coitem_id)) AS location_reserved_qty,
+&lt;? else ?>
+       formatQty(0) AS location_reserved_qty,
+&lt;? endif ?>
        itemuomtouomratio(item_id,item_inv_uom_id, coitem_qty_uom_id) * itemloc_qty AS loc_issue_uom_qty,
        formatqty(itemuomtouomratio(item_id,item_inv_uom_id, coitem_qty_uom_id) * itemloc_qty) AS loc_issue_uom_fmt,
        coitemuom.uom_name AS uom_name,
@@ -462,6 +464,7 @@ WHERE ((image_name='logo'));</sql>
    <format>3of9</format>
    <maxlength>10</maxlength>
    <left/>
+   <narrowBarWidth>0.01</narrowBarWidth>
    <data>
     <query>head</query>
     <column>cust_number</column>
@@ -477,6 +480,7 @@ WHERE ((image_name='logo'));</sql>
    <format>128</format>
    <maxlength>10</maxlength>
    <left/>
+   <narrowBarWidth>0.01</narrowBarWidth>
    <data>
     <query>head</query>
     <column>order_barcode</column>
@@ -745,6 +749,7 @@ WHERE ((image_name='logo'));</sql>
    <format>3of9</format>
    <maxlength>20</maxlength>
    <left/>
+   <narrowBarWidth>0.01</narrowBarWidth>
    <data>
     <query>head</query>
     <column>cohead_custponumber</column>
@@ -861,6 +866,7 @@ WHERE ((image_name='logo'));</sql>
      <format>128</format>
      <maxlength>15</maxlength>
      <left/>
+     <narrowBarWidth>0.01</narrowBarWidth>
      <data>
       <query>detail</query>
       <column>item_barcode</column>
@@ -1235,7 +1241,8 @@ WHERE ((image_name='logo'));</sql>
       <query>detail</query>
       <column>loc_issue_uom_qty</column>
      </data>
-     <tracktotal subtotal="true" builtin="true" >qty</tracktotal>
+     <format builtin="true">qty</format>
+     <tracktotal subtotal="true"/>
     </field>
     <field>
      <rect>

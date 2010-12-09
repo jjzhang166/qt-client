@@ -63,6 +63,7 @@ protected slots:
 
 
 private:
+    int _vendid;
     int _voheadid;
     int _mode;
 

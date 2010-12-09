@@ -9,24 +9,13 @@
  <bottommargin>50</bottommargin>
  <rightmargin>50</rightmargin>
  <leftmargin>50</leftmargin>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT crmacct_number,
-       crmacct_name,
-       CASE WHEN crmacct_cust_id IS NULL THEN '' ELSE 'Y' END AS f_cust,
-       CASE WHEN crmacct_prospect_id IS NULL THEN '' ELSE 'Y' END AS f_prospect,
-       CASE WHEN crmacct_vend_id IS NULL THEN '' ELSE 'Y' END AS f_vend,
-       CASE WHEN crmacct_competitor_id IS NULL THEN '' ELSE 'Y' END AS f_competitor,
-       CASE WHEN crmacct_partner_id IS NULL THEN '' ELSE 'Y' END AS f_partner,
-       CASE WHEN crmacct_taxauth_id IS NULL THEN '' ELSE 'Y' END AS f_taxauth
-  FROM crmacct
-&lt;? if exists("activeOnly") ?>
- WHERE crmacct_active
-&lt;? endif ?>
-ORDER BY crmacct_number;</sql>
+  <mqlgroup>crmaccounts</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
-  <height>76</height>
+  <height>90</height>
   <label>
    <rect>
     <x>115</x>
@@ -76,10 +65,10 @@ ORDER BY crmacct_number;</sql>
    <string>Tax Auth</string>
   </label>
   <line>
-   <xstart>5</xstart>
-   <ystart>70</ystart>
-   <xend>745</xend>
-   <yend>70</yend>
+   <xstart>5.76465</xstart>
+   <ystart>85.2931</ystart>
+   <xend>745.765</xend>
+   <yend>85.2931</yend>
    <weight>2</weight>
   </line>
   <label>
@@ -148,7 +137,7 @@ ORDER BY crmacct_number;</sql>
   </label>
   <label>
    <rect>
-    <x>485</x>
+    <x>484.235</x>
     <y>55</y>
     <width>60</width>
     <height>15</height>
@@ -178,13 +167,61 @@ ORDER BY crmacct_number;</sql>
    <vcenter/>
    <string>Account #</string>
   </label>
+  <label>
+   <rect>
+    <x>114</x>
+    <y>69.3233</y>
+    <width>95</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Contact Name</string>
+  </label>
+  <label>
+   <rect>
+    <x>301</x>
+    <y>69.3233</y>
+    <width>60</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Phone</string>
+  </label>
+  <label>
+   <rect>
+    <x>420.823</x>
+    <y>69.3233</y>
+    <width>60</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Email</string>
+  </label>
  </rpthead>
  <pghead>
   <firstpage/>
   <height>6</height>
  </pghead>
  <pghead>
-  <height>21</height>
+  <height>34</height>
   <label>
    <rect>
     <x>10</x>
@@ -234,10 +271,10 @@ ORDER BY crmacct_number;</sql>
    <string>Account Name</string>
   </label>
   <line>
-   <xstart>5</xstart>
-   <ystart>15</ystart>
-   <xend>745</xend>
-   <yend>15</yend>
+   <xstart>4.23535</xstart>
+   <ystart>30.2931</ystart>
+   <xend>744.235</xend>
+   <yend>30.2931</yend>
    <weight>2</weight>
   </line>
   <label>
@@ -258,7 +295,7 @@ ORDER BY crmacct_number;</sql>
   </label>
   <label>
    <rect>
-    <x>680</x>
+    <x>678.471</x>
     <y>0</y>
     <width>60</width>
     <height>15</height>
@@ -275,7 +312,7 @@ ORDER BY crmacct_number;</sql>
   <label>
    <rect>
     <x>485</x>
-    <y>0</y>
+    <y>-7.10543e-15</y>
     <width>60</width>
     <height>15</height>
    </rect>
@@ -320,6 +357,54 @@ ORDER BY crmacct_number;</sql>
    <vcenter/>
    <string>Competitor</string>
   </label>
+  <label>
+   <rect>
+    <x>114.637</x>
+    <y>13.8197</y>
+    <width>95</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Contact Name</string>
+  </label>
+  <label>
+   <rect>
+    <x>301</x>
+    <y>13.7586</y>
+    <width>60</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Phone</string>
+  </label>
+  <label>
+   <rect>
+    <x>418.235</x>
+    <y>13.7586</y>
+    <width>60</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <string>Email</string>
+  </label>
  </pghead>
  <section>
   <name>detail</name>
@@ -327,7 +412,7 @@ ORDER BY crmacct_number;</sql>
    <key>
     <query>detail</query>
    </key>
-   <height>18</height>
+   <height>32</height>
    <field>
     <rect>
      <x>550</x>
@@ -344,7 +429,7 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_competitor</column>
+     <column>competitor</column>
     </data>
    </field>
    <field>
@@ -382,12 +467,12 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_partner</column>
+     <column>partner</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>419</x>
+     <x>418.235</x>
      <y>0</y>
      <width>60</width>
      <height>15</height>
@@ -401,7 +486,7 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_prospect</column>
+     <column>prospect</column>
     </data>
    </field>
    <field>
@@ -439,7 +524,7 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_taxauth</column>
+     <column>taxauth</column>
     </data>
    </field>
    <field>
@@ -458,7 +543,7 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_cust</column>
+     <column>cust</column>
     </data>
    </field>
    <field>
@@ -477,7 +562,64 @@ ORDER BY crmacct_number;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_vend</column>
+     <column>vend</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>302.941</x>
+     <y>15.3526</y>
+     <width>100</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>cntct_phone</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>115</x>
+     <y>14.6293</y>
+     <width>185</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>cntct_name</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>417.941</x>
+     <y>14.6647</y>
+     <width>100</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <left/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>cntct_email</column>
     </data>
    </field>
   </detail>

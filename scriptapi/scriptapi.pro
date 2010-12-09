@@ -25,6 +25,7 @@ HEADERS += setupscriptapi.h \
     qactionproto.h \
     qboxlayoutproto.h \
     qbytearrayproto.h \
+    qdialogbuttonboxproto.h \
     qdialogsetup.h \
     qdockwidgetproto.h \
     qdomattrproto.h \
@@ -59,6 +60,7 @@ HEADERS += setupscriptapi.h \
     qnetworkreplyproto.h \
     qnetworkrequestproto.h \
     qprinterproto.h \
+    qpushbuttonproto.h \
     qsizepolicyproto.h \
     qspaceritemproto.h \
     qsqldatabaseproto.h \
@@ -94,19 +96,17 @@ HEADERS += setupscriptapi.h \
     orderlineeditsetup.h \
     parametereditproto.h \
     parametergroupsetup.h \
-    polineeditsetup.h \
     projectlineeditsetup.h \
     ralineeditsetup.h \
     revisionlineeditsetup.h \
     screensetup.h \
     shipmentclusterlineeditsetup.h \
-    solineeditsetup.h \
-    tolineeditsetup.h \
     vendorgroupsetup.h \
     wcomboboxsetup.h \
     womatlclustersetup.h \
     xdateeditsetup.h \
     xsqltablenodeproto.h \
+    xt.h \
     xvariantsetup.h
 
 SOURCES += setupscriptapi.cpp \
@@ -117,6 +117,7 @@ SOURCES += setupscriptapi.cpp \
     qactionproto.cpp \
     qboxlayoutproto.cpp \
     qbytearrayproto.cpp \
+    qdialogbuttonboxproto.cpp \
     qdialogsetup.cpp \
     qdockwidgetproto.cpp \
     qdomattrproto.cpp \
@@ -151,6 +152,7 @@ SOURCES += setupscriptapi.cpp \
     qnetworkreplyproto.cpp \
     qnetworkrequestproto.cpp \
     qprinterproto.cpp \
+    qpushbuttonproto.cpp \
     qsizepolicyproto.cpp \
     qspaceritemproto.cpp \
     qsqldatabaseproto.cpp \
@@ -186,19 +188,17 @@ SOURCES += setupscriptapi.cpp \
     orderlineeditsetup.cpp \
     parametereditproto.cpp \
     parametergroupsetup.cpp \
-    polineeditsetup.cpp \
     projectlineeditsetup.cpp \
     ralineeditsetup.cpp \
     revisionlineeditsetup.cpp \
     screensetup.cpp \
     shipmentclusterlineeditsetup.cpp \
-    solineeditsetup.cpp \
-    tolineeditsetup.cpp \
     vendorgroupsetup.cpp \
     wcomboboxsetup.cpp \
     womatlclustersetup.cpp \
     xdateeditsetup.cpp \
     xsqltablnodeproto.cpp \
+    xt.cpp \
     xvariantsetup.cpp
 
 QT += sql \

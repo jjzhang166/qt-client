@@ -12,8 +12,9 @@
 #define XTREEVIEW_H
 
 #include <QItemDelegate>
-#include <QTreeView>
 #include <QMenu>
+#include <QSqlRecord>
+#include <QTreeView>
 
 #include "xdatawidgetmapper.h"
 #include "xsqltablemodel.h"

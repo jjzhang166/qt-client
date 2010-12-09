@@ -8,12 +8,10 @@
  * to be bound by its terms.
  */
 
-#include <QMessageBox>
-#include <QDropEvent>
-#include <QStandardItemEditorCreator>
-#include <QMouseEvent>
-#include <QDragEnterEvent>
 #include <QApplication>
+#include <QMessageBox>
+#include <QSqlRecord>
+#include <QStandardItemEditorCreator>
 
 #include <xsqlquery.h>
 
@@ -218,6 +216,7 @@ ItemLineEdit::ItemLineEdit(QWidget* pParent, const char* pName) :
   setUiName("item");
   setEditPriv("MaintainItemMasters");
   setViewPriv("ViewItemMasters");
+  setNewPriv("MaintainItemMasters");
 
   setAcceptDrops(TRUE);
   
@@ -588,6 +587,8 @@ void ItemLineEdit::sSearch(ParameterList params)
     params.append("extraClauses", _extraClauses);
 
   itemSearch* newdlg = searchFactory();
+  newdlg->set(params);
+
   QString stripped = text().trimmed();
   if(stripped.length())
   {
@@ -772,37 +773,23 @@ ItemCluster::ItemCluster(QWidget* pParent, const char* pName) :
 {
   setObjectName(pName);
   addNumberWidget(new ItemLineEdit(this, pName));
-  _label->setText(tr("Item Number:"));
+  setLabel(tr("Item Number:"));
 
 //  Create the component Widgets
-  QLabel *_uomLit = new QLabel(tr("UOM:"), this, "_uomLit");
+  QLabel *_uomLit = new QLabel(tr("UOM:"), this);
+  _uomLit->setObjectName("_uomLit");
   _uomLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-  _uom = new QLabel(this, "_uom");
+  _uom = new QLabel(this);
+  _uom->setObjectName("_uom");
   _uom->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   _uom->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   _uom->setMinimumWidth(50);
-  if (_x_preferences)
-  {
-    if (_x_preferences->boolean("ClusterButtons"))
-    {
-      _info->hide();
-      _grid->addWidget(_uomLit, 0, 3);
-      _grid->addWidget(_uom, 0, 4);
-    }
-    else
-    {
-      _grid->addWidget(_uomLit, 0, 2);
-      _grid->addWidget(_uom, 0, 3);
-    }
-  }
-  else
-  {
-    _uomLit->hide();
-    _uom->hide();
-  }
 
+  _grid->addWidget(_uomLit, 0, 2);
+  _grid->addWidget(_uom, 0, 3);
 
-  _descrip2 = new QLabel(this, "_descrip2");
+  _descrip2 = new QLabel(this);
+  _descrip2->setObjectName("_descrip2");
   _descrip2->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   _descrip2->setMaximumWidth(300);
   _grid->addWidget(_descrip2, 3, 1, 1, -1);
@@ -836,8 +823,6 @@ void ItemCluster::addNumberWidget(ItemLineEdit* pNumberWidget)
     _grid->addWidget(_number, 0, 1);
     setFocusProxy(pNumberWidget);
 
-    connect(_list,      SIGNAL(clicked()),      this, SLOT(sEllipses()));
-    connect(_info,      SIGNAL(clicked()),      this, SLOT(sInfo()));
     connect(_number,	SIGNAL(newId(int)),	this,	 SIGNAL(newId(int)));
     connect(_number,	SIGNAL(parsed()), 	this, 	 SLOT(sRefresh()));
     connect(_number,	SIGNAL(valid(bool)),	this,	 SIGNAL(valid(bool)));
@@ -852,16 +837,9 @@ void ItemCluster::setDescriptionVisible(const bool p)
 void ItemCluster::setReadOnly(const bool pReadOnly)
 {
   if (pReadOnly)
-  {
     _number->setEnabled(FALSE);
-    _list->hide();
-  }
   else
-  {
     _number->setEnabled(TRUE);
-    if (_x_preferences)
-      _list->setVisible(_x_preferences->boolean("ClusterButtons"));
-  }
 }
 
 void ItemCluster::setEnabled(const bool pEnabled)
@@ -889,6 +867,12 @@ void ItemCluster::setItemsiteid(int intPItemsiteid)
   static_cast<ItemLineEdit* >(_number)->setItemsiteid(intPItemsiteid);
 }
 
+void ItemCluster::setOrientation(Qt::Orientation orientation)
+{
+  _descrip2->setVisible(orientation == Qt::Vertical);
+  VirtualCluster::setOrientation(orientation);
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 itemList::itemList(QWidget* pParent, Qt::WindowFlags pFlags ) :
@@ -904,10 +888,13 @@ itemList::itemList(QWidget* pParent, Qt::WindowFlags pFlags ) :
 
   setWindowTitle(tr("Item List"));
 
-  _showInactive = new QCheckBox(tr("Show &Inactive Items"), this, "_showInactive");
+  _showInactive = new QCheckBox(tr("Show &Inactive Items"), this);
+  _showInactive->setObjectName("_showInactive");
   _dialogLyt->insertWidget(1, _showInactive );
-  _showMake = new QCheckBox(tr("&Make Items Only"), this, "_showMake");
-  _showBuy = new QCheckBox(tr("&Buy Items Only"), this, "_showBuy");
+  _showMake = new QCheckBox(tr("&Make Items Only"), this);
+  _showMake->setObjectName("_showMake");
+  _showBuy = new QCheckBox(tr("&Buy Items Only"), this);
+  _showBuy->setObjectName("_showBuy");
   _dialogLyt->insertWidget(2, _showMake );
   _dialogLyt->insertWidget(3, _showBuy );
 
@@ -995,6 +982,7 @@ void itemList::sSearch(const QString &pTarget)
 
 void itemList::sFillList()
 {
+  _listTab->clear();
   if (_useQuery)
   {
     _listTab->populate(_sql, _itemid);
@@ -1057,7 +1045,6 @@ itemSearch::itemSearch(QWidget* pParent, Qt::WindowFlags pFlags)
 
   setWindowTitle( tr( "Search for Item" ) );
 
-  _searchName->show();
   _searchName->setText(tr("Search through Description 1"));
   _searchDescrip->show();
   _searchDescrip->setText(tr("Search through Description 2"));

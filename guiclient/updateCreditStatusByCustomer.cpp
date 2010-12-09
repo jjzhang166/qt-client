@@ -10,44 +10,27 @@
 
 #include "updateCreditStatusByCustomer.h"
 
-#include <qvariant.h>
+#include <QVariant>
 
-/*
- *  Constructs a updateCreditStatusByCustomer as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 updateCreditStatusByCustomer::updateCreditStatusByCustomer(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-
-    // signals and slots connections
-    connect(_update, SIGNAL(clicked()), this, SLOT(sUpdate()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(_cust, SIGNAL(newId(int)), this, SLOT(sPopulate(int)));
+  connect(_update, SIGNAL(clicked()), this, SLOT(sUpdate()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_cust, SIGNAL(newId(int)), this, SLOT(sPopulate(int)));
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 updateCreditStatusByCustomer::~updateCreditStatusByCustomer()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void updateCreditStatusByCustomer::languageChange()
 {
     retranslateUi(this);
 }
-
 
 void updateCreditStatusByCustomer::sUpdate()
 {
@@ -78,23 +61,24 @@ void updateCreditStatusByCustomer::sPopulate( int /*pCustid*/ )
   q.exec();
   if (q.first())
   {
+    QString stylesheet;
     if (q.value("cust_creditstatus").toString() == "G")
     {
       _inGoodStanding->setChecked(TRUE);
       _currentStatus->setText(tr("In Good Standing"));
-      _currentStatus->setPaletteForegroundColor(QColor("black"));
     }
     else if (q.value("cust_creditstatus").toString() == "W")
     {
       _onCreditWarning->setChecked(TRUE);
       _currentStatus->setText(tr("On Credit Warning"));
-      _currentStatus->setPaletteForegroundColor(QColor("orange"));
+      stylesheet = QString("* { color: %1; }").arg(namedColor("warning").name());
     }
     else if (q.value("cust_creditstatus").toString() == "H")
     {
       _onCreditHold->setChecked(TRUE);
       _currentStatus->setText(tr("On Credit Hold"));
-      _currentStatus->setPaletteForegroundColor(QColor("red"));
+      stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }
+    _currentStatus->setStyleSheet(stylesheet);
   }
 }

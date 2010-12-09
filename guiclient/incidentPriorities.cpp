@@ -10,27 +10,21 @@
 
 #include "incidentPriorities.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
+#include <QVariant>
+
 #include <openreports.h>
+
 #include "incidentPriority.h"
 
-/*
- *  Constructs an incidentPriorities as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 incidentPriorities::incidentPriorities(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-//  (void)statusBar();
-
-  // signals and slots connections
   connect(_close,  SIGNAL(clicked()), this, SLOT(close()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,   SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -40,8 +34,6 @@ incidentPriorities::incidentPriorities(QWidget* parent, const char* name, Qt::WF
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_view,  SIGNAL(clicked()), this, SLOT(sView()));
 
-//  statusBar()->hide();
-  
   _incidentPriorities->addColumn(tr("Order"),  _seqColumn, Qt::AlignRight, true, "incdtpriority_order");
   _incidentPriorities->addColumn(tr("Priority"),      100, Qt::AlignLeft, true, "incdtpriority_name" );
   _incidentPriorities->addColumn(tr("Description"),    -1, Qt::AlignLeft, true, "incdtpriority_descrip" );
@@ -139,17 +131,15 @@ void incidentPriorities::sView()
 
 void incidentPriorities::sPopulateMenu( QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainIncidentPriorities"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentPriorities"));
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainIncidentPriorities"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentPriorities"));
 }
 
 void incidentPriorities::sPrint()

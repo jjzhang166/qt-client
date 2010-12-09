@@ -165,7 +165,7 @@ to be bound by its terms.</comment>
        <item>
         <widget class="QPushButton" name="_submit" >
          <property name="text" >
-          <string>&amp;Submit</string>
+          <string>&amp;Schedule</string>
          </property>
          <property name="default" >
           <bool>true</bool>

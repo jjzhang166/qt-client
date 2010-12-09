@@ -22,8 +22,8 @@ department::department(QWidget* parent, const char* name, bool modal, Qt::WFlags
   setupUi(this);
 
   // signals and slots connections
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(sClose()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
   _deptid = -1;
 }
@@ -67,11 +67,11 @@ enum SetResponse department::set(const ParameterList& pParams)
     else if (param.toString() == "view")
     {
        _mode = cView;
-       _close->setText(tr("&Close"));
        _number->setEnabled(false);
        _name->setEnabled(false);
-       _save->hide();
-       _close->setFocus();
+       _buttonBox->clear();
+       _buttonBox->addButton(QDialogButtonBox::Close);
+       _buttonBox->setFocus();
     }
   }
 

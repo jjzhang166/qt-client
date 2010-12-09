@@ -47,7 +47,7 @@ enum SetResponse printOptions::set(const ParameterList &pParams)
   if (valid) {
     _parentName = param.toString();
     _autoPrint->setChecked(xtsettingsValue(QString("%1.autoPrint").arg(_parentName)).toBool());
-    _printers->setCurrentText(xtsettingsValue(QString("%1.defaultPrinter").arg(_parentName)).toString());
+    _printers->setCurrentIndex(_printers->findText(xtsettingsValue(QString("%1.defaultPrinter").arg(_parentName)).toString()));
     _printerGroup->setChecked(!_printers->currentText().isEmpty());
   }
 

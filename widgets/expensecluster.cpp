@@ -14,8 +14,8 @@ ExpenseCluster::ExpenseCluster(QWidget *pParent, const char *pName) :
   VirtualCluster(pParent, pName)
 {
   addNumberWidget(new ExpenseLineEdit(this, pName));
-  _info->hide();
   _description->show();
+  setLabel(tr("Expense Category:"));
 }
 
 ExpenseLineEdit::ExpenseLineEdit(QWidget *pParent, const char *pName) :

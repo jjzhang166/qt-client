@@ -25,9 +25,6 @@ public:
     packingListBatch(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~packingListBatch();
 
-    virtual void dragEnterEvent( QDragEnterEvent * pEvent );
-    virtual void dropEvent( QDropEvent * pEvent );
-
 public slots:
     virtual void sAddSO();
     virtual void sAddTO();

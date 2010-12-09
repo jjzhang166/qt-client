@@ -48,8 +48,8 @@ group::group(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   q.exec( "SELECT DISTINCT priv_module "
           "FROM priv "
           "ORDER BY priv_module;" );
-  while (q.next())
-    _module->insertItem(q.value("priv_module").toString());
+  for (int i = 0; q.next(); i++)
+    _module->append(i, q.value("priv_module").toString());
 
   _trapClose = false;
 }
@@ -108,7 +108,7 @@ enum SetResponse group::set(const ParameterList &pParams)
       }
 
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
       _name->setFocus();
     }
     else if (param.toString() == "edit")
@@ -386,17 +386,17 @@ void group::populate()
     {
       for (int counter = 0; counter < _module->count(); counter++)
       {
-        if (_module->text(counter) == q.value("priv_module").toString())
+        if (_module->itemText(counter) == q.value("priv_module").toString())
         {
           _module->setCurrentIndex(counter);
-          sModuleSelected(_module->text(counter));
+          sModuleSelected(_module->itemText(counter));
         }
       }
     }
     else
     {
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
     }
   }
   else if (q.lastError().type() != QSqlError::NoError)

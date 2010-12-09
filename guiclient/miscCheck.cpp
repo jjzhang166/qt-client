@@ -67,9 +67,9 @@ enum SetResponse miscCheck::set(const ParameterList &pParams)
   param = pParams.value("check_id", &valid);
   if (valid)
   {
+    connect(_cmCluster, SIGNAL(newId(int)),   this, SLOT(sCreditMemoSelected()));
     _checkid = param.toInt();
     populate();
-    connect(_cmCluster, SIGNAL(newId(int)),   this, SLOT(sCreditMemoSelected()));
   }
 
   if (pParams.inList("new"))
@@ -367,6 +367,7 @@ void miscCheck::sCreditMemoSelected()
 			  " WHERE ((checkhead_id=checkitem_checkhead_id) "
 			  " AND (NOT checkhead_posted) "
 			  " AND (NOT checkhead_void) "
+                          " AND (checkhead_id <> :check_id) "
 			  " AND (checkitem_aropen_id=aropen_id))) "
 
 			  ") * aropen_curr_rate / currRate(:curr_id,aropen_docdate),2) AS amount "
@@ -375,11 +376,13 @@ void miscCheck::sCreditMemoSelected()
     q.bindValue(":aropen_id", _cmCluster->id());
     q.bindValue(":curr_id", _amount->id());
     q.bindValue(":date", _date->date());
+    q.bindValue(":check_id", _checkid);
     q.exec();
     if (q.first())
     {
       _aropenamt=q.value("amount").toDouble();
-      _amount->setLocalValue(q.value("amount").toDouble());
+      if (_mode == cNew)
+        _amount->setLocalValue(q.value("amount").toDouble());
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
@@ -390,6 +393,5 @@ void miscCheck::sCreditMemoSelected()
   else
   {
     _aropenamt=0;
-    _amount->clear();
   } 
 }

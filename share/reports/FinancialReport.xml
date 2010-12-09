@@ -38,7 +38,7 @@
  </querysource>
  <querysource>
   <name>detail</name>
-  <sql>SELECT financialReport(&lt;? value("flhead_id") ?>, period_id,&lt;? value("interval") ?>)
+  <sql>SELECT financialReport(&lt;? value("flhead_id") ?>, period_id,&lt;? value("interval") ?>,&lt;? value("prj_id") ?>)
   FROM period
  WHERE (period_id IN (
 &lt;? foreach("period_id_list") ?>

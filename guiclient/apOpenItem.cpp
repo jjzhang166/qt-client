@@ -42,6 +42,8 @@ apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
 
   _terms->setType(XComboBox::APTerms);
   _journalNumber->setEnabled(FALSE);
+
+  _altAccntid->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
 
 apOpenItem::~apOpenItem()
@@ -65,13 +67,13 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
   {
     if (param.toString() == "creditMemo")
     {
-      setWindowTitle(caption() + tr(" - Enter Misc. Credit Memo"));
+      setWindowTitle(windowTitle() + tr(" - Enter Misc. Credit Memo"));
       _docType->setCurrentIndex(0);
       _status->setEnabled(false);
     }
     else if (param.toString() == "debitMemo")
     {
-      setWindowTitle(caption() + tr(" - Enter Misc. Debit Memo"));
+      setWindowTitle(windowTitle() + tr(" - Enter Misc. Debit Memo"));
       _docType->setCurrentIndex(1);
     }
     else if (param.toString() == "voucher")

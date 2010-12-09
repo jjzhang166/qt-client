@@ -10,10 +10,8 @@
 
 #include "packingListBatch.h"
 
-#include <Q3DragObject>
+#include <QAction>
 #include <QMenu>
-#include <QDragEnterEvent>
-#include <QDropEvent>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
@@ -25,7 +23,6 @@
 #include "printPackingList.h"
 #include "salesOrder.h"
 #include "salesOrderList.h"
-#include "socluster.h"
 #include "storedProcErrorLookup.h"
 #include "transferOrder.h"
 #include "transferOrderList.h"
@@ -217,20 +214,18 @@ void packingListBatch::sClearPrinted()
 
 void packingListBatch::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()), 0);
-  if (_pack->currentItem()->rawValue("pack_head_type") != "SO" ||
-      (! _privileges->check("MaintainSalesOrders") &&
-       ! _privileges->check("ViewSalesOrders")))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()));
+  menuItem->setEnabled(_pack->currentItem()->rawValue("pack_head_type") == "SO" &&
+                       (_privileges->check("MaintainSalesOrders") ||
+                        _privileges->check("ViewSalesOrders")));
     
 
-  menuItem = pMenu->insertItem(tr("View Transfer Order..."), this, SLOT(sViewTransferOrder()), 0);
-  if (_pack->currentItem()->rawValue("pack_head_type") != "TO" ||
-      (! _privileges->check("MaintainTransferOrders") &&
-       ! _privileges->check("ViewTransferOrders")))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("View Transfer Order..."), this, SLOT(sViewTransferOrder()));
+  menuItem->setEnabled(_pack->currentItem()->rawValue("pack_head_type") == "TO" &&
+                       (_privileges->check("MaintainTransferOrders") ||
+                        _privileges->check("ViewTransferOrders")));
 }
 
 void packingListBatch::sViewSalesOrder()
@@ -402,68 +397,3 @@ void packingListBatch::sHandleAutoUpdate(bool pAutoUpdate)
     disconnect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
 }
 
-void packingListBatch::dragEnterEvent(QDragEnterEvent *pEvent)
-{
-  QString dragData;
-
-  if ( (Q3TextDrag::decode(pEvent, dragData)) && (_privileges->check("MaintainPackingListBatch")) )
-  {
-    if (dragData.contains("soheadid=") || dragData.contains("toheadid="))
-      pEvent->accept(TRUE);
-  }
-  else
-    pEvent->accept(FALSE);
-}
-
-void packingListBatch::dropEvent(QDropEvent *pEvent)
-{
-  QString dropData;
-
-  if (Q3TextDrag::decode(pEvent, dropData))
-  {
-    if (dropData.contains("soheadid=") || dropData.contains("toheadid="))
-    {
-      QString target;
-      QString targettype;
-      if (dropData.contains("soheadid="))
-      {
-	target = dropData.mid((dropData.find("soheadid=") + 9), (dropData.length() - 9));
-	targettype="SO";
-      }
-      else if (dropData.contains("toheadid="))
-      {
-	target = dropData.mid((dropData.find("toheadid=") + 9), (dropData.length() - 9));
-	targettype="TO";
-      }
-
-      if (target.contains(","))
-        target = target.left(target.find(","));
-
-      if (target.toInt() != -1)
-      {
-        q.prepare( "SELECT addToPackingListBatch(:head_type, :head_id) AS result;");
-	q.bindValue(":head_type", targettype);
-        q.bindValue(":head_id",   target.toInt());
-        q.exec();
-        if (q.first())
-        {
-	  int result = q.value("result").toInt();
-	  if (result < 0)
-	  {
-	    systemError(this,
-			storedProcErrorLookup("addToPackingListBatch", result),
-			__FILE__, __LINE__);
-	    return;
-	  }
-
-          sFillList();
-        }
-	else if (q.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-	  return;
-	}
-      }
-    }
-  }
-}

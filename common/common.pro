@@ -22,8 +22,10 @@ SOURCES = calendarcontrol.cpp \
           metricsenc.cpp \
           qbase64encode.cpp \
           qmd5.cpp \
+          shortcuts.cpp \
           storedProcErrorLookup.cpp \
           xbase32.cpp \
+          xtupleproductkey.cpp \
           xtsettings.cpp
 HEADERS = calendarcontrol.h \
           calendargraphicsitem.h \
@@ -37,8 +39,10 @@ HEADERS = calendarcontrol.h \
           metricsenc.h \
           qbase64encode.h \
           qmd5.h \
+          shortcuts.h \
           storedProcErrorLookup.h \
           xbase32.h \
+          xtupleproductkey.h \
           xtsettings.h
 FORMS = login2.ui login2Options.ui
 

@@ -56,7 +56,7 @@ to be bound by its terms.</comment>
           <number>0</number>
          </property>
          <item>
-          <widget class="QComboBox" name="_module" >
+          <widget class="XComboBox" name="_module" >
            <item>
             <property name="text" >
              <string>A/P</string>
@@ -435,6 +435,11 @@ to be bound by its terms.</comment>
  <layoutdefault spacing="5" margin="5" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
+  <customwidget>
+   <class>XComboBox</class>
+   <extends>QComboBox</extends>
+   <header>xcombobox.h</header>
+  </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>

@@ -10,6 +10,7 @@
 
 #include "voucher.h"
 
+#include <QAction>
 #include <QCloseEvent>
 #include <QKeyEvent>
 #include <QMenu>
@@ -50,7 +51,6 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WFlags fl)
   _terms->setType(XComboBox::APTerms);
   _poNumber->setAllowedStatuses(OrderLineEdit::Open);
   _poNumber->setAllowedTypes(OrderLineEdit::Purchase);
-  _poNumber->setInfoVisible(false);
   _poNumber->setLabel("");
   _poNumber->findChild<QWidget*>("_name")->hide();
   _poNumber->findChild<QWidget*>("_description")->hide();
@@ -60,9 +60,6 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WFlags fl)
   _poNumber->findChild<QWidget*>("_to")->hide();
   _poNumber->setMinimumHeight(32);
   
-  /* a VendorCluster keeps the vend_id handy and handles address info easily */
-  _vendor->setVisible(false);
-
   _poitem->addColumn(tr("#"),               _whsColumn,   Qt::AlignCenter, true,  "poitem_linenumber" );
   _poitem->addColumn(tr("Status"),          _uomColumn,   Qt::AlignCenter, true,  "poitemstatus" );
   _poitem->addColumn(tr("Item Number"),     _itemColumn,  Qt::AlignLeft,   true,  "itemnumber"   );
@@ -70,9 +67,10 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WFlags fl)
   _poitem->addColumn(tr("Vend. Item #"),    -1,           Qt::AlignLeft,   true,  "poitem_vend_item_number"   );
   _poitem->addColumn(tr("UOM"),             _uomColumn,   Qt::AlignCenter, true,  "poitem_vend_uom" );
   _poitem->addColumn(tr("Ordered"),         _qtyColumn,   Qt::AlignRight,  true,  "poitem_qty_ordered"  );
-  _poitem->addColumn(tr("Invoiced"),        _qtyColumn,   Qt::AlignRight,  false, "invoiced" );
+  _poitem->addColumn(tr("Invoiced"),        _qtyColumn,   Qt::AlignRight,  false, "qtyinvoiced" );
   _poitem->addColumn(tr("Uninvoiced"),      _qtyColumn,   Qt::AlignRight,  true,  "qtyreceived"  );
   _poitem->addColumn(tr("Rejected"),        _qtyColumn,   Qt::AlignRight,  true,  "qtyrejected"  );
+  _poitem->addColumn(tr("Quantity"),        _qtyColumn,   Qt::AlignRight,  false, "invoiceqty" );
   _poitem->addColumn(tr("Amount"),          _moneyColumn, Qt::AlignRight,  true,  "invoiceamount"  );
   _poitem->addColumn(tr("PO Unit Price"),   _moneyColumn, Qt::AlignRight,  true,  "poitem_unitprice" );
   _poitem->addColumn(tr("PO Ext Price"),    _moneyColumn, Qt::AlignRight,  true,  "extprice"  );
@@ -80,6 +78,8 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _miscDistrib->addColumn(tr("Account"),    -1,           Qt::AlignLeft,   true,  "account"  );
   _miscDistrib->addColumn(tr("Amount"),     _moneyColumn, Qt::AlignRight,  true,  "vodist_amount" ); 
+
+  _vendid = -1;
 
   setWindowModified(false);
 }
@@ -144,7 +144,6 @@ enum SetResponse voucher::set(const ParameterList &pParams)
 
       _voucherNumber->setEnabled(FALSE);
       _poNumber->setEnabled(FALSE);
-      _poNumber->setListVisible(false);
 
       _save->setFocus();
     }
@@ -156,7 +155,6 @@ enum SetResponse voucher::set(const ParameterList &pParams)
  
       _voucherNumber->setEnabled(FALSE);
       _poNumber->setEnabled(FALSE);
-      _poNumber->setListVisible(false);
       _taxzone->setEnabled(FALSE);
       _amountToDistribute->setEnabled(FALSE);
       _distributionDate->setEnabled(FALSE);
@@ -164,7 +162,6 @@ enum SetResponse voucher::set(const ParameterList &pParams)
       _dueDate->setEnabled(FALSE);
       _invoiceNum->setEnabled(FALSE);
       _reference->setEnabled(FALSE);
-      _poitem->setEnabled(FALSE);
       _distributions->setEnabled(FALSE);
       _miscDistrib->setEnabled(FALSE);
       _new->setEnabled(FALSE);
@@ -177,6 +174,9 @@ enum SetResponse voucher::set(const ParameterList &pParams)
       _save->hide();
 
       _close->setFocus();
+      disconnect(_poitem, SIGNAL(valid(bool)), _distributions, SLOT(setEnabled(bool)));
+      disconnect(_poitem, SIGNAL(valid(bool)), _distributeline, SLOT(setEnabled(bool)));
+      disconnect(_poitem, SIGNAL(valid(bool)), _clear, SLOT(setEnabled(bool)));
       disconnect(_poNumber, SIGNAL(valid(bool)), _distributeall, SLOT(setEnabled(bool)));
     }
   }
@@ -251,7 +251,7 @@ bool voucher::sSave()
                " AND (pohead_vend_id=:vend_id)"
                " AND (vohead_id<>:vohead_id) );" );
     q.bindValue(":vohead_invcnumber", _invoiceNum->text().trimmed());
-    q.bindValue(":vend_id", _vendor->id());
+    q.bindValue(":vend_id",   _vendid);
     q.bindValue(":vohead_id", _voheadid);
     q.exec();
     if (q.first())
@@ -289,7 +289,7 @@ bool voucher::sSave()
   q.bindValue(":vohead_pohead_id", _poNumber->id());
   if (_taxzone->isValid())
     q.bindValue(":vohead_taxzone_id", _taxzone->id());
-  q.bindValue(":vohead_vend_id",  _vendor->id());
+  q.bindValue(":vohead_vend_id",  _vendid);
   q.bindValue(":vohead_terms_id", _terms->id());
   q.bindValue(":vohead_distdate", _distributionDate->date());
   q.bindValue(":vohead_docdate", _invoiceDate->date());
@@ -299,7 +299,7 @@ bool voucher::sSave()
   q.bindValue(":vohead_amount", _amountToDistribute->localValue());
   q.bindValue(":vohead_1099", QVariant(_flagFor1099->isChecked()));
   q.bindValue(":vohead_curr_id", _amountToDistribute->id());
-  q.bindValue(":vohead_notes", _notes->text());
+  q.bindValue(":vohead_notes", _notes->toPlainText());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)
   {
@@ -311,14 +311,14 @@ bool voucher::sSave()
 
   _voheadid = -1;
 
-  setWindowModified(false);
-
   if (cNew != _mode)
   {
+    setWindowModified(false);
     close();
     return true;
   }
 
+  _poNumber->setEnabled(true);
   _poNumber->setId(-1);
   _amountToDistribute->clear();
   _amountDistributed->clear();
@@ -333,6 +333,8 @@ bool voucher::sSave()
   _miscDistrib->clear();
   _notes->setText("");
 
+  setWindowModified(false);
+
   ParameterList params;
   params.append("mode", "new");
   set(params);
@@ -343,7 +345,8 @@ void voucher::sHandleVoucherNumber()
 {
   if (_voucherNumber->text().length() == 0)
   {
-    if ((_metrics->value("VoucherNumberGeneration") == "A") || (_metrics->value("VoucherNumberGeneration") == "O"))
+    if ((_metrics->value("VoucherNumberGeneration") == "A") ||
+        (_metrics->value("VoucherNumberGeneration") == "O"))
       populateNumber();
     else
     {
@@ -368,7 +371,6 @@ void voucher::sHandleVoucherNumber()
 
       _voucherNumber->setEnabled(FALSE);
       _poNumber->setEnabled(FALSE);
-      _poNumber->setListVisible(false);
 
       _mode = cEdit;
       populate();
@@ -380,7 +382,7 @@ void voucher::sHandleVoucherNumber()
 
 void voucher::sPopulate()
 {
-  setWindowTitle(tr("Voucher for P/O #") + _poNumber->number());
+  setWindowTitle(tr("Voucher for P/O # %1").arg(_poNumber->number()));
 }
 
 void voucher::sDistributions()
@@ -402,7 +404,11 @@ void voucher::sDistributions()
       {
         // nothing to do:
         // voucherItem wraps itself in a transaction and rolls back on reject
-    }
+      }
+      else
+      {
+        _poNumber->setEnabled(FALSE);
+      }
   }
   sFillList();
   sPopulateDistributed();
@@ -427,6 +433,10 @@ void voucher::sDistributeLine()
         systemError(this,
                     storedProcErrorLookup("distributeVoucherLine", result),
                     __FILE__, __LINE__);
+      else
+      {
+        _poNumber->setEnabled(FALSE);
+      }
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
@@ -470,8 +480,9 @@ void voucher::sClear()
         return;
         }
      }
-  sFillList();
-  sPopulateDistributed();
+    _poNumber->setEnabled(true);
+    sFillList();
+    sPopulateDistributed();
 }
 
 void voucher::sDistributeAll()
@@ -494,6 +505,10 @@ void voucher::sDistributeAll()
         systemError(this,
                     storedProcErrorLookup("distributeVoucherLine", result),
                     __FILE__, __LINE__);
+      else
+      {
+        _poNumber->setEnabled(FALSE);
+      }
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
@@ -584,7 +599,7 @@ void voucher::sFillList()
                "         FROM porecv"
                "         WHERE ( (porecv_posted)"
                "           AND (porecv_invoiced)"
-               "           AND (porecv_poitem_id=poitem_id) ) ) AS invoiced,"
+               "           AND (porecv_poitem_id=poitem_id) ) ) AS qtyinvoiced,"
                "       ( SELECT COALESCE(SUM(porecv_qty), 0)"
                "         FROM porecv"
                "         WHERE ( (porecv_posted)"
@@ -597,6 +612,10 @@ void voucher::sFillList()
                "           AND (NOT poreject_invoiced)"
                "           AND (poreject_vohead_id IS NULL)"
                "           AND (poreject_poitem_id=poitem_id) ) ) AS qtyrejected,"
+               "       ( SELECT COALESCE(SUM(vodist_qty), 0)"
+               "         FROM vodist"
+               "         WHERE vodist_poitem_id=poitem_id"
+               "           AND vodist_vohead_id=:vohead_id ) AS invoiceqty, "
                "       ( SELECT COALESCE(SUM(vodist_amount), 0)"
                "         FROM vodist"
                "         WHERE vodist_poitem_id=poitem_id"
@@ -609,9 +628,10 @@ void voucher::sFillList()
                "       (poitem_unitprice * poitem_qty_ordered) AS extprice,"
                "       poitem_freight,"
                "       'qty' AS poitem_qty_ordered_xtnumericrole,"
-               "       'qty' AS invoiced_xtnumericrole,"
+               "       'qty' AS qtyinvoiced_xtnumericrole,"
                "       'qty' AS qtyreceived_xtnumericrole,"
                "       'qty' AS qtyrejected_xtnumericrole,"
+               "       'qty' AS invoiceqty_xtnumericrole,"
                "       'curr' AS invoiceamount_xtnumericrole,"
                "       'curr' AS poitem_unitprice_xtnumericrole,"
                "       'curr' AS extprice_xtnumericrole,"
@@ -687,10 +707,13 @@ void voucher::sFillMiscList()
 void voucher::sPopulatePoInfo()
 {
   XSqlQuery po;
-  po.prepare( "SELECT pohead_terms_id, pohead_taxzone_id, vend_1099, "
-             "       pohead_curr_id, vend_id "
-             "FROM pohead JOIN vendinfo ON (pohead_vend_id=vend_id)"
-             "WHERE (pohead_id=:pohead_id);" );
+  po.prepare("SELECT pohead_terms_id, pohead_taxzone_id, vend_1099, "
+             "       pohead_curr_id, vend_id, vend_number, vend_name,"
+             "       addr_line1, addr_line2"
+             "  FROM pohead"
+             "  JOIN vendinfo ON (pohead_vend_id=vend_id)"
+             "  LEFT OUTER JOIN addr ON (vend_addr_id=addr_id)"
+             " WHERE (pohead_id=:pohead_id);" );
   po.bindValue(":pohead_id", _poNumber->id());
   po.exec();
   if (po.first())
@@ -701,7 +724,12 @@ void voucher::sPopulatePoInfo()
     _terms->setId(po.value("pohead_terms_id").toInt());
     _taxzone->setId(po.value("pohead_taxzone_id").toInt());
     _amountToDistribute->setId(po.value("pohead_curr_id").toInt());
-    _vendor->setId(po.value("vend_id").toInt());
+    _vendid = po.value("vend_id").toInt();
+    _vendor->setText(po.value("vend_number").toString());
+    _vendName->setText(po.value("vend_name").toString());
+    // TODO: replace with a compact AddressCluster when such exists
+    _vendAddress1->setText(po.value("addr_line1").toString());
+    _vendAddress2->setText(po.value("addr_line2").toString());
   }
   else if (po.lastError().type() != QSqlError::NoError)
   {
@@ -882,7 +910,7 @@ void voucher::sPopulateDueDate()
 
 void voucher::sPopulateMenu( QMenu * pMenu )
 {
-  pMenu->insertItem(tr("View P/O Item..."), this, SLOT(sView()), 0);
+  pMenu->addAction(tr("View P/O Item..."), this, SLOT(sView()));
 }
 
 void voucher::sView()
@@ -934,7 +962,7 @@ void voucher::saveDetail()
     q.bindValue(":vohead_pohead_id", _poNumber->id());
     if (_taxzone->isValid())
       q.bindValue(":vohead_taxzone_id", _taxzone->id());
-    q.bindValue(":vohead_vend_id",  _vendor->id());
+    q.bindValue(":vohead_vend_id",  _vendid);
     q.bindValue(":vohead_terms_id", _terms->id());
     q.bindValue(":vohead_distdate", _distributionDate->date());
     q.bindValue(":vohead_docdate", _invoiceDate->date());
@@ -944,7 +972,7 @@ void voucher::saveDetail()
     q.bindValue(":vohead_amount", _amountToDistribute->localValue());
     q.bindValue(":vohead_1099", QVariant(_flagFor1099->isChecked()));
     q.bindValue(":vohead_curr_id", _amountToDistribute->id());
-    q.bindValue(":vohead_notes", _notes->text());
+    q.bindValue(":vohead_notes", _notes->toPlainText());
     q.exec();
     if (q.lastError().type() != QSqlError::NoError)
     {
@@ -967,7 +995,6 @@ void voucher::enableWindowModifiedSetting()
   connect(_reference, SIGNAL(textChanged(const QString&)), this, SLOT(sDataChanged()));
   connect(_taxzone,                    SIGNAL(newID(int)), this, SLOT(sDataChanged()));
   connect(_terms,                      SIGNAL(newID(int)), this, SLOT(sDataChanged()));
-  connect(_vendor,                          SIGNAL(newId(int)), this, SLOT(sDataChanged()));
 }
 
 void voucher::sDataChanged()

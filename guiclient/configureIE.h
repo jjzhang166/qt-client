@@ -12,11 +12,11 @@
 #define CONFIGUREIE_H
 
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureIE.h"
 
-class configureIE : public XDialog, public Ui::configureIE
+class configureIE : public XAbstractConfigure, public Ui::configureIE
 {
     Q_OBJECT
 
@@ -27,7 +27,6 @@ public:
     static bool userHasPriv();
 
 public slots:
-    virtual int  exec();
     virtual void sDeleteAtlasMap();
     virtual void sDeleteMap();
     virtual void sEditAtlasMap();
@@ -37,10 +36,13 @@ public slots:
     virtual void sNewMap();
     virtual void sPopulate();
     virtual void sPopulateMenu(QMenu*, QTreeWidgetItem*);
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void saving();
 
 };
 

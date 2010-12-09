@@ -15,7 +15,7 @@
 #include "guiclient.h"
 #include "paymentechprocessor.h"
 
-#define DEBUG true
+#define DEBUG false
 
 PaymentechProcessor::PaymentechProcessor() : CreditCardProcessor()
 {
@@ -38,7 +38,7 @@ PaymentechProcessor::PaymentechProcessor() : CreditCardProcessor()
   _msgHash.insert(-209, tr("The selected credit card is not a know type for Paymentech."));
 }
 
-int PaymentechProcessor::buildCommon(QString & pordernum, const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &prequest, QString pordertype, const QString & pAuthcode, const QString & pRespdate)
+int PaymentechProcessor::buildCommon(QString & pordernum, const int pccardid, const int pcvv, const double pamount, const int /*pcurrid*/, QString &prequest, QString pordertype, const QString & pAuthcode, const QString & pRespdate)
 {
   XSqlQuery anq;
   anq.prepare(
@@ -212,7 +212,7 @@ int PaymentechProcessor::buildCommon(QString & pordernum, const int pccardid, co
   return 0;
 }
 
-int  PaymentechProcessor::doAuthorize(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
+int  PaymentechProcessor::doAuthorize(const int pccardid, const int pcvv, double &pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
     qDebug("Paymentech:doAuthorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
@@ -300,7 +300,7 @@ int  PaymentechProcessor::doCharge(const int pccardid, const int pcvv, const dou
   pparams.append("ref",         ccq.value("ccpay_r_ref").toString());
   pparams.append("message",     ccq.value("ccpay_r_message").toString());
   pparams.append("tdate",       ccq.value("ccpay_yp_r_tdate").toString());
-  pparams.append("auth", QVariant(false, 1));
+  pparams.append("auth",        false);
   pparams.append("amount",   amount);
   return returnValue;
 }
@@ -351,7 +351,7 @@ int PaymentechProcessor::doChargePreauthorized(const int pccardid, const int pcv
   pparams.append("ref",         ccq.value("ccpay_r_ref").toString());
   pparams.append("message",     ccq.value("ccpay_r_message").toString());
   pparams.append("tdate",       ccq.value("ccpay_yp_r_tdate").toString());
-  pparams.append("auth", QVariant(false, 1));
+  pparams.append("auth",        false);
   pparams.append("amount",   amount);
 
   return returnValue;
@@ -380,7 +380,7 @@ int PaymentechProcessor::doCredit(const int pccardid, const int pcvv, const doub
   pparams.append("reforder",    (preforder.isEmpty()) ? pneworder : preforder);
   pparams.append("ordernum",    pneworder);
   pparams.append("approved",    "SUBMITTED");
-  pparams.append("auth", QVariant(false, 1));
+  pparams.append("auth",        false);
   pparams.append("amount",   amount);
 
   return returnValue;
@@ -555,10 +555,7 @@ int PaymentechProcessor::handleResponse(const QString &presponse, const int pcca
   pparams.append("message",     r_message);
   pparams.append("tdate",       r_date);
 
-  if (ptype == "A")
-    pparams.append("auth", QVariant(true, 0));
-  else
-    pparams.append("auth", QVariant(false, 1));
+  pparams.append("auth", (ptype == "A"));
 
   if (DEBUG)
     qDebug("Paymentech:r_error.isEmpty() = %d", r_error.isEmpty());

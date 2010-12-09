@@ -10,6 +10,7 @@
 
 #include "items.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -19,11 +20,29 @@
 #include "copyItem.h"
 #include "item.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-items::items(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+items::items(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "items", fl)
 {
-  setupUi(this);
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Items"));
+  setMetaSQLOptions("items", "detail");
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
+  setParameterWidgetVisible(true);
+
+  parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Item Number Pattern"), "item_number_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Item Description"), "item_descrip_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Item Group"), "itemgrp_id", XComboBox::ItemGroups);
+  parameterWidget()->appendComboBox(tr("Class Code"), "classcode_id", XComboBox::ClassCodes);
+  parameterWidget()->append(tr("Class Code Pattern"), "classcode_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Product Category"), "prodcat_id", XComboBox::ProductCategories);
+  parameterWidget()->append(tr("Product Category Pattern"), "prodcat_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Freight Class"), "freightclass_id", XComboBox::FreightClasses);
+  parameterWidget()->append(tr("Freight Class Pattern"), "freightclass_pattern", ParameterWidget::Text);
 
   QButtonGroup* _statusGroupInt = new QButtonGroup(this);
   _statusGroupInt->addButton(_showAll);
@@ -31,77 +50,45 @@ items::items(QWidget* parent, const char* name, Qt::WFlags fl)
   _statusGroupInt->addButton(_showManufactured);
   _statusGroupInt->addButton(_showSold);
 
-  // signals and slots connections
-  connect(_item, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
-  connect(_showInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_statusGroupInt, SIGNAL(buttonClicked(int)), this, SLOT(sFillList()));
-  connect(_searchFor, SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
-  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-  connect(_item, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-
-  _item->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft   , true, "item_number" );
-  _item->addColumn(tr("Active"),      _ynColumn,   Qt::AlignCenter , true, "item_active" );
-  _item->addColumn(tr("Description"), -1,          Qt::AlignLeft   , true, "item_descrip" );
-  _item->addColumn(tr("Class Code"),  _dateColumn, Qt::AlignCenter , true, "classcode_code");
-  _item->addColumn(tr("Type"),        _itemColumn, Qt::AlignCenter , true, "item_type");
-  _item->addColumn(tr("UOM"),         _uomColumn,  Qt::AlignCenter , true, "uom_name");
-  _item->setDragString("itemid=");
+  list()->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft   , true, "item_number" );
+  list()->addColumn(tr("Active"),      _ynColumn,   Qt::AlignCenter , true, "item_active" );
+  list()->addColumn(tr("Description"), -1,          Qt::AlignLeft   , true, "item_descrip" );
+  list()->addColumn(tr("Class Code"),  _dateColumn, Qt::AlignLeft , true, "classcode_code");
+  list()->addColumn(tr("Type"),        _itemColumn, Qt::AlignLeft , true, "item_type");
+  list()->addColumn(tr("UOM"),         _uomColumn,  Qt::AlignLeft , true, "uom_name");
+  list()->addColumn(tr("Product Category"),  _itemColumn, Qt::AlignLeft , false, "prodcat_code");
+  list()->addColumn(tr("Freight Class"),  _itemColumn, Qt::AlignLeft , false, "freightclass_code");
   
-  connect(omfgThis, SIGNAL(itemsUpdated(int, bool)), this, SLOT(sFillList(int, bool)));
+  connect(omfgThis, SIGNAL(itemsUpdated(int, bool)), this, SLOT(sFillList()));
   
   if (_privileges->check("MaintainItemMasters"))
-  {
-    connect(_item, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_item, SIGNAL(valid(bool)), _copy, SLOT(setEnabled(bool)));
-    connect(_item, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_item, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(FALSE);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
-
-  if (_privileges->check("DeleteItemMasters"))
-    connect(_item, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-
-  sFillList();
-
-  _searchFor->setFocus();
 }
 
-items::~items()
+
+void items::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  // no need to delete child widgets, Qt does it all for us
-}
+  QAction *menuItem;
 
-void items::languageChange()
-{
-  retranslateUi(this);
-}
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainItemMasters"));
 
-void items::sPopulateMenu(QMenu *pMenu)
-{
-  int menuItem;
-
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainItemMasters"))
-    pMenu->setItemEnabled(menuItem, FALSE);
-
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-
-  menuItem = pMenu->insertItem(tr("Copy..."), this, SLOT(sCopy()), 0);
-  if (!_privileges->check("MaintainItemMasters"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
   QAction *tmpaction = pMenu->addAction(tr("Delete..."));
   connect(tmpaction, SIGNAL(triggered()), this, SLOT(sDelete()));
-  tmpaction->setEnabled(_privileges->check("MaintainItemMasters"));
+  tmpaction->setEnabled(_privileges->check("DeleteItemMasters"));
   tmpaction->setObjectName("items.popup.delete");
+
+  pMenu->addSeparator();
+
+  menuItem = pMenu->addAction(tr("Copy..."), this, SLOT(sCopy()));
+  menuItem->setEnabled(_privileges->check("MaintainItemMasters"));
 }
 
 void items::sNew()
@@ -111,91 +98,51 @@ void items::sNew()
 
 void items::sEdit()
 {
-  item::editItem(_item->id());
+  item::editItem(list()->id());
 }
 
 void items::sView()
 {
-  item::viewItem(_item->id());
+  item::viewItem(list()->id());
 }
 
 void items::sDelete()
 {
   if (QMessageBox::information( this, tr("Delete Item"),
-                                 tr( "Are you sure that you want to delete the Item?"),
+                                tr( "Are you sure that you want to delete the Item?"),
                                 tr("&Delete"), tr("&Cancel"), 0, 0, 1 ) == 0  )
   {
-	q.prepare("SELECT deleteItem(:item_id) AS returnVal;");
-	q.bindValue(":item_id", _item->id());
-	q.exec();
-	if (q.first())
-	{
-		int returnVal = q.value("returnVal").toInt();
-		if (returnVal < 0)
-		{
-			systemError(this, storedProcErrorLookup("deleteItem", returnVal), __FILE__, __LINE__);
-			return;
-		}
-		sFillList();
-	}
-	else if (q.lastError().type() != QSqlError::NoError)
-	{
-		systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-		return;
-	}
+    XSqlQuery qry;
+    qry.prepare("SELECT deleteItem(:item_id) AS returnVal;");
+    qry.bindValue(":item_id", list()->id());
+    qry.exec();
+    if (q.first())
+    {
+      int returnVal = q.value("returnVal").toInt();
+      if (returnVal < 0)
+      {
+        systemError(this, storedProcErrorLookup("deleteItem", returnVal), __FILE__, __LINE__);
+        return;
+      }
+      sFillList();
+    }
+    else if (qry.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }   
 }
 
-void items::sFillList( int pItemid, bool pLocal )
+bool items::setParams(ParameterList &params)
 {
-  QString sql( "SELECT item_id, item_number, item_active,"
-               "       (item_descrip1 || ' ' || item_descrip2) as item_descrip, classcode_code,"
-               "       CASE WHEN (item_type='P') THEN text(<? value(\"purchased\") ?>)"
-               "            WHEN (item_type='M') THEN text(<? value(\"manufactured\") ?>)"
-               "            WHEN (item_type='F') THEN text(<? value(\"phantom\") ?>)"
-               "            WHEN (item_type='B') THEN text(<? value(\"breeder\") ?>)"
-               "            WHEN (item_type='C') THEN text(<? value(\"coProduct\") ?>)"
-               "            WHEN (item_type='Y') THEN text(<? value(\"byProduct\") ?>)"
-               "            WHEN (item_type='R') THEN text(<? value(\"reference\") ?>)"
-               "            WHEN (item_type='S') THEN text(<? value(\"costing\") ?>)"
-               "            WHEN (item_type='T') THEN text(<? value(\"tooling\") ?>)"
-               "            WHEN (item_type='A') THEN text(<? value(\"assortment\") ?>)"
-               "            WHEN (item_type='O') THEN text(<? value(\"outside\") ?>)"
-               "            WHEN (item_type='L') THEN text(<? value(\"planning\") ?>)"
-               "            WHEN (item_type='K') THEN text(<? value(\"kit\") ?>)"
-               "            ELSE text(<? value(\"error\") ?>)"
-               "       END AS item_type,"
-               "       uom_name "
-               "FROM item, classcode, uom "
-               "WHERE ( (item_classcode_id=classcode_id)"
-               " AND (item_inv_uom_id=uom_id)"
-               "<? if exists(\"showPurchased\") ?>"
-               " AND (item_type IN ('P', 'O'))"
-               "<? elseif exists(\"showManufactured\") ?>"
-               " AND (item_type IN ('M', 'F', 'B','K'))"
-               "<? elseif exists(\"showSold\") ?>"
-               " AND (item_sold)"
-               "<? endif ?>"
-               "<? if exists(\"onlyShowActive\") ?>"
-               " AND (item_active)"
-               "<? endif ?>"
-               ") ORDER BY"
-               "<? if exists(\"ListNumericItemNumbersFirst\") ?>"
-               " toNumeric(item_number, 999999999999999),"
-               "<? endif ?>"
-               " item_number;" );
-
-  ParameterList params;
-
+  display::setParams(params);
   if(_showPurchased->isChecked())
     params.append("showPurchased");
   else if(_showManufactured->isChecked())
     params.append("showManufactured");
   else if(_showSold->isChecked())
     params.append("showSold");
-
-  if (!_showInactive->isChecked())
-    params.append("onlyShowActive");
 
   if (_preferences->boolean("ListNumericItemNumbersFirst"))
     params.append("ListNumericItemNumbersFirst");
@@ -215,43 +162,15 @@ void items::sFillList( int pItemid, bool pLocal )
   params.append("kit", tr("Kit"));
   params.append("error", tr("Error"));
 
-  MetaSQLQuery mql(sql);
-  XSqlQuery r = mql.toQuery(params);
-
-  if ((pItemid != -1) && (pLocal))
-    _item->populate(r, pItemid);
-  else
-    _item->populate(r);
-}
-
-void items::sFillList()
-{
-  sFillList(-1, FALSE);
-}
-
-void items::sSearch( const QString &pTarget )
-{
-  _item->clearSelection();
-  int i;
-  for (i = 0; i < _item->topLevelItemCount(); i++)
-  {
-    if (_item->topLevelItem(i)->text(0).startsWith(pTarget, Qt::CaseInsensitive))
-      break;
-  }
-
-  if (i < _item->topLevelItemCount())
-  {
-    _item->setCurrentItem(_item->topLevelItem(i));
-    _item->scrollToItem(_item->topLevelItem(i));
-  }
+  return true;
 }
 
 void items::sCopy()
 {
   ParameterList params;
-  params.append("item_id", _item->id());
+  params.append("item_id", list()->id());
 
-  copyItem newdlg(this, "", TRUE);
+  copyItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

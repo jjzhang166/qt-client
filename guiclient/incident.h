@@ -33,6 +33,8 @@ public:
     Q_INVOKABLE virtual void    populate();
     Q_INVOKABLE virtual bool    save(bool);
 
+    QPushButton* _print;
+
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sCancel();

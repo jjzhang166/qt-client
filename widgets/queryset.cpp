@@ -30,12 +30,14 @@ QuerySet::QuerySet(QWidget *parent, Qt::WindowFlags fl)
   {
     _itemdlg = new QueryItem(0, Qt::Dialog);
     if (_itemdlg)
+    {
       _itemdlg->setWindowModality(Qt::WindowModal);
+      connect(_itemdlg, SIGNAL(closed(bool)), this, SLOT(sFillList()));
+    }
   }
   else
     _itemdlg = 0;
 
-  connect(_itemdlg,    SIGNAL(closed(bool)),      this, SLOT(sFillList()));
   connect(_qryDelete,  SIGNAL(clicked()),         this, SLOT(sDelete()));
   connect(_qryEdit,    SIGNAL(clicked()),         this, SLOT(sEdit()));
   connect(_qryList,    SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

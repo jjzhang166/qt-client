@@ -10,78 +10,39 @@
 
 #include "projects.h"
 
-#include <QVariant>
+#include <QAction>
+#include <QMenu>
 #include <QMessageBox>
-//#include <QStatusBar>
+#include <QVariant>
+
 #include <parameter.h>
-#include <QWorkspace>
+
 #include "project.h"
 
-/*
- *  Constructs a projects as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
-projects::projects(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "projects", fl)
 {
-    setupUi(this);
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Projects"));
+  setMetaSQLOptions("projects", "detail");
+  setNewVisible(true);
+  queryAction()->setVisible(false);
+  queryAction()->setEnabled(false);
 
-//    (void)statusBar();
-
-    // signals and slots connections
-    connect(_showComplete, SIGNAL(clicked()), this, SLOT(sFillList()));
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-    connect(_prj, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-    connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-    connect(_prj, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-projects::~projects()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void projects::languageChange()
-{
-    retranslateUi(this);
-}
-
-//Added by qt3to4:
-#include <QMenu>
-
-void projects::init()
-{
-//  statusBar()->hide();
-  
   if (_privileges->check("MaintainProjects"))
-  {
-    connect(_prj, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_prj, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_prj, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_prj, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(FALSE);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 
-  _prj->addColumn(tr("Number"), -1,           Qt::AlignCenter, true, "prj_number" );
-  _prj->addColumn(tr("Name"),   _orderColumn, Qt::AlignLeft,   true, "prj_name"   );
-  _prj->addColumn(tr("Status"), _itemColumn,  Qt::AlignCenter, true, "prj_status" );
+  list()->addColumn(tr("Number"), _orderColumn, Qt::AlignLeft, true, "prj_number" );
+  list()->addColumn(tr("Name"), -1, Qt::AlignLeft, true, "prj_name"   );
+  list()->addColumn(tr("Status"), _itemColumn,  Qt::AlignCenter, true, "prj_status" );
 
   connect(omfgThis, SIGNAL(projectsUpdated(int)), this, SLOT(sFillList()));
+  connect(_showComplete, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
   sFillList();
 }
@@ -100,7 +61,7 @@ void projects::sNew()
 void projects::sEdit()
 {
   ParameterList params;
-  params.append("prj_id", _prj->id());
+  params.append("prj_id", list()->id());
   params.append("mode", "edit");
 
   project newdlg(this, "", TRUE);
@@ -112,7 +73,7 @@ void projects::sEdit()
 void projects::sView()
 {
   ParameterList params;
-  params.append("prj_id", _prj->id());
+  params.append("prj_id", list()->id());
   params.append("mode", "view");
 
   project newdlg(this, "", TRUE);
@@ -123,7 +84,7 @@ void projects::sView()
 void projects::sDelete()
 {
   q.prepare("SELECT deleteProject(:prj_id) AS result");
-  q.bindValue(":prj_id", _prj->id());
+  q.bindValue(":prj_id", list()->id());
   q.exec();
   if(q.first())
   {
@@ -162,40 +123,30 @@ void projects::sDelete()
   sFillList();
 }
 
-void projects::sPopulateMenu(QMenu *pMenu)
+void projects::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  pMenu->insertItem("View...", this, SLOT(sView()), 0);
+  pMenu->addAction("View...", this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem("Edit...", this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainProjects"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction("Edit...", this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainProjects"));
 
-  menuItem = pMenu->insertItem("Delete...", this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainProjects"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction("Delete...", this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainProjects"));
 }
 
-void projects::sFillList()
+bool projects::setParams(ParameterList &params)
 {
-  QString sql( "SELECT prj_id,"
-               "       prj_number, prj_name,"
-               "       CASE WHEN(prj_status='P') THEN :planning"
-               "            WHEN(prj_status='O') THEN :open"
-               "            WHEN(prj_status='C') THEN :complete"
-               "            ELSE :undefined"
-               "       END AS prj_status "
-               "FROM prj " );
-  if (!_showComplete->isChecked())
-    sql += " WHERE (prj_status <> 'C') ";
-  sql += "ORDER BY prj_number;";
-  q.prepare(sql);
-  q.bindValue(":planning", tr("Concept"));
-  q.bindValue(":open", tr("In-Process"));
-  q.bindValue(":complete", tr("Complete"));
-  q.bindValue(":undefined", tr("Undefined"));
-  q.exec();
-  _prj->populate(q);
+  display::setParams(params);
+  if (_showComplete->isChecked())
+    params.append("showComplete",true);
+
+  params.append("planning", tr("Concept"));
+  params.append("open", tr("In-Process"));
+  params.append("complete", tr("Complete"));
+  params.append("undefined", tr("Undefined"));
+
+  return true;
 }
 

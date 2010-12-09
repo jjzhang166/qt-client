@@ -22,6 +22,8 @@ public:
     docAttach(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~docAttach();
 
+    QPushButton* _save;
+
 public slots:
     virtual void set( const ParameterList & pParams );
     virtual void sFileList();

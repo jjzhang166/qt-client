@@ -14,46 +14,38 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QDesktopWidget>
-#include <QScriptEngineDebugger>
+#include <QPushButton>
 #include <QShowEvent>
 #include <QWorkspace>
-#include <QtScript>
 
+#include "xcheckbox.h"
 #include "xtsettings.h"
 #include "guiclient.h"
-#include "scripttoolbox.h"
-
-#include "../scriptapi/qeventproto.h"
-#include "../scriptapi/parameterlistsetup.h"
+#include "scriptablePrivate.h"
+#include "shortcuts.h"
 
 //
 // XWidgetPrivate
 //
-class XWidgetPrivate
+class XWidgetPrivate : public ScriptablePrivate
 {
   friend class XWidget;
 
   public:
-    XWidgetPrivate();
-    ~XWidgetPrivate();
+    XWidgetPrivate(XWidget *parent);
+    virtual ~XWidgetPrivate();
 
+    XWidget * _parent;
     bool _shown;
-    bool _scriptLoaded;
-    QScriptEngine * _engine;
-    QScriptEngineDebugger * _debugger;
 };
 
-XWidgetPrivate::XWidgetPrivate()
+XWidgetPrivate::XWidgetPrivate(XWidget *parent) : ScriptablePrivate(false, parent), _parent(parent)
 {
   _shown = false;
-  _scriptLoaded = false;
-  _engine = 0;
 }
 
 XWidgetPrivate::~XWidgetPrivate()
 {
-  if(_engine)
-    delete _engine;
 }
 
 XWidget::XWidget(QWidget * parent, Qt::WindowFlags flags)
@@ -66,8 +58,7 @@ XWidget::XWidget(QWidget * parent, Qt::WindowFlags flags)
     setWindowModality(Qt::ApplicationModal);
   }
 
-  _private = new XWidgetPrivate();
-  ScriptToolbox::setLastWindow(this);
+  _private = new XWidgetPrivate(this);
 }
 
 XWidget::XWidget(QWidget * parent, const char * name, Qt::WindowFlags flags)
@@ -84,7 +75,7 @@ XWidget::XWidget(QWidget * parent, const char * name, Qt::WindowFlags flags)
   if(name)
     setObjectName(name);
 
-  _private = new XWidgetPrivate();
+  _private = new XWidgetPrivate(this);
 }
 
 XWidget::~XWidget()
@@ -96,12 +87,7 @@ XWidget::~XWidget()
 void XWidget::closeEvent(QCloseEvent *event)
 {
   event->accept(); // we have no reason not to accept and let the script change it if needed
-  if(_private->_engine && (_private->_engine->globalObject().property("closeEvent").isFunction()))
-  {
-    QScriptValueList args;
-    args << _private->_engine->toScriptValue((QEvent*)event);
-    _private->_engine->globalObject().property("closeEvent").call(QScriptValue(), args);
-  }
+  _private->callCloseEvent(event);
 
   if(event->isAccepted())
   {
@@ -153,12 +139,17 @@ void XWidget::showEvent(QShowEvent *event)
       }
     }
 
-    loadScriptEngine();
+    _private->loadScriptEngine();
 
     QList<XCheckBox*> allxcb = findChildren<XCheckBox*>();
     for (int i = 0; i < allxcb.size(); ++i)
       allxcb.at(i)->init();
+
+    shortcuts::setStandardKeys(this);
   }
+
+  _private->callShowEvent(event);
+
   QWidget::showEvent(event);
 }
 
@@ -166,7 +157,7 @@ enum SetResponse XWidget::set( const ParameterList & pParams )
 {
   _lastSetParams = pParams;
 
-  loadScriptEngine();
+  _private->loadScriptEngine();
 
   QTimer::singleShot(0, this, SLOT(postSet()));
 
@@ -175,18 +166,7 @@ enum SetResponse XWidget::set( const ParameterList & pParams )
 
 enum SetResponse XWidget::postSet()
 {
-  loadScriptEngine();
-
-  enum SetResponse returnValue = NoError;
-  if(_private->_engine && _private->_engine->globalObject().property("set").isFunction())
-  {
-    QScriptValueList args;
-    args << ParameterListtoScriptValue(_private->_engine, _lastSetParams);
-    QScriptValue tmp = _private->_engine->globalObject().property("set").call(QScriptValue(), args);
-    SetResponsefromScriptValue(tmp, returnValue);
-  }
-
-  return returnValue;
+  return _private->callSet(_lastSetParams);
 }
 
 ParameterList XWidget::get() const
@@ -194,51 +174,4 @@ ParameterList XWidget::get() const
   return _lastSetParams;
 }
 
-void XWidget::loadScriptEngine()
-{
-  if(_private->_scriptLoaded)
-    return;
-  _private->_scriptLoaded = true;
 
-  QStringList parts = objectName().split(" ");
-  QStringList search_parts;
-  QString oName;
-  while(!parts.isEmpty())
-  {
-    search_parts.append(parts.takeFirst());
-    oName = search_parts.join(" ");
-    // load and run an QtScript that applies to this window
-    qDebug() << "Looking for a script on widget " << oName;
-    XSqlQuery scriptq;
-    scriptq.prepare("SELECT script_source, script_order"
-                    "  FROM script"
-                    " WHERE((script_name=:script_name)"
-                    "   AND (script_enabled))"
-                    " ORDER BY script_order;");
-    scriptq.bindValue(":script_name", oName);
-    scriptq.exec();
-    while(scriptq.next())
-    {
-      QString script = scriptHandleIncludes(scriptq.value("script_source").toString());
-      if(!_private->_engine)
-      {
-        _private->_engine = new QScriptEngine();
-        if (_preferences->boolean("EnableScriptDebug"))
-        {
-          _private->_debugger = new QScriptEngineDebugger(this);
-          _private->_debugger->attachTo(_private->_engine);
-        }
-        omfgThis->loadScriptGlobals(_private->_engine);
-        QScriptValue mywindow = _private->_engine->newQObject(this);
-        _private->_engine->globalObject().setProperty("mywindow", mywindow);
-      }
-
-      QScriptValue result = _private->_engine->evaluate(script, objectName());
-      if (_private->_engine->hasUncaughtException())
-      {
-        int line = _private->_engine->uncaughtExceptionLineNumber();
-        qDebug() << "uncaught exception at line" << line << ":" << result.toString();
-      }
-    }
-  }
-}

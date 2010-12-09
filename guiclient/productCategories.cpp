@@ -10,63 +10,31 @@
 
 #include "productCategories.h"
 
-#include <QVariant>
+#include <QAction>
+#include <QMenu>
 #include <QMessageBox>
+#include <QVariant>
+
 #include <parameter.h>
-//#include <QStatusBar>
 #include <openreports.h>
+
 #include "productCategory.h"
 
-/*
- *  Constructs a productCategories as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 productCategories::productCategories(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-//    (void)statusBar();
+  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
+  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_prodcat, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
+  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
+  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_deleteUnused, SIGNAL(clicked()), this, SLOT(sDeleteUnused()));
+  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
+  connect(_prodcat, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
 
-    // signals and slots connections
-    connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-    connect(_prodcat, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-    connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_deleteUnused, SIGNAL(clicked()), this, SLOT(sDeleteUnused()));
-    connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-    connect(_prodcat, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-productCategories::~productCategories()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void productCategories::languageChange()
-{
-    retranslateUi(this);
-}
-
-//Added by qt3to4:
-#include <QMenu>
-
-
-void productCategories::init()
-{
-//  statusBar()->hide();
-  
   _prodcat->addColumn(tr("Category"),    70, Qt::AlignLeft, true, "prodcat_code" );
   _prodcat->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "prodcat_descrip" );
 
@@ -85,6 +53,16 @@ void productCategories::init()
   }
 
   sFillList(-1);
+}
+
+productCategories::~productCategories()
+{
+    // no need to delete child widgets, Qt does it all for us
+}
+
+void productCategories::languageChange()
+{
+    retranslateUi(this);
 }
 
 void productCategories::sDelete()
@@ -151,15 +129,13 @@ void productCategories::sView()
 
 void productCategories::sPopulateMenu( QMenu * menu )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem("Edit Product Cateogry...", this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainProductCategories"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction("Edit Product Cateogry...", this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainProductCategories"));
 
-  menuItem = menu->insertItem("Delete Product Category...", this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainProductCategories"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction("Delete Product Category...", this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainProductCategories"));
 }
 
 void productCategories::sPrint()

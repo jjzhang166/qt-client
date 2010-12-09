@@ -19,7 +19,7 @@ checkFormat::checkFormat(QWidget* parent, const char* name, bool modal, Qt::WFla
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
   _report->setCurrentIndex(-1);
 }
@@ -66,10 +66,9 @@ enum SetResponse checkFormat::set(const ParameterList &pParams)
 
       _name->setEnabled(FALSE);
       _report->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

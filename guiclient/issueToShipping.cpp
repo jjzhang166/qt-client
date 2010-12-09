@@ -40,6 +40,7 @@ issueToShipping::issueToShipping(QWidget* parent, const char* name, Qt::WFlags f
   _order->setAllowedStatuses(OrderLineEdit::Open);
   _order->setAllowedTypes(OrderLineEdit::Sales |
                           OrderLineEdit::Transfer);
+  _order->setLockSelected(true);
 
   _ship->setEnabled(_privileges->check("ShipOrders"));
 
@@ -575,15 +576,21 @@ void issueToShipping::sShip()
   q.exec();
   if (q.first())
   {
+    // Reset _order so that lock is released prior to shipping and potentially auto receiving
+    // to avoid locking conflicts
+    _transDate->setDate(omfgThis->dbDate());
+    _order->setId(-1);
+    _order->setFocus();
+
     ParameterList params;
     params.append("shiphead_id", q.value("shiphead_id").toInt());
 
     shipOrder newdlg(this, "", TRUE);
     if (newdlg.set(params) == NoError && newdlg.exec() != XDialog::Rejected)
     {
-      _transDate->setDate(omfgThis->dbDate());
-      _order->setId(-1);
-      _order->setFocus();
+      //_transDate->setDate(omfgThis->dbDate());
+      //_order->setId(-1);
+      //_order->setFocus();
     }
   }
   else if (q.lastError().type() != QSqlError::NoError)
@@ -685,7 +692,7 @@ void issueToShipping::sFillList()
                 "         ELSE "
                 "           0 "
                 "       END AS job, "
-                "       s2.shiphead_number, "
+                "       MIN(s1.shiphead_number) AS shiphead_number, "
                 "       formatSoLineNumber(coitem_id) AS linenumber, item_number,"
                 "       (item_descrip1 || ' ' || item_descrip2) AS itemdescrip,"
                 "       warehous_code,"
@@ -703,9 +710,10 @@ void issueToShipping::sFillList()
                 "         AND (s1.shiphead_order_type='SO') "
                 "         AND (NOT s1.shiphead_shipped) )"
                 "      ) ON  (shipitem_orderitem_id=coitem_id) "
-                "     LEFT OUTER JOIN shiphead s2 ON ((s2.shiphead_order_id=coitem_cohead_id) "
-                "                                 AND (s2.shiphead_order_type='SO') "
-                "                                 AND (NOT s2.shiphead_shipped )) "
+// TODO - need a facility to select which shipment you are working on
+//                "     LEFT OUTER JOIN shiphead s2 ON ((s2.shiphead_order_id=coitem_cohead_id) "
+//                "                                 AND (s2.shiphead_order_type='SO') "
+//                "                                 AND (NOT s2.shiphead_shipped )) "
                 "WHERE ( (coitem_itemsite_id=itemsite_id)"
                 " AND (coitem_qty_uom_id=uom_id)"
                 " AND (itemsite_item_id=item_id)"
@@ -718,7 +726,7 @@ void issueToShipping::sFillList()
                 "         coitem_scheddate, uom_name,"
                 "         coitem_qtyord, coitem_qtyshipped, coitem_qtyreturned, "
                 "         coitem_linenumber, coitem_subnumber, "
-                "         s2.shiphead_number, "
+//                "         s2.shiphead_number, "
                 "         itemsite_costmethod, itemsite_controlmethod "
                 "<? elseif exists(\"tohead_id\") ?>"
                 "SELECT toitem_id AS lineitem_id, "
@@ -761,10 +769,10 @@ void issueToShipping::sFillList()
                 ;
   MetaSQLQuery listm(sql);
   XSqlQuery listq = listm.toQuery(listp);
+  _soitem->populate(listq, true);
   if (listq.first())
   {
     _shipment->setText(listq.value("shiphead_number").toString());
-    _soitem->populate(listq, true);
   }
   if (listq.lastError().type() != QSqlError::NoError)
   {

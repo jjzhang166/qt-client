@@ -23,6 +23,8 @@ public:
     allocateReservations(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~allocateReservations();
 
+    QPushButton* _submit;
+
 public slots:
     virtual void sAllocate();
     virtual void sSubmit();

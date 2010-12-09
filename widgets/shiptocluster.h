@@ -11,7 +11,7 @@
 #ifndef shiptoCluster_h
 #define shiptoCluster_h
 
-#include "xlineedit.h"
+#include "virtualCluster.h"
 
 #include "widgets.h"
 
@@ -20,11 +20,36 @@ class QPushButton;
 
 class ShiptoCluster;
 
-class XTUPLEWIDGETS_EXPORT ShiptoEdit : public XLineEdit
+class XTUPLEWIDGETS_EXPORT shipToList : public VirtualList
+{
+    Q_OBJECT
+
+public:
+    shipToList(QWidget*, Qt::WindowFlags = 0);
+    void set( const ParameterList & pParams );
+
+private:
+    QLabel* _custNumber;
+    QLabel* _custName;
+    QLabel* _custAddr;
+
+};
+
+class XTUPLEWIDGETS_EXPORT shipToSearch : public VirtualSearch
+{
+    Q_OBJECT
+
+public:
+    shipToSearch(QWidget*, Qt::WindowFlags = 0);
+    void set( ParameterList & pParams );
+
+private:
+    int _custid;
+};
+
+class XTUPLEWIDGETS_EXPORT ShiptoEdit : public VirtualClusterLineEdit
 {
   Q_OBJECT
-
-  friend class ShiptoCluster;
 
   public:
     ShiptoEdit(QWidget *, const char * = 0);
@@ -35,53 +60,39 @@ class XTUPLEWIDGETS_EXPORT ShiptoEdit : public XLineEdit
     void nameChanged(const QString &);
     void address1Changed(const QString &);
     void requestList();
-    void newId(int);
     void newCustid(int);
-    void valid(bool);
     void disableList(bool);
 
   public slots:
     void setId(int);
     void setCustid(int);
-    void sParse();
+    void sNew();
+    void sList();
+    void sSearch();
+
+  protected slots:
+    shipToList* listFactory();
+    shipToSearch* searchFactory();
 
   private:
     int  _custid;
-
-    void clear();
 };
 
 
-class XTUPLEWIDGETS_EXPORT ShiptoCluster : public QWidget
+class XTUPLEWIDGETS_EXPORT ShiptoCluster : public VirtualCluster
 {
   Q_OBJECT
 
   public:
     ShiptoCluster(QWidget *, const char * = 0);
 
-    void setReadOnly(bool);
-
-    Q_INVOKABLE inline int id()       { return _shiptoNumber->_id;     }
-    inline int custid()   { return _shiptoNumber->_custid; }
-    inline bool isValid() { return _shiptoNumber->_valid;  }
+    inline int custid()   { return static_cast<ShiptoEdit*>(_number)->custid(); }
 
   signals:
-    void newId(int);
-    void valid(bool);
     void newCustid(int);
 
   public slots:
-    void setId(int);
     void setCustid(int);
-
-  private slots:
-    void sList();
-
-  private:
-    ShiptoEdit  *_shiptoNumber;
-    QPushButton *_list;
-    QLabel      *_shiptoName;
-    QLabel      *_shiptoAddress1;
 };
 
 #endif

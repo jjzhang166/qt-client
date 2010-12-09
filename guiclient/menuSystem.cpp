@@ -14,10 +14,10 @@
 #include <QDir>
 #include <QMenu>
 #include <QMenuBar>
-#include <QToolBar>
 #include <QMessageBox>
 #include <QPixmap>
 #include <QPluginLoader>
+#include <QToolBar>
 #include <QWorkspace>
 
 #include "xtsettings.h"
@@ -28,22 +28,17 @@
 
 #include <csvimpplugininterface.h>
 
-#include "batchManager.h"
 #include "importhelper.h"
 
 #include "version.h"
 
 #include "menuSystem.h"
 
-#include "systemMessage.h"
 #include "eventManager.h"
 #include "users.h"
-#include "submitAction.h"
 #include "userPreferences.h"
 #include "hotkeys.h"
 #include "errorLog.h"
-
-#include "databaseInformation.h"
 
 #include "accountNumbers.h"
 #include "calendars.h"
@@ -76,19 +71,10 @@
 #include "exportData.h"
 #include "importData.h"
 
-#include "configureIE.h"
-#include "configureIM.h"
-#include "configurePD.h"
-#include "configureMS.h"
-#include "configureWO.h"
-#include "configureSO.h"
-#include "configurePO.h"
-#include "configureGL.h"
-#include "configureEncryption.h"
-#include "configureCC.h"
-#include "configureCRM.h"
-
+#include "checkForUpdates.h"
 #include "registration.h"
+
+#include "setup.h"
 
 extern QString __path;
 
@@ -116,7 +102,6 @@ menuSystem::menuSystem(GUIClient *Pparent) :
   geometryMenu     = 0;
 
   systemMenu		= new QMenu(parent);
-  configModulesMenu	= new QMenu(parent);
   masterInfoMenu	= new QMenu(parent);
   sysUtilsMenu		= new QMenu(parent);
   windowMenu		= new QMenu(parent);
@@ -125,7 +110,6 @@ menuSystem::menuSystem(GUIClient *Pparent) :
   employeeMenu          = new QMenu(parent);
 
   systemMenu->setObjectName("menu.sys");
-  configModulesMenu->setObjectName("menu.sys.configmodules");
   masterInfoMenu->setObjectName("menu.sys.masterinfo");
   sysUtilsMenu->setObjectName("menu.sys.utilities");
   windowMenu->setObjectName("menu.window");
@@ -133,7 +117,7 @@ menuSystem::menuSystem(GUIClient *Pparent) :
   designMenu->setObjectName("menu.sys.design");
 
 //  Window
-  windowMenu->setCheckable(TRUE);
+  // TODO: windowMenu->setCheckable(TRUE);
 
   cascade = new Action( parent, "window.cascade", tr("&Cascade"), parent->workspace(), SLOT(cascade()), windowMenu, true);
 
@@ -158,13 +142,12 @@ menuSystem::menuSystem(GUIClient *Pparent) :
 
   actionProperties acts[] = {
 
-    { "sys.scheduleSystemMessage",    tr("Schedule S&ystem Message..."),    SLOT(sScheduleSystemMessage()),    systemMenu, "IssueSystemMessages", NULL, NULL, _metrics->boolean("EnableBatchManager") },
-    { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, _metrics->boolean("EnableBatchManager") },
     { "sys.eventManager",             tr("E&vent Manager..."),              SLOT(sEventManager()),             systemMenu, "true",                                      NULL, NULL, true },
-    { "sys.batchManager",             tr("&xTuple Connect Console..."),          SLOT(sBatchManager()),             systemMenu, "true",                                      NULL, NULL, _metrics->boolean("EnableBatchManager") },
     { "sys.viewDatabaseLog",          tr("View Database &Log..."),          SLOT(sErrorLog()),                 systemMenu, "true",                                      NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, true },
+#ifndef Q_WS_MACX
     { "sys.preferences",              tr("P&references..."),                SLOT(sPreferences()),              systemMenu, "MaintainPreferencesSelf MaintainPreferencesOthers",  NULL,   NULL,   true },
+#endif
     { "sys.hotkeys",                  tr("&Hot Keys..."),                   SLOT(sHotKeys()),                  systemMenu, "true",  NULL,   NULL,   !(_privileges->check("MaintainPreferencesSelf") || _privileges->check("MaintainPreferencesOthers")) },
     { "sys.rescanPrivileges",         tr("Rescan &Privileges"),             SLOT(sRescanPrivileges()),         systemMenu, "true",                                      NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, true },
@@ -173,52 +156,13 @@ menuSystem::menuSystem(GUIClient *Pparent) :
 
     { "menu",                         tr("&Employees"),                     (char*)employeeMenu,               systemMenu, "true",                                      NULL, NULL, true },
     { "sys.employee",                 tr("&New..."),               	    SLOT(sNewEmployee()),            employeeMenu, "MaintainEmployees",               NULL, NULL, true },
-    { "sys.listEmployees",            tr("&List..."),             	    SLOT(sListEmployees()),          employeeMenu, "ViewEmployees MaintainEmployees",                   NULL, NULL, true },
-    { "sys.searchEmployees",          tr("&Search..."),       		    SLOT(sSearchEmployees()),        employeeMenu, "ViewEmployees MaintainEmployees",               NULL, NULL, true },
+    { "sys.listEmployees",            tr("&List..."),             	    SLOT(sListEmployees()),          employeeMenu, "ViewEmployees MaintainEmployees",           NULL, NULL, true },
+    { "sys.searchEmployees",          tr("&Search..."),       		    SLOT(sSearchEmployees()),        employeeMenu, "ViewEmployees MaintainEmployees",           NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                            employeeMenu, "true",                                      NULL, NULL, true },
-    { "sys.employeeGroups",           tr("Employee &Groups..."),            SLOT(sEmployeeGroups()),         employeeMenu, "ViewEmployeeGroups MaintainEmployeeGroups",                   NULL, NULL, true },
+    { "sys.employeeGroups",           tr("Employee &Groups..."),            SLOT(sEmployeeGroups()),         employeeMenu, "ViewEmployeeGroups MaintainEmployeeGroups", NULL, NULL, true },
 
     { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, true },
-    { "sys.scheduleServerMaintenance",tr("Schedule Server Mai&ntenance..."),SLOT(sScheduleServerMaintenance()),systemMenu, "MaintainServer",      NULL, NULL, _metrics->boolean("EnableBatchManager") },
-    { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, _metrics->boolean("EnableBatchManager") },
-
-  //  System | Configure Modules
-    { "menu",			tr("&Configure Modules"),(char*)configModulesMenu,systemMenu,		"true",					NULL,	NULL,	true	},
-    { "sys.configurePD",	tr("&Products..."),	SLOT(sConfigurePD()),	configModulesMenu,	"ConfigurePD",	NULL,	NULL,	true	},
-    { "sys.configureIM",	tr("&Inventory..."),	SLOT(sConfigureIM()),	configModulesMenu,	"ConfigureIM",	NULL,	NULL,	true	},
-    { "sys.configurePO",	tr("P&urchase..."),	SLOT(sConfigurePO()),	configModulesMenu,	"ConfigurePO",	NULL,	NULL,	true	},
-    { "sys.configureMS",	tr("Sch&edule..."),	SLOT(sConfigureMS()),	configModulesMenu,	"ConfigureMS",	NULL,	NULL,	 (_metrics->value("Application") != "PostBooks")	},
-    { "sys.configureWO",	tr("&Manufacture..."),	SLOT(sConfigureWO()),	configModulesMenu,	"ConfigureWO",	NULL,	NULL,	true	},
-    { "sys.configureCRM",	tr("&CRM..."),		SLOT(sConfigureCRM()),	configModulesMenu,	"ConfigureCRM",	NULL,	NULL,	true	},
-    { "sys.configureSO",	tr("&Sales..."),	SLOT(sConfigureSO()),	configModulesMenu,	"ConfigureSO",	NULL,	NULL,	true	},
-    { "sys.configureGL",	tr("&Accounting..."),	SLOT(sConfigureGL()),	configModulesMenu,	"ConfigureGL",	NULL,	NULL,	true	},
-
-  //  Master Information
-    { "menu",			tr("&Master Information"),	(char*)masterInfoMenu,		systemMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.databaseInformation",tr("&Database Information..."),	SLOT(sDatabaseInformation()),	masterInfoMenu,	"ConfigDatabaseInfo",	NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.images",		tr("&Images..."),	SLOT(sImages()),	masterInfoMenu,	"MaintainImages",	NULL,	NULL,	true	},
-    { "sys.forms",		tr("&Forms..."),	SLOT(sForms()),		masterInfoMenu,	"MaintainForms",	NULL,	NULL,	true	},
-    { "sys.labelForms",		tr("&Label Forms..."),	SLOT(sLabelForms()),	masterInfoMenu,	"MaintainForms",	NULL,	NULL,	true	},
-    { "sys.calendars",		tr("C&alendars..."),	SLOT(sCalendars()),	masterInfoMenu,	"MaintainCalendars",	NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.currencies",		tr("Curre&ncies..."),	SLOT(sCurrencies()),	masterInfoMenu,	"CreateNewCurrency",	NULL,	NULL,	true	},
-    { "sys.exchangeRates",	tr("&Exchange Rates..."),SLOT(sExchangeRates()),masterInfoMenu,	"MaintainCurrencyRates ViewCurrencyRates",
-															NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.encryption",         tr("Encr&yption..."),   SLOT(sConfigureEncryption()), masterInfoMenu, "ConfigureCC ConfigureEncryption",
-                                                                                                                        NULL,	NULL,	true	},
-    { "sys.configureCC",	tr("&Credit Cards..."),	SLOT(sConfigureCC()),	masterInfoMenu,	"ConfigureCC",	        NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.countries",		tr("Co&untries..."),	SLOT(sCountries()),	masterInfoMenu,	"MaintainCountries",	NULL,	NULL,	true	},
-    { "sys.states",	tr("&States and Provinces..."),	SLOT(sStates()),	masterInfoMenu,	"MaintainStates",	NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.locales",		tr("L&ocales..."),	SLOT(sLocales()),	masterInfoMenu,	"MaintainLocales",	NULL,	NULL,	true	},
-    { "sys.commentTypes",	tr("Comment &Types..."),SLOT(sCommentTypes()),	masterInfoMenu,	"MaintainCommentTypes", NULL, NULL,	true	},
-    { "sys.departments",	tr("Depart&ments..."),	SLOT(sDepartments()),	masterInfoMenu,	"ViewDepartments MaintainDepartments",	NULL,	NULL,	true	},
-    { "separator",		NULL,			NULL,			masterInfoMenu,	"true",			NULL,	NULL,	true	},
-    { "sys.configureIE", tr("Configure Data Import and E&xport..."), SLOT(sConfigureIE()), masterInfoMenu, "ConfigureImportExport", NULL, NULL, true },
-    { "sys.CSVAtlases",  tr("Maintain CS&V Atlases..."),             SLOT(sCSVAtlases()),  masterInfoMenu, "ConfigureImportExport", NULL, NULL, loadCSVPlugin() },
+    { "sys.checkForUpdates",          tr("Check For Updates..."),           SLOT(sCheckForUpdates()),          systemMenu, "#superuser",          NULL, NULL, true },
 
   //  Design
     { "menu",           tr("&Design"),                (char*)designMenu,      systemMenu, "true",                        NULL, NULL, true },
@@ -233,14 +177,19 @@ menuSystem::menuSystem(GUIClient *Pparent) :
     { "sys.packages",   tr("&Packages..."),           SLOT(sPackages()),      designMenu, "ViewPackages",                NULL, NULL, true },
 
   // Utilities
-    { "menu",              tr("&System Utilities"),(char*)sysUtilsMenu, systemMenu,    "true",                            NULL, NULL, true },
+    { "menu",              tr("&Utilities"),(char*)sysUtilsMenu, systemMenu,    "true",                            NULL, NULL, true },
     { "sys.fixACL",        tr("&Access Control"),  SLOT(sFixACL()),     sysUtilsMenu,  "fixACL+#superuser",           NULL, NULL, true },
     { "sys.fixSerial",     tr("&Serial Columns"),  SLOT(sFixSerial()),  sysUtilsMenu,  "FixSerial+#superuser", NULL, NULL, true },
+    { "separator",      NULL,                         NULL,             sysUtilsMenu, "true",                        NULL, NULL, true },
+    { "sys.CSVAtlases",  tr("Maintain CS&V Atlases..."),             SLOT(sCSVAtlases()),  sysUtilsMenu, "ConfigureImportExport", NULL, NULL, loadCSVPlugin() },
     { "sys.importData",    tr("&Import Data"),     SLOT(sImportData()), sysUtilsMenu,  "ImportXML",        NULL, NULL, true },
     { "sys.exportData",    tr("&Export Data"),     SLOT(sExportData()), sysUtilsMenu,  "ExportXML",       NULL, NULL, true },
+    { "separator",		NULL,				NULL,				sysUtilsMenu,	"true",	NULL,	NULL,	true	},
+    { "sys.printAlignmentPage",	tr("Print &Alignment Page..."),	SLOT(sPrintAlignment()),	sysUtilsMenu,	"true",	NULL,	NULL,	true	},
 
-    { "separator",		NULL,				NULL,				systemMenu,	"true",	NULL,	NULL,	true	},
-    { "sys.printAlignmentPage",	tr("Print &Alignment Page..."),	SLOT(sPrintAlignment()),	systemMenu,	"true",	NULL,	NULL,	true	},
+    // Setup
+    { "sys.setup",	tr("&Setup..."),	SLOT(sSetup()),	systemMenu,	NULL,	NULL,	NULL,	true	},
+
     { "separator",		NULL,				NULL,				systemMenu,	"true",	NULL,	NULL,	true	},
     { "sys.exit",	tr("E&xit xTuple ERP..."), SLOT(sExit()),				systemMenu,	"true",	NULL,	NULL,	true	},
 
@@ -341,11 +290,11 @@ void menuSystem::sPrepareWindowMenu()
 
   if(!omfgThis->showTopLevel())
   {
-    cascade->addTo(windowMenu);
-    tile->addTo(windowMenu);
+    windowMenu->addAction(cascade);
+    windowMenu->addAction(tile);
   }
-  closeActive->addTo(windowMenu);
-  closeAll->addTo(windowMenu);
+  windowMenu->addAction(closeActive);
+  windowMenu->addAction(closeAll);
 
   QWidgetList windows = omfgThis->windowList();
 
@@ -355,7 +304,7 @@ void menuSystem::sPrepareWindowMenu()
   closeActive->setEnabled(b);
   closeAll->setEnabled(b);
 
-  windowMenu->insertSeparator();
+  windowMenu->addSeparator();
 
   QWidget * activeWindow = parent->workspace()->activeWindow();
   if(omfgThis->showTopLevel())
@@ -371,23 +320,23 @@ void menuSystem::sPrepareWindowMenu()
       geometryMenu = new QMenu();
 
     geometryMenu->clear();
-    geometryMenu->setTitle(activeWindow->caption());
+    geometryMenu->setTitle(activeWindow->windowTitle());
 
     QString objName = activeWindow->objectName();
     
     _rememberPos->setChecked(xtsettingsValue(objName + "/geometry/rememberPos", true).toBool());
-    _rememberPos->addTo(geometryMenu);
+    geometryMenu->addAction(_rememberPos);
     _rememberSize->setChecked(xtsettingsValue(objName + "/geometry/rememberSize", true).toBool());
-    _rememberSize->addTo(geometryMenu);
+    geometryMenu->addAction(_rememberSize);
 
     windowMenu->addMenu(geometryMenu);
-    windowMenu->insertSeparator();
+    windowMenu->addSeparator();
   }
 
   QAction * m = 0;
   for (int cursor = 0; cursor < windows.count(); cursor++)
   {
-    m = windowMenu->addAction(windows.at(cursor)->caption(), this, SLOT(sActivateWindow()));
+    m = windowMenu->addAction(windows.at(cursor)->windowTitle(), this, SLOT(sActivateWindow()));
     if(m)
     {
       m->setData(cursor);
@@ -466,26 +415,9 @@ void menuSystem::sCloseActive()
     parent->workspace()->closeActiveWindow();
 }
 
-void menuSystem::sScheduleSystemMessage()
-{
-  ParameterList params;
-  params.append("mode", "new");
-
-  systemMessage newdlg(parent, "", TRUE);
-  newdlg.set(params);
-  newdlg.exec();
-}
-
 void menuSystem::sEventManager()
 {
   omfgThis->handleNewWindow(new eventManager());
-}
-
-void menuSystem::sBatchManager()
-{
-  batchManager *newdlg = new batchManager();
-  newdlg->setViewOtherEvents(_privileges->check("ViewOtherEvents"));
-  omfgThis->handleNewWindow(newdlg);
 }
 
 void menuSystem::sPreferences()
@@ -513,81 +445,6 @@ void menuSystem::sRescanPrivileges()
   omfgThis->initMenuBar();
 }
 
-void menuSystem::sDatabaseInformation()
-{
-  databaseInformation(parent, "", TRUE).exec();
-}
-
-void menuSystem::sImages()
-{
-  omfgThis->handleNewWindow(new images());
-}
-
-void menuSystem::sReports()
-{
-  omfgThis->handleNewWindow(new reports());
-}
-
-void menuSystem::sForms()
-{
-  omfgThis->handleNewWindow(new forms());
-}
-
-void menuSystem::sLabelForms()
-{
-  omfgThis->handleNewWindow(new labelForms());
-}
-
-void menuSystem::sCalendars()
-{
-  omfgThis->handleNewWindow(new calendars());
-}
-
-void menuSystem::sCurrencies()
-{
-  omfgThis->handleNewWindow(new currencies());
-}
-
-void menuSystem::sExchangeRates()
-{
-  omfgThis->handleNewWindow(new currencyConversions());
-}
-
-void menuSystem::sCountries()
-{
-  omfgThis->handleNewWindow(new countries());
-}
-
-void menuSystem::sStates()
-{
-  omfgThis->handleNewWindow(new states());
-}
-
-void menuSystem::sLocales()
-{
-  omfgThis->handleNewWindow(new locales());
-}
-
-void menuSystem::sCommentTypes()
-{
-  omfgThis->handleNewWindow(new commentTypes());
-}
-
-void menuSystem::sAccountNumbers()
-{
-  omfgThis->handleNewWindow(new accountNumbers());
-}
-
-void menuSystem::sDepartments()
-{
-  omfgThis->handleNewWindow(new departments());
-}
-
-void menuSystem::sConfigureIE()
-{
-  configureIE(parent, "", TRUE).exec();
-}
-
 void menuSystem::sCustomCommands()
 {
   omfgThis->handleNewWindow(new customCommands());
@@ -596,6 +453,11 @@ void menuSystem::sCustomCommands()
 void menuSystem::sPackages()
 {
   omfgThis->handleNewWindow(new packages());
+}
+
+void menuSystem::sReports()
+{
+  omfgThis->handleNewWindow(new reports());
 }
 
 void menuSystem::sMetasqls()
@@ -613,54 +475,14 @@ void menuSystem::sUIForms()
   omfgThis->handleNewWindow(new uiforms());
 }
 
-void menuSystem::sConfigureIM()
+void menuSystem::sSetup()
 {
-  configureIM(parent, "", TRUE).exec();
-}
+  ParameterList params;
+  params.append("module", Xt::SystemModule);
 
-void menuSystem::sConfigurePD()
-{
-  configurePD(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureMS()
-{
-  configureMS(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureWO()
-{
-  configureWO(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigurePO()
-{
-  configurePO(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureSO()
-{
-  configureSO(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureGL()
-{
-  configureGL(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureEncryption()
-{
-  configureEncryption(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureCC()
-{
-  configureCC(parent, "", TRUE).exec();
-}
-
-void menuSystem::sConfigureCRM()
-{
-  configureCRM(parent, "", TRUE).exec();
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }
 
 void menuSystem::sMaintainUsers()
@@ -695,16 +517,6 @@ void menuSystem::sSearchEmployees()
 void menuSystem::sEmployeeGroups()
 {
   omfgThis->handleNewWindow(new empGroups());
-}
-
-void menuSystem::sScheduleServerMaintenance()
-{
-  ParameterList params;
-  params.append("action_name", "ServerMaintenance");
-
-  submitAction newdlg(parent, "", TRUE);
-  newdlg.set(params);
-  newdlg.exec();
 }
 
 void menuSystem::sErrorLog()
@@ -827,5 +639,10 @@ void menuSystem::sCommunityTranslation()
 void menuSystem::sCommunityXchange()
 {
   omfgThis->launchBrowser(omfgThis, "http://www.xtuple.com/xchange");
+}
+
+void menuSystem::sCheckForUpdates()
+{
+  omfgThis->handleNewWindow(new checkForUpdates());
 }
 

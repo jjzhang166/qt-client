@@ -19,12 +19,10 @@ terms::terms(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_proximo, SIGNAL(toggled(bool)), _cutOffDay, SLOT(setEnabled(bool)));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_days, SIGNAL(toggled(bool)), this, SLOT(sTypeChanged()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_code, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   
   _discountPercent->setValidator(omfgThis->percentVal());
@@ -79,11 +77,9 @@ enum SetResponse terms::set(const ParameterList &pParams)
       _discountDays->setEnabled(FALSE);
       _discountPercent->setEnabled(FALSE);
       _cutOffDay->setEnabled(FALSE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -202,21 +198,21 @@ void terms::sTypeChanged()
     _dueDaysLit->setText(tr("Due Days:"));
     _discountDaysLit->setText(tr("Discnt. Days:"));
 
-    _dueDays->setMinValue(0);
-    _dueDays->setMaxValue(999);
-    _discountDays->setMinValue(0);
-    _discountDays->setMaxValue(999);
+    _dueDays->setMinimum(0);
+    _dueDays->setMaximum(999);
+    _discountDays->setMinimum(0);
+    _discountDays->setMaximum(999);
   }
   else
   {
     _dueDaysLit->setText(tr("Due Day:"));
     _discountDaysLit->setText(tr("Discnt. Day:"));
 
-    _dueDays->setMinValue(1);
-    _dueDays->setMaxValue(31);
-    _discountDays->setMinValue(1);
-    _discountDays->setMaxValue(31);
-    _cutOffDay->setMaxValue(31);
+    _dueDays->setMinimum(1);
+    _dueDays->setMaximum(31);
+    _discountDays->setMinimum(1);
+    _discountDays->setMaximum(31);
+    _cutOffDay->setMaximum(31);
   }
 }
 

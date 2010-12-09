@@ -74,10 +74,10 @@ static void sNoConversionRate(QWidget* parent, const int curr_id, const QDate& e
 	errorMap[currDatePair] = 0;
 	currMap = errorMap.find(currDatePair);
     }
-    if (currMap.data() <= 0)
+    if (currMap.value() <= 0)
     {
 	displayMsg = true;
-	errorMap[currDatePair] = currMap.data() + 1;
+	errorMap[currDatePair] = currMap.value() + 1;
     }
     errorListLock.unlock();
 
@@ -147,28 +147,29 @@ while _valueBaseWidget is a QLabel; they emit different signals.
 CurrCluster::CurrCluster(QWidget * parent, const char* name)
     : CurrDisplay(parent, name)
 {
+  _baseVisible     = true;
+  _currencyEnabled = true;
+
     setObjectName("CurrCluster");
     setWindowTitle("CurrCluster");
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    _grid->remove(_valueLocalWidget);
-    _grid->expand(2, 2);
+    _grid->removeWidget(_valueLocalWidget);
 
     _currency = new XComboBox(this, "_currency");
     //_currency->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _currency->setMaximumSize(MAXCURRWIDTH, MAXHEIGHT);
-    _grid->addWidget(_currency, 0, 0);
-
-    _grid->addWidget(_valueLocalWidget, 0, 1);
-
-    _valueBaseLit = new QLabel("", this);
-    _valueBaseLit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _valueBaseLit->setAlignment(Qt::AlignRight);
-    _grid->addWidget(_valueBaseLit, 1, 0);
+    _grid->addWidget(_valueLocalWidget, 0, 0);
+    _grid->addWidget(_currency, 0, 1);
 
     _valueBaseWidget = new QLabel("", this);
     _valueBaseWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _grid->addWidget(_valueBaseWidget, 1, 1);
+    _grid->addWidget(_valueBaseWidget, 1, 0);
+
+    _valueBaseLit = new QLabel("", this);
+    _valueBaseLit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _valueBaseLit->setAlignment(Qt::AlignLeft);
+    _grid->addWidget(_valueBaseLit, 1, 1);
 
     setFocusProxy(_valueLocalWidget);
     setFocusPolicy(Qt::StrongFocus);
@@ -180,8 +181,8 @@ CurrCluster::CurrCluster(QWidget * parent, const char* name)
     
     _valueBaseWidget->setAlignment(Qt::AlignRight|Qt::AlignTop);
 
-    setTabOrder(_currency, _valueLocalWidget);
-    setTabOrder(_valueLocalWidget, 0);
+ //   setTabOrder(_currency, _valueLocalWidget);
+ //   setTabOrder(_valueLocalWidget, 0);
 
     connect(_currency, SIGNAL(newID(int)), this, SLOT(sId(int)));
     connect(_valueLocalWidget, SIGNAL(lostFocus()), this, SLOT(sLostFocus()));
@@ -422,12 +423,15 @@ void CurrCluster::setEnabled(bool newValue)
     _currency->setEnabled(newValue && currencyEnabled());
 }
 
-void CurrCluster::setPaletteForegroundColor(const QColor & newColor)
+void CurrCluster::setPaletteForegroundColor(const QColor &newColor)
 {
-    CurrDisplay::setPaletteForegroundColor(newColor);
-    _currency->setPaletteForegroundColor(newColor);
-    _valueBaseLit->setPaletteForegroundColor(newColor);
-    _valueBaseWidget->setPaletteForegroundColor(newColor);
+  CurrDisplay::setPaletteForegroundColor(newColor);
+
+  QPalette p = _valueLocalWidget->palette();
+  p.setColor(QPalette::Text, newColor);
+  _currency->setPalette(p);
+  _valueBaseLit->setPalette(p);
+  _valueBaseWidget->setPalette(p);
 }
 
 // deprecated
@@ -465,14 +469,15 @@ int CurrDisplay::baseId()
   if (_x_preferences && _baseId <= 0)
   {
     XSqlQuery baseQuery;
-    baseQuery.prepare("SELECT curr_id, curr_symbol " //currConcat(curr_id) AS curr_symbol "
+    baseQuery.prepare("SELECT curr_id, "
+                      "  ' ' || curr_abbr || '-' || curr_symbol AS f_curr " //currConcat(curr_id) AS curr_symbol "
 		      "FROM curr_symbol "
 		      "WHERE curr_base = TRUE;");
     baseQuery.exec();
     if (baseQuery.first())
     {
 	_baseId = baseQuery.value("curr_id").toInt();
-	_baseAbbr = baseQuery.value("curr_symbol").toString();
+        _baseAbbr = baseQuery.value("f_curr").toString();
     }
     else if (baseQuery.lastError().number() == 2000 /* NOT FOUND */)
     {
@@ -499,9 +504,9 @@ QString CurrDisplay::baseCurrAbbr()
 }
 
 CurrDisplay::CurrDisplay(QWidget * parent, const char* name)
-    : QWidget(parent, name)
+    : QWidget(parent)
 {
-    setObjectName("CurrDisplay");
+    setObjectName(name ? name : "CurrDisplay");
     setWindowTitle("CurrDisplay");
 
     _grid = new QGridLayout(this);
@@ -712,7 +717,7 @@ void CurrDisplay::setLocalValue(double newValue)
   if (ABS(_valueLocal - newValue) > EPSILON(_localScale) ||
       newValue < EPSILON(_localScale))
   {
-    double prec = pow(10, qMax(0, (_decimals + _localScale)));
+    double prec = pow(10.0, qMax(0, (_decimals + _localScale)));
     // use the floor function here instead of qRound to prevent problem on windows builds
     _valueLocal = floor(newValue*prec + 0.5f)/prec;
     _localKnown = true;
@@ -922,9 +927,11 @@ QString CurrDisplay::currSymbol(const int pid)
   return "";
 }
 
-void CurrDisplay::setPaletteForegroundColor(const QColor & newColor)
+void CurrDisplay::setPaletteForegroundColor(const QColor &newColor)
 {
-    _valueLocalWidget->setPaletteForegroundColor(newColor);
+  QPalette p = _valueLocalWidget->palette();
+  p.setColor(QPalette::Text, newColor);
+  _valueLocalWidget->setPalette(p);
 }
 
 void CurrDisplay::setNA(const bool isNA)

@@ -48,6 +48,7 @@ CRMAcctLineEdit::CRMAcctLineEdit(QWidget* pParent, const char* pName) :
   setUiName("crmaccount");
   setEditPriv("MaintainCRMAccounts");
   setViewPriv("ViewCRMAccounts");
+  setNewPriv("MaintainCRMAccounts");
 
     setSubtype(Crmacct);
 
@@ -123,8 +124,8 @@ CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WFlags p
       type = (qobject_cast<CLineEdit*>(_parent))->type();
     else if (_parent->inherits("CustCluster"))
       type = (qobject_cast<CustCluster*>(_parent))->type();
-    else if (_parent->inherits("CustInfo"))
-      type = (qobject_cast<CustInfo*>(_parent))->type();
+ //   else if (_parent->inherits("CustInfo"))
+ //     type = (qobject_cast<CustInfo*>(_parent))->type();
 
     switch (type)
     {
@@ -329,26 +330,6 @@ void CRMAcctList::sFillList()
   }
 }
 
-void CRMAcctList::sSearch(const QString& pTarget)
-{
-  XTreeWidgetItem *target = 0;
-
-  for (int i = 0; i < _listTab->topLevelItemCount(); i++)
-  {
-    target = _listTab->topLevelItem(i);
-    if (target == NULL ||
-	target->text(0).startsWith(pTarget, Qt::CaseInsensitive) ||
-	target->text(1).startsWith(pTarget, Qt::CaseInsensitive))
-      break;
-  }
-
-  if (target)
-  {
-    _listTab->setCurrentItem(target);
-    _listTab->scrollToItem(target);
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////
 
 CRMAcctSearch::CRMAcctSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
@@ -432,9 +413,8 @@ CRMAcctSearch::CRMAcctSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
   setTabOrder(_searchCombo,     _comboCombo);
   setTabOrder(_comboCombo,      _showInactive);
   setTabOrder(_showInactive,	_listTab);
-  setTabOrder(_listTab,		_select);
-  setTabOrder(_select,		_close);
-  setTabOrder(_close,		_search);
+  setTabOrder(_listTab,		_buttonBox);
+  setTabOrder(_buttonBox,	_search);
 
   resize(800, size().height());
   

@@ -10,6 +10,7 @@
 
 #include "companies.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -118,17 +119,15 @@ void companies::sDelete()
 
 void companies::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  pMenu->insertItem("View...", this, SLOT(sView()), 0);
+  pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem("Edit...", this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainChartOfAccounts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainChartOfAccounts"));
 
-  menuItem = pMenu->insertItem("Delete...", this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainChartOfAccounts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainChartOfAccounts"));
 }
 
 void companies::sFillList()

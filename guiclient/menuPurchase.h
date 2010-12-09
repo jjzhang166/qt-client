@@ -84,19 +84,14 @@ class menuPurchase : public QObject
     void sPrintVendorForm();
 
     void sNewVendor();
-    void sSearchForVendor();
     void sVendors();
-    void sVendorTypes();
     void sVendorWorkBench();
-    void sPlannerCodes();
-    void sRejectCodes();
-    void sTerms();
-    void sExpenseCategories();
-    void sAPAssignments();
 
     void sItemsWithoutItemSources();
     void sAssignItemToPlannerCode();
     void sAssignClassCodeToPlannerCode();
+
+    void sSetup();
 
   private:
     GUIClient *parent;
@@ -116,7 +111,6 @@ class menuPurchase : public QObject
     QMenu *reportsRcptRtrnMenu;
     QMenu *reportsPriceVarMenu;
     QMenu *reportsDelvVarMenu;
-    QMenu *masterInfoMenu;
     QMenu *utilitiesMenu;
 
     void	addActionsToMenu(actionProperties [], unsigned int);

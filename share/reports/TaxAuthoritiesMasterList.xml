@@ -9,11 +9,10 @@
  <bottommargin>50</bottommargin>
  <rightmargin>50</rightmargin>
  <leftmargin>50</leftmargin>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>select taxauth_code, taxauth_name
-  from taxauth
-order by taxauth_code;</sql>
+  <mqlgroup>taxAuthorities</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>76</height>
@@ -124,7 +123,6 @@ order by taxauth_code;</sql>
   <detail>
    <key>
     <query>detail</query>
-    <column></column>
    </key>
    <height>16</height>
    <field>
@@ -143,7 +141,7 @@ order by taxauth_code;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>taxauth_name</column>
+     <column>taxauth_code</column>
     </data>
    </field>
    <field>

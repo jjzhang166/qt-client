@@ -13,25 +13,31 @@
 
 class GroupBalances;
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <QMap>
 #include <parameter.h>
 
 #include "ui_dspFinancialReport.h"
 
-class dspFinancialReport : public XWidget, public Ui::dspFinancialReport
+class dspFinancialReport : public display, public Ui::dspFinancialReport
 {
     Q_OBJECT
 
 public:
     dspFinancialReport(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
-    ~dspFinancialReport();
+
+    Q_INVOKABLE virtual bool setParams(ParameterList &);
+
+    Q_INVOKABLE int projectId() { return _prjid; }
+    Q_INVOKABLE void setProjectId(int p) { _prjid = p; }
+
+    Q_INVOKABLE QString reportName() const;
 
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sFillList();
     virtual void sPrint();
+    virtual void sPreview();
     virtual void sPopulateMenu(QMenu * pMenu);
     virtual void sFillListStatement();
     virtual void sFillListTrend();
@@ -42,17 +48,16 @@ public slots:
     virtual bool sCheck();
 
 protected slots:
-    virtual void languageChange();
-
     virtual void sCollapsed( QTreeWidgetItem * item );
     virtual void sExpanded( QTreeWidgetItem * item );
     virtual void sReportChanged(int);
 
 protected:
     virtual bool forwardUpdate();
+    Q_INVOKABLE ParameterList getParams();
     
 private:
-    int _mode;
+    int _prjid;
     QMap<int, QString> _columnLabels;
 };
 

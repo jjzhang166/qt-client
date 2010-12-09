@@ -18,7 +18,7 @@
 #include "importhelper.h"
 #include "storedProcErrorLookup.h"
 
-#define DEBUG true
+#define DEBUG false
 
 enum ImportFileType { Unknown = -1, Csv, Xml };
 
@@ -42,24 +42,14 @@ void importData::setVisible(bool visible)
   else if (_metrics->value("XMLSuccessTreatment").isEmpty() ||
            _metrics->value("XSLTLibrary").isEmpty()) // not configured properly
   {
-    if (! configureIE::userHasPriv())
-    {
-      systemError(this,
-                  tr("The application is not set up to import data. "
+    QString msg = tr("The application is not set up to import data. "
                      "Have an administrator configure Data Import before "
-                     "trying to import data."),
-                  __FILE__, __LINE__);
-      deleteLater();
-    }
-    else if (QMessageBox::question(this, tr("Setup required"),
-                              tr("<p>You must first set up the application to "
-                                 "import data. Would you like to do this now?"),
-                              QMessageBox::Yes | QMessageBox::No,
-                              QMessageBox::Yes) == QMessageBox::Yes &&
-             configureIE(this, "", true).exec() == XDialog::Accepted)
-      XWidget::setVisible(true);
-    else
-      deleteLater();
+                     "trying to import data.");
+    if (configureIE::userHasPriv())
+      tr("<p>You must first set up the application to import data.");
+
+    systemError(this, msg, __FILE__, __LINE__);
+    deleteLater();
   }
   else
     XWidget::setVisible(true);
@@ -180,11 +170,11 @@ void importData::sDelete()
 
 void importData::sPopulateMenu(QMenu* pMenu, QTreeWidgetItem* /* pItem */)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Import Selected"),  this, SLOT(sImportSelected()), 0);
-  menuItem = pMenu->insertItem(tr("Clear Status"),     this, SLOT(sClearStatus()), 0);
-  menuItem = pMenu->insertItem(tr("Delete From List"), this, SLOT(sDelete()), 0);
+  menuItem = pMenu->addAction(tr("Import Selected"),  this, SLOT(sImportSelected()));
+  menuItem = pMenu->addAction(tr("Clear Status"),     this, SLOT(sClearStatus()));
+  menuItem = pMenu->addAction(tr("Delete From List"), this, SLOT(sDelete()));
 }
 
 void importData::sImportAll()
@@ -231,12 +221,18 @@ bool importData::importOne(const QString &pFileName, int pType)
     qDebug("importData::importOne(%s, %d)", qPrintable(pFileName), pType);
 
   QString errmsg;
+  QString warnmsg;
   if (pType == Xml || QFileInfo(pFileName).suffix().toUpper() == "XML")
   {
-    if (! ImportHelper::importXML(pFileName, errmsg))
+    if (! ImportHelper::importXML(pFileName, errmsg, warnmsg))
     {
       systemError(this, errmsg);
       return false;
+    }
+    else if (! warnmsg.isEmpty())
+    {
+      QMessageBox::warning(this, tr("XML Import Warnings"), warnmsg);
+      return true;
     }
   }
   else if (pType == Csv || QFileInfo(pFileName).suffix().toUpper() == "CSV")

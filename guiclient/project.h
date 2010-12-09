@@ -28,7 +28,7 @@ public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void populate();
     virtual void sClose();
-    virtual void sSave();
+    virtual bool sSave(bool partial = false);
     virtual void sPrintTasks();
     virtual void sNewTask();
     virtual void sEditTask();
@@ -36,6 +36,7 @@ public slots:
     virtual void sDeleteTask();
     virtual void sFillTaskList();
     virtual void sNumberChanged();
+    virtual void sActivity();
 
 protected slots:
     virtual void languageChange();
@@ -44,6 +45,11 @@ private:
     int _mode;
     int _prjid;
     bool _saved;
+
+signals:
+    void saved(int);
+    void populated(int);
+    void deletedTask();
 
 };
 

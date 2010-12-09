@@ -24,21 +24,34 @@
 #include "quotecluster.h"
 #include "xsqlquery.h"
 
-quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog( parent, name, modal, fl )
+quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog( parent, fl )
 {
-  if ( !name )
-    setObjectName( "quoteList" );
+  setObjectName(name ? name : "quoteList" );
+  setModal(modal);
 
   _quheadid = -1;
   _custid = -1;
 
   setWindowTitle(tr("Quotes"));
 
-  QVBoxLayout *mainLayout = new QVBoxLayout(this, 5, 5, "mainLayout"); 
-  QVBoxLayout *warehouseLayout = new QVBoxLayout(0, 0, 0, "warehouseLayout"); 
-  QHBoxLayout *topLayout = new QHBoxLayout( 0, 0, 7, "topLayout"); 
-  QVBoxLayout *buttonsLayout = new QVBoxLayout(0, 0, 5, "buttonsLayout");
-  QVBoxLayout *listLayout = new QVBoxLayout( 0, 0, 0, "listLayout"); 
+  QVBoxLayout *mainLayout = new QVBoxLayout(this);
+  mainLayout->setContentsMargins(5, 5, 5, 5);
+  mainLayout->setSpacing(5);
+  mainLayout->setObjectName("mainLayout");
+
+  QVBoxLayout *warehouseLayout = new QVBoxLayout();
+  warehouseLayout->setObjectName("warehouseLayout");
+
+  QHBoxLayout *topLayout = new QHBoxLayout();
+  topLayout->setSpacing(7);
+  topLayout->setObjectName("topLayout");
+
+  QVBoxLayout *buttonsLayout = new QVBoxLayout();
+  buttonsLayout->setSpacing(5);
+  buttonsLayout->setObjectName("buttonsLayout");
+
+  QVBoxLayout *listLayout = new QVBoxLayout();
+  listLayout->setObjectName("listLayout");
 
   _warehouse = new WarehouseGroup(this, "_warehouse");
   warehouseLayout->addWidget(_warehouse);
@@ -50,18 +63,22 @@ quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WFlags 
   QSpacerItem* spacer_2 = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
   topLayout->addItem(spacer_2);
 
-  _close = new QPushButton(tr("&Cancel"), this, "_close");
+  _close = new QPushButton(tr("&Cancel"), this);
+  _close->setObjectName("_close");
   buttonsLayout->addWidget(_close);
 
-  _select = new QPushButton(tr("&Select"), this, "_select");
+  _select = new QPushButton(tr("&Select"), this);
+  _select->setObjectName("_select");
   _select->setEnabled( FALSE );
   _select->setDefault( TRUE );
+
   buttonsLayout->addWidget(_select);
   buttonsLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
   topLayout->addLayout(buttonsLayout);
   mainLayout->addLayout(topLayout);
 
-  QLabel *_quotesLit = new QLabel(tr("Quotes:"), this, "_quotesLit");
+  QLabel *_quotesLit = new QLabel(tr("Quotes:"), this);
+  _quotesLit->setObjectName("_quotesLit");
   listLayout->addWidget(_quotesLit);
 
   _qu = new XTreeWidget(this);

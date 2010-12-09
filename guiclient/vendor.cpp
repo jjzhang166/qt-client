@@ -71,30 +71,35 @@ vendor::vendor(QWidget* parent, const char* name, Qt::WFlags fl)
   _vendaddr->addColumn(tr("Country"),-1, Qt::AlignLeft, true, "vendaddr_country");
   _vendaddr->addColumn(tr("Postal Code"),-1, Qt::AlignLeft, true, "vendaddr_zipcode");
 
-  _taxreg->addColumn(tr("Tax Authority"), 100, Qt::AlignLeft, true, "taxzone_code");
+  _taxreg->addColumn(tr("Tax Authority"), 100, Qt::AlignLeft, true, "taxauth_code");
+  _taxreg->addColumn(tr("Tax Zone"),      100, Qt::AlignLeft, true, "taxzone_code");
   _taxreg->addColumn(tr("Registration #"), -1, Qt::AlignLeft, true, "taxreg_number");
+
+  _accountType->append(0, "Checking", "K");
+  _accountType->append(1, "Savings",  "C");
 
   _crmacctid = -1;
   _ignoreClose = false;
   _NumberGen = -1;
   
+  _transmitStack->setCurrentIndex(0);
   if (_metrics->boolean("EnableBatchManager") &&
-      ! _metrics->boolean("ACHEnabled"))
+      ! (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled")))
   {
     _checksButton->hide();
   }
   else if (! _metrics->boolean("EnableBatchManager") &&
-           _metrics->boolean("ACHEnabled"))
+           (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled")))
   {
     _checksButton->hide();
     _transmitStack->setCurrentIndex(1);
   }
   else if (! _metrics->boolean("EnableBatchManager") &&
-           ! _metrics->boolean("ACHEnabled"))
+           ! (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled")))
     ediTab->setVisible(false);
   // else defaults are OK
 
-  if (_metrics->boolean("ACHEnabled") && omfgThis->_key.isEmpty())
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled") && omfgThis->_key.isEmpty())
     _checksButton->setEnabled(false);
 
   _vendid = -1;
@@ -296,7 +301,7 @@ void vendor::sSave()
       tr("The Account Number is not valid."),
       _achAccountNumber },
     { _achGroup->isChecked() && _useACHSpecial->isChecked() &&
-      _individualName->text().stripWhiteSpace().length() == 0 &&
+      _individualName->text().trimmed().length() == 0 &&
       !omfgThis->_key.isEmpty(),
       tr("Please enter an Individual Name if EFT Check Printing is enabled and "
          "'%1' is checked.").arg(_useACHSpecial->title()),
@@ -312,7 +317,7 @@ void vendor::sSave()
       return;
     }
 
-  if (_number->text().trimmed().toUpper() != _cachedNumber.upper())
+  if (_number->text().trimmed().toUpper() != _cachedNumber.toUpper())
   {
     q.prepare( "SELECT vend_name "
 	       "FROM vendinfo "
@@ -466,7 +471,7 @@ void vendor::sSave()
   params.append("vend_terms_id", _defaultTerms->id());
   params.append("vend_curr_id", _defaultCurr->id());
 
-  params.append("vend_number",   _number->text().trimmed().upper());
+  params.append("vend_number",   _number->text().trimmed().toUpper());
   params.append("vend_accntnum", _accountNumber->text().trimmed());
   params.append("vend_name",     _name->text().trimmed());
 
@@ -497,10 +502,7 @@ void vendor::sSave()
   params.append("vend_ach_indiv_number", _individualId->text().trimmed());
   params.append("vend_ach_indiv_name",   _individualName->text().trimmed());
 
-  if (_accountType->currentItem() == 0)
-    params.append("vend_ach_accnttype",  "K");
-  else if (_accountType->currentItem() == 1)
-    params.append("vend_ach_accnttype",  "C");
+  params.append("vend_ach_accnttype",  _accountType->code());
 
   if(_taxzone->isValid())
     params.append("vend_taxzone_id", _taxzone->id());
@@ -529,6 +531,7 @@ void vendor::sSave()
   q.exec("COMMIT;");
   _NumberGen = -1;
   omfgThis->sVendorsUpdated();
+  emit saved(_vendid);
   if (_mode == cNew)
     emit newId(_vendid);
 
@@ -690,10 +693,7 @@ void vendor::populate()
     _individualId->setText(q.value("vend_ach_indiv_number").toString());
     _individualName->setText(q.value("vend_ach_indiv_name").toString());
 
-    if (q.value("vend_ach_accnttype").toString() == "K")
-      _accountType->setCurrentItem(0);
-    else if (q.value("vend_ach_accnttype").toString() == "C")
-      _accountType->setCurrentItem(1);
+    _accountType->setCode(q.value("vend_ach_accnttype").toString());
 
     sFillAddressList();
     sFillTaxregList();
@@ -794,12 +794,13 @@ void vendor::sFillAddressList()
 void vendor::sFillTaxregList()
 {
   XSqlQuery taxreg;
-  taxreg.prepare("SELECT taxreg_id, taxreg_taxauth_id, "
-                 "       taxauth_code, taxreg_number "
-                 "FROM taxreg, taxauth "
-                 "WHERE ((taxreg_rel_type='V') "
-                 "  AND  (taxreg_rel_id=:vend_id) "
-                 "  AND  (taxreg_taxauth_id=taxauth_id));");
+  taxreg.prepare("SELECT taxreg_id, taxreg_taxauth_id,"
+                 "       taxauth_code, taxzone_code, taxreg_number"
+                 "  FROM taxreg"
+                 "  JOIN taxauth ON (taxreg_taxauth_id=taxauth_id)"
+                 "  LEFT OUTER JOIN taxzone ON (taxreg_taxzone_id=taxzone_id)"
+                 " WHERE ((taxreg_rel_type='V') "
+                 "    AND (taxreg_rel_id=:vend_id));");
   taxreg.bindValue(":vend_id", _vendid);
   taxreg.exec();
   _taxreg->clear();
@@ -977,7 +978,7 @@ void vendor::clear()
   _achAccountNumber->clear();
   _individualId->clear();
   _individualName->clear();
-  _accountType->setCurrentItem(0);
+  _accountType->setCurrentIndex(0);
 
   _comments->setId(-1);
   _tabs->setCurrentIndex(0);

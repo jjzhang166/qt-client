@@ -142,6 +142,7 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
       connect(_billed, SIGNAL(lostFocus()), this, SLOT(sDeterminePrice()));
       connect(_billed, SIGNAL(lostFocus()), this, SLOT(sCalculateExtendedPrice()));
       connect(_price, SIGNAL(lostFocus()), this, SLOT(sCalculateExtendedPrice()));
+      _salescat->setType(XComboBox::SalesCategoriesActive);
     }
     else if (param.toString() == "edit")
     {
@@ -513,9 +514,9 @@ void invoiceItem::sDeterminePrice()
       _custPrice->setLocalValue(price);
       _price->setLocalValue(price);
     }
-    else if (q.lastError().type() != QSqlError::NoError)
+    else if (itemprice.lastError().type() != QSqlError::NoError)
     {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      systemError(this, itemprice.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

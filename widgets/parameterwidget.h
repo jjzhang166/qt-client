@@ -34,7 +34,9 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
   public:
     enum ParameterWidgetTypes
     {
-      Crmacct, User, Text, Date, XComBox, Contact, Multiselect, GLAccount
+      Crmacct, User, Text, Date, XComBox, Contact,
+      Multiselect, GLAccount, Exists, CheckBox, Project,
+      Customer, Site, Vendor, Item, Employee
     };
 
     ParameterWidget(QWidget *pParent, const char * = 0);
@@ -42,24 +44,24 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
     Q_INVOKABLE void applyDefaultFilterSet();
     Q_INVOKABLE int paramIndex(QString pName);
     Q_INVOKABLE ParameterList parameters();
-
     
  public slots:
     void addParam();
-    void append(QString pName, QString pParam, enum ParameterWidgetTypes pType = Text, QVariant pDefault = 0,  bool pRequired = false, QString pExtraInfo =  QString());
-    void appendComboBox(QString pName, QString pParam, QString pQuery, QVariant pDefault = 0, bool pRequired = false);
-    void appendComboBox(QString pName, QString pParam, enum XComboBox::XComboBoxTypes pType, QVariant pDefault = 0, bool pRequired = false);
+    void append(QString pName, QString pParam, enum ParameterWidgetTypes pType = Text, QVariant pDefault = QVariant(),  bool pRequired = false, QString pExtraInfo =  QString());
+    void appendComboBox(QString pName, QString pParam, QString pQuery, QVariant pDefault = QVariant(), bool pRequired = false);
+    void appendComboBox(QString pName, QString pParam, int pType, QVariant pDefault = QVariant(), bool pRequired = false);
     void applySaved(int pId = 0, int filter_id = 0);
     void changeFilterObject(int index);
     void clearFilters();
     void removeParam(int);
     void save();
-    void setDefault(QString pName, QVariant pDefault, bool pAutoApply = false);
+    void setDefault(QString pName, QVariant pDefault = QVariant(), bool pAutoApply = false);
+    void setEnabled(QString pName, bool pEnabled);
     void setSavedFilters(int defaultId = -1);
     void setSavedFiltersIndex(QString);
-    void setType(QString, QString, enum ParameterWidgetTypes = Text, QVariant pDefault = 0, QVariant extraInfo =  QVariant());
-    void setXComboBoxType(QString, QString, enum XComboBox::XComboBoxTypes, QVariant pDefault = 0);
-    void setXComboBoxType(QString, QString, QString, QVariant pDefault = 0);
+    void setType(QString, QString, enum ParameterWidgetTypes = Text, QVariant pDefault = QVariant(), QVariant extraInfo =  QVariant());
+    void setXComboBoxType(QString, QString, enum XComboBox::XComboBoxTypes, QVariant pDefault = QVariant());
+    void setXComboBoxType(QString, QString, QString, QVariant pDefault = QVariant());
     void sManageFilters();
     void storeFilterValue(int pId = -1, QObject* filter = 0);
     void setFiltersVisabiltyPreference();
@@ -92,6 +94,7 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
       bool required;
       XComboBox::XComboBoxTypes comboType;
       QString query;
+      bool enabled;
     };
     QMap<int, ParamProps*> _params;
 

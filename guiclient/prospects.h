@@ -11,31 +11,22 @@
 #ifndef PROSPECTS_H
 #define PROSPECTS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
-#include "ui_prospects.h"
-
-class prospects : public XWidget, public Ui::prospects
+class prospects : public display
 {
     Q_OBJECT
 
 public:
     prospects(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~prospects();
 
 public slots:
     virtual void sDelete();
     virtual void sEdit();
-    virtual void sFillList();
     virtual void sNew();
-    virtual void sPopulateMenu( QMenu * pMenu );
     virtual void sView();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // PROSPECTS_H

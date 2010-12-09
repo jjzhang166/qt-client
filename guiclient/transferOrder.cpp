@@ -12,16 +12,13 @@
 
 #include <stdlib.h>
 
-#include <Q3DragObject>
+#include <QAction>
 #include <QCloseEvent>
-#include <QDragEnterEvent>
-#include <QDropEvent>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QWorkspace>
 
 #include <metasql.h>
 
@@ -103,6 +100,7 @@ transferOrder::transferOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   _saved		= false;
   _taxzoneidCache	= -1;
   _whstaxzoneid		= -1;
+  _locked       = false;
   _srcWhs->setId(_preferences->value("PreferredWarehouse").toInt());
   _trnsWhs->setId(_metrics->value("DefaultTransitWarehouse").toInt());
   _dstWhs->setId(_preferences->value("PreferredWarehouse").toInt());
@@ -122,21 +120,25 @@ void transferOrder::setToheadid(const int pId)
   _qeitem->setHeadId(pId);
   _comments->setId(_toheadid);
        
-  if(_mode == cEdit)
+  if(_mode == cEdit && !_locked)
   {
      XSqlQuery to;
-     to.prepare("SELECT lockTohead(:tohead_id) AS result;");
+     to.prepare("SELECT tryLock(oid::integer, :tohead_id) AS locked "
+                "FROM pg_class "
+                "WHERE relname='tohead';");
      to.bindValue(":tohead_id", _toheadid);
      to.exec();
      if(to.first())
      {
-       if(to.value("result").toBool() != true)
+       if(to.value("locked").toBool() != true)
        {
           QMessageBox::critical( this, tr("Record Currently Being Edited"),
                tr("<p>The record you are trying to edit is currently being edited "
                "by another user. Continue in View Mode.") );
           setViewMode();
        }
+       else
+         _locked=true;
      }
      else
      {
@@ -315,7 +317,8 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
           for(int i = 0; i < list.size(); i++)
           {
             QWidget * w = list.at(i);
-            if(w->isA("transferOrder") && w != this)
+            if(QString::compare(w->metaObject()->className(), "transferOrder") &&
+               w != this)
             {
               transferOrder *other = (transferOrder*)w;
               if(_toheadid == other->_toheadid)
@@ -351,7 +354,6 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
 
     _status->setCurrentIndex(0);
 
-    setAcceptDrops(true);
     _captive = FALSE;
     _edit->setEnabled(FALSE);
     _action->setEnabled(FALSE);
@@ -361,7 +363,6 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
   else if (cEdit == _mode)
   {
     _captive = TRUE;
-    setAcceptDrops(TRUE);
     _orderNumber->setEnabled(FALSE);
 
     _new->setFocus();
@@ -412,6 +413,10 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
     _orderDate->setEnabled(FALSE);
     _packDate->setEnabled(FALSE);
   }
+
+  param = pParams.value("captive", &valid);
+  if (valid)
+    _captive = true;
 
   // TODO: Why don't the constructor or setId earlier in set() handle this?
   getWhsInfo(_srcWhs->id(), _srcWhs);
@@ -704,10 +709,14 @@ bool transferOrder::save(bool partial)
   if((cNew == _mode) && (!_saved))
   {
     // should I bother to check because no one should have this but us?
-    q.prepare("SELECT lockTohead(:head_id) AS result;");
+    q.prepare("SELECT tryLock(oid::integer, :head_id) AS locked "
+              "FROM pg_class "
+              "WHERE relname='tohead';");
     q.bindValue(":head_id", _toheadid);
     q.exec();
-    if (q.lastError().type() != QSqlError::NoError)
+    if (q.first())
+      _locked = q.value("locked").toBool();
+    else if (q.lastError().type() != QSqlError::NoError)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return false;
@@ -752,6 +761,8 @@ bool transferOrder::save(bool partial)
   _saved = true;
   omfgThis->sTransferOrdersUpdated(_toheadid);
 
+  emit saved(_toheadid);
+
   return TRUE;
 }
 
@@ -763,33 +774,33 @@ void transferOrder::sPopulateMenu(QMenu *pMenu)
     if(_numSelected == 1)
     {
       if (_lineMode == cClosed)
-        pMenu->insertItem(tr("Open Line..."), this, SLOT(sAction()), 0);
+        pMenu->addAction(tr("Open Line..."), this, SLOT(sAction()));
       else if (_lineMode == cActiveOpen)
       {
-        pMenu->insertItem(tr("Edit Line..."), this, SLOT(sEdit()), 0);
-        pMenu->insertItem(tr("Close Line..."), this, SLOT(sAction()), 0);
+        pMenu->addAction(tr("Edit Line..."), this, SLOT(sEdit()));
+        pMenu->addAction(tr("Close Line..."), this, SLOT(sAction()));
       }
       else if (_lineMode == cInactiveOpen)
       {
-        pMenu->insertItem(tr("Edit Line..."), this, SLOT(sEdit()), 0);
-        pMenu->insertItem(tr("Close Line..."), this, SLOT(sAction()), 0);
-        pMenu->insertItem(tr("Delete Line..."), this, SLOT(sDelete()), 0);
+        pMenu->addAction(tr("Edit Line..."), this, SLOT(sEdit()));
+        pMenu->addAction(tr("Close Line..."), this, SLOT(sAction()));
+        pMenu->addAction(tr("Delete Line..."), this, SLOT(sDelete()));
       }
       else if (_lineMode == cUnreleased)
       {
-        pMenu->insertItem(tr("Edit Line..."), this, SLOT(sEdit()), 0);
-        pMenu->insertItem(tr("Delete Line..."), this, SLOT(sDelete()), 0);
+        pMenu->addAction(tr("Edit Line..."), this, SLOT(sEdit()));
+        pMenu->addAction(tr("Delete Line..."), this, SLOT(sDelete()));
       }
     }
 
     if(_metrics->boolean("EnableTOShipping"))
     {
       if(_numSelected == 1)
-        pMenu->insertSeparator();
+        pMenu->addSeparator();
 
-      pMenu->insertItem(tr("Return Stock"), this, SLOT(sReturnStock()), 0);
-      pMenu->insertItem(tr("Issue Stock..."), this, SLOT(sIssueStock()), 0);
-      pMenu->insertItem(tr("Issue Line Balance"), this, SLOT(sIssueLineBalance()), 0);
+      pMenu->addAction(tr("Return Stock"), this, SLOT(sReturnStock()));
+      pMenu->addAction(tr("Issue Stock..."), this, SLOT(sIssueStock()));
+      pMenu->addAction(tr("Issue Line Balance"), this, SLOT(sIssueLineBalance()));
     }
   }
 }
@@ -1179,7 +1190,7 @@ void transferOrder::populate()
 
       _srcWhs->setId(to.value("tohead_src_warehous_id").toInt());
       if (! _srcWhs->isValid())
-        _srcWhs->setCurrentText(to.value("tohead_srcname").toString());
+        _srcWhs->setCode(to.value("tohead_srcname").toString());
       if (_srcAddr->line1() !=to.value("tohead_srcaddress1").toString() ||
           _srcAddr->line2() !=to.value("tohead_srcaddress2").toString() ||
           _srcAddr->line3() !=to.value("tohead_srcaddress3").toString() ||
@@ -1208,11 +1219,11 @@ void transferOrder::populate()
 
       _trnsWhs->setId(to.value("tohead_trns_warehous_id").toInt());
       if (! _trnsWhs->isValid())
-	_trnsWhs->setCurrentText(to.value("tohead_trnsname").toString());
+	_trnsWhs->setCode(to.value("tohead_trnsname").toString());
 
       _dstWhs->setId(to.value("tohead_dest_warehous_id").toInt());
       if (! _dstWhs->isValid())
-	_dstWhs->setCurrentText(to.value("tohead_destname").toString());
+	_dstWhs->setCode(to.value("tohead_destname").toString());
       if (_dstAddr->line1() !=to.value("tohead_destaddress1").toString() ||
           _dstAddr->line2() !=to.value("tohead_destaddress2").toString() ||
           _dstAddr->line3() !=to.value("tohead_destaddress3").toString() ||
@@ -1491,7 +1502,7 @@ void transferOrder::clear()
     sReleaseTohead();
   _toheadid = -1;
 
-  _tabs->setCurrentPage(0);
+  _tabs->setCurrentIndex(0);
 
   _orderNumber->setEnabled(TRUE);
   _orderNumberGen = 0;
@@ -1508,7 +1519,8 @@ void transferOrder::clear()
   _taxzone->setId(-1);
   _whstaxzoneid        = -1;
   _shipVia->setId(-1);
-  _shippingForm->setId(-1);
+//  cannot clear _shippingForm
+//  _shippingForm->setId(-1);
   _freight->clear();
   _orderComments->clear();
   _shippingComments->clear();
@@ -1574,60 +1586,6 @@ void transferOrder::closeEvent(QCloseEvent *pEvent)
     omfgThis->sTransferOrdersUpdated(-1);
 
   XWidget::closeEvent(pEvent);
-}
-
-void transferOrder::dragEnterEvent(QDragEnterEvent *pEvent)
-{
-  if (!_srcWhs->isValid())
-  {
-    message(tr("<p>You must select a Source Site for this Transfer Order before you "
-               "may add Line Items to it."), 5000);
-    pEvent->accept(FALSE);
-  }
-  else
-  {
-    QString dragData;
-
-    if (Q3TextDrag::decode(pEvent, dragData))
-    {
-      if (dragData.contains("itemid="))
-        pEvent->accept(TRUE);
-    }
-    else
-      pEvent->accept(FALSE);
-  }
-}
-
-void transferOrder::dropEvent(QDropEvent *pEvent)
-{
-  QString dropData;
-
-  if (Q3TextDrag::decode(pEvent, dropData))
-  {
-    if (dropData.contains("itemid="))
-    {
-      QString target = dropData.mid((dropData.find("itemid=") + 7), (dropData.length() - 7));
-
-      if (target.contains(","))
-        target = target.left(target.find(","));
-
-      ParameterList params;
-      params.append("tohead_id",	_toheadid);
-      params.append("orderNumber", _orderNumber->text());
-      params.append("item_id", target.toInt());
-      params.append("curr_id", _freight->id());
-      params.append("orderDate", _orderDate->date());
-
-      if (_mode == cNew)
-        params.append("mode", "new");
-
-      transferOrderItem newdlg(this, "", TRUE);
-      newdlg.set(params);
-      newdlg.exec();
-
-      sFillItemList();
-    }
-  }
 }
 
 void transferOrder::sHandleShipchrg(int pShipchrgid)
@@ -1702,7 +1660,6 @@ void transferOrder::setViewMode()
   {
     // Undo some changes set for the edit mode
     _captive = false;
-    setAcceptDrops(false);
   }
   _new->setEnabled(false);
 
@@ -1751,12 +1708,12 @@ void transferOrder::setViewMode()
 void transferOrder::keyPressEvent( QKeyEvent * e )
 {
 #ifdef Q_WS_MAC
-  if(e->key() == Qt::Key_N && e->state() == Qt::ControlModifier)
+  if(e->key() == Qt::Key_N && (e->modifiers() & Qt::ControlModifier))
   {
     _new->animateClick();
     e->accept();
   }
-  else if(e->key() == Qt::Key_E && e->state() == Qt::ControlModifier)
+  else if(e->key() == Qt::Key_E && (e->modifiers() & Qt::ControlModifier))
   {
     _edit->animateClick();
     e->accept();
@@ -1776,7 +1733,7 @@ void transferOrder::newTransferOrder(int pSrcWhsid, int pDstWhsid)
     for(int i = 0; i < list.size(); i++)
     {
       QWidget * w = list.at(i);
-      if(QString::compare(w->name(), "transferOrder new")==0)
+      if(QString::compare(w->objectName(), "transferOrder new")==0)
       {
         w->setFocus();
         if(omfgThis->showTopLevel())
@@ -1812,7 +1769,7 @@ void transferOrder::editTransferOrder( int pId , bool enableSaveAndAdd )
   for(int i = 0; i < list.size(); i++)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1844,7 +1801,7 @@ void transferOrder::viewTransferOrder( int pId )
   for(int i = 0; i < list.size(); i++)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -2170,8 +2127,13 @@ void transferOrder::sHandleTrnsWhs(const int pid)
 
 void transferOrder::sReleaseTohead()
 {
+  if (!_locked)
+    return;
+
   XSqlQuery query;
-  query.prepare("SELECT releaseTohead(:tohead_id) AS result;");
+  query.prepare("SELECT pg_advisory_unlock(oid::integer, :tohead_id) AS result "
+                "FROM pg_class "
+                "WHERE relname='tohead';");
   query.bindValue(":tohead_id", _toheadid);
   query.exec();
   if (query.first() && ! query.value("result").toBool())
@@ -2179,4 +2141,6 @@ void transferOrder::sReleaseTohead()
                 __FILE__, __LINE__);
   else if (query.lastError().type() != QSqlError::NoError)
     systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    _locked = false;
 }

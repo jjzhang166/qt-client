@@ -10,61 +10,28 @@
 
 #include "siteTypes.h"
 
-#include <QVariant>
+#include <QAction>
+#include <QMenu>
 #include <QMessageBox>
-//#include <QStatusBar>
-#include <QWorkspace>
+#include <QVariant>
+
 #include <openreports.h>
 #include "siteType.h"
 
-/*
- *  Constructs a siteTypes as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 siteTypes::siteTypes(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-//    (void)statusBar();
+  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
+  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
+  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
+  connect(_sitetype, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
+  connect(_sitetype, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
 
-    // signals and slots connections
-    connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-    connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_sitetype, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
-    connect(_sitetype, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-siteTypes::~siteTypes()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void siteTypes::languageChange()
-{
-    retranslateUi(this);
-}
-
-//Added by qt3to4:
-#include <QMenu>
-
-void siteTypes::init()
-{
-//  statusBar()->hide();
-  
   _sitetype->addColumn(tr("Code"),        _itemColumn, Qt::AlignCenter, true,  "sitetype_name" );
   _sitetype->addColumn(tr("Description"), -1,          Qt::AlignLeft,   true,  "sitetype_descrip"   );
 
@@ -82,6 +49,17 @@ void siteTypes::init()
 
   sFillList();
 }
+
+siteTypes::~siteTypes()
+{
+    // no need to delete child widgets, Qt does it all for us
+}
+
+void siteTypes::languageChange()
+{
+    retranslateUi(this);
+}
+
 
 void siteTypes::sPrint()
 {
@@ -158,19 +136,19 @@ void siteTypes::sDelete()
 
 void siteTypes::sPopulateMenu(QMenu *menu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem(tr("Edit Site Type..."), this, SLOT(sEdit()), 0);
+  menuItem = menu->addAction(tr("Edit Site Type..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainSiteTypes"))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 
-  menuItem = menu->insertItem(tr("View Site Type..."), this, SLOT(sView()), 0);
+  menuItem = menu->addAction(tr("View Site Type..."), this, SLOT(sView()));
   if ((!_privileges->check("MaintainSiteTypes")) && (!_privileges->check("ViewSiteTypes")))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 
-  menuItem = menu->insertItem(tr("Delete Site Type..."), this, SLOT(sDelete()), 0);
+  menuItem = menu->addAction(tr("Delete Site Type..."), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainSiteTypes"))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 }
 
 void siteTypes::sFillList()

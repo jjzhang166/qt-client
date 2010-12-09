@@ -10,6 +10,7 @@
 
 #include "countries.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -139,15 +140,13 @@ void countries::sFillList()
 
 void countries::sPopulateMenu(QMenu* pMenu)
 {
-    int menuItem;
+    QAction *menuItem;
     
-    pMenu->insertItem("View...", this, SLOT(sView()), 0);
+    pMenu->addAction("View...", this, SLOT(sView()));
     
-    menuItem = pMenu->insertItem("Edit...", this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainCountries"))
-	pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction("Edit...", this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainCountries"));
     
-    menuItem = pMenu->insertItem("Delete...", this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainCountries"))
-	pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction("Delete...", this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainCountries"));
 }

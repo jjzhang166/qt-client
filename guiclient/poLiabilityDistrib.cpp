@@ -27,6 +27,8 @@ poLiabilityDistrib::poLiabilityDistrib(QWidget* parent, const char* name, bool m
 {
   setupUi(this);
 
+  _account->setType(GLCluster::cRevenue | GLCluster::cExpense |
+                    GLCluster::cAsset | GLCluster::cLiability);
 
   // signals and slots connections
   connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));

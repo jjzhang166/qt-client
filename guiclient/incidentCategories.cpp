@@ -10,27 +10,21 @@
 
 #include "incidentCategories.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
+#include <QVariant>
+
 #include <openreports.h>
+
 #include "incidentCategory.h"
 
-/*
- *  Constructs an incidentCategories as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-//  (void)statusBar();
-
-  // signals and slots connections
   connect(_close,  SIGNAL(clicked()), this, SLOT(close()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,   SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -40,8 +34,6 @@ incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WF
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_view,  SIGNAL(clicked()), this, SLOT(sView()));
 
-//  statusBar()->hide();
-  
   _incidentCategories->addColumn(tr("Order"),  _seqColumn, Qt::AlignRight, true, "incdtcat_order");
   _incidentCategories->addColumn(tr("Category"),      100, Qt::AlignLeft, true, "incdtcat_name");
   _incidentCategories->addColumn(tr("Description"),    -1, Qt::AlignLeft, true, "incdtcat_descrip");
@@ -139,17 +131,15 @@ void incidentCategories::sView()
 
 void incidentCategories::sPopulateMenu( QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainIncidentCategories"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentCategories"));
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainIncidentCategories"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentCategories"));
 }
 
 void incidentCategories::sPrint()

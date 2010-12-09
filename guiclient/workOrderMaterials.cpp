@@ -10,6 +10,7 @@
 
 #include "workOrderMaterials.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -119,21 +120,21 @@ enum SetResponse workOrderMaterials::set(const ParameterList &pParams)
 
 void workOrderMaterials::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
   
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
   
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
   
-  menuItem = pMenu->insertItem(tr("View Availability..."), this, SLOT(sViewAvailability()), 0);
+  menuItem = pMenu->addAction(tr("View Availability..."), this, SLOT(sViewAvailability()));
   
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
   
-  menuItem = pMenu->insertItem(tr("View Item-Defined Subsitute Availability..."), this, SLOT(sViewSubstituteAvailability()), 0);
-  menuItem = pMenu->insertItem(tr("Substitute..."), this, SLOT(sSubstitute()), 0);
+  menuItem = pMenu->addAction(tr("View Item-Defined Subsitute Availability..."), this, SLOT(sViewSubstituteAvailability()));
+  menuItem = pMenu->addAction(tr("Substitute..."), this, SLOT(sSubstitute()));
 }
 
 void workOrderMaterials::sNew()

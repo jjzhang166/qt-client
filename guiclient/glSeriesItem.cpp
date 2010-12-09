@@ -22,7 +22,7 @@ glSeriesItem::glSeriesItem(QWidget* parent, const char* name, bool modal, Qt::WF
 {
     setupUi(this);
 
-    connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+    connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 }
 
 glSeriesItem::~glSeriesItem()
@@ -73,7 +73,7 @@ enum SetResponse glSeriesItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
   }
 

@@ -19,7 +19,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-#define DEBUG true
+#define DEBUG false
 
 // TODO: XDialog should have a default implementation that returns FALSE
 bool package::userHasPriv(const int pMode)
@@ -230,7 +230,7 @@ void package::sSave()
   q.bindValue(":pkghead_descrip",  _description->text());
   q.bindValue(":pkghead_version",  _version->text());
   q.bindValue(":pkghead_developer",_developer->text());
-  q.bindValue(":pkghead_notes",    _notes->text());
+  q.bindValue(":pkghead_notes",    _notes->toPlainText());
   q.bindValue(":pkghead_indev",    _indev->isChecked());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)
@@ -267,7 +267,7 @@ void package::sSave()
         return;
       }
     }
-    else if (eq.lastError().type() != QSqlError::None)
+    else if (eq.lastError().type() != QSqlError::NoError)
     {
       systemError(this, eq.lastError().databaseText(), __FILE__, __LINE__);
       return;

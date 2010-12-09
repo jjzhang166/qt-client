@@ -15,31 +15,6 @@ RUNEXTRACT=true	#undocumented feature
 XSLT=xsltproc
 
 XSLTFILE=$TMPDIR/rptdiff.xslt
-cat > $XSLTFILE <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
-  <xsl:output indent="yes" method="text" />
-
-  <xsl:template match="text()"/>
-
-  <xsl:template match="report/name">
-====================================================================
-REPORT: <xsl:value-of select="."/>
-  </xsl:template>
-
-  <xsl:template match="report/querysource">
-QUERY: <xsl:value-of select="name"/><xsl:text>
-</xsl:text>
-    <xsl:value-of select="sql"     />
-    <xsl:if test="mqlgroup">== MetaSQL statement </xsl:if>
-    <xsl:value-of select="mqlgroup"/>
-    <xsl:if test="mqlname">-</xsl:if>
-    <xsl:value-of select="mqlname" />
---------------------------------------------------------------------
-  </xsl:template>
-
-</xsl:stylesheet>
-EOF
 
 usage () {
   echo "$PROG -h"
@@ -70,6 +45,7 @@ while [ $1 != -- ] ; do
       ;;
     -t)
       TMPDIR=$2
+      XSLTFILE=$TMPDIR/rptdiff.xslt
       shift
       ;;
     -x)
@@ -117,6 +93,32 @@ elif [ -e "$TMPDIR" -a ! -d "$TMPDIR" ] ; then
 elif ! mkdir -p $TMPDIR/old || ! mkdir -p $TMPDIR/new ; then
   exit 2
 fi
+
+cat > $XSLTFILE <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+  <xsl:output indent="yes" method="text" />
+
+  <xsl:template match="text()"/>
+
+  <xsl:template match="report/name">
+====================================================================
+REPORT: <xsl:value-of select="."/>
+  </xsl:template>
+
+  <xsl:template match="report/querysource">
+QUERY: <xsl:value-of select="name"/><xsl:text>
+</xsl:text>
+    <xsl:value-of select="sql"     />
+    <xsl:if test="mqlgroup">== MetaSQL statement </xsl:if>
+    <xsl:value-of select="mqlgroup"/>
+    <xsl:if test="mqlname">-</xsl:if>
+    <xsl:value-of select="mqlname" />
+--------------------------------------------------------------------
+  </xsl:template>
+
+</xsl:stylesheet>
+EOF
 
 if $RUNEXTRACT ; then
 for DIR in $OLDDIR $NEWDIR ; do
@@ -178,7 +180,7 @@ for FILE in `ls $TMPDIR/old/* $TMPDIR/new/* | xargs -J X -n 1 basename X | sort 
       REPORTNAME="`head -3 $TMPDIR/new/$FILE | tail -1 | cut -f2 -d:`"
       CHANGEDLIST="$CHANGEDLIST $REPORTNAME"
       diff -E -b -i -U `wc -l $TMPDIR/new/$FILE | 
-                        awk '{print $1}'` $TMPDIR/old/$FILE $TMPDIR/new/$FILE | tail +4 >> $TMPDIR/diffs
+                        awk '{print $1}'` $TMPDIR/old/$FILE $TMPDIR/new/$FILE | tail -n +4 >> $TMPDIR/diffs
     fi
   fi
 done

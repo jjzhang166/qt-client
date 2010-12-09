@@ -21,12 +21,16 @@ printLabelsByTo::printLabelsByTo(QWidget* parent, const char* name, bool modal, 
 {
   setupUi(this);
 
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_so, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
+  _print = _buttonBox->button(QDialogButtonBox::Ok);
+  _print->setEnabled(false);
+
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sPrint()));
+  connect(_order, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
   connect(_from, SIGNAL(valueChanged(int)), this, SLOT(sSetToMin(int)));
 
-  _so->setType(cToOpen | cToClosed);
+  _order->setAllowedTypes(OrderLineEdit::Transfer);
+  _order->setAllowedStatuses(OrderLineEdit::Open | OrderLineEdit::Closed);
 
   _report->populate( "SELECT labelform_id, labelform_name "
                      "FROM labelform "
@@ -53,7 +57,7 @@ void printLabelsByTo::sPrint()
   if (q.first())
   {
     ParameterList params;
-    params.append("tohead_id", _so->id());
+    params.append("tohead_id", _order->id());
     params.append("labelFrom", _from->value());
     params.append("labelTo", _to->value());
 
@@ -66,8 +70,8 @@ void printLabelsByTo::sPrint()
       reject();
     }
 
-    _so->setId(-1);
-    _so->setFocus();
+    _order->setId(-1);
+    _order->setFocus();
   }
   else
     QMessageBox::warning(this, tr("Could not locate report"),
@@ -77,5 +81,5 @@ void printLabelsByTo::sPrint()
 
 void printLabelsByTo::sSetToMin(int pValue)
 {
-  _to->setMinValue(pValue);
+  _to->setMinimum(pValue);
 }

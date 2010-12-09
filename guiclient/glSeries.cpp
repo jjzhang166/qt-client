@@ -27,11 +27,13 @@ glSeries::glSeries(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
+  _post = _buttonBox->addButton(tr("&Post"), QDialogButtonBox::ActionRole);
+
   connect(_delete,	SIGNAL(clicked()),	this, SLOT(sDelete()));
   connect(_edit,	SIGNAL(clicked()),	this, SLOT(sEdit()));
   connect(_new,		SIGNAL(clicked()),	this, SLOT(sNew()));
   connect(_post,	SIGNAL(clicked()),	this, SLOT(sPost()));
-  connect(_save,	SIGNAL(clicked()),	this, SLOT(sSave()));
+  connect(_buttonBox,	SIGNAL(accepted()),	this, SLOT(sSave()));
 
   _glseries->addColumn(tr("Account"), -1,           Qt::AlignLeft,  true,  "account"  );
   _glseries->addColumn(tr("Debit"),   _moneyColumn, Qt::AlignRight, true,  "debit" );
@@ -63,6 +65,7 @@ glSeries::glSeries(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _doctype->setCurrentIndex(_doctype->findText("JE"));
 
   _submit = false;
+  _journal = 0;
 }
 
 glSeries::~glSeries()
@@ -83,7 +86,7 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
 
   _submit = pParams.inList("submit");
   if((_submit)  && (_metrics->boolean("EnableBatchManager")))
-    _post->setText(tr("Submit"));
+    _post->setText(tr("Schedule"));
   else
     _submit = false;
 
@@ -117,6 +120,16 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
     sFillList();
   }
 
+  param = pParams.value("journalnumber", &valid);
+  if (valid)
+  {
+    _journal = param.toInt();
+    _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Save));
+    _mode = cEdit;
+    _doctype->setCurrentIndex(_doctype->findText("JE"));
+    _doctype->setEnabled(false);
+  }
+
   param = pParams.value("mode", &valid);
   if (valid)
   {
@@ -132,8 +145,6 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
 	systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
 	return UndefinedError;
       }
-
-      _new->setFocus();
     }
     else if (param.toString() == "edit")
     {
@@ -172,9 +183,6 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _close->setText("&Close");
-      _post->setEnabled(false);
-      _save->setEnabled(false);
       _new->setEnabled(false);
       _edit->setEnabled(false);
       _delete->setEnabled(false);
@@ -183,8 +191,9 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
       _docnumber->setEnabled(false);
       _date->setEnabled(false);
       _notes->setEnabled(false);
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -215,7 +224,10 @@ void glSeries::sNew()
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
+  {
     sFillList();
+    sNew();
+  }
 }
 
 void glSeries::sEdit()
@@ -353,8 +365,10 @@ void glSeries::sPost()
   }
   else
   {
-    q.prepare("SELECT postGLSeriesNoSumm(:glseries_sequence) AS return;");
+    q.prepare("SELECT postGLSeriesNoSumm(:glseries_sequence,COALESCE(:journal,fetchJournalNumber('G/L'))) AS return;");
     q.bindValue(":glseries_sequence", _glsequence);
+    if (_journal)
+      q.bindValue(":journal", _journal);
     q.exec();
     if (q.first())
     {
@@ -375,7 +389,7 @@ void glSeries::sPost()
     omfgThis->sGlSeriesUpdated();
   }
 
-  if(cPostStandardJournal == _mode)
+  if(cPostStandardJournal == _mode || _journal)
   {
     accept();
     return;
@@ -465,18 +479,13 @@ void glSeries::sFillList()
     _credits->setDouble(q.value("credit").toDouble());
     _diff->setDouble(q.value("diff").toDouble());
 
+    QString stylesheet;
     if (q.value("oob").toBool())
-    {
-      _debits->setPaletteForegroundColor(namedColor("error"));
-      _credits->setPaletteForegroundColor(namedColor("error"));
-      _diff->setPaletteForegroundColor(namedColor("error"));
-    }
-    else
-    {
-      _debits->setPaletteForegroundColor(QColor("black"));
-      _credits->setPaletteForegroundColor(QColor("black"));
-      _diff->setPaletteForegroundColor(QColor("black"));
-    }
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+
+    _debits->setStyleSheet(stylesheet);
+    _credits->setStyleSheet(stylesheet);
+    _diff->setStyleSheet(stylesheet);
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {

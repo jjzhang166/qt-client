@@ -963,7 +963,7 @@ to be bound by its terms.</comment>
          <item row="1" column="0">
           <widget class="QStackedWidget" name="_transmitStack">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="_emptyPage">
             <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -1035,18 +1035,7 @@ to be bound by its terms.</comment>
                  </widget>
                 </item>
                 <item row="2" column="1">
-                 <widget class="XComboBox" name="_accountType">
-                  <item>
-                   <property name="text">
-                    <string>Checking</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Savings</string>
-                   </property>
-                  </item>
-                 </widget>
+                 <widget class="XComboBox" name="_accountType"/>
                 </item>
                 <item row="4" column="0" colspan="2">
                  <widget class="QGroupBox" name="_useACHSpecial">

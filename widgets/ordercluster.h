@@ -12,14 +12,20 @@
 
 #define _orderCluster_h
 
+#include "parameter.h"
 #include "virtualCluster.h"
 
 class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
 {
   Q_OBJECT
+  Q_FLAGS (OrderStatuses)
+  Q_FLAGS (OrderTypes)
+  Q_PROPERTY(OrderStatuses allowedStatuses READ allowedStatuses WRITE setAllowedStatuses)
+  Q_PROPERTY(OrderTypes    allowedTypes    READ allowedTypes    WRITE setAllowedTypes)
 
   public:
     OrderLineEdit(QWidget*, const char* = 0);
+    ~OrderLineEdit();
 
     enum OrderStatus
     {
@@ -46,9 +52,9 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
     Q_INVOKABLE virtual bool          isSO()                const;
     Q_INVOKABLE virtual bool          isTO()                const;
     Q_INVOKABLE virtual bool          isUnposted()                const;
-    Q_INVOKABLE virtual bool      fromSitePrivsEnforced() const {return _fromPrivs; };
-    Q_INVOKABLE virtual bool      toSitePrivsEnforced()   const {return _toPrivs; };
-    Q_INVOKABLE virtual void      setExtraClause(const QString & p) {VirtualClusterLineEdit::setExtraClause(p);};
+    Q_INVOKABLE virtual bool      fromSitePrivsEnforced() const {return _fromPrivs; }
+    Q_INVOKABLE virtual bool      toSitePrivsEnforced()   const {return _toPrivs; }
+    Q_INVOKABLE virtual void      setExtraClause(const QString & p) {VirtualClusterLineEdit::setExtraClause(p);}
     Q_INVOKABLE virtual void          setExtraClause(const QString &, const QString &);
     Q_INVOKABLE virtual void          setExtraClause(const OrderTypes, const QString &);
     Q_INVOKABLE virtual void      setFromSitePrivsEnforced(const bool p);
@@ -56,13 +62,17 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
     Q_INVOKABLE virtual OrderStatus          status();
     Q_INVOKABLE virtual QString          to()                        const;
     Q_INVOKABLE virtual QString          type();
-    Q_INVOKABLE virtual QString       fromPrivsClause() {return _fromPrivsClause;};
-    Q_INVOKABLE virtual QString       toPrivsClause()   {return _toPrivsClause;};
+    Q_INVOKABLE virtual QString       fromPrivsClause() {return _fromPrivsClause;}
+    Q_INVOKABLE virtual QString       toPrivsClause()   {return _toPrivsClause;}
+
+    Q_INVOKABLE virtual bool lockSelected() {return _lock; }
+    Q_INVOKABLE virtual void setLockSelected(bool lock) { _lock = lock; }
 
   public slots:
     virtual void          setAllowedStatuses(const OrderStatuses);
     virtual void          setAllowedType(const QString &);
     virtual void          setAllowedTypes(const OrderTypes);
+    virtual void          setCustId(int);
     virtual void          setId(const int, const QString & = QString::null);
     virtual void          sList();
     virtual void          sSearch();
@@ -79,6 +89,7 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
 
     virtual QString        buildExtraClause();
     virtual void        silentSetId(const int);
+    virtual void        unlock();
 
 
   protected slots:
@@ -91,6 +102,7 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
   private:
     bool        _fromPrivs;
     bool        _toPrivs;
+    bool        _lock;
     QString     _toPrivsClause;
     QString     _fromPrivsClause;
     QString        _allClause;
@@ -100,6 +112,7 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
     QString        _toClause;
     QString        _statusClause;
     QString        _typeClause;
+    int         _custid;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(OrderLineEdit::OrderStatuses)
 Q_DECLARE_OPERATORS_FOR_FLAGS(OrderLineEdit::OrderTypes)
@@ -107,6 +120,11 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(OrderLineEdit::OrderTypes)
 class XTUPLEWIDGETS_EXPORT OrderCluster : public VirtualCluster
 {
   Q_OBJECT
+
+  Q_PROPERTY(OrderLineEdit::OrderStatuses allowedStatuses READ allowedStatuses WRITE setAllowedStatuses)
+  Q_PROPERTY(OrderLineEdit::OrderTypes    allowedTypes    READ allowedTypes    WRITE setAllowedTypes)
+  Q_PROPERTY(bool    nameVisible    READ nameVisible    WRITE setNameVisible)
+  Q_PROPERTY(bool    descriptionVisible    READ descriptionVisible    WRITE setDescriptionVisible)
 
   public:
     OrderCluster(QWidget*, const char* = 0);
@@ -130,12 +148,22 @@ class XTUPLEWIDGETS_EXPORT OrderCluster : public VirtualCluster
     Q_INVOKABLE virtual QString                    to()                const;
     Q_INVOKABLE virtual QString                    type()              const;
 
+    Q_INVOKABLE virtual bool lockSelected();
+    Q_INVOKABLE virtual void setLockSelected(bool lock);
+
+    virtual bool        nameVisible();
+    virtual void        setNameVisible(const bool p);
+
+    virtual bool        descriptionVisible();
+    virtual void        setDescriptionVisible(const bool p);
+
   public slots:
     virtual void        setAllowedStatuses(const OrderLineEdit::OrderStatuses);
     virtual void        setAllowedStatuses(const int);
     virtual void        setAllowedType(const QString &);
     virtual void        setAllowedTypes(const OrderLineEdit::OrderTypes);
     virtual void        setAllowedTypes(const int);
+    virtual void        setCustId(int);
     virtual void        setId(const int, const QString& = QString::null);
     virtual void        setFromSitePrivsEnforced(const bool p);
     virtual void        setToSitePrivsEnforced(const bool p);
@@ -150,6 +178,8 @@ class XTUPLEWIDGETS_EXPORT OrderCluster : public VirtualCluster
     QLabel        *_from;
     QLabel        *_toLit;
     QLabel        *_to;
+    bool           _nameVisible;
+    bool           _descripVisible;
     
 };
 

@@ -19,8 +19,6 @@ submitReport::submitReport(QWidget* parent, const char* name, bool modal, Qt::WF
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_scheduled, SIGNAL(toggled(bool)), _time, SLOT(setEnabled(bool)));
   connect(_submit, SIGNAL(clicked()), this, SLOT(sSubmit()));
   connect(_scheduled, SIGNAL(toggled(bool)), _date, SLOT(setEnabled(bool)));
@@ -117,7 +115,8 @@ void submitReport::sSubmit()
   if (_email->text().trimmed().length() == 0)
   {
     QMessageBox::critical( this, tr("Cannot Submit Report"),
-                           tr("You must indicate an Email address to which the completed Report will be sent.") );
+                           tr("<p>You must indicate an Email address to which "
+                              "the completed Report will be sent.") );
     _email->setFocus();
     return;
   }

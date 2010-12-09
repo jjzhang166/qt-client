@@ -21,8 +21,22 @@ costCategory::costCategory(QWidget* parent, const char* name, bool modal, Qt::WF
 
   _costcatid = -1;
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_category, SIGNAL(lostFocus()), this, SLOT(sCheck()));
+
+  _asset->setType(GLCluster::cAsset);
+  _expense->setType(GLCluster::cExpense);
+  _wip->setType(GLCluster::cAsset);
+  _inventoryCost->setType(GLCluster::cExpense | GLCluster::cAsset);
+  _adjustment->setType(GLCluster::cExpense);
+  _invScrap->setType(GLCluster::cExpense);
+  _mfgScrap->setType(GLCluster::cExpense);
+  _transformClearing->setType(GLCluster::cAsset);
+  _purchasePrice->setType(GLCluster::cExpense | GLCluster::cAsset);
+  _liability->setType(GLCluster::cLiability);
+  _freight->setType(GLCluster::cExpense);
+  _shippingAsset->setType(GLCluster::cAsset);
+  _toLiabilityClearing->setType(GLCluster::cLiability);
 
   _transformClearingLit->setVisible(_metrics->boolean("Transforms")); 
   _transformClearing->setVisible(_metrics->boolean("Transforms"));
@@ -80,6 +94,7 @@ enum SetResponse costCategory::set(const ParameterList &pParams)
       _category->setEnabled(FALSE);
       _description->setEnabled(FALSE);
       _asset->setReadOnly(TRUE);
+      _expense->setReadOnly(TRUE);
       _wip->setReadOnly(TRUE);
       _inventoryCost->setReadOnly(TRUE);
       _adjustment->setReadOnly(TRUE);
@@ -91,10 +106,9 @@ enum SetResponse costCategory::set(const ParameterList &pParams)
       _freight->setReadOnly(TRUE);
       _shippingAsset->setReadOnly(TRUE);
       _toLiabilityClearing->setReadOnly(TRUE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -199,7 +213,7 @@ void costCategory::sSave()
     ;
   if (! error[errIndex].msg.isEmpty())
   {
-    QMessageBox::critical(this, tr("Cannot Save CRM Account"),
+    QMessageBox::critical(this, tr("Cannot Save Cost Category"),
 			  error[errIndex].msg);
     error[errIndex].widget->setFocus();
     return;
@@ -214,7 +228,7 @@ void costCategory::sSave()
   q.exec();
   if (q.first())
   {
-    QMessageBox::critical(this, tr("Cannot Save CRM Account"),
+    QMessageBox::critical(this, tr("Cannot Save Cost Category"),
                           tr("The Name you have entered for this Cost Category is already in use. "
                              "Please enter in a different Name for this Cost Category."));
     _category->setFocus();

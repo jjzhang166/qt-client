@@ -24,8 +24,6 @@ adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowF
 {
   setupUi(this);
 
-//  (void)statusBar();
-
   _adjustmentTypeGroupInt = new QButtonGroup(this);
 
   connect(_absolute,                   SIGNAL(toggled(bool)), this, SLOT(sPopulateQty()));
@@ -258,7 +256,6 @@ void adjustmentTrans::sPost()
       close();
     else
     {
-      _close->setText(tr("&Close"));
       _item->setId(-1);
       _qty->clear();
       _documentNum->clear();
@@ -297,6 +294,8 @@ void adjustmentTrans::sPopulateQOH(int pWarehousid)
     q.bindValue(":item_id", _item->id());
     q.bindValue(":warehous_id", pWarehousid);
     q.exec();
+
+    _absolute->setStyleSheet("");
     if (q.first())
     {
       _cachedQOH = q.value("itemsite_qtyonhand").toDouble();
@@ -308,18 +307,14 @@ void adjustmentTrans::sPopulateQOH(int pWarehousid)
       _costMethod = q.value("itemsite_costmethod").toString();
 
       if (q.value("itemsite_freeze").toBool())
-        _absolute->setPaletteForegroundColor(QColor("red"));
-      else
-        _absolute->setPaletteForegroundColor(QColor("black"));
+        _absolute->setStyleSheet(QString("* { color: %1; }")
+                                 .arg(namedColor("error").name()));
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      _absolute->setPaletteForegroundColor(QColor("black"));
       return;
     }
-    else
-      _absolute->setPaletteForegroundColor(QColor("black"));
 
     sPopulateQty();
   }

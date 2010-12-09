@@ -34,7 +34,7 @@ check::check(QWidget* parent, const char* name, Qt::WFlags fl)
   _items->addColumn(tr("Amount (in %1)").arg(CurrDisplay::baseCurrAbbr()),
                                       _moneyColumn, Qt::AlignRight, true, "baseamount");
 
-  _achBatchNumber->setVisible(_metrics->boolean("ACHEnabled"));
+  _achBatchNumber->setVisible(_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"));
 
   _checkid = -1;
 }
@@ -79,13 +79,13 @@ void check::sPopulate()
   {
     _checkNumber->setText(q.value("checkhead_number").toString());
     _bankaccnt->setId(q.value("checkhead_bankaccnt_id").toInt());
-    _recipNumber->setText(q.value("checkrecip_number").toString());;
-    _recipName->setText(q.value("checkrecip_name").toString());;
+    _recipNumber->setText(q.value("checkrecip_number").toString());
+    _recipName->setText(q.value("checkrecip_name").toString());
     _amount->set(q.value("checkhead_amount").toDouble(),
                  q.value("checkhead_curr_id").toInt(),
                  q.value("checkhead_checkdate").toDate());
     _checkdate->setDate(q.value("checkhead_checkdate").toDate());
-    _achBatchNumber->setText(q.value("checkhead_achbatch_number").toString());
+    _achBatchNumber->setText(q.value("checkhead_ach_batch").toString());
     _recipType->setText(q.value("checkrecip_type").toString());
     _void->setChecked(q.value("checkhead_void").toBool());
     _replaced->setChecked(q.value("checkhead_replaced").toBool());

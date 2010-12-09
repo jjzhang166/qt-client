@@ -248,7 +248,7 @@ void selectPayments::sClearAll()
                  " AND (apopen_vend_id=vend_id)"
                  " AND (vend_vendtype_id IN (SELECT vendtype_id"
                  "                           FROM vendtype"
-                 "                           WHERE (vendtype_code ~ :vendtype_pattern)));" );
+                 "                           WHERE (vendtype_code ~ :vendtype_pattern))));" );
         break;
     }
 

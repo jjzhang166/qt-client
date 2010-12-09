@@ -198,7 +198,7 @@ int YourPayProcessor::buildCommon(const int pccardid, const int pcvv, const doub
   return 0;
 }
 
-int  YourPayProcessor::doAuthorize(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
+int YourPayProcessor::doAuthorize(const int pccardid, const int pcvv, double &pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
     qDebug("YP:doAuthorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
@@ -629,6 +629,9 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
     status = "X";
   }
 
+  /* TODO: rewrite CreditCardProcessor::fraudChecks() as recommended in
+           cybersourceprocessor.cpp, then rewrite this
+   */
   // YP encodes AVS and CVV checking in the r_avs response field
   QRegExp avsRegExp("^[" + _metrics->value("CCAvsAddr") +
 		    "][" + _metrics->value("CCAvsZIP") + "]");
@@ -639,6 +642,7 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
   _passedCvv = _metrics->value("CCCVVCheck") == "X" ||
 	       ! r_avs.contains(QRegExp("[" + _metrics->value("CCCVVErrors") +
 					"]$"));
+  // end TODO
 
   _passedLinkShield = (! _metrics->boolean("CCYPLinkShield")) ||
 	      (! r_score.isEmpty() &&
@@ -674,10 +678,7 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
   else
     pparams.append("currid",    pcurrid);
 
-  if (ptype == "A")
-    pparams.append("auth", QVariant(true, 0));
-  else
-    pparams.append("auth", QVariant(false, 1));
+  pparams.append("auth", QVariant(ptype == "A"));
 
   if (! r_time.isEmpty())
     pparams.append("time",     r_time);

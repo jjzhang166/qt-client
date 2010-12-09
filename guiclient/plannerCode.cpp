@@ -33,8 +33,8 @@ plannerCode::plannerCode(QWidget* parent, const char* name, bool modal, Qt::WFla
   }
   
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_code, SIGNAL(lostFocus()), this, SLOT(sCheck()));
 }
 
@@ -81,9 +81,9 @@ enum SetResponse plannerCode::set(const ParameterList &pParams)
       _description->setEnabled(FALSE);
       _autoExplode->setEnabled(FALSE);
       _explosionGroup->setEnabled(FALSE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -176,7 +176,7 @@ void plannerCode::sSave()
   q.bindValue(":plancode_id", _plancodeid);
   q.bindValue(":plancode_code", _code->text());
   q.bindValue(":plancode_name", _description->text().trimmed());
-  q.bindValue(":plancode_consumefcst", QVariant(FALSE, 0));
+  q.bindValue(":plancode_consumefcst", false);
 
   if (_autoExplode->isChecked())
   {

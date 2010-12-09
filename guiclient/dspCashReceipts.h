@@ -11,41 +11,30 @@
 #ifndef DSPCASHRECEIPTS_H
 #define DSPCASHRECEIPTS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
-#include "xerrormessage.h"
 
 #include "ui_dspCashReceipts.h"
 
-class dspCashReceipts : public XWidget, public Ui::dspCashReceipts
+class dspCashReceipts : public display, public Ui::dspCashReceipts
 {
     Q_OBJECT
 
 public:
     dspCashReceipts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~dspCashReceipts();
     virtual bool setParams(ParameterList &);
 
 public slots:
+    virtual void sPrint();
     virtual void sEditAropen();
     virtual void sEditCashrcpt();
-    virtual void sFillList();
-    virtual void sHandleButtons(bool);
-    virtual void sNewCashrcpt();
+    virtual void sNew();
+    virtual void sNewCashrcpt(); // Legacy code
     virtual void sPostCashrcpt();
-    virtual void sPrint();
     virtual void sViewAropen();
     virtual void sViewCashrcpt();
     virtual void sReversePosted();
-
-protected slots:
-    virtual void languageChange();
-    virtual void sPopulateMenu(QMenu *);
-  
-private:
-    XErrorMessage *_upgradeWarn;
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // DSPCASHRECEIPTS_H

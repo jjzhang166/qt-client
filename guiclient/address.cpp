@@ -10,11 +10,14 @@
 
 #include "address.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QVariant>
+
 #include <parameter.h>
+
 #include "addresscluster.h"
 #include "characteristicAssignment.h"
 #include "contact.h"
@@ -81,6 +84,10 @@ enum SetResponse address::set(const ParameterList &pParams)
     if (param.toString() == "new")
     {
       _mode = cNew;
+      q.exec("SELECT fetchNextNumber('AddressNumber') AS result;");
+      q.first();
+      _addr->setNumber(q.value("result").toString());
+      _addr->setLine1("Address" + QDateTime::currentDateTime().toString());
       int addrSaveResult = _addr->save(AddressCluster::CHANGEONE);
       if (addrSaveResult < 0)
       {
@@ -91,6 +98,7 @@ enum SetResponse address::set(const ParameterList &pParams)
 	return UndefinedError;
       }
       _comments->setId(_addr->id());
+      _addr->setLine1("");
       connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
       connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
       _addr->setFocus();
@@ -265,7 +273,7 @@ void address::sPopulate()
 
 void address::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
   QString editStr = tr("Edit...");
   QString viewStr = tr("View...");
 
@@ -274,18 +282,18 @@ void address::sPopulateMenu(QMenu *pMenu)
     case 1:
       if (_privileges->check("MaintainContacts") &&
 	  (cNew == _mode || cEdit == _mode))
-	menuItem = pMenu->insertItem(editStr, this, SLOT(sEditContact()));
+	menuItem = pMenu->addAction(editStr, this, SLOT(sEditContact()));
       else if (_privileges->check("ViewContacts"))
-	menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewContact()));
+	menuItem = pMenu->addAction(viewStr, this, SLOT(sViewContact()));
 
       break;
 
     case 2:	// ship-to
       if (_privileges->check("MaintainShiptos") &&
 	  (cNew == _mode || cEdit == _mode))
-	menuItem = pMenu->insertItem(editStr, this, SLOT(sEditShipto()));
+	menuItem = pMenu->addAction(editStr, this, SLOT(sEditShipto()));
       else if (_privileges->check("ViewShiptos"))
-	menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewShipto()));
+	menuItem = pMenu->addAction(viewStr, this, SLOT(sViewShipto()));
 
       break;
 
@@ -293,9 +301,9 @@ void address::sPopulateMenu(QMenu *pMenu)
       /* comment out until we make vendor a XDialog or address a XMainWindow
       if (_privileges->check("MaintainVendors") &&
 	  (cNew == _mode || cEdit == _mode))
-	menuItem = pMenu->insertItem(editStr, this, SLOT(sEditVendor()));
+	menuItem = pMenu->addAction(editStr, this, SLOT(sEditVendor()));
       else if (_privileges->check("ViewVendors"))
-	menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewVendor()));
+	menuItem = pMenu->addAction(viewStr, this, SLOT(sViewVendor()));
       */
 
       break;
@@ -303,18 +311,18 @@ void address::sPopulateMenu(QMenu *pMenu)
     case 4:	// vendaddr
       if (_privileges->check("MaintainVendorAddresses") &&
 	  (cNew == _mode || cEdit == _mode))
-	menuItem = pMenu->insertItem(editStr, this, SLOT(sEditVendorAddress()));
+	menuItem = pMenu->addAction(editStr, this, SLOT(sEditVendorAddress()));
       else if (_privileges->check("ViewVendorAddresses"))
-	menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewVendorAddress()));
+	menuItem = pMenu->addAction(viewStr, this, SLOT(sViewVendorAddress()));
 
       break;
 
     case 5:	// warehouse
       if (_privileges->check("MaintainWarehouses") &&
 	  (cNew == _mode || cEdit == _mode))
-	menuItem = pMenu->insertItem(editStr, this, SLOT(sEditWarehouse()));
+	menuItem = pMenu->addAction(editStr, this, SLOT(sEditWarehouse()));
       else if (_privileges->check("ViewWarehouses"))
-	menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewWarehouse()));
+	menuItem = pMenu->addAction(viewStr, this, SLOT(sViewWarehouse()));
 
       break;
 

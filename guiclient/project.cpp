@@ -16,6 +16,7 @@
 #include <openreports.h>
 #include <comment.h>
 #include "task.h"
+#include "dspOrderActivityByProject.h"
 
 project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -24,14 +25,15 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   if(!_privileges->check("EditOwner")) _owner->setEnabled(false);
 
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(sClose()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_printTasks, SIGNAL(clicked()), this, SLOT(sPrintTasks()));
   connect(_newTask, SIGNAL(clicked()), this, SLOT(sNewTask()));
   connect(_editTask, SIGNAL(clicked()), this, SLOT(sEditTask()));
   connect(_viewTask, SIGNAL(clicked()), this, SLOT(sViewTask()));
   connect(_deleteTask, SIGNAL(clicked()), this, SLOT(sDeleteTask()));
   connect(_number, SIGNAL(lostFocus()), this, SLOT(sNumberChanged()));
+  connect(_activity, SIGNAL(clicked()), this, SLOT(sActivity()));
 
   _prjtask->addColumn( tr("Number"),			_itemColumn,	Qt::AlignRight, true, "prjtask_number" );
   _prjtask->addColumn( tr("Name"),				_itemColumn,	Qt::AlignLeft,  true, "prjtask_name"  );
@@ -194,6 +196,7 @@ void project::populate()
   sFillTaskList();
   _comments->setId(_prjid);
   _documents->setId(_prjid);
+  emit populated(_prjid);
 }
 
 void project::sClose()
@@ -208,18 +211,25 @@ void project::sClose()
   reject();
 }
 
-void project::sSave()
+bool project::sSave(bool partial)
 {
   if (_number->text().trimmed().isEmpty())
   {
     QMessageBox::warning( this, tr("Cannot Save Project"),
       tr("No Project Number was specified. You must specify a project number.") );
-    return;
+    return false;
+  }
+
+  if (!partial && !_due->isValid())
+  {
+    QMessageBox::warning( this, tr("Cannot Save Project"),
+      tr("You must specify a due date.") );
+    return false;
   }
 
   RecurrenceWidget::RecurrenceChangePolicy cp = _recurring->getChangePolicy();
   if (cp == RecurrenceWidget::NoPolicy)
-    return;
+    return false;
 
   XSqlQuery rollbackq;
   rollbackq.prepare("ROLLBACK;");
@@ -281,7 +291,7 @@ void project::sSave()
   {
     rollbackq.exec();
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    return false;
   }
 
   QString errmsg;
@@ -290,15 +300,17 @@ void project::sSave()
     qDebug("recurring->save failed");
     rollbackq.exec();
     systemError(this, errmsg, __FILE__, __LINE__);
-    return;
+    return false;
   }
 
   q.exec("COMMIT;");
+  emit saved(_prjid);
 
-  if (_saved)
+  if (!partial)
     done(_prjid);
   else
     _saved=true;
+  return true;
 }
 
 void project::sPrintTasks()
@@ -317,7 +329,10 @@ void project::sPrintTasks()
 void project::sNewTask()
 {
   if (!_saved)
-    sSave();
+  {
+    if (!sSave(true))
+      return;
+  }
     
   ParameterList params;
   params.append("mode", "new");
@@ -364,6 +379,7 @@ void project::sDeleteTask()
             " WHERE (prjtask_id=:prjtask_id); ");
   q.bindValue(":prjtask_id", _prjtask->id());
   q.exec();
+  emit deletedTask();
   sFillTaskList();
 }
 
@@ -431,4 +447,15 @@ void project::sNumberChanged()
       _mode = cNew;
     }
   }
+}
+
+void project::sActivity()
+{
+  ParameterList params;
+  params.append("prj_id", _prjid);
+  params.append("run", true);
+
+  dspOrderActivityByProject *newdlg = new dspOrderActivityByProject(this,"dspOrderActivityByProject",Qt::Dialog );
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
 }

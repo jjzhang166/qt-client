@@ -35,16 +35,17 @@ customCommand::customCommand(QWidget* parent, const char* name, bool modal, Qt::
   _arguments->addColumn(tr("Argument"),      -1, Qt::AlignLeft,  true, "cmdarg_arg");
   
   _module->clear();
-  _module->addItem("Products");
-  _module->addItem("Inventory");
+  int i = 0;
+  _module->append(i++, "Products");
+  _module->append(i++, "Inventory");
   if (_metrics->value("Application") != "PostBooks")
-    _module->addItem("Schedule");
-  _module->addItem("Purchase");
-  _module->addItem("Manufacture");
-  _module->addItem("CRM");
-  _module->addItem("Sales");
-  _module->addItem("Accounting");
-  _module->addItem("System");
+    _module->append(i++, "Schedule");
+  _module->append(i++, "Purchase");
+  _module->append(i++, "Manufacture");
+  _module->append(i++, "CRM");
+  _module->append(i++, "Sales");
+  _module->append(i++, "Accounting");
+  _module->append(i++, "System");
 }
 
 customCommand::~customCommand()
@@ -189,7 +190,7 @@ bool customCommand::save()
               " WHERE (cmd_id=:cmd_id);");
 
   q.bindValue(":cmd_id", _cmdid);
-  q.bindValue(":cmd_module", _module->currentText());
+  q.bindValue(":cmd_module", _module->code());
   q.bindValue(":cmd_title", _title->text());
   q.bindValue(":cmd_privname", _privname->text().trimmed());
   if(!_name->text().isEmpty())
@@ -284,7 +285,12 @@ void customCommand::populate()
   q.exec();
   if(q.first())
   {
-    _module->setCurrentText(q.value("cmd_module").toString());
+    _module->setCode(q.value("cmd_module").toString());
+    if (_module->id() < 0)
+    {
+      _module->append(_module->count(), q.value("cmd_module").toString());
+      _module->setCode(q.value("cmd_module").toString());
+    }
     _title->setText(q.value("cmd_title").toString());
     _oldPrivname = q.value("cmd_privname").toString();
     _privname->setText(q.value("cmd_privname").toString());

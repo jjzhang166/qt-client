@@ -11,11 +11,11 @@
 #ifndef CONFIGURECRM_H
 #define CONFIGURECRM_H
 
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureCRM.h"
 
-class configureCRM : public XDialog, public Ui::configureCRM
+class configureCRM : public XAbstractConfigure, public Ui::configureCRM
 {
     Q_OBJECT
 
@@ -24,11 +24,14 @@ public:
     ~configureCRM();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
     virtual void sStrictCountryChanged(bool);
+
+signals:
+    void saving();
 
 };
 

@@ -149,6 +149,7 @@ FROM (
          AS cost
     FROM item, cust
    WHERE ( (item_sold)
+     AND (item_active)
      AND (cust_id=&lt;? value("cust_id") ?>)
      AND (NOT item_exclusive) )
 ) AS data

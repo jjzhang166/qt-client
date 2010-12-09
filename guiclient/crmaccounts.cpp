@@ -10,70 +10,72 @@
 
 #include "crmaccounts.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 
-#include <openreports.h>
-#include <metasql.h>
-
 #include "crmaccount.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-crmaccounts::crmaccounts(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "crmaccounts", fl)
 {
-    setupUi(this);
+  setWindowTitle(tr("Accounts"));
+  setReportName("CRMAccountMasterList");
+  setMetaSQLOptions("crmaccounts", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
 
-    connect(_print,	 SIGNAL(clicked()),	this,	SLOT(sPrint()));
-    connect(_new,	 SIGNAL(clicked()),	this,	SLOT(sNew()));
-    connect(_edit,	 SIGNAL(clicked()),	this,	SLOT(sEdit()));
-    connect(_view,	 SIGNAL(clicked()),	this,	SLOT(sView()));
-    connect(_delete,	 SIGNAL(clicked()),	this,	SLOT(sDelete()));
-    connect(_activeOnly, SIGNAL(toggled(bool)),	this,	SLOT(sFillList()));
-    connect(_crmaccount, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)),
-				      this, SLOT(sPopulateMenu(QMenu*)));
-    connect(omfgThis, SIGNAL(crmAccountsUpdated(int)), this, SLOT(sFillList()));
-    connect(omfgThis, SIGNAL(customersUpdated(int, bool)), this, SLOT(sFillList()));
-    connect(omfgThis, SIGNAL(prospectsUpdated()), this, SLOT(sFillList()));
-    connect(omfgThis, SIGNAL(taxAuthsUpdated(int)), this, SLOT(sFillList()));
-    connect(omfgThis, SIGNAL(vendorsUpdated()), this, SLOT(sFillList()));
+  parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Account Number Pattern"), "crmacct_number_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Account Name Pattern"), "crmacct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Contact Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Email Pattern"), "cntct_email_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("City Pattern"), "addr_city_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
 
-    _crmaccount->addColumn(tr("Number"),    80, Qt::AlignLeft,  true, "crmacct_number");
-    _crmaccount->addColumn(tr("Name"),	    -1, Qt::AlignLeft,  true, "crmacct_name");
-    _crmaccount->addColumn(tr("Customer"),  70, Qt::AlignCenter,true, "cust");
-    _crmaccount->addColumn(tr("Prospect"),  70, Qt::AlignCenter,true, "prospect");
-    _crmaccount->addColumn(tr("Vendor"),    70, Qt::AlignCenter,true, "vend");
-    _crmaccount->addColumn(tr("Competitor"),70, Qt::AlignCenter,true, "competitor");
-    _crmaccount->addColumn(tr("Partner"),   70, Qt::AlignCenter,true, "partner");
-    _crmaccount->addColumn(tr("Tax Auth."), 70, Qt::AlignCenter,true, "taxauth");
+  parameterWidget()->applyDefaultFilterSet();
 
-    if (_privileges->check("MaintainCRMAccounts"))
-    {
-      connect(_crmaccount, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_crmaccount, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-      connect(_crmaccount, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    }
-    else
-    {
-      _new->setEnabled(FALSE);
-      connect(_crmaccount, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    }
+  connect(omfgThis, SIGNAL(crmAccountsUpdated(int)), this, SLOT(sFillList()));
+  connect(omfgThis, SIGNAL(customersUpdated(int, bool)), this, SLOT(sFillList()));
+  connect(omfgThis, SIGNAL(prospectsUpdated()), this, SLOT(sFillList()));
+  connect(omfgThis, SIGNAL(taxAuthsUpdated(int)), this, SLOT(sFillList()));
+  connect(omfgThis, SIGNAL(vendorsUpdated()), this, SLOT(sFillList()));
 
-    _activeOnly->setChecked(true);
+  list()->addColumn(tr("Number"),      80, Qt::AlignLeft,  true, "crmacct_number");
+  list()->addColumn(tr("Name"),        -1, Qt::AlignLeft,  true, "crmacct_name");
+  list()->addColumn(tr("First"),       50, Qt::AlignLeft  , true, "cntct_first_name" );
+  list()->addColumn(tr("Last"),        -1, Qt::AlignLeft  , true, "cntct_last_name" );
+  list()->addColumn(tr("Phone"),      100, Qt::AlignLeft  , true, "cntct_phone" );
+  list()->addColumn(tr("Email"),      100, Qt::AlignLeft  , true, "cntct_email" );
+  list()->addColumn(tr("Address"),     -1, Qt::AlignLeft  , false, "addr_line1" );
+  list()->addColumn(tr("City"),        75, Qt::AlignLeft  , false, "addr_city" );
+  list()->addColumn(tr("State"),       50, Qt::AlignLeft  , false, "addr_state" );
+  list()->addColumn(tr("Country"),    100, Qt::AlignLeft  , false, "addr_country" );
+  list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft  , false, "addr_postalcode" );
+  list()->addColumn(tr("Customer"),    70, Qt::AlignCenter,true, "cust");
+  list()->addColumn(tr("Prospect"),    70, Qt::AlignCenter,true, "prospect");
+  list()->addColumn(tr("Vendor"),      70, Qt::AlignCenter,true, "vend");
+  list()->addColumn(tr("Competitor"),  70, Qt::AlignCenter,false, "competitor");
+  list()->addColumn(tr("Partner"),     70, Qt::AlignCenter,false, "partner");
+  list()->addColumn(tr("Tax Auth."),   70, Qt::AlignCenter,false, "taxauth");
 
-    sFillList();
-}
-
-crmaccounts::~crmaccounts()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-void crmaccounts::languageChange()
-{
-    retranslateUi(this);
+  if (_privileges->check("MaintainCRMAccounts"))
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+  else
+  {
+    newAction()->setEnabled(FALSE);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
+  }
 }
 
 void crmaccounts::sNew()
@@ -90,7 +92,7 @@ void crmaccounts::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("crmacct_id", _crmaccount->id());
+  params.append("crmacct_id", list()->id());
 
   crmaccount* newdlg = new crmaccount();
   newdlg->set(params);
@@ -100,7 +102,7 @@ void crmaccounts::sView()
 void crmaccounts::sDelete()
 {
   q.prepare("SELECT deleteCRMAccount(:crmacct_id) AS returnVal;");
-  q.bindValue(":crmacct_id", _crmaccount->id());
+  q.bindValue(":crmacct_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -124,70 +126,24 @@ void crmaccounts::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("crmacct_id", _crmaccount->id());
+  params.append("crmacct_id", list()->id());
 
   crmaccount* newdlg = new crmaccount();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
 
-void crmaccounts::sFillList()
+void crmaccounts::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)
 {
-  QString sql("SELECT crmacct_id, crmacct_number, crmacct_name,"
-	      "     CASE WHEN crmacct_cust_id IS NULL THEN '' ELSE 'Y' END AS cust,"
-	      "     CASE WHEN crmacct_prospect_id IS NULL THEN '' ELSE 'Y' END AS prospect,"
-	      "     CASE WHEN crmacct_vend_id IS NULL THEN '' ELSE 'Y' END AS vend,"
-	      "     CASE WHEN crmacct_competitor_id IS NULL THEN '' ELSE 'Y' END AS competitor,"
-	      "     CASE WHEN crmacct_partner_id IS NULL THEN '' ELSE 'Y' END AS partner,"
-	      "     CASE WHEN crmacct_taxauth_id IS NULL THEN '' ELSE 'Y' END AS taxauth "
-              "FROM crmacct "
-	      "<? if exists(\"activeOnly\") ?> WHERE crmacct_active <? endif ?>"
-              "ORDER BY crmacct_number;");
-  ParameterList params;
-  if (! setParams(params))
-    return;
-  MetaSQLQuery mql(sql);
-  q = mql.toQuery(params);
-  _crmaccount->populate(q);
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
+  QAction *menuItem;
+
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainCRMAccounts"));
+
+  pMenu->addAction(tr("View..."), this, SLOT(sView()));
+
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainCRMAccounts"));
 }
 
-void crmaccounts::sPopulateMenu( QMenu * pMenu )
-{
-  int menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainCRMAccounts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
-
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainCRMAccounts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
-}
-
-bool crmaccounts::setParams(ParameterList &params)
-{
-  if (_activeOnly->isChecked())
-    params.append("activeOnly");
-
-  return true;
-}
-
-void crmaccounts::sPrint()
-{
-  ParameterList params;
-  if (! setParams(params))
-    return;
-
-  orReport report("CRMAccountMasterList", params);
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
-}

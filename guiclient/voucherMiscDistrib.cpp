@@ -30,6 +30,9 @@ voucherMiscDistrib::voucherMiscDistrib(QWidget* parent, const char* name, bool m
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_taxCode, SIGNAL(newID(int)), this, SLOT(sCheck()));
   
+  _account->setType(GLCluster::cRevenue | GLCluster::cExpense |
+                    GLCluster::cAsset | GLCluster::cLiability);
+
   adjustSize();
 }
 

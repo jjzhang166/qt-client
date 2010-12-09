@@ -21,7 +21,7 @@ task::task(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_actualExp, SIGNAL(lostFocus()), this, SLOT(sExpensesAdjusted()));
   connect(_budgetExp, SIGNAL(lostFocus()), this, SLOT(sExpensesAdjusted()));
   connect(_actualHours, SIGNAL(lostFocus()), this, SLOT(sHoursAdjusted()));
@@ -33,17 +33,12 @@ task::task(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _actualExp->setValidator(omfgThis->qtyVal());
   _balanceHours->setPrecision(omfgThis->qtyVal());
   _balanceExp->setPrecision(omfgThis->qtyVal());
-   
-//_usr->addColumn( tr("Username"),_itemColumn, AlignLeft, true, "usr_username");
-//_usr->addColumn( tr("Proper Name"),      -1, AlignLeft, true, "usr_propername");
 
   _prjid = -1;
   _prjtaskid = -1;
   
   _owner->setType(UsernameLineEdit::UsersActive);
   _assignedTo->setType(UsernameLineEdit::UsersActive);
-
-  adjustSize();
 }
 
 task::~task()
@@ -121,7 +116,7 @@ enum SetResponse task::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     if (param.toString() == "view")
     {
@@ -142,8 +137,10 @@ enum SetResponse task::set(const ParameterList &pParams)
       _started->setEnabled(false);
       _completed->setEnabled(false);
       _alarms->setEnabled(false);
-	  _comments->setReadOnly(true);
-      _save->hide();
+      _comments->setReadOnly(true);
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -216,6 +213,14 @@ void task::sSave()
       QMessageBox::warning( this, tr("Cannot Save Project Task"),
                             tr("You must enter a valid Name.") );
       _name->setFocus();
+      return;
+  }
+
+  if (!_due->isValid())
+  {
+      QMessageBox::warning( this, tr("Cannot Save Project Task"),
+                            tr("You must enter a valid due date.") );
+      _due->setFocus();
       return;
   }
   

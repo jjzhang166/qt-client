@@ -10,6 +10,7 @@
 
 #include "eventManager.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -87,20 +88,20 @@ void eventManager::sHandleEventValid(bool pvalid)
 
 void eventManager::sPopulateMenu(QMenu *menu)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (_event->currentItem()->rawValue("evntlog_dispatched").toString().length() == 0)
   {
-    menuItem = menu->insertItem(tr("Acknowledge"), this, SLOT(sAcknowledge()), 0);
+    menuItem = menu->addAction(tr("Acknowledge"), this, SLOT(sAcknowledge()));
     if ( ((_currentUser->isChecked()) && (!_privileges->check("DispatchOwnEvents"))) ||
          ((_selectedUser->isChecked()) && (!_privileges->check("DispatchOtherEvents"))) )
-        menu->setItemEnabled(menuItem, FALSE);
+        menuItem->setEnabled(FALSE);
   }
 
-  menuItem = menu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
+  menuItem = menu->addAction(tr("Delete"), this, SLOT(sDelete()));
   if ( ((_currentUser->isChecked()) && (!_privileges->check("DeleteOwnEvents"))) ||
        ((_selectedUser->isChecked()) && (!_privileges->check("DeleteOtherEvents"))) )
-      menu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(FALSE);
 
   // if multiple items are selected then keep the menu short
   QList<XTreeWidgetItem*> list = _event->selectedItems();
@@ -111,91 +112,91 @@ void eventManager::sPopulateMenu(QMenu *menu)
        (_event->currentItem()->rawValue("evnttype_name").toString() == "WoDueDateChanged") ||
        (_event->currentItem()->rawValue("evnttype_name").toString() == "WoQtyChanged") )
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("Inventory Availability by Work Order..."), this, SLOT(sInventoryAvailabilityByWorkOrder()), 0);
+    menuItem = menu->addAction(tr("Inventory Availability by Work Order..."), this, SLOT(sInventoryAvailabilityByWorkOrder()));
   }
   
   else if ( (_event->currentItem()->rawValue("evnttype_name").toString() == "POitemCreate") )
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Purchase Order Item..."), this, SLOT(sViewPurchaseOrderItem()), 0);
+    menuItem = menu->addAction(tr("View Purchase Order Item..."), this, SLOT(sViewPurchaseOrderItem()));
   }
 
   else if ( (_event->currentItem()->rawValue("evnttype_name").toString() == "SoitemCreated") ||
             (_event->currentItem()->rawValue("evnttype_name").toString() == "SoitemQtyChanged") ||
             (_event->currentItem()->rawValue("evnttype_name").toString() == "SoitemSchedDateChanged") )
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()), 0);
-    menuItem = menu->insertItem(tr("View Sales Order Item..."), this, SLOT(sViewSalesOrderItem()), 0);
-    menuItem = menu->insertItem(tr("Print Packing List..."), this, SLOT(sPrintPackingList()), 0);
+    menuItem = menu->addAction(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()));
+    menuItem = menu->addAction(tr("View Sales Order Item..."), this, SLOT(sViewSalesOrderItem()));
+    menuItem = menu->addAction(tr("Print Packing List..."), this, SLOT(sPrintPackingList()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "SoCommentsChanged")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()), 0);
-    menuItem = menu->insertItem(tr("Print Packing List..."), this, SLOT(sPrintPackingList()), 0);
+    menuItem = menu->addAction(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()));
+    menuItem = menu->addAction(tr("Print Packing List..."), this, SLOT(sPrintPackingList()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "QOHBelowZero")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("Issue Count Tag..."), this, SLOT(sIssueCountTag()), 0);
-    menuItem = menu->insertItem(tr("View Inventory History..."), this, SLOT(sViewInventoryHistory()), 0);
-    menuItem = menu->insertItem(tr("View Inventory Availability..."), this, SLOT(sViewInventoryAvailability()), 0);
+    menuItem = menu->addAction(tr("Issue Count Tag..."), this, SLOT(sIssueCountTag()));
+    menuItem = menu->addAction(tr("View Inventory History..."), this, SLOT(sViewInventoryHistory()));
+    menuItem = menu->addAction(tr("View Inventory Availability..."), this, SLOT(sViewInventoryAvailability()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "RWoQtyRequestChange")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("Recall Work Order"), this, SLOT(sRecallWo()), 0);
-    menuItem = menu->insertItem(tr("Change W/O Quantity..."), this, SLOT(sChangeWoQty()), 0);
-    menuItem = menu->insertItem(tr("Print W/O Traveler..."), this, SLOT(sPrintWoTraveler()), 0);
+    menuItem = menu->addAction(tr("Recall Work Order"), this, SLOT(sRecallWo()));
+    menuItem = menu->addAction(tr("Change W/O Quantity..."), this, SLOT(sChangeWoQty()));
+    menuItem = menu->addAction(tr("Print W/O Traveler..."), this, SLOT(sPrintWoTraveler()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "RWoDueDateRequestChange")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("Recall Work Order"), this, SLOT(sRecallWo()), 0);
-    menuItem = menu->insertItem(tr("Change W/O Due Date..."), this, SLOT(sChangeWoDueDate()), 0);
-    menuItem = menu->insertItem(tr("Print W/O Traveler..."), this, SLOT(sPrintWoTraveler()), 0);
+    menuItem = menu->addAction(tr("Recall Work Order"), this, SLOT(sRecallWo()));
+    menuItem = menu->addAction(tr("Change W/O Due Date..."), this, SLOT(sChangeWoDueDate()));
+    menuItem = menu->addAction(tr("Print W/O Traveler..."), this, SLOT(sPrintWoTraveler()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "RWoRequestCancel")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("Recall Work Order"), this, SLOT(sRecallWo()), 0);
-    menuItem = menu->insertItem(tr("Delete Work Order..."), this, SLOT(sDeleteWorkOrder()), 0);
+    menuItem = menu->addAction(tr("Recall Work Order"), this, SLOT(sRecallWo()));
+    menuItem = menu->addAction(tr("Delete Work Order..."), this, SLOT(sDeleteWorkOrder()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "TodoAlarm")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Todo Item..."), this, SLOT(sViewTodoItem()), 0);
+    menuItem = menu->addAction(tr("View Todo Item..."), this, SLOT(sViewTodoItem()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "IncidentAlarm")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Incident..."), this, SLOT(sViewIncident()), 0);
+    menuItem = menu->addAction(tr("View Incident..."), this, SLOT(sViewIncident()));
   }
 
   else if (_event->currentItem()->rawValue("evnttype_name").toString() == "TaskAlarm")
   {
-    menu->insertSeparator();
+    menu->addSeparator();
 
-    menuItem = menu->insertItem(tr("View Project Task..."), this, SLOT(sViewTask()), 0);
+    menuItem = menu->addAction(tr("View Project Task..."), this, SLOT(sViewTask()));
   }
 }
 

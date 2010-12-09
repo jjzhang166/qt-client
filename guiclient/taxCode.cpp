@@ -9,28 +9,24 @@
  */
 
 #include "taxCode.h"
+
+#include <QAction>
 #include <QCloseEvent>
-#include <QMenu>
 #include <QDoubleValidator>
-#include <QVariant>
+#include <QMenu>
 #include <QMessageBox>
-#include <metasql.h>
 #include <QSqlError>
+#include <QVariant>
+
+#include <metasql.h>
 #include "taxCodeRate.h"
 
-/*
- *  Constructs a taxCode as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 taxCode::taxCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave())); 
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_code, SIGNAL(lostFocus()), this, SLOT(sCheck())); 
   connect(_taxClass, SIGNAL(newID(int)), this, SLOT(populateBasis()));
   connect(_taxitems, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
@@ -46,6 +42,8 @@ taxCode::taxCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _taxitems->addColumn(tr("Amount"),    _moneyColumn,   Qt::AlignRight, true, "taxrate_amount" );
   _taxitems->addColumn(tr("Currency"),  -1,             Qt::AlignLeft,  true, "curr_name" );
   sFillList(); 
+
+  _account->setType(GLCluster::cRevenue | GLCluster::cLiability | GLCluster::cExpense);
 }
 
 void taxCode::populateBasis()
@@ -66,28 +64,21 @@ void taxCode::populateBasis()
 
 void taxCode::sPopulateMenu(QMenu *menuThis)
 {
-  menuThis->insertItem(tr("View"), this, SLOT(sView()), 0);
+  menuThis->addAction(tr("View"), this, SLOT(sView()));
   
   if ((_mode == cNew) || (_mode == cEdit))
   {
-    menuThis->insertItem(tr("Edit"), this, SLOT(sEdit()), 0);
-    menuThis->insertItem(tr("Expire"), this, SLOT(sExpire()), 0);
-    menuThis->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
+    menuThis->addAction(tr("Edit"), this, SLOT(sEdit()));
+    menuThis->addAction(tr("Expire"), this, SLOT(sExpire()));
+    menuThis->addAction(tr("Delete"), this, SLOT(sDelete()));
   }
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 taxCode::~taxCode()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void taxCode::languageChange()
 {
   retranslateUi(this);
@@ -166,8 +157,8 @@ void taxCode::sFillList()
                     "             ELSE taxrate_effective END AS effective, "
                     "        CASE WHEN (taxrate_expires = endOfTime()) THEN NULL "
                     "             ELSE taxrate_expires END AS expires, "
-                    "        <? literal (\"always\") ?> AS effective_xtnullrole, "
-                    "        <? literal (\"never\") ?>  AS expires_xtnullrole, "
+                    "        <? value(\"always\") ?> AS effective_xtnullrole, "
+                    "        <? value(\"never\") ?>  AS expires_xtnullrole, "
                     "       CASE WHEN (taxrate_expires < CURRENT_DATE) THEN 'error'"
                     "	         WHEN (taxrate_effective >= CURRENT_DATE) THEN 'emphasis'"
                     "       END AS qtforegroundrole, "
@@ -261,16 +252,16 @@ enum SetResponse taxCode::set(const ParameterList &pParams)
       _code->setEnabled(FALSE);
       _description->setEnabled(FALSE);
       _account->setReadOnly(TRUE); 
-      _close->setText(tr("&Close"));
-	  _taxClass->setEnabled(FALSE);
-	  _taxauth->setEnabled(FALSE);
-	  _basis->setEnabled(FALSE);
-      _save->hide(); 
-      _close->setFocus();
-	  _new->setEnabled(FALSE);
+      _taxClass->setEnabled(FALSE);
+      _taxauth->setEnabled(FALSE);
+      _basis->setEnabled(FALSE);
+      _new->setEnabled(FALSE);
       _edit->setEnabled(FALSE);
       _expire->setEnabled(FALSE);
       _delete->setEnabled(FALSE);
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }  
   return NoError;
@@ -439,8 +430,8 @@ void taxCode::closeEvent(QCloseEvent *pEvent)
 bool taxCode::setParams(ParameterList &pParams)
 {
   pParams.append("tax_id",      _taxid);
-  pParams.append("always",      tr("'Always'"));
-  pParams.append("never",       tr("'Never'"));
+  pParams.append("always",      tr("Always"));
+  pParams.append("never",       tr("Never"));
 
   return true;
 }

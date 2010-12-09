@@ -15,8 +15,10 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QList>
+#include <QPair>
 #include <QSqlTableModel>
 
+#include "guiclientinterface.h"
 #include "widgets.h"
 #include "xdatawidgetmapper.h"
 
@@ -82,7 +84,8 @@ class XTUPLEWIDGETS_EXPORT XComboBox : public QComboBox
       ReturnAuthCommentTypes, ReturnAuthItemCommentTypes,
       QuoteCommentTypes, QuoteItemCommentTypes,
       SalesOrderCommentTypes, SalesOrderItemCommentTypes,               
-      SalesCategories, SalesReps, SalesRepsActive,
+      SalesCategories, SalesCategoriesActive,
+      SalesReps, SalesRepsActive,
       ShipVias,		ShippingCharges,	ShippingForms,
       SiteTypes, SoProjects,	Subaccounts,
       TaxAuths, TaxClasses, TaxCodes, TaxZones,
@@ -93,10 +96,12 @@ class XTUPLEWIDGETS_EXPORT XComboBox : public QComboBox
       WorkCenters, WorkOrderCommentTypes
       };
 
+    static GuiClientInterface *_guiClientInterface;
+
     XComboBoxTypes type();
     void setType(XComboBoxTypes);
 
-    void setCode(QString);
+    void setCode(const QString&);
 
 
     virtual bool      allowNull()            const  { return _allowNull; };
@@ -116,6 +121,7 @@ class XTUPLEWIDGETS_EXPORT XComboBox : public QComboBox
     Q_INVOKABLE bool isValid()              const;
     int               id(int)                const;
     Q_INVOKABLE int   id()                   const;
+    Q_INVOKABLE void  insertEditor(int type, const QString& uiName, const QString& privilege);
     QString           code()                 const;
     QString           fieldName()            const  { return _fieldName;            };
     QString           listDisplayFieldName() const  { return _listDisplayFieldName; };
@@ -169,6 +175,8 @@ class XTUPLEWIDGETS_EXPORT XComboBox : public QComboBox
     QString             _nullStr;
 
   private:
+    void init();
+
     enum Defaults       _default;
     QString             _fieldName;
     QString             _listDisplayFieldName;
@@ -176,6 +184,7 @@ class XTUPLEWIDGETS_EXPORT XComboBox : public QComboBox
     QString             _listSchemaName;
     QString             _listTableName;
     XDataWidgetMapper   *_mapper;
+    QMap<int, QPair<QString, QString > > _editorMap;
 };
 
 // TODO: is this necessary for script exposure?

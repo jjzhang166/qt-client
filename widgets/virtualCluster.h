@@ -15,11 +15,14 @@
 #include "guiclientinterface.h"
 #include "parameter.h"
 #include "xlineedit.h"
+#include "xtextedit.h"
 #include "xtreewidget.h"
 #include "xcheckbox.h"
 #include "xdatawidgetmapper.h"
 
+#include <QSqlQueryModel>
 #include <QAction>
+#include <QDialogButtonBox>
 #include <QCheckBox>
 #include <QCompleter>
 #include <QDialog>
@@ -33,6 +36,11 @@
 
 class QGridLayout;
 class VirtualClusterLineEdit;
+
+#define ID              1
+#define NUMBER          2
+#define DESCRIPTION     3
+#define ACTIVE          4
 
 class XTUPLEWIDGETS_EXPORT VirtualList : public QDialog
 {
@@ -52,13 +60,14 @@ class XTUPLEWIDGETS_EXPORT VirtualList : public QDialog
 
     protected:
         virtual void init();
+        void showEvent(QShowEvent *);
 
         VirtualClusterLineEdit* _parent;
         QVBoxLayout* _dialogLyt;
         QLabel*      _searchLit;
         QLineEdit*   _search;
         QLabel*      _titleLit;
-        QPushButton* _close;
+        QDialogButtonBox*  _buttonBox;
         QPushButton* _select;
         XTreeWidget* _listTab;
         int          _id;
@@ -91,7 +100,7 @@ class XTUPLEWIDGETS_EXPORT VirtualSearch : public QDialog
         XCheckBox*   _searchName;
         XCheckBox*   _searchDescrip;
         QLabel*      _titleLit;
-        QPushButton* _close;
+        QDialogButtonBox*  _buttonBox;
         QPushButton* _select;
         XTreeWidget* _listTab;
         QLayout*     dialogLyt;
@@ -170,6 +179,11 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
        Q_INVOKABLE inline virtual QString editPriv()       const { return _editPriv; }
        Q_INVOKABLE inline virtual QString viewPriv()       const { return _viewPriv; }
 
+       Q_INVOKABLE inline virtual QSqlQueryModel* model() const { return _model;}
+
+       Q_INVOKABLE inline virtual QString name()        const { return _name; }
+       Q_INVOKABLE inline virtual QString description() const { return _description; }
+
     public slots:
         virtual void clear();
         virtual QString extraClause() const { return _extraClause; }
@@ -181,6 +195,7 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
         virtual void sSearch();
         virtual void setId(const int);
         virtual void setNumber(const QString&);
+        virtual void setShowInactive(const bool);
 
         virtual void setUiName(const QString& name);
         virtual void setEditPriv(const QString& priv);
@@ -196,8 +211,10 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
 
         virtual void setStrikeOut(bool enable = false);
         virtual void sHandleCompleter();
+        virtual void sHandleNullStr();
         virtual void sParse();
         virtual void sUpdateMenu();
+        virtual QWidget* sOpenWindow(const QString& uiName, ParameterList &params);
 
         virtual void setTitles(const QString&, const QString& = 0);
         inline virtual void setExtraClause(const QString& pExt) { _extraClause = pExt; }
@@ -249,6 +266,7 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
         bool _hasName;
         bool _hasActive;
         bool _strict;
+        bool _showInactive;
 
         virtual void silentSetId(const int);
 
@@ -256,6 +274,8 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
         void positionMenuLabel();
 
         QString _cText;
+
+        QSqlQueryModel* _model;
 };
 
 /*
@@ -277,13 +297,14 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
     Q_OBJECT
 
     Q_PROPERTY(QString label          READ label          WRITE setLabel)
-    Q_PROPERTY(bool    infoVisible    READ infoVisible    WRITE setInfoVisible)
-    Q_PROPERTY(bool    listVisible    READ listVisible    WRITE setListVisible)
     Q_PROPERTY(bool    nameVisible    READ nameVisible    WRITE setNameVisible)
+    Q_PROPERTY(bool    descriptionVisible    READ descriptionVisible    WRITE setDescriptionVisible)
     Q_PROPERTY(bool    readOnly       READ readOnly       WRITE setReadOnly)
+    Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
     Q_PROPERTY(QString fieldName      READ fieldName      WRITE setFieldName)
     Q_PROPERTY(QString number         READ number         WRITE setNumber         DESIGNABLE false)
     Q_PROPERTY(QString defaultNumber  READ defaultNumber  WRITE setDefaultNumber  DESIGNABLE false)
+    Q_PROPERTY(QString nullStr        READ nullStr        WRITE setNullStr)
 
     friend class VirtualClusterLineEdit;
 
@@ -292,11 +313,7 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
         VirtualCluster(QWidget*, VirtualClusterLineEdit* = 0, const char* = 0);
 
         Q_INVOKABLE inline virtual int     id()             const { return _number->id(); }
-                    inline virtual bool    infoVisible()    const { return _info->isVisible(); }
-                    inline virtual bool    listVisible()    const { return _list->isVisible(); }
                     inline virtual QString label()          const { return _label->text(); }
-                    inline virtual bool    nameVisible()    const { return _name->isVisible(); }
-                    inline virtual bool    descriptionVisible() const { return _description->isVisible(); }
                     inline virtual QString number()         const { return _number->text(); }
         Q_INVOKABLE inline virtual QString description()    const { return _description->text(); }
         Q_INVOKABLE inline virtual bool    isValid()        const { return _number->isValid(); }
@@ -307,6 +324,18 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
                     inline virtual QString fieldName()      const { return _fieldName; }
         Q_INVOKABLE inline virtual QString extraClause()    const { return _number->extraClause(); }
 
+        virtual Qt::Orientation orientation();
+        virtual void setOrientation(Qt::Orientation orientation);
+
+        virtual bool   nameVisible() const;
+        virtual void   setNameVisible(const bool p);
+
+        virtual bool   descriptionVisible() const;
+        virtual void   setDescriptionVisible(const bool p);
+
+        virtual QString nullStr() const;
+        virtual void setNullStr(const QString &text);
+
     public slots:
         // most of the heavy lifting is done by VirtualClusterLineEdit _number
         virtual void clearExtraClause()                { _number->clearExtraClause(); }
@@ -315,11 +344,7 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
         virtual void setExtraClause(const QString& p)  { _number->setExtraClause(p); }
         virtual void setFieldName(QString p)           { _fieldName = p; }
         virtual void setId(const int p)                { _number->setId(p); }
-        virtual void setInfoVisible(const bool p);
-        virtual void setListVisible(const bool p);
         virtual void setName(const QString& p)         { _name->setText(p); }
-        virtual void setNameVisible(const bool p)      { _name->setHidden(!p); }
-        virtual void setDescriptionVisible(const bool p) { _description->setHidden(!p); }
         virtual void setNumber(const int p)            { _number->setNumber(QString::number(p)); }
         virtual void setNumber(const QString& p)       { _number->setNumber(p); }
 
@@ -329,6 +354,7 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
         virtual void setLabel(const QString& p);
         virtual void setStrict(const bool b);
         virtual void setReadOnly(const bool b);
+        virtual void setShowInactive(const bool);
         virtual void sRefresh();
         virtual void updateMapperData();
 
@@ -347,14 +373,14 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
         QGridLayout*            _grid;
         QLabel*                 _label;
         VirtualClusterLineEdit* _number;
-        QPushButton*            _list;
-        QPushButton*            _info;
         QLabel*                 _description;
         QLabel*                 _name;
+        QSpacerItem*            _hspcr;
         bool                    _readOnly;
 	QString                 _fieldName;
         QString                 _default;
         XDataWidgetMapper       *_mapper;
+        Qt::Orientation         _orientation;
 
     private:
         virtual void init();

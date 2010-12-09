@@ -37,9 +37,6 @@ public slots:
 protected slots:
     virtual void languageChange();
 
-    virtual void init();
-
-
 };
 
 #endif // SITETYPES_H

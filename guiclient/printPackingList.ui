@@ -199,9 +199,6 @@ to be bound by its terms.</comment>
             <property name="label">
              <string>Shipment#:</string>
             </property>
-            <property name="listVisible">
-             <bool>true</bool>
-            </property>
            </widget>
           </item>
           <item>

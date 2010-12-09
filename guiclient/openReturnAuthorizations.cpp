@@ -10,10 +10,9 @@
 
 #include "openReturnAuthorizations.h"
 
-#include <QVariant>
 #include <QMessageBox>
-#include <QWorkspace>
 #include <QSqlError>
+#include <QVariant>
 
 #include <openreports.h>
 #include <metasql.h>
@@ -23,17 +22,11 @@
 #include "openReturnAuthorizations.h"
 #include "printRaForm.h"
 
-/*
- *  Constructs a openReturnAuthorizations as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-  // signals and slots connections
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_ra, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
@@ -45,8 +38,6 @@ openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* 
   connect(_expired, SIGNAL(clicked()), this, SLOT(sFillList()));
   connect(_unauthorized, SIGNAL(clicked()), this, SLOT(sFillList()));
 
-//  statusBar()->hide();
-  
   _ra->addColumn(tr("Return #"),         _orderColumn, Qt::AlignLeft,   true,  "rahead_number"   );
   _ra->addColumn(tr("Cust. #"),          _orderColumn, Qt::AlignLeft,   true,  "custnumber"   );
   _ra->addColumn(tr("Customer"),         -1,           Qt::AlignLeft,   true,  "rahead_billtoname"   );
@@ -69,18 +60,11 @@ openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* 
   connect(omfgThis, SIGNAL(returnAuthorizationsUpdated()), this, SLOT(sFillList()));
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 openReturnAuthorizations::~openReturnAuthorizations()
 {
     // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void openReturnAuthorizations::languageChange()
 {
     retranslateUi(this);
@@ -191,27 +175,19 @@ void openReturnAuthorizations::sDelete()
 
 void openReturnAuthorizations::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainReturns"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainReturns"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainReturns"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainReturns"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  /*
-  if (_metrics->boolean("EnableBatchManager"))
-  {
-    menuItem = pMenu->insertItem(tr("Schedule S/O for Email Delivery..."), this, SLOT(sDeliver()), 0);
-  }*/
-
-  menuItem = pMenu->insertItem(tr("Print Return Authorization Form..."), this, SLOT(sPrintForms()), 0); 
+  menuItem = pMenu->addAction(tr("Print Return Authorization Form..."), this, SLOT(sPrintForms())); 
 
 }
 

@@ -28,7 +28,6 @@
 
 #define cDelete 0x01
 #define cClose  0x02
-#define ORDERTYPE_COL	12
 
 purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -45,15 +44,15 @@ purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_freight, SIGNAL(valueChanged()), this, SLOT(sCalculateTotals()));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_orderDate,	SIGNAL(newDate(QDate)), this, SLOT(sHandleOrderDate()));
+  connect(_orderDate,   SIGNAL(newDate(QDate)), this, SLOT(sHandleOrderDate()));
   connect(_orderNumber, SIGNAL(lostFocus()), this, SLOT(sHandleOrderNumber()));
   connect(_orderNumber, SIGNAL(textChanged(const QString&)), this, SLOT(sSetUserOrderNumber()));
-  connect(_poCurrency,	SIGNAL(newID(int)),	this, SLOT(sCurrencyChanged()));
+  connect(_poCurrency,  SIGNAL(newID(int)),     this, SLOT(sCurrencyChanged()));
   connect(_poitem, SIGNAL(itemSelectionChanged()), this, SLOT(sHandleDeleteButton()));
   connect(_purchaseOrderInformation, SIGNAL(currentChanged(int)), this, SLOT(sTabChanged(int)));
-  connect(_qecurrency,	SIGNAL(newID(int)),	this, SLOT(sCurrencyChanged()));
-  connect(_qedelete,	SIGNAL(clicked()),	this, SLOT(sQEDelete()));
-  connect(_qesave,	SIGNAL(clicked()),	this, SLOT(sQESave()));
+  connect(_qecurrency,  SIGNAL(newID(int)),     this, SLOT(sCurrencyChanged()));
+  connect(_qedelete,    SIGNAL(clicked()),      this, SLOT(sQEDelete()));
+  connect(_qesave,      SIGNAL(clicked()),      this, SLOT(sQESave()));
   connect(_save,        SIGNAL(clicked()),      this, SLOT(sSave()));
   connect(_taxLit, SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
   connect(_tax,          SIGNAL(valueChanged()), this, SLOT(sCalculateTotals()));
@@ -61,8 +60,7 @@ purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_vendaddrList, SIGNAL(clicked()),     this, SLOT(sVendaddrList()));
   connect(_vendor,       SIGNAL(newId(int)),    this, SLOT(sHandleVendor(int)));
   connect(_vendAddr,     SIGNAL(changed()),     _vendaddrCode, SLOT(clear()));
-  connect(_warehouse,	 SIGNAL(newID(int)),    this, SLOT(sHandleShipTo()));
-  connect(_vendor,         SIGNAL(newCrmacctId(int)), _vendAddr, SLOT(setSearchAcct(int)));
+  connect(_warehouse,    SIGNAL(newID(int)),    this, SLOT(sHandleShipTo()));
 
   connect(_vendAddr, SIGNAL(addressChanged(QString,QString,QString,QString,QString,QString, QString)),
           _vendCntct, SLOT(setNewAddr(QString,QString,QString,QString,QString,QString, QString)));
@@ -80,7 +78,8 @@ purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   _poitem->addColumn(tr("Status"),      _statusColumn, Qt::AlignCenter,true, "poitemstatus");
   _poitem->addColumn(tr("Item"),        _itemColumn,   Qt::AlignLeft,  true, "item_number");
   _poitem->addColumn(tr("Description"), -1,            Qt::AlignLeft,  true, "item_descrip");
-  _poitem->addColumn(tr("Due Date"),    _dateColumn,   Qt::AlignRight, true, "poitem_duedate");
+  _poitem->addColumn(tr("Orgl. Due Date"),_dateColumn, Qt::AlignRight, false, "orgl_duedate");            
+  _poitem->addColumn(tr("Due Date Now"), _dateColumn,  Qt::AlignRight, true, "poitem_duedate");
   _poitem->addColumn(tr("Ordered"),     _qtyColumn,    Qt::AlignRight, true, "poitem_qty_ordered");
   _poitem->addColumn(tr("UOM"),         _uomColumn,    Qt::AlignCenter,true, "poitem_vend_uom");
   _poitem->addColumn(tr("Unit Price"),  _priceColumn,  Qt::AlignRight, true, "poitem_unitprice");
@@ -101,14 +100,16 @@ purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   if(q.first())
     _agent->setId(q.value("usr_id").toInt());
 
-  _userOrderNumber = FALSE;
-  _printed	   = false;
+  _captive         = false;
+  _userOrderNumber = false;
+  _printed         = false;
 
   setPoheadid(-1);
+  _vendaddrid = -1;
 
   _cachedTabIndex = 0;
 
-  _mode = cView;	// initialize _mode to something safe - bug 3768
+  _mode = cView;        // initialize _mode to something safe - bug 3768
  
   _printPO->setChecked(_metrics->boolean("DefaultPrintPOOnSave"));
 
@@ -227,7 +228,7 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
       int openpoid =-1;
       if (itemsiteid != -1)
       {
-	      q.prepare( "SELECT itemsite_item_id, itemsrc_id, itemsrc_default "
+              q.prepare( "SELECT itemsite_item_id, itemsrc_id, itemsrc_default "
                    "FROM itemsite, itemsrc "
                    "WHERE ( (itemsrc_item_id=itemsite_item_id)"
                    " AND (itemsite_id=:itemsite_id) ) "
@@ -245,19 +246,19 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
                                   "Purchase Orders for it." ) );
           return UndefinedError;
         }
-		if (q.first())
-		{
-		  XSqlQuery itemsrcdefault;
-		  itemsrcdefault.prepare("SELECT itemsrc_id FROM itemsrc "
-		                         "WHERE ((itemsrc_item_id=:item_id) AND ( itemsrc_default='TRUE')) "); 
+                if (q.first())
+                {
+                  XSqlQuery itemsrcdefault;
+                  itemsrcdefault.prepare("SELECT itemsrc_id FROM itemsrc "
+                                         "WHERE ((itemsrc_item_id=:item_id) AND ( itemsrc_default='TRUE')) "); 
           itemsrcdefault.bindValue(":item_id", q.value("itemsite_item_id").toInt());
-		  itemsrcdefault.exec();
-		  if (itemsrcdefault.first())
-		  {
-		    itemsrcid=(itemsrcdefault.value("itemsrc_id").toInt());
-		  }
-		  else
-		  {
+                  itemsrcdefault.exec();
+                  if (itemsrcdefault.first())
+                  {
+                    itemsrcid=(itemsrcdefault.value("itemsrc_id").toInt());
+                  }
+                  else
+                  {
         ParameterList itemSourceParams;
         itemSourceParams.append("item_id", q.value("itemsite_item_id").toInt());
         itemSourceParams.append("qty", qty);
@@ -266,11 +267,11 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
         newdlg.set(itemSourceParams);
         itemsrcid = newdlg.exec();
         if (itemsrcid == XDialog::Rejected)
-      	{
+        {
           deleteLater();
           return UndefinedError;
             }
-		  }
+                  }
         }
 
         q.prepare( "SELECT itemsrc_vend_id, vend_name  "
@@ -287,7 +288,7 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
         }
         else
         {
-          int vendid = q.value("itemsrc_vend_id").toInt();;
+          int vendid = q.value("itemsrc_vend_id").toInt();
           QString vendname = q.value("vend_name").toString();
 
           q.prepare( "SELECT pohead_id "
@@ -374,7 +375,7 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
               for(int i = 0; i < list.size(); i++)
               {
                 QWidget * w = list.at(i);
-                if(w->isA("purchaseOrder") && w != this)
+                if (strcmp(w->metaObject()->className(), "purchaseOrder") == 0 && w != this)
                 {
                   purchaseOrder *other = (purchaseOrder*)w;
                   if(_poheadid == other->_poheadid)
@@ -425,15 +426,15 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
       _orderNumber->setEnabled(FALSE);
       _orderDate->setEnabled(FALSE);
       _warehouse->setEnabled(FALSE);
-	  _taxZone->setEnabled(FALSE);
+          _taxZone->setEnabled(FALSE);
       _agent->setEnabled(FALSE);
       _terms->setEnabled(FALSE);
       _terms->setType(XComboBox::Terms);
       _vendor->setReadOnly(TRUE);
-	  _vendCntct->setEnabled(FALSE);
-	  _vendAddr->setEnabled(FALSE);
-	  _shiptoCntct->setEnabled(FALSE);
-	  _shiptoAddr->setEnabled(FALSE);
+          _vendCntct->setEnabled(FALSE);
+          _vendAddr->setEnabled(FALSE);
+          _shiptoCntct->setEnabled(FALSE);
+          _shiptoAddr->setEnabled(FALSE);
       _shipVia->setEnabled(FALSE);
       _fob->setEnabled(FALSE);
       _status->setEnabled(FALSE);
@@ -442,7 +443,7 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
       _freight->setEnabled(FALSE);
       _tax->setEnabled(FALSE);
       _vendaddrList->hide();
-      _purchaseOrderInformation->removePage(_quickEntryTab);
+      _purchaseOrderInformation->removeTab(_purchaseOrderInformation->indexOf(_quickEntryTab));
       _poCurrency->setEnabled(FALSE);
       _qeitemView->setEnabled(FALSE);
       _qesave->setEnabled(FALSE);
@@ -482,6 +483,10 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
     populate();
   }
 
+  param = pParams.value("captive", &valid);
+  if (valid)
+    _captive = true;
+
   return NoError;
 }
 
@@ -513,16 +518,16 @@ void purchaseOrder::createHeader()
   _documents->setId(_poheadid);
   _orderDate->setDate(omfgThis->dbDate(), true);
   _status->setCurrentIndex(0);
-  _vendor->setType(__activeVendors);
+  _vendor->setShowInactive(false);
 
   q.prepare( "INSERT INTO pohead "
              "( pohead_id, pohead_number, pohead_status,"
              "  pohead_agent_username, pohead_vend_id, pohead_taxzone_id,"
-	     "  pohead_orderdate, pohead_curr_id, pohead_saved) "
+             "  pohead_orderdate, pohead_curr_id, pohead_saved) "
              "VALUES "
              "( :pohead_id, :pohead_number, 'U',"
              "  :pohead_agent_username, :pohead_vend_id, :pohead_taxzone_id, "
-	     "  :pohead_orderdate, :pohead_curr_id, false );" );
+             "  :pohead_orderdate, :pohead_curr_id, false );" );
   q.bindValue(":pohead_id", _poheadid);
   q.bindValue(":pohead_agent_username", _agent->currentText());
   if (!_orderNumber->text().isEmpty())
@@ -545,18 +550,18 @@ void purchaseOrder::populate()
 {
   XSqlQuery po;
   po.prepare( "SELECT pohead.*, COALESCE(pohead_warehous_id, -1) AS warehous_id,"
-			  "       COALESCE(pohead_cohead_id, -1) AS cohead_id,"
+                          "       COALESCE(pohead_cohead_id, -1) AS cohead_id,"
               "       CASE WHEN (pohead_status='U') THEN 0"
-			  "            WHEN (pohead_status='O') THEN 1"
-			  "            WHEN (pohead_status='C') THEN 2"
-			  "       END AS status,"
+                          "            WHEN (pohead_status='O') THEN 1"
+                          "            WHEN (pohead_status='C') THEN 2"
+                          "       END AS status,"
               "       COALESCE(pohead_terms_id, -1) AS terms_id,"
               "       COALESCE(pohead_vend_id, -1) AS vend_id,"
               "       COALESCE(vendaddr_id, -1) AS vendaddrid,"
-			  "       vendaddr_code "
+                          "       vendaddr_code "
               "FROM pohead JOIN vendinfo ON (pohead_vend_id=vend_id)"
-			  "     LEFT OUTER JOIN vendaddrinfo ON (pohead_vendaddr_id=vendaddr_id)"
-			  "     LEFT OUTER JOIN cohead ON (pohead_cohead_id=cohead_id) "
+                          "     LEFT OUTER JOIN vendaddrinfo ON (pohead_vendaddr_id=vendaddr_id)"
+                          "     LEFT OUTER JOIN cohead ON (pohead_cohead_id=cohead_id) "
               "WHERE (pohead_id=:pohead_id);" );
   po.bindValue(":pohead_id", _poheadid);
   po.exec();
@@ -565,6 +570,8 @@ void purchaseOrder::populate()
     _orderNumber->setText(po.value("pohead_number"));
     _warehouse->setId(po.value("warehous_id").toInt());
     _orderDate->setDate(po.value("pohead_orderdate").toDate(), true);
+    if(po.value("pohead_released").isValid())                                                             
+      _releaseDate->setDate(po.value("pohead_released").toDate(), true);
     _agent->setText(po.value("pohead_agent_username").toString());
     _status->setCurrentIndex(po.value("status").toInt());
     _printed = po.value("pohead_printed").toBool();
@@ -572,18 +579,18 @@ void purchaseOrder::populate()
     _shipVia->setText(po.value("pohead_shipvia"));
     _fob->setText(po.value("pohead_fob"));
     _notes->setText(po.value("pohead_comments").toString());
-	_so->setId(po.value("cohead_id").toInt());
+        _so->setId(po.value("cohead_id").toInt());
 
-	if ((po.value("cohead_id").toInt())!=-1)
-	{
-	  _dropShip->setEnabled(TRUE);
-	  _dropShip->setChecked(po.value("pohead_dropship").toBool());
-	}
-	else
+        if ((po.value("cohead_id").toInt())!=-1)
+        {
+          _dropShip->setEnabled(TRUE);
+          _dropShip->setChecked(po.value("pohead_dropship").toBool());
+        }
+        else
     {
-	  _dropShip->setChecked(FALSE);
+          _dropShip->setChecked(FALSE);
       _dropShip->setEnabled(FALSE);
-	}
+        }
 
     _vendaddrid = po.value("vendaddrid").toInt();
     
@@ -598,7 +605,7 @@ void purchaseOrder::populate()
     _vendCntct->setFax(po.value("pohead_vend_cntct_fax").toString());
     _vendCntct->setEmailAddress(po.value("pohead_vend_cntct_email").toString());
 
-	_shiptoCntct->setId(po.value("pohead_shipto_cntct_id").toInt());
+        _shiptoCntct->setId(po.value("pohead_shipto_cntct_id").toInt());
     _shiptoCntct->setHonorific(po.value("pohead_shipto_cntct_honorific").toString());
     _shiptoCntct->setFirst(po.value("pohead_shipto_cntct_first_name").toString());
     _shiptoCntct->setMiddle(po.value("pohead_shipto_cntct_middle").toString());
@@ -610,11 +617,11 @@ void purchaseOrder::populate()
     _shiptoCntct->setEmailAddress(po.value("pohead_shipto_cntct_email").toString());
 
     disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
-	if (_vendaddrid == -1)
+        if (_vendaddrid == -1)
       _vendaddrCode->setText(tr("Main"));
-	else
-	  _vendaddrCode->setText(po.value("vendaddr_code"));
-	_vendAddr->setId(_vendaddrid);
+        else
+          _vendaddrCode->setText(po.value("vendaddr_code"));
+        _vendAddr->setId(_vendaddrid);
     _vendAddr->setLine1(po.value("pohead_vendaddress1").toString());
     _vendAddr->setLine2(po.value("pohead_vendaddress2").toString());
     _vendAddr->setLine3(po.value("pohead_vendaddress3").toString());
@@ -622,9 +629,9 @@ void purchaseOrder::populate()
     _vendAddr->setState(po.value("pohead_vendstate").toString());
     _vendAddr->setPostalCode(po.value("pohead_vendzipcode").toString());
     _vendAddr->setCountry(po.value("pohead_vendcountry").toString());
-	connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+        connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
 
-	_shiptoAddr->setId(po.value("pohead_shiptoddress_id").toInt());
+        _shiptoAddr->setId(po.value("pohead_shiptoddress_id").toInt());
     _shiptoAddr->setLine1(po.value("pohead_shiptoaddress1").toString());
     _shiptoAddr->setLine2(po.value("pohead_shiptoaddress2").toString());
     _shiptoAddr->setLine3(po.value("pohead_shiptoaddress3").toString());
@@ -638,7 +645,6 @@ void purchaseOrder::populate()
     _vendor->setId(po.value("vend_id").toInt());
     _taxZone->setId(po.value("pohead_taxzone_id").toInt());
     _poCurrency->setId(po.value("pohead_curr_id").toInt());
-    _tax->setLocalValue(po.value("pohead_tax").toDouble());
     _freight->setLocalValue(po.value("pohead_freight").toDouble());
   }
 
@@ -697,7 +703,7 @@ void purchaseOrder::sSave()
   {
     if ((postatus.value("pohead_status") == "O") && (_status->currentIndex() == 0))
     {
-	  QMessageBox::critical( this, tr("Cannot Save Purchase Order"),
+          QMessageBox::critical( this, tr("Cannot Save Purchase Order"),
                              tr( "This Purchase Order has been released. You may not set its Status back to 'Unreleased'." ) );
 
       _status->setFocus();
@@ -708,7 +714,7 @@ void purchaseOrder::sSave()
   q.prepare( "UPDATE pohead "
              "SET pohead_warehous_id=:pohead_warehous_id, pohead_orderdate=:pohead_orderdate,"
              "    pohead_shipvia=:pohead_shipvia, pohead_taxzone_id=:pohead_taxzone_id,"
-             "    pohead_tax=:pohead_tax, pohead_freight=:pohead_freight,"
+             "    pohead_freight=:pohead_freight,"
              "    pohead_fob=:pohead_fob, pohead_agent_username=:pohead_agent_username,"
              "    pohead_terms_id=:pohead_terms_id,"
              "    pohead_vendaddr_id=:pohead_vendaddr_id,"
@@ -805,7 +811,6 @@ void purchaseOrder::sSave()
   q.bindValue(":pohead_shiptostate", _shiptoAddr->state());
   q.bindValue(":pohead_shiptozipcode", _shiptoAddr->postalCode());
   q.bindValue(":pohead_shiptocountry", _shiptoAddr->country());
-  q.bindValue(":pohead_tax", _tax->localValue());
   q.bindValue(":pohead_freight", _freight->localValue());
   q.bindValue(":pohead_curr_id", _poCurrency->id());
   if (_status->currentIndex() == 0)
@@ -841,14 +846,17 @@ void purchaseOrder::sSave()
     newdlgP.exec();
   }
 
-  if (_mode == cNew)
+  emit saved(_poheadid);
+
+  if (_mode == cNew && !_captive)
   {
-    _purchaseOrderInformation->setCurrentPage(0);
+    _purchaseOrderInformation->setCurrentIndex(0);
 
     _agent->setText(omfgThis->username());
     _terms->setId(-1);
+    _vendor->setReadOnly(false);
     _vendor->setId(-1);
-	_taxZone->setId(-1);
+    _taxZone->setId(-1);
 
     _orderNumber->clear();
     _orderDate->clear();
@@ -869,8 +877,6 @@ void purchaseOrder::sSave()
     _shiptoCntct->clear();
     _shiptoAddr->clear();
 
-    _close->setText(tr("&Close"));
-
     createHeader();
     _subtotal->clear();
   }
@@ -887,8 +893,8 @@ void purchaseOrder::sNew()
     q.prepare( "UPDATE pohead "
                "SET pohead_warehous_id=:pohead_warehous_id, pohead_vend_id=:pohead_vend_id,"
                "    pohead_number=:pohead_number, pohead_taxzone_id=:pohead_taxzone_id, "
-	       "    pohead_curr_id=:pohead_curr_id, "
-	       "    pohead_orderdate=:pohead_orderdate "
+               "    pohead_curr_id=:pohead_curr_id, "
+               "    pohead_orderdate=:pohead_orderdate "
                "WHERE (pohead_id=:pohead_id);" );
     if (_warehouse->isValid())
       q.bindValue(":pohead_warehous_id", _warehouse->id());
@@ -900,6 +906,11 @@ void purchaseOrder::sNew()
     q.bindValue(":pohead_curr_id", _poCurrency->id());
     q.bindValue(":pohead_orderdate", _orderDate->date());
     q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().text(), __FILE__, __LINE__);
+      return;
+    }
   }
 
   ParameterList params;
@@ -910,7 +921,10 @@ void purchaseOrder::sNew()
   purchaseOrderItem newdlg(this, "", TRUE);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
+  {
     sFillList();
+    _vendor->setReadOnly(true);
+  }
 }
 
 void purchaseOrder::sEdit()
@@ -938,7 +952,7 @@ void purchaseOrder::sDelete()
   {
     if (QMessageBox::question(this, tr("Delete Purchase Order Item?"),
                                               tr("<p>Are you sure you want to delete this "
-				                     "Purchase Order Line Item?"),
+                                                     "Purchase Order Line Item?"),
            QMessageBox::Yes,
             QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
       return;
@@ -992,7 +1006,7 @@ void purchaseOrder::sVendaddrList()
       if (q.first())
       {
         _vendaddrid = vendaddrid;
-		disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+                disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
         _vendaddrCode->setText(q.value("vendaddr_code"));
         _vendAddr->setLine1(q.value("vendaddr_address1").toString());
         _vendAddr->setLine2(q.value("vendaddr_address2").toString());
@@ -1001,7 +1015,7 @@ void purchaseOrder::sVendaddrList()
         _vendAddr->setState(q.value("vendaddr_state").toString());
         _vendAddr->setPostalCode(q.value("vendaddr_zipcode").toString());
         _vendAddr->setCountry(q.value("vendaddr_country").toString());
-		connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+                connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
       }
     }
     else
@@ -1016,7 +1030,7 @@ void purchaseOrder::sVendaddrList()
       if (q.first())
       {
         _vendaddrid = -1;
-		disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+                disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
         _vendaddrCode->setText(tr("Main"));
         _vendAddr->setLine1(q.value("vend_address1").toString());
         _vendAddr->setLine2(q.value("vend_address2").toString());
@@ -1025,7 +1039,7 @@ void purchaseOrder::sVendaddrList()
         _vendAddr->setState(q.value("vend_state").toString());
         _vendAddr->setPostalCode(q.value("vend_zip").toString());
         _vendAddr->setCountry(q.value("vend_country").toString());
-		connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+                connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
       }
     }
   }
@@ -1070,6 +1084,11 @@ void purchaseOrder::sHandleVendor(int pVendid)
     q.bindValue(":pohead_id", _poheadid);
     q.bindValue(":pohead_curr_id", _poCurrency->id());
     q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().text(), __FILE__, __LINE__);
+      return;
+    }
 
     XSqlQuery vq;
     vq.prepare("SELECT addr.*, cntct.*, vend_terms_id, vend_curr_id,"
@@ -1077,10 +1096,10 @@ void purchaseOrder::sHandleVendor(int pVendid)
                "       vend_name,"
                "       COALESCE(vend_addr_id, -1) AS vendaddrid,"
                "       COALESCE(vend_taxzone_id, -1) AS vendtaxzoneid,"
-			   "       COALESCE(crmacct_id, -1) AS crmacct_id "
-               "FROM vendinfo JOIN addr ON (vend_addr_id=addr_id)"
-			   "     LEFT OUTER JOIN crmacct ON (vend_id=crmacct_vend_id)"
-			   "     LEFT OUTER JOIN cntct ON (vend_cntct1_id=cntct_id) "
+               "       crmacct_id"
+               "  FROM vendinfo JOIN addr ON (vend_addr_id=addr_id)"
+               "  JOIN crmacct ON (vend_id=crmacct_vend_id)"
+               "  LEFT OUTER JOIN cntct ON (vend_cntct1_id=cntct_id) "
                "WHERE (vend_id=:vend_id) "
                "LIMIT 1;" );
     vq.bindValue(":vend_id", pVendid);
@@ -1108,8 +1127,8 @@ void purchaseOrder::sHandleVendor(int pVendid)
       }
 
       if (vq.value("cntct_id").toInt())
-	  {
-		_vendCntct->setId(vq.value("cntct_id").toInt());
+      {
+        _vendCntct->setId(vq.value("cntct_id").toInt());
         _vendCntct->setHonorific(vq.value("cntct_honorific").toString());
         _vendCntct->setFirst(vq.value("cntct_first_name").toString());
         _vendCntct->setMiddle(vq.value("cntct_middle").toString());
@@ -1119,14 +1138,14 @@ void purchaseOrder::sHandleVendor(int pVendid)
         _vendCntct->setTitle(vq.value("cntct_title").toString());
         _vendCntct->setFax(vq.value("cntct_fax").toString());
         _vendCntct->setEmailAddress(vq.value("cntct_email").toString());
-	  }
+      }
 
-	  if (vq.value("addr_id").toInt())
+      if (vq.value("addr_id").toInt())
       {
         _vendaddrid = -1;
-		disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+        disconnect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
         _vendaddrCode->setText(tr("Main"));
-		_vendAddr->setId(vq.value("addr_id").toInt());
+        _vendAddr->setId(vq.value("addr_id").toInt());
         _vendAddr->setLine1(vq.value("addr_line1").toString());
         _vendAddr->setLine2(vq.value("addr_line2").toString());
         _vendAddr->setLine3(vq.value("addr_line3").toString());
@@ -1134,11 +1153,16 @@ void purchaseOrder::sHandleVendor(int pVendid)
         _vendAddr->setState(vq.value("addr_state").toString());
         _vendAddr->setPostalCode(vq.value("addr_postalcode").toString());
         _vendAddr->setCountry(vq.value("addr_country").toString());
-		connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
-	  }
+        connect(_vendAddr, SIGNAL(changed()), _vendaddrCode, SLOT(clear()));
+      }
 
-	  if (vq.value("crmacct_id").toInt())
-		_vendCntct->setSearchAcct(vq.value("crmacct_id").toInt());
+      if (vq.value("crmacct_id").toInt())
+        _vendCntct->setSearchAcct(vq.value("crmacct_id").toInt());
+    }
+    else if (vq.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, vq.lastError().text(), __FILE__, __LINE__);
+      return;
     }
   }
 }
@@ -1169,6 +1193,7 @@ void purchaseOrder::sFillList()
              "       CASE WHEN (itemsite_id IS NULL) THEN firstLine(poitem_vend_item_descrip)"
              "            ELSE (item_descrip1 || ' ' || item_descrip2)"
              "       END AS item_descrip,"
+             "       poitem_rlsd_duedate AS orgl_duedate, "
              "       (poitem_unitprice * poitem_qty_ordered) AS extprice, "
              "       'qty' AS poitem_qty_ordered_xtnumericrole,"
              "       'purchprice' AS poitem_unitprice_xtnumericrole,"
@@ -1265,7 +1290,7 @@ void purchaseOrder::sHandleOrderNumber()
       q.bindValue(":orderNumber", _orderNumber->text().toInt());
       q.exec();
       if (q.lastError().type() != QSqlError::NoError)
-	systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
 
       _mode = cEdit;
       setPoheadid(poheadid);
@@ -1301,15 +1326,17 @@ void purchaseOrder::populateOrderNumber()
 
 void purchaseOrder::closeEvent(QCloseEvent *pEvent)
 {
-  if ((_mode == cNew) && (_poheadid != -1))
+  if ((_mode == cNew) &&
+      (_poheadid != -1) &&
+      !_captive)
   {
     if (_poitem->topLevelItemCount() > 0 &&
         QMessageBox::question(this, tr("Delete Purchase Order?"),
-			      tr("<p>Are you sure you want to delete this "
-				 "Purchase Order and all of its associated "
-				 "Line Items?"),
-				  QMessageBox::Yes,
-				  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+                              tr("<p>Are you sure you want to delete this "
+                                 "Purchase Order and all of its associated "
+                                 "Line Items?"),
+                                  QMessageBox::Yes,
+                                  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
     {
       pEvent->ignore();
       return;
@@ -1329,10 +1356,10 @@ void purchaseOrder::closeEvent(QCloseEvent *pEvent)
   else if (_mode == cEdit && _poitem->topLevelItemCount() == 0)
   {
     if (QMessageBox::question(this, tr("Delete Purchase Order?"),
-			      tr("<p>This Purchase Order does not have any line items.  "
-				  "Are you sure you want to delete this Purchase Order?"),
-				  QMessageBox::Yes,
-				  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+                              tr("<p>This Purchase Order does not have any line items.  "
+                                  "Are you sure you want to delete this Purchase Order?"),
+                                  QMessageBox::Yes,
+                                  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
     {
       pEvent->ignore();
       return;
@@ -1350,9 +1377,9 @@ void purchaseOrder::closeEvent(QCloseEvent *pEvent)
   if (_qeitem->isDirty())
   {
     if (QMessageBox::question(this, tr("Save Quick Entry Data?"),
-		    tr("Do you want to save your Quick Entry changes?"),
-		    QMessageBox::Yes | QMessageBox::Default,
-		    QMessageBox::No | QMessageBox::Escape) == QMessageBox::Yes)
+                    tr("Do you want to save your Quick Entry changes?"),
+                    QMessageBox::Yes | QMessageBox::Default,
+                    QMessageBox::No | QMessageBox::Escape) == QMessageBox::Yes)
       sQESave();
   }
 
@@ -1400,13 +1427,13 @@ void purchaseOrder::sTabChanged(int pIndex)
       _qeitem->isDirty())
   {
     if (QMessageBox::question(this, tr("Save Quick Entry Data?"),
-		    tr("Do you want to save your Quick Entry changes?"),
-		    QMessageBox::Yes | QMessageBox::Default,
-		    QMessageBox::No | QMessageBox::Escape) == QMessageBox::Yes)
+                    tr("Do you want to save your Quick Entry changes?"),
+                    QMessageBox::Yes | QMessageBox::Default,
+                    QMessageBox::No | QMessageBox::Escape) == QMessageBox::Yes)
       if (! sQESave())
       {
-	_purchaseOrderInformation->setCurrentIndex(_cachedTabIndex);
-	return;
+        _purchaseOrderInformation->setCurrentIndex(_cachedTabIndex);
+        return;
       }
   }
   _cachedTabIndex = pIndex;
@@ -1447,7 +1474,7 @@ void purchaseOrder::sCalculateTax()
                 "SELECT ROUND(SUM(taxdetail_tax),2) AS tax "
                 "FROM tax "
                 " JOIN calculateTaxDetailSummary('PO', :pohead_id, 'T') ON (taxdetail_tax_id=tax_id)"
-	        "GROUP BY tax_id) AS data;" );
+                "GROUP BY tax_id) AS data;" );
   taxq.bindValue(":pohead_id", _poheadid);
   taxq.exec();
   if (taxq.first())
@@ -1482,15 +1509,15 @@ void purchaseOrder::saveDetail()
   {
     taxq.prepare("UPDATE pohead SET pohead_taxzone_id = :taxzone,"
                  " pohead_orderdate = :pohead_orderdate,"
-				 " pohead_curr_id = :pohead_curr_id,"
-				 " pohead_freight = :pohead_freight "
-		         "WHERE (pohead_id = :pohead_id);");
+                                 " pohead_curr_id = :pohead_curr_id,"
+                                 " pohead_freight = :pohead_freight "
+                         "WHERE (pohead_id = :pohead_id);");
     if (_taxZone->isValid())
-      taxq.bindValue(":taxzone",	_taxZone->id());
-    taxq.bindValue(":pohead_id",	_poheadid);
+      taxq.bindValue(":taxzone",        _taxZone->id());
+    taxq.bindValue(":pohead_id",        _poheadid);
     taxq.bindValue(":pohead_orderdate", _orderDate->date());
-	taxq.bindValue(":pohead_curr_id", _poCurrency->id());
-	taxq.bindValue(":pohead_freight", _freight->localValue());
+        taxq.bindValue(":pohead_curr_id", _poCurrency->id());
+        taxq.bindValue(":pohead_freight", _freight->localValue());
     taxq.exec();
     if (taxq.lastError().type() != QSqlError::NoError)
     {
@@ -1502,24 +1529,24 @@ void purchaseOrder::saveDetail()
 
 void purchaseOrder::sPopulateMenu( QMenu * pMenu, QTreeWidgetItem * pSelected )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  if (pSelected->text(ORDERTYPE_COL) == tr("SO") )
+  if (pSelected->text(_poitem->column("demand_type")) == tr("SO"))
   {
-    menuItem = pMenu->insertItem(tr("View Sales Order..."), this, SLOT(sViewSo()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewSalesOrders"));
+    menuItem = pMenu->addAction(tr("View Sales Order..."), this, SLOT(sViewSo()));
+    menuItem->setEnabled(_privileges->check("ViewSalesOrders"));
 
-    menuItem = pMenu->insertItem(tr("Edit Sales Order..."), this, SLOT(sEditSo()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainSalesOrders"));
+    menuItem = pMenu->addAction(tr("Edit Sales Order..."), this, SLOT(sEditSo()));
+    menuItem->setEnabled(_privileges->check("MaintainSalesOrders"));
   }
 
-  else if (pSelected->text(ORDERTYPE_COL) == "WO")
+  else if (pSelected->text(_poitem->column("demand_type")) == "WO")
   {
-    menuItem = pMenu->insertItem(tr("View Work Order..."), this, SLOT(sViewWo()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewWorkOrders")); 
+    menuItem = pMenu->addAction(tr("View Work Order..."), this, SLOT(sViewWo()));
+    menuItem->setEnabled(_privileges->check("ViewWorkOrders")); 
 
-    menuItem = pMenu->insertItem(tr("Edit Work Order..."), this, SLOT(sEditWo()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainWorkOrders"));
+    menuItem = pMenu->addAction(tr("Edit Work Order..."), this, SLOT(sEditWo()));
+    menuItem->setEnabled(_privileges->check("MaintainWorkOrders"));
   }
 }
 
@@ -1610,7 +1637,7 @@ void purchaseOrder::sHandleShipTo()
     _shiptoCntct->setFax(q.value("cntct_fax").toString());
     _shiptoCntct->setEmailAddress(q.value("cntct_email").toString());
 
-	_shiptoAddr->setId(q.value("addr_id").toInt());
+        _shiptoAddr->setId(q.value("addr_id").toInt());
     _shiptoAddr->setLine1(q.value("addr_line1").toString());
     _shiptoAddr->setLine2(q.value("addr_line2").toString());
     _shiptoAddr->setLine3(q.value("addr_line3").toString());

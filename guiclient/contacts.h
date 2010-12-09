@@ -12,39 +12,43 @@
 #define CONTACTS_H
 
 #include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_contacts.h"
 
-class contacts : public XWidget, public Ui::contacts
+class contacts : public display, public Ui::contacts
 {
     Q_OBJECT
 
 public:
     contacts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~contacts();
 
-    virtual void setParams(ParameterList &);
+    virtual void setCrmacctid(int crmacctId);
+    virtual int crmacctId();
+
+    QAction * attachAction();
+    QAction * detachAction();
 
 public slots:
     virtual enum SetResponse set(const ParameterList&);
-    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem* = NULL);
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
     virtual void sDelete();
-    virtual void sPrint();
-    virtual void sFillList();
     virtual void sAttach();
     virtual void sDetach();
-    virtual void sHandleButtons();
-
-protected slots:
-    virtual void languageChange();
+    virtual bool setParams(ParameterList &);
    
 signals:
     void cntctDetached(int);
+
+private:
+    int _crmacctid;
+
+    QAction * _attachAct;
+    QAction * _detachAct;
 
 };
 

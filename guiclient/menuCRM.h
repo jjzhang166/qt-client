@@ -45,32 +45,23 @@ class menuCRM : public QObject
 
     void sAddress();
     void sAddresses();
-    void sCharacteristics();
     void sCRMAccount();
     void sCRMAccounts();
-    void sSearchForCRMAccount();
     void sContact();
     void sContacts();
     void sCreateRecurringItems();
-    void sSearchForContact();
     void sDspIncidentsByCRMAccount();
     void sDspTodoByUserAndIncident();
-    void sHonorifics();
     void sIncident();
-    void sIncidentCategories();
-    void sIncidentPriorities();
-    void sIncidentResolutions();
-    void sIncidentSeverities();
     void sIncidentWorkbench();
     void sTodoItem();
     void sTodoList();
     void sTodoListCalendar();
     void sNewOpportunity();
     void sOpportunities();
-    void sOpportunitySources();
-    void sOpportunityStages();
-    void sOpportunityTypes();
     void sEditOwners();
+
+    void sSetup();
 
   private:
     GUIClient *parent;
@@ -85,10 +76,7 @@ class menuCRM : public QObject
     QMenu *contactsMenu;
     QMenu *addressMenu;
     QMenu *utilitiesMenu;
-    QMenu *masterMenu;
-    QMenu *masterIncdMenu;
     QMenu *opportunityMenu;
-    QMenu *masterOppMenu;
     
     void	addActionsToMenu(actionProperties [], unsigned int);
 };

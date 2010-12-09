@@ -38,8 +38,6 @@ public slots:
 
     virtual void clear();
     virtual void closeEvent( QCloseEvent * pEvent );
-    virtual void dragEnterEvent( QDragEnterEvent * pEvent );
-    virtual void dropEvent( QDropEvent * pEvent );
     virtual void populate();
     virtual void populateOrderNumber();
     virtual void sAction();
@@ -77,6 +75,9 @@ protected slots:
     virtual bool sQESave();
     virtual void sTabChanged(int);
 
+signals:
+    void saved(int);
+
 private:
     bool 		deleteForCancel();
     void		getWhsInfo(const int, const QWidget*);
@@ -104,6 +105,7 @@ private:
     bool		_userEnteredOrderNumber;
     int			_whstaxzoneid;
     QString		doServer;
+    bool        _locked;
 
 
 };

@@ -13,17 +13,13 @@
 #include "imageAssignment.h"
 #include "imageview.h"
 
-/*
- *  Constructs a imageAssignment as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 imageAssignment::imageAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-  : QDialog(parent, name, modal, fl)
+  : QDialog(parent, fl)
 {
   setupUi(this);
+
+  setObjectName(name ? name : "imageAssignment");
+  setModal(modal);
 
   // signals and slots connections
   connect(_image, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
@@ -116,13 +112,13 @@ void imageAssignment::set(const ParameterList &pParams)
 void imageAssignment::sSave()
 {
   QString purpose;
-  if (_purpose->currentItem() == 0)  
+  if (_purpose->currentIndex() == 0)  
     purpose = "I";
-  if (_purpose->currentItem() == 1)  
+  if (_purpose->currentIndex() == 1)  
     purpose = "P";
-  if (_purpose->currentItem() == 2)  
+  if (_purpose->currentIndex() == 2)  
     purpose = "E";
-  if (_purpose->currentItem() == 3)  
+  if (_purpose->currentIndex() == 3)  
     purpose = "M";
 
   XSqlQuery newImage;

@@ -48,7 +48,9 @@ QScriptValue scriptBeginMultiPrint(QScriptContext *context,
       qDebug("beginMultiPrint(%p, %d) returned %d",
              printer, userCanceled, result);
     if (context->argumentCount() > 1)
-      ; // TODO: figure out how to set userCanceled in the script
+    {
+      // TODO: figure out how to set userCanceled in the script
+    }
   }
   else
   {

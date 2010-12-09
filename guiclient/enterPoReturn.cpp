@@ -48,6 +48,7 @@ enterPoReturn::enterPoReturn(QWidget* parent, const char* name, Qt::WFlags fl)
   _returnAddr->setEnabled(_printReport->isChecked());
   _po->setAllowedStatuses(OrderLineEdit::Open | OrderLineEdit::Closed);
   _po->setAllowedTypes(OrderLineEdit::Purchase);
+  _po->setLockSelected(true);
 
   if (_metrics->boolean("EnableDropShipments"))
     _dropShip->setEnabled(FALSE);

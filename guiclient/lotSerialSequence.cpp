@@ -19,8 +19,8 @@ lotSerialSequence::lotSerialSequence(QWidget* parent, const char* name, bool mod
   setupUi(this);
   
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_number, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_prefix, SIGNAL(editingFinished()), this, SLOT(sHandleExample()));
   connect(_nextValue, SIGNAL(editingFinished()), this, SLOT(sHandleExample()));
@@ -76,9 +76,9 @@ enum SetResponse lotSerialSequence::set(const ParameterList &pParams)
       _nextValue->setEnabled(FALSE);
       _length->setEnabled(FALSE);
       _suffix->setEnabled(FALSE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

@@ -10,9 +10,9 @@
 
 #include "purchaseRequest.h"
 
-#include <QVariant>
 #include <QMessageBox>
 #include <QValidator>
+#include <QVariant>
 
 #include <QCloseEvent>
 
@@ -45,24 +45,17 @@ purchaseRequest::purchaseRequest(QWidget* parent, const char* name, bool modal, 
   }
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 purchaseRequest::~purchaseRequest()
 {
     // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void purchaseRequest::languageChange()
 {
     retranslateUi(this);
 }
 
-enum SetResponse purchaseRequest::set(ParameterList &pParams)
+enum SetResponse purchaseRequest::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
   QVariant param;
@@ -252,7 +245,7 @@ void purchaseRequest::sCreate()
     q.prepare("SELECT createPr(:orderNumber, 'F', :planord_id, :notes) AS prid;");
     q.bindValue(":orderNumber", _number->text().toInt());
     q.bindValue(":planord_id", _planordid);
-    q.bindValue(":notes", _notes->text());
+    q.bindValue(":notes", _notes->toPlainText());
     q.exec();
     if (q.first())
     {
@@ -271,6 +264,8 @@ void purchaseRequest::sCreate()
     q.bindValue(":prj_id", _project->id());
     q.exec();
   }
+
+  omfgThis->sPurchaseRequestsUpdated();
 
   if (_captive)
     done(prid);

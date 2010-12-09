@@ -31,7 +31,7 @@ void salesOrderInformation::languageChange()
   retranslateUi(this);
 }
 
-enum SetResponse salesOrderInformation::set(ParameterList &pParams)
+enum SetResponse salesOrderInformation::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
   QVariant param;

@@ -14,7 +14,6 @@
 #include <QCursor>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
 #include <QVariant>
 
 #include <parameter.h>
@@ -26,8 +25,6 @@ reconcileBankaccount::reconcileBankaccount(QWidget* parent, const char* name, Qt
     : XWidget(parent, name, fl)
 {
     setupUi(this);
-
-//    (void)statusBar();
 
     connect(_addAdjustment, SIGNAL(clicked()),  this, SLOT(sAddAdjustment()));
     connect(_bankaccnt, SIGNAL(newID(int)),     this, SLOT(sBankaccntChanged()));
@@ -76,6 +73,7 @@ reconcileBankaccount::reconcileBankaccount(QWidget* parent, const char* name, Qt
     connect(omfgThis, SIGNAL(bankAdjustmentsUpdated(int, bool)), this, SLOT(populate()));
     connect(omfgThis, SIGNAL(checksUpdated(int, int, bool)), this, SLOT(populate()));
     connect(omfgThis, SIGNAL(cashReceiptsUpdated(int, bool)), this, SLOT(populate()));
+    connect(omfgThis, SIGNAL(glSeriesUpdated()), this, SLOT(populate()));
 }
 
 reconcileBankaccount::~reconcileBankaccount()
@@ -298,7 +296,7 @@ void reconcileBankaccount::sReconcile()
 */
 void reconcileBankaccount::populate()
 {
-  qApp->setOverrideCursor(Qt::waitCursor);
+  qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
 
   double begBal = _openBal->localValue();
   double endBal = _endBal->localValue();
@@ -323,6 +321,7 @@ void reconcileBankaccount::populate()
             "        AND (bankrecitem_bankrec_id=:bankrecid)) "
             "       LEFT OUTER JOIN jrnluse ON (jrnluse_number=gltrans_journalnumber AND jrnluse_use='C/R')"
             " WHERE ((gltrans_accnt_id=bankaccnt_accnt_id)"
+            "   AND (NOT gltrans_deleted) "
             "   AND (NOT gltrans_rec)"
             "   AND (gltrans_amount < 0)"
             "   AND (bankaccnt_id=:bankaccntid) ) "
@@ -432,6 +431,7 @@ void reconcileBankaccount::populate()
             "            AND (bankrecitem_source_id=gltrans_id)"
             "            AND (bankrecitem_bankrec_id=:bankrecid)"
             "            AND (bankrecitem_cleared)"
+            "            AND (NOT gltrans_deleted)"
             "            AND (NOT gltrans_rec)"
             "            AND (gltrans_amount < 0)"
             "            AND (bankaccnt_id=:bankaccntid) ) "
@@ -472,6 +472,7 @@ void reconcileBankaccount::populate()
             "    ON ((bankrecitem_source='GL') AND (bankrecitem_source_id=gltrans_id)"
             "        AND (bankrecitem_bankrec_id=:bankrecid)) "
             " WHERE ((gltrans_accnt_id=bankaccnt_accnt_id)"
+            "   AND (NOT gltrans_deleted)"
             "   AND (NOT gltrans_rec)"
             "   AND (gltrans_amount > 0)"
             "   AND (bankaccnt_id=:bankaccntid) ) "
@@ -517,6 +518,7 @@ void reconcileBankaccount::populate()
             "            AND (bankrecitem_source_id=gltrans_id)"
             "            AND (bankrecitem_bankrec_id=:bankrecid)"
             "            AND (bankrecitem_cleared)"
+            "            AND (NOT gltrans_deleted)"
             "            AND (NOT gltrans_rec)"
             "            AND (gltrans_amount > 0)"
             "            AND (bankaccnt_id=:bankaccntid) ) "
@@ -580,14 +582,18 @@ void reconcileBankaccount::populate()
     _clearBal->setDouble(q.value("cleared_amount").toDouble());
     _endBal2->setDouble(q.value("end_amount").toDouble());
     _diffBal->setDouble(q.value("diff_amount").toDouble());
+
+    QString stylesheet;
+
     if(q.value("diff_value").toDouble() == 0.0)
     {
-      _diffBal->setPaletteForegroundColor(QColor("black"));
       if(_startDate->isValid() && _endDate->isValid())
         enableRec = TRUE;
     }
     else
-      _diffBal->setPaletteForegroundColor(QColor("red"));
+      stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+
+    _diffBal->setStyleSheet(stylesheet);
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {

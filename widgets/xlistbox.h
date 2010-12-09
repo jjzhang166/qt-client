@@ -11,15 +11,15 @@
 #ifndef __XLISTBOX_H__
 #define __XLISTBOX_H__
 
-#include <Q3ListBox>
+#include <QListWidget>
 
-class XListBoxText : public Q3ListBoxText
+class XListBoxText : public QListWidgetItem
 {
   public:
-    XListBoxText( Q3ListBox* listbox, const QString & text=QString::null, int id=-1 );
-    XListBoxText( const QString & text=QString::null, int id=-1 );
-    XListBoxText( Q3ListBox* listbox, const QString & text, Q3ListBoxItem *after );
-    XListBoxText( Q3ListBox* listbox, const QString & text, int id, Q3ListBoxItem *after );
+    XListBoxText(QListWidget* listbox, const QString & text=QString::null, int id=-1);
+    XListBoxText(const QString & text=QString::null, int id=-1);
+    XListBoxText(QListWidget* listbox, const QString & text, QListWidgetItem *after);
+    XListBoxText(QListWidget* listbox, const QString & text, int id, QListWidgetItem *after);
     virtual ~XListBoxText();
 
     void setId(int id);

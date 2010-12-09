@@ -11,6 +11,7 @@
 #include "bom.h"
 
 #include <QKeyEvent>
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QValidator>
@@ -172,6 +173,13 @@ enum SetResponse BOM::set(const ParameterList &pParams)
 
 void BOM::sSave()
 {
+  if(_item->id() == -1)
+  {
+    QMessageBox::warning( this, tr("Item Number Required"),
+      tr("You must specify a valid item number to continue."));
+    return;
+  }
+  
   if(_batchSize->text().length() == 0)
     _batchSize->setDouble(1.0);
   else if(_batchSize->toDouble() == 0.0)
@@ -282,25 +290,25 @@ void BOM::sPrint()
 
 void BOM::sPopulateMenu(QMenu *menuThis)
 {
-  menuThis->insertItem(tr("View"), this, SLOT(sView()), 0);
+  menuThis->addAction(tr("View"), this, SLOT(sView()));
   
   if ((_mode == cNew) || (_mode == cEdit))
   {
-    menuThis->insertItem(tr("Edit"), this, SLOT(sEdit()), 0);
-    menuThis->insertItem(tr("Expire"), this, SLOT(sExpire()), 0);
-    menuThis->insertItem(tr("Replace"), this, SLOT(sReplace()), 0);
+    menuThis->addAction(tr("Edit"), this, SLOT(sEdit()));
+    menuThis->addAction(tr("Expire"), this, SLOT(sExpire()));
+    menuThis->addAction(tr("Replace"), this, SLOT(sReplace()));
 
     if (_metrics->boolean("AllowBOMItemDelete"))
     {
-      menuThis->insertSeparator();
+      menuThis->addSeparator();
 
-      menuThis->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
+      menuThis->addAction(tr("Delete"), this, SLOT(sDelete()));
     }
     
-    menuThis->insertSeparator();
+    menuThis->addSeparator();
     
-    menuThis->insertItem(tr("Move Up"),   this, SLOT(sMoveUp()), 0);
-    menuThis->insertItem(tr("Move Down"), this, SLOT(sMoveDown()), 0);
+    menuThis->addAction(tr("Move Up"),   this, SLOT(sMoveUp()));
+    menuThis->addAction(tr("Move Down"), this, SLOT(sMoveDown()));
   }
 }
 
@@ -567,7 +575,7 @@ void BOM::sFillList(int pItemid, bool)
 void BOM::keyPressEvent( QKeyEvent * e )
 {
 #ifdef Q_WS_MAC
-  if(e->key() == Qt::Key_S && e->state() == Qt::ControlModifier)
+  if(e->key() == Qt::Key_S && (e->modifiers() & Qt::ControlModifier))
   {
     _save->animateClick();
     e->accept();

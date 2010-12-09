@@ -23,6 +23,7 @@
 #include <QCheckBox>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QPushButton>
 
 #include "xtsettings.h"
 #include "dbtools.h"
@@ -44,7 +45,11 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _company->hide();
   _companyLit->hide();
 
-  connect(_login, SIGNAL(clicked()), this, SLOT(sLogin()));
+  _options = _buttonBox->addButton(tr("Options..."), QDialogButtonBox::ActionRole);
+  _recent = _buttonBox->addButton(tr("Recent"), QDialogButtonBox::ActionRole);
+  _buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Login"));
+
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sLogin()));
   connect(_options, SIGNAL(clicked()), this, SLOT(sOptions()));
   connect(_cloudLink, SIGNAL(linkActivated(QString)), this, SLOT(cloudLink(QString)));
 

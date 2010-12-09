@@ -182,7 +182,7 @@ bool closeWo::okToSave()
       return true;      // this is the only successful case
     }
   }
-  else if (type.lastError().type() != QSqlError::None)
+  else if (type.lastError().type() != QSqlError::NoError)
   {
     systemError(this, type.lastError().databaseText(), __FILE__, __LINE__);
     return false;

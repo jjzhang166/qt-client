@@ -66,7 +66,7 @@ void printArOpenItem::sPrint()
   qry.exec();
   if (qry.first())
     doctype = qry.value("aropen_doctype").toString();
-  else if (q.lastError().type() != QSqlError::None)
+  else if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
@@ -75,9 +75,29 @@ void printArOpenItem::sPrint()
   ParameterList params;
   params.append("aropen_id", _aropen->id());
   if ("I" == doctype || "D" == doctype)
+  {
     params.append("docTypeID", 1);
+    params.append("creditMemo", tr("Credit Memo"));
+    params.append("cashdeposit", tr("Cash Deposit"));
+    params.append("check", tr("Check"));
+    params.append("certifiedCheck", tr("Certified Check"));
+    params.append("masterCard", tr("Master Card"));
+    params.append("visa", tr("Visa"));
+    params.append("americanExpress", tr("American Express"));
+    params.append("discoverCard", tr("Discover Card"));
+    params.append("otherCreditCard", tr("Other Credit Card"));
+    params.append("cash", tr("Cash"));
+    params.append("wireTransfer", tr("Wire Transfer"));
+    params.append("other", tr("Other"));
+  }
   else if ("R" == doctype || "C" == doctype)
+  {
     params.append("docTypeRC", 1);
+    params.append("invoice", tr("Invoice"));
+    params.append("debitMemo", tr("Debit Memo"));
+    params.append("apcheck", tr("A/P Check"));
+    params.append("cashreceipt", tr("Cash Receipt"));
+  }
 
   orReport report("AROpenItem", params);
 

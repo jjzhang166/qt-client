@@ -11,21 +11,21 @@
  <leftmargin>50</leftmargin>
  <querysource>
   <name>head</name>
-  <sql>SELECT formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;source&quot;) ?>
-         text(&lt;? value(&quot;source&quot;) ?>)
+  <sql>SELECT formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("source") ?>
+         text(&lt;? value("source") ?>)
        &lt;? else ?>
          text('All Sources')
        &lt;? endif  ?>
        AS source,
-       &lt;? if exists(&quot;startJrnlnum&quot;) ?>
+       &lt;? if exists("startJrnlnum") ?>
          text('Start Journal Number:')
        &lt;? else ?>
          text('')
        &lt;? endif ?>
        AS startJrnlnumLit,
-       &lt;? if exists(&quot;endJrnlnum&quot;) ?>
+       &lt;? if exists("endJrnlnum") ?>
          text('End Journal Number:')
        &lt;? else ?>
          text('')
@@ -47,7 +47,8 @@
        formatBoolYN(gltrans_posted) AS f_posted
   FROM gltrans, accnt
  WHERE ( (gltrans_accnt_id=accnt_id)
-   AND   (gltrans_date BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
+   AND   (NOT gltrans_deleted)
+   AND   (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
    AND   (gltrans_doctype='ST') )
 ORDER BY gltrans_date, gltrans_sequence, gltrans_docnumber, gltrans_amount;</sql>
  </querysource>

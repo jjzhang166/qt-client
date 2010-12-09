@@ -24,13 +24,11 @@ bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_adjustment,    SIGNAL(clicked()), this, SLOT(sPostAdjustment()));
   connect(_bankaccnt, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
   connect(_delete,        SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,          SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_new,           SIGNAL(clicked()), this, SLOT(sNew()));
   connect(_print,         SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_serviceCharge, SIGNAL(clicked()), this, SLOT(sPostServiceCharge()));
   connect(_view,          SIGNAL(clicked()), this, SLOT(sView()));
   
   _bankaccnt->addColumn(tr("Name"),        _itemColumn, Qt::AlignLeft, true, "bankaccnt_name"  );
@@ -169,6 +167,7 @@ void bankAccounts::sDelete()
     return;
   }
   sFillList();
+  omfgThis->sBankAccountsUpdated();
 }
 
 void bankAccounts::sPopulateMenu( QMenu * )
@@ -184,10 +183,3 @@ void bankAccounts::sPrint()
     report.reportError(this);
 }
 
-void bankAccounts::sPostServiceCharge()
-{
-}
-
-void bankAccounts::sPostAdjustment()
-{
-}

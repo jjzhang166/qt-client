@@ -11,40 +11,22 @@
 #ifndef INCIDENTWORKBENCH_H
 #define INCIDENTWORKBENCH_H
 
-#include "xwidget.h"
+#include "display.h"
 
-#include <QAction>
-
-#include <parameter.h>
-#include "ui_incidentWorkbench.h"
-
-class incidentWorkbench : public XWidget, public Ui::incidentWorkbench
+class incidentWorkbench : public display
 {
     Q_OBJECT
 
 public:
     incidentWorkbench(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~incidentWorkbench();
 
 public slots:
-    virtual void setParams(ParameterList&);
+    virtual enum SetResponse set( const ParameterList & pParams );
+    virtual bool setParams(ParameterList&);
     virtual void sNew();
     virtual void sEdit();
-    virtual void sFillList();
-    virtual void sHandleAutoUpdate(bool);
-    virtual void sPrint();
     virtual void sView();
-    virtual void sPopulateShiptoMenu( QMenu * menu );
-
-protected slots:
-    virtual void languageChange();
-
-private:
-
-    QAction* _closeAct;
-    QAction* _queryAct;
-    QAction* _printAct;
-    QAction* _newAct;
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // INCIDENTWORKBENCH_H

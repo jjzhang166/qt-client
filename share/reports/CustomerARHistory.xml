@@ -18,80 +18,10 @@
  WHERE (cust_id=&lt;? value("cust_id") ?>);
     </sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT aropen_id, -1 AS arapply_id,
-       aropen_docnumber AS sortnumber,
-       aropen_docnumber AS docnumber,
-       formatBoolYN(aropen_open) AS f_open,
-       CASE WHEN (aropen_doctype='I') THEN 'Invoice'
-            WHEN (aropen_doctype='C') THEN 'C/M'
-            WHEN (aropen_doctype='D') THEN 'D/M'
-            WHEN (aropen_doctype='R') THEN 'C/D'
-            ELSE 'Other'
-       END AS documenttype,
-       formatDate(aropen_docdate) AS f_docdate,
-       formatDate(aropen_duedate) AS f_duedate,
-       formatMoney(currtobase(aropen_curr_id,aropen_amount,aropen_docdate)) AS f_amount,
-       formatMoney(currtobase(aropen_curr_id,(aropen_amount - aropen_paid),aropen_docdate)) AS f_balance
-FROM aropen
-WHERE ( (aropen_cust_id=&lt;? value("cust_id") ?>)
- AND (aropen_duedate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>) )
-
-UNION
-SELECT aropen_id, arapply_id,
-       aropen_docnumber AS sortnumber,
-       CASE WHEN (arapply_source_doctype='C') THEN arapply_source_docnumber
-            WHEN (arapply_source_doctype='K') THEN arapply_refnumber
-            ELSE 'Error'
-       END AS docnumber,
-       '' AS f_open,
-       CASE WHEN (arapply_source_doctype='C') THEN 'C/M'
-            WHEN (arapply_fundstype='C') THEN 'Check'
-            WHEN (arapply_fundstype='T') THEN 'Certified Check'
-            WHEN (arapply_fundstype='M') THEN 'Master Card'
-            WHEN (arapply_fundstype='V') THEN 'Visa'
-            WHEN (arapply_fundstype='A') THEN ';American Express'
-            WHEN (arapply_fundstype='D') THEN 'Discover Card'
-            WHEN (arapply_fundstype='R') THEN 'Other Credit Card'
-            WHEN (arapply_fundstype='K') THEN 'Cash'
-            WHEN (arapply_fundstype='W') THEN 'Wire Transfer'
-            WHEN (arapply_fundstype='O') THEN 'Other'
-       END AS documenttype,
-       formatDate(arapply_postdate) AS f_docdate,
-       '' AS f_duedate,
-       formatMoney(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)) AS f_amount,
-       '' AS f_balance 
-FROM arapply, aropen
-WHERE ( (arapply_target_doctype IN ('I', 'D'))
- AND (arapply_target_doctype=aropen_doctype)
- AND (arapply_target_docnumber=aropen_docnumber)
- AND (arapply_cust_id=&lt;? value("cust_id") ?>)
- AND (aropen_cust_id=&lt;? value("cust_id") ?>)
- AND (aropen_duedate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>) )
-
-UNION
-SELECT aropen_id, arapply_id,
-       aropen_docnumber AS sortnumber,
-       arapply_target_docnumber AS docnumber,
-       '' AS f_open,
-       CASE WHEN (arapply_target_doctype='I') THEN 'Invoice'
-            WHEN (arapply_target_doctype='D') THEN 'D/M'
-            ELSE 'Other'
-       END AS documenttype,
-       formatDate(arapply_postdate) AS f_docdate,
-       '' AS f_duedate,
-       formatMoney(currtobase(arapply_curr_id,arapply_applied,arapply_postdate)) AS f_amount,
-       '' AS f_balance
-FROM arapply, aropen
-WHERE ( (arapply_source_doctype IN ('K', 'C'))
- AND (arapply_source_doctype=aropen_doctype)
- AND (arapply_source_docnumber=aropen_docnumber)
- AND (arapply_cust_id=&lt;? value("cust_id") ?>)
- AND (aropen_cust_id=&lt;? value("cust_id") ?>)
- AND (aropen_duedate BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>) )
-
-ORDER BY sortnumber DESC, arapply_id;</sql>
+  <mqlgroup>arHistory</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>156</height>
@@ -485,8 +415,9 @@ ORDER BY sortnumber DESC, arapply_id;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_amount</column>
+     <column>amount</column>
     </data>
+    <format builtin="true">extprice</format>
    </field>
    <field>
     <rect>
@@ -504,12 +435,13 @@ ORDER BY sortnumber DESC, arapply_id;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_balance</column>
+     <column>balance</column>
     </data>
+    <format builtin="true">extprice</format>
    </field>
    <field>
     <rect>
-     <x>350</x>
+     <x>349</x>
      <y>0</y>
      <width>90</width>
      <height>15</height>

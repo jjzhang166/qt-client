@@ -53,6 +53,7 @@ SELECT 'Earliest' AS startdate,
   FROM period, gltrans JOIN accnt ON (gltrans_accnt_id=accnt_id)
        LEFT OUTER JOIN invhist ON (gltrans_misc_id=invhist_id AND gltrans_docnumber='Misc.')
 WHERE (NOT gltrans_posted
+  AND (NOT gltrans_deleted)
   AND  (gltrans_date BETWEEN period_start AND period_end)
 &lt;? if exists("period_id") ?>
   AND  (period_id=&lt;? value("period_id") ?>)
@@ -681,7 +682,8 @@ ORDER BY gltrans_created, gltrans_sequence, gltrans_amount;</sql>
     <query>detail</query>
     <column>balance_amt</column>
    </data>
-   <tracktotal builtin="true" >money</tracktotal>
+   <format builtin="true">money</format>
+   <tracktotal/>
   </field>
   <label>
    <rect>
@@ -794,7 +796,8 @@ ORDER BY gltrans_created, gltrans_sequence, gltrans_amount;</sql>
     <query>detail</query>
     <column>credit_amt</column>
    </data>
-   <tracktotal builtin="true" >money</tracktotal>
+   <format builtin="true">money</format>
+   <tracktotal/>
   </field>
   <label>
    <rect>
@@ -830,7 +833,8 @@ ORDER BY gltrans_created, gltrans_sequence, gltrans_amount;</sql>
     <query>detail</query>
     <column>debit_amt</column>
    </data>
-   <tracktotal builtin="true" >money</tracktotal>
+   <format builtin="true">money</format>
+   <tracktotal/>
   </field>
  </pgfoot>
  <pgfoot>

@@ -23,6 +23,8 @@
 
 #include "xTupleDesigner.h"
 
+#define DEBUG false
+
 static QAction *separator(QObject *parent)
 {
   QAction *sep = new QAction(parent);
@@ -143,8 +145,9 @@ xTupleDesignerActions::xTupleDesignerActions(xTupleDesigner *parent)
 
 void xTupleDesignerActions::sActiveFormWindowChanged(QDesignerFormWindowInterface *pwindow)
 {
-  qDebug("xTupleDesignerActions::sActiveFormWindowChanged(%p)",
-         pwindow);
+  if (DEBUG)
+    qDebug("xTupleDesignerActions::sActiveFormWindowChanged(%p)",
+           pwindow);
 
   QList<QActionGroup*> actionGroupList;
   actionGroupList.append(_fileActions);
@@ -304,7 +307,7 @@ bool xTupleDesignerActions::sSaveToDB()
     return false;
   }
 
-  _designer->setSource(source);
+  _designer->setSource(source); // otherwise the uiform window has the old source
   _designer->formwindow()->setDirty(false);
   return true;
 }

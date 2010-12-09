@@ -10,6 +10,7 @@
 
 #include "billingEditList.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -128,14 +129,14 @@ void billingEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
   if (((XTreeWidgetItem *)pSelected)->altId() == -2)
   {
     _itemtype = 1;
-    pMenu->insertItem("Edit Billing...", this, SLOT(sEditBillingOrd()), 0);
-    pMenu->insertItem("Cancel Billing...", this, SLOT(sCancelBillingOrd()), 0);
+    pMenu->addAction("Edit Billing...", this, SLOT(sEditBillingOrd()));
+    pMenu->addAction("Cancel Billing...", this, SLOT(sCancelBillingOrd()));
   }
   else if (((XTreeWidgetItem *)pSelected)->altId() != -1)
   {
     _itemtype = 2;
-    pMenu->insertItem("Edit Billing...", this, SLOT(sEditBillingQty()), 0);
-    pMenu->insertItem("Cancel Billing...", this, SLOT(sCancelBillingQty()), 0);
+    pMenu->addAction("Edit Billing...", this, SLOT(sEditBillingQty()), 0);
+    pMenu->addAction("Cancel Billing...", this, SLOT(sCancelBillingQty()));
   }
 }
 

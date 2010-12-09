@@ -162,10 +162,9 @@ void financialLayouts::sCopy()
   bool ok;
   QString text;
   do {
-    text = QInputDialog::getText( tr("Copy Financial Report"),
-           tr("Target Report:"),
-           QLineEdit::Normal,
-           text, &ok, this );
+    text = QInputDialog::getText(this, tr("Copy Financial Report"),
+                                 tr("Target Report:"), QLineEdit::Normal,
+                                 text, &ok);
     if ( ok ) {
       q.prepare("SELECT copyFinancialLayout(:flhead_id, :name) AS result;");
       q.bindValue(":flhead_id", _flhead->id());

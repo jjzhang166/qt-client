@@ -196,6 +196,12 @@ void printPackingList::sPrint()
       params.append("shiphead_id", _shipment->id());
     }
 
+    if (_metrics->boolean("EnableSOReservations"))
+      params.append("EnableSOReservations");
+
+    if (_metrics->boolean("EnableSOReservationsByLocation"))
+      params.append("EnableSOReservationsByLocation");
+
     orReport report(q.value("reportname").toString(), params);
     if (report.isValid())
       report.print();

@@ -75,11 +75,14 @@ enum SetResponse accountingPeriod::set(const ParameterList &pParams)
         _startDate->setDate(q.value("start_date").toDate());
         int pmonth = _startDate->date().month();
         QDate pdate = _startDate->date();
-        while (pmonth == _startDate->date().month())
+        if(pdate.isValid())
         {
-          _endDate->setDate(pdate);
-          pdate = pdate.addDays(1);
-          pmonth = pdate.month();
+          while (pmonth == _startDate->date().month())
+          {
+            _endDate->setDate(pdate);
+            pdate = pdate.addDays(1);
+            pmonth = pdate.month();
+          }
         }
         sHandleNumber();
         connect(_year, SIGNAL(newID(int)), this, SLOT(sHandleNumber()));
@@ -188,6 +191,7 @@ void accountingPeriod::sSave()
       q.prepare("SELECT COUNT(gltrans_sequence) AS count "
 		"FROM gltrans, period "
 		"WHERE ( (NOT gltrans_posted) "
+		"AND (NOT gltrans_deleted) "
 		"AND (gltrans_date BETWEEN period_start AND period_end) "
 		"AND (period_id=:period_id) );");
       q.bindValue(":period_id", _periodid);

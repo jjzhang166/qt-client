@@ -10,10 +10,10 @@
 
 #include "salesReps.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
 
 #include <parameter.h>
 #include <openreports.h>
@@ -138,19 +138,19 @@ void salesReps::sFillList()
 
 void salesReps::sPopulateMenu( QMenu * menu )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem(tr("Edit Sales Rep..."), this, SLOT(sEdit()), 0);
+  menuItem = menu->addAction(tr("Edit Sales Rep..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainSalesReps"))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 
-  menuItem = menu->insertItem(tr("View Sales Rep..."), this, SLOT(sView()), 0);
+  menuItem = menu->addAction(tr("View Sales Rep..."), this, SLOT(sView()));
   if ((!_privileges->check("MaintainSalesReps")) && (!_privileges->check("ViewSalesReps")))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 
-  menuItem = menu->insertItem(tr("Delete Sales Rep..."), this, SLOT(sDelete()), 0);
+  menuItem = menu->addAction(tr("Delete Sales Rep..."), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainSalesReps"))
-    menu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(FALSE);
 }
 
 void salesReps::sPrint()

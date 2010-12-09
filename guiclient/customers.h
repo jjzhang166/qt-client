@@ -12,17 +12,14 @@
 #define CUSTOMERS_H
 
 #include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 
-#include "ui_customers.h"
-
-class customers : public XWidget, public Ui::customers
+class customers : public display
 {
     Q_OBJECT
 
 public:
     customers(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~customers();
 
 public slots:
     virtual void sNew();
@@ -30,13 +27,7 @@ public slots:
     virtual void sReassignCustomerType();
     virtual void sView();
     virtual void sDelete();
-    virtual void sPopulateMenu( QMenu * pMenu );
-    virtual void sFillList( int pCustid, bool pLocal );
-
-protected slots:
-    virtual void languageChange();
-
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // CUSTOMERS_H

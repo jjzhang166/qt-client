@@ -306,7 +306,7 @@ void taxAuthority::sSave()
 	       "      NULL, NULL, NULL, NULL, :taxauthid, NULL, NULL) AS crmacctid;");
     q.bindValue(":number",	_code->text().trimmed());
     q.bindValue(":name",	_name->text().trimmed());
-    q.bindValue(":active",	QVariant(true, 0));
+    q.bindValue(":active",	true);
     q.bindValue(":type",	"O");	// TODO - when will this be "I"?
     q.bindValue(":taxauthid",	_taxauthid);
     q.exec();

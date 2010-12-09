@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Submit Report to xTuple Connect</string>
+   <string>Schedule Report with xTuple Connect</string>
   </property>
   <layout class="QVBoxLayout" >
    <property name="spacing" >
@@ -143,7 +143,7 @@ to be bound by its terms.</comment>
          <item>
           <widget class="QPushButton" name="_submit" >
            <property name="text" >
-            <string>&amp;Submit</string>
+            <string>&amp;Schedule</string>
            </property>
            <property name="autoDefault" >
             <bool>true</bool>

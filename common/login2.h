@@ -42,6 +42,9 @@ class login2 : public QDialog, public Ui::login2
     virtual bool requireSSL() const { return _requireSSL; }
     virtual bool useCloud() const;
 
+    QPushButton* _recent;
+    QPushButton* _options;
+
   public slots:
     virtual int set( ParameterList & pParams );
     virtual void setLogo( const QImage & );

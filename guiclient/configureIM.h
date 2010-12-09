@@ -11,11 +11,10 @@
 #ifndef CONFIGUREIM_H
 #define CONFIGUREIM_H
 
-#include "xdialog.h"
-#include <parameter.h>
+#include "xabstractconfigure.h"
 #include "ui_configureIM.h"
 
-class configureIM : public XDialog, public Ui::configureIM
+class configureIM : public XAbstractConfigure, public Ui::configureIM
 {
     Q_OBJECT
 
@@ -23,12 +22,16 @@ public:
     configureIM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~configureIM();
 
+public slots:
+    virtual bool sSave();
+
 protected slots:
     virtual void languageChange();
-    virtual void sSave();
     virtual void sHandleShippingFormCopies( int pValue );
     virtual void sEditShippingFormWatermark();
 
+signals:
+    void saving();
 };
 
 #endif // CONFIGUREIM_H

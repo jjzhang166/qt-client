@@ -10,6 +10,7 @@
 
 #include "incident.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -32,17 +33,21 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _saved = false;
   _aropenid = -1;
 
+  _print = _buttonBox->addButton(tr("Print"),QDialogButtonBox::ActionRole);
+  _print->setObjectName("_print");
+  _buttonBox->button(QDialogButtonBox::Save)->setObjectName("_save");
+
   if(!_privileges->check("EditOwner")) _owner->setEnabled(false);
 
   connect(_assignedTo,    SIGNAL(newId(int)),       this, SLOT(sAssigned()));
-  connect(_cancel,        SIGNAL(clicked()),        this,       SLOT(sCancel()));
+  connect(_buttonBox,     SIGNAL(rejected()),        this,       SLOT(sCancel()));
   connect(_crmacct,       SIGNAL(newId(int)),       this,       SLOT(sCRMAcctChanged(int)));
   connect(_deleteTodoItem, SIGNAL(clicked()),       this,       SLOT(sDeleteTodoItem()));
   connect(_editTodoItem,  SIGNAL(clicked()),        this,       SLOT(sEditTodoItem()));
   connect(_item,          SIGNAL(newId(int)),     _lotserial,   SLOT(setItemId(int)));
   connect(_newTodoItem,   SIGNAL(clicked()),        this,       SLOT(sNewTodoItem()));
   //connect(_return,      SIGNAL(clicked()),        this, SLOT(sReturn()));
-  connect(_save,          SIGNAL(clicked()),        this,       SLOT(sSave()));
+  connect(_buttonBox,     SIGNAL(accepted()),        this,       SLOT(sSave()));
   connect(_print,         SIGNAL(clicked()),        this,       SLOT(sPrint()));
   connect(_todoList,      SIGNAL(itemSelected(int)), _editTodoItem, SLOT(animateClick()));
   connect(_todoList,      SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*, int)), this,         SLOT(sPopulateTodoMenu(QMenu*)));
@@ -148,7 +153,7 @@ enum SetResponse incident::set(const ParameterList &pParams)
       _mode = cEdit;
 
       _crmacct->setEnabled(true);
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -169,11 +174,14 @@ enum SetResponse incident::set(const ParameterList &pParams)
       _deleteTodoItem->setEnabled(false);
       _editTodoItem->setEnabled(false);
       _newTodoItem->setEnabled(false);
+      disconnect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
+      disconnect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
+      disconnect(_charass, SIGNAL(itemSelected(int)), _editCharacteristic, SLOT(animateClick()));
+      _newCharacteristic->setEnabled(false);
       _owner->setEnabled(false);
 
-      _save->hide();
-      _cancel->setText(tr("&Close"));
-      _cancel->setFocus();
+      _buttonBox->setStandardButtons(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
       _alarms->setReadOnly(true);
@@ -622,7 +630,7 @@ void incident::sFillTodoList()
 
 void incident::sPopulateTodoMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
   bool newPriv = (cNew == _mode || cEdit == _mode) &&
       (_privileges->check("MaintainPersonalTodoList") ||
@@ -636,17 +644,17 @@ void incident::sPopulateTodoMenu(QMenu *pMenu)
       (omfgThis->username() == _todoList->currentItem()->text("todoitem_username") && _privileges->check("ViewPersonalTodoList")) ||
       (omfgThis->username() != _todoList->currentItem()->text("todoitem_username") && _privileges->check("ViewOtherTodoLists"));
 
-  menuItem = pMenu->insertItem(tr("New..."), this, SLOT(sNewTodoItem()), 0);
-  pMenu->setItemEnabled(menuItem, newPriv);
+  menuItem = pMenu->addAction(tr("New..."), this, SLOT(sNewTodoItem()));
+  menuItem->setEnabled(newPriv);
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEditTodoItem()), 0);
-  pMenu->setItemEnabled(menuItem, editPriv);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEditTodoItem()));
+  menuItem->setEnabled(editPriv);
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sViewTodoItem()), 0);
-  pMenu->setItemEnabled(menuItem, viewPriv);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sViewTodoItem()));
+  menuItem->setEnabled(viewPriv);
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDeleteTodoItem()), 0);
-  pMenu->setItemEnabled(menuItem, editPriv);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDeleteTodoItem()));
+  menuItem->setEnabled(editPriv);
 }
 
 void incident::sHandleTodoPrivs()

@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2010 by OpenMFG LLC, d/b/a xTuple.
@@ -8,250 +8,172 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>alarmMaint</class>
- <widget class="QDialog" name="alarmMaint" >
-  <property name="geometry" >
+ <widget class="QDialog" name="alarmMaint">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>715</width>
-    <height>197</height>
+    <width>612</width>
+    <height>388</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Alarm</string>
   </property>
-  <widget class="ContactCluster" name="_contactCluster" >
-   <property name="geometry" >
-    <rect>
-     <x>30</x>
-     <y>200</y>
-     <width>748</width>
-     <height>297</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget" >
-   <property name="geometry" >
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>690</width>
-     <height>172</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" >
-    <item>
-     <layout class="QVBoxLayout" >
-      <item>
-       <layout class="QHBoxLayout" >
-        <item>
-         <widget class="QLabel" name="_alarmDueLit" >
-          <property name="text" >
-           <string>Due:</string>
-          </property>
-          <property name="alignment" >
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" >
-          <item>
-           <widget class="QSpinBox" name="_alarmOffset" >
-            <property name="value" >
-             <number>15</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="XComboBox" name="_alarmQualifier" >
-            <property name="minimumSize" >
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <item>
-             <property name="text" >
-              <string>minutes before</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>hours before</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>days before</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>minutes after</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>hours after</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>days after</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="DLineEdit" name="_alarmDate" >
-          <property name="enabled" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTimeEdit" name="_alarmTime" />
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="_alarmGroup" >
-        <property name="title" >
-         <string/>
-        </property>
-        <layout class="QGridLayout" >
-         <item row="0" column="0" >
-          <widget class="XCheckBox" name="_eventAlarm" >
-           <property name="text" >
-            <string>Event</string>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout">
+     <item>
+      <layout class="QVBoxLayout">
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel" name="_alarmDueLit">
+           <property name="text">
+            <string>Due:</string>
            </property>
-           <property name="checked" >
-            <bool>false</bool>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
-           <property name="forgetful" >
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QSpinBox" name="_alarmOffset">
+             <property name="value">
+              <number>15</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="XComboBox" name="_alarmQualifier">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <item>
+              <property name="text">
+               <string>minutes before</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hours before</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>days before</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>minutes after</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hours after</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>days after</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="DLineEdit" name="_alarmDate">
+           <property name="enabled">
             <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="0" column="1" >
-          <widget class="QLineEdit" name="_eventRecipient" />
-         </item>
-         <item row="1" column="0" >
-          <widget class="XCheckBox" name="_emailAlarm" >
-           <property name="text" >
-            <string>Email</string>
-           </property>
-           <property name="forgetful" >
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" >
-          <widget class="QLineEdit" name="_emailRecipient" />
-         </item>
-         <item row="2" column="0" >
-          <widget class="XCheckBox" name="_sysmsgAlarm" >
-           <property name="text" >
-            <string>System Message</string>
-           </property>
-           <property name="forgetful" >
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" >
-          <widget class="QLineEdit" name="_sysmsgRecipient" />
+         <item>
+          <widget class="QTimeEdit" name="_alarmTime"/>
          </item>
         </layout>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" >
-      <item>
-       <layout class="QVBoxLayout" >
-        <item>
-         <widget class="QPushButton" name="_cancel" >
-          <property name="text" >
-           <string>&amp;Cancel</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+C</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="_save" >
-          <property name="text" >
-           <string>&amp;Save</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+S</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" >
-        <item>
-         <widget class="QPushButton" name="_userLookup" >
-          <property name="text" >
-           <string>User Lookup</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+S</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="_contactLookup" >
-          <property name="text" >
-           <string>Contact Lookup</string>
-          </property>
-          <property name="shortcut" >
-           <string>Alt+S</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType" >
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
-        <property name="sizeHint" >
-         <size>
-          <width>69</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
-  <widget class="UsernameCluster" name="_usernameCluster" >
-   <property name="geometry" >
-    <rect>
-     <x>100</x>
-     <y>520</y>
-     <width>226</width>
-     <height>34</height>
-    </rect>
-   </property>
-  </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="_alarmGroup">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QGridLayout">
+          <item row="0" column="0">
+           <widget class="XCheckBox" name="_eventAlarm">
+            <property name="text">
+             <string>Event</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="forgetful">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="_eventRecipient"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="XCheckBox" name="_emailAlarm">
+            <property name="text">
+             <string>Email</string>
+            </property>
+            <property name="forgetful">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="_emailRecipient"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="XCheckBox" name="_sysmsgAlarm">
+            <property name="text">
+             <string>System Message</string>
+            </property>
+            <property name="forgetful">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="_sysmsgRecipient"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="_buttonBox">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="ContactCluster" name="_contactCluster"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="UsernameCluster" name="_usernameCluster"/>
+   </item>
+  </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
@@ -292,63 +214,10 @@ to be bound by its terms.</comment>
   <tabstop>_emailRecipient</tabstop>
   <tabstop>_sysmsgAlarm</tabstop>
   <tabstop>_sysmsgRecipient</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_cancel</tabstop>
-  <tabstop>_userLookup</tabstop>
-  <tabstop>_contactLookup</tabstop>
  </tabstops>
  <includes>
-  <include location="global" >parameter.h</include>
+  <include location="global">parameter.h</include>
  </includes>
  <resources/>
- <connections>
-  <connection>
-   <sender>_cancel</sender>
-   <signal>clicked()</signal>
-   <receiver>alarmMaint</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_contactLookup</sender>
-   <signal>clicked()</signal>
-   <receiver>_contactCluster</receiver>
-   <slot>sSearch()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>609</x>
-     <y>134</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>403</x>
-     <y>348</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_userLookup</sender>
-   <signal>clicked()</signal>
-   <receiver>_usernameCluster</receiver>
-   <slot>sList()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>626</x>
-     <y>101</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>212</x>
-     <y>536</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

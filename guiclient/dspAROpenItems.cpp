@@ -10,9 +10,12 @@
 
 #include "dspAROpenItems.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QToolBar>
+#include <QToolButton>
 #include <QVariant>
 
 #include <metasql.h>
@@ -40,23 +43,21 @@
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
 
-dspAROpenItems::dspAROpenItems(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+dspAROpenItems::dspAROpenItems(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "dspAROpenItems", fl)
 {
-  setupUi(this);
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Open Receivables"));
+  setListLabel(tr("Receivables"));
+  setReportName("AROpenItems");
+  setMetaSQLOptions("arOpenItems", "detail");
+  setUseAltId(true);
+  setNewVisible(true);
 
-  connect(_print,          SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_printItem,      SIGNAL(clicked()), this, SLOT(sPrintItem()));
-  connect(_query, SIGNAL(clicked()), this, SLOT(sFillList()));
-  connect(_aropen, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*,QTreeWidgetItem*)));
-  connect(_customerSelector, SIGNAL(updated()), _aropen, SLOT(clear()));
-  connect(_customerSelector, SIGNAL(updated()), this, SLOT(sHandleStatementButton()));
-  connect(_aropen, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_apply, SIGNAL(clicked()), this, SLOT(sApplyAropenCM()));
-  connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));
-  connect(_refund,   SIGNAL(clicked()), this, SLOT(sCCRefundCM()));
+  connect(_customerSelector, SIGNAL(updated()), list(), SLOT(clear()));
+  connect(_customerSelector, SIGNAL(updated()), this, SLOT(sHandlePrintGroup()));
   connect(_closed, SIGNAL(toggled(bool)), this, SLOT(sClosedToggled(bool)));
+  connect(_printList, SIGNAL(toggled(bool)), this, SLOT(sHandleReportName()));
 
   _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
@@ -72,62 +73,55 @@ dspAROpenItems::dspAROpenItems(QWidget* parent, const char* name, Qt::WFlags fl)
     basePaidTitle    = tr("Paid (in %1)").arg(CurrDisplay::baseCurrAbbr());
   }
 
-  _aropen->setRootIsDecorated(TRUE);
-  _aropen->addColumn(tr("Doc. Type"),     _itemColumn, Qt::AlignLeft,   true,  "doctype");
-  _aropen->addColumn(tr("Posted"),          _ynColumn, Qt::AlignCenter, true,  "posted");
-  _aropen->addColumn(tr("Recurring"),       _ynColumn, Qt::AlignCenter, false, "recurring");
-  _aropen->addColumn(tr("Open"),            _ynColumn, Qt::AlignCenter, false, "open");
-  _aropen->addColumn(tr("Doc. #"),       _orderColumn, Qt::AlignLeft,   true,  "docnumber");
-  _aropen->addColumn(tr("Cust./Assign To"),_itemColumn, Qt::AlignLeft,  true,  "cust_number");
-  _aropen->addColumn(tr("Name/Desc."),             -1, Qt::AlignLeft,   true,  "cust_name");
-  _aropen->addColumn(tr("Order/Incident"),_itemColumn, Qt::AlignRight,  false, "ordernumber");
-  _aropen->addColumn(tr("Doc. Date"),     _dateColumn, Qt::AlignCenter, true,  "docdate");
-  _aropen->addColumn(tr("Due Date"),      _dateColumn, Qt::AlignCenter, true,  "aropen_duedate");
-  _aropen->addColumn(tr("Amount"),       _moneyColumn, Qt::AlignRight,  true,  "amount");
-  _aropen->addColumn(baseAmountTitle,    _moneyColumn, Qt::AlignRight,  false,  "base_amount");
-  _aropen->addColumn(tr("Paid"),         _moneyColumn, Qt::AlignRight,  true,  "paid");
-  _aropen->addColumn(basePaidTitle,      _moneyColumn, Qt::AlignRight,  false,  "base_paid");
-  _aropen->addColumn(tr("Balance"),      _moneyColumn, Qt::AlignRight,  true,  "balance");
-  _aropen->addColumn(tr("Currency"),  _currencyColumn, Qt::AlignLeft,   true,  "currAbbr");
-  _aropen->addColumn(baseBalanceTitle,   _moneyColumn, Qt::AlignRight,  true,  "base_balance");
-  _aropen->addColumn(tr("Credit Card"),            -1, Qt::AlignLeft,   false, "ccard_number");
+  list()->setRootIsDecorated(true);
+  list()->addColumn(tr("Doc. Type"),              -1, Qt::AlignLeft,   true,  "doctype");
+  list()->addColumn(tr("Posted"),          _ynColumn, Qt::AlignCenter, true,  "posted");
+  list()->addColumn(tr("Recurring"),       _ynColumn, Qt::AlignCenter, false, "recurring");
+  list()->addColumn(tr("Open"),            _ynColumn, Qt::AlignCenter, false, "open");
+  list()->addColumn(tr("Doc. #"),       _orderColumn, Qt::AlignLeft,   true,  "docnumber");
+  list()->addColumn(tr("Cust./Assign To"),_itemColumn, Qt::AlignLeft,  false, "cust_number");
+  list()->addColumn(tr("Name/Desc."),             -1, Qt::AlignLeft,   true,  "cust_name");
+  list()->addColumn(tr("Order/Incident"),_itemColumn, Qt::AlignRight,  false, "ordernumber");
+  list()->addColumn(tr("Doc. Date"),     _dateColumn, Qt::AlignCenter, true,  "docdate");
+  list()->addColumn(tr("Due Date"),      _dateColumn, Qt::AlignCenter, true,  "aropen_duedate");
+  list()->addColumn(tr("Amount"),       _moneyColumn, Qt::AlignRight,  true,  "amount");
+  list()->addColumn(baseAmountTitle,    _moneyColumn, Qt::AlignRight,  false,  "base_amount");
+  list()->addColumn(tr("Paid"),         _moneyColumn, Qt::AlignRight,  true,  "paid");
+  list()->addColumn(basePaidTitle,      _moneyColumn, Qt::AlignRight,  false,  "base_paid");
+  list()->addColumn(tr("Balance"),      _moneyColumn, Qt::AlignRight,  true,  "balance");
+  list()->addColumn(tr("Currency"),  _currencyColumn, Qt::AlignLeft,   true,  "currAbbr");
+  list()->addColumn(baseBalanceTitle,   _moneyColumn, Qt::AlignRight,  true,  "base_balance");
+  list()->addColumn(tr("Credit Card"),            -1, Qt::AlignLeft,   false, "ccard_number");
+  list()->addColumn(tr("Notes"),                  -1, Qt::AlignLeft,   false, "notes");
   
   connect(omfgThis, SIGNAL(creditMemosUpdated()), this, SLOT(sFillList()));
   connect(omfgThis, SIGNAL(invoicesUpdated(int, bool)), this, SLOT(sFillList()));
 
   if (omfgThis->singleCurrency())
   {
-    _aropen->hideColumn("currAbbr");
-    _aropen->hideColumn("balance");
+    list()->hideColumn("currAbbr");
+    list()->hideColumn("balance");
   }
 
-  int menuItem;
+  newAction()->disconnect();
+  QToolButton * newBtn = (QToolButton*)toolBar()->widgetForAction(newAction());
+  newBtn->setPopupMode(QToolButton::MenuButtonPopup);
+  QAction *menuItem;
   QMenu * newMenu = new QMenu;
-  menuItem = newMenu->insertItem(tr("Invoice"), this, SLOT(sCreateInvoice()));
-  newMenu->setItemEnabled(menuItem, _privileges->check("MaintainMiscInvoices"));
-  menuItem = newMenu->insertItem(tr("Misc. Debit Memo"),   this, SLOT(sEnterMiscArDebitMemo()));
-  newMenu->setItemEnabled(menuItem, _privileges->check("MaintainARMemos"));
+  menuItem = newMenu->addAction(tr("Invoice"), this, SLOT(sCreateInvoice()));
+  menuItem->setEnabled(_privileges->check("MaintainMiscInvoices"));
+  menuItem = newMenu->addAction(tr("Misc. Debit Memo"),   this, SLOT(sEnterMiscArDebitMemo()));
+  menuItem->setEnabled(_privileges->check("MaintainARMemos"));
   newMenu->addSeparator();
-  menuItem = newMenu->insertItem(tr("Credit Memo"), this, SLOT(sNewCreditMemo()));
-  newMenu->setItemEnabled(menuItem, _privileges->check("MaintainCreditMemos"));
-  menuItem = newMenu->insertItem(tr("Misc. Credit Memo"),   this, SLOT(sEnterMiscArCreditMemo()));
-  newMenu->setItemEnabled(menuItem, _privileges->check("MaintainARMemos"));
-  _new->setMenu(newMenu);
+  menuItem = newMenu->addAction(tr("Credit Memo"), this, SLOT(sNewCreditMemo()));
+  menuItem->setEnabled(_privileges->check("MaintainCreditMemos"));
+  menuItem = newMenu->addAction(tr("Misc. Credit Memo"),   this, SLOT(sEnterMiscArCreditMemo()));
+  menuItem->setEnabled(_privileges->check("MaintainARMemos"));
+  newBtn->setMenu(newMenu);
 
   
   _asOf->setDate(omfgThis->dbDate(), true);
   _closed->hide();
-  sHandleButtons(false);
-}
-
-dspAROpenItems::~dspAROpenItems()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void dspAROpenItems::languageChange()
-{
-  retranslateUi(this);
 }
 
 enum SetResponse dspAROpenItems::set(const ParameterList &pParams)
@@ -167,55 +161,55 @@ enum SetResponse dspAROpenItems::set(const ParameterList &pParams)
   return NoError;
 }
 
-void dspAROpenItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
+void dspAROpenItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem, int)
 {
-  int menuItem = -1;
+  QAction *menuItem = 0;
 
   if (((XTreeWidgetItem *)pItem)->altId() < 4)
   {
-    menuItem = pMenu->insertItem(tr("Print..."), this, SLOT(sPrintItem()), 0);
+    menuItem = pMenu->addAction(tr("Print..."), this, SLOT(sPrintItem()));
     if (((XTreeWidgetItem *)pItem)->altId() == 0)
     // Invoice
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewMiscInvoices") || _privileges->check("MaintainMiscInvoices"));
+      menuItem->setEnabled(_privileges->check("ViewMiscInvoices") || _privileges->check("MaintainMiscInvoices"));
     else if (((XTreeWidgetItem *)pItem)->altId() == 1 && ((XTreeWidgetItem *)pItem)->id("docnumber") > -1)
     // Credit Memo
-     pMenu->setItemEnabled(menuItem, _privileges->check("ViewCreditMemos") || _privileges->check("MaintainCreditMemos"));
+     menuItem->setEnabled(_privileges->check("ViewCreditMemos") || _privileges->check("MaintainCreditMemos"));
     else
     // Open Item
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewAROpenItems") || _privileges->check("EditAROpenItem"));
+      menuItem->setEnabled(_privileges->check("ViewAROpenItems") || _privileges->check("EditAROpenItem"));
   }
       
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
   if (((XTreeWidgetItem *)pItem)->altId() == 0 && ((XTreeWidgetItem *)pItem)->rawValue("posted") == 0)
   // Invoice
   {
-    menuItem = pMenu->insertItem(tr("Edit Invoice..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainMiscInvoices"));
+    menuItem = pMenu->addAction(tr("Edit Invoice..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainMiscInvoices"));
   }
   else if (((XTreeWidgetItem *)pItem)->altId() == 1 && ((XTreeWidgetItem *)pItem)->id("docnumber") > -1)
   // Credit Memo
   {
-    menuItem = pMenu->insertItem(tr("Edit Credit Memo..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCreditMemos"));
+    menuItem = pMenu->addAction(tr("Edit Credit Memo..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainCreditMemos"));
   }
   else if (((XTreeWidgetItem *)pItem)->id() > 0)
   // Open Item
   {
-    menuItem = pMenu->insertItem(tr("Edit Receivable Item..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("EditAROpenItem"));
+    menuItem = pMenu->addAction(tr("Edit Receivable Item..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("EditAROpenItem"));
   }
   else
   // Incident
   {
-    menuItem = pMenu->insertItem(tr("Edit Incident..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainIncidents"));
+    menuItem = pMenu->addAction(tr("Edit Incident..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainIncidents"));
   }
 
   if (((XTreeWidgetItem *)pItem)->id() > 0)
   // Open Item
   {
-    menuItem = pMenu->insertItem(tr("View Receivable Item..."), this, SLOT(sView()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("EditAROpenItem") || _privileges->check("ViewAROpenItems"));
+    menuItem = pMenu->addAction(tr("View Receivable Item..."), this, SLOT(sView()));
+    menuItem->setEnabled(_privileges->check("EditAROpenItem") || _privileges->check("ViewAROpenItems"));
   }
   
   if (((XTreeWidgetItem *)pItem)->altId() == 0)
@@ -223,44 +217,47 @@ void dspAROpenItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
   {
     if(((XTreeWidgetItem *)pItem)->rawValue("posted") != 0)
     {
-      menuItem = pMenu->insertItem(tr("Edit Posted Invoice..."), this, SLOT(sEditInvoiceDetails()), 0);
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainMiscInvoices"));
+      menuItem = pMenu->addAction(tr("Edit Posted Invoice..."), this, SLOT(sEditInvoiceDetails()));
+      menuItem->setEnabled(_privileges->check("MaintainMiscInvoices"));
     }
 
-    menuItem = pMenu->insertItem(tr("View Invoice..."), this, SLOT(sViewInvoiceDetails()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewMiscInvoices"));
+    menuItem = pMenu->addAction(tr("View Invoice..."), this, SLOT(sViewInvoiceDetails()));
+    menuItem->setEnabled(_privileges->check("ViewMiscInvoices"));
   
-    menuItem = pMenu->insertItem(tr("View Invoice Information..."), this, SLOT(sViewInvoice()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewMiscInvoices"));
+    menuItem = pMenu->addAction(tr("View Invoice Information..."), this, SLOT(sViewInvoice()));
+    menuItem->setEnabled(_privileges->check("ViewMiscInvoices"));
   }
-  else if (((XTreeWidgetItem *)pItem)->altId() == 1 && ((XTreeWidgetItem *)pItem)->id("docnumber") > -1)
+  else if (((XTreeWidgetItem *)pItem)->altId() == 1 &&
+           ((XTreeWidgetItem *)pItem)->id("docnumber") > -1)
   // Credit Memo
   {
-    menuItem = pMenu->insertItem(tr("View Credit Memo..."), this, SLOT(sViewCreditMemo()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCreditMemos") || _privileges->check("ViewCreditMemos"));
+    menuItem = pMenu->addAction(tr("View Credit Memo..."), this, SLOT(sViewCreditMemo()));
+    menuItem->setEnabled(_privileges->check("MaintainCreditMemos") || _privileges->check("ViewCreditMemos"));
   }
   else if (((XTreeWidgetItem *)pItem)->altId() == 4)
   // Incident
   {
-    menuItem = pMenu->insertItem(tr("View Incident..."), this, SLOT(sViewIncident()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewIncidents") || _privileges->check("MaintainIncidents"));
+    menuItem = pMenu->addAction(tr("View Incident..."), this, SLOT(sViewIncident()));
+    menuItem->setEnabled(_privileges->check("ViewIncidents") || _privileges->check("MaintainIncidents"));
   }
   
-  if (((XTreeWidgetItem *)pItem)->altId() < 2 && ((XTreeWidgetItem *)pItem)->id() == -1 && ((XTreeWidgetItem *)pItem)->rawValue("posted").toBool())
+  if (((XTreeWidgetItem *)pItem)->altId() < 2 &&
+      ((XTreeWidgetItem *)pItem)->id() == -1 &&
+      !((XTreeWidgetItem *)pItem)->rawValue("posted").toBool())
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("Post..."), this, SLOT(sPost()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("PostARDocuments"));
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("Post..."), this, SLOT(sPost()));
+    menuItem->setEnabled(_privileges->check("PostARDocuments"));
     
     if (((XTreeWidgetItem *)pItem)->altId() == 0)
     {
-      menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDeleteInvoice()), 0);
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainMiscInvoices"));
+      menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDeleteInvoice()));
+      menuItem->setEnabled(_privileges->check("MaintainMiscInvoices"));
     }
     else
     {
-      menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDeleteCreditMemo()), 0);
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCreditMemos"));
+      menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDeleteCreditMemo()));
+      menuItem->setEnabled(_privileges->check("MaintainCreditMemos"));
     }
   }
   
@@ -268,23 +265,23 @@ void dspAROpenItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
       ((XTreeWidgetItem *)pItem)->rawValue("posted").toBool() && 
       ((XTreeWidgetItem *)pItem)->rawValue("open").toBool() )
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("Apply Credit Memo..."), this, SLOT(sApplyAropenCM()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ApplyARMemos"));
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("Apply Credit Memo..."), this, SLOT(sApplyAropenCM()));
+    menuItem->setEnabled(_privileges->check("ApplyARMemos"));
   }
 
   if ((((XTreeWidgetItem *)pItem)->id("ordernumber") > 0 && 
       ((XTreeWidgetItem *)pItem)->altId() == 0) )
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("Edit Sales Order..."), this, SLOT(sEditSalesOrder()),0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
-    menuItem = pMenu->insertItem(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()),0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewSalesOrders"));
-    menuItem = pMenu->insertItem(tr("Shipment Status..."), this, SLOT(sDspShipmentStatus()),0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
-    menuItem = pMenu->insertItem(tr("Shipments..."), this, SLOT(sShipment()),0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("Edit Sales Order..."), this, SLOT(sEditSalesOrder()));
+    menuItem->setEnabled(_privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
+    menuItem = pMenu->addAction(tr("View Sales Order..."), this, SLOT(sViewSalesOrder()));
+    menuItem->setEnabled(_privileges->check("ViewSalesOrders"));
+    menuItem = pMenu->addAction(tr("Shipment Status..."), this, SLOT(sDspShipmentStatus()));
+    menuItem->setEnabled(_privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
+    menuItem = pMenu->addAction(tr("Shipments..."), this, SLOT(sShipment()));
+    menuItem->setEnabled(_privileges->check("MaintainSalesOrders") || _privileges->check("ViewSalesOrders"));
   }
   
   
@@ -293,26 +290,35 @@ void dspAROpenItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
       ((XTreeWidgetItem *)pItem)->rawValue("posted").toBool() && 
       ((XTreeWidgetItem *)pItem)->rawValue("open").toBool() )
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("New Cash Receipt..."), this, SLOT(sNewCashrcpt()),0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCashReceipts"));
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("New Cash Receipt..."), this, SLOT(sNewCashrcpt()));
+    menuItem->setEnabled(_privileges->check("MaintainCashReceipts"));
+  }
+
+  if ((_metrics->boolean("CCAccept") &&
+       ((XTreeWidgetItem *)pItem)->id("ccard_number") > 0) )
+  {
+    menuItem = pMenu->addAction(tr("Refund"), this, SLOT(sCCRefundCM()));
+    menuItem->setEnabled( _privileges->check("ProcessCreditCards") &&
+                          ((XTreeWidgetItem *)pItem)->rawValue("balance").toDouble() < 0);
   }
 
   if (((XTreeWidgetItem *)pItem)->id() > -1 && 
      ((XTreeWidgetItem *)pItem)->rawValue("posted").toBool() && 
      ((XTreeWidgetItem *)pItem)->rawValue("open").toBool() )
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("New Incident..."), this, SLOT(sIncident()), 0);
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("New Incident..."), this, SLOT(sIncident()));
     if (!_privileges->check("AddIncidents"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
   }
+
 }
 
 void dspAROpenItems::sApplyAropenCM()
 {
   ParameterList params;
-  params.append("aropen_id", _aropen->id());
+  params.append("aropen_id", list()->id());
 
   applyARCreditMemo newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -323,7 +329,7 @@ void dspAROpenItems::sApplyAropenCM()
 
 void dspAROpenItems::sCCRefundCM()
 {
-  if (_aropen->id("ccard_number") < 0)
+  if (list()->id("ccard_number") < 0)
   {
     QMessageBox::warning(this, tr("Cannot Refund by Credit Card"),
 			 tr("<p>The application cannot refund this "
@@ -340,7 +346,7 @@ void dspAROpenItems::sCCRefundCM()
   bool    taxexempt = false;
   QString docnum;
   QString refnum;
-  int     ccpayid = _aropen->currentItem()->id("ccard_number");
+  int     ccpayid = list()->currentItem()->id("ccard_number");
 
   q.prepare("SELECT ccpay_ccard_id, aropen_amount - aropen_paid AS balance, "
 	    "       aropen_curr_id, aropen_docnumber "
@@ -349,7 +355,7 @@ void dspAROpenItems::sCCRefundCM()
             "     JOIN ccpay ON (payaropen_ccpay_id=ccpay_id) "
             "WHERE ((aropen_id=:aropen_id)"
             "  AND  (ccpay_id=:ccpay_id));");
-  q.bindValue(":aropen_id", _aropen->id());
+  q.bindValue(":aropen_id", list()->id());
   q.bindValue(":ccpay_id",  ccpayid);
   q.exec();
   if (q.first())
@@ -378,7 +384,7 @@ void dspAROpenItems::sCCRefundCM()
 			  CreditCardProcessor::errorMsg());
   else
   {
-    int refid = _aropen->id();
+    int refid = list()->id();
     int returnVal = cardproc->credit(ccardid, -2, total, tax, taxexempt,
 				     freight, duty, currid,
 				     docnum, refnum, ccpayid, "aropen", refid);
@@ -406,9 +412,9 @@ void dspAROpenItems::sDeleteCreditMemo()
     XSqlQuery delq;
     delq.prepare("SELECT deleteCreditMemo(:cmhead_id) AS result;");
 
-    if (checkCreditMemoSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkCreditMemoSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      delq.bindValue(":cmhead_id", (_aropen->currentItem()->id("docnumber")));
+      delq.bindValue(":cmhead_id", (list()->currentItem()->id("docnumber")));
       delq.exec();
       if (delq.first())
       {
@@ -418,7 +424,7 @@ void dspAROpenItems::sDeleteCreditMemo()
       }
       else if (delq.lastError().type() != QSqlError::NoError)
             systemError(this,
-                        tr("Error deleting Credit Memo %1\n").arg(_aropen->currentItem()->text("docnumber")) +
+                        tr("Error deleting Credit Memo %1\n").arg(list()->currentItem()->text("docnumber")) +
                         delq.lastError().databaseText(), __FILE__, __LINE__);
     }
 
@@ -435,9 +441,9 @@ void dspAROpenItems::sDeleteInvoice()
   {
     q.prepare("SELECT deleteInvoice(:invchead_id) AS result;");
 
-    if (checkInvoiceSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkInvoiceSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      q.bindValue(":invchead_id", _aropen->currentItem()->id("docnumber"));
+      q.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
       q.exec();
       if (q.first())
       {
@@ -450,7 +456,7 @@ void dspAROpenItems::sDeleteInvoice()
       }
       else if (q.lastError().type() != QSqlError::NoError)
             systemError(this,
-                        tr("Error deleting Invoice %1\n").arg(_aropen->currentItem()->text("docnumber")) +
+                        tr("Error deleting Invoice %1\n").arg(list()->currentItem()->text("docnumber")) +
                         q.lastError().databaseText(), __FILE__, __LINE__);
     }
 
@@ -461,10 +467,10 @@ void dspAROpenItems::sDeleteInvoice()
 
 void dspAROpenItems::sDspShipmentStatus()
 {
-  if (checkSalesOrderSitePrivs(_aropen->currentItem()->id("ordernumber")))
+  if (checkSalesOrderSitePrivs(list()->currentItem()->id("ordernumber")))
   {
     ParameterList params;
-    params.append("sohead_id", _aropen->currentItem()->id("ordernumber"));
+    params.append("sohead_id", list()->currentItem()->id("ordernumber"));
     params.append("run");
 
     dspSalesOrderStatus *newdlg = new dspSalesOrderStatus(this);
@@ -477,12 +483,12 @@ void dspAROpenItems::sEdit()
 {
   ParameterList params;
     
-  if (_aropen->altId() == 0 && _aropen->id() == -1)
+  if (list()->altId() == 0 && list()->id() == -1)
   // Edit Unposted Invoice
   {
-    if (checkInvoiceSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkInvoiceSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      params.append("invchead_id", _aropen->currentItem()->id("docnumber"));
+      params.append("invchead_id", list()->currentItem()->id("docnumber"));
       params.append("mode", "edit");
       invoice* newdlg = new invoice(this);
       newdlg->set(params);
@@ -491,12 +497,12 @@ void dspAROpenItems::sEdit()
     }
     return;
   }
-  else if (_aropen->altId() == 1 && _aropen->currentItem()->id("docnumber") > -1 && _aropen->id() -1)
+  else if (list()->altId() == 1 && list()->currentItem()->id("docnumber") > -1 && list()->id() -1)
   // Edit Unposted Credit Memo
   {
-    if (checkCreditMemoSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkCreditMemoSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      params.append("cmhead_id", _aropen->currentItem()->id("docnumber"));
+      params.append("cmhead_id", list()->currentItem()->id("docnumber"));
       params.append("mode", "edit");
       creditMemo* newdlg = new creditMemo(this);
       newdlg->set(params);
@@ -505,11 +511,11 @@ void dspAROpenItems::sEdit()
     }
     return;
   }
-  else if (_aropen->id() > 0)
+  else if (list()->id() > 0)
   // Edit AR Open Item
   {
     params.append("mode", "edit");
-    params.append("aropen_id", _aropen->id());
+    params.append("aropen_id", list()->id());
     arOpenItem newdlg(this, "", TRUE);
     newdlg.set(params);
 
@@ -520,7 +526,7 @@ void dspAROpenItems::sEdit()
   // Edit Incident
   {
     params.append("mode", "edit");
-    params.append("incdt_id", _aropen->currentItem()->id("ordernumber"));
+    params.append("incdt_id", list()->currentItem()->id("ordernumber"));
     incident newdlg(this, "", TRUE);
     newdlg.set(params);
 
@@ -531,15 +537,15 @@ void dspAROpenItems::sEdit()
 
 void dspAROpenItems::sEditSalesOrder()
 {
-  if (checkSalesOrderSitePrivs(_aropen->currentItem()->id("ordernumber")))
-    salesOrder::editSalesOrder(_aropen->currentItem()->id("ordernumber"), false);
+  if (checkSalesOrderSitePrivs(list()->currentItem()->id("ordernumber")))
+    salesOrder::editSalesOrder(list()->currentItem()->id("ordernumber"), false);
 }
 
 void dspAROpenItems::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("aropen_id", _aropen->id());
+  params.append("aropen_id", list()->id());
   arOpenItem newdlg(this, "", TRUE);
   newdlg.set(params);
 
@@ -549,14 +555,14 @@ void dspAROpenItems::sView()
 
 void dspAROpenItems::sViewSalesOrder()
 {
-  if (checkSalesOrderSitePrivs(_aropen->currentItem()->id("ordernumber")))
-    salesOrder::viewSalesOrder(_aropen->currentItem()->id("ordernumber"));
+  if (checkSalesOrderSitePrivs(list()->currentItem()->id("ordernumber")))
+    salesOrder::viewSalesOrder(list()->currentItem()->id("ordernumber"));
 }
 
 void dspAROpenItems::sViewCreditMemo()
 {
   ParameterList params;
-  params.append("cmhead_id", _aropen->currentItem()->id("docnumber"));
+  params.append("cmhead_id", list()->currentItem()->id("docnumber"));
   params.append("mode", "view");
   creditMemo* newdlg = new creditMemo(this);
   newdlg->set(params);
@@ -600,15 +606,15 @@ void dspAROpenItems::sNewCashrcpt()
 {
   ParameterList params;
   params.append("mode", "new");
-  if (_aropen->id() > -1)
+  if (list()->id() > -1)
   {
     q.prepare("SELECT aropen_cust_id FROM aropen WHERE aropen_id=:aropen_id;");
-    q.bindValue(":aropen_id", _aropen->id());
+    q.bindValue(":aropen_id", list()->id());
     q.exec();
     if (q.first())
     {
       params.append("cust_id", q.value("aropen_cust_id").toInt());
-      params.append("docnumber", _aropen->currentItem()->text("docnumber"));
+      params.append("docnumber", list()->currentItem()->text("docnumber"));
     }
   }
   else
@@ -637,7 +643,7 @@ void dspAROpenItems::sNewCreditMemo()
 void dspAROpenItems::sViewInvoice()
 {
   ParameterList params;
-  params.append("invoiceNumber", _aropen->currentItem()->text("docnumber"));
+  params.append("invoiceNumber", list()->currentItem()->text("docnumber"));
   dspInvoiceInformation* newdlg = new dspInvoiceInformation(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -645,7 +651,7 @@ void dspAROpenItems::sViewInvoice()
 
 void dspAROpenItems::sEditInvoiceDetails()
 {
-  XTreeWidgetItem *pItem = _aropen->currentItem();
+  XTreeWidgetItem *pItem = list()->currentItem();
   if(pItem->rawValue("posted") != 0 &&
       QMessageBox::question(this, tr("Edit Posted Invoice?"),
                             tr("<p>This Invoice has already been posted. "
@@ -657,7 +663,7 @@ void dspAROpenItems::sEditInvoiceDetails()
   }
 
   ParameterList params;
-  params.append("invchead_id", _aropen->currentItem()->id("docnumber"));
+  params.append("invchead_id", list()->currentItem()->id("docnumber"));
   params.append("mode", "edit");
   invoice* newdlg = new invoice(this);
   newdlg->set(params);
@@ -667,7 +673,7 @@ void dspAROpenItems::sEditInvoiceDetails()
 void dspAROpenItems::sViewInvoiceDetails()
 {
   ParameterList params;
-  params.append("invchead_id", _aropen->currentItem()->id("docnumber"));
+  params.append("invchead_id", list()->currentItem()->id("docnumber"));
   params.append("mode", "view");
   invoice* newdlg = new invoice(this);
   newdlg->set(params);
@@ -680,13 +686,13 @@ void dspAROpenItems::sIncident()
             "FROM crmacct, aropen "
             "WHERE ((aropen_id=:aropen_id) "
             "AND (crmacct_cust_id=aropen_cust_id));");
-  q.bindValue(":aropen_id", _aropen->id());
+  q.bindValue(":aropen_id", list()->id());
   q.exec();
   if (q.first())
   {
     ParameterList params;
     params.append("mode", "new");
-    params.append("aropen_id", _aropen->id());
+    params.append("aropen_id", list()->id());
     params.append("crmacct_id", q.value("crmacct_id"));
     params.append("cntct_id", q.value("crmacct_cntct_id_1"));
     incident newdlg(this, 0, TRUE);
@@ -701,7 +707,7 @@ void dspAROpenItems::sViewIncident()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("incdt_id", _aropen->currentItem()->id("ordernumber"));
+  params.append("incdt_id", list()->currentItem()->id("ordernumber"));
   incident newdlg(this, "", TRUE);
   newdlg.set(params);
 
@@ -746,9 +752,13 @@ void dspAROpenItems::sPrint()
     return;
   params.append("includeFormatted");
 
-  orReport report("AROpenItems", params);
+  orReport report(reportName(), params);
   if (report.isValid())
+  {
     report.print();
+    if (_printStatement->isChecked())
+      emit finishedPrintingStatement(_customerSelector->custId());
+  }
   else
     report.reportError(this);
 }
@@ -757,14 +767,14 @@ void dspAROpenItems::sPrintItem()
 {
   ParameterList params;
 
-  if (_aropen->altId() == 0)
+  if (list()->altId() == 0)
   {
     // Print Invoice
     printInvoice newdlg(this, "", TRUE);
     
-    if (checkInvoiceSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkInvoiceSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      params.append("invchead_id", _aropen->currentItem()->id("docnumber"));
+      params.append("invchead_id", list()->currentItem()->id("docnumber"));
       params.append("persistentPrint");
 
       newdlg.set(params);
@@ -782,12 +792,12 @@ void dspAROpenItems::sPrintItem()
     else
       return;
   }
-  else if (_aropen->altId() == 1 && _aropen->currentItem()->id("docnumber") > -1)
+  else if (list()->altId() == 1 && list()->currentItem()->id("docnumber") > -1)
   {
     // Print Credit Memo
-    if (checkCreditMemoSitePrivs(_aropen->currentItem()->id("docnumber")))
+    if (checkCreditMemoSitePrivs(list()->currentItem()->id("docnumber")))
     {
-      params.append("cmhead_id", _aropen->currentItem()->id("docnumber"));
+      params.append("cmhead_id", list()->currentItem()->id("docnumber"));
       params.append("persistentPrint");
 
       printCreditMemo newdlg(this, "", TRUE);
@@ -805,10 +815,10 @@ void dspAROpenItems::sPrintItem()
     else
       return;
   }
-  else if (_aropen->id() > 0)
+  else if (list()->id() > 0)
   // Print AR Open Item
   {
-    params.append("aropen_id", _aropen->id());
+    params.append("aropen_id", list()->id());
 
     printArOpenItem newdlg(this, "", true);
     if (newdlg.set(params) == NoError)
@@ -816,41 +826,20 @@ void dspAROpenItems::sPrintItem()
   }
 }
 
-void dspAROpenItems::sPrintStatement()
-{
-  q.prepare("SELECT findCustomerForm(:cust_id, 'S') AS _reportname;");
-  q.bindValue(":cust_id", _customerSelector->custId());
-  q.exec();
-  if (q.first())
-  {
-    ParameterList params;
-    params.append("cust_id", _customerSelector->custId());
-
-    orReport report(q.value("_reportname").toString(), params);
-    if (report.isValid())
-    {
-      if (report.print())
-        emit finishedPrintingStatement(_customerSelector->custId());
-    }
-    else
-      report.reportError(this);
-  }
-}
-
 void dspAROpenItems::sPost()
 {
-  if (_aropen->altId() == 1 && _aropen->id() == -1)
+  if (list()->altId() == 1 && list()->id() == -1)
     sPostCreditMemo();
-  else if (_aropen->altId() == 0 || _aropen->id() == -1)
+  else if (list()->altId() == 0 || list()->id() == -1)
     sPostInvoice();
 }
 
 void dspAROpenItems::sPostCreditMemo()
 {
-  if (_aropen->altId() != 1 || _aropen->id() > 0)
+  if (list()->altId() != 1 || list()->id() > 0)
     return;
 
-  int id = _aropen->currentItem()->id("docnumber");
+  int id = list()->currentItem()->id("docnumber");
 
   if (!checkCreditMemoSitePrivs(id))
     return;
@@ -924,14 +913,14 @@ void dspAROpenItems::sPostCreditMemo()
   {
     rollback.exec();
     systemError(this, tr("Could not post Credit Memo #%1 because of a missing exchange rate.")
-                                      .arg(_aropen->currentItem()->text("docnumber")));
+                                      .arg(list()->currentItem()->text("docnumber")));
     return;
   }
   else if (postq.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
     systemError(this, tr("A System Error occurred posting Credit Memo#%1.\n%2")
-            .arg(_aropen->currentItem()->text("docnumber"))
+            .arg(list()->currentItem()->text("docnumber"))
             .arg(postq.lastError().databaseText()),
           __FILE__, __LINE__);
   }
@@ -941,13 +930,13 @@ void dspAROpenItems::sPostCreditMemo()
 
 void dspAROpenItems::sPostInvoice()
 {
-  if (_aropen->altId() != 0 || _aropen->id() > 0)
+  if (list()->altId() != 0 || list()->id() > 0)
     return;
     
   bool changeDate = false;
   QDate newDate = QDate::currentDate();
 
-  if (!checkInvoiceSitePrivs(_aropen->currentItem()->id("docnumber")))
+  if (!checkInvoiceSitePrivs(list()->currentItem()->id("docnumber")))
     return;
 
   if (_privileges->check("ChangeARInvcDistDate"))
@@ -1000,13 +989,13 @@ void dspAROpenItems::sPostInvoice()
   if (changeDate)
   {
     setDate.bindValue(":distdate",    newDate);
-    setDate.bindValue(":invchead_id", _aropen->currentItem()->id("docnumber"));
+    setDate.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
     setDate.exec();
     if (setDate.lastError().type() != QSqlError::NoError)
       systemError(this, setDate.lastError().databaseText(), __FILE__, __LINE__);
   }
 
-  sum.bindValue(":invchead_id", _aropen->currentItem()->id("docnumber"));
+  sum.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
   sum.exec();
   if (sum.first())
   {
@@ -1015,7 +1004,7 @@ void dspAROpenItems::sPostInvoice()
       if (QMessageBox::question(this, tr("Invoice Has Value 0"),
                           tr("Invoice #%1 has a total value of 0.\n"
                              "Would you like to post it anyway?")
-                            .arg(_aropen->currentItem()->text("docnumber")),
+                            .arg(list()->currentItem()->text("docnumber")),
                           QMessageBox::Yes,
                           QMessageBox::No | QMessageBox::Default)
       == QMessageBox::No)
@@ -1023,12 +1012,12 @@ void dspAROpenItems::sPostInvoice()
     }
     else
     {
-      xrate.bindValue(":invchead_id", _aropen->currentItem()->id("docnumber"));
+      xrate.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
       xrate.exec();
       if (xrate.lastError().type() != QSqlError::NoError)
       {
         systemError(this, tr("System Error posting Invoice #%1\n%2")
-                            .arg(_aropen->currentItem()->text("docnumber"))
+                            .arg(list()->currentItem()->text("docnumber"))
                             .arg(xrate.lastError().databaseText()),
                         __FILE__, __LINE__);
         return;
@@ -1036,7 +1025,7 @@ void dspAROpenItems::sPostInvoice()
       else if (!xrate.first() || xrate.value("curr_rate").isNull())
       {
         systemError(this, tr("Could not post Invoice #%1 because of a missing exchange rate.")
-                                        .arg(_aropen->currentItem()->text("docnumber")));
+                                        .arg(list()->currentItem()->text("docnumber")));
         return;
       }
     }
@@ -1047,7 +1036,7 @@ void dspAROpenItems::sPostInvoice()
     return;
   }
 
-  post.bindValue(":invchead_id", _aropen->currentItem()->id("docnumber"));
+  post.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
   post.bindValue(":journal",     journal);
   post.exec();
   if (post.first())
@@ -1060,11 +1049,11 @@ void dspAROpenItems::sPostInvoice()
   // contains() string is hard-coded in stored procedure
   else if (post.lastError().databaseText().contains("post to closed period"))
     systemError(this, tr("Could not post Invoice #%1 into a closed period.")
-                            .arg(_aropen->currentItem()->text("docnumber")));
+                            .arg(list()->currentItem()->text("docnumber")));
 
   else if (post.lastError().type() != QSqlError::NoError)
         systemError(this, tr("A System Error occurred posting Invoice #%1.\n%2")
-                .arg(_aropen->currentItem()->text("docnumber"))
+                .arg(list()->currentItem()->text("docnumber"))
                     .arg(post.lastError().databaseText()),
                     __FILE__, __LINE__);
 
@@ -1073,10 +1062,10 @@ void dspAROpenItems::sPostInvoice()
 
 void dspAROpenItems::sShipment()
 {
-  if (checkSalesOrderSitePrivs(_aropen->currentItem()->id("ordernumber")))
+  if (checkSalesOrderSitePrivs(list()->currentItem()->id("ordernumber")))
   {
     ParameterList params;
-    params.append("sohead_id", _aropen->currentItem()->id("ordernumber"));
+    params.append("sohead_id", list()->currentItem()->id("ordernumber"));
 
     dspShipmentsBySalesOrder* newdlg = new dspShipmentsBySalesOrder(this);
     newdlg->set(params);
@@ -1084,144 +1073,24 @@ void dspAROpenItems::sShipment()
   }
 }
 
-void dspAROpenItems::sFillList()
+void dspAROpenItems::sHandleReportName()
 {
-  MetaSQLQuery mql = mqlLoad("arOpenItems", "detail");
-  ParameterList params;
-  if (! setParams(params))
-    return;
-
-  XSqlQuery qry;
-  qry = mql.toQuery(params);
-  _aropen->populate(qry, true);
-  if (qry.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-}
-
-void dspAROpenItems::sHandleStatementButton()
-{
-  if (_customerSelector->isValid() &&
-      _customerSelector->isSelectedCust())
-  {
-    if (_print->menu())
-      return;
-    else
-      disconnect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-
-    QMenu * printMenu = new QMenu;
-    printMenu->insertItem(tr("&List..."), this, SLOT(sPrint()), 0);
-    printMenu->insertItem(tr("&Statement..."), this, SLOT(sPrintStatement()), 0);
-    _print->setMenu(printMenu);
-  }
-  else if (_print->menu())
-  {
-    _print->setMenu(0);
-    connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-  }
-}
-
-
-void dspAROpenItems::sHandleButtons(bool valid)
-{
-  sHandleStatementButton();
-  if (valid)
-  {
-    // Handle Print Item Button
-    if (_aropen->altId() == 0)
-    // Invoice
-      _printItem->setEnabled(_privileges->check("ViewMiscInvoices") || _privileges->check("MaintainMiscInvoices"));
-    else if (_aropen->altId() == 1 && _aropen->currentItem()->id("docnumber") > -1)
-    // Credit Memo
-      _printItem->setEnabled(_privileges->check("ViewCreditMemos") || _privileges->check("EditCreditMemos"));
-    else if (_aropen->id() > 0)
-    // Open Item
-      _printItem->setEnabled(_privileges->check("ViewAROpenItems") || _privileges->check("EditAROpenItem"));
-    else
-    // Incident
-      _printItem->setEnabled(false);
-
-    // Handle Edit Button
-    if (_aropen->altId() == 0 && _aropen->id() == -1 && _aropen->currentItem()->rawValue("posted") == 0)
-    // Unposted Invoice
-      _edit->setEnabled(_privileges->check("MaintainMiscInvoices"));
-    else if (_aropen->altId() == 1 && _aropen->currentItem()->id("docnumber") > -1 && _aropen->currentItem()->rawValue("posted") == 0)
-    // Unposted Credit Memo
-      _edit->setEnabled(_privileges->check("MaintainCreditMemos"));
-    else if (_aropen->id() > 0)
-    // Open Item
-      _edit->setEnabled(_privileges->check("EditAROpenItem"));
-    else if (_aropen->altId() == 4)
-    // Incident
-      _edit->setEnabled(_privileges->check("MaintainIncidents"));
-    
-    // Handle View Button
-    int menuItem = -1;
-    QMenu * viewMenu = new QMenu;
-    if (_aropen->id() > 0)
-    // Open Item
-    {
-      viewMenu->insertItem(tr("Receivable Item..."), this, SLOT(sView()), 0);
-      viewMenu->setItemEnabled(menuItem, _privileges->check("EditAROpenItem") || _privileges->check("ViewAROpenItems"));
-    }
-    if (_aropen->altId() == 0)
-    // Invoice
-    {
-      viewMenu->insertItem(tr("Invoice..."), this, SLOT(sViewInvoiceDetails()), 0);
-      viewMenu->setItemEnabled(menuItem, _privileges->check("ViewMiscInvoices"));
-    
-      viewMenu->insertItem(tr("Invoice Information..."), this, SLOT(sViewInvoice()), 0);
-      viewMenu->setItemEnabled(menuItem, _privileges->check("ViewMiscInvoices"));
-    }
-    else if (_aropen->altId() == 1 && _aropen->id("docnumber") > -1)
-    // Credit Memo
-    {
-      viewMenu->insertItem(tr("Credit Memo..."), this, SLOT(sViewCreditMemo()), 0);
-      viewMenu->setItemEnabled(menuItem, _privileges->check("MaintainCreditMemos") || _privileges->check("ViewCreditMemos"));
-    }
-    else if (_aropen->altId() == 4)
-    // Incident
-    {
-      viewMenu->insertItem(tr("Incident..."), this, SLOT(sViewIncident()), 0);
-      viewMenu->setItemEnabled(menuItem, _privileges->check("ViewIncidents") || _privileges->check("MaintainIncidents"));
-    }
-    _view->setMenu(viewMenu);
-    _view->setEnabled(true);
-    
-    // Handle Post and Apply Button
-    if ((_aropen->altId() == 1 || _aropen->altId() == 3) && 
-        _aropen->currentItem()->rawValue("posted").toBool() && 
-        _aropen->currentItem()->rawValue("open").toBool() )
-    {
-      _post->hide();
-      _apply->show();
-      _apply->setEnabled(_privileges->check("ApplyARMemos"));
-    }
-    else
-    {
-      _apply->hide();
-      _post->show();
-      _post->setEnabled(_aropen->altId() < 4 && _aropen->currentItem()->rawValue("posted") == 0 && _privileges->check("PostARDocuments"));
-    }
-    
-    _refund->setVisible(_metrics->boolean("CCAccept") &&
-                        _privileges->check("ProcessCreditCards"));
-    _refund->setEnabled(_aropen->id("ccard_number") > 0 &&
-                        _aropen->currentItem()->rawValue("balance").toDouble() < 0);
-      
-  }
+  if (_printList->isChecked())
+    setReportName("AROpenItems");
   else
   {
-    _printItem->setEnabled(false);
-    _edit->setEnabled(false);
-    _view->setEnabled(false);
-    _apply->hide();
-    _post->show();
-    _post->setEnabled(false);
-    _refund->setEnabled(false);
+    q.prepare("SELECT findCustomerForm(:cust_id, 'S') AS _reportname;");
+    q.bindValue(":cust_id", _customerSelector->custId());
+    q.exec();
+    if (q.first())
+      setReportName(q.value("_reportname").toString());
   }
+}
+
+void dspAROpenItems::sHandlePrintGroup()
+{
+  _printGroup->setEnabled(_customerSelector->isValid() &&
+                          _customerSelector->isSelectedCust());
 }
 
 bool dspAROpenItems::checkInvoiceSitePrivs(int invcid)

@@ -276,16 +276,11 @@ void standardJournal::sFillList()
     _debits->setDouble(q.value("debit").toDouble());
     _credits->setDouble(q.value("credit").toDouble());
 
+    QString stylesheet;
     if (q.value("oob").toBool())
-    {
-      _debits->setPaletteForegroundColor(QColor("red"));
-      _credits->setPaletteForegroundColor(QColor("red"));
-    }
-    else
-    {
-      _debits->setPaletteForegroundColor(QColor("black"));
-      _credits->setPaletteForegroundColor(QColor("black"));
-    }
+      stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+    _debits->setStyleSheet(stylesheet);
+    _credits->setStyleSheet(stylesheet);
   }
   else
     systemError(this, tr("A System Error occurred at %1::%2.")

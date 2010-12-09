@@ -20,7 +20,7 @@
 #include "comments.h"
 
 class XComboBox;
-class QTextEdit;
+class XTextEdit;
 class QPushButton;
 class ParameterList;
 
@@ -34,7 +34,7 @@ class XTUPLEWIDGETS_EXPORT comment : public QDialog
     comment(QWidget * = 0, const char * = 0, bool = FALSE, Qt::WindowFlags = 0);
 
     XComboBox* _cmnttype;
-    QTextEdit* _comment;
+    XTextEdit* _comment;
     QPushButton* _close;
     QPushButton* _save;
     QPushButton* _next;

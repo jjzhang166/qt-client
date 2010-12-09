@@ -22,8 +22,8 @@ customerType::customerType(QWidget* parent, const char* name, bool modal, Qt::WF
 
   _custtypeid = -1;
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(close()));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
@@ -85,9 +85,9 @@ enum SetResponse customerType::set(const ParameterList &pParams)
       _mode = cView;
       _code->setEnabled(FALSE);
       _description->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

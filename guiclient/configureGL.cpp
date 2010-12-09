@@ -17,12 +17,17 @@
 #include "configureEncryption.h"
 #include "guiclient.h"
 
-configureGL::configureGL(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  if (name)
+    setObjectName(name);
+
+  _yearend->setType(GLCluster::cEquity);
+  _gainLoss->setType(GLCluster::cExpense);
+  _discrepancy->setType(GLCluster::cExpense);
 
   // AP
   _nextAPMemoNumber->setValidator(omfgThis->orderVal());
@@ -177,11 +182,24 @@ configureGL::configureGL(QWidget* parent, const char* name, bool modal, Qt::WFla
   _discrepancy->setId(_metrics->value("GLSeriesDiscrepancyAccount").toInt());
 
   _mandatoryNotes->setChecked(_metrics->boolean("MandatoryGLEntryNotes"));
-  _manualGlaccnt->setChecked(_metrics->boolean("AllowManualGLAccountEntry"));
   _manualFwdUpdate->setChecked(_metrics->boolean("ManualForwardUpdate"));
   _taxauth->setId(_metrics->value("DefaultTaxAuthority").toInt());
+  // TODO hide default tax authority, not used?
+  _taxGroup->setVisible(FALSE);
 
   _recurringBuffer->setValue(_metrics->value("RecurringInvoiceBuffer").toInt());
+
+  if (_metrics->boolean("UseJournals"))
+  {
+    _journal->setChecked(true);
+    XSqlQuery qry;
+    qry.exec("SELECT count(sltrans_id) > 0 AS result FROM sltrans WHERE (NOT sltrans_posted);");
+    qry.first();
+    if (qry.value("result").toBool())
+      _postGroup->setEnabled(false);
+  }
+  else
+    _generalLedger->setChecked(true);
   
   adjustSize();
 }
@@ -196,8 +214,10 @@ void configureGL::languageChange()
   retranslateUi(this);
 }
 
-void configureGL::sSave()
+bool configureGL::sSave()
 {
+  emit saving();
+
   if (_metrics->boolean("ACHSupported"))
   {
     QString tmpCompanyId = _companyId->text();
@@ -234,7 +254,7 @@ void configureGL::sSave()
         QMessageBox::critical(this, tr("Cannot Save Accounting Configuration"),
                               error[i].msg);
         error[i].widget->setFocus();
-        return;
+        return false;
       }
   }
 
@@ -297,7 +317,8 @@ void configureGL::sSave()
   if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    _nextARMemoNumber->setFocus();
+    return false;
   }
 
   q.prepare("SELECT setNextCashRcptNumber(:cashrcpt_number) AS result;");
@@ -306,7 +327,8 @@ void configureGL::sSave()
   if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    _nextCashRcptNumber->setFocus();
+    return false;
   }
 
   _metrics->set("HideApplyToBalance", _hideApplyto->isChecked());
@@ -381,6 +403,7 @@ void configureGL::sSave()
       subaccounts->setEnabled(FALSE);
   }
 
+  _metrics->set("UseJournals", _journal->isChecked());
   _metrics->set("YearEndEquityAccount", _yearend->id());
 
   //if (! omfgThis->singleCurrency())
@@ -394,11 +417,8 @@ void configureGL::sSave()
 
   _metrics->set("GLSeriesDiscrepancyAccount", _discrepancy->id());
   _metrics->set("MandatoryGLEntryNotes", _mandatoryNotes->isChecked());
-  _metrics->set("AllowManualGLAccountEntry", _manualGlaccnt->isChecked());
   _metrics->set("ManualForwardUpdate", _manualFwdUpdate->isChecked());
   _metrics->set("DefaultTaxAuthority", _taxauth->id());
-
-  _metrics->load();
 
   omfgThis->sConfigureGLUpdated();
 
@@ -415,7 +435,7 @@ void configureGL::sSave()
                                    "this now?"),
                                     QMessageBox::Yes | QMessageBox::Default,
                                     QMessageBox::No ) == QMessageBox::Yes)
-        configureEncryption(this, "", TRUE).exec();
+        return false;
     }
     else
       QMessageBox::question(this, tr("Set Encryption?"),
@@ -425,5 +445,5 @@ void configureGL::sSave()
                                "system is configured to perform encryption."));
   }
 
-  accept();
+  return true;
 }

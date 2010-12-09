@@ -13,8 +13,8 @@
 #include <QCloseEvent>
 #include <QKeyEvent>
 #include <QMessageBox>
-#include <QVariant>
 #include <QSqlError>
+#include <QVariant>
 
 #include "voucherMiscDistrib.h"
 
@@ -37,7 +37,8 @@ miscVoucher::miscVoucher(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_voucherNumber, SIGNAL(lostFocus()), this, SLOT(sHandleVoucherNumber()));
 
   _terms->setType(XComboBox::APTerms);
-  _vendor->setType(__activeVendors);
+
+  _vendor->setShowInactive(false);
 
   _miscDistrib->addColumn(tr("Account"), -1,           Qt::AlignLeft,   true,  "account"  );
   _miscDistrib->addColumn(tr("Amount"),  _moneyColumn, Qt::AlignRight,  true,  "vodist_amount" );
@@ -73,7 +74,11 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
       q.exec("SELECT NEXTVAL('vohead_vohead_id_seq') AS vohead_id");
       if (q.first())
         _voheadid = q.value("vohead_id").toInt();
-//  ToDo
+      else if (q.lastError().type() != QSqlError::NoError)
+      {
+        systemError(this, q.lastError().text(), __FILE__, __LINE__);
+        return UndefinedError;
+      }
 
       if (_metrics->value("VoucherNumberGeneration") == "A")
       {
@@ -85,8 +90,12 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
 
       connect(_vendor, SIGNAL(newId(int)), this, SLOT(sPopulateVendorInfo(int)));
 
-      q.prepare("INSERT INTO vohead (vohead_id, vohead_number, vohead_misc, vohead_posted, vohead_pohead_id, vohead_docdate)"
-                "            VALUES (:vohead_id, :vohead_number, true, false, -1, CURRENT_DATE);" );
+      q.prepare("INSERT INTO vohead ("
+                "  vohead_id, vohead_number, vohead_misc,"
+                "  vohead_posted, vohead_pohead_id, vohead_docdate"
+                ") VALUES ("
+                "  :vohead_id, :vohead_number, true,"
+                "  false, -1, CURRENT_DATE);" );
       q.bindValue(":vohead_id",     _voheadid);
       q.bindValue(":vohead_number", _voucherNumber->text());
       q.exec();
@@ -100,8 +109,8 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _voucherNumber->setEnabled(FALSE);
-      _vendor->setEnabled(FALSE);
+      _voucherNumber->setEnabled(false);
+      _vendor->setEnabled(false);
 
       _save->setFocus();
     }
@@ -109,21 +118,21 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _voucherNumber->setEnabled(FALSE);
-      _vendor->setReadOnly(TRUE);
-	  _taxzone->setEnabled(FALSE);
-      _amountToDistribute->setEnabled(FALSE);
-      _distributionDate->setEnabled(FALSE);
-      _invoiceDate->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
+      _voucherNumber->setEnabled(false);
+      _vendor->setReadOnly(true);
+      _taxzone->setEnabled(false);
+      _amountToDistribute->setEnabled(false);
+      _distributionDate->setEnabled(false);
+      _invoiceDate->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _terms->setEnabled(false);
       _terms->setType(XComboBox::Terms);
-      _vendor->setType(__allVendors);
-      _invoiceNum->setEnabled(FALSE);
-      _reference->setEnabled(FALSE);
-      _miscDistrib->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
-      _flagFor1099->setEnabled(FALSE);
+      _vendor->setShowInactive(true);
+      _invoiceNum->setEnabled(false);
+      _reference->setEnabled(false);
+      _miscDistrib->setEnabled(false);
+      _new->setEnabled(false);
+      _flagFor1099->setEnabled(false);
       _notes->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
@@ -147,7 +156,8 @@ void miscVoucher::sSave()
   if (!_invoiceDate->isValid())
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must enter an Invoice Date before you may save this Voucher.") );
+                           tr("<p>You must enter an Invoice Date before you "
+                              "may save this Voucher.") );
     _invoiceDate->setFocus();
     return;
   }
@@ -155,7 +165,8 @@ void miscVoucher::sSave()
   if (!_dueDate->isValid())
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must enter a Due Date before you may save this Voucher.") );
+                           tr("<p>You must enter a Due Date before you may "
+                              "save this Voucher.") );
     _dueDate->setFocus();
     return;
   }
@@ -163,7 +174,8 @@ void miscVoucher::sSave()
   if (!_distributionDate->isValid())
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must enter a Distribution Date before you may save this Voucher.") );
+                           tr("<p>You must enter a Distribution Date before "
+                              "you may save this Voucher.") );
     _distributionDate->setFocus();
     return;
   }
@@ -171,7 +183,8 @@ void miscVoucher::sSave()
   if (_amountToDistribute->isZero())
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must enter an Amount to Distribute before you may save this Voucher.") );
+                           tr("<p>You must enter an Amount to Distribute "
+                              "before you may save this Voucher.") );
     _amountToDistribute->setFocus();
     return;
   }
@@ -179,15 +192,18 @@ void miscVoucher::sSave()
   if (!_balance->isZero())
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must fully distribute the Amount before you may save this Voucher.") );
+                           tr("<p>You must fully distribute the Amount before "
+                              "you may save this Voucher.") );
     _amountToDistribute->setFocus();
     return;
   }
 
-  if ( (_metrics->boolean("ReqInvMiscVoucher")) && (_invoiceNum->text().trimmed().length() == 0) )
+  if ( _metrics->boolean("ReqInvMiscVoucher") &&
+      (_invoiceNum->text().trimmed().length() == 0) )
   {
     QMessageBox::critical( this, tr("Cannot Save Voucher"),
-                           tr("You must enter a Vendor Invoice Number before you may save this Voucher.") );
+                           tr("<p>You must enter a Vendor Invoice Number "
+                              "before you may save this Voucher.") );
     _invoiceNum->setFocus();
     return;
   }
@@ -199,31 +215,40 @@ void miscVoucher::sSave()
                " AND (vohead_vend_id=:vend_id)"
                " AND (vohead_id<>:vohead_id) );" );
     q.bindValue(":vohead_invcnumber", _invoiceNum->text().trimmed());
-    q.bindValue(":vend_id", _vendor->id());
+    q.bindValue(":vend_id",   _vendor->id());
     q.bindValue(":vohead_id", _voheadid);
     q.exec();
     if (q.first())
     {
-	  if (QMessageBox::question( this, windowTitle(),
-                             tr( "A Voucher for this Vendor has already been entered with the same Vendor Invoice Number. "
-                                 "Are you sure you want to use this number again?" ),
-                              QMessageBox::Yes,
-                              QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+      if (QMessageBox::question(this, windowTitle(),
+                                tr("<p>A Voucher for this Vendor has already "
+                                   "been entered with the same Vendor Invoice "
+                                   "Number. Are you sure you want to use this "
+                                   "number again?" ),
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::No) == QMessageBox::No)
       {
         _invoiceNum->setFocus();
         return;
       }
-	}
+    }
   }
 
   q.prepare( "UPDATE vohead "
-             "SET vohead_number=:vohead_number, vohead_vend_id=:vohead_vend_id,"
-             "    vohead_distdate=:vohead_distdate, vohead_docdate=:vohead_docdate, vohead_duedate=:vohead_duedate,"
-             "    vohead_terms_id=:vohead_terms_id, vohead_taxzone_id=:vohead_taxzone_id, "
-             "    vohead_invcnumber=:vohead_invcnumber, vohead_reference=:vohead_reference,"
-             "    vohead_amount=:vohead_amount, vohead_1099=:vohead_1099, "
-             "    vohead_curr_id=:vohead_curr_id, vohead_notes=:vohead_notes "
-             "WHERE (vohead_id=:vohead_id);" );
+             "SET vohead_number=:vohead_number,"
+             "    vohead_vend_id=:vohead_vend_id,"
+             "    vohead_distdate=:vohead_distdate,"
+             "    vohead_docdate=:vohead_docdate,"
+             "    vohead_duedate=:vohead_duedate,"
+             "    vohead_terms_id=:vohead_terms_id,"
+             "    vohead_taxzone_id=:vohead_taxzone_id,"
+             "    vohead_invcnumber=:vohead_invcnumber,"
+             "    vohead_reference=:vohead_reference,"
+             "    vohead_amount=:vohead_amount,"
+             "    vohead_1099=:vohead_1099,"
+             "    vohead_curr_id=:vohead_curr_id,"
+             "    vohead_notes=:vohead_notes"
+             " WHERE (vohead_id=:vohead_id);" );
 
   q.bindValue(":vohead_id", _voheadid);
   q.bindValue(":vohead_number", _voucherNumber->text().toInt());
@@ -239,8 +264,13 @@ void miscVoucher::sSave()
   q.bindValue(":vohead_amount", _amountToDistribute->localValue());
   q.bindValue(":vohead_1099", QVariant(_flagFor1099->isChecked()));
   q.bindValue(":vohead_curr_id", _amountToDistribute->id());
-  q.bindValue(":vohead_notes", _notes->text());
+  q.bindValue(":vohead_notes",   _notes->toPlainText());
   q.exec();
+  if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().text(), __FILE__, __LINE__);
+    return;
+  }
 
   omfgThis->sVouchersUpdated();
 
@@ -276,12 +306,14 @@ void miscVoucher::sHandleVoucherNumber()
 {
   if (_voucherNumber->text().length() == 0)
   {
-    if ((_metrics->value("VoucherNumberGeneration") == "A") || (_metrics->value("VoucherNumberGeneration") == "O"))
+    if ((_metrics->value("VoucherNumberGeneration") == "A") ||
+        (_metrics->value("VoucherNumberGeneration") == "O"))
       populateNumber();
     else
     {
       QMessageBox::critical( this, tr("Enter Voucher Number"),
-                             tr("You must enter a valid Voucher Number before continuing") );
+                             tr("<p>You must enter a valid Voucher Number "
+                                "before continuing.") );
 
       _voucherNumber->setFocus();
       return;
@@ -298,12 +330,17 @@ void miscVoucher::sHandleVoucherNumber()
     {
       _voheadid = q.value("vohead_id").toInt();
 
-      _voucherNumber->setEnabled(FALSE);
-      _vendor->setEnabled(FALSE);
+      _voucherNumber->setEnabled(false);
+      _vendor->setEnabled(false);
 
       _mode = cEdit;
       populate();
 
+      return;
+    }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -321,7 +358,7 @@ void miscVoucher::sPopulateVendorInfo(int pVendid)
     _terms->setId(q.value("vend_terms_id").toInt());
     _flagFor1099->setChecked(q.value("vend_1099").toBool());
     _amountToDistribute->setId(q.value("vend_curr_id").toInt());
-	_taxzone->setId(q.value("vend_taxzone_id").toInt());
+    _taxzone->setId(q.value("vend_taxzone_id").toInt());
   }
 }
 
@@ -392,17 +429,22 @@ void miscVoucher::sFillMiscList()
              " WHERE ( (vodist_poitem_id=-1)"
              "   AND   (vodist_expcat_id=expcat_id)"
              "   AND   (vodist_vohead_id=:vohead_id) ) "
-			 "UNION ALL "
+             "UNION ALL "
              "SELECT vodist_id, (tax_code || ' - ' || tax_descrip) AS account,"
              "       vodist_amount, 'curr' AS vodist_amount_xtnumericrole "
              "  FROM vodist, tax "
              " WHERE ( (vodist_poitem_id=-1)"
              "   AND   (vodist_tax_id=tax_id)"
-             "   AND   (vodist_vohead_id=:vohead_id) ) " 
+             "   AND   (vodist_vohead_id=:vohead_id) ) "
              "ORDER BY account;" );
   q.bindValue(":vohead_id", _voheadid);
   q.exec();
   _miscDistrib->populate(q);
+  if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
 }
 
 void miscVoucher::sPopulateDistributed()
@@ -416,6 +458,11 @@ void miscVoucher::sPopulateDistributed()
   {
     _amountDistributed->setLocalValue(q.value("distrib").toDouble());
     sPopulateBalanceDue();
+  }
+  else if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
   }
 }
 
@@ -436,6 +483,11 @@ void miscVoucher::populateNumber()
     _voucherNumber->setText(q.value("vouchernumber").toString());
     _voucherNumber->setEnabled(FALSE);
   }
+  else if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
 }
 
 void miscVoucher::populate()
@@ -453,10 +505,10 @@ void miscVoucher::populate()
   {
     _voucherNumber->setText(vohead.value("vohead_number").toString());
     _vendor->setId(vohead.value("vohead_vend_id").toInt());
-	_taxzone->setId(vohead.value("vohead_taxzone_id").toInt());
+    _taxzone->setId(vohead.value("vohead_taxzone_id").toInt());
     _amountToDistribute->set(vohead.value("vohead_amount").toDouble(),
-			     vohead.value("vohead_curr_id").toInt(),
-			     vohead.value("vohead_docdate").toDate(), false);
+                             vohead.value("vohead_curr_id").toInt(),
+                             vohead.value("vohead_docdate").toDate(), false);
     _terms->setId(vohead.value("vohead_terms_id").toInt());
 
     _distributionDate->setDate(vohead.value("vohead_distdate").toDate(), true);
@@ -476,6 +528,7 @@ void miscVoucher::closeEvent(QCloseEvent *pEvent)
 {
   if ( (_mode == cNew) && (_voheadid != -1) )
   {
+    // TODO: call deleteVoucher and then releaseVoNumber?
     q.prepare( "DELETE FROM vohead "
                "WHERE (vohead_id=:vohead_id);"
 
@@ -487,13 +540,13 @@ void miscVoucher::closeEvent(QCloseEvent *pEvent)
     q.bindValue(":voucherNumber", _voucherNumber->text().toInt());
     q.exec();
   }
-   
+
   pEvent->accept();
 }
 
 void miscVoucher::sPopulateDistDate()
 {
-  if ( (_invoiceDate->isValid()) && (!_distributionDate->isValid()) )
+  if ( _invoiceDate->isValid() && (!_distributionDate->isValid()) )
   {
     _distributionDate->setDate(_invoiceDate->date(), true);
     sPopulateDueDate();
@@ -502,7 +555,7 @@ void miscVoucher::sPopulateDistDate()
 
 void miscVoucher::sPopulateDueDate()
 {
-  if ( (_invoiceDate->isValid()) && (!_dueDate->isValid()) )
+  if ( _invoiceDate->isValid() && (!_dueDate->isValid()) )
   {
     q.prepare("SELECT determineDueDate(:terms_id, :invoiceDate) AS duedate;");
     q.bindValue(":terms_id", _terms->id());
@@ -512,7 +565,7 @@ void miscVoucher::sPopulateDueDate()
       _dueDate->setDate(q.value("duedate").toDate());
   }
 }
- 
+
 void miscVoucher::keyPressEvent( QKeyEvent * e )
 {
   if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)

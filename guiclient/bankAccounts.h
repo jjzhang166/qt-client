@@ -25,10 +25,6 @@ public:
     bankAccounts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~bankAccounts();
 
-public slots:
-    virtual void sPostServiceCharge();
-    virtual void sPostAdjustment();
-
 protected slots:
     virtual void languageChange();
 

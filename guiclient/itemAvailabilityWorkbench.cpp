@@ -26,7 +26,6 @@
 #include "dspItemCostSummary.h"
 #include "dspOrders.h"
 #include "dspRunningAvailability.h"
-//#include "dspSingleLevelWhereUsed.h"
 #include "dspSubstituteAvailabilityByItem.h"
 #include "enterMiscCount.h"
 #include "expenseTrans.h"
@@ -45,17 +44,10 @@
 #include "transferTrans.h"
 #include "workOrder.h"
 
-#define ORDERTYPE_COL		0
-#define ORDERNUM_COL		1
-#define DUEDATE_COL		3
-#define RUNNINGAVAIL_COL	7
-
 itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
-
-//  (void)statusBar();
 
   _costsGroupInt = new QButtonGroup(this);
   _costsGroupInt->addButton(_useStandardCosts);
@@ -219,7 +211,7 @@ itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char
   
   //If not Serial Control, hide lot control
   if (!_metrics->boolean("LotSerialControl"))
-    _tab->removePage(_tab->page(4));
+    _tab->removeTab(_tab->indexOf(lotserial));
   
   if (_preferences->boolean("XCheckBox/forgetful"))
     _ignoreReorderAtZero->setChecked(true);
@@ -431,11 +423,8 @@ void itemAvailabilityWorkbench::sFillListInvhist()
     _invhistWarehouse->appendValue(params);
     MetaSQLQuery mql = mqlLoad("inventoryHistory", "detail");
     q = mql.toQuery(params);
-    if (q.first())
-    {
-      _invhist->populate(q, true);
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
+    _invhist->populate(q, true);
+    if (q.lastError().type() != QSqlError::NoError)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return;
@@ -588,12 +577,12 @@ void itemAvailabilityWorkbench::sHandleResort()
   for (int i = 0; i < _availability->topLevelItemCount(); i++)
   {
     XTreeWidgetItem *item = _availability->topLevelItem(i);
-    if (item->data(RUNNINGAVAIL_COL, Qt::DisplayRole).toDouble() < 0)
-      item->setTextColor(RUNNINGAVAIL_COL, namedColor("error"));
-    else if (item->data(RUNNINGAVAIL_COL, Qt::DisplayRole).toDouble() < _reorderLevel->toDouble())
-      item->setTextColor(RUNNINGAVAIL_COL, namedColor("warning"));
+    if (item->data(_availability->column("runningavail"), Qt::DisplayRole).toDouble() < 0)
+      item->setTextColor(_availability->column("runningavail"), namedColor("error"));
+    else if (item->data(_availability->column("runningavail"), Qt::DisplayRole).toDouble() < _reorderLevel->toDouble())
+      item->setTextColor(_availability->column("runningavail"), namedColor("warning"));
     else
-      item->setTextColor(RUNNINGAVAIL_COL, namedColor(""));
+      item->setTextColor(_availability->column("runningavail"), namedColor(""));
   }
 }
 
@@ -862,7 +851,13 @@ void itemAvailabilityWorkbench::sPrintHistory()
   params.append("item_id", _item->id());
   params.append("transType", _transType->id());
 
-  orReport report("InventoryHistoryByItem", params);
+  params.append("average", tr("Average"));
+  params.append("standard", tr("Standard"));
+  params.append("job", tr("Job"));
+  params.append("none", tr("None"));
+  params.append("unknown", tr("Unknown"));
+
+  orReport report("InventoryHistory", params);
   if(report.isValid())
     report.print();
   else
@@ -912,142 +907,133 @@ void itemAvailabilityWorkbench::sPopulateMenuRunning( QMenu * pMenu, QTreeWidget
       pSelected->text(0) == tr("Planned P/O (firmed)") || pSelected->text(0) == tr("Planned P/O") )
   {
     if (pSelected->text(0) == tr("Planned W/O (firmed)") || pSelected->text(0) == tr("Planned P/O (firmed)") )
-      pMenu->insertItem(tr("Soften Order..."), this, SLOT(sSoftenOrder()), 0);
+      pMenu->addAction(tr("Soften Order..."), this, SLOT(sSoftenOrder()));
     else
-      pMenu->insertItem(tr("Firm Order..."), this, SLOT(sFirmOrder()), 0);
+      pMenu->addAction(tr("Firm Order..."), this, SLOT(sFirmOrder()));
 
-    pMenu->insertItem(tr("Release Order..."), this, SLOT(sReleaseOrder()), 0);
-    pMenu->insertItem(tr("Delete Order..."), this, SLOT(sDeleteOrder()), 0);
+    pMenu->addAction(tr("Release Order..."), this, SLOT(sReleaseOrder()));
+    pMenu->addAction(tr("Delete Order..."), this, SLOT(sDeleteOrder()));
   }
 
   else if (pSelected->text(0).contains("W/O") && !(pSelected->text(0) == tr("Planned W/O Req. (firmed)") || pSelected->text(0) == tr("Planned W/O Req.")))
-    pMenu->insertItem(tr("View Work Order Details..."), this, SLOT(sViewWOInfo()), 0);
+    pMenu->addAction(tr("View Work Order Details..."), this, SLOT(sViewWOInfo()));
 }
 
 void itemAvailabilityWorkbench::sPopulateMenuAvail( QMenu *pMenu, QTreeWidgetItem * selected )
 {
-  int menuItem;
+  XTreeWidgetItem *item = dynamic_cast<XTreeWidgetItem*>(selected);
 
-  menuItem = pMenu->insertItem(tr("View Inventory History..."), this, SLOT(sViewHistory()), 0);
-  if (!_privileges->check("ViewInventoryHistory"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  QAction *menuItem;
 
-  pMenu->insertSeparator();
+  menuItem = pMenu->addAction(tr("View Inventory History..."), this, SLOT(sViewHistory()));
+  menuItem->setEnabled(_privileges->check("ViewInventoryHistory"));
 
-  menuItem = pMenu->insertItem(tr("View Allocations..."), this, SLOT(sViewAllocations()), 0);
-  if (selected->text(3).remove(',').toDouble() == 0.0)
-    pMenu->setItemEnabled(menuItem, FALSE);
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("View Orders..."), this, SLOT(sViewOrders()), 0);
-  if (selected->text(5).remove(',').toDouble() == 0.0)
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("View Allocations..."), this, SLOT(sViewAllocations()));
+  menuItem->setEnabled(item && item->rawValue("allocated").toDouble() != 0.0);
 
-  menuItem = pMenu->insertItem(tr("Running Availability..."), this, SLOT(sRunningAvailability()), 0);
+  menuItem = pMenu->addAction(tr("View Orders..."), this, SLOT(sViewOrders()));
+  menuItem->setEnabled(item && item->rawValue("ordered").toDouble() != 0.0);
 
-  pMenu->insertSeparator();
+  menuItem = pMenu->addAction(tr("Running Availability..."), this, SLOT(sRunningAvailability()));
 
-  if (((XTreeWidgetItem *)selected)->altId() == 1)
+  pMenu->addSeparator();
+
+  if (item && (item->altId() == 1))
   {
-    menuItem = pMenu->insertItem(tr("Create P/R..."), this, SLOT(sCreatePR()), 0);
-    if (!_privileges->check("MaintainPurchaseRequests"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Create P/R..."), this, SLOT(sCreatePR()));
+    menuItem->setEnabled(_privileges->check("MaintainPurchaseRequests"));
 
-    menuItem = pMenu->insertItem(tr("Create P/O..."), this, SLOT(sCreatePO()), 0);
-    if (!_privileges->check("MaintainPurchaseOrders"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Create P/O..."), this, SLOT(sCreatePO()));
+    menuItem->setEnabled(_privileges->check("MaintainPurchaseOrders"));
 
-    pMenu->insertSeparator();
+    pMenu->addSeparator();
   }
-  else if (((XTreeWidgetItem *)selected)->altId() == 2)
+  else if (item && (item->altId() == 2))
   {
-    menuItem = pMenu->insertItem(tr("Create W/O..."), this, SLOT(sCreateWO()), 0);
-    if (!_privileges->check("MaintainWorkOrders"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Create W/O..."), this, SLOT(sCreateWO()));
+    menuItem->setEnabled(_privileges->check("MaintainWorkOrders"));
 
-    pMenu->insertSeparator();
+    pMenu->addSeparator();
   }
 
-  menuItem = pMenu->insertItem(tr("Issue Count Tag..."), this, SLOT(sIssueCountTag()), 0);
-  if (!_privileges->check("IssueCountTags"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Issue Count Tag..."), this, SLOT(sIssueCountTag()));
+  menuItem->setEnabled(_privileges->check("IssueCountTags"));
 
-  menuItem = pMenu->insertItem(tr("Enter Misc. Inventory Count..."), this, SLOT(sEnterMiscCount()), 0);
-  if (!_privileges->check("EnterMiscCounts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Enter Misc. Inventory Count..."), this, SLOT(sEnterMiscCount()));
+  menuItem->setEnabled(_privileges->check("EnterMiscCounts"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  pMenu->insertItem(tr("View Substitute Availability..."), this, SLOT(sViewSubstituteAvailability()), 0);
+  pMenu->addAction(tr("View Substitute Availability..."), this, SLOT(sViewSubstituteAvailability()));
 }
 
 void itemAvailabilityWorkbench::sPopulateMenuCosted( QMenu * pMenu, QTreeWidgetItem * pSelected )
 {
-  if(!_privileges->check("ViewCosts"))
+  XTreeWidgetItem *item = dynamic_cast<XTreeWidgetItem*>(pSelected);
+  if(! item || !_privileges->check("ViewCosts"))
     return;
- 
-  if (((XTreeWidgetItem *)pSelected)->id() != -1)
-    pMenu->insertItem(tr("Maintain Item Costs..."), this, SLOT(sMaintainItemCosts()), 0);
 
-  if (((XTreeWidgetItem *)pSelected)->id() != -1)
-    pMenu->insertItem(tr("View Item Costing..."), this, SLOT(sViewItemCosting()), 0);
+  if (item->id() != -1)
+    pMenu->addAction(tr("Maintain Item Costs..."), this, SLOT(sMaintainItemCosts()));
+
+  if (item->id() != -1)
+    pMenu->addAction(tr("View Item Costing..."), this, SLOT(sViewItemCosting()));
 }
 
 void itemAvailabilityWorkbench::sPopulateMenuHistory( QMenu * pMenu, QTreeWidgetItem * pItem )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("View Transaction Information..."), this, SLOT(sViewTransInfo()), 0);
-  menuItem = pMenu->insertItem(tr("Edit Transaction Information..."), this, SLOT(sEditTransInfo()), 0);
+  menuItem = pMenu->addAction(tr("View Transaction Information..."), this, SLOT(sViewTransInfo()));
+  menuItem = pMenu->addAction(tr("Edit Transaction Information..."), this, SLOT(sEditTransInfo()));
 
   if ( (pItem->text(3).length()) &&
        ( (pItem->text(2) == "RM") || (pItem->text(2) == "IM") ) )
   {
     QString orderNumber = _invhist->currentItem()->text(4);
-    int sep1            = orderNumber.find('-');
-    int sep2            = orderNumber.find('-', (sep1 + 1));
+    int sep1            = orderNumber.indexOf('-');
+    int sep2            = orderNumber.indexOf('-', (sep1 + 1));
     int mainNumber      = orderNumber.mid((sep1 + 1), ((sep2 - sep1) - 1)).toInt();
     int subNumber       = orderNumber.right((orderNumber.length() - sep2) - 1).toInt();
 
     if ( (mainNumber) && (subNumber) )
     {
-      menuItem = pMenu->insertItem(tr("View Work Order Information..."), this, SLOT(sViewWOInfoHistory()), 0);
-      if ((!_privileges->check("MaintainWorkOrders")) && (!_privileges->check("ViewWorkOrders")))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction(tr("View Work Order Information..."), this, SLOT(sViewWOInfoHistory()));
+      menuItem->setEnabled(_privileges->check("MaintainWorkOrders") ||
+                           _privileges->check("ViewWorkOrders"));
     }
   }
 }
 
 void itemAvailabilityWorkbench::sPopulateMenuLocation( QMenu * pMenu, QTreeWidgetItem * pSelected )
 {
-  int menuItem;
+  QAction *menuItem;
+  XTreeWidgetItem *item = dynamic_cast<XTreeWidgetItem*>(pSelected);
 
-  if (((XTreeWidgetItem *)pSelected)->altId() == -1)
+  if (item && item->altId() == -1)
   {
-    menuItem = pMenu->insertItem(tr("Relocate..."), this, SLOT(sRelocateInventory()), 0);
-    if (!_privileges->check("RelocateInventory"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Relocate..."), this, SLOT(sRelocateInventory()));
+    menuItem->setEnabled(_privileges->check("RelocateInventory"));
 
-    menuItem = pMenu->insertItem(tr("Reassign Lot/Serial #..."), this, SLOT(sReassignLotSerial()), 0);
-    if (!_privileges->check("ReassignLotSerial"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Reassign Lot/Serial #..."), this, SLOT(sReassignLotSerial()));
+    menuItem->setEnabled(_privileges->check("ReassignLotSerial"));
   }
 }
 
 void itemAvailabilityWorkbench::sPopulateMenuWhereUsed( QMenu *menu, QTreeWidgetItem * )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem(tr("Edit Bill of Materials..."), this, SLOT(sEditBOM()), 0);
-  if (!_privileges->check("MaintainBOMs"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("Edit Bill of Materials..."), this, SLOT(sEditBOM()));
+  menuItem->setEnabled(_privileges->check("MaintainBOMs"));
 
-  menuItem = menu->insertItem(tr("Edit Item Master..."), this, SLOT(sEditItem()), 0);
-  if (!_privileges->check("MaintainItemMasters"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("Edit Item Master..."), this, SLOT(sEditItem()));
+  menuItem->setEnabled(_privileges->check("MaintainItemMasters"));
 
-  menuItem = menu->insertItem(tr("View Item Inventory History..."), this, SLOT(sViewInventoryHistory()), 0);
-  if (!_privileges->check("ViewInventoryHistory"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("View Item Inventory History..."), this, SLOT(sViewInventoryHistory()));
+  menuItem->setEnabled(_privileges->check("ViewInventoryHistory"));
 }
 
 void itemAvailabilityWorkbench::sViewHistory()
@@ -1367,8 +1353,8 @@ void itemAvailabilityWorkbench::sViewWOInfo()
 void itemAvailabilityWorkbench::sViewWOInfoHistory()
 {
   QString orderNumber = _invhist->currentItem()->text(4);
-  int sep1            = orderNumber.find('-');
-  int sep2            = orderNumber.find('-', (sep1 + 1));
+  int sep1            = orderNumber.indexOf('-');
+  int sep2            = orderNumber.indexOf('-', (sep1 + 1));
   int mainNumber      = orderNumber.mid((sep1 + 1), ((sep2 - sep1) - 1)).toInt();
   int subNumber       = orderNumber.right((orderNumber.length() - sep2) - 1).toInt();
 

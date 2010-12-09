@@ -16,6 +16,7 @@
        bankaccnt_descrip AS f_descrip,
        CASE WHEN (bankaccnt_type='K') THEN text('Checking')
             WHEN (bankaccnt_type='C') THEN text('Cash')
+            WHEN (bankaccnt_type='R') THEN text('Credit Card')
             ELSE text('?')
        END AS f_type,
        formatBoolYN(bankaccnt_ap) AS f_ap,

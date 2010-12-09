@@ -30,7 +30,8 @@ public:
 public slots:
     virtual void sBackgroundList();
     virtual void sPopulate();
-    virtual void sSave();
+    virtual void sApply();
+    virtual void sSave(bool close = true);
     virtual void sClose();
 
     virtual void sFillList();

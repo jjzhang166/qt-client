@@ -11,21 +11,22 @@
  <leftmargin>50</leftmargin>
  <querysource>
   <name>head</name>
-  <sql>SELECT formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;source&quot;) ?>
-         text(&lt;? value(&quot;source&quot;) ?>)
+  <sql>SELECT &lt;? value("title") ?> AS title,
+       formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("source") ?>
+         text(&lt;? value("source") ?>)
        &lt;? else ?>
          text('All Sources')
        &lt;? endif  ?>
        AS source,
-       &lt;? if exists(&quot;startJrnlnum&quot;) ?>
+       &lt;? if exists("startJrnlnum") ?>
          text('Start Journal Number:')
        &lt;? else ?>
          text('')
        &lt;? endif ?>
        AS startJrnlnumLit,
-       &lt;? if exists(&quot;endJrnlnum&quot;) ?>
+       &lt;? if exists("endJrnlnum") ?>
          text('End Journal Number:')
        &lt;? else ?>
          text('')
@@ -34,7 +35,8 @@
  </querysource>
  <querysource>
   <name>detail</name>
-  <sql>SELECT gltrans_id,
+  <sql>&lt;? if exists("gltrans") ?>
+SELECT gltrans_id,
        gltrans_sequence,
        formatDate(gltrans_date) AS transdate,
        gltrans_journalnumber,
@@ -52,15 +54,45 @@
        formatBoolYN(gltrans_posted) AS f_posted
   FROM gltrans, accnt
  WHERE ((gltrans_accnt_id=accnt_id)
-   AND (gltrans_date BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-&lt;? if exists(&quot;source&quot;) ?>
-   AND (gltrans_source=&lt;? value(&quot;source&quot;) ?>)
+   AND (NOT gltrans_deleted)
+   AND (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+&lt;? if exists("source") ?>
+   AND (gltrans_source=&lt;? value("source") ?>)
 &lt;? endif ?>
-&lt;? if exists(&quot;startJrnlnum&quot;) ?>
-   AND (gltrans_journalnumber BETWEEN &lt;? value(&quot;startJrnlnum&quot;) ?> AND &lt;? value(&quot;endJrnlnum&quot;) ?>)
+&lt;? if exists("startJrnlnum") ?>
+   AND (gltrans_journalnumber BETWEEN &lt;? value("startJrnlnum") ?> AND &lt;? value("endJrnlnum") ?>)
 &lt;? endif ?>
        )
-ORDER BY gltrans_date, gltrans_sequence, gltrans_amount DESC;</sql>
+ORDER BY gltrans_date, gltrans_sequence, gltrans_amount DESC;
+&lt;? else ?>
+SELECT sltrans_id AS gltrans_id,
+       sltrans_sequence AS gltrans_sequence,
+       formatDate(sltrans_date) AS transdate,
+       sltrans_journalnumber AS gltrans_journalnumber,
+       sltrans_source AS gltrans_source,
+       sltrans_doctype AS gltrans_doctype,
+       sltrans_docnumber AS gltrans_docnumber,
+       (formatGLAccount(accnt_id) || ' - ' || accnt_descrip) AS account,
+       firstLine(sltrans_notes) AS f_notes,
+       CASE WHEN (sltrans_amount &lt; 0) THEN formatMoney(sltrans_amount * -1)
+            ELSE ''
+       END AS f_debit,
+       CASE WHEN (sltrans_amount > 0) THEN formatMoney(sltrans_amount)
+            ELSE ''
+       END AS f_credit,
+       formatBoolYN(sltrans_posted) AS f_posted
+  FROM sltrans, accnt
+ WHERE ((sltrans_accnt_id=accnt_id)
+   AND (sltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+&lt;? if exists("source") ?>
+   AND (sltrans_source=&lt;? value("source") ?>)
+&lt;? endif ?>
+&lt;? if exists("startJrnlnum") ?>
+   AND (sltrans_journalnumber BETWEEN &lt;? value("startJrnlnum") ?> AND &lt;? value("endJrnlnum") ?>)
+&lt;? endif ?>
+       )
+ORDER BY sltrans_date, sltrans_sequence, sltrans_amount DESC;
+&lt;? endif ?></sql>
  </querysource>
  <rpthead>
   <height>206</height>
@@ -366,22 +398,6 @@ ORDER BY gltrans_date, gltrans_sequence, gltrans_amount DESC;</sql>
   </field>
   <label>
    <rect>
-    <x>260</x>
-    <y>10</y>
-    <width>465</width>
-    <height>38</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>G/L Series</string>
-  </label>
-  <label>
-   <rect>
     <x>330</x>
     <y>185</y>
     <width>106</width>
@@ -396,6 +412,25 @@ ORDER BY gltrans_date, gltrans_sequence, gltrans_amount DESC;</sql>
    <vcenter/>
    <string>Notes/Account</string>
   </label>
+  <field>
+   <rect>
+    <x>440</x>
+    <y>7</y>
+    <width>300</width>
+    <height>35</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>18</size>
+    <weight>bold</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>title</column>
+   </data>
+  </field>
  </rpthead>
  <pghead>
   <firstpage/>

@@ -26,13 +26,16 @@ arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
 {
   setupUi(this);
 
-  connect(_save,           SIGNAL(clicked()),                 this, SLOT(sSave()));
-  connect(_close,          SIGNAL(clicked()),                 this, SLOT(sClose()));
+  _save = _buttonBox->button(QDialogButtonBox::Save);
+  _save->setDisabled(true);
+
+  connect(_buttonBox,      SIGNAL(accepted()),                 this, SLOT(sSave()));
+  connect(_buttonBox,      SIGNAL(rejected()),                 this, SLOT(sClose()));
   connect(_cust,           SIGNAL(newId(int)),                this, SLOT(sPopulateCustInfo(int)));
+  connect(_cust,           SIGNAL(valid(bool)),               _save, SLOT(setEnabled(bool)));
   connect(_terms,          SIGNAL(newID(int)),                this, SLOT(sPopulateDueDate()));
   connect(_docDate,        SIGNAL(newDate(const QDate&)),     this, SLOT(sPopulateDueDate()));
   connect(_taxLit,         SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
-  connect(_amount,         SIGNAL(noConversionRate()),            this, SLOT(noConversionRate()));
 
   _last = -1;
   _aropenid = -1;
@@ -59,6 +62,8 @@ arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
 
   _journalNumber->setEnabled(FALSE);
   _commissionPaid->setEnabled(FALSE);
+
+  _altAccntid->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
 
 arOpenItem::~arOpenItem()
@@ -82,13 +87,13 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
   {
     if (param.toString() == "creditMemo")
     {
-      setWindowTitle(caption() + tr(" - Enter Misc. Credit Memo"));
+      setWindowTitle(windowTitle() + tr(" - Enter Misc. Credit Memo"));
       _docType->setCurrentIndex(0);
       _rsnCode->setType(XComboBox::ARCMReasonCodes);
     }
     else if (param.toString() == "debitMemo")
     {
-      setWindowTitle(caption() + tr(" - Enter Misc. Debit Memo"));
+      setWindowTitle(windowTitle() + tr(" - Enter Misc. Debit Memo"));
       _docType->setCurrentIndex(1);
       _rsnCode->setType(XComboBox::ARDMReasonCodes);
     }
@@ -157,9 +162,9 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
       _rsnCode->setEnabled(FALSE);
       _altPrepaid->setEnabled(FALSE);
       _notes->setReadOnly(TRUE);
-      _save->hide();
-
-      _close->setText(tr("&Close"));
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
     else
       return UndefinedError;
@@ -537,10 +542,11 @@ void arOpenItem::populate()
                  "       CASE WHEN (arapply_target_doctype = 'I') THEN :invoice"
                  "            WHEN (arapply_target_doctype = 'D') THEN :debitMemo"
                  "            WHEN (arapply_target_doctype = 'K') THEN :apcheck"
+                 "            WHEN (arapply_target_doctype = 'R') THEN :cashreceipt"
                  "            ELSE :other"
                  "       END AS doctype,"
                  "       arapply_target_docnumber AS docnumber,"
-                 "       arapply_postdate, arapply_applied,"
+                 "       arapply_distdate, arapply_postdate, arapply_applied,"
                  "       currConcat(arapply_curr_id) AS currabbr,"
                  "       currToBase(arapply_curr_id, arapply_applied, arapply_postdate) AS baseapplied,"
                  "       'curr' AS arapply_applied_xtnumericrole,"
@@ -552,6 +558,7 @@ void arOpenItem::populate()
       q.bindValue(":invoice", tr("Invoice"));
       q.bindValue(":debitMemo", tr("Debit Memo"));
       q.bindValue(":apcheck", tr("A/P Check"));
+      q.bindValue(":cashreceipt", tr("Cash Receipt"));
     }
 
     q.bindValue(":error", tr("Error"));

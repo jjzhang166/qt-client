@@ -152,6 +152,19 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
   f.setPointSize(f.pointSize() - 2);
   setFont(f);
 #endif
+
+  // Shortcuts for xtreewidget
+  QAction* menuAct = new QAction(this);
+  menuAct->setShortcut(QKeySequence(tr("Ctrl+M")));
+  connect(menuAct, SIGNAL(triggered()), this, SLOT(sShowMenu()));
+  addAction(menuAct);
+
+  QAction* itemSelectedAct = new QAction(this);
+  itemSelectedAct->setShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator));
+  itemSelectedAct->setShortcutContext(Qt::WidgetShortcut);
+  connect(itemSelectedAct, SIGNAL(triggered()), this, SLOT(sItemSelected()));
+  addAction(itemSelectedAct);
+
 }
 
 XTreeWidget::~XTreeWidget()
@@ -780,7 +793,14 @@ void XTreeWidget::addColumn(const QString &pString, int pWidth, int pAlignment, 
 
     QString pname;
     if (window())
+    {
       pname = window()->objectName() + "/";
+      if (parentWidget())
+      {
+        if (parentWidget()->objectName() != window()->objectName())
+          pname += parentWidget()->objectName() + "/";
+      }
+    }
     _settingsName = pname + objectName();
 
     // Load any previously saved information about column widths
@@ -1039,6 +1059,8 @@ bool XTreeWidgetItem::operator>(const XTreeWidgetItem &other) const
 */
 void XTreeWidget::sortItems(int column, Qt::SortOrder order)
 {
+  int previd = id();
+
   // if old style then maintain backwards compatibility
   if (_roles.size() <= 0)
   {
@@ -1159,6 +1181,8 @@ void XTreeWidget::sortItems(int column, Qt::SortOrder order)
   }
 
   populateCalculatedColumns();
+
+  setId(previd);
   emit resorted();
 }
 
@@ -1180,12 +1204,10 @@ void XTreeWidget::populateCalculatedColumns()
           subtotals[set] = topLevelItem(row)->data(col, Xt::RunningInitRole).toDouble();
         subtotals[set] += topLevelItem(row)->data(col, Xt::RawRole).toDouble();
 
-        // only update if necessary, reducing (slow) calls to recalculate row height
-        int scale = topLevelItem(row)->data(col, Xt::ScaleRole).toInt();
-        float maxdiff = pow(10.0, 0 - scale);
-        if (qAbs(subtotals[set] - topLevelItem(row)->data(col, Qt::DisplayRole).toDouble()) > maxdiff)
-          topLevelItem(row)->setData(col, Qt::DisplayRole,
-                                     QLocale().toString(subtotals[set], 'f', scale));
+        // setData apparently knows if the value hasn't changed
+        topLevelItem(row)->setData(col, Qt::DisplayRole,
+                                   QLocale().toString(subtotals[set], 'f',
+                                                      topLevelItem(row)->data(col, Xt::ScaleRole).toInt()));
       }
     }
     else if (headerItem()->data(col, Qt::UserRole).toString() == "xttotalrole")
@@ -1403,10 +1425,28 @@ void XTreeWidget::sSelectionChanged()
   }
 }
 
+void XTreeWidget::sItemSelected()
+{
+  QList<XTreeWidgetItem*> selected = selectedItems();
+  if (selected.count())
+   sItemSelected(selected.at(0), 0);
+}
+
 void XTreeWidget::sItemSelected(QTreeWidgetItem *pSelected, int)
 {
   if (pSelected)
     emit itemSelected(((XTreeWidgetItem *)pSelected)->_id);
+}
+
+void XTreeWidget::sShowMenu()
+{
+  QList<XTreeWidgetItem*> selected = selectedItems();
+  if (selected.count())
+  {
+    QRect rect = this->visualItemRect(selected.at(0));
+    QPoint point = rect.bottomRight();
+    sShowMenu(point);
+  }
 }
 
 void XTreeWidget::sShowMenu(const QPoint &pntThis)

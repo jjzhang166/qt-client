@@ -13,69 +13,34 @@
   <name>head</name>
   <sql>SELECT vend_number,
        vend_name,
-       &lt;? if exists(&quot;warehous_id&quot;) ?>
-         ( SELECT warehous_code FROM warehous WHERE warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
+       &lt;? if exists("warehous_id") ?>
+         ( SELECT warehous_code FROM warehous WHERE warehous_id=&lt;? value("warehous_id") ?>)
        &lt;? else ?>
          text('All Sites')
        &lt;? endif ?>
        AS warehouse,
-       &lt;? if exists(&quot;agentUsername&quot;) ?>
-       TEXT(&lt;? value(&quot;agentUsername&quot; ?>)
+       &lt;? if exists("agentUsername") ?>
+       TEXT(&lt;? value("agentUsername" ?>)
        &lt;? else ?>
        TEXT('All Agents')
        &lt;? endif ?>
        AS agentUsername,
-       &lt;? if exists(&quot;openItems&quot;) ?>
+       &lt;? if exists("openItems") ?>
          text('Open Items')
-       &lt;? elseif exists(&quot;closedItems&quot;) ?>
+       &lt;? elseif exists("closedItems") ?>
          text('Closed Items')
        &lt;? else ?>
          text('All Items')
        &lt;? endif ?>
        AS f_whichitems
   FROM vend
- WHERE (vend_id=&lt;? value(&quot;vend_id&quot;) ?>);
+ WHERE (vend_id=&lt;? value("vend_id") ?>);
 </sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT CASE WHEN (itemsite_id IS NULL) THEN ( SELECT warehous_code
-                                              FROM warehous
-                                              WHERE (pohead_warehous_id=warehous_id) )
-            ELSE ( SELECT warehous_code
-                   FROM warehous
-                   WHERE (itemsite_warehous_id=warehous_id) )
-       END AS warehousecode,
-       pohead_number as f_ponumber,
-       formatDate(poitem_duedate) as f_duedate,
-       COALESCE(item_number, (text('NonInv - ') || poitem_vend_item_number)) AS itemnumber,
-       COALESCE(uom_name, poitem_vend_uom) AS itemuom,
-       formatQty(poitem_qty_ordered) as f_ordered,
-       formatQty(poitem_qty_received) as f_received,
-       formatQty(poitem_qty_returned) as f_returned 
-  FROM pohead,
-       poitem LEFT OUTER JOIN
-       ( itemsite JOIN item
-         ON (itemsite_item_id=item_id) JOIN uom ON (item_inv_uom_id=uom_id))
-       ON (poitem_itemsite_id=itemsite_id)
- WHERE ((poitem_pohead_id=pohead_id)
-&lt;? if exists(&quot;warehous_id&quot;) ?>
-   AND ( ( (itemsite_id IS NULL) AND (pohead_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>) ) OR
-         ( (itemsite_id IS NOT NULL) AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>) ) )
-&lt;? endif ?>
-&lt;? if exists(&quot;agentUsername&quot;) ?>
-   AND (pohead_agent_username=&lt;? value(&quot;agentUsername&quot;) ?>)
-&lt;? endif ?>
-&lt;? if exists(&quot;poNumber&quot;) ?>
-   AND (pohead_number=&lt;? value(&quot;poNumber&quot;) ?>)
-&lt;? endif ?>
-&lt;? if exists(&quot;openItems&quot;) ?>
-   AND (poitem_status='O')
-&lt;? elseif exists(&quot;closedItems&quot;) ?>
-   AND (poitem_status='C')
-&lt;? endif ?>
-   AND (pohead_vend_id=&lt;? value(&quot;vend_id&quot;) ?>)) 
-ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
+  <mqlgroup>poItems</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>224</height>
@@ -593,7 +558,7 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_ponumber</column>
+     <column>pohead_number</column>
     </data>
    </field>
    <field>
@@ -612,7 +577,7 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_duedate</column>
+     <column>poitem_duedate</column>
     </data>
    </field>
    <field>
@@ -631,7 +596,7 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>warehousecode</column>
+     <column>warehous_code</column>
     </data>
    </field>
    <field>
@@ -650,8 +615,9 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_ordered</column>
+     <column>poitem_qty_ordered</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <field>
     <rect>
@@ -669,8 +635,9 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_received</column>
+     <column>poitem_qty_received</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <field>
     <rect>
@@ -688,8 +655,9 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_returned</column>
+     <column>poitem_qty_returned</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
   </detail>
  </section>
@@ -767,4 +735,3 @@ ORDER BY poitem_duedate, pohead_number, poitem_linenumber;</sql>
   </label>
  </pgfoot>
 </report>
-

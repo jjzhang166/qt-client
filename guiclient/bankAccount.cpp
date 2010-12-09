@@ -21,7 +21,7 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WFla
   setupUi(this);
 
   connect(_bankName,SIGNAL(textChanged(QString)), this, SLOT(sNameChanged(QString)));
-  connect(_save,               SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_transmitGroup,  SIGNAL(toggled(bool)), this, SLOT(sHandleTransmitGroup()));
 
   _nextCheckNum->setValidator(omfgThis->orderVal());
@@ -44,7 +44,7 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WFla
                    "WHERE form_key='Chck' "
                    "ORDER BY form_name;" );
 
-  if (_metrics->boolean("ACHEnabled"))
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
   {
     q.prepare("SELECT fetchMetricText('ACHCompanyName') AS name,"
               "       formatACHCompanyId() AS number;");
@@ -119,10 +119,9 @@ enum SetResponse bankAccount::set(const ParameterList &pParams)
       _form->setEnabled(FALSE);
       _ar->setEnabled(FALSE);
       _assetAccount->setReadOnly(TRUE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -352,7 +351,7 @@ void bankAccount::sSave()
   q.bindValue(":bankaccnt_ar",          QVariant(_ar->isChecked()));
   q.bindValue(":bankaccnt_accnt_id",    _assetAccount->id());
   q.bindValue(":bankaccnt_curr_id",     _currency->id());
-  q.bindValue(":bankaccnt_notes",       _notes->text().stripWhiteSpace());
+  q.bindValue(":bankaccnt_notes",       _notes->toPlainText().trimmed());
   q.bindValue(":bankaccnt_ach_enabled", _transmitGroup->isChecked());
   q.bindValue(":bankaccnt_routing",     _routing->text());
 
@@ -394,6 +393,7 @@ void bankAccount::sSave()
     return;
   }
 
+  omfgThis->sBankAccountsUpdated();
   done(_bankaccntid);
 }
 

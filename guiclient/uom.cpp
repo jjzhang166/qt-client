@@ -30,9 +30,9 @@ uom::uom(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   setupUi(this);
 
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_uomconv, SIGNAL(itemSelectionChanged()), this, SLOT(sSelected()));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -83,7 +83,7 @@ enum SetResponse uom::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
       _new->setEnabled(true);
     }
     else if (param.toString() == "view")
@@ -93,11 +93,11 @@ enum SetResponse uom::set(const ParameterList &pParams)
       _name->setEnabled(FALSE);
       _description->setEnabled(FALSE);
       _weightUom->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _edit->setText(tr("&View"));
-      _save->hide();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
 
-      _close->setFocus();
+      _edit->setText(tr("&View"));
     }
   }
 

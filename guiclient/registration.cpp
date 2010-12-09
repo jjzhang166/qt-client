@@ -134,9 +134,8 @@ void registration::sNext()
 
 QString registration::encodedPair(const QString pfield, const QString pvalue)
 {
-  QString encodedValue = pvalue;
-  QUrl::encode(encodedValue);
-  return pfield + "=" + encodedValue;
+  QByteArray encodedValue = QUrl::toPercentEncoding(pvalue);
+  return QString(pfield + "=" + encodedValue);
 }
 
 void registration::sRegister(bool /*pretry*/)
@@ -344,7 +343,7 @@ void registration::sRegister(bool /*pretry*/)
 
   _postreq = new QHttp("www.xtuple.com", QHttp::ConnectionModeHttp);
   _postreq->setHost("www.xtuple.com");
-  _postreq->request(header, request.utf8()); 
+  _postreq->request(header, request.toUtf8()); 
 
   _xml->setText(request);
   sState(QHttp::Unconnected);
@@ -365,12 +364,14 @@ void registration::sRegister(bool /*pretry*/)
 
 void registration::sRead(int pread, int ptotal)
 {
-  _progress->setValue(50 + 40 * pread / ptotal);
+  if (ptotal > 0)
+    _progress->setValue(50 + 40 * pread / ptotal);
 }
 
 void registration::sSent(int psent, int ptotal)
 {
-  _progress->setValue(10 + 40 * psent / ptotal);
+  if (ptotal > 0)
+    _progress->setValue(10 + 40 * psent / ptotal);
 }
 
 void registration::sState(int pstate)

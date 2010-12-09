@@ -13,15 +13,15 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>128</height>
+    <width>472</width>
+    <height>114</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Opportunity Stage</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QHBoxLayout">
@@ -119,60 +119,23 @@ to be bound by its terms.</comment>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>347</width>
-         <height>13</height>
+         <width>40</width>
+         <height>0</height>
         </size>
        </property>
       </spacer>
      </item>
     </layout>
    </item>
-   <item>
-    <layout class="QVBoxLayout">
-     <property name="spacing">
-      <number>0</number>
+   <item row="0" column="1">
+    <widget class="QDialogButtonBox" name="_buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <item>
-      <layout class="QVBoxLayout">
-       <property name="spacing">
-        <number>5</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="_close">
-         <property name="text">
-          <string>&amp;Cancel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="_save">
-         <property name="text">
-          <string>&amp;Save</string>
-         </property>
-         <property name="default">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -188,31 +151,13 @@ to be bound by its terms.</comment>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>_name</tabstop>
   <tabstop>_description</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>opportunityStage</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -18,6 +18,7 @@
 #include <QScriptEngine>
 #include <QScriptValue>
 #include <QSqlError>
+#include <QSqlRecord>
 #include <QTemporaryFile>
 #include <QTextCursor>
 #include <QTextDocument>
@@ -53,7 +54,7 @@ bool ExportHelper::exportHTML(const int qryheadid, ParameterList &params, QStrin
                                       .arg(filename, exportfile->errorString());
     else
     {
-      if (exportfile->write(generateHTML(qryheadid, params, errmsg)) < 0)
+      if (exportfile->write(generateHTML(qryheadid, params, errmsg).toUtf8()) < 0)
         errmsg = tr("Error writing to %1: %2")
                                       .arg(filename, exportfile->errorString());
       exportfile->close();
@@ -123,7 +124,7 @@ bool ExportHelper::exportXML(const int qryheadid, ParameterList &params, QString
       errmsg = tr("Could not open %1 (%2).").arg(filename,exportfile.error());
     else
     {
-      exportfile.write(generateXML(qryheadid, params, errmsg, xsltmapid));
+      exportfile.write(generateXML(qryheadid, params, errmsg, xsltmapid).toUtf8());
       exportfile.close();
     }
   }
@@ -632,7 +633,7 @@ QString ExportHelper::XSLTConvertString(QString input, int xsltmapid, QString &e
     else
     {
       QString inputfileName = inputfile->fileName();
-      inputfile->write(input);
+      inputfile->write(input.toUtf8());
       inputfile->close();
       delete inputfile;
       inputfile = 0;

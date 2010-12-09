@@ -25,8 +25,11 @@ public:
     expenseTrans(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~expenseTrans();
 
+    Q_INVOKABLE int projectId() { return _prjid; }
+
 public slots:
     virtual enum SetResponse set( const ParameterList & pParams );
+    virtual void setProjectId(int p) { _prjid = p; }
     virtual void sPost();
     virtual void sPopulateQOH( int pWarehousid );
     virtual void sPopulateQty();
@@ -38,6 +41,7 @@ private:
     int _mode;
     bool _captive;
     double _cachedQOH;
+    int _prjid;
 
 };
 

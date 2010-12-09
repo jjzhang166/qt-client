@@ -19,7 +19,7 @@ state::state(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
   _mode = cNew;
   setWindowModified(false);
@@ -87,10 +87,9 @@ enum SetResponse state::set(const ParameterList &pParams)
       _abbr->setEnabled(FALSE);
       _name->setEnabled(FALSE);
 
-      _save->hide();
-      _close->setText(tr("&Close"));
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

@@ -13,6 +13,7 @@
 
 #include <Qt>
 #include <QtScript>
+#include <QTextDocument>
 
 void setupQt(QScriptEngine *engine);
 
@@ -40,7 +41,7 @@ QScriptValue FillRuletoScriptValue(QScriptEngine *engine, const enum Qt::FillRul
 QScriptValue FocusPolicytoScriptValue(QScriptEngine *engine, const enum Qt::FocusPolicy &p);
 QScriptValue FocusReasontoScriptValue(QScriptEngine *engine, const enum Qt::FocusReason &p);
 QScriptValue GlobalColortoScriptValue(QScriptEngine *engine, const enum Qt::GlobalColor &p);
-//QScriptValue HitTestAccuracytoScriptValue(QScriptEngine *engine, const enum Qt::HitTestAccuracy &p);
+QScriptValue HitTestAccuracytoScriptValue(QScriptEngine *engine, const enum Qt::HitTestAccuracy &p);
 QScriptValue ImageConversionFlagtoScriptValue(QScriptEngine *engine, const enum Qt::ImageConversionFlag &p);
 QScriptValue InputMethodQuerytoScriptValue(QScriptEngine *engine, const enum Qt::InputMethodQuery &p);
 QScriptValue ItemDataRoletoScriptValue(QScriptEngine *engine, const enum Qt::ItemDataRole &p);
@@ -54,7 +55,7 @@ QScriptValue MatchFlagtoScriptValue(QScriptEngine *engine, const enum Qt::MatchF
 QScriptValue MatchFlagstoScriptValue(QScriptEngine *engine, const Qt::MatchFlags &p);
 QScriptValue ModifiertoScriptValue(QScriptEngine *engine, const enum Qt::Modifier &p);
 QScriptValue MouseButtontoScriptValue(QScriptEngine *engine, const enum Qt::MouseButton &p);
-QScriptValue OrientationtoScriptValue(QScriptEngine *engine, const enum Qt::Orientation &p);
+//QScriptValue OrientationtoScriptValue(QScriptEngine *engine, const enum Qt::Orientation &p);
 QScriptValue PenCapStyletoScriptValue(QScriptEngine *engine, const enum Qt::PenCapStyle &p);
 QScriptValue PenJoinStyletoScriptValue(QScriptEngine *engine, const enum Qt::PenJoinStyle &p);
 QScriptValue PenStyletoScriptValue(QScriptEngine *engine, const enum Qt::PenStyle &p);
@@ -72,7 +73,7 @@ QScriptValue ToolBarAreatoScriptValue(QScriptEngine *engine, const enum Qt::Tool
 QScriptValue ToolButtonStyletoScriptValue(QScriptEngine *engine, const enum Qt::ToolButtonStyle &p);
 QScriptValue TransformationModetoScriptValue(QScriptEngine *engine, const enum Qt::TransformationMode &p);
 QScriptValue UIEffecttoScriptValue(QScriptEngine *engine, const enum Qt::UIEffect &p);
-//QScriptValue WhiteSpaceModetoScriptValue(QScriptEngine *engine, const enum Qt::WhiteSpaceMode &p);
+QScriptValue WhiteSpaceModetoScriptValue(QScriptEngine *engine, const enum Qt::WhiteSpaceMode &p);
 QScriptValue WidgetAttributetoScriptValue(QScriptEngine *engine, const enum Qt::WidgetAttribute &p);
 QScriptValue WindowFrameSectiontoScriptValue(QScriptEngine *engine, const enum Qt::WindowFrameSection &p);
 QScriptValue WindowModalitytoScriptValue(QScriptEngine *engine, const enum Qt::WindowModality &p);
@@ -103,7 +104,7 @@ void FillRulefromScriptValue(const QScriptValue &obj, enum Qt::FillRule &p);
 void FocusPolicyfromScriptValue(const QScriptValue &obj, enum Qt::FocusPolicy &p);
 void FocusReasonfromScriptValue(const QScriptValue &obj, enum Qt::FocusReason &p);
 void GlobalColorfromScriptValue(const QScriptValue &obj, enum Qt::GlobalColor &p);
-//void HitTestAccuracyfromScriptValue(const QScriptValue &obj, enum Qt::HitTestAccuracy &p);
+void HitTestAccuracyfromScriptValue(const QScriptValue &obj, enum Qt::HitTestAccuracy &p);
 void ImageConversionFlagfromScriptValue(const QScriptValue &obj, enum Qt::ImageConversionFlag &p);
 void InputMethodQueryfromScriptValue(const QScriptValue &obj, enum Qt::InputMethodQuery &p);
 void ItemDataRolefromScriptValue(const QScriptValue &obj, enum Qt::ItemDataRole &p);
@@ -117,7 +118,7 @@ void MatchFlagfromScriptValue(const QScriptValue &obj, enum Qt::MatchFlag &p);
 void MatchFlagsfromScriptValue(const QScriptValue &obj, Qt::MatchFlags &p);
 void ModifierfromScriptValue(const QScriptValue &obj, enum Qt::Modifier &p);
 void MouseButtonfromScriptValue(const QScriptValue &obj, enum Qt::MouseButton &p);
-void OrientationfromScriptValue(const QScriptValue &obj, enum Qt::Orientation &p);
+//void OrientationfromScriptValue(const QScriptValue &obj, enum Qt::Orientation &p);
 void PenCapStylefromScriptValue(const QScriptValue &obj, enum Qt::PenCapStyle &p);
 void PenJoinStylefromScriptValue(const QScriptValue &obj, enum Qt::PenJoinStyle &p);
 void PenStylefromScriptValue(const QScriptValue &obj, enum Qt::PenStyle &p);
@@ -135,7 +136,7 @@ void ToolBarAreafromScriptValue(const QScriptValue &obj, enum Qt::ToolBarArea &p
 void ToolButtonStylefromScriptValue(const QScriptValue &obj, enum Qt::ToolButtonStyle &p);
 void TransformationModefromScriptValue(const QScriptValue &obj, enum Qt::TransformationMode &p);
 void UIEffectfromScriptValue(const QScriptValue &obj, enum Qt::UIEffect &p);
-//void WhiteSpaceModefromScriptValue(const QScriptValue &obj, enum Qt::WhiteSpaceMode &p);
+void WhiteSpaceModefromScriptValue(const QScriptValue &obj, enum Qt::WhiteSpaceMode &p);
 void WidgetAttributefromScriptValue(const QScriptValue &obj, enum Qt::WidgetAttribute &p);
 void WindowFrameSectionfromScriptValue(const QScriptValue &obj, enum Qt::WindowFrameSection &p);
 void WindowModalityfromScriptValue(const QScriptValue &obj, enum Qt::WindowModality &p);

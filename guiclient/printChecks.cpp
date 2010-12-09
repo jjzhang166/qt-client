@@ -42,7 +42,7 @@ printChecks::printChecks(QWidget* parent, const char* name, bool modal, Qt::WFla
   _bankaccnt->setAllowNull(TRUE);
   _bankaccnt->setType(XComboBox::APBankAccounts);
 
-  _createEFT->setVisible(_metrics->boolean("ACHEnabled"));
+  _createEFT->setVisible(_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"));
 }
 
 printChecks::~printChecks()
@@ -326,7 +326,7 @@ void printChecks::sHandleBankAccount(int pBankaccntid)
   {
     _setCheckNumber = q.value("bankaccnt_nextchknum").toInt();
     _nextCheckNum->setText(q.value("bankaccnt_nextchknum").toString());
-    _numberOfChecks->setMaxValue(q.value("numofchecks").toInt());
+    _numberOfChecks->setMaximum(q.value("numofchecks").toInt());
     _numberOfChecks->setValue(q.value("numofchecks").toInt());
     _allrecips_eft_enabled = q.value("allrecip_eft_enabled").toBool();
     _somerecips_eft_enabled = q.value("somerecip_eft_enabled").toBool();

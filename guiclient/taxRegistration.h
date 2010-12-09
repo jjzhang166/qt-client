@@ -24,6 +24,8 @@ class taxRegistration : public XDialog, public Ui::taxRegistration
     taxRegistration(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
     ~taxRegistration();
 
+    QPushButton* _save;
+
   public slots:
     virtual SetResponse set(const ParameterList pParams);
 

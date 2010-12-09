@@ -39,7 +39,6 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual void        sHandleOrderNumber();
     virtual void        sPopulateFOB( int pWarehousid );
     virtual void        sPopulateCustomerInfo( int pCustid );
-    virtual void        sShipToList();
     virtual void        sParseShipToNumber();
     virtual void        populateShipto( int pShiptoid );
     virtual void        sConvertShipTo();
@@ -57,8 +56,6 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual void        sClear();
     virtual void        clear();
     virtual void        closeEvent( QCloseEvent *pEvent );
-    virtual void        dragEnterEvent( QDragEnterEvent *pEvent );
-    virtual void        dropEvent( QDropEvent *pEvent );
     virtual void        sFreightChanged();
     virtual void        sHandleShipchrg( int pShipchrgid );
     virtual void        sHandleSalesOrderEvent( int pSoheadid, bool );
@@ -87,7 +84,6 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual void        sCheckValidContacts();
     virtual void        sHandleMore();
     virtual void        sCalculateTax();
-    virtual void        sNewCust();
     virtual void        sRecalculatePrice();
     virtual void        sOrderDateChanged();
     virtual void        sShipDateChanged();
@@ -98,12 +94,12 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual void        sReleasePR();
     virtual void        sViewPR();
 
-  protected:
-    virtual void keyPressEvent( QKeyEvent *e );
-
   protected slots:
     virtual void  languageChange();
     virtual bool  okToProcessCC();
+
+  signals:
+    void saved(int);
 
   private:
     bool    deleteForCancel();
@@ -121,7 +117,6 @@ class salesOrder : public XWidget, public Ui::salesOrder
     bool    _usesPos;
     bool    _ffShipto;
     bool    _captive;
-    int     _shiptoid;
     int     _soheadid;
     int     _lineMode;
     int     _mode;
@@ -132,6 +127,7 @@ class salesOrder : public XWidget, public Ui::salesOrder
     int     _crmacctid;
     QDate   _orderDateCache;
     QDate   _shipDateCache;
+    bool    _locked;
 };
 
 #endif  // SALESORDER_H

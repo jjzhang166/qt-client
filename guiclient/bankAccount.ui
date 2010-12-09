@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>636</height>
+    <height>638</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,51 +83,14 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout">
-       <property name="spacing">
-        <number>0</number>
+      <widget class="QDialogButtonBox" name="_buttonBox">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <item>
-        <layout class="QVBoxLayout">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="_close">
-           <property name="text">
-            <string>&amp;Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_save">
-           <property name="text">
-            <string>&amp;Save</string>
-           </property>
-           <property name="default">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -671,27 +634,9 @@ to be bound by its terms.</comment>
   <tabstop>_useOtherDest</tabstop>
   <tabstop>_otherDestName</tabstop>
   <tabstop>_otherDest</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>bankAccount</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>685</x>
-     <y>45</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>_ap</sender>
    <signal>toggled(bool)</signal>
@@ -881,6 +826,22 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>97</x>
      <y>552</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>bankAccount</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>647</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>318</y>
     </hint>
    </hints>
   </connection>

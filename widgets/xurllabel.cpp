@@ -13,10 +13,11 @@
 #include <QLabel>
 
 XURLLabel::XURLLabel(QWidget * parent, const char * name)
-  : QLabel(parent, name)
+  : QLabel(parent)
 {
+  setObjectName(name ? name : "XUrlLabel");
   QPalette p = palette();
-  p.setColor(QColorGroup::Foreground, Qt::blue);
+  p.setColor(QPalette::Foreground, Qt::blue);
   setPalette(p);
 
   setFont(font());

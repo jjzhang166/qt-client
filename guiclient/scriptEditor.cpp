@@ -184,7 +184,7 @@ bool scriptEditor::sSave()
   }
 
   QScriptEngine engine;
-  if (!engine.canEvaluate(_source->toPlainText()) || _source->text().length() == 0)
+  if (!engine.canEvaluate(_source->toPlainText()) || _source->toPlainText().length() == 0)
   {
     if (QMessageBox::question(this, windowTitle(),
                           tr("<p>The script appears incomplete are you sure you want to save?"),

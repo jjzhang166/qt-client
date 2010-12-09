@@ -41,7 +41,6 @@ class menuProducts : public QObject
     void sNewItem();
     void sItems();
     void sLotSerial();
-    void sSearchForItems();
     void sCopyItem();
     void sItemGroups();
     void sItemImages();
@@ -81,18 +80,15 @@ class menuProducts : public QObject
     void sDspCapacityUOMsByProductCategory();
     void sDspItemAvailabilityWorkbench();
 
-    void sUnitsOfMeasure();
-    void sClassCodes();
-    void sProductCategories();
-    void sFreightClasses();
-    void sCharacteristics();
-    void sLotSerialSequences();
-
     void sDspUnusedPurchasedItems();
     void sDspUndefinedManufacturedItems();
     void sDspInvalidBillsOfMaterials();
     void sReassignClassCodeByClassCode();
     void sReassignProductCategoryByProductCategory();
+
+    void sSetup();
+
+    void sPreferences();
 
   private:
     GUIClient *parent;
@@ -113,7 +109,6 @@ class menuProducts : public QObject
     QMenu *reportsBomsMenu;
     QMenu *reportsWhereUsdMenu;
     QMenu *reportsCapUomMenu;
-    QMenu *masterInfoMenu;
     QMenu *utilitiesMenu;
     
     void	addActionsToMenu(actionProperties [], unsigned int);

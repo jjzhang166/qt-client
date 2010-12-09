@@ -19,7 +19,7 @@
 
 #include "login2.h"
 
-#define DEBUG true
+#define DEBUG false
 
 company::company(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -207,7 +207,7 @@ void company::sSave()
   
   q.bindValue(":company_id",       _companyid);
   q.bindValue(":company_number",   _number->text());
-  q.bindValue(":company_descrip",  _descrip->text());
+  q.bindValue(":company_descrip",  _descrip->toPlainText());
   q.bindValue(":company_external", _external->isChecked());
   q.bindValue(":company_server",   _extServer->text());
   q.bindValue(":company_port",     _extPort->cleanText());

@@ -26,13 +26,15 @@ public:
     alarmMaint(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~alarmMaint();
 
+    QPushButton* _userLookup;
+    QPushButton* _contactLookup;
+
 public slots:
     virtual void set( const ParameterList & pParams );
     virtual void sSave();
     virtual void sGetUser(int pUsrId);
     virtual void sGetContact(int pCntctId);
     virtual void sPopulate();
-    virtual void sHandleButtons();
     virtual void sUserLookup(int pId);
     virtual void sContactLookup(int pId);
 

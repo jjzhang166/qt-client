@@ -18,6 +18,8 @@
 
 #include "addresscluster.h"
 
+#define DEBUG false
+
 shipTo::shipTo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -97,12 +99,12 @@ enum SetResponse shipTo::set(const ParameterList &pParams)
         if (shipvia.length())
         {
           for (int counter = 0; counter < _shipVia->count(); counter++)
-            if (_shipVia->text(counter) == shipvia)
+            if (_shipVia->itemText(counter) == shipvia)
               _shipVia->setCurrentIndex(counter);
 
           if (_shipVia->id() == -1)
           {
-            _shipVia->insertItem(shipvia);
+            _shipVia->addItem(shipvia);
             _shipVia->setCurrentIndex(_shipVia->count() - 1);
           }
         }
@@ -294,12 +296,12 @@ void shipTo::populate()
     if (shipvia.trimmed().length() != 0)
     {
       for (int counter = 0; counter < _shipVia->count(); counter++)
-        if (_shipVia->text(counter) == shipvia)
+        if (_shipVia->itemText(counter) == shipvia)
           _shipVia->setCurrentIndex(counter);
 
       if (_shipVia->id() == -1)
       {
-        _shipVia->insertItem(shipvia);
+        _shipVia->addItem(shipvia);
         _shipVia->setCurrentIndex(_shipVia->count() - 1);
       }
     }
@@ -410,12 +412,16 @@ void shipTo::sPopulateCommission(int pSalesrepid)
   }
 }
 
-void shipTo::closeEvent(QCloseEvent *pEvent)
+void shipTo::closeEvent(QCloseEvent * /*pEvent*/)
 {
+  if (DEBUG)
+    qDebug("%s::closeEvent() _mode = %d", qPrintable(objectName()), _mode);
   if (_mode == cNew)
+  {
     q.prepare( "DELETE FROM shiptoinfo "
                "WHERE (shipto_id=:shipto_id);" );
     q.bindValue(":shipto_id", _shiptoid);
     q.exec();
+  }
 }
 

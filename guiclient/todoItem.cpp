@@ -24,9 +24,9 @@ todoItem::todoItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   if(!_privileges->check("EditOwner")) _owner->setEnabled(false);
 
-  connect(_close,	SIGNAL(clicked()),	this,	SLOT(sClose()));
+  connect(_buttonBox,	SIGNAL(rejected()),	this,	SLOT(sClose()));
   connect(_incident,	SIGNAL(newId(int)),	this,	SLOT(sHandleIncident()));
-  connect(_save,	SIGNAL(clicked()),	this,	SLOT(sSave()));
+  connect(_buttonBox,	SIGNAL(accepted()),	this,	SLOT(sSave()));
 
   _started->setAllowNullDate(true);
   _due->setAllowNullDate(true);
@@ -113,11 +113,11 @@ enum SetResponse todoItem::set(const ParameterList &pParams)
       _alarms->setReadOnly(TRUE);
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
+      _crmacct->setReadOnly(true);
+      _cntct->setReadOnly(true);
 
-      _close->setText(tr("&Close"));
-      _save->hide();
-      
-      _close->setFocus();
+      _buttonBox->setStandardButtons(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -168,7 +168,7 @@ void todoItem::sSave()
   {
     q.prepare( "SELECT createTodoItem(:todoitem_id, :username, :name, :description, "
 	       "  :incdt_id, :crmacct_id, :ophead_id, :started, :due, :status, "
-	       "  :assigned, :completed, :priority, :notes, :owner) AS result;");
+               "  :assigned, :completed, :priority, :notes, :owner, :cntct_id) AS result;");
     storedProc = "createTodoItem";
   }
   else if (_mode == cEdit)
@@ -176,7 +176,7 @@ void todoItem::sSave()
     q.prepare( "SELECT updateTodoItem(:todoitem_id, "
 	       "  :username, :name, :description, "
 	       "  :incdt_id, :crmacct_id, :ophead_id, :started, :due, :status, "
-	       "  :assigned, :completed, :priority, :notes, :active, :owner) AS result;");
+               "  :assigned, :completed, :priority, :notes, :active, :owner, :cntct_id) AS result;");
     storedProc = "updateTodoItem";
   }
   q.bindValue(":todoitem_id", _todoitemid);
@@ -213,6 +213,9 @@ void todoItem::sSave()
   else
     status = "N";
   q.bindValue(":status", status);
+
+  if (_cntct->isValid())
+    q.bindValue(":cntct_id", _cntct->id());
 
   q.exec();
   if (q.first())
@@ -286,6 +289,7 @@ void todoItem::sPopulate()
     _description->setText(q.value("todoitem_description").toString());
     _notes->setText(q.value("todoitem_notes").toString());
     _crmacct->setId(q.value("todoitem_crmacct_id").toInt());
+    _cntct->setId(q.value("todoitem_cntct_id").toInt());
     _active->setChecked(q.value("todoitem_active").toBool());
 
     if (q.value("todoitem_status").toString() == "P")
@@ -313,6 +317,7 @@ void todoItem::sPopulate()
     _recurring->setParent(q.value("todoitem_recurring_todoitem_id").isNull() ?
                           _todoitemid : q.value("todoitem_recurring_todoitem_id").toInt(),
                           "TODO");
+    _cntct->setId(q.value("todoitem_cntct_id").toInt());
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {

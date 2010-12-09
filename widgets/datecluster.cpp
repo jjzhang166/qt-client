@@ -575,11 +575,13 @@ DateCluster::DateCluster(QWidget *pParent, const char *pName) : QWidget(pParent)
   literalLayout->setMargin(0);
   literalLayout->setObjectName(QString::fromUtf8("literalLayout"));
 
-  _startDateLit = new QLabel(tr("Start Date:"), this, "_startDateLit");
+  _startDateLit = new QLabel(tr("Start Date:"), this);
+  _startDateLit->setObjectName("_startDateLit");
   _startDateLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
   literalLayout->addWidget(_startDateLit);
 
-  _endDateLit = new QLabel(tr("End Date:"), this, "_endDateLit");
+  _endDateLit = new QLabel(tr("End Date:"), this);
+  _endDateLit->setObjectName("_endDateLit");
   _endDateLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
   literalLayout->addWidget(_endDateLit);
 
@@ -590,10 +592,12 @@ DateCluster::DateCluster(QWidget *pParent, const char *pName) : QWidget(pParent)
   dataLayout->setMargin(0);
   dataLayout->setObjectName(QString::fromUtf8("dataLayout"));
 
-  _startDate = new DLineEdit(this, "_startDate");
+  _startDate = new DLineEdit(this);
+  _startDate->setObjectName("_startDate");
   dataLayout->addWidget(_startDate);
 
-  _endDate = new DLineEdit(this, "_endDate");
+  _endDate = new DLineEdit(this);
+  _endDate->setObjectName("_endDate");
   dataLayout->addWidget(_endDate);
 
   mainLayout->addLayout(dataLayout);

@@ -65,8 +65,12 @@ protected slots:
     virtual bool sQESave();
     virtual void sTabChanged(int);
 
+signals:
+   void saved(int);
+
 private:
     void setPoheadid(const int);
+    bool _captive;
     bool _userOrderNumber;
     bool _useWarehouseFOB;
     int	_cachedTabIndex;

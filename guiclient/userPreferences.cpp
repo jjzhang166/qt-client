@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 #include <QSqlError>
+#include <QFile>
 
 #include <qmd5.h>
 #include "storedProcErrorLookup.h"
@@ -37,16 +38,18 @@ userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, 
   if(!_privileges->check("MaintainPreferencesOthers"))
     _selectedUser->setEnabled(false);
 
+  QPushButton* apply = _buttonBox->button(QDialogButtonBox::Apply);
+  connect(apply, SIGNAL(clicked()), this, SLOT(sApply()));
+  connect(_buttonBox,         SIGNAL(rejected()),     this, SLOT(sClose()));
+  connect(_buttonBox,          SIGNAL(accepted()),     this, SLOT(sSave()));
+
   connect(_backgroundList,SIGNAL(clicked()),     this, SLOT(sBackgroundList()));
-  connect(_close,         SIGNAL(clicked()),     this, SLOT(sClose()));
-  connect(_save,          SIGNAL(clicked()),     this, SLOT(sSave()));
   connect(_selectedUser,  SIGNAL(toggled(bool)), this, SLOT(sPopulate()));
   connect(_user,          SIGNAL(newID(int)),    this, SLOT(sPopulate()));
     //hot key signals and slots connections
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
   connect(_hotkey, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
   connect(_hotkey, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
   connect(_hotkey, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
@@ -167,6 +170,7 @@ void userPreferences::sPopulate()
   else
   {
     _noBackgroundImage->setChecked(TRUE);
+    _background->clear();
     _backgroundImageid = -1;
   }
 
@@ -187,6 +191,8 @@ void userPreferences::sPopulate()
     _plainText->setChecked(true);
   else
     _richText->setChecked(true);
+
+  _enableSpell->setChecked(_pref->boolean("SpellCheck"));
 
   //_rememberCheckBoxes->setChecked(! _pref->boolean("XCheckBox/forgetful"));
   
@@ -224,7 +230,7 @@ void userPreferences::sPopulate()
   else
     _ellipsesAction->setId(1);
 
-  _clusterButtons->setChecked(_pref->boolean("ClusterButtons"));
+  _alternating->setChecked(!_pref->boolean("NoAlternatingRowColors"));
     
   //Hide for PostBooks 
   if (_metrics->value("Application") == "PostBooks")
@@ -242,12 +248,35 @@ void userPreferences::sPopulate()
   sFillWarehouseList();
 }
 
-void userPreferences::sSave()
+void userPreferences::sApply()
+{
+  sSave(false);
+  sPopulate();
+}
+
+void userPreferences::sSave(bool close)
 {
   if (_backgroundImage->isChecked())
     _pref->set("BackgroundImageid", _backgroundImageid);
   else
     _pref->set("BackgroundImageid", -1);
+
+  _pref->set("SpellCheck", _enableSpell->isChecked());
+
+  if(_enableSpell->isChecked())
+  {
+      QString langName = QLocale::languageToString(QLocale().language());
+      QString appPath = QApplication::applicationDirPath();
+      QString fullPathWithoutExt = appPath + "/" + langName;
+      QFile affFile(fullPathWithoutExt + ".aff");
+      QFile dicFile(fullPathWithoutExt + ".dic");
+      if(!affFile.exists() || !dicFile.exists())
+      {
+        QMessageBox::warning( this, tr("Spell Dictionary Missing"),
+                   tr("The following Hunspell files are required for spell checking: <p>")
+                   + fullPathWithoutExt + tr(".aff <p>") + fullPathWithoutExt + tr(".dic"));
+      }
+  }
   
   _pref->set("ShowIMMenu", _inventoryMenu->isChecked());
   _pref->set("ShowPDMenu", _productsMenu->isChecked());
@@ -280,7 +309,7 @@ void userPreferences::sSave()
   else
     _pref->set("DefaultEllipsesAction", QString("list"));
 
-  _pref->set("ClusterButtons", _clusterButtons->isChecked());
+  _pref->set("NoAlternatingRowColors", !_alternating->isChecked());
 
   if(_interfaceWorkspace->isChecked())
     _pref->set("InterfaceWindowOption", QString("Workspace"));
@@ -304,13 +333,11 @@ void userPreferences::sSave()
 
   if (_currentUser->isChecked() && !_currentpassword->text().isEmpty())
   {
-    if (save())
+    if (save() && close)
      accept(); 
   }
-  else
-  {
+  else if (close)
     accept();
-  }
 }
 
 bool userPreferences::save()
@@ -362,7 +389,7 @@ bool userPreferences::save()
                 "  FROM usrpref "
                 " WHERE ( (usrpref_name = 'UseEnhancedAuthentication') "
                 "   AND (usrpref_username=:username) ); ");
-    q.bindValue(":username", _username->text().trimmed().lower());         
+    q.bindValue(":username", _username->text().trimmed().toLower());         
     q.exec();
     if(q.first())
     {

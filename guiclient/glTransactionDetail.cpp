@@ -13,6 +13,9 @@
 #include <QMessageBox>
 #include <QVariant>
 
+#include <metasql.h>
+#include "mqlutil.h"
+
 glTransactionDetail::glTransactionDetail(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -21,6 +24,7 @@ glTransactionDetail::glTransactionDetail(QWidget* parent, const char* name, bool
   _amount->setPrecision(omfgThis->moneyVal());
 
   _gltransid = -1;
+  _table = "gltrans";
 }
 
 glTransactionDetail::~glTransactionDetail()
@@ -46,29 +50,49 @@ enum SetResponse glTransactionDetail::set( const ParameterList & pParams )
     populate();
   }
 
+  param = pParams.value("sltrans_id", &valid);
+  if (valid)
+  {
+    setWindowTitle(tr("Sub Ledger"));
+    _table = "sltrans";
+    _gltransid = param.toInt();
+    populate();
+  }
+
   return NoError;
 }
 
 void glTransactionDetail::populate()
 {
-  q.prepare("SELECT *,"
-            "       (gltrans_doctype || ' ' || gltrans_docnumber) AS f_document,"
-            "       formatGLAccountLong(gltrans_accnt_id) AS f_accnt "
-            "  FROM gltrans"
-            " WHERE (gltrans_id=:gltrans_id);");
-  q.bindValue(":gltrans_id", _gltransid);
-  q.exec();
+  QString sql("SELECT <? literal(\"table\") ?>_date AS transdate, "
+            "<? literal(\"table\") ?>_source AS source, "
+            "<? literal(\"table\") ?>_journalnumber AS journalnumber, "
+            "<? literal(\"table\") ?>_amount AS amount, "
+            "<? literal(\"table\") ?>_username AS username, "
+            "<? literal(\"table\") ?>_created AS created, "
+            "<? literal(\"table\") ?>_posted AS posted, "
+            "<? literal(\"table\") ?>_notes AS notes, "
+            "       (<? literal(\"table\") ?>_doctype || ' ' || <? literal(\"table\") ?>_docnumber) AS f_document,"
+            "       formatGLAccountLong(<? literal(\"table\") ?>_accnt_id) AS f_accnt "
+            "  FROM <? literal(\"table\") ?> "
+            " WHERE (<? literal(\"table\") ?>_id=<? value(\"gltrans_id\") ?>);");
+
+  ParameterList params;
+  params.append("gltrans_id", _gltransid);
+  params.append("table", _table);
+  MetaSQLQuery mql(sql);
+  q = mql.toQuery(params);
   if(q.first())
   {
-    _date->setDate(q.value("gltrans_date").toDate());
-    _source->setText(q.value("gltrans_source").toString());
+    _date->setDate(q.value("transdate").toDate());
+    _source->setText(q.value("source").toString());
     _document->setText(q.value("f_document").toString());
-    _journalnumber->setText(q.value("gltrans_journalnumber").toString());
+    _journalnumber->setText(q.value("journalnumber").toString());
     _accnt->setText(q.value("f_accnt").toString());
-    _amount->setDouble(q.value("gltrans_amount").toDouble());
-    _username->setText(q.value("gltrans_username").toString());
-    _created->setDate(q.value("gltrans_created").toDate());
-    _posted->setText(q.value("gltrans_posted").toBool() ? tr("Yes") : tr("No"));
-    _notes->setText(q.value("gltrans_notes").toString());
+    _amount->setDouble(q.value("amount").toDouble());
+    _username->setText(q.value("username").toString());
+    _created->setDate(q.value("created").toDate());
+    _posted->setText(q.value("posted").toBool() ? tr("Yes") : tr("No"));
+    _notes->setText(q.value("notes").toString());
   }
 }

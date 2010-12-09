@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>629</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,7 +57,7 @@ to be bound by its terms.</comment>
               <bool>false</bool>
              </property>
              <property name="fieldName">
-              <string>lsreg_number</string>
+              <string notr="true">lsreg_number</string>
              </property>
             </widget>
            </item>
@@ -80,7 +80,7 @@ to be bound by its terms.</comment>
               <enum>XComboBox::RegistrationTypes</enum>
              </property>
              <property name="fieldName">
-              <string>lsreg_regtype_id</string>
+              <string notr="true">lsreg_regtype_id</string>
              </property>
             </widget>
            </item>
@@ -120,16 +120,12 @@ to be bound by its terms.</comment>
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_cancel">
-           <property name="text">
-            <string>&amp;Cancel</string>
+          <widget class="QDialogButtonBox" name="_buttonBox">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_save">
-           <property name="text">
-            <string>&amp;Save</string>
+           <property name="standardButtons">
+            <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
            </property>
           </widget>
          </item>
@@ -157,7 +153,7 @@ to be bound by its terms.</comment>
          <property name="title">
           <string/>
          </property>
-         <layout class="QGridLayout">
+         <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0" colspan="3">
            <widget class="ItemCluster" name="_item">
             <property name="focusPolicy">
@@ -173,70 +169,30 @@ to be bound by its terms.</comment>
             <property name="label">
              <string>  Lot/Serial #:</string>
             </property>
-            <property name="infoVisible">
-             <bool>true</bool>
-            </property>
             <property name="fieldName">
-             <string>lsreg_ls_id</string>
+             <string notr="true">lsreg_ls_id</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <layout class="QVBoxLayout">
-            <property name="topMargin">
-             <number>3</number>
+           <widget class="QLabel" name="_qtyLit">
+            <property name="text">
+             <string>Qty:</string>
             </property>
-            <item>
-             <layout class="QHBoxLayout">
-              <item>
-               <widget class="QLabel" name="_qtyLit">
-                <property name="text">
-                 <string>Qty:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="buddy">
-                 <cstring>_qty</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="XLineEdit" name="_qty">
-                <property name="fieldName">
-                 <string>lsreg_qty</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>16</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>_qty</cstring>
+            </property>
+           </widget>
           </item>
           <item row="1" column="2">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="XLineEdit" name="_qty">
+            <property name="fieldName">
+             <string notr="true">lsreg_qty</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>0</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -275,11 +231,8 @@ to be bound by its terms.</comment>
           </item>
           <item row="1" column="1">
            <widget class="DLineEdit" name="_soldDate">
-            <property name="toolTip">
-             <string>sold_date</string>
-            </property>
             <property name="fieldName">
-             <string>lsreg_solddate</string>
+             <string notr="true">lsreg_solddate</string>
             </property>
            </widget>
           </item>
@@ -311,9 +264,6 @@ to be bound by its terms.</comment>
           </item>
           <item row="2" column="1">
            <widget class="DLineEdit" name="_expireDate">
-            <property name="toolTip">
-             <string>expire_date</string>
-            </property>
             <property name="date">
              <date>
               <year>2000</year>
@@ -322,17 +272,14 @@ to be bound by its terms.</comment>
              </date>
             </property>
             <property name="fieldName">
-             <string>lsreg_expiredate</string>
+             <string notr="true">lsreg_expiredate</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="DLineEdit" name="_regDate">
-            <property name="toolTip">
-             <string>register_date</string>
-            </property>
             <property name="fieldName">
-             <string>lsreg_regdate</string>
+             <string notr="true">lsreg_regdate</string>
             </property>
            </widget>
           </item>
@@ -344,19 +291,36 @@ to be bound by its terms.</comment>
          <property name="title">
           <string/>
          </property>
-         <layout class="QGridLayout">
+         <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
-           <widget class="CRMAcctCluster" name="_crmacct">
-            <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
-            </property>
-            <property name="label">
-             <string>CRM Account:</string>
-            </property>
-            <property name="fieldName">
-             <string>lsreg_crmacct_id</string>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="CRMAcctCluster" name="_crmacct">
+              <property name="focusPolicy">
+               <enum>Qt::StrongFocus</enum>
+              </property>
+              <property name="label">
+               <string>CRM Account:</string>
+              </property>
+              <property name="fieldName">
+               <string notr="true">lsreg_crmacct_id</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -366,7 +330,7 @@ to be bound by its terms.</comment>
          <property name="title">
           <string/>
          </property>
-         <layout class="QGridLayout">
+         <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
            <layout class="QVBoxLayout">
             <property name="topMargin">
@@ -380,9 +344,6 @@ to be bound by its terms.</comment>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
-              <property name="buddy">
-               <cstring>_so</cstring>
-              </property>
              </widget>
             </item>
             <item>
@@ -401,70 +362,35 @@ to be bound by its terms.</comment>
            </layout>
           </item>
           <item row="0" column="1">
-           <widget class="SoCluster" name="_so">
-            <property name="minimumSize">
-             <size>
-              <width>140</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
-            </property>
+           <widget class="OrderCluster" name="_so">
             <property name="label">
              <string/>
-            </property>
-            <property name="fieldName">
-             <string>lsreg_cohead_id</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <layout class="QVBoxLayout">
-            <property name="topMargin">
-             <number>3</number>
+           <widget class="QLabel" name="_shipmentLit">
+            <property name="text">
+             <string>Shipment #:</string>
             </property>
-            <item>
-             <widget class="QLabel" name="_shipmentLit">
-              <property name="text">
-               <string>Shipment #:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="buddy">
-               <cstring>_shipment</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>_shipment</cstring>
+            </property>
+           </widget>
           </item>
           <item row="1" column="1">
            <widget class="ShipmentCluster" name="_shipment">
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
-            <property name="infoVisible">
-             <bool>true</bool>
-            </property>
             <property name="nameVisible">
              <bool>false</bool>
             </property>
             <property name="fieldName">
-             <string>lsreg_shiphead_id</string>
+             <string notr="true">lsreg_shiphead_id</string>
             </property>
            </widget>
           </item>
@@ -496,7 +422,7 @@ to be bound by its terms.</comment>
              <item>
               <widget class="ContactCluster" name="_cntct">
                <property name="fieldName">
-                <string>lsreg_cntct_id</string>
+                <string notr="true">lsreg_cntct_id</string>
                </property>
                <property name="accountVisible" stdset="0">
                 <bool>false</bool>
@@ -619,7 +545,7 @@ to be bound by its terms.</comment>
          <item row="0" column="0">
           <widget class="XTextEdit" name="_notes">
            <property name="fieldName">
-            <string>lsreg_notes</string>
+            <string notr="true">lsreg_notes</string>
            </property>
           </widget>
          </item>
@@ -660,14 +586,14 @@ to be bound by its terms.</comment>
    <header>lotserialcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>OrderCluster</class>
+   <extends>QWidget</extends>
+   <header>ordercluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>ShipmentCluster</class>
    <extends>QWidget</extends>
    <header>shipmentcluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SoCluster</class>
-   <extends>QWidget</extends>
-   <header>socluster.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
@@ -711,27 +637,9 @@ to be bound by its terms.</comment>
   <tabstop>_editChar</tabstop>
   <tabstop>_deleteChar</tabstop>
   <tabstop>_notes</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_cancel</tabstop>
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>_cancel</sender>
-   <signal>clicked()</signal>
-   <receiver>lotSerialRegistration</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>673</x>
-     <y>34</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>497</x>
-     <y>6</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>_item</sender>
    <signal>newId(int)</signal>
@@ -761,22 +669,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>28</x>
      <y>527</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_so</sender>
-   <signal>newId(int)</signal>
-   <receiver>_shipment</receiver>
-   <slot>limitToOrder(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>658</x>
-     <y>342</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>658</x>
-     <y>401</y>
     </hint>
    </hints>
   </connection>
@@ -841,6 +733,22 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>608</x>
      <y>506</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>lotSerialRegistration</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>745</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>

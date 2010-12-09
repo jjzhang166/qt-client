@@ -27,6 +27,12 @@ class GuiClientInterface
     virtual const XSqlQuery* globalQ() const = 0;
     virtual void addDocumentWatch(QString path, int id) = 0;
     virtual void removeDocumentWatch(QString path) = 0;
+
+    virtual bool hunspell_ready() = 0;
+    virtual int hunspell_check(const QString word) = 0;
+    virtual const QStringList hunspell_suggest(const QString word) = 0;
+    virtual int hunspell_add(const QString word) = 0;
+    virtual int hunspell_ignore(const QString word) = 0;
 };
 
 #endif

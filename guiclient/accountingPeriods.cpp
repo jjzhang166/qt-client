@@ -10,6 +10,7 @@
 
 #include "accountingPeriods.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
 
@@ -72,56 +73,38 @@ void accountingPeriods::languageChange()
 
 void accountingPeriods::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
   int altId = ((XTreeWidgetItem *)pSelected)->altId();
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainAccountingPeriods"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainAccountingPeriods"));
   }
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainAccountingPeriods"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainAccountingPeriods"));
   }
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Close..."), this, SLOT(sClosePeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Close..."), this, SLOT(sClosePeriod()));
   }
   else if (altId == 1)
   {
-    menuItem = pMenu->insertItem(tr("Open..."), this, SLOT(sOpenPeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Open..."), this, SLOT(sOpenPeriod()));
 
-    menuItem = pMenu->insertItem(tr("Freeze..."), this, SLOT(sFreezePeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Freeze..."), this, SLOT(sFreezePeriod()));
   }
   else if (altId == 2)
   {
-    menuItem = pMenu->insertItem(tr("Thaw..."), this, SLOT(sThawPeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Thaw..."), this, SLOT(sThawPeriod()));
   }
 }
 

@@ -13,8 +13,10 @@
 
 #include "vendorgroup.h"
 
-VendorGroup::VendorGroup(QWidget *pParent, const char *pName) : QWidget(pParent, pName)
+VendorGroup::VendorGroup(QWidget *pParent, const char *pName) : QWidget(pParent)
 {
+  setObjectName(pName);
+
   setupUi(this);
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));

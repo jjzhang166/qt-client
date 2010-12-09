@@ -12,12 +12,12 @@
 #define DSPTIMEPHASEDOPENARITEMS_H
 
 #include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_dspTimePhasedOpenARItems.h"
 
-class dspTimePhasedOpenARItems : public XWidget, public Ui::dspTimePhasedOpenARItems
+class dspTimePhasedOpenARItems : public display, public Ui::dspTimePhasedOpenARItems
 {
     Q_OBJECT
 
@@ -28,8 +28,6 @@ public:
     virtual bool setParams(ParameterList &);
 
 public slots:
-    virtual void sPrint();
-    virtual void sSubmit();
     virtual void sViewOpenItems();
     virtual void sPrintStatement();
     virtual void sPopulateMenu( QMenu *, QTreeWidgetItem *, int ); 
@@ -37,9 +35,6 @@ public slots:
     virtual void sFillStd();
     virtual void sFillCustom();
     virtual void sToggleCustom();
-
-protected slots:
-    virtual void languageChange();
 
 private:
     int _column;

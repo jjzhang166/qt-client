@@ -61,6 +61,7 @@
                                   END ) ) AS f_credit
            FROM gltrans, accnt
           WHERE ( (gltrans_accnt_id=accnt_id)
+            AND (NOT gltrans_deleted)
             AND (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
          &lt;? if exists("source") ?>
             AND (gltrans_source=&lt;? value("source") ?>)
@@ -89,6 +90,7 @@
                 END AS f_creditdetail
            FROM gltrans, accnt
           WHERE ((gltrans_accnt_id=accnt_id)
+            AND (NOT gltrans_deleted)
             AND (gltrans_date BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
          &lt;? if exists("source") ?>
             AND (gltrans_source=&lt;? value("source") ?>)

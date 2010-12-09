@@ -26,7 +26,53 @@ ExternalCCProcessor::ExternalCCProcessor() : CreditCardProcessor()
   _defaultTestServer = "";
 }
 
-int  ExternalCCProcessor::doAuthorize(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
+/** \brief Simplify CreditCardProcessor's implementation - we really don't care about
+           much with the external credit card processor.
+ */
+int ExternalCCProcessor::testConfiguration()
+{
+  if (DEBUG)
+    qDebug("ExternalCCProcessor::testConfiguration()");
+  reset();
+
+  if (!_privileges->check("ProcessCreditCards"))
+  {
+    _errorMsg = errorMsg(-2);
+    return -2;
+  }
+
+  if(!_metrics->boolean("CCAccept"))
+  {
+    _errorMsg = errorMsg(-3);
+    return -3;
+  }
+
+  XSqlQuery ccbankq("SELECT ccbank_id"
+                    "  FROM ccbank"
+                    " WHERE (ccbank_bankaccnt_id IS NOT NULL);");
+  if (ccbankq.first())
+    ; // we're ok - we can accept at least one credit card
+  else if (ccbankq.lastError().type() != QSqlError::NoError)
+  {
+    _errorMsg = ccbankq.lastError().text();
+    return -1;
+  }
+  else
+  {
+    _errorMsg = errorMsg(-4);
+    return -4;
+  }
+
+  if (omfgThis->_key.isEmpty())
+  {
+    _errorMsg = errorMsg(-5);
+    return -5;
+  }
+
+  return 0;
+}
+
+int ExternalCCProcessor::doAuthorize(const int pccardid, const int pcvv, double &pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
     qDebug("ExtCC:doAuthorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %s, %d)",

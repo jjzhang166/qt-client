@@ -11,6 +11,7 @@
 #include "itemSites.h"
 
 #include <QKeyEvent>
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -180,13 +181,12 @@ void itemSites::sDelete()
 
 void itemSites::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("View Item Site"), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View Item Site"), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Edit Item Site"), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainItemSites"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit Item Site"), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSites"));
 }
 
 void itemSites::sFillList()
@@ -241,12 +241,12 @@ void itemSites::sSearch(const QString &pTarget)
 void itemSites::keyPressEvent( QKeyEvent * e )
 {
 #ifdef Q_WS_MAC
-  if(e->key() == Qt::Key_N && e->state() == Qt::ControlModifier)
+  if(e->key() == Qt::Key_N && (e->modifiers() & Qt::ControlModifier))
   {
     _new->animateClick();
     e->accept();
   }
-  else if(e->key() == Qt::Key_E && e->state() == Qt::ControlModifier)
+  else if(e->key() == Qt::Key_E && (e->modifiers() & Qt::ControlModifier))
   {
     _edit->animateClick();
     e->accept();

@@ -8,845 +8,412 @@
  * to be bound by its terms.
  */
 
-#include <Q3DragObject>
+//#include <QApplication>
 #include <QHBoxLayout>
-#include <QDragEnterEvent>
-#include <QDropEvent>
 #include <QLabel>
 #include <QMessageBox>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <QSqlError>
 #include <QVBoxLayout>
-#include <QValidator>
 
 #include <metasql.h>
 #include <parameter.h>
 #include <xsqlquery.h>
 
-#include "crmacctcluster.h"
-
 #include "custcluster.h"
+#include "format.h"
+#include "storedProcErrorLookup.h"
 
-//  Routines for CLineEdit - a customer and prospect validating QLineEdit
-CLineEdit::CLineEdit(QWidget *pParent, const char *name) :
-  XLineEdit(pParent, name)
+#define DEBUG false
+
+CLineEdit::CLineEdit(QWidget *pParent, const char *pName) :
+  VirtualClusterLineEdit(pParent, "cust", "id", "number", "name", "description", 0, pName, "active")
 {
-  setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-  setMaximumWidth(100);
-
-  setAcceptDrops(TRUE);
-
-  _id       = -1;
   _crmacctId = -1;
-  _valid    = FALSE;
-  _parsed   = TRUE;
-  _dragging = FALSE;
   _type     = AllCustomers;
-  _autoFocus = true;
+  _subtype  = CRMAcctLineEdit::Cust;
+  _canEdit = false;
+  _editMode = false;
 
-  connect(this, SIGNAL(lostFocus()), this, SLOT(sParse()));
-  connect(this, SIGNAL(requestSearch()), this, SLOT(sSearch()));
-  connect(this, SIGNAL(requestList()), this, SLOT(sList()));
+  setTitles(tr("Customer"), tr("Customers"));
+  setUiName("customer");
+  setEditPriv("MaintainCustomerMasters");
+  setViewPriv("ViewCustomerMasters");
+  setNewPriv("MaintainCustomerMasters");
+
+  _query = " SELECT * FROM ( "
+           "  SELECT cust_id AS id, "
+           "         cust_number AS number, "
+           "         cust_name AS name,"
+           "         addr_line1 AS description,"
+           "         cust_active AS active, "
+           "         cust_creditstatus, "
+           "         crmacct_id, true AS iscustomer, "
+           "         addr.*, cntct.*, "
+           "         formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street "
+           "  FROM custinfo "
+           "    LEFT OUTER JOIN cntct  ON (cust_cntct_id=cntct_id) "
+           "    LEFT OUTER JOIN addr   ON (cntct_addr_id=addr_id) "
+           "    LEFT OUTER JOIN crmacct ON (crmacct_cust_id=cust_id) "
+           "  UNION "
+           "  SELECT prospect_id AS id, "
+           "         prospect_number AS number,"
+           "         prospect_name AS name,"
+           "         addr_line1 AS description,"
+           "         prospect_active AS active, "
+           "         'G' AS cust_creditstatus, "
+           "         crmacct_id, false AS iscustomer, "
+           "         addr.*, cntct.*, "
+           "         formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street "
+           "  FROM prospect "
+           "    LEFT OUTER JOIN cntct  ON (prospect_cntct_id=cntct_id) "
+           "    LEFT OUTER JOIN addr   ON (cntct_addr_id=addr_id) "
+           "    LEFT OUTER JOIN crmacct ON (crmacct_prospect_id=prospect_id) "
+           "  ) cust "
+           "WHERE (true) ";
+
+  _modeSep = 0;
+  _modeAct = new QAction(tr("Edit Number"), this);
+  _modeAct->setToolTip(tr("Sets number for editing"));
+  _modeAct->setCheckable(true);
+  connect(_modeAct, SIGNAL(triggered(bool)), this, SLOT(setEditMode(bool)));
 }
 
-void CLineEdit::setAutoFocus(bool yes)
+void CLineEdit::sNew()
 {
-  _autoFocus = yes;
-}
+  QString uiName="customer";
+  ParameterList params;
+  QMessageBox ask(this);
+  ask.setIcon(QMessageBox::Question);
+  QPushButton *pbutton = ask.addButton(tr("Prospect"), QMessageBox::YesRole);
+  QPushButton *cbutton = ask.addButton(tr("Customer"), QMessageBox::YesRole);
+  ask.setDefaultButton(cbutton);
+  ask.setWindowTitle(tr("Customer or Prospect?"));
 
-void CLineEdit::sEllipses()
-{
-  if(_x_preferences)
+  if (_subtype == CRMAcctLineEdit::Prospect ||
+      (_subtype == CRMAcctLineEdit::CustAndProspect &&
+       !_x_privileges->check("MaintainCustomerMasters")))
   {
-    if(_x_preferences->value("DefaultEllipsesAction") == "search")
+    params.append("mode", "new");
+    uiName="prospect";
+  }
+  if (_subtype == CRMAcctLineEdit::CustAndProspect &&
+       !_x_privileges->check("MaintainProspectMasters"))
+    params.append("mode", "new");
+  else
+  {
+    if (_subtype == CRMAcctLineEdit::Cust)
+      ask.setText(tr("<p>Would you like to create a new Customer or convert "
+                     "an existing Prospect?"));
+    else
+      ask.setText(tr("<p>Would you like to create a new Customer or "
+                     "a new Prospect?"));
+
+    ask.exec();
+
+    if (ask.clickedButton() == pbutton &&
+        _subtype == CRMAcctLineEdit::Cust)  // converting prospect
     {
-      sSearch();
-      return;
+      int prospectid = -1;
+      if (_x_preferences->value("DefaultEllipsesAction") == "search")
+      {
+        CRMAcctSearch* search = new CRMAcctSearch(this);
+        search->setSubtype(CRMAcctLineEdit::Prospect);
+        prospectid = search->exec();
+      }
+      else
+      {
+        CRMAcctList* list = new CRMAcctList(this);
+        list->setSubtype(CRMAcctLineEdit::Prospect);
+        prospectid = list->exec();
+      }
+
+      if (prospectid > 0)
+      {
+        XSqlQuery convertq;
+        convertq.prepare("SELECT convertProspectToCustomer(:id) AS result;");
+        convertq.bindValue(":id", prospectid);
+        convertq.exec();
+        if (convertq.first())
+        {
+          int result = convertq.value("result").toInt();
+          if (result < 0)
+          {
+            QMessageBox::critical(this, tr("Processing Error"),
+                                  storedProcErrorLookup("convertProspectToCustomer", result));
+            return;
+          }
+          params.append("cust_id", prospectid);
+          params.append("mode", "edit");
+        }
+      }
+      else
+        return;
+    }
+    else
+    {
+      params.append("mode", "new");
+      if (ask.clickedButton() == pbutton)
+        uiName = "prospect";
     }
   }
 
-  sList();
+  sOpenWindow(uiName, params);
 }
-
-void CLineEdit::sSearch()
-{
-  CRMAcctSearch * newdlg = new CRMAcctSearch(this);
-  newdlg->setId(_id);
-
-  int id = newdlg->exec();
-  if (id != QDialog::Rejected)
-  {
-    setId(id);
-
-    if (_autoFocus && id != -1)
-      focusNextPrevChild(TRUE);
-  }
-}
-
-void CLineEdit::sList()
-{
-  CRMAcctList * newdlg = new CRMAcctList(this);
-  newdlg->setId(_id);
-
-  int id = newdlg->exec();
-  setId(id);
-
-  if (_autoFocus && id != -1)
-  {
-    this->setFocus();
-    focusNextPrevChild(TRUE);
-  }
-}
-
-void CLineEdit::setSilentId(int pId)
-{
-//  Make sure there's a change
-  if (pId == _id)
-    return;
-
-  if (pId != -1)
-  {
-    QString sql( "<? if exists(\"customer\") ?>"
-                 "  SELECT cust_number,"
-                 "         cust_name,"
-                 "         addr_line1, addr_line2, addr_line3,"
-                 "         addr_city,  addr_state, addr_postalcode,"
-                 "         addr_country, cust_creditstatus, "
-                 "         cntct_addr_id, cust_cntct_id, "
-                 "         crmacct_id "
-                 "  FROM custinfo LEFT OUTER JOIN "
-                 "       cntct ON (cust_cntct_id=cntct_id) LEFT OUTER JOIN "
-                 "       addr  ON (cntct_addr_id=addr_id) "
-                 "       JOIN crmacct ON (crmacct_cust_id=cust_id) "
-                 "  WHERE ( (cust_id=<? value(\"id\") ?>) "
-                 "  <? if exists(\"active\") ?>"
-                 "   AND (cust_active)"
-                 "  <? endif ?>"
-                 "  <? if exists(\"customer_extraclause\") ?>"
-                 "  AND (<? literal(\"customer_extraclause\") ?>)"
-                 "  <? endif ?>"
-                 "  <? if exists(\"all_extraclause\") ?>"
-                 "  AND (<? literal(\"all_extraclause\") ?>)"
-                 "  <? endif ?>"
-                 "  )"
-                 "<? endif ?>"
-                 "<? if exists(\"prospect\") ?>"
-                 "  <? if exists(\"customer\") ?>"
-                 "    UNION"
-                 "  <? endif ?>"
-                 "  SELECT prospect_number AS cust_number,"
-                 "         prospect_name AS cust_name,"
-                 "         addr_line1, addr_line2, addr_line3,"
-                 "         addr_city,  addr_state, addr_postalcode,"
-                 "         addr_country, '' AS cust_creditstatus, "
-                 "         cntct_addr_id, prospect_cntct_id AS cust_cntct_id, "
-                 "         crmacct_id "
-                 "  FROM prospect LEFT OUTER JOIN "
-                 "       cntct ON (prospect_cntct_id=cntct_id) LEFT OUTER JOIN "
-                 "       addr  ON (cntct_addr_id=addr_id) "
-                 "       JOIN crmacct ON (crmacct_prospect_id=prospect_id) "
-                 "  WHERE ( (prospect_id=<? value(\"id\") ?>) "
-                 "  <? if exists(\"active\") ?>"
-                 "   AND (prospect_active)"
-                 "  <? endif ?>"
-                 "  <? if exists(\"prospect_extraclause\") ?>"
-                 "  AND (<? literal(\"prospect_extraclause\") ?>)"
-                 "  <? endif ?>"
-                 "  <? if exists(\"all_extraclause\") ?>"
-                 "  AND (<? literal(\"all_extraclause\") ?>)"
-                 "  <? endif ?>"
-                 "  )"
-                 "<? endif ?>"
-                 ";");
-
-    ParameterList params;
-    params.append("id", pId);
-    switch (_type)
-    {
-      case ActiveCustomers:
-        params.append("active");
-        // fall-through
-      case AllCustomers:
-        params.append("customer");
-        break;
-
-      case ActiveProspects:
-        params.append("active");
-        // fall-through
-      case AllProspects:
-        params.append("prospect");
-        break;
-
-      case ActiveCustomersAndProspects:
-        params.append("active");
-        // fall-through
-      case AllCustomersAndProspects:
-        params.append("customer");
-        params.append("prospect");
-        break;
-    }
-    if (! _all_extraclause.isEmpty())
-      params.append("all_extraclause", _all_extraclause);
-    if (! _customer_extraclause.isEmpty())
-      params.append("customer_extraclause", _customer_extraclause);
-    if (! _prospect_extraclause.isEmpty())
-      params.append("prospect_extraclause", _prospect_extraclause);
-
-    MetaSQLQuery mql(sql);
-    XSqlQuery cust = mql.toQuery(params);
-
-    if (cust.first())
-    {
-      _id = pId;
-      _crmacctId = cust.value("crmacct_id").toInt();
-      setText(cust.value("cust_number").toString());
-
-      emit custNumberChanged(cust.value("cust_number").toString());
-      emit custNameChanged(cust.value("cust_name").toString());
-      emit custAddr1Changed(cust.value("addr_line1").toString());
-      emit custAddr2Changed(cust.value("addr_line2").toString());
-      emit custAddr3Changed(cust.value("addr_line3").toString());
-      emit custCityChanged(cust.value("addr_city").toString());
-      emit custStateChanged(cust.value("addr_state").toString());
-      emit custZipCodeChanged(cust.value("addr_postalcode").toString());
-      emit custCountryChanged(cust.value("addr_country").toString());
-      emit creditStatusChanged(cust.value("cust_creditstatus").toString());
-      emit custAddressChanged(cust.value("cntct_addr_id").toInt());
-      emit custContactChanged(cust.value("cust_cntct_id").toInt());
-
-      _valid = TRUE;
-
-      return;
-    }
-    else if (cust.lastError().type() != QSqlError::NoError)
-      QMessageBox::critical(this, tr("A System Error occurred at %1::%2.")
-                            .arg(__FILE__)
-                            .arg(__LINE__),
-                            cust.lastError().databaseText());
-//qDebug("the query: %s", cust.lastQuery().toAscii().data());
-  }
-
-//  A valid cust could not be found, clear the cust information
-  _id = -1;
-  setText("");
-
-  emit custNumberChanged("");
-  emit custNameChanged("");
-  emit custAddr1Changed("");
-  emit custAddr2Changed("");
-  emit custAddr3Changed("");
-  emit custCityChanged("");
-  emit custStateChanged("");
-  emit custZipCodeChanged("");
-  emit custCountryChanged("");
-  emit creditStatusChanged("");
-  emit custAddressChanged(-1);
-  emit custContactChanged(-1);
-
-  _valid = FALSE;
-}
-
 
 void CLineEdit::setId(int pId)
 {
-  if (_id == pId)
-    return;
-    
-  setSilentId(pId);
+  VirtualClusterLineEdit::setId(pId);
+  if (model() && _id != -1)
+  {
+    if (model()->data(model()->index(0,ISCUSTOMER)).toBool())
+    {
+      setUiName("customer");
+      setEditPriv("MaintainCustomerMasters");
+      setViewPriv("ViewCustomerMasters");
+      setNewPriv("MaintainCustomerMasters");
+      _idColName="cust_id";
+    }
+    else
+    {
+      setUiName("prospect");
+      setEditPriv("MaintainProspectMasters");
+      setViewPriv("ViewProspectMasters");
+      setNewPriv("MaintainProspectMasters");
+      _idColName="prospect_id";
+    }
+    sUpdateMenu();
 
-//  Emit the item information signals
-  emit newId(_id);
-  emit newCrmacctId(_crmacctId);
-  emit valid(_valid);
+    _crmacctId = model()->data(model()->index(0,CRMACCT_ID)).toInt();
+
+    emit newCrmacctId(_crmacctId);
+
+    // Handle Credit Status
+    QString status = model()->data(model()->index(0,CREDITSTATUS)).toString();
+
+    if (!editMode() && status != "G")
+    {
+      if (status == "W")
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/credit_warn.png"));
+      else
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/credit_hold.png"));
+
+      return;
+    }
+  }
+
+  if (_editMode)
+    _menuLabel->setPixmap(QPixmap(":/widgets/images/edit.png"));
+  else
+    _menuLabel->setPixmap(QPixmap(":/widgets/images/magnifier.png"));
 }
-
-
-void CLineEdit::setNumber(const QString& pNumber)
-{
-    _parsed = false;
-    setText(pNumber);
-    sParse();
-}
-
 
 void CLineEdit::setType(CLineEditTypes pType)
 {
   _type = pType;
+  QStringList list;
+  switch (_type)
+  {
+  case ActiveCustomers:
+    list.append("active");
+    // fall-through
+  case AllCustomers:
+    list.append("iscustomer");
+    _subtype = CRMAcctLineEdit::Cust;
+    break;
+
+  case ActiveProspects:
+    list.append("active");
+    // fall-through
+  case AllProspects:
+    list.append("NOT iscustomer");
+    _subtype = CRMAcctLineEdit::Prospect;
+    break;
+
+  case ActiveCustomersAndProspects:
+    list.append("active");
+    // fall-through
+  case AllCustomersAndProspects:
+    _subtype = CRMAcctLineEdit::CustAndProspect;
+    break;
+  }
+  list.removeDuplicates();
+  setExtraClause(list.join(" AND "));
 }
 
-void CLineEdit::setExtraClause(CLineEditTypes type, const QString &clause)
+VirtualList* CLineEdit::listFactory()
 {
-  switch (type)
+  CRMAcctList* list = new CRMAcctList(this);
+  list->setSubtype(_subtype);
+  return list;
+}
+
+VirtualSearch* CLineEdit::searchFactory()
+{
+  CRMAcctSearch* search = new CRMAcctSearch(this);
+  search->setSubtype(_subtype);
+  return search;
+}
+
+bool CLineEdit::canEdit()
+{
+  return _canEdit;
+}
+
+void CLineEdit::setCanEdit(bool p)
+{
+  if (p == _canEdit)
+    return;
+
+  if (!p)
+    setEditMode(false);
+
+  _canEdit=p;
+
+  sUpdateMenu();
+}
+
+bool CLineEdit::editMode()
+{
+  return _editMode;
+}
+
+bool CLineEdit::setEditMode(bool p)
+{
+  if (p == _editMode)
+    return p;
+
+  if (!_canEdit)
+    return false;
+
+  _editMode=p;
+  _modeAct->setChecked(p);
+
+  if (_x_preferences)
   {
-    case AllCustomers:
-    case ActiveCustomers:
-      _all_extraclause = QString::null;
-      _customer_extraclause = QString(clause);
-      _prospect_extraclause = QString::null;
-      break;
+    if (!_x_preferences->boolean("ClusterButtons"))
+    {
+      if (_editMode)
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/edit.png"));
+      else
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/magnifier.png"));
+    }
 
-    case AllProspects:
-    case ActiveProspects:
-      _all_extraclause = QString::null;
-      _customer_extraclause = QString::null;
-      _prospect_extraclause = QString(clause);
-      break;
-
-    case AllCustomersAndProspects:
-    case ActiveCustomersAndProspects:
-      _all_extraclause = QString(clause);
-      _customer_extraclause = QString::null;
-      _prospect_extraclause = QString::null;
-      break;
-
-    default:
-      _all_extraclause = QString::null;
-      _customer_extraclause = QString::null;
-      _prospect_extraclause = QString::null;
-      qWarning("%s::setExtraClause(%d, %s) called with bad type",
-               qPrintable(objectName()), type, qPrintable(clause));
+    if (!_x_metrics->boolean("DisableAutoComplete") && _editMode)
+      disconnect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
+    else if (!_x_metrics->boolean("DisableAutoComplete"))
+      connect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
   }
+  sUpdateMenu();
+
+  setDisabled(_editMode &&
+              _x_metrics->value("CRMAccountNumberGeneration") == "A");
+
+ if (!_editMode)
+   selectAll();
+
+  emit editable(p);
+  return p;
 }
 
 void CLineEdit::sParse()
 {
-  if (!_parsed)
-  {
-    _parsed = TRUE;
-
-    QString stripped = text().trimmed().toUpper();
-    if (stripped.length() == 0)
-      setId(-1);
-    QString sql("<? if exists(\"customer\") ?>"
-                "  SELECT cust_number, cust_id"
-                "  FROM custinfo "
-                "  WHERE ((UPPER(cust_number)=UPPER(<? value(\"number\") ?>))"
-                "  <? if exists(\"active\") ?>"
-                "   AND (cust_active)"
-                "  <? endif ?>"
-                "  <? if exists(\"customer_extraclause\") ?>"
-                "  AND (<? literal(\"customer_extraclause\") ?>)"
-                "  <? endif ?>"
-                "  <? if exists(\"all_extraclause\") ?>"
-                "  AND (<? literal(\"all_extraclause\") ?>)"
-                "  <? endif ?>"
-                "  )"
-                "<? endif ?>"
-                "<? if exists(\"prospect\") ?>"
-                "  <? if exists(\"customer\") ?>"
-                "    UNION"
-                "  <? endif ?>"
-                "  SELECT prospect_number AS cust_number,"
-                "         prospect_id AS cust_id "
-                "  FROM prospect "
-                "  WHERE ((UPPER(prospect_number)=UPPER(<? value(\"number\") ?>))"
-                "  <? if exists(\"active\") ?>"
-                "   AND (prospect_active)"
-                "  <? endif ?>"
-                "  <? if exists(\"prospect_extraclause\") ?>"
-                "  AND (<? literal(\"prospect_extraclause\") ?>)"
-                "  <? endif ?>"
-                "  <? if exists(\"all_extraclause\") ?>"
-                "  AND (<? literal(\"all_extraclause\") ?>)"
-                "  <? endif ?>"
-                "  )"
-                "<? endif ?>"
-                ";");
-
-    ParameterList params;
-    params.append("number", stripped);
-    switch (_type)
-    {
-      case ActiveCustomers:
-        params.append("active");
-        // fall-through
-      case AllCustomers:
-        params.append("customer");
-        break;
-
-      case ActiveProspects:
-        params.append("active");
-        // fall-through
-      case AllProspects:
-        params.append("prospect");
-        break;
-
-      case ActiveCustomersAndProspects:
-        params.append("active");
-        // fall-through
-      case AllCustomersAndProspects:
-        params.append("customer");
-        params.append("prospect");
-        break;
-    }
-
-    MetaSQLQuery mql(sql);
-    XSqlQuery cust = mql.toQuery(params);
-    if (cust.first())
-    {
-      setText(cust.value("cust_number").toString());
-      setId(cust.value("cust_id").toInt());
-    }
-    else
-    {
-      if (cust.lastError().type() != QSqlError::NoError)
-        QMessageBox::critical(this, tr("A System Error occurred at %1::%2.")
-                              .arg(__FILE__)
-                              .arg(__LINE__),
-                              cust.lastError().databaseText());
-      setText("");
-      setId(-1);
-    }
-//qDebug("the query: %s", cust.lastQuery().toAscii().data());
-  }
-}
-
-void CLineEdit::mousePressEvent(QMouseEvent *pEvent)
-{
-  QLineEdit::mousePressEvent(pEvent);
-
-  if (_valid)
-    _dragging = TRUE;
-}
-
-void CLineEdit::mouseMoveEvent(QMouseEvent *)
-{
-  if (_dragging)
-  {
-    Q3DragObject *drag = new Q3TextDrag(QString("custid=%1").arg(_id), this);
-    drag->dragCopy();
-
-    _dragging = FALSE;
-  }
-}
-
-void CLineEdit::dragEnterEvent(QDragEnterEvent *pEvent)
-{
-  QString dragData;
-
-  if (Q3TextDrag::decode(pEvent, dragData))
-  {
-    if (dragData.contains("custid="))
-      pEvent->accept(TRUE);
-  }
-
-  pEvent->accept(FALSE);
-}
-
-void CLineEdit::dropEvent(QDropEvent *pEvent)
-{
-  QString dropData;
-
-  if (Q3TextDrag::decode(pEvent, dropData))
-  {
-    if (dropData.contains("custid="))
-    {
-      QString target = dropData.mid((dropData.find("custid=") + 7), (dropData.length() - 7));
-
-      if (target.contains(","))
-        target = target.left(target.find(","));
-      setId(target.toInt());
-    }
-  }
-}
-
-void CLineEdit::keyPressEvent(QKeyEvent * pEvent)
-{
-  if(pEvent->key() == Qt::Key_Tab)
-    sParse();
-  XLineEdit::keyPressEvent(pEvent);
-}
-
-/////////////////////////////////////////////////////////
-
-CustInfoAction* CustInfo::_custInfoAction = 0;
-CustInfo::CustInfo(QWidget *pParent, const char *name) :
-  QWidget(pParent, name)
-{
-//  Create and place the component Widgets
-  QHBoxLayout *layoutMain = new QHBoxLayout(this, 0, 6, "layoutMain"); 
-  QHBoxLayout *layoutNumber = new QHBoxLayout(0, 0, 6, "layoutNumber"); 
-  QHBoxLayout *layoutButtons = new QHBoxLayout(0, 0, -1, "layoutButtons"); 
-
-  _customerNumberLit = new QLabel(tr("Customer #:"), this, "_customerNumberLit");
-  _customerNumberLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-  layoutNumber->addWidget(_customerNumberLit);
-
-  _customerNumber = new CLineEdit(this, "_customerNumber");
-  _customerNumber->setMinimumWidth(100);
-  layoutNumber->addWidget(_customerNumber);
-  
-  _customerNumberEdit = new XLineEdit(this, "_customerNumberEdit");
-  _customerNumberEdit->setMinimumWidth(100);
-  _customerNumberEdit->setMaximumWidth(100);
-  layoutNumber->addWidget(_customerNumberEdit);
-  _customerNumberEdit->hide();
-  layoutMain->addLayout(layoutNumber);
-
-  _list = new QPushButton(tr("..."), this, "_list");
-  _list->setFocusPolicy(Qt::NoFocus);
-  if(_x_preferences)
-  {
-    if(_x_preferences->value("DefaultEllipsesAction") == "search")
-      _list->setToolTip(tr("Search"));
-    else
-      _list->setToolTip(tr("List"));
-  }
-  layoutButtons->addWidget(_list);
-
-  _info = new QPushButton(tr("?"), this, "_info");
-  _info->setFocusPolicy(Qt::NoFocus);
-  _info->setToolTip(tr("Open"));
-  _info->setEnabled(false);
-  layoutButtons->addWidget(_info);
-  connect(this, SIGNAL(valid(bool)), _info, SLOT(setEnabled(bool)));
-  
-  _delete = new QPushButton(tr("x"), this, "_delete");
-  _delete->setFocusPolicy(Qt::NoFocus);
-  _delete->setToolTip(tr("Delete"));
-  layoutButtons->addWidget(_delete);
-  
-  _new = new QPushButton(tr("+"), this, "_new");
-  _new->setFocusPolicy(Qt::NoFocus);
-  _new->setToolTip(tr("New"));
-  layoutButtons->addWidget(_new);
-
-  _edit = new QPushButton(tr("!"), this, "_edit");
-  _edit->setFocusPolicy(Qt::NoFocus);
-  _edit->setCheckable(true);
-  _edit->setToolTip(tr("Edit Mode"));
-  layoutButtons->addWidget(_edit);
-  
-#ifndef Q_WS_MAC
-  _list->setMaximumWidth(25);
-  _info->setMaximumWidth(25);
-  _new->setMaximumWidth(25);
-  _edit->setMaximumWidth(25);
-  _delete->setMaximumWidth(25);
-#else
-  _list->setMinimumWidth(60);
-  _list->setMinimumHeight(32);
-  _info->setMinimumWidth(60);
-  _info->setMinimumHeight(32);
-  _new->setMinimumWidth(60);
-  _new->setMinimumHeight(32);
-  _edit->setMinimumWidth(60);
-  _edit->setMinimumHeight(32);
-  _delete->setMinimumWidth(60);
-  _delete->setMinimumHeight(32);
-  layoutNumber->setContentsMargins(2,0,0,0);
-  layoutButtons->setContentsMargins(0,8,0,0);
-  layoutButtons->setSpacing(6);
-#endif
-  
-  layoutMain->addLayout(layoutButtons);
-
-//  Make some internal connections
-  connect(_list, SIGNAL(clicked()), _customerNumber, SLOT(sEllipses()));
-  connect(_info, SIGNAL(clicked()), this, SLOT(sInfo()));
-
-  connect(_customerNumber, SIGNAL(newId(int)), this, SIGNAL(newId(int)));
-  connect(_customerNumber, SIGNAL(newCrmacctId(int)), this, SIGNAL(newCrmacctId(int)));
-  connect(_customerNumber, SIGNAL(custNameChanged(const QString &)), this, SIGNAL(nameChanged(const QString &)));
-  connect(_customerNumber, SIGNAL(custAddr1Changed(const QString &)), this, SIGNAL(address1Changed(const QString &)));
-  connect(_customerNumber, SIGNAL(custAddr2Changed(const QString &)), this, SIGNAL(address2Changed(const QString &)));
-  connect(_customerNumber, SIGNAL(custAddr3Changed(const QString &)), this, SIGNAL(address3Changed(const QString &)));
-  connect(_customerNumber, SIGNAL(custCityChanged(const QString &)), this, SIGNAL(cityChanged(const QString &)));
-  connect(_customerNumber, SIGNAL(custStateChanged(const QString &)), this, SIGNAL(stateChanged(const QString &)));
-  connect(_customerNumber, SIGNAL(custZipCodeChanged(const QString &)), this, SIGNAL(zipCodeChanged(const QString &)));
-  connect(_customerNumber, SIGNAL(custCountryChanged(const QString &)), this, SIGNAL(countryChanged(const QString &)));
-  connect(_customerNumber, SIGNAL(custAddressChanged(const int)), this, SIGNAL(addressChanged(const int)));
-  connect(_customerNumber, SIGNAL(custContactChanged(const int)), this, SIGNAL(contactChanged(const int)));
-  connect(_customerNumber, SIGNAL(valid(bool)), this, SIGNAL(valid(bool)));
-
-  connect(_customerNumber, SIGNAL(creditStatusChanged(const QString &)), this, SLOT(sHandleCreditStatus(const QString &)));
-  connect(_customerNumber, SIGNAL(textChanged(const QString &)), _customerNumberEdit, SLOT(setText(const QString &)));
-  connect(_customerNumberEdit, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(setMode()));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNewClicked()));
-  connect(_delete, SIGNAL(clicked()), this, SIGNAL(deleteClicked()));
-  connect(_customerNumber, SIGNAL(newId(int)), this, SLOT(setMode()));
-
-  if(_x_privileges && (!_x_privileges->check("MaintainCustomerMasters") && !_x_privileges->check("ViewCustomerMasters")))
-  {
-    _info->setEnabled(false);
-    _delete->setEnabled(false);
-    _edit->setEnabled(false);
-    _new->setEnabled(false);
-  }
-  else
-  {
-    connect(_customerNumber, SIGNAL(valid(bool)), _info, SLOT(setEnabled(bool)));
-    connect(_customerNumber, SIGNAL(requestInfo()), this, SLOT(sInfo()));
-  }
-  
-  if(_x_privileges && (!_x_privileges->check("MaintainCustomerMasters") ))
-  {
-    _delete->setEnabled(false);
-    _edit->setEnabled(false);
-    _new->setEnabled(false);
-  }
-
-  setFocusProxy(_customerNumber);
-
-  _mapper = new XDataWidgetMapper(this);
-  _labelVisible = true;
-  _canEdit=true;
-  setCanEdit(false);
-}
-  
-void CustInfo::setAutoFocus(bool yes)
-{
-  _customerNumber->setAutoFocus(yes);
-}
-
-void CustInfo::setDataWidgetMap(XDataWidgetMapper* m)
-{
-  disconnect(_customerNumber, SIGNAL(newId(int)), this, SLOT(updateMapperData()));
-  m->addMapping(this, _fieldName, "number", "defaultNumber");
-  _mapper=m;
-  connect(_customerNumber, SIGNAL(newId(int)), this, SLOT(updateMapperData()));
-}
-
-void CustInfo::setReadOnly(bool pReadOnly)
-{
-  if (pReadOnly)
-  {
-    _customerNumber->setEnabled(FALSE);
-    _list->hide();
-  }
-  else
-  {
-    _customerNumber->setEnabled(TRUE);
-    _list->show();
-  }
-}
-
-void CustInfo::clear()
-{
-  setId(-1);
-  _customerNumberEdit->setText("");
-}
-
-void CustInfo::setId(int pId)
-{
-  _customerNumber->setId(pId);
-}
-
-void CustInfo::setSilentId(int pId)
-{
-  _customerNumber->setSilentId(pId);
-}
-
-void CustInfo::setType(CLineEdit::CLineEditTypes pType)
-{
-  _customerNumber->setType(pType);
-}
-
-void CustInfo::setLabelVisible(bool p)
-{
-  _customerNumberLit->setVisible(p);
-  _labelVisible=p;
-}
-
-void CustInfo::setInfoVisible(bool p)
-{
-  _info->setVisible(p);
-  _infoVisible=p;
-}
-
-void CustInfo::setCanEdit(bool p)
-{
-  if (_canEdit == p)
-    return;
-    
-  if (!p)
-    _edit->setChecked(false);
-
-  _canEdit=p;
-    
-  _info->setHidden(p);
-  _edit->setVisible(p);
-  _new->setVisible(p);
-  if (!p)
-  {
-    _delete->setVisible(false);
-    setEditMode(false);
-  }
-}
-
-void CustInfo::setEditMode(bool p)
-{
-  _edit->setChecked(p);
-  setMode();
-}
-
-void CustInfo::setMode()
-{
-  if(_x_privileges && (!_x_privileges->check("MaintainCustomerMasters")))
-    return;
-    
-  _delete->setDisabled(id() == -1);
-    
-  if (_editMode == _edit->isChecked())
-    return;
- 
-  _editMode = _edit->isChecked();
-
   if (_editMode)
+    return;
+
+  VirtualClusterLineEdit::sParse();
+}
+
+void CLineEdit::sUpdateMenu()
+{
+  VirtualClusterLineEdit::sUpdateMenu();
+  if (_x_preferences)
   {
-   setCanEdit(true);
-   _list->hide();
-   _delete->show();
-   _customerNumber->hide();
-   _customerNumberEdit->show();
-   _customerNumberEdit->setEnabled(_x_metrics && _x_metrics->value("CRMAccountNumberGeneration") != "A");
+    if (_x_preferences->boolean("ClusterButtons"))
+      return;
+  }
+  else
+    return;
+
+  if (_canEdit)
+  {
+    if (!menu()->actions().contains(_modeAct))
+    {
+      _infoAct->setVisible(false);
+      menu()->addAction(_modeAct);
+    }
+
+    _listAct->setDisabled(_editMode);
+    _searchAct->setDisabled(_editMode);
+    _listAct->setVisible(!_editMode);
+    _searchAct->setVisible(!_editMode);
   }
   else
   {
-   _customerNumber->setText(_customerNumberEdit->text());
-   _delete->hide();
-   _list->show();
-   _customerNumberEdit->hide();
-   _customerNumber->show();
-   _customerNumberEdit->setEnabled(true);
-   setId(-1);
+    if (menu()->actions().contains(_modeAct))
+    {
+      _infoAct->setVisible(true);
+      menu()->removeAction(_modeAct);
+    }
   }
 
-  emit editable(_editMode);
-}
+  // Handle New
+  bool canNew = false;
 
-QString CustInfo::number()
-{
-  if (_editMode)
-    return _customerNumberEdit->text();
+  if (_subtype == CRMAcctLineEdit::Cust)
+    canNew = (_x_privileges->check("MaintainCustomerMasters"));
+  else if (_subtype == CRMAcctLineEdit::Prospect)
+    canNew = (_x_privileges->check("MaintainProspectMasters"));
   else
-    return _customerNumber->text();
+    canNew = (_x_privileges->check("MaintainCustomerMasters") ||
+              _x_privileges->check("MaintainProspectMasters"));
+
+  _newAct->setEnabled(canNew && isEnabled());
 }
 
-void CustInfo::setNumber(QString number)
+bool CLineEdit::canOpen()
 {
-  if (_editMode)
-    _customerNumberEdit->setText(number);
-  else
-    _customerNumber->setNumber(number);
+  return VirtualClusterLineEdit::canOpen() && !canEdit();
 }
 
-void CustInfo::sNewClicked()
-{
-  setEditMode(true);
-  setId(-1);
-  if(((_x_metrics && 
-       _x_metrics->value("CRMAccountNumberGeneration") == "A") ||
-      (_x_metrics->value("CRMAccountNumberGeneration") == "O"))
-   && _customerNumberEdit->text().isEmpty() )
-  {
-    XSqlQuery num;
-    num.exec("SELECT fetchCRMAccountNumber() AS number;");
-    if (num.first())
-      _customerNumberEdit->setText(num.value("number").toString());
-  }
-}
-
-void CustInfo::sInfo()
-{
-  if(_custInfoAction)
-    _custInfoAction->customerInformation(parentWidget(), _customerNumber->_id);
-}
-
-void CustInfo::setExtraClause(CLineEdit::CLineEditTypes type, const QString &clause)
-{
-  _customerNumber->setExtraClause(type, clause);
-}
-
-void CustInfo::sHandleCreditStatus(const QString &pStatus)
-{
-  if ((pStatus == "G") || (pStatus == ""))
-  {
-    _info->setText(tr("?"));
-    _info->setPaletteForegroundColor(QColor("black"));
-  }
-  else
-  {
-    _info->setText(tr("$"));
-
-    if (pStatus == "W")
-      _info->setPaletteForegroundColor(QColor("orange"));
-    else if (pStatus == "H")
-      _info->setPaletteForegroundColor(QColor("red"));
-  }
-}
-
-void CustInfo::updateMapperData()
-{
-  if (_mapper->model() &&
-      _mapper->model()->data(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this))).toString() != number())
-    _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this)), number());
-}
 
 //////////////////////////////////////////////////////////////
 
-CustCluster::CustCluster(QWidget *parent, const char *name) :
-  QWidget(parent, name)
+CustCluster::CustCluster(QWidget *pParent, const char *pName) :
+    VirtualCluster(pParent, pName)
 {
-//  Create the component Widgets
-  QVBoxLayout *_main = new QVBoxLayout(this);
-  _main->setMargin(0);
-  _main->setSpacing(0);
+  addNumberWidget(new CLineEdit(this, pName));
 
-  _custInfo = new CustInfo(this, "_custInfo");
-  _custInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  _main->addWidget(_custInfo);
+  CLineEdit* number = static_cast<CLineEdit*>(_number);
+  connect(number, SIGNAL(newCrmacctId(int)), this, SIGNAL(newCrmacctId(int)));
+  connect(number, SIGNAL(editable(bool)), this, SIGNAL(editable(bool)));
+  connect(number, SIGNAL(editable(bool)), this, SLOT(sHandleEditMode(bool)));
 
-  _name = new QLabel(this, "_name");
-  _name->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-  _name->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  _main->addWidget(_name);
-
-  _address1 = new QLabel(this, "_address1");
-  _address1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  _address1->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-  _main->addWidget(_address1);
-
-  setLayout(_main);
-
-//  Make some internal connections
-  connect(_custInfo, SIGNAL(newId(int)), this, SIGNAL(newId(int)));
-  connect(_custInfo, SIGNAL(newCrmacctId(int)), this, SIGNAL(newCrmacctId(int)));
-  connect(_custInfo, SIGNAL(valid(bool)), this, SIGNAL(valid(bool)));
-  connect(_custInfo, SIGNAL(nameChanged(const QString &)), _name, SLOT(setText(const QString &)));
-  connect(_custInfo, SIGNAL(address1Changed(const QString &)), _address1, SLOT(setText(const QString &)));
-
-  setFocusProxy(_custInfo);
-}
-
-void CustCluster::setAutoFocus(bool yes)
-{
-  _custInfo->setAutoFocus(yes);
-}
-
-void CustCluster::setReadOnly(bool pReadOnly)
-{
-  _custInfo->setReadOnly(pReadOnly);
-}
-
-void CustCluster::setId(int pId)
-{
-  _custInfo->setId(pId);
-}
-
-void CustCluster::setSilentId(int pId)
-{
-  _custInfo->setSilentId(pId);
+  setLabel(tr("Customer #:"));
+  setNameVisible(true);
+  setDescriptionVisible(true);
 }
 
 void CustCluster::setType(CLineEdit::CLineEditTypes pType)
 {
-  _custInfo->setType(pType);
+  static_cast<CLineEdit*>(_number)->setType(pType);
 }
 
-void CustCluster::setExtraClause(CLineEdit::CLineEditTypes type, const QString &clause)
+bool CustCluster::setEditMode(bool p) const
 {
-  _custInfo->setExtraClause(type, clause);
+  return static_cast<CLineEdit*>(_number)->setEditMode(p);
 }
+
+void CustCluster::sHandleEditMode(bool p)
+{
+  CLineEdit* number = static_cast<CLineEdit*>(_number);
+
+  if (p)
+    connect(number, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
+  else
+    disconnect(number, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
+}
+
+
+
+

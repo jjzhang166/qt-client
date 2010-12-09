@@ -11,32 +11,22 @@
 #ifndef CRMACCOUNTS_H
 #define CRMACCOUNTS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
-#include "ui_crmaccounts.h"
 
-class crmaccounts : public XWidget, public Ui::crmaccounts
+class crmaccounts : public display
 {
     Q_OBJECT
 
 public:
     crmaccounts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~crmaccounts();
-    virtual bool setParams(ParameterList &);
 
 public slots:
     virtual void sDelete();
     virtual void sEdit();
-    virtual void sFillList();
     virtual void sNew();
-    virtual void sPopulateMenu( QMenu * pMenu );
-    virtual void sPrint();
     virtual void sView();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // CRMACCOUNTS_H

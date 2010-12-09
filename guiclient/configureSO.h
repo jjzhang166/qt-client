@@ -12,11 +12,11 @@
 #define CONFIGURESO_H
 
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureSO.h"
 
-class configureSO : public XDialog, public Ui::configureSO
+class configureSO : public XAbstractConfigure, public Ui::configureSO
 {
     Q_OBJECT
 
@@ -25,7 +25,7 @@ public:
     ~configureSO();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
     virtual void sHandleInvoiceCopies( int pValue );
     virtual void sHandleCreditMemoCopies( int pValue );
     virtual void sEditInvoiceWatermark();
@@ -34,6 +34,9 @@ public slots:
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void saving();
 
 };
 

@@ -318,8 +318,8 @@ void bomItem::sSave()
   q.bindValue(":effective", _dates->startDate());
   q.bindValue(":expires", _dates->endDate());
   q.bindValue(":ecn", _ecn->text());
-  q.bindValue(":notes",	_notes->text());
-  q.bindValue(":ref", _ref->text());
+  q.bindValue(":notes",	_notes->toPlainText());
+  q.bindValue(":ref",   _ref->toPlainText());
 
   q.bindValue(":createWo", QVariant(_createWo->isChecked()));
 

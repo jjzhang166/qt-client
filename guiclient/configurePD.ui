@@ -8,164 +8,108 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>configurePD</class>
- <widget class="QDialog" name="configurePD">
+ <widget class="QWidget" name="configurePD">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>414</width>
-    <height>243</height>
+    <width>385</width>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>P/D Module Configuration</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QCheckBox" name="_transforms">
-       <property name="text">
-        <string>Enable Transforms</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="_revControl">
-       <property name="text">
-        <string>Enable Revision Control</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="_changeLog">
-       <property name="text">
-        <string>Post Item Changes to the Change Log</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="_inactiveBomItems">
-       <property name="text">
-        <string>Allow Inactive Items to be Added to BOMs</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="_allowDelete">
-       <property name="text">
-        <string>Allow deletion of Items from Bill of Material</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="_defaultGroup">
-       <property name="title">
-        <string>Defaults</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="_exclusive">
-          <property name="text">
-           <string>Set Sold Items as E&amp;xclusive</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <layout class="QHBoxLayout">
-          <property name="spacing">
-           <number>5</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="_issueMethodLit">
-            <property name="text">
-             <string>W/O Material &amp;Issue Method:</string>
-            </property>
-            <property name="buddy">
-             <cstring>_issueMethod</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="_issueMethod">
-            <item>
-             <property name="text">
-              <string>Push</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Pull</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Mixed</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>16</width>
-         <height>13</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QVBoxLayout">
-       <property name="spacing">
-        <number>5</number>
-       </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="_close">
+        <widget class="QCheckBox" name="_transforms">
          <property name="text">
-          <string>&amp;Cancel</string>
+          <string>Enable Transforms</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_save">
+        <widget class="QCheckBox" name="_revControl">
          <property name="text">
-          <string>&amp;Save</string>
+          <string>Enable Revision Control</string>
          </property>
-         <property name="default">
-          <bool>true</bool>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="_changeLog">
+         <property name="text">
+          <string>Post Item Changes to the Change Log</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="_inactiveBomItems">
+         <property name="text">
+          <string>Allow Inactive Items to be Added to BOMs</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="_allowDelete">
+         <property name="text">
+          <string>Allow deletion of Items from Bill of Material</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="_defaultGroup">
+         <property name="title">
+          <string>Defaults</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="_exclusive">
+            <property name="text">
+             <string>Set Sold Items as E&amp;xclusive</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="_issueMethodLit">
+              <property name="text">
+               <string>W/O Material &amp;Issue Method:</string>
+              </property>
+              <property name="buddy">
+               <cstring>_issueMethod</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="_issueMethod">
+              <item>
+               <property name="text">
+                <string>Push</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Pull</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Mixed</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -178,13 +122,26 @@ to be bound by its terms.</comment>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>16</width>
+           <height>13</height>
           </size>
          </property>
         </spacer>
        </item>
       </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -199,26 +156,7 @@ to be bound by its terms.</comment>
   <tabstop>_inactiveBomItems</tabstop>
   <tabstop>_exclusive</tabstop>
   <tabstop>_issueMethod</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>configurePD</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>346</x>
-     <y>30</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

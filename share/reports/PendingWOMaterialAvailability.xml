@@ -23,29 +23,10 @@
   FROM item
 WHERE (item_id=&lt;? value("item_id") ?>);</sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT bomitem_seqnumber, item_number, item_descrip1, item_descrip2, uom_name,
-       formatQty(pendalloc) AS pendalloc,
-       formatQty(totalalloc + pendalloc) AS totalalloc,
-       formatQty(qoh) AS qoh,
-       formatQty(qoh + ordered - (totalalloc + pendalloc)) AS totalavail
-FROM ( SELECT bomitem_seqnumber, item_number,
-              item_descrip1, item_descrip2, uom_name,
-              ((itemuomtouom(bomitem_item_id, bomitem_uom_id, NULL, (bomitem_qtyfxd + bomitem_qtyper) * (1 + bomitem_scrap))) * &lt;? value("buildQty") ?>) AS pendalloc,
-              qtyAllocated(itemsite_id, date(&lt;? value("buildDate") ?>)) AS totalalloc,
-              noNeg(itemsite_qtyonhand) AS qoh,
-              qtyOrdered(itemsite_id, date(&lt;? value("buildDate") ?>)) AS ordered
-   FROM itemsite, item, bomitem(&lt;? value("item_id") ?>), uom
-       WHERE ((bomitem_item_id=itemsite_item_id)
-        AND (itemsite_item_id=item_id)
-        AND (item_inv_uom_id=uom_id)
-        AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>)
-        AND (&lt;? value("effectiveDate") ?> BETWEEN bomitem_effective AND (bomitem_expires-1)) ) ) AS data
-&lt;? if exists("showShortages") ?>
-WHERE ((qoh + ordered - (totalalloc + pendalloc)) &lt; 0.0)
-&lt;? endif ?>
-ORDER BY bomitem_seqnumber;</sql>
+  <mqlgroup>pendingAvailability</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>234</height>
@@ -473,7 +454,7 @@ ORDER BY bomitem_seqnumber;</sql>
    <key>
     <query>detail</query>
    </key>
-   <height>53</height>
+   <height>41</height>
    <field>
     <rect>
      <x>290</x>
@@ -511,12 +492,13 @@ ORDER BY bomitem_seqnumber;</sql>
      <query>detail</query>
      <column>pendalloc</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <line>
-    <xstart>5</xstart>
-    <ystart>45</ystart>
+    <xstart>6</xstart>
+    <ystart>32</ystart>
     <xend>745</xend>
-    <yend>45</yend>
+    <yend>32</yend>
     <weight>0</weight>
    </line>
    <field>
@@ -556,12 +538,13 @@ ORDER BY bomitem_seqnumber;</sql>
      <query>detail</query>
      <column>qoh</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <field>
     <rect>
      <x>60</x>
      <y>15</y>
-     <width>300</width>
+     <width>665</width>
      <height>15</height>
     </rect>
     <font>
@@ -573,26 +556,7 @@ ORDER BY bomitem_seqnumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>item_descrip1</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>60</x>
-     <y>30</y>
-     <width>300</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <left/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>item_descrip2</column>
+     <column>item_descrip</column>
     </data>
    </field>
    <field>
@@ -613,6 +577,7 @@ ORDER BY bomitem_seqnumber;</sql>
      <query>detail</query>
      <column>totalalloc</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <field>
     <rect>
@@ -632,6 +597,7 @@ ORDER BY bomitem_seqnumber;</sql>
      <query>detail</query>
      <column>totalavail</column>
     </data>
+    <format builtin="true">qty</format>
    </field>
    <field>
     <rect>

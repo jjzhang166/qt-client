@@ -97,11 +97,14 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QTranslator>
+#include <QHttp>
+#include <QUrl>
 
 #include <dbtools.h>
 #include <parameter.h>
 #include <widgets.h>
 #include "xtupleplugin.h"
+#include "xtupleproductkey.h"
 
 #include "login2.h"
 
@@ -294,6 +297,77 @@ int main(int argc, char *argv[])
       _splash->setPixmap(QPixmap(":/images/splashStdEdition.png"));
       _Name = _Name.arg("Standard");
     }
+
+    _splash->showMessage(QObject::tr("Checking License Key"), SplashTextAlignment, SplashTextColor);
+    qApp->processEvents();
+    metric.exec("SELECT COUNT(*) as _count"
+                "  FROM pg_stat_activity"
+                " WHERE(datid IN (SELECT datid"
+                "                   FROM pg_stat_activity"
+                "                  WHERE(procpid=pg_backend_pid())));");
+    int cnt = 50000;
+    if(metric.first())
+      cnt = metric.value("_count").toInt();
+    metric.exec("SELECT metric_value"
+                "  FROM metric"
+                " WHERE(metric_name = 'RegistrationKey');");
+    bool checkPass = true;
+    QString checkPassReason;
+    QString rkey = "";
+    if(metric.first())
+      rkey = metric.value("metric_value").toString();
+    XTupleProductKey pkey(rkey);
+    if(pkey.valid() && pkey.version() == 1)
+    {
+      if(pkey.expiration() < QDate::currentDate())
+      {
+        checkPass = false;
+        checkPassReason = QObject::tr("Your license has expired.");
+      }
+      else if(pkey.users() != 0 && (pkey.users()+1) < cnt)
+      {
+        checkPass = false;
+        checkPassReason = QObject::tr("You have exceeded the number of allowed concurrent users for your license.");
+      }
+    }
+    else
+    {
+      checkPass = false;
+      checkPassReason = QObject::tr("<p>The Registration key installed for this system does not appear to be valid.");
+    }
+    if(!checkPass)
+    {
+      _splash->hide();
+      QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
+
+      metric.exec("SELECT current_database() AS db,"
+                  "       fetchMetricText('DatabaseName') AS dbname,"
+                  "       fetchMetricText('remitto_name') AS name;");
+      QString db = "";
+      QString dbname = "";
+      QString name = "";
+      if(metric.first())
+      {
+        db = metric.value("db").toString();
+        dbname = metric.value("dbname").toString();
+        name = metric.value("name").toString();
+      }
+
+      QHttp *http = new QHttp();
+      
+      QUrl url;
+      url.setPath("/api/regviolation.php");
+      url.addQueryItem("key", QUrl::toPercentEncoding(rkey));
+      url.addQueryItem("error", QUrl::toPercentEncoding(checkPassReason));
+      url.addQueryItem("name", QUrl::toPercentEncoding(name));
+      url.addQueryItem("dbname", QUrl::toPercentEncoding(dbname));
+      url.addQueryItem("db", QUrl::toPercentEncoding(db));
+      url.addQueryItem("cnt", QString::number(cnt));
+
+      http->setHost("www.xtuple.org");
+      http->get(url.toString());
+      _splash->show();
+    }
   }
   else
   {
@@ -361,18 +435,6 @@ int main(int argc, char *argv[])
                   " AND (usr_locale_id=locale_id) );" );
   if (langq.first())
   {
-    QStringList paths;
-    paths << "dict";
-    paths << "";
-    paths << "../dict";
-    paths << app.applicationDirPath() + "/dict";
-    paths << app.applicationDirPath();
-    paths << app.applicationDirPath() + "/../dict";
-#if defined Q_WS_MACX
-    paths << app.applicationDirPath() + "/../../../dict";
-    paths << app.applicationDirPath() + "/../../..";
-#endif
-    
     QStringList files;
     if (!langq.value("locale_lang_file").toString().isEmpty())
       files << langq.value("locale_lang_file").toString();
@@ -391,47 +453,42 @@ int main(int argc, char *argv[])
 
     if(!langext.isEmpty())
     {
-      files << "xTuple." + langext;
-      files << "openrpt." + langext;
-      files << "reports." + langext;
+      files << "xTuple";
+      files << "openrpt";
+      files << "reports";
 
-      XSqlQuery pkglist("SELECT pkghead_name FROM pkghead WHERE packageIsEnabled(pkghead_name);");
+      XSqlQuery pkglist("SELECT pkghead_name"
+                        "  FROM pkghead"
+                        " WHERE packageIsEnabled(pkghead_name);");
       while(pkglist.next())
-      {
-        files << pkglist.value("pkghead_name").toString() + "." + langext;
-      }
+        files << pkglist.value("pkghead_name").toString();
     }
 
     if (files.size() > 0)
     {
-      bool langFound = false;
-
+      QStringList notfound;
       QTranslator *translator = new QTranslator(&app);
       for (QStringList::Iterator fit = files.begin(); fit != files.end(); ++fit)
       {
-        for(QStringList::Iterator pit = paths.begin(); pit != paths.end(); ++pit)
+        if (DEBUG)
+          qDebug("looking for %s", (*fit).toAscii().data());
+        if (translator->load(translationFile(langext, *fit)))
         {
-          if (DEBUG)
-            qDebug("looking for %s in %s",
-                   (*fit).toAscii().data(), (*pit).toAscii().data());
-          if (translator->load(*fit, *pit))
-          {
-            app.installTranslator(translator);
-            langFound = true;
-            qDebug("installed %s/%s",
-                   (*pit).toAscii().data(), (*fit).toAscii().data());
-            translator = new QTranslator(&app);
-            break;
-          }
+          app.installTranslator(translator);
+          qDebug("installed %s", (*fit).toAscii().data());
+          translator = new QTranslator(&app);
         }
+        else
+          notfound << *fit;
       }
 
-      if (!langFound && !_preferences->boolean("IngoreMissingTranslationFiles"))
+      if (! notfound.isEmpty() &&
+          !_preferences->boolean("IngoreMissingTranslationFiles"))
         QMessageBox::warning( 0, QObject::tr("Cannot Load Dictionary"),
                               QObject::tr("<p>The Translation Dictionaries %1 "
                                           "cannot be loaded. Reverting "
                                           "to the default dictionary." )
-                                       .arg(files.join(QObject::tr(", "))));
+                                       .arg(notfound.join(QObject::tr(", "))));
     }
 
     /* set the locale to langabbr_countryabbr, langabbr, {lang# country#}, or

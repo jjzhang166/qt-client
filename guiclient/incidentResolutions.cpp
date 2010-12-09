@@ -10,27 +10,21 @@
 
 #include "incidentResolutions.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
+#include <QVariant>
+
 #include <openreports.h>
+
 #include "incidentResolution.h"
 
-/*
- *  Constructs an incidentResolutions as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-//  (void)statusBar();
-
-  // signals and slots connections
   connect(_close,  SIGNAL(clicked()), this, SLOT(close()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,   SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -40,11 +34,10 @@ incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_view,  SIGNAL(clicked()), this, SLOT(sView()));
 
-//  statusBar()->hide();
-  
   _incidentResolutions->addColumn(tr("Order"),  _seqColumn, Qt::AlignRight, true,  "incdtresolution_order");
   _incidentResolutions->addColumn(tr("Resolution"),      100, Qt::AlignLeft, true, "incdtresolution_name" );
   _incidentResolutions->addColumn(tr("Description"),    -1, Qt::AlignLeft, true,  "incdtresolution_descrip" );
+
 
   if (_privileges->check("MaintainIncidentResolutions"))
   {
@@ -139,17 +132,15 @@ void incidentResolutions::sView()
 
 void incidentResolutions::sPopulateMenu( QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainIncidentResolutions"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentResolutions"));
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainIncidentResolutions"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentResolutions"));
 }
 
 void incidentResolutions::sPrint()

@@ -336,7 +336,9 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
 
   private slots:
     void  sSelectionChanged();
+    void  sItemSelected();
     void  sItemSelected(QTreeWidgetItem *, int);
+    void  sShowMenu();
     void  sShowMenu(const QPoint&);
     void  sShowHeaderMenu(const QPoint&);
     // void sStartDrag(QTreeWidgetItem *, int);

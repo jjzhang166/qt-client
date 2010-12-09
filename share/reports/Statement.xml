@@ -25,7 +25,7 @@
        formatMoney(araging_aropen_amount) AS f_amount,
        formatMoney(araging_aropen_amount - araging_total_val) AS f_applied,
        formatMoney(araging_total_val) AS f_balance
-FROM araging(&lt;? value("asofdate") ?>, true)
+FROM araging(&lt;? value("asofdate") ?>, true, false)
 WHERE ((araging_cust_id = &lt;? value("cust_id") ?>)
    AND (abs(araging_aropen_amount) > 0)
       )
@@ -54,7 +54,7 @@ WHERE (cust_id = &lt;? value("cust_id") ?>);</sql>
        formatMoney(SUM(araging_ninety_val)) AS f_ninety,
        formatMoney(SUM(araging_plus_val)) AS f_plus,
        formatMoney(SUM(araging_total_val)) AS f_total
-FROM araging(&lt;? value("asofdate") ?>, true)
+FROM araging(&lt;? value("asofdate") ?>, true, false)
 WHERE ((abs(araging_aropen_amount) > 0)
    AND (araging_cust_id = &lt;? value("cust_id") ?>));</sql>
  </querysource>

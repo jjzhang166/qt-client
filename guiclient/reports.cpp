@@ -138,10 +138,17 @@ void reports::sEdit()
 
 void reports::sDelete()
 {
-  q.prepare( "DELETE FROM report "
-             "WHERE (report_id=:report_id);" );
-  q.bindValue(":report_id", _report->id());
-  q.exec();
+  if ( QMessageBox::warning(this, tr("Delete Report?"),
+                            tr("<p>Are you sure that you want to completely "
+                               "delete the selected Report?"),
+                            QMessageBox::Yes,
+                            QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+  {
+    q.prepare( "DELETE FROM report "
+               "WHERE (report_id=:report_id);" );
+    q.bindValue(":report_id", _report->id());
+    q.exec();
 
-  sFillList();
+    sFillList();
+  }
 }

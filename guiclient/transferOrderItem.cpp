@@ -629,10 +629,10 @@ void transferOrderItem::sDetermineAvailability()
       _onOrder->setText(availability.value("ordered").toString());
       _available->setText(availability.value("available").toString());
 
+      QString stylesheet;
       if (availability.value("available").toDouble() < _qtyOrdered->toDouble())
-        _available->setPaletteForegroundColor(QColor("red"));
-      else
-        _available->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+      _available->setStyleSheet(stylesheet);
 
       if ( (_item->itemType() == "M") )
       {

@@ -81,6 +81,7 @@
 #include "scripttoolbox.h"
 #include "menubutton.h"
 
+#include "setup.h"
 #include "setupscriptapi.h"
 
 #define CHECK_REGISTERED 0
@@ -197,8 +198,8 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, (pEnabled?"true":"false"));
 
-  setIconSet(QIcon(pIcon));
-  addTo(pToolBar);
+  setIcon(QIcon(pIcon));
+  pToolBar->addAction(this);
 }
 
 Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
@@ -210,8 +211,8 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, (pEnabled?"true":"false"));
 
-  setIconSet(QIcon(pIcon));
-  addTo(pToolBar);
+  setIcon(QIcon(pIcon));
+  pToolBar->addAction(this);
   setToolTip(pToolTip);
 }
 
@@ -231,8 +232,8 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, pEnabled);
 
-  setIconSet(QIcon(pIcon));
-  addTo(pToolBar);
+  setIcon(QIcon(pIcon));
+  pToolBar->addAction(this);
 }
 
 Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
@@ -244,8 +245,8 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, pEnabled);
 
-  setIconSet(QIcon(pIcon));
-  addTo(pToolBar);
+  setIcon(QIcon(pIcon));
+  pToolBar->addAction(this);
   setToolTip(pToolTip);
 }
 
@@ -330,37 +331,31 @@ class xTupleGuiClientInterface : public GuiClientInterface
   {
     omfgThis->removeDocumentWatch(path);
   }
-};
 
-class xTupleCustInfoAction : public CustInfoAction
-{
-  public:
-    void customerInformation(QWidget* parent, int pCustid)
-    {
-      ParameterList params;
-      params.append("cust_id", pCustid);
-      if (_privileges->check("ViewCustomerMasters"))
-        params.append("mode","edit");
-      else
-        params.append("mode","view");
+  bool hunspell_ready()
+  {
+      return omfgThis->hunspell_ready();
+  }
 
-      QWidget * w = parent;
-      while(w && !w->isWindow())
-        w = w->parentWidget();
-      if(w && w->isModal())
-      {
-        params.append("modal");
-        customer * newdlg = new customer(w, 0, Qt::Window);
-        newdlg->set(params);
-        omfgThis->handleNewWindow(newdlg);
-      }
-      else
-      {
-        customer * newdlg = new customer();
-        newdlg->set(params);
-        omfgThis->handleNewWindow(newdlg);
-      }
-    }
+  int hunspell_check(const QString word)
+  {
+      return omfgThis->hunspell_check(word);
+  }
+
+  const QStringList hunspell_suggest(const QString word)
+  {
+      return omfgThis->hunspell_suggest(word);
+  }
+
+  int hunspell_add(const QString word)
+  {
+      return omfgThis->hunspell_add(word);
+  }
+
+  int hunspell_ignore(const QString word)
+  {
+      return omfgThis->hunspell_ignore(word);
+  }
 };
 
 GUIClient *omfgThis;
@@ -499,8 +494,8 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
       QImage background;
 
       background.loadFromData(QUUDecode(_q.value("image_data").toString()));
-      _workspace->setPaletteBackgroundPixmap(QPixmap::fromImage(background));
-      _workspace->setBackgroundMode(Qt::FixedPixmap);
+      _workspace->setBackground(QBrush(QPixmap::fromImage(background)));
+      //_workspace->setBackgroundMode(Qt::FixedPixmap);
     }
   }
 
@@ -525,11 +520,11 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
   Documents::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
   MenuButton::_guiClientInterface =  VirtualClusterLineEdit::_guiClientInterface;
   XTreeWidget::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
+  XComboBox::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
+  XTextEdit::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
+  XTextEditHighlighter::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
 
-  xTupleCustInfoAction* ciAction = new xTupleCustInfoAction();
-  CustInfo::_custInfoAction = ciAction;
-
-  _splash->showMessage(tr("Completing Initialzation"), SplashTextAlignment, SplashTextColor);
+  _splash->showMessage(tr("Completing Initialization"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
   _splash->finish(this);
 
@@ -577,6 +572,8 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
   // Set up document file watcher
   _fileWatcher = new QFileSystemWatcher();
   connect(_fileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(handleDocument(QString)));
+
+  hunspell_initialize();
 }
 
 GUIClient::~GUIClient()
@@ -587,7 +584,7 @@ GUIClient::~GUIClient()
   //omfgThis = 0;
 
   // Close the database connection
-  QSqlDatabase::database().close();
+  QSqlDatabase::database().close();  
 }
 
 bool GUIClient::singleCurrency()
@@ -762,6 +759,8 @@ void GUIClient::saveToolbarPositions()
 
 void GUIClient::closeEvent(QCloseEvent *event)
 {
+  hunspell_uninitialize();
+
   _shuttingDown = true;
 
   // Remove any temporary document files being watched
@@ -982,7 +981,10 @@ void GUIClient::sTick()
 
 void GUIClient::sNewErrorMessage()
 {
-  if (_errorButton)
+  if (QApplication::closingDown())
+    return;
+
+  if (_errorButton && _metrics)
     _errorButton->setVisible(_metrics->value("Registered") != "Yes" && xtsettingsValue("/xTuple/Registered").toString() != "Yes");
   else
   {
@@ -1149,6 +1151,11 @@ void GUIClient::sCashReceiptsUpdated(int pCashrcptid, bool pLocal)
   emit cashReceiptsUpdated(pCashrcptid, pLocal);
 }
 
+void GUIClient::sBankAccountsUpdated()
+{
+  emit bankAccountsUpdated();
+}
+
 void GUIClient::sBankAdjustmentsUpdated(int pBankadjid, bool pLocal)
 {
   emit bankAdjustmentsUpdated(pBankadjid, pLocal);
@@ -1244,7 +1251,7 @@ void message(const QString &pMessage, int pTimeout)
 
 void resetMessage()
 {
-  omfgThis->statusBar()->message(QObject::tr("Ready..."));
+  omfgThis->statusBar()->showMessage(QObject::tr("Ready..."));
   qApp->processEvents();
 }
 
@@ -1258,6 +1265,82 @@ void audioReject()
   qApp->beep();
 }
 
+/** \brief Find the translation file for a given locale.
+
+    Looks for the translation %file for a particular locale in all of the
+    standard places xTuple ERP knows to look. The first %file found is returned
+    even if it isn't the most complete, specific, or up-to-date.
+
+    \param localestr The locale to look for, in standard format.
+    \param component The application component for which to find a
+                     translation file (empty string means core)
+
+    \return The path to the translation file (may be relative or absolute)
+ */
+QString translationFile(QString localestr, const QString component)
+{
+  QString version = QString::null;
+  return translationFile(localestr, component, version);
+}
+
+/** \brief Find the translation file for a given locale.
+
+    This overload should be used primarily by the Update Manager.
+
+    Looks for the translation %file for a particular locale in all
+    of the standard places xTuple ERP knows to look. The first %file
+    found is returned even if it isn't the most complete, specific,
+    or up-to-date.  If translation %file is found for the locale,
+    this overload of translationFile(QString) tries to extract a
+    version number from the translation %file and pass it back to
+    the caller.
+
+    The base translation file is expected to have a \c Version
+    string in the component context. Translations from that base
+    translation %file are expected to translate the \c Version
+    string to something meaningful that can be put in the compatibility
+    matrix. One suggestion is \c major.minor.percent-complete ,
+    where \c major and \c minor are component release numbers and
+    percent-complete indicates how much of the base translation
+    file has been completed.
+
+    \param[in]  localestr The locale to look for, in standard format.
+    \param[in]  component The application component for which to find a
+                          translation file (empty string means core)
+    \param[out] version   The version string found in the translation file or
+                          an empty string if none was found.
+
+    \return The path to the translation file (may be relative or absolute)
+ */
+QString translationFile(QString localestr, const QString component, QString &version)
+{
+  QStringList paths;
+  paths << "dict";
+  paths << "";
+  paths << "../dict";
+  paths << QApplication::applicationDirPath() + "/dict";
+  paths << QApplication::applicationDirPath();
+  paths << QApplication::applicationDirPath() + "/../dict";
+#if defined Q_WS_MACX
+  paths << QApplication::applicationDirPath() + "/../../../dict";
+  paths << QApplication::applicationDirPath() + "/../../..";
+#endif
+
+  QTranslator translator;
+  for (QStringList::Iterator pit = paths.begin(); pit != paths.end(); pit++)
+  {
+    QString filename = *pit + "/" + component + "." + localestr;
+    if (translator.load(filename))
+    {
+      if (! version.isNull())
+        version = translator.translate(component.toAscii().data(), "Version");
+
+      return filename;
+    }
+  }
+
+  return QString::null;
+}
 
 void GUIClient::populateCustomMenu(QMenu * menu, const QString & module)
 {
@@ -1283,8 +1366,9 @@ void GUIClient::populateCustomMenu(QMenu * menu, const QString & module)
     if(!privname.isEmpty())
       allowed = "Custom"+privname;
 
-    Action * action = new Action( this, QString("custom.")+qry.value("cmd_name").toString(), qry.value("cmd_title").toString(),
-      this, SLOT(sCustomCommand()), customMenu, allowed);
+    QString cmdname = QString("custom." + qry.value("cmd_name").toString());
+    Action *action = new Action(this, cmdname.toAscii().data(), qry.value("cmd_title").toString(),
+                                this, SLOT(sCustomCommand()), customMenu, allowed);
 
     _customCommands.insert(action, qry.value("cmd_id").toInt());
     //actions.append(action);
@@ -1510,7 +1594,7 @@ void GUIClient::launchBrowser(QWidget * w, const QString & url)
     }
     app.replace("%%", "%");
     QProcess *proc = new QProcess(w);
-    connect(proc, SIGNAL(processExited()), proc, SLOT(deleteLater()));
+    connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), proc, SLOT(deleteLater()));
     QStringList args = app.split(QRegExp(" +"));
     QString cmd = args.first();
     args.removeFirst();
@@ -1945,6 +2029,7 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
                         QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   setupScriptApi(engine);
+  setupSetupApi(engine);
 }
 
 void GUIClient::addDocumentWatch(QString path, int id)
@@ -1979,6 +2064,7 @@ void GUIClient::handleDocument(QString path)
   retry.start();
   while (retry.isActive() && !opened)
   {
+    qApp->processEvents();
     // Retry for 5 sec. so OS can finish any housekeeping.
     // In particular, Microsoft Office deletes and copies
     // files on every save which can take a bit of time to
@@ -1988,7 +2074,8 @@ void GUIClient::handleDocument(QString path)
 
   if (!opened)
   {
-    qWarning(QString("File %1 could not be opened. Changes will not be saved to the database.").arg(path));
+    qWarning("File %s could not be opened. Changes will not be saved to the database.",
+       qPrintable(path));
     return;
   }
 
@@ -2004,3 +2091,124 @@ void GUIClient::handleDocument(QString path)
   addDocumentWatch(path, id);
 }
 
+void GUIClient::hunspell_initialize()
+{
+    _spellReady = false;
+    QString langName = QLocale::languageToString(QLocale().language());
+    QString appPath = QApplication::applicationDirPath();
+    QString fullPathWithoutExt = appPath + "/" + langName;
+    QFile affFile(fullPathWithoutExt + tr(".aff"));
+    QFile dicFile(fullPathWithoutExt + tr(".dic"));
+    if(affFile.exists() && dicFile.exists())
+    {
+      _spellReady = true;      
+    }
+    _spellChecker = new Hunspell(QString(fullPathWithoutExt+tr(".aff")).toLatin1(),
+                                 QString(fullPathWithoutExt+tr(".dic")).toLatin1());
+
+    QString spell_encoding = QString(_spellChecker->get_dic_encoding());
+    _spellCodec = QTextCodec::codecForName(spell_encoding.toLocal8Bit());
+
+    QString homePath = QDir::homePath().toLatin1();
+    if(_spellReady)
+    {
+        QFile file(homePath + tr("/xTuple/user.dic"));
+        if(file.exists(homePath + tr("/xTuple/user.dic")))
+        {           
+           //open user dictionary if exists
+           _spellChecker->add_dic(QString(homePath + tr("/xTuple/user.dic")).toLatin1());
+        }
+    }
+}
+
+void GUIClient::hunspell_uninitialize()
+{   
+    delete (Hunspell *)(_spellChecker);
+    QString homePath = QDir::homePath().toLatin1();
+    QFile file(homePath + tr("/xTuple/user.dic"));
+
+    if(_spellReady && !_spellAddWords.isEmpty())
+    {
+      //if user directory missing create it
+      QString homePath = QDir::homePath().toLatin1();
+      QDir dir(homePath);
+      if(!dir.exists(homePath + tr("/xTuple")))
+      {
+            dir.mkpath(tr("xTuple"));
+      }
+      //get old words from file
+      if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+      {          
+           QTextStream in(&file);
+           //skip word count line
+           in.readLine();
+           while (!in.atEnd())
+           {
+             //add old words to stringlist
+             QString line = in.readLine();
+             if(!_spellAddWords.contains(line))
+                 _spellAddWords.append(line);
+           }
+           file.close();
+      }
+      //store new words added and old words
+      if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+      {
+         QTextStream out(&file);
+         //add word count to file first line
+         out << _spellAddWords.count() << "\n";
+         //add all new words in sort order
+         _spellAddWords.sort();
+         foreach(QString word, _spellAddWords)
+         {
+           QByteArray encodedString = _spellCodec->fromUnicode(word);
+           out << encodedString.data() << "\n";
+         }
+         file.close();
+      }
+    }
+}
+
+bool GUIClient::hunspell_ready()
+{
+       return _spellReady;
+}
+
+int GUIClient::hunspell_check(const QString word)
+{     
+      QByteArray encodedString = _spellCodec->fromUnicode(word);
+      return _spellChecker->spell(encodedString.data());
+}
+
+const QStringList GUIClient::hunspell_suggest(const QString word)
+{
+    char **wlst;
+    QStringList wordList;    
+    QByteArray encodedString = _spellCodec->fromUnicode(word);
+    if(_spellChecker->spell(encodedString.data()) < 1)
+    {
+      int suggestNum = _spellChecker->suggest(&wlst, encodedString.data());
+      if (suggestNum > 0)
+      {
+         for (int i=0; i < suggestNum; i++)
+             wordList.append(_spellCodec->toUnicode(wlst[i]));
+      }
+      _spellChecker->free_list(&wlst, suggestNum);
+    }
+    return wordList;
+}
+
+int GUIClient::hunspell_add(const QString word)
+{   
+    QByteArray encodedString = _spellCodec->fromUnicode(word);
+    //check if word has been added before
+    if(!_spellAddWords.contains(encodedString.data()))
+        _spellAddWords.append(encodedString.data());
+    return _spellChecker->add(encodedString.data());
+}
+
+int GUIClient::hunspell_ignore(const QString word)
+{
+    QByteArray encodedString = _spellCodec->fromUnicode(word);
+    return _spellChecker->add(encodedString.data());
+}

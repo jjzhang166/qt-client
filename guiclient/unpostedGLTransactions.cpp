@@ -10,6 +10,7 @@
 
 #include "unpostedGLTransactions.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
 #include <QVariant>
@@ -83,18 +84,18 @@ enum SetResponse unpostedGLTransactions::set(const ParameterList &pParams)
 
 void unpostedGLTransactions::sPopulateMenu(QMenu * menuThis, QTreeWidgetItem* pItem)
 {
-  menuThis->insertItem(tr("View..."), this, SLOT(sViewTrans()), 0);
+  menuThis->addAction(tr("View..."), this, SLOT(sViewTrans()));
 
   XTreeWidgetItem * item = (XTreeWidgetItem*)pItem;
   if(0 == item)
     return;
 
   if(item->text(2) == "VO")
-    menuThis->insertItem(tr("View Voucher..."), this, SLOT(sViewDocument()));
+    menuThis->addAction(tr("View Voucher..."), this, SLOT(sViewDocument()));
   else if(item->text(2) == "IN")
-    menuThis->insertItem(tr("View Invoice..."), this, SLOT(sViewDocument()));
+    menuThis->addAction(tr("View Invoice..."), this, SLOT(sViewDocument()));
   else if(item->text(2) == "PO")
-    menuThis->insertItem(tr("View Purchase Order..."), this, SLOT(sViewDocument()));
+    menuThis->addAction(tr("View Purchase Order..."), this, SLOT(sViewDocument()));
 }
 
 void unpostedGLTransactions::sPrint()
@@ -132,7 +133,8 @@ void unpostedGLTransactions::sFillList()
                "FROM period, gltrans JOIN accnt ON (gltrans_accnt_id=accnt_id) "
                "     LEFT OUTER JOIN invhist ON (gltrans_misc_id=invhist_id AND"
 	       "                                 gltrans_docnumber='Misc.') "
-               "WHERE (NOT gltrans_posted "
+               "WHERE ((NOT gltrans_posted) "
+               "  AND  (NOT gltrans_deleted) "
 	       "  AND  (gltrans_date BETWEEN period_start AND period_end)"
 	       "  AND  (period_id=:period_id)) "
 	       "ORDER BY gltrans_created, gltrans_sequence, gltrans_amount;");

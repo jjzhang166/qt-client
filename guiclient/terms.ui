@@ -13,26 +13,17 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>439</width>
-    <height>254</height>
+    <width>488</width>
+    <height>249</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Terms</string>
   </property>
-  <layout class="QHBoxLayout">
-   <property name="spacing">
-    <number>7</number>
-   </property>
-   <property name="margin">
-    <number>5</number>
-   </property>
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <layout class="QVBoxLayout">
      <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -40,23 +31,14 @@ to be bound by its terms.</comment>
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
        <item>
         <layout class="QHBoxLayout">
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <layout class="QVBoxLayout">
            <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -92,15 +74,9 @@ to be bound by its terms.</comment>
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <layout class="QHBoxLayout">
              <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
               <number>0</number>
              </property>
              <item>
@@ -136,15 +112,9 @@ to be bound by its terms.</comment>
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <layout class="QVBoxLayout">
            <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -186,16 +156,10 @@ to be bound by its terms.</comment>
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <layout class="QHBoxLayout">
              <property name="spacing">
               <number>7</number>
-             </property>
-             <property name="margin">
-              <number>0</number>
              </property>
              <item>
               <widget class="QGroupBox" name="_typeGroup">
@@ -255,20 +219,17 @@ to be bound by its terms.</comment>
                <property name="spacing">
                 <number>0</number>
                </property>
-               <property name="margin">
-                <number>0</number>
-               </property>
                <item>
                 <widget class="QCheckBox" name="_ap">
                  <property name="text">
-                  <string>Used in A/P</string>
+                  <string>Used in Payables</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="_ar">
                  <property name="text">
-                  <string>Used in A/R</string>
+                  <string>Used in Receivables</string>
                  </property>
                 </widget>
                </item>
@@ -302,7 +263,7 @@ to be bound by its terms.</comment>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>177</width>
+               <width>0</width>
                <height>20</height>
               </size>
              </property>
@@ -317,15 +278,9 @@ to be bound by its terms.</comment>
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <layout class="QVBoxLayout">
            <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -387,23 +342,14 @@ to be bound by its terms.</comment>
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <layout class="QHBoxLayout">
              <property name="spacing">
               <number>0</number>
              </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
              <item>
               <layout class="QVBoxLayout">
                <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="margin">
                 <number>0</number>
                </property>
                <item>
@@ -451,9 +397,6 @@ to be bound by its terms.</comment>
              <property name="spacing">
               <number>0</number>
              </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
              <item>
               <widget class="XLineEdit" name="_discountPercent">
                <property name="sizePolicy">
@@ -494,9 +437,6 @@ to be bound by its terms.</comment>
            <item>
             <layout class="QHBoxLayout">
              <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
               <number>0</number>
              </property>
              <item>
@@ -547,55 +487,22 @@ to be bound by its terms.</comment>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>16</height>
+         <height>0</height>
         </size>
        </property>
       </spacer>
      </item>
     </layout>
    </item>
-   <item>
-    <layout class="QVBoxLayout">
-     <property name="spacing">
-      <number>5</number>
+   <item row="0" column="1">
+    <widget class="QDialogButtonBox" name="_buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <property name="margin">
-      <number>0</number>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
      </property>
-     <item>
-      <widget class="QPushButton" name="_close">
-       <property name="text">
-        <string>&amp;Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_save">
-       <property name="text">
-        <string>&amp;Save</string>
-       </property>
-       <property name="default">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -606,6 +513,7 @@ to be bound by its terms.</comment>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -618,8 +526,6 @@ to be bound by its terms.</comment>
   <tabstop>_discountDays</tabstop>
   <tabstop>_discountPercent</tabstop>
   <tabstop>_cutOffDay</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -628,22 +534,6 @@ to be bound by its terms.</comment>
    <signal>toggled(bool)</signal>
    <receiver>_cutOffDay</receiver>
    <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>terms</receiver>
-   <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>20</x>

@@ -116,6 +116,7 @@ class menuAccounting : public QObject
     void sStandardJournalGroups();
     void sPostStandardJournal();
     void sPostStandardJournalGroup();
+    void sPostJournals();
 
     void sFinancialReports();
     void sViewFinancialReport();
@@ -126,6 +127,7 @@ class menuAccounting : public QObject
     void sDspGLSeries();
     void sDspStandardJournalHistory();
     void sDspTrialBalances();
+    void sDspJournals();
 
     void sCompanies();
     void sProfitCenters();
@@ -140,7 +142,6 @@ class menuAccounting : public QObject
     void sTaxAuthorities();
     void sTaxZones();
     void sTaxClasses();
-    void sTaxAuthoritySearch();
     void sTaxAssignments();
     void sTaxRegistrations();
     void sDspTaxHistory();
@@ -148,7 +149,6 @@ class menuAccounting : public QObject
     void sReconcileBankaccount();
     void sEnterAdjustment();
     void sAdjustmentEditList();
-    void sAdjustmentTypes();
     void sDspBankrecHistory();
     void sDspSummarizedBankrecHistory();
 
@@ -158,26 +158,18 @@ class menuAccounting : public QObject
     void sForwardUpdateAccounts();
 
     void sVendors();
-    void sTerms();
-    void sBankAccounts();
     void sCheckFormats();
-    void sAPAssignments();
-    void sCostCategories();
-    void sExpenseCategories();
     
     void sPrintStatementByCustomer();
     void sPrintStatementsByCustomerType();
 
     void sCustomers();
-    void sCustomerTypes();
-    void sVendorTypes();
-    void sSalesCategories();
-    void sReasonCodes();
-    void sARAccountAssignments();
 
     void sUpdateLateCustCreditStatus();
     void sCreateRecurringInvoices();
     void sSyncCompanies();
+
+    void sSetup();
 
   private:
     GUIClient *parent;
@@ -207,7 +199,6 @@ class menuAccounting : public QObject
     QMenu    *budgetMenu;
     QMenu    *taxMenu;
     QMenu    *taxReportsMenu;
-    QMenu    *masterInfoMenu;
     QMenu    *bankrecMenu;
     QMenu    *bankrecDisplaysMenu;
     QMenu    *bankrecReportsMenu;

@@ -24,6 +24,8 @@ public:
     imageview(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~imageview();
 
+    QPushButton* _save;
+
 public slots:
     virtual void set( const ParameterList & pParams );
     virtual void populate();

@@ -39,6 +39,11 @@ class XTUPLEWIDGETS_EXPORT XLineEdit : public QLineEdit
     virtual void   setText(const QVariant &);
     Q_INVOKABLE virtual void   setDouble(const double, const int = -1);
 
+    Q_INVOKABLE inline virtual QString nullStr() const { return _nullStr; }
+    Q_INVOKABLE        virtual void setNullStr(const QString &text);
+
+    Q_INVOKABLE bool isNull();
+
   public slots:
     virtual void sParse();
     virtual void setData();
@@ -55,20 +60,28 @@ class XTUPLEWIDGETS_EXPORT XLineEdit : public QLineEdit
     void requestInfo();
     void requestAlias();
 
+  protected slots:
+    virtual void sHandleNullStr();
+
   protected:
     int     _id;
     bool    _valid;
     bool    _parsed;
+    QString _nullStr;
 
     QAction* _listAct;
     QAction* _searchAct;
     QAction* _aliasAct;
     
+    virtual void focusInEvent(QFocusEvent * event);
+    virtual void focusOutEvent(QFocusEvent * event);
+
     void mouseDoubleClickEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
     
   private:    
+    bool _isNull;
     QString _default;
     QString _fieldName;
     XDataWidgetMapper *_mapper;

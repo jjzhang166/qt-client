@@ -76,19 +76,6 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
   connect(_priceUOM,          SIGNAL(newID(int)),                   this, SLOT(sPriceUOMChanged()));
   connect(_inventoryButton,   SIGNAL(toggled(bool)),                this, SLOT(sHandleButton()));
 
-  QAction *_saveAct = new QAction(this);
-  _saveAct->setShortcut(QKeySequence::Save);
-  connect(_saveAct, SIGNAL(triggered()), this, SLOT(sSave()));
-
-  QAction *_closeAct = new QAction(this);
-  _closeAct->setShortcut(QKeySequence::Close);
-  connect(_closeAct, SIGNAL(triggered()), this, SLOT(close()));
-
-  QList<QAction *> _actions;
-  _actions.append(_saveAct);
-  _actions.append(_closeAct);
-  addActions(_actions);
-
 #ifndef Q_WS_MAC
   _listPrices->setMaximumWidth(25);
   _subItemList->setMaximumWidth(25);
@@ -211,6 +198,8 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
   _availability->setEnabled(_showAvailability->isChecked());
   _showIndented->setEnabled(_showAvailability->isChecked());
 
+  _altCosAccnt->setType(GLCluster::cRevenue | GLCluster::cExpense);
+
   // TO DO **** Fix tab order issues and offer alternate means for "Express Tab Order"  ****
 }
 
@@ -302,9 +291,22 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
     _charVars.replace(EFFECTIVE, param.toDate());
   }
 
+  param = pParams.value("shipDate", &valid);
+  if (valid)
+    _scheduledDate->setDate(param.toDate());
+
   param = pParams.value("mode", &valid);
   if (valid)
   {
+    QDate asOf;
+
+    if (_metrics->value("soPriceEffective") == "ScheduleDate")
+      asOf = _scheduledDate->date();
+    else if (_metrics->value("soPriceEffective") == "OrderDate")
+      asOf = _netUnitPrice->effective();
+    else
+      asOf = omfgThis->dbDate();
+
     if (param.toString() == "new")
     {
       _mode = cNew;
@@ -321,7 +323,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _orderId = -1;
       _itemsrc = -1;
 
-      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2))").arg(_custid).arg(_shiptoid) );
+      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
 
       prepare();
 
@@ -373,9 +375,9 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _orderId = -1;
       _itemsrc = -1;
       _warranty->hide();
-      _tabs->removePage(_tabs->page(6));
+      _tabs->removeTab(_tabs->indexOf(supplyTab));
 
-      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2))").arg(_custid).arg(_shiptoid) );
+      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
 
       prepare();
 
@@ -437,7 +439,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _subItemList->hide();
       _qtyOrdered->setFocus();
       _warranty->hide();
-      _tabs->removePage(_tabs->page(6));
+      _tabs->removeTab(_tabs->indexOf(supplyTab));
 
       connect(_qtyOrdered,        SIGNAL(lostFocus()),  this, SLOT(sCalculateExtendedPrice()));
       connect(_netUnitPrice,      SIGNAL(lostFocus()),  this, SLOT(sCalculateDiscountPrcnt()));
@@ -473,7 +475,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _subItem->hide();
       _comments->setType(Comments::QuoteItem);
       _warranty->hide();
-      _tabs->removePage(_tabs->page(6));
+      _tabs->removeTab(_tabs->indexOf(supplyTab));
     }
   }
 
@@ -609,10 +611,6 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
     _supplyWarehouse->hide();
   }
 
-  param = pParams.value("shipDate", &valid);
-  if (valid)
-    _scheduledDate->setDate(param.toDate());
-
   _modified = false;
 
   return NoError;
@@ -648,17 +646,20 @@ void salesOrderItem::prepare()
       return;
     }
 
-    q.prepare( "SELECT MIN(coitem_scheddate) AS scheddate "
-               "FROM coitem "
-               "WHERE (coitem_cohead_id=:cohead_id);" );
-    q.bindValue(":cohead_id", _soheadid);
-    q.exec();
-    if (q.first())
-      _scheduledDate->setDate(q.value("scheddate").toDate());
-    else if (q.lastError().type() != QSqlError::NoError)
+    if (!_scheduledDate->isValid())
     {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+      q.prepare( "SELECT MIN(coitem_scheddate) AS scheddate "
+                 "FROM coitem "
+                 "WHERE (coitem_cohead_id=:cohead_id);" );
+      q.bindValue(":cohead_id", _soheadid);
+      q.exec();
+      if (q.first())
+        _scheduledDate->setDate(q.value("scheddate").toDate());
+      else if (q.lastError().type() != QSqlError::NoError)
+      {
+        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+        return;
+      }
     }
   }
   else if (_mode == cNewQuote)
@@ -686,17 +687,20 @@ void salesOrderItem::prepare()
       return;
     }
 
-    q.prepare( "SELECT MIN(quitem_scheddate) AS scheddate "
-               "FROM quitem "
-               "WHERE (quitem_quhead_id=:quhead_id);" );
-    q.bindValue(":quhead_id", _soheadid);
-    q.exec();
-    if (q.first())
-      _scheduledDate->setDate(q.value("scheddate").toDate());
-    else if (q.lastError().type() != QSqlError::NoError)
+    if (!_scheduledDate->isValid())
     {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+      q.prepare( "SELECT MIN(quitem_scheddate) AS scheddate "
+                 "FROM quitem "
+                 "WHERE (quitem_quhead_id=:quhead_id);" );
+      q.bindValue(":quhead_id", _soheadid);
+      q.exec();
+      if (q.first())
+        _scheduledDate->setDate(q.value("scheddate").toDate());
+      else if (q.lastError().type() != QSqlError::NoError)
+      {
+        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+        return;
+      }
     }
   }
   _modified = false;
@@ -1190,7 +1194,10 @@ void salesOrderItem::sSave()
       {
         idx1 = _itemchar->index(i, CHAR_ID);
         idx2 = _itemchar->index(i, CHAR_VALUE);
-        q.bindValue(":target_type", "W");
+        if (_createPO)
+          q.bindValue(":target_type", "PI");
+        else
+          q.bindValue(":target_type", "W");
         q.bindValue(":target_id", _orderId);
         q.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
         q.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
@@ -2142,10 +2149,10 @@ void salesOrderItem::sDetermineAvailability( bool p )
       _available->setDouble(availability.value("available").toDouble());
       _leadtime->setText(availability.value("itemsite_leadtime").toString());
 
+      QString stylesheet;
       if (availability.value("available").toDouble() < _availabilityQtyOrdered)
-        _available->setPaletteForegroundColor(QColor("red"));
-      else
-        _available->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+      _available->setStyleSheet(stylesheet);
 
       if ((_item->itemType() == "M") || (_item->itemType() == "K"))
       {
@@ -2210,7 +2217,7 @@ void salesOrderItem::sDetermineAvailability( bool p )
               valueidx = _itemchar->index(i, CHAR_VALUE);
               sql     += QString(" OR ((bomdata_char_id=%1) AND (bomdata_value='%2'))")
                          .arg(_itemchar->data(charidx, Qt::UserRole).toString())
-                         .arg(_itemchar->data(valueidx, Qt::DisplayRole).toString());
+                         .arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''"));
             }
 
             sql +=  " ) ";
@@ -2284,7 +2291,7 @@ void salesOrderItem::sDetermineAvailability( bool p )
             {
               charidx  = _itemchar->index(i, CHAR_ID);
               valueidx = _itemchar->index(i, CHAR_VALUE);
-              sql     += QString(" OR ((bomitem_char_id=%1) AND (bomitem_value='%2'))").arg(_itemchar->data(charidx, Qt::UserRole).toString()).arg(_itemchar->data(valueidx, Qt::DisplayRole).toString());
+              sql     += QString(" OR ((bomitem_char_id=%1) AND (bomitem_value='%2'))").arg(_itemchar->data(charidx, Qt::UserRole).toString()).arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''"));
             }
 
             sql +=  " ) ";
@@ -2512,7 +2519,7 @@ void salesOrderItem::sHandleWo(bool pCreate)
 
 void salesOrderItem::sPopulateOrderInfo()
 {
-  if (_createOrder->isChecked())
+  if (_createOrder->isChecked() && ((_mode == cNew) || (_mode == cEdit) || (_mode == cView)))
   {
     XSqlQuery checkpo;
     checkpo.prepare( "SELECT pohead_id, poitem_id, poitem_status "
@@ -3398,8 +3405,9 @@ void salesOrderItem::setItemExtraClause()
 
 void salesOrderItem::sHandleScheduleDate()
 {
-  if ((!_scheduledDate->isValid() ||
-       (_scheduledDate->date() == _dateCache)))
+  if ((_metrics->value("soPriceEffective") != "ScheduleDate") ||
+      (!_scheduledDate->isValid() ||
+      (_scheduledDate->date() == _dateCache)))
     return;
 
   if (_createOrder->isChecked())
@@ -3436,8 +3444,8 @@ void salesOrderItem::sHandleScheduleDate()
 
     QString sql("SELECT customerCanPurchase(<? value(\"item_id\") ?>, "
                 "<? value(\"cust_id\") ?>, "
-                  "<? value(\"shipto_id\") ?>, "
-                    "<? value(\"shipDate\") ?>) AS canPurchase; ");
+                "<? value(\"shipto_id\") ?>, "
+                "<? value(\"shipDate\") ?>) AS canPurchase; ");
 
     MetaSQLQuery mql(sql);
     q = mql.toQuery(params);

@@ -86,6 +86,8 @@ class menuManufacture : public QObject
 
     void sPrintWorkOrderForm();
 
+    void sSetup();
+
   private:
     GUIClient *parent;
 

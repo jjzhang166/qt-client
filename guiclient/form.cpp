@@ -19,7 +19,7 @@ form::form(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 }
 
 form::~form()
@@ -56,7 +56,7 @@ enum SetResponse form::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -65,10 +65,9 @@ enum SetResponse form::set(const ParameterList &pParams)
       _name->setEnabled(FALSE);
       _report->setEnabled(FALSE);
       _key->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

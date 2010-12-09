@@ -11,19 +11,17 @@
 #ifndef ADDRESSES_H
 #define ADDRESSES_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_addresses.h"
 
-class addresses : public XWidget, public Ui::addresses
+class addresses : public display, public Ui::addresses
 {
     Q_OBJECT
 
 public:
     addresses(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~addresses();
 
 public slots:
     virtual void sPopulateMenu(QMenu *, QTreeWidgetItem* = NULL, int = 0);
@@ -31,11 +29,7 @@ public slots:
     virtual void sEdit();
     virtual void sView();
     virtual void sDelete();
-    virtual void sPrint();
-    virtual void sFillList();
-
-protected slots:
-    virtual void languageChange();
+    virtual bool setParams(ParameterList &);
 
 };
 

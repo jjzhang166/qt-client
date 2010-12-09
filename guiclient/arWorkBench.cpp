@@ -10,9 +10,9 @@
 
 #include "arWorkBench.h"
 
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QVariant>
 
 #include <stdlib.h>
 #include <metasql.h>
@@ -28,18 +28,16 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
 {
   setupUi(this);
 
-//  (void)statusBar();
-
   _aritems = new dspAROpenItems(this, "_aritems", Qt::Widget);
   _aropenFrame->layout()->addWidget(_aritems);
-  _aritems->findChild<QWidget*>("_close")->hide();
+  _aritems->setCloseVisible(false);
   _aritems->findChild<QWidget*>("_customerSelector")->hide();
-  _aritems->findChild<QWidget*>("_print")->hide();
-  _aritems->findChild<QWidget*>("_query")->hide();
+  _aritems->queryAction()->setVisible(false);
   _aritems->findChild<QWidget*>("_asofGroup")->hide();
   _aritems->findChild<DLineEdit*>("_asOf")->setDate(omfgThis->endOfTime());
   _aritems->findChild<QWidget*>("_dateGroup")->hide();
   _aritems->findChild<QWidget*>("_showGroup")->hide();
+  _aritems->findChild<QWidget*>("_printGroup")->hide();
   _aritems->findChild<QRadioButton*>("_dueDate")->click();
   
   _cctrans = new dspCreditCardTransactions(this, "_cctrans", Qt::Widget);
@@ -93,7 +91,6 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
           _aritems->findChild<QRadioButton*>("_credits"), SLOT(click()));
   connect(_both, SIGNAL(clicked()), 
           _aritems->findChild<QRadioButton*>("_both"), SLOT(click()));
-  connect(_print, SIGNAL(clicked()), _aritems, SLOT(sPrint()));
   connect(_searchDocNum, SIGNAL(textChanged(const QString&)), this, SLOT(sSearchDocNumChanged()));
 
   _cashrcpt->addColumn(tr("Cust. #"),       _bigMoneyColumn, Qt::AlignLeft,  true, "cust_number");                                                                
@@ -197,7 +194,7 @@ void arWorkBench::sFillList()
 
 void arWorkBench::sClear()
 {
-  _aritems->findChild<XTreeWidget*>("_aropen")->clear();
+  _aritems->list()->clear();
   _cashrcpt->clear();
   _cctrans->findChild<XTreeWidget*>("_preauth")->clear();
 }
@@ -323,31 +320,31 @@ void arWorkBench::sPostCashrcpt()
 
 void arWorkBench::sPopulateCashRcptMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit Cash Receipt..."), this, SLOT(sEditCashrcpt()), 0);
+  menuItem = pMenu->addAction(tr("Edit Cash Receipt..."), this, SLOT(sEditCashrcpt()));
   if (! _privileges->check("MaintainCashReceipts") &&
       ! _privileges->check("ViewCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  menuItem = pMenu->insertItem(tr("View Cash Receipt..."), this, SLOT(sViewCashrcpt()), 0);
+  menuItem = pMenu->addAction(tr("View Cash Receipt..."), this, SLOT(sViewCashrcpt()));
   if (! _privileges->check("ViewCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  menuItem = pMenu->insertItem(tr("Delete Cash Receipt..."), this, SLOT(sDeleteCashrcpt()), 0);
+  menuItem = pMenu->addAction(tr("Delete Cash Receipt..."), this, SLOT(sDeleteCashrcpt()));
   if (! _privileges->check("MaintainCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Post Cash Receipt..."), this, SLOT(sPostCashrcpt()), 0);
+  menuItem = pMenu->addAction(tr("Post Cash Receipt..."), this, SLOT(sPostCashrcpt()));
   if (! _privileges->check("PostCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 }
 
 void arWorkBench::sSearchDocNumChanged()
 {
-  XTreeWidget *aropen = _aritems->findChild<XTreeWidget*>("_aropen");
+  XTreeWidget *aropen = _aritems->list();
   QString sub = _searchDocNum->text().trimmed();
   if(sub.isEmpty())
     return;

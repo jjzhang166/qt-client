@@ -10,6 +10,7 @@
 
 #include "imageview.h"
 #include "widgets.h"
+#include "shortcuts.h"
 
 #include <xsqlquery.h>
 
@@ -22,23 +23,20 @@
 #include <QScrollArea>
 #include <quuencode.h>
 
-/*
- *  Constructs a image as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 imageview::imageview(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : QDialog(parent, name, modal, fl)
+    : QDialog(parent, fl)
 {
   setupUi(this);
 
+  setObjectName(name ? name : "imageview");
+  setModal(modal);
+
+  _save = _buttonBox->button(QDialogButtonBox::Save);
+  _save->setEnabled(false);
 
   // signals and slots connections
   connect(_fileList, SIGNAL(clicked()), this, SLOT(sFileList()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
 #ifndef Q_WS_MAC
   _fileList->setMaximumWidth(25);
@@ -54,6 +52,8 @@ imageview::imageview(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   layout->setMargin(0);
   layout->addWidget(scrollArea);
   _imageFrame->setLayout(layout);
+
+  shortcuts::setStandardKeys(this);
 }
 
 /*
@@ -112,10 +112,10 @@ void imageview::set(const ParameterList &pParams)
       _filenameLit->hide();
       _fileName->hide();
       _fileList->hide();
-      _close->setText(tr("&Close"));
-      _save->hide();
+      _buttonBox->setStandardButtons(QDialogButtonBox::Close);
+      _buttonBox->button(QDialogButtonBox::Close)->setShortcut(QKeySequence::Close);
 
-      _close->setFocus();
+      _buttonBox->setFocus();
     }
   }
 }
@@ -205,7 +205,7 @@ void imageview::sFileList()
   {
     if (!first)
       frmtList += QString(tr(" "));
-    ext = (list.at(i)).lower();
+    ext = QString(list.at(i)).toLower();
 
     if (ext == "jpeg")
       ext = "jpg";

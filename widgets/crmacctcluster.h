@@ -57,7 +57,6 @@ class XTUPLEWIDGETS_EXPORT CRMAcctList : public VirtualList
 
     public slots:
 	virtual void sFillList();
-	virtual void sSearch(const QString&);
 	virtual void setId(const int);
 	virtual void setShowInactive(const bool);
 	virtual void setSubtype(const CRMAcctLineEdit::CRMAcctSubtype);

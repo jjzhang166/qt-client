@@ -31,6 +31,7 @@ expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_warehouse,           SIGNAL(newID(int)), this, SLOT(sPopulateQOH(int)));
 
   _captive = FALSE;
+  _prjid = -1;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _warehouse->setType(WComboBox::AllActiveInventory);
@@ -164,7 +165,7 @@ void expenseTrans::sPost()
 
   q.exec("BEGIN;");	// because of possible distribution cancelations
   q.prepare( "SELECT invExpense(itemsite_id, :qty, :expcatid, :docNumber,"
-             "                  :comments, :date) AS result "
+             "                  :comments, :date, :prj_id) AS result "
              "FROM itemsite "
              "WHERE ( (itemsite_item_id=:item_id)"
              " AND (itemsite_warehous_id=:warehous_id) );" );
@@ -175,6 +176,8 @@ void expenseTrans::sPost()
   q.bindValue(":item_id", _item->id());
   q.bindValue(":warehous_id", _warehouse->id());
   q.bindValue(":date",        _transDate->date());
+  if (_prjid != -1)
+    q.bindValue(":prj_id", _prjid);
   q.exec();
 
   if (q.first())

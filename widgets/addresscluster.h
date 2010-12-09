@@ -65,7 +65,6 @@ class XTUPLEWIDGETS_EXPORT AddressSearch : public VirtualSearch
 
     protected:
 	AddressCluster*	_parent;
-        XCheckBox*      _searchCrmacct;
 	XCheckBox*	_searchStreet;
 	XCheckBox*	_searchCity;
 	XCheckBox*	_searchState;
@@ -151,6 +150,7 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
                virtual void setNumber(const int)     {};
 	inline virtual void setPostalCode(const QString& p) { _postalcode->setText(p); };
 	       virtual void setState(const QString& p);
+               virtual void setListVisible(bool p) { _list->setVisible(p); }
 	virtual void	clear();
 	virtual void	sEllipses();
 	virtual void	sInfo();
@@ -215,6 +215,7 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
 	QString		_titleSingular;
 	bool		_valid;
 	XDataWidgetMapper* _mapper;
+        QPushButton*    _list;
 
 	// cached values
 	QString         c_number;

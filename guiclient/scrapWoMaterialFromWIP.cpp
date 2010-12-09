@@ -207,7 +207,7 @@ void scrapWoMaterialFromWIP::sScrap()
     }
 
     q.prepare("SELECT invScrap(itemsite_id, :qty, formatWoNumber(wo_id), "
-              " :descrip, :date, :invhist_id) AS result"
+              " :descrip, :date, :invhist_id, wo_prj_id) AS result"
               " FROM wo, itemsite"
               "  WHERE ((wo_id=:wo_id)"
               " AND  (itemsite_id=wo_itemsite_id));");

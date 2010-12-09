@@ -23,8 +23,8 @@
 XLineEdit::XLineEdit(QWidget *parent, const char *name) :
   QLineEdit(parent)
 {
-  if(name)
-    setObjectName(name);
+  if (! name && objectName().isEmpty())
+    setObjectName("XLineEdit");
   setAcceptDrops(FALSE);
 
 #ifdef Q_WS_MAC
@@ -33,8 +33,9 @@ XLineEdit::XLineEdit(QWidget *parent, const char *name) :
   setFont(f);
 #endif
 
-  _parsed = TRUE;
-  _valid = FALSE;
+  _parsed = true;
+  _valid = false;
+  _isNull = true;
 
   _id = -1;
   connect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
@@ -129,6 +130,7 @@ void XLineEdit::setText(const QVariant &pVariant)
   }
   else
     QLineEdit::setText(pVariant.toString());
+  sHandleNullStr();
 }
 
 
@@ -172,5 +174,75 @@ void XLineEdit::setData(const QString &text)
 {
   if (_mapper->model())
     _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this)), text);
+}
+
+void XLineEdit::setNullStr(const QString &text)
+{
+  if (_nullStr == text )
+    return;
+
+  _nullStr = text;
+  sHandleNullStr();
+  if (!_nullStr.isEmpty())
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(sHandleNullStr()));
+}
+
+void XLineEdit::sHandleNullStr()
+{
+  if (_nullStr.isEmpty())
+    return;
+
+  QString sheet = styleSheet();
+  QString nullStyle = " QLineEdit{ color: Grey; "
+                      "            font: italic; "
+                      "            font-size: 12px}";
+
+  if (!hasFocus() &&
+      text().isEmpty())
+  {
+    setText(_nullStr);
+    sheet.append(nullStyle);
+    _isNull = true;
+  }
+  else if (hasFocus() &&
+           sheet.contains(nullStyle))
+  {
+    clear();
+    sheet.remove(nullStyle);
+  }
+  else
+  {
+    _isNull = false;
+    sheet.remove(nullStyle);
+  }
+
+  setStyleSheet(sheet);
+}
+
+void XLineEdit::focusInEvent(QFocusEvent * event)
+{
+  if (!_nullStr.isEmpty())
+  {
+    disconnect(this, SIGNAL(textChanged(QString)), this, SLOT(sHandleNullStr()));
+    sHandleNullStr();
+  }
+  QLineEdit::focusInEvent(event);
+}
+
+void XLineEdit::focusOutEvent(QFocusEvent * event)
+{
+  if (!_nullStr.isEmpty())
+  {
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(sHandleNullStr()));
+    sHandleNullStr();
+  }
+  QLineEdit::focusOutEvent(event);
+}
+
+bool XLineEdit::isNull()
+{
+  if (_nullStr.isEmpty() || hasFocus())
+    return text().isEmpty();
+  return _isNull;
 }
 

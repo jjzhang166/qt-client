@@ -160,7 +160,7 @@ QVariantMap XSqlQueryProto::lastError()
     m.insert("text", err.text());
     m.insert("number", err.number());
     m.insert("type", err.type());
-    m.insert("isValid", QVariant(err.isValid(), 0));
+    m.insert("isValid", QVariant(err.isValid()));
   }
 
   return m;

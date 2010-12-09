@@ -34,8 +34,8 @@ image::image(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   // signals and slots connections
   connect(_fileList, SIGNAL(clicked()), this, SLOT(sFileList()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
 #ifndef Q_WS_MAC
   _fileList->setMaximumWidth(25);
@@ -110,10 +110,9 @@ enum SetResponse image::set(const ParameterList &pParams)
       _filenameLit->hide();
       _fileName->hide();
       _fileList->hide();
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -209,7 +208,7 @@ void image::sFileList()
   {
     if (!first)
       frmtList += QString(tr(" "));
-    ext = (list.at(i)).lower();
+    ext = (list.at(i)).toLower();
 
     if (ext == "jpeg")
       ext = "jpg";

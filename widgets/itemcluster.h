@@ -258,6 +258,8 @@ class XTUPLEWIDGETS_EXPORT ItemCluster : public VirtualCluster
     Q_INVOKABLE inline void clearExtraClauseList()                  { static_cast<ItemLineEdit*>(_number)->clearExtraClauseList();      }
     Q_INVOKABLE ItemLineEdit *itemLineEdit() { return static_cast<ItemLineEdit*>(_number); }
 
+    void setOrientation(Qt::Orientation orientation);
+
   public slots:
     QItemDelegate *itemDelegate() { return static_cast<ItemLineEdit*>(_number)->itemDelegate(); }
     void setDescriptionVisible(const bool p);

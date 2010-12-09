@@ -28,8 +28,8 @@ incidentCategory::incidentCategory(QWidget* parent, const char* name, bool modal
     setupUi(this);
 
     // signals and slots connections
-    connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+    connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
     
     if (!_metrics->boolean("EnableBatchManager"))
@@ -39,7 +39,7 @@ incidentCategory::incidentCategory(QWidget* parent, const char* name, bool modal
     }
     else
       _ediprofile->populate("SELECT ediprofile_id, ediprofile_name "
-                            "FROM ediprofile "
+                            "FROM xtbatch.ediprofile "
                             "WHERE (ediprofile_type='email');");
 }
 
@@ -85,10 +85,9 @@ enum SetResponse incidentCategory::set(const ParameterList &pParams)
       _name->setEnabled(FALSE);
       _order->setEnabled(FALSE);
       _descrip->setEnabled(FALSE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

@@ -194,13 +194,12 @@ void fixSerial::sFixAll()
 
 void fixSerial::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Fix"), this, SLOT(sFix()));
-  pMenu->setItemEnabled(menuItem,
-		        (static_cast<XTreeWidgetItem*>(pItem))->altId() > 0 &&
-			 _privileges->check("FixSerial"));
+  menuItem = pMenu->addAction(tr("Fix"), this, SLOT(sFix()));
+  menuItem->setEnabled((static_cast<XTreeWidgetItem*>(pItem))->altId() > 0 &&
+                       _privileges->check("FixSerial"));
 
-  menuItem = pMenu->insertItem(tr("Fix All"), this, SLOT(sFixAll()));
-  pMenu->setItemEnabled(menuItem, _privileges->check("FixSerial"));
+  menuItem = pMenu->addAction(tr("Fix All"), this, SLOT(sFixAll()));
+  menuItem->setEnabled(_privileges->check("FixSerial"));
 }

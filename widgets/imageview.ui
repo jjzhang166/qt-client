@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>591</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -180,47 +180,14 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout">
-       <property name="spacing">
-        <number>5</number>
+      <widget class="QDialogButtonBox" name="_buttonBox">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <item>
-        <widget class="QPushButton" name="_close">
-         <property name="text">
-          <string>&amp;Cancel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="_save">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>&amp;Save</string>
-         </property>
-         <property name="default">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>120</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -257,20 +224,18 @@ to be bound by its terms.</comment>
   <tabstop>_fileList</tabstop>
   <tabstop>_name</tabstop>
   <tabstop>_descrip</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
+   <sender>_buttonBox</sender>
+   <signal>rejected()</signal>
    <receiver>imageview</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>538</x>
-     <y>27</y>
+     <x>464</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>

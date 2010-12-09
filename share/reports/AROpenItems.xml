@@ -48,10 +48,10 @@ formatDate(&lt;? value("asofDate") ?>) AS asOfDate,
   'No' AS incidentsOnly
 &lt;? endif ?>;</sql>
  </querysource>
- <querysource loadFromDb="true" >
+ <querysource loadFromDb="true">
   <name>detail</name>
   <mqlgroup>arOpenItems</mqlgroup>
-  <mqlname>detail</mqlname>
+  <mqlname>f_detail</mqlname>
  </querysource>
  <rpthead>
   <height>178</height>
@@ -889,7 +889,7 @@ formatDate(&lt;? value("asofDate") ?>) AS asOfDate,
     <query>detail</query>
     <column>base_balance</column>
    </data>
-   <format builtin="true" >qty</format>
+   <format builtin="true">qty</format>
    <tracktotal/>
   </field>
   <label>

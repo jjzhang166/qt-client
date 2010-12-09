@@ -35,7 +35,7 @@ to be bound by its terms.</comment>
            <enum>Qt::StrongFocus</enum>
           </property>
           <property name="fieldName">
-           <string>so_number</string>
+           <string notr="true">so_number</string>
           </property>
          </widget>
         </item>
@@ -99,7 +99,7 @@ to be bound by its terms.</comment>
            <string>Shipment #:</string>
           </property>
           <property name="fieldName">
-           <string>shipment_number</string>
+           <string notr="true">shipment_number</string>
           </property>
          </widget>
         </item>
@@ -134,7 +134,7 @@ to be bound by its terms.</comment>
       <item row="2" column="1">
        <widget class="XLineEdit" name="_shipper">
         <property name="fieldName">
-         <string>shipper</string>
+         <string notr="true">shipper</string>
         </property>
        </widget>
       </item>
@@ -154,7 +154,7 @@ to be bound by its terms.</comment>
       <item row="3" column="1" colspan="2">
        <widget class="XLineEdit" name="_packnumTracknum">
         <property name="fieldName">
-         <string>package_tracking_number</string>
+         <string notr="true">package_tracking_number</string>
         </property>
        </widget>
       </item>
@@ -174,7 +174,7 @@ to be bound by its terms.</comment>
       <item row="4" column="1" colspan="2">
        <widget class="XLineEdit" name="_tracknum">
         <property name="fieldName">
-         <string>tracking_number</string>
+         <string notr="true">tracking_number</string>
         </property>
        </widget>
       </item>
@@ -196,7 +196,7 @@ to be bound by its terms.</comment>
         <item row="0" column="1">
          <widget class="XLineEdit" name="_pkgType">
           <property name="fieldName">
-           <string>package_type</string>
+           <string notr="true">package_type</string>
           </property>
          </widget>
         </item>
@@ -219,7 +219,7 @@ to be bound by its terms.</comment>
            <enum>Qt::StrongFocus</enum>
           </property>
           <property name="fieldName">
-           <string>void</string>
+           <string notr="true">void</string>
           </property>
           <item>
            <property name="text">
@@ -249,7 +249,7 @@ to be bound by its terms.</comment>
         <item row="2" column="1">
          <widget class="XLineEdit" name="_billing">
           <property name="fieldName">
-           <string>billing_option</string>
+           <string notr="true">billing_option</string>
           </property>
          </widget>
         </item>
@@ -295,7 +295,7 @@ to be bound by its terms.</comment>
         <item row="0" column="3">
          <widget class="XLineEdit" name="_weight">
           <property name="fieldName">
-           <string>weight</string>
+           <string notr="true">weight</string>
           </property>
           <property name="defaultText">
            <string>0</string>
@@ -305,26 +305,26 @@ to be bound by its terms.</comment>
         <item row="1" column="3">
          <widget class="CurrCluster" name="_baseFreight">
           <property name="fieldNameValue">
-           <string>base_freight</string>
+           <string notr="true">base_freight</string>
           </property>
           <property name="currencyEditable" stdset="0">
            <bool>false</bool>
           </property>
           <property name="fieldNameCurr">
-           <string>base_freight_currency</string>
+           <string notr="true">base_freight_currency</string>
           </property>
          </widget>
         </item>
         <item row="2" column="3">
          <widget class="CurrCluster" name="_totalFreight">
           <property name="fieldNameValue">
-           <string>total_freight</string>
+           <string notr="true">total_freight</string>
           </property>
           <property name="currencyEditable" stdset="0">
            <bool>false</bool>
           </property>
           <property name="fieldNameCurr">
-           <string>total_freight_currency</string>
+           <string notr="true">total_freight_currency</string>
           </property>
          </widget>
         </item>
@@ -350,7 +350,7 @@ to be bound by its terms.</comment>
            <enum>XDateEdit::Current</enum>
           </property>
           <property name="fieldName">
-           <string>last_updated</string>
+           <string notr="true">last_updated</string>
           </property>
          </widget>
         </item>

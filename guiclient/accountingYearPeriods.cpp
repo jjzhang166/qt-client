@@ -10,6 +10,7 @@
 
 #include "accountingYearPeriods.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
 
@@ -22,8 +23,6 @@ accountingYearPeriods::accountingYearPeriods(QWidget* parent, const char* name, 
     : XWidget(parent, name, fl)
 {
     setupUi(this);
-
-//    (void)statusBar();
 
     connect(_period, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*,QTreeWidgetItem*)));
     connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -64,47 +63,32 @@ void accountingYearPeriods::languageChange()
 
 void accountingYearPeriods::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
   int altId = ((XTreeWidgetItem *)pSelected)->altId();
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainAccountingPeriods"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainAccountingPeriods"));
   }
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainAccountingPeriods"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainAccountingPeriods"));
   }
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
   if (altId == 0)
   {
-    menuItem = pMenu->insertItem(tr("Close..."), this, SLOT(sClosePeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Close..."), this, SLOT(sClosePeriod()));
   }
   else if (altId == 1)
   {
-    menuItem = pMenu->insertItem(tr("Open..."), this, SLOT(sOpenPeriod()), 0);
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
-
-#if 0
-    if (!_privileges->check("MaintainItemMasters"))
-      pMenu->setItemEnabled(menuItem, FALSE);
-#endif
+    menuItem = pMenu->addAction(tr("Open..."), this, SLOT(sOpenPeriod()));
   }
 }
 

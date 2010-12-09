@@ -24,8 +24,6 @@ public:
     postPurchaseOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
     ~postPurchaseOrder();
 
-    virtual void init();
-
 public slots:
     virtual enum SetResponse set( ParameterList & pParams );
     virtual void sRelease();

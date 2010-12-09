@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
+    <width>660</width>
     <height>543</height>
    </rect>
   </property>
@@ -71,43 +71,6 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="0" column="2" rowspan="3">
-    <layout class="QVBoxLayout">
-     <item>
-      <widget class="QPushButton" name="_close">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_save">
-       <property name="text">
-        <string>Save</string>
-       </property>
-       <property name="default">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="_descripLit">
      <property name="text">
@@ -154,48 +117,6 @@ to be bound by its terms.</comment>
       </spacer>
      </item>
     </layout>
-   </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QGroupBox" name="_assignmentGroup">
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QGridLayout">
-      <item row="0" column="0">
-       <widget class="UsernameCluster" name="_owner">
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
-        <property name="label">
-         <string>Owner:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="UsernameCluster" name="_assignedTo">
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
-        <property name="label">
-         <string>Assigned to:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>0</width>
-          <height>28</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
    </item>
    <item row="4" column="0" colspan="3">
     <widget class="QTabWidget" name="_tab">
@@ -363,11 +284,51 @@ to be bound by its terms.</comment>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="RecurrenceWidget" name="_recurring">
-         <property name="maxVisible">
-          <bool>true</bool>
-         </property>
-        </widget>
+        <widget class="RecurrenceWidget" name="_recurring"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="_contactTab">
+      <attribute name="title">
+       <string>Contact</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="ContactCluster" name="_cntct"/>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -397,36 +358,6 @@ to be bound by its terms.</comment>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <layout class="QGridLayout">
-           <item row="0" column="0">
-            <layout class="QVBoxLayout">
-             <property name="topMargin">
-              <number>5</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="_crmacctLit">
-               <property name="text">
-                <string>Account#:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer>
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
            <item row="0" column="1">
             <widget class="CRMAcctCluster" name="_crmacct">
              <property name="focusPolicy">
@@ -434,6 +365,9 @@ to be bound by its terms.</comment>
              </property>
              <property name="label">
               <string/>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -471,6 +405,16 @@ to be bound by its terms.</comment>
             <widget class="QLabel" name="_incidentLit">
              <property name="text">
               <string>Incident #:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="_crmacctLit">
+             <property name="text">
+              <string>Account #:</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -536,6 +480,58 @@ to be bound by its terms.</comment>
      </widget>
     </widget>
    </item>
+   <item row="0" column="2" rowspan="2">
+    <widget class="QDialogButtonBox" name="_buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QGroupBox" name="_assignmentGroup">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QGridLayout">
+      <item row="0" column="2">
+       <spacer>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>28</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="UsernameCluster" name="_assignedTo">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="label">
+         <string>Assigned to:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="UsernameCluster" name="_owner">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="label">
+         <string>Owner:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -548,6 +544,11 @@ to be bound by its terms.</comment>
    <class>Comments</class>
    <extends>QWidget</extends>
    <header>comments.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ContactCluster</class>
+   <extends>QWidget</extends>
+   <header>contactcluster.h</header>
   </customwidget>
   <customwidget>
    <class>CRMAcctCluster</class>
@@ -606,12 +607,12 @@ to be bound by its terms.</comment>
   <tabstop>_pending</tabstop>
   <tabstop>_deferred</tabstop>
   <tabstop>_neither</tabstop>
+  <tabstop>_cntct</tabstop>
   <tabstop>_notes</tabstop>
   <tabstop>_crmacct</tabstop>
   <tabstop>_ophead</tabstop>
   <tabstop>_incident</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
+  <tabstop>_buttonBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -660,6 +661,22 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>637</x>
      <y>647</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_crmacct</sender>
+   <signal>newId(int)</signal>
+   <receiver>_cntct</receiver>
+   <slot>setSearchAcct(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>267</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>76</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>

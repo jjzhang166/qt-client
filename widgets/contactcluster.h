@@ -69,6 +69,9 @@ class XTUPLEWIDGETS_EXPORT ContactCluster : public VirtualCluster
       Q_INVOKABLE void setFax(const QString fax);
       Q_INVOKABLE void setEmailAddress(const QString email);
 
+      Q_INVOKABLE void setEmailSubjectText(const QString text);
+      Q_INVOKABLE void setEmailBodyText(const QString text);
+
       Q_INVOKABLE QString honorific() const { return _fname->at(0); }
       Q_INVOKABLE QString first() const { return _fname->at(1); }
       Q_INVOKABLE QString middle() const { return _fname->at(2); }
@@ -80,6 +83,7 @@ class XTUPLEWIDGETS_EXPORT ContactCluster : public VirtualCluster
       Q_INVOKABLE QString emailAddress() const { return _email->text(); }
 
     public slots:
+      void launchEmail(QString url);
       void openUrl(QString url);
       void setDescriptionVisible(const bool p);
       void setMinimalLayout(bool);
@@ -117,6 +121,8 @@ class XTUPLEWIDGETS_EXPORT ContactCluster : public VirtualCluster
       QStringList* _fname;
       XURLLabel* _email;
       XURLLabel* _webaddr;
+      QString _subjText;
+      QString _bodyText;
 };
 
 #endif

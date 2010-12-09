@@ -86,17 +86,10 @@ void postInvoices::sPost()
 
   bool inclZero = false;
   q.exec("SELECT COUNT(invchead_id) AS numZeroInvcs "
-	 "FROM ( SELECT invchead_id "
-	 "         FROM invchead LEFT OUTER JOIN"
-         "              invcitem ON (invcitem_invchead_id=invchead_id) LEFT OUTER JOIN"
-	 "              item ON (invcitem_item_id=item_id)  "
-	 "        WHERE (NOT invchead_posted) "
-	 "        GROUP BY invchead_id, invchead_freight, invchead_tax, invchead_misc_amount "
-	 "       HAVING (COALESCE(SUM(round((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price /  "
-	 "     	     CASE WHEN (item_id IS NULL) THEN 1 "
-	 "     	     ELSE invcitem_price_invuomratio END), 2)),0) + invchead_freight + invchead_tax + "
-         "                  invchead_misc_amount) <= 0) AS foo "
-         "WHERE  (checkInvoiceSitePrivs(invchead_id));");
+         "FROM invchead "
+         "WHERE ( (NOT invchead_posted) "
+         "  AND   (invoiceTotal(invchead_id) <= 0.0) "
+         "  AND   (checkInvoiceSitePrivs(invchead_id)) );");
   if (q.first() && q.value("numZeroInvcs").toInt() > 0)
   {
     int toPost = QMessageBox::question(this, tr("Invoices for 0 Amount"),
@@ -120,7 +113,7 @@ void postInvoices::sPost()
 
   q.prepare("SELECT postInvoices(:postUnprinted, :inclZero) AS result;");
   q.bindValue(":postUnprinted", QVariant(_postUnprinted->isChecked()));
-  q.bindValue(":inclZero",      QVariant(inclZero, 0));
+  q.bindValue(":inclZero",      inclZero);
   q.exec();
   if (q.first())
   {
@@ -173,8 +166,8 @@ void postInvoices::sSubmit()
 {
   ParameterList params;
   params.append("action_name", "PostInvoices");
-  params.append("postUnprinted", QVariant(_postUnprinted->isChecked(), 0));
-  params.append("printSalesJournal", QVariant(_printJournal->isChecked(), 0));
+  params.append("postUnprinted",     _postUnprinted->isChecked());
+  params.append("printSalesJournal", _printJournal->isChecked());
 
   submitAction newdlg(this, "", TRUE);
   newdlg.set(params);

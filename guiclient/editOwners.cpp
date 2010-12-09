@@ -140,13 +140,8 @@ void editOwners::sFillList()
   q.prepare(_queryString);
   q.bindValue(":owner", _owner->username());
   q.exec();
-  if(q.first())
-  {
-    _list->populate(q);
-    _modifyAll->setEnabled(true);
-  }
-  else
-    _list->clear();
+  _list->populate(q);
+  _modifyAll->setEnabled(_list->topLevelItemCount() > 0);
 
   _first = true;
   _queryString = "";
@@ -169,9 +164,9 @@ void editOwners::sModify()
     return;
   }
   int ret = QMessageBox::warning(this, tr("Confirm Ownership Modification"),
-                   tr("Are you sure that you want to change\n"
-                      "the new owner to '"+_newOwner->username()+"' for the\n"
-                      "selected records?"),
+                   tr("<p>Are you sure that you want to change the new owner "
+                      "to '%1' for the selected records?")
+                      .arg(_newOwner->username()),
                    QMessageBox::Yes | QMessageBox::No,
                    QMessageBox::Yes);
 
@@ -193,9 +188,9 @@ void editOwners::sModifyAll()
   }
 
   int ret = QMessageBox::warning(this, tr("Confirm Ownership Modification"),
-                   tr("Are you sure that you want to change\n"
-                      "the new owner to '"+_newOwner->username()+"' for the\n"
-                      "selected records?"),
+                   tr("<p>Are you sure that you want to change the new owner "
+                      "to '%1' for the selected records?")
+                      .arg(_newOwner->username()),
                    QMessageBox::Yes | QMessageBox::No,
                    QMessageBox::Yes);
   

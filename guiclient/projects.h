@@ -11,31 +11,23 @@
 #ifndef PROJECTS_H
 #define PROJECTS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include "ui_projects.h"
 
-class projects : public XWidget, public Ui::projects
+class projects : public display, public Ui::projects
 {
     Q_OBJECT
 
 public:
     projects(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~projects();
-
-    virtual void init();
 
 public slots:
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
     virtual void sDelete();
-    virtual void sPopulateMenu( QMenu * pMenu );
-    virtual void sFillList();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
+    virtual bool setParams(ParameterList &);
 };
 
 #endif // PROJECTS_H

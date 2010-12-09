@@ -12,12 +12,11 @@
 #define TODOLIST_H
 
 #include "guiclient.h"
-#include "xwidget.h"
-#include <parameter.h>
+#include "display.h"
 
 #include "ui_todoList.h"
 
-class todoList : public XWidget, public Ui::todoList
+class todoList : public display, public Ui::todoList
 {
   Q_OBJECT
 
@@ -25,28 +24,22 @@ class todoList : public XWidget, public Ui::todoList
     todoList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
 
   public slots:
-    virtual void	languageChange();
     virtual SetResponse	set(const ParameterList&);
-    virtual void	handlePrivs();
-    virtual void	sClose();
-    virtual void	sDelete();
-    virtual void	sEdit();
-    virtual void	sEditIncident();
-    virtual void  sEditTask();
-    virtual void  sEditProject();
-    virtual void	sEditCustomer();
-    virtual void	sFillList();
-    virtual void	sHandleAutoUpdate(bool);
-    virtual void	sNew();
-    virtual void  sNewIncdt();
-    virtual void	sPopulateMenu(QMenu*);
-    virtual void	sPrint();
-    virtual void	sView();
-    virtual void  sViewCustomer();
-    virtual void	sViewIncident();
-    virtual void  sViewTask();
-    virtual void  sViewProject();
-    virtual void 	setParams(ParameterList &);
+    virtual void sDelete();
+    virtual void sEdit();
+    virtual void sEditIncident();
+    virtual void sEditTask();
+    virtual void sEditProject();
+    virtual void sEditCustomer();
+    virtual void sNew();
+    virtual void sNewIncdt();
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
+    virtual void sView();
+    virtual void sViewCustomer();
+    virtual void sViewIncident();
+    virtual void sViewTask();
+    virtual void sViewProject();
+    virtual bool setParams(ParameterList &);
 
   private:
     int		    _mode;

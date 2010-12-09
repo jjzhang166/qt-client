@@ -17,58 +17,55 @@
 #include "customer.h"
 #include "customerTypeList.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-customers::customers(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+customers::customers(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "customers", fl)
 {
-  setupUi(this);
+  setUseAltId(true);
+  setWindowTitle(tr("Customers"));
+  setMetaSQLOptions("customers", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
 
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_cust, SIGNAL(populateMenu(QMenu *, QTreeWidgetItem *)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
+  parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Customer Number Pattern"), "cust_number_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Customer Name Pattern"), "cust_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Customer Type Pattern"), "custtype_code_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Contact Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Email Pattern"), "cntct_email_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("City Pattern"), "addr_city_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
 
   if (_privileges->check("MaintainCustomerMasters"))
-  {
-    connect(_cust, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_cust, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_cust, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_cust, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 
-  _cust->addColumn(tr("Type"),    _itemColumn,  Qt::AlignCenter, true, "custtype");
-  _cust->addColumn(tr("Number"),  _orderColumn, Qt::AlignCenter, true, "cust_number");
-  _cust->addColumn(tr("Active"),  _ynColumn,    Qt::AlignCenter, true, "cust_active");
-  _cust->addColumn(tr("Name"),    -1,           Qt::AlignLeft,   true, "cust_name");
-  _cust->addColumn(tr("Address"), 175,          Qt::AlignLeft,   true, "cust_address1");
-  _cust->addColumn(tr("Phone #"), 100,          Qt::AlignLeft,   true, "cust_phone");
+  list()->addColumn(tr("Number"),  _orderColumn, Qt::AlignLeft, true, "cust_number");
+  list()->addColumn(tr("Active"),  _ynColumn,    Qt::AlignCenter, false, "cust_active");
+  list()->addColumn(tr("Name"),    -1,           Qt::AlignLeft,   true, "cust_name");
+  list()->addColumn(tr("Type"),    _itemColumn,  Qt::AlignLeft, true, "custtype_code");
+  list()->addColumn(tr("First"),   50, Qt::AlignLeft  , true, "cntct_first_name" );
+  list()->addColumn(tr("Last"),    -1, Qt::AlignLeft  , true, "cntct_last_name" );
+  list()->addColumn(tr("Phone"),   100, Qt::AlignLeft  , true, "cntct_phone" );
+  list()->addColumn(tr("Email"),   100, Qt::AlignLeft  , true, "cntct_email" );
+  list()->addColumn(tr("Address"), -1, Qt::AlignLeft  , false, "addr_line1" );
+  list()->addColumn(tr("City"),    75, Qt::AlignLeft  , false, "addr_city" );
+  list()->addColumn(tr("State"),   50, Qt::AlignLeft  , false, "addr_state" );
+  list()->addColumn(tr("Country"), 100, Qt::AlignLeft  , false, "addr_country" );
+  list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft  , false, "addr_postalcode" );
 
-  connect(omfgThis, SIGNAL(customersUpdated(int, bool)), SLOT(sFillList(int, bool)));
-
-  sFillList(-1, FALSE);
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-customers::~customers()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void customers::languageChange()
-{
-  retranslateUi(this);
+  connect(omfgThis, SIGNAL(customersUpdated(int, bool)), SLOT(sFillList()));
 }
 
 void customers::sNew()
@@ -84,7 +81,7 @@ void customers::sNew()
 void customers::sEdit()
 {
   ParameterList params;
-  params.append("cust_id", _cust->id());
+  params.append("cust_id", list()->id());
   params.append("mode", "edit");
 
   customer *newdlg = new customer();
@@ -95,7 +92,7 @@ void customers::sEdit()
 void customers::sView()
 {
   ParameterList params;
-  params.append("cust_id", _cust->id());
+  params.append("cust_id", list()->id());
   params.append("mode", "view");
 
   customer *newdlg = new customer();
@@ -106,7 +103,7 @@ void customers::sView()
 void customers::sReassignCustomerType()
 {
   ParameterList params;
-  params.append("custtype_id", _cust->altId());
+  params.append("custtype_id", list()->altId());
 
   customerTypeList *newdlg = new customerTypeList(this, "", TRUE);
   newdlg->set(params);
@@ -116,10 +113,11 @@ void customers::sReassignCustomerType()
     q.prepare( "UPDATE custinfo "
                "SET cust_custtype_id=:custtype_id "
                "WHERE (cust_id=:cust_id);" );
-    q.bindValue(":cust_id", _cust->id());
+    q.bindValue(":cust_id", list()->id());
     q.bindValue(":custtype_id", custtypeid);
     q.exec();
-    omfgThis->sCustomersUpdated(_cust->id(), TRUE);
+    omfgThis->sCustomersUpdated(list()->id(), TRUE);
+    sFillList();
   }
 }
 
@@ -132,7 +130,7 @@ void customers::sDelete()
 			    QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
   {
     q.prepare("SELECT deleteCustomer(:cust_id) AS result;");
-    q.bindValue(":cust_id", _cust->id());
+    q.bindValue(":cust_id", list()->id());
     q.exec();
     if (q.first())
     {
@@ -144,6 +142,7 @@ void customers::sDelete()
         return;
       }
       omfgThis->sCustomersUpdated(-1, TRUE);
+      sFillList();
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
@@ -153,43 +152,22 @@ void customers::sDelete()
   }
 }
 
-void customers::sPopulateMenu(QMenu *pMenu)
+void customers::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem("View...", this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction("View...", this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem("Edit...", this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainCustomerMasters"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction("Edit...", this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
 
-  menuItem = pMenu->insertItem("Reassign Customer Type", this, SLOT(sReassignCustomerType()), 0);
-  if (!_privileges->check("MaintainCustomerMasters"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction("Delete", this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
 
-  menuItem = pMenu->insertItem("Delete", this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainCustomerMasters"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  pMenu->addSeparator();
+
+  menuItem = pMenu->addAction("Reassign Customer Type", this, SLOT(sReassignCustomerType()));
+  menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
+
 }
 
-void customers::sFillList(int pCustid, bool pLocal)
-{
-  XSqlQuery r;
-  r.prepare( "SELECT cust_id, cust_custtype_id,"
-             "       COALESCE(custtype_code, :error) AS custtype, cust_number,"
-             "       cust_active, cust_name, cust_address1, cust_phone "
-             "FROM cust LEFT OUTER JOIN custtype ON (cust_custtype_id=custtype_id) "
-             "ORDER BY cust_number;" );
-  r.bindValue(":error", tr("Error"));
-  r.exec();
- 
-  if (pLocal)
-    _cust->populate(r, pCustid, TRUE);
-  else
-    _cust->populate(r, TRUE);
-  if (r.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, r.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-}

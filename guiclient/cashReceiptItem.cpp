@@ -122,12 +122,15 @@ void cashReceiptItem::sSave()
     return;
   }
 
+  int sense = 1;
+  if (_docType->text() == "C" || _docType->text() == "R")
+    sense = -1;
+
   if (_mode == cNew)
   {
     XSqlQuery cashrcptitemid("SELECT NEXTVAL('cashrcptitem_cashrcptitem_id_seq') AS _cashrcptitem_id;");
     if (cashrcptitemid.first())
       _cashrcptitemid = cashrcptitemid.value("_cashrcptitem_id").toInt();
-//  ToDo
 
     XSqlQuery newReceipt;
     newReceipt.prepare( "INSERT INTO cashrcptitem "
@@ -139,8 +142,8 @@ void cashReceiptItem::sSave()
     newReceipt.bindValue(":cashrcptitem_id", _cashrcptitemid);
     newReceipt.bindValue(":cashrcptitem_cashrcpt_id", _cashrcptid);
     newReceipt.bindValue(":cashrcptitem_aropen_id", _aropenid);
-    newReceipt.bindValue(":cashrcptitem_amount", _amountToApply->localValue());
-	newReceipt.bindValue(":cashrcptitem_discount", _discountAmount->localValue());
+    newReceipt.bindValue(":cashrcptitem_amount", _amountToApply->localValue() * sense);
+    newReceipt.bindValue(":cashrcptitem_discount", _discountAmount->localValue() * sense);
 
     newReceipt.exec();
   }
@@ -152,8 +155,8 @@ void cashReceiptItem::sSave()
 						   "cashrcptitem_discount=:cashrcptitem_discount "
                            "WHERE (cashrcptitem_id=:cashrcptitem_id);" );
     updateReceipt.bindValue(":cashrcptitem_id", _cashrcptitemid);
-    updateReceipt.bindValue(":cashrcptitem_amount", _amountToApply->localValue());
-	updateReceipt.bindValue(":cashrcptitem_discount", _discountAmount->localValue());
+    updateReceipt.bindValue(":cashrcptitem_amount", _amountToApply->localValue() * sense);
+    updateReceipt.bindValue(":cashrcptitem_discount", _discountAmount->localValue() * sense);
 
     updateReceipt.exec();
   }
@@ -172,7 +175,7 @@ void cashReceiptItem::populate()
                    "       cashrcpt_curr_id, cashrcpt_distdate, "
                    "       currToCurr(aropen_curr_id, cashrcpt_curr_id, (aropen_amount - aropen_paid), "
                    "       cashrcpt_distdate) AS f_amount, "
-                   "       COALESCE(cashrcptitem_discount, 0.00) AS discount "
+                   "       COALESCE(ABS(cashrcptitem_discount), 0.00) AS discount "
                    "FROM cashrcpt, aropen LEFT OUTER JOIN cashrcptitem ON (aropen_id=cashrcptitem_aropen_id) "
                    "WHERE ( (aropen_id=:aropen_id)"
                    " AND (cashrcpt_id=:cashrcpt_id))" );
@@ -190,6 +193,8 @@ void cashReceiptItem::populate()
       _openAmount->set(query.value("f_amount").toDouble(),
                        query.value("cashrcpt_curr_id").toInt(),
                        query.value("cashrcpt_distdate").toDate(), false);
+      _discount->setEnabled(query.value("aropen_doctype").toString() == "I" ||
+                            query.value("aropen_doctype").toString() == "D");
     } 
   }
   else if (_mode == cEdit)
@@ -198,8 +203,9 @@ void cashReceiptItem::populate()
                    "       aropen_docdate, aropen_duedate, "
                    "       currToCurr(aropen_curr_id, cashrcpt_curr_id, (aropen_amount - aropen_paid), "
                    "       cashrcpt_distdate) AS balance, "
-                   "       cashrcptitem_amount, cashrcpt_curr_id, cashrcpt_distdate,  "
-                   "       cashrcptitem_discount AS discount "
+                   "       ABS(cashrcptitem_amount) AS cashrcptitem_amount, "
+                   "       cashrcpt_curr_id, cashrcpt_distdate,  "
+                   "       ABS(cashrcptitem_discount) AS discount "
                    "FROM cashrcptitem, cashrcpt, aropen "
                    "WHERE ( (cashrcptitem_cashrcpt_id=cashrcpt_id)"
                    " AND (cashrcptitem_aropen_id=aropen_id)"
@@ -218,6 +224,8 @@ void cashReceiptItem::populate()
                        query.value("cashrcpt_distdate").toDate(), false);
       _amountToApply->setLocalValue(query.value("cashrcptitem_amount").toDouble());
       _discountAmount->setLocalValue(query.value("discount").toDouble());
+      _discount->setEnabled(query.value("aropen_doctype").toString() == "I" ||
+                            query.value("aropen_doctype").toString() == "D");
     }
 //  ToDo
   }

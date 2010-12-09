@@ -14,9 +14,6 @@
 #include <QSqlError>
 #include <QVariant>
 
-#include <metasql.h>
-#include <openreports.h>
-
 #include "copySalesOrder.h"
 #include "creditcardprocessor.h"
 #include "dspSalesOrderStatus.h"
@@ -25,60 +22,50 @@
 #include "printSoForm.h"
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-openSalesOrders::openSalesOrders(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "openSalesOrders", fl)
 {
-  setupUi(this);
-  
-  _cust->hide();
-  _showGroup->hide();
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Open Sales Orders"));
+  setMetaSQLOptions("opensalesorders", "detail");
+  setReportName("ListOpenSalesOrders");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setQueryOnStartEnabled(true);
+  setAutoUpdateEnabled(true);
 
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_so, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
-  connect(_autoUpdate, SIGNAL(toggled(bool)), this, SLOT(sHandleAutoUpdate(bool)));
-  connect(_showClosed, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  _custid = -1;
+  optionsWidget()->hide();
 
-  _so->addColumn(tr("S/O #"),           _orderColumn, Qt::AlignLeft,  true, "cohead_number");
-  _so->addColumn(tr("Cust. #"),         _orderColumn, Qt::AlignLeft,  true, "cust_number");
-  _so->addColumn(tr("Customer"),         -1,          Qt::AlignLeft,  true, "cohead_billtoname");
-  _so->addColumn(tr("Ship-To"),          _itemColumn, Qt::AlignLeft,  false,"cohead_shiptoname");
-  _so->addColumn(tr("Cust. P/O Number"), -1         , Qt::AlignLeft,  true, "cohead_custponumber");
-  _so->addColumn(tr("Ordered"),          _dateColumn, Qt::AlignCenter,true, "cohead_orderdate");
-  _so->addColumn(tr("Scheduled"),        _dateColumn, Qt::AlignCenter,true, "scheddate");
-  _so->addColumn(tr("Status"),         _statusColumn, Qt::AlignLeft, false, "status");
+  if (_metrics->boolean("MultiWhs"))
+    parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
+  parameterWidget()->append(tr("Customer"), "cust_id", ParameterWidget::Customer);
+  parameterWidget()->appendComboBox(tr("Customer Type"), "custtype_id", XComboBox::CustomerTypes);
+  parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("P/O Number"), "poNumber", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesRepsActive);
+
+  list()->addColumn(tr("Order #"),         _orderColumn, Qt::AlignLeft,  true, "cohead_number");
+  list()->addColumn(tr("Cust. #"),         _orderColumn, Qt::AlignLeft,  true, "cust_number");
+  list()->addColumn(tr("Customer"),         -1,          Qt::AlignLeft,  true, "cohead_billtoname");
+  list()->addColumn(tr("Ship-To"),          _itemColumn, Qt::AlignLeft,  false,"cohead_shiptoname");
+  list()->addColumn(tr("Cust. P/O Number"), -1         , Qt::AlignLeft,  true, "cohead_custponumber");
+  list()->addColumn(tr("Ordered"),          _dateColumn, Qt::AlignCenter,true, "cohead_orderdate");
+  list()->addColumn(tr("Scheduled"),        _dateColumn, Qt::AlignCenter,true, "scheddate");
+  list()->addColumn(tr("Status"),         _statusColumn, Qt::AlignLeft, false, "status");
+  list()->addColumn(tr("Notes"),          -1, Qt::AlignLeft, false, "notes");
   
   if (_privileges->check("MaintainSalesOrders"))
-  {
-    connect(_so, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_so, SIGNAL(valid(bool)), _copy, SLOT(setEnabled(bool)));
-    connect(_so, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_so, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_so, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 
   connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillList()));
-
-  sHandleAutoUpdate(_autoUpdate->isChecked());
-}
-
-openSalesOrders::~openSalesOrders()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void openSalesOrders::languageChange()
-{
-  retranslateUi(this);
 }
 
 enum SetResponse openSalesOrders::set(const ParameterList& pParams)
@@ -89,53 +76,36 @@ enum SetResponse openSalesOrders::set(const ParameterList& pParams)
   
   param = pParams.value("run", &valid);
   if (valid)
-  {
-    connect(_warehouse, SIGNAL(updated()), this, SLOT(sFillList()));
     sFillList();
-  }
 
   return NoError;
 }
 
-void openSalesOrders::setParams(ParameterList &params)
+bool openSalesOrders::setParams(ParameterList &params)
 {
+  display::setParams(params);
   params.append("error", tr("Error"));
-  if (_cust->isValid())
-    params.append("cust_id", _cust->id());
   if (_showClosed->isChecked() && _showClosed->isVisible())
     params.append("showClosed");
-  if (_preferences->boolean("selectedSites") || _warehouse->isSelected())
-    params.append("selectedSites");
-  _warehouse->appendValue(params);
-}
 
-void openSalesOrders::sPrint()
-{    
-  ParameterList params;
-  setParams(params);
-
-  orReport report("ListOpenSalesOrders", params);
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
+  return true;
 }
 
 void openSalesOrders::sNew()
 {
-  salesOrder::newSalesOrder(_cust->id(), this);
+  salesOrder::newSalesOrder(_custid, this);
 }
 
 void openSalesOrders::sEdit()
 {
   if (checkSitePrivs())
-    salesOrder::editSalesOrder(_so->id(), false, this);
+    salesOrder::editSalesOrder(list()->id(), false, this);
 }
 
 void openSalesOrders::sView()
 {
   if (checkSitePrivs())
-    salesOrder::viewSalesOrder(_so->id(), this);
+    salesOrder::viewSalesOrder(list()->id(), this);
 }
 
 void openSalesOrders::sCopy()
@@ -144,7 +114,7 @@ void openSalesOrders::sCopy()
     return;
     
   ParameterList params;
-  params.append("sohead_id", _so->id());
+  params.append("sohead_id", list()->id());
       
   copySalesOrder newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -163,7 +133,7 @@ void openSalesOrders::sDelete()
 			    QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
   {
     q.prepare("SELECT deleteSo(:sohead_id) AS result;");
-    q.bindValue(":sohead_id", _so->id());
+    q.bindValue(":sohead_id", list()->id());
     q.exec();
     if (q.first())
     {
@@ -202,15 +172,15 @@ void openSalesOrders::sDelete()
 			"        AND  (payco_cohead_id=:coheadid)) "
 			"      ) AS dummy "
                         "GROUP BY ccpay_id, ccpay_ccard_id, ccpay_curr_id;");
-	    ccq.bindValue(":coheadid", _so->id());
+            ccq.bindValue(":coheadid", list()->id());
 	    ccq.exec();
 	    if (ccq.first())
 	    do
 	    {
-	      QString docnum = _so->currentItem()->text(0);
+              QString docnum = list()->currentItem()->text(0);
 	      QString refnum = docnum;
               int ccpayid = ccq.value("ccpay_id").toInt();
-	      int coheadid = _so->id();
+              int coheadid = list()->id();
 	      int returnVal = cardproc->credit(ccq.value("ccpay_ccard_id").toInt(),
 					       -2,
 					       ccq.value("amount").toDouble(),
@@ -281,7 +251,7 @@ void openSalesOrders::sDelete()
 		   "SET coitem_status='C' "
 		   "WHERE ((coitem_status <> 'X')"
 		   "  AND  (coitem_cohead_id=:sohead_id));" );
-	q.bindValue(":sohead_id", _so->id());
+        q.bindValue(":sohead_id", list()->id());
 	q.exec();
 	if (q.lastError().type() != QSqlError::NoError)
 	{
@@ -301,21 +271,13 @@ void openSalesOrders::sDelete()
   }
 }
 
-void openSalesOrders::sHandleAutoUpdate(bool pAutoUpdate)
-{
-  if (pAutoUpdate)
-    connect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
-  else
-    disconnect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
-}
-
 void openSalesOrders::sPrintPackingList()
 {
   if (!checkSitePrivs())
     return;
     
   ParameterList params;
-  params.append("sohead_id", _so->id());
+  params.append("sohead_id", list()->id());
 
   printPackingList newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -328,7 +290,7 @@ void openSalesOrders::sAddToPackingListBatch()
     return;
     
   q.prepare("SELECT addToPackingListBatch(:sohead_id) AS result;");
-  q.bindValue(":sohead_id", _so->id());
+  q.bindValue(":sohead_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -346,86 +308,37 @@ void openSalesOrders::sAddToPackingListBatch()
   }
 }
 
-void openSalesOrders::sPopulateMenu(QMenu *pMenu)
+void openSalesOrders::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainSalesOrders"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainSalesOrders"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Copy..."), this, SLOT(sCopy()), 0);
-  if (!_privileges->check("MaintainSalesOrders"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainSalesOrders"));
 
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainSalesOrders"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  pMenu->addSeparator();
 
-  pMenu->insertSeparator();
+  menuItem = pMenu->addAction(tr("Copy..."), this, SLOT(sCopy()));
+  menuItem->setEnabled(_privileges->check("MaintainSalesOrders"));
 
-  menuItem = pMenu->insertItem(tr("Print Packing List..."), this, SLOT(sPrintPackingList()), 0);
-  if (!_privileges->check("PrintPackingLists"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Add to Packing List Batch..."), this, SLOT(sAddToPackingListBatch()), 0);
-  if (!_privileges->check("MaintainPackingListBatch"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Print Packing List..."), this, SLOT(sPrintPackingList()));
+  menuItem->setEnabled(_privileges->check("PrintPackingLists"));
 
-  menuItem = pMenu->insertItem(tr("Print Sales Order Form..."), this, SLOT(sPrintForms()), 0); 
+  menuItem = pMenu->addAction(tr("Add to Packing List Batch..."), this, SLOT(sAddToPackingListBatch()));
+  menuItem->setEnabled(_privileges->check("MaintainPackingListBatch"));
+
+  menuItem = pMenu->addAction(tr("Print Sales Order Form..."), this, SLOT(sPrintForms())); 
   
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  pMenu->insertItem(tr("Shipment Status..."), this, SLOT(sDspShipmentStatus()), 0);
-  pMenu->insertItem(tr("Shipments..."), this, SLOT(sShipment()), 0);
-
-}
-
-
-void openSalesOrders::sFillList()
-{
-  ParameterList params;
-  setParams(params);
-
-  QString sql( "SELECT DISTINCT cohead.*,"
-               "       COALESCE(cust_number, :error) AS cust_number,"
-               "       getSoSchedDate(cohead_id) AS scheddate, "
-               "       getSoStatus(cohead_id) AS status "
-               "  FROM cohead "
-               "    JOIN custinfo ON (cohead_cust_id=cust_id) "
-               "<? if exists(\"selectedSites\") ?> "
-               "    JOIN coitem ON (coitem_cohead_id=cohead_id) "
-               "    JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
-               "    JOIN site() ON (itemsite_warehous_id=warehous_id) "
-               "<? else ?> "
-               "    LEFT OUTER JOIN coitem ON (coitem_cohead_id=cohead_id) "
-               "    LEFT OUTER JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
-               "    LEFT OUTER JOIN whsinfo ON (itemsite_warehous_id=warehous_id) "
-               " <? endif ?> "
-               " WHERE((true) "
-               "<? if exists(\"cust_id\") ?>"
-               "  AND (cust_id=<? value(\"cust_id\") ?> )"
-               "<? endif ?>"
-               "<? if not exists(\"showClosed\") ?> "
-               "  AND ((coitem_status = 'O') OR (coitem_status IS NULL)) "
-               "<? endif ?>"
-               "<? if  exists(\"warehous_id\") ?>"
-               "  AND (warehous_id=<? value(\"warehous_id\") ?>)"
-               "<? endif ?>"
-               " ) "
-               "ORDER BY cohead_number " );
-  MetaSQLQuery mql(sql);
-  q = mql.toQuery(params);
-
-  _so->populate(q);
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  _so->setDragString("soheadid=");
+  pMenu->addAction(tr("Shipment Status..."), this, SLOT(sDspShipmentStatus()));
+  pMenu->addAction(tr("Shipments..."), this, SLOT(sShipment()));
 }
 
 void openSalesOrders::sPrintForms()
@@ -434,7 +347,7 @@ void openSalesOrders::sPrintForms()
     return;
     
   ParameterList params;
-  params.append("sohead_id", _so->id());
+  params.append("sohead_id", list()->id());
 
   printSoForm newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -447,7 +360,7 @@ bool openSalesOrders::checkSitePrivs()
   {
     XSqlQuery check;
     check.prepare("SELECT checkSOSitePrivs(:coheadid) AS result;");
-    check.bindValue(":coheadid", _so->id());
+    check.bindValue(":coheadid", list()->id());
     check.exec();
     if (check.first())
     {
@@ -466,7 +379,7 @@ bool openSalesOrders::checkSitePrivs()
 void openSalesOrders::sDspShipmentStatus()
 {
   ParameterList params;
-  params.append("sohead_id", _so->id());
+  params.append("sohead_id", list()->id());
   params.append("run");
 
   dspSalesOrderStatus *newdlg = new dspSalesOrderStatus(this);
@@ -477,9 +390,20 @@ void openSalesOrders::sDspShipmentStatus()
 void openSalesOrders::sShipment()
 {
   ParameterList params;
-  params.append("sohead_id", _so->id());
+  params.append("sohead_id", list()->id());
 
   dspShipmentsBySalesOrder* newdlg = new dspShipmentsBySalesOrder(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
+}
+
+void openSalesOrders::setCustId(int custId)
+{
+  _custid = custId;
+  parameterWidget()->setDefault(tr("Customer"), custId, true );
+}
+
+int openSalesOrders::custId()
+{
+  return _custid;
 }

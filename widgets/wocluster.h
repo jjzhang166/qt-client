@@ -16,13 +16,14 @@
 #include <QDate>
 
 #include <xsqlquery.h>
-#include "xlineedit.h"
+#include "virtualCluster.h"
 #include "ui_womatlcluster.h"
 
 class QLabel;
 class QPushButton;
 class WoCluster;
 class XComboBox;
+class WarehouseGroup;
 
 //  Possible Work Order Status
 #define cWoOpen     WoLineEdit::Open
@@ -35,7 +36,43 @@ class QScriptEngine;
 
 void setupWoCluster(QScriptEngine *engine);
 
-class XTUPLEWIDGETS_EXPORT WoLineEdit : public XLineEdit
+class XTUPLEWIDGETS_EXPORT woList : public VirtualList
+{
+    Q_OBJECT
+
+public:
+    woList(QWidget*, Qt::WindowFlags = 0);
+
+public slots:
+    virtual void set( const ParameterList & pParams );
+    virtual void sFillList();
+
+private:
+    int _woid;
+    int _type;
+    WarehouseGroup* _warehouse;
+
+};
+
+class XTUPLEWIDGETS_EXPORT woSearch : public VirtualSearch
+{
+    Q_OBJECT
+
+public:
+    woSearch(QWidget*, Qt::WindowFlags = 0);
+
+public slots:
+    void set( ParameterList & pParams );
+    void sFillList();
+
+private:
+    int _woid;
+    int _type;
+    WarehouseGroup* _warehouse;
+};
+
+
+class XTUPLEWIDGETS_EXPORT WoLineEdit : public VirtualClusterLineEdit
 {
   Q_OBJECT
 
@@ -59,27 +96,31 @@ friend class WoCluster;
 
     Q_INVOKABLE inline int     currentWarehouse() const       { return _currentWarehouseid;  }
     Q_INVOKABLE inline QString method() const                 { return _method;              }
-    Q_INVOKABLE inline void    setQuery(const QString  &pSql) { _sql = pSql; _useQuery = TRUE; }
-    Q_INVOKABLE inline void    setType(int pWoType)           { _woType = pWoType;           }
-    Q_INVOKABLE inline void    setWarehouse(int pWarehouseid) { _warehouseid = pWarehouseid; }
+    Q_INVOKABLE void           setType(int pWoType);
+    Q_INVOKABLE void           setWarehouse(int pWarehouseid);
     Q_INVOKABLE inline int     type() const                   { return _woType;              }
     Q_INVOKABLE inline int     warehouse() const              { return _warehouseid;         }
 
   public slots:
-    void setId(int);
-    void sParse();
+    void silentSetId(const int);
+    void sList();
+    void sSearch();
 
   private:
+    void init();
+    void buildExtraClause();
+
     int     _currentWarehouseid;
-    bool    _useQuery;
-    QString _sql;
     int     _woType;
     int     _warehouseid;
     QChar   _status;
     double  _qtyOrdered;
     double  _qtyReceived;
-    XDataWidgetMapper *_mapper;
     QString _method;
+
+  protected:
+    woList* listFactory();
+    woSearch* searchFactory();
 
   signals:
     void newId(int);
@@ -115,10 +156,9 @@ class XTUPLEWIDGETS_EXPORT WoCluster : public QWidget
     QString  fieldName()        { return _fieldName;         }
     Q_INVOKABLE QString woNumber() const;
 
-    inline void setQuery(const QString &pSql)  { _woNumber->_sql = pSql; _woNumber->_useQuery = TRUE; }
-    inline void setType(int pWoType)           { _woNumber->_woType = pWoType;           }
+    inline void setType(int pWoType)           { _woNumber->setType(pWoType);           }
     inline int  type() const                   { return _woNumber->_woType;              }
-    inline void setWarehouse(int pWarehouseid) { _woNumber->_warehouseid = pWarehouseid; }
+    inline void setWarehouse(int pWarehouseid) { _woNumber->setWarehouse(pWarehouseid); }
     Q_INVOKABLE inline int currentWarehouse() const { return _woNumber->currentWarehouse(); }
     Q_INVOKABLE inline int id() const          { return _woNumber->_id;                  }
     Q_INVOKABLE inline bool isValid() const    { return _woNumber->_valid;               }
@@ -141,13 +181,11 @@ class XTUPLEWIDGETS_EXPORT WoCluster : public QWidget
     void setId(int);
     void setReadOnly(bool);
     void setWoNumber(const QString& number);
-    void sWoList();
 
   private:
     void constructor();
 
     WoLineEdit  *_woNumber;
-    QPushButton *_woList;
     QLabel      *_warehouse;
     QLabel      *_itemNumber;
     QLabel      *_uom;

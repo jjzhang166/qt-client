@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>772</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,68 +77,22 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout">
-        <item row="0" column="1">
-         <layout class="QHBoxLayout">
-          <property name="spacing">
-           <number>0</number>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="_voucherNumLit">
+          <property name="text">
+           <string>Voucher #:</string>
           </property>
-          <item>
-           <widget class="XLineEdit" name="_voucherNumber">
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>32767</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Expanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>0</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+         </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <layout class="QHBoxLayout">
-          <item>
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>6</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="VendorCluster" name="_vendor">
-            <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="1" column="1">
+         <widget class="VendorCluster" name="_vendor">
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
+          </property>
+         </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <spacer>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -151,13 +105,20 @@ to be bound by its terms.</comment>
           </property>
          </spacer>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="_voucherNumLit">
+        <item row="1" column="0">
+         <widget class="QLabel" name="_vendorLit">
           <property name="text">
-           <string>Voucher #:</string>
+           <string>Vendor #:</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="XLineEdit" name="_voucherNumber">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>32767</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -169,14 +130,14 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout" name="gridLayout_4">
+       <layout class="QFormLayout" name="formLayout_2">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+        </property>
         <item row="0" column="0">
          <widget class="QLabel" name="_invoiceDateLit">
           <property name="text">
            <string>Invoice Date:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -188,37 +149,15 @@ to be bound by its terms.</comment>
           <property name="text">
            <string>Distribution Date:</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="DLineEdit" name="_distributionDate"/>
         </item>
-        <item row="1" column="2">
-         <spacer>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>76</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="_dueDateLit">
           <property name="text">
            <string>Due Date:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -230,30 +169,10 @@ to be bound by its terms.</comment>
           <property name="text">
            <string>Terms:</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="XComboBox" name="_terms"/>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>0</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+        <item row="3" column="1">
+         <widget class="XComboBox" name="_terms"/>
         </item>
        </layout>
       </widget>
@@ -263,14 +182,11 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout">
+       <layout class="QFormLayout" name="formLayout_3">
         <item row="0" column="0">
          <widget class="QLabel" name="_amountToDistributeLit">
           <property name="text">
            <string>Amount to Distribute:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -284,26 +200,10 @@ to be bound by its terms.</comment>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <spacer>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>26</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="_amountDistributedLit">
           <property name="text">
            <string>Amount Distributed:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -325,9 +225,6 @@ to be bound by its terms.</comment>
           <property name="text">
            <string>Balance:</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
          </widget>
         </item>
         <item row="2" column="1">
@@ -340,19 +237,6 @@ to be bound by its terms.</comment>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <spacer>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>66</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </widget>
      </item>
@@ -361,14 +245,11 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QFormLayout" name="formLayout_4">
         <item row="0" column="0">
          <widget class="QLabel" name="_invoiceNumLit">
           <property name="text">
            <string>Vendor Invoice #:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -380,9 +261,6 @@ to be bound by its terms.</comment>
           <property name="text">
            <string>Reference:</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
          </widget>
         </item>
         <item row="1" column="1">
@@ -392,9 +270,6 @@ to be bound by its terms.</comment>
          <widget class="QLabel" name="_taxzoneLit">
           <property name="text">
            <string>Tax Zone:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -474,9 +349,6 @@ to be bound by its terms.</comment>
            </item>
            <item>
             <layout class="QVBoxLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
              <item>
               <widget class="QPushButton" name="_new">
                <property name="text">
@@ -599,16 +471,20 @@ to be bound by its terms.</comment>
   <tabstop>_invoiceDate</tabstop>
   <tabstop>_distributionDate</tabstop>
   <tabstop>_dueDate</tabstop>
+  <tabstop>_terms</tabstop>
   <tabstop>_amountToDistribute</tabstop>
   <tabstop>_amountDistributed</tabstop>
   <tabstop>_balance</tabstop>
   <tabstop>_invoiceNum</tabstop>
   <tabstop>_reference</tabstop>
+  <tabstop>_taxzone</tabstop>
   <tabstop>_flagFor1099</tabstop>
+  <tabstop>tabWidget</tabstop>
   <tabstop>_miscDistrib</tabstop>
   <tabstop>_new</tabstop>
   <tabstop>_edit</tabstop>
   <tabstop>_delete</tabstop>
+  <tabstop>_notes</tabstop>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>

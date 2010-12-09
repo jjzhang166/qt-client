@@ -11,11 +11,11 @@
 #ifndef CONFIGUREWO_H
 #define CONFIGUREWO_H
 
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureWO.h"
 
-class configureWO : public XDialog, public Ui::configureWO
+class configureWO : public XAbstractConfigure, public Ui::configureWO
 {
     Q_OBJECT
 
@@ -24,10 +24,13 @@ public:
     ~configureWO();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void saving();
 
 };
 

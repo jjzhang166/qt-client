@@ -14,13 +14,13 @@
 
 #include <dbtools.h>
 
-databaseInformation::databaseInformation(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+databaseInformation::databaseInformation(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
-  // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  if (name)
+    setObjectName(name);
 
   QString server;
   QString database;
@@ -53,6 +53,7 @@ databaseInformation::databaseInformation(QWidget* parent, const char* name, bool
   _name->setText(database);
 
   _disableAutoComplete->setChecked(_metrics->boolean("DisableAutoComplete"));
+  _useToolbars->setChecked(_metrics->boolean("DisplaysUseToolbar"));
   
   q.exec( "SELECT numOfDatabaseUsers() AS databaseusers,"
           "       numOfServerUsers() AS serverusers;" );
@@ -67,8 +68,6 @@ databaseInformation::databaseInformation(QWidget* parent, const char* name, bool
   {
     _description->setEnabled(FALSE);
     _comments->setEnabled(FALSE);
-    _close->setText(tr("&Close"));
-    _save->hide();
   }
 }
 
@@ -82,11 +81,14 @@ void databaseInformation::languageChange()
   retranslateUi(this);
 }
 
-void databaseInformation::sSave()
+bool databaseInformation::sSave()
 {
+  emit saving();
+
   _metrics->set("DatabaseName", _description->text().trimmed());
   _metrics->set("DatabaseComments", _comments->toPlainText().trimmed());
   _metrics->set("DisallowMismatchClientVersion", _disallowMismatchClient->isChecked());
+  _metrics->set("DisplaysUseToolbar", _useToolbars->isChecked());
 
   _metrics->set("updateTickInterval", _interval->value());
 
@@ -103,5 +105,5 @@ void databaseInformation::sSave()
 
   omfgThis->setWindowTitle();
 
-  accept();
+  return true;
 }

@@ -10,25 +10,20 @@
 
 #include "uninvoicedShipments.h"
 
-#include <QVariant>
-#include <QMessageBox>
-//#include <QStatusBar>
+#include <QAction>
 #include <QMenu>
+#include <QMessageBox>
+#include <QVariant>
+
 #include <parameter.h>
 #include <openreports.h>
 #include "selectOrderForBilling.h"
 
-/*
- *  Constructs a uninvoicedShipments as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-  // signals and slots connections
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_showUnselected, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
@@ -48,18 +43,11 @@ uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::
   sFillList();
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 uninvoicedShipments::~uninvoicedShipments()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void uninvoicedShipments::languageChange()
 {
   retranslateUi(this);
@@ -81,11 +69,10 @@ void uninvoicedShipments::sPrint()
 
 void uninvoicedShipments::sPopulateMenu(QMenu *menu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem(tr("Select This Order for Billing..."), this, SLOT(sSelectForBilling()), 0);
-  if (!_privileges->check("SelectBilling"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("Select This Order for Billing..."), this, SLOT(sSelectForBilling()));
+  menuItem->setEnabled(_privileges->check("SelectBilling"));
 }
 
 void uninvoicedShipments::sSelectForBilling()
@@ -101,8 +88,6 @@ void uninvoicedShipments::sSelectForBilling()
 
 void uninvoicedShipments::sFillList()
 {
-  _coship->clear();
-
   QString sql( "SELECT cohead_id, coship_id, cohead_number, coitem_linenumber,"
                "       cust_number, cust_name,"
                "       item_number, description,"

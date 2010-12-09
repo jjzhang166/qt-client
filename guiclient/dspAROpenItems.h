@@ -11,19 +11,17 @@
 #ifndef DSPAROPENITEMS_H
 #define DSPAROPENITEMS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_dspAROpenItems.h"
 
-class dspAROpenItems : public XWidget, public Ui::dspAROpenItems
+class dspAROpenItems : public display, public Ui::dspAROpenItems
 {
     Q_OBJECT
 
 public:
     dspAROpenItems(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~dspAROpenItems();
     
     Q_INVOKABLE bool checkInvoiceSitePrivs(int);
     Q_INVOKABLE bool checkCreditMemoSitePrivs(int);
@@ -34,7 +32,7 @@ public slots:
     virtual bool setParams(ParameterList &);
     virtual void sApplyAropenCM();
     virtual void sCCRefundCM();
-    virtual void sPopulateMenu( QMenu * pMenu, QTreeWidgetItem *pItem );
+    virtual void sPopulateMenu( QMenu * pMenu, QTreeWidgetItem *pItem, int );
     virtual void sDeleteCreditMemo();
     virtual void sDeleteInvoice();
     virtual void sDspShipmentStatus();
@@ -42,7 +40,6 @@ public slots:
     virtual void sEditSalesOrder();
     virtual void sEnterMiscArCreditMemo();
     virtual void sEnterMiscArDebitMemo();
-    virtual void sFillList();
     virtual void sCreateInvoice();
     virtual void sNewCashrcpt();
     virtual void sNewCreditMemo();
@@ -56,21 +53,16 @@ public slots:
     virtual void sViewIncident();
     virtual void sPrint();
     virtual void sPrintItem();
-    virtual void sPrintStatement();
     virtual void sPost();
     virtual void sPostInvoice();
     virtual void sPostCreditMemo();
     virtual void sShipment();
-    virtual void sHandleButtons(bool);
-    virtual void sHandleStatementButton();
+    virtual void sHandleReportName();
+    virtual void sHandlePrintGroup();
     virtual void sClosedToggled(bool);
 
 signals:
-            void finishedPrintingStatement(int);
-
-protected slots:
-    virtual void languageChange();
-
+    void finishedPrintingStatement(int);
 };
 
 #endif // DSPAROPENITEMS_H

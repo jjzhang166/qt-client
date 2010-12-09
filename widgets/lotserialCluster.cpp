@@ -180,12 +180,14 @@ void LotserialLineEdit::sParse()
               }
               else if (_strict || _itemid == -1)
                 VirtualClusterLineEdit::clear();
-              else if (isVisible() && QMessageBox::question(this, tr("Lot/Serial # Not Found"),
-                                             tr("This Lot/Serial # was not found" +
-                                                QString(_itemid > 0 ? " for this item" : "") +
-                                                ". Are you sure it is correct?"),
-                                             QMessageBox::Yes,
-                                             QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+              else if (isVisible() &&
+                       QMessageBox::question(this, tr("Lot/Serial # Not Found"),
+                        (_itemid > 0 ?
+                          tr("This Lot/Serial # was not found for this item.") :
+                          tr("This Lot/Serial # was not found.")) + 
+                        tr(" Are you sure it is correct?"),
+                     QMessageBox::Yes | QMessageBox::No,
+                     QMessageBox::No) == QMessageBox::No)
               {
                 VirtualClusterLineEdit::clear();
                 return;

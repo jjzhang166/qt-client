@@ -71,6 +71,9 @@ public slots:
 protected slots:
     virtual void languageChange();
 
+signals:
+    void saved(int);
+
 private:
     bool _captive;
     int _planordid;

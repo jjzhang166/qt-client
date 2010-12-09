@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2010 by OpenMFG LLC, d/b/a xTuple.
@@ -8,51 +8,49 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>changePoitemQty</class>
- <widget class="QDialog" name="changePoitemQty" >
-  <property name="geometry" >
+ <widget class="QDialog" name="changePoitemQty">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>412</width>
-    <height>359</height>
+    <width>463</width>
+    <height>416</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Change P/O Item Quantity</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
-      <number>5</number>
-     </property>
+    <layout class="QHBoxLayout">
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
-        <number>5</number>
-       </property>
+      <layout class="QVBoxLayout">
        <item>
-        <widget class="PoCluster" name="_po" />
+        <widget class="OrderCluster" name="_po">
+         <property name="allowedStatuses">
+          <set>OrderLineEdit::Open|OrderLineEdit::Unposted</set>
+         </property>
+         <property name="allowedTypes">
+          <set>OrderLineEdit::Purchase</set>
+         </property>
+        </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
-          <number>5</number>
-         </property>
+        <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel" name="_poitemLit" >
-           <property name="text" >
+          <widget class="QLabel" name="_poitemLit">
+           <property name="text">
             <string>Line Item:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="XComboBox" name="_poitem" >
-           <property name="enabled" >
+          <widget class="XComboBox" name="_poitem">
+           <property name="enabled">
             <bool>false</bool>
            </property>
-           <property name="sizePolicy" >
-            <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -64,46 +62,36 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
-        <number>0</number>
-       </property>
+      <layout class="QVBoxLayout">
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
-          <number>5</number>
+        <widget class="QPushButton" name="_close">
+         <property name="text">
+          <string>&amp;Cancel</string>
          </property>
-         <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
-            <string>&amp;Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_change" >
-           <property name="enabled" >
-            <bool>false</bool>
-           </property>
-           <property name="text" >
-            <string>Change &amp;Qty.</string>
-           </property>
-           <property name="default" >
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="_change">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Change &amp;Qty.</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Preferred</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>16</height>
@@ -116,154 +104,148 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" >
-     <property name="horizontalSpacing" >
-      <number>0</number>
-     </property>
-     <property name="verticalSpacing" >
-      <number>0</number>
-     </property>
-     <item row="1" column="0" >
-      <widget class="QLabel" name="_qtyOrderedLit" >
-       <property name="text" >
+    <layout class="QGridLayout">
+     <item row="1" column="0">
+      <widget class="QLabel" name="_qtyOrderedLit">
+       <property name="text">
         <string>Qty. Ordered:</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="0" column="2" >
-      <widget class="QLabel" name="_newLit" >
-       <property name="text" >
+     <item row="0" column="2">
+      <widget class="QLabel" name="_newLit">
+       <property name="text">
         <string>New</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
-     <item row="1" column="2" >
-      <widget class="XLineEdit" name="_newQty" >
-       <property name="maximumSize" >
+     <item row="1" column="2">
+      <widget class="XLineEdit" name="_newQty">
+       <property name="maximumSize">
         <size>
          <width>80</width>
          <height>32767</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="0" >
-      <widget class="QLabel" name="_qtyReceivedLit" >
-       <property name="text" >
+     <item row="2" column="0">
+      <widget class="QLabel" name="_qtyReceivedLit">
+       <property name="text">
         <string>Qty. Received:</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="3" column="2" >
-      <widget class="XLabel" name="_newQtyBalance" >
-       <property name="minimumSize" >
+     <item row="3" column="2">
+      <widget class="XLabel" name="_newQtyBalance">
+       <property name="minimumSize">
         <size>
          <width>80</width>
          <height>0</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="2" >
-      <widget class="XLabel" name="_newQtyReceived" >
-       <property name="minimumSize" >
+     <item row="2" column="2">
+      <widget class="XLabel" name="_newQtyReceived">
+       <property name="minimumSize">
         <size>
          <width>80</width>
          <height>0</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" >
-      <widget class="XLabel" name="_currentQtyOrdered" >
-       <property name="minimumSize" >
+     <item row="1" column="1">
+      <widget class="XLabel" name="_currentQtyOrdered">
+       <property name="minimumSize">
         <size>
          <width>80</width>
          <height>0</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="0" column="1" >
-      <widget class="QLabel" name="_currentLit" >
-       <property name="text" >
+     <item row="0" column="1">
+      <widget class="QLabel" name="_currentLit">
+       <property name="text">
         <string>Current</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
-     <item row="3" column="0" >
-      <widget class="QLabel" name="_qtyBalanceLit" >
-       <property name="text" >
+     <item row="3" column="0">
+      <widget class="QLabel" name="_qtyBalanceLit">
+       <property name="text">
         <string>Qty. Balance:</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="3" column="1" >
-      <widget class="XLabel" name="_currentQtyBalance" >
-       <property name="minimumSize" >
+     <item row="3" column="1">
+      <widget class="XLabel" name="_currentQtyBalance">
+       <property name="minimumSize">
         <size>
          <width>80</width>
          <height>0</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" >
-      <widget class="XLabel" name="_currentQtyReceived" >
-       <property name="minimumSize" >
+     <item row="2" column="1">
+      <widget class="XLabel" name="_currentQtyReceived">
+       <property name="minimumSize">
         <size>
          <width>80</width>
          <height>0</height>
         </size>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="0" column="3" >
-      <widget class="QLabel" name="textLabel1" >
-       <property name="text" >
+     <item row="0" column="3">
+      <widget class="QLabel" name="textLabel1">
+       <property name="text">
         <string>Line Item Freight:</string>
        </property>
       </widget>
      </item>
-     <item rowspan="2" row="1" column="3" >
-      <widget class="CurrCluster" name="_freight" >
-       <property name="baseVisible" >
+     <item row="1" column="3" rowspan="2">
+      <widget class="CurrCluster" name="_freight">
+       <property name="baseVisible">
         <bool>false</bool>
        </property>
-       <property name="currencyEditable" stdset="0" >
+       <property name="currencyEditable" stdset="0">
         <bool>false</bool>
        </property>
       </widget>
@@ -271,101 +253,60 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="spacing" >
-      <number>0</number>
-     </property>
+    <layout class="QVBoxLayout">
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="spacing" >
-        <number>0</number>
-       </property>
+      <layout class="QHBoxLayout">
        <item>
-        <widget class="XCheckBox" name="_postComment" >
-         <property name="text" >
+        <widget class="XCheckBox" name="_postComment">
+         <property name="text">
           <string>Post Comment</string>
          </property>
         </widget>
        </item>
-       <item>
-        <spacer>
-         <property name="orientation" >
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType" >
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" >
-          <size>
-           <width>46</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </item>
      <item>
-      <widget class="QGroupBox" name="_commentGroup" >
-       <property name="enabled" >
+      <widget class="QGroupBox" name="_commentGroup">
+       <property name="enabled">
         <bool>false</bool>
        </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="title" >
+       <property name="title">
         <string/>
        </property>
-       <layout class="QVBoxLayout" >
-        <property name="spacing" >
+       <layout class="QVBoxLayout">
+        <property name="spacing">
          <number>0</number>
         </property>
-        <property name="leftMargin" >
-         <number>5</number>
-        </property>
-        <property name="topMargin" >
-         <number>5</number>
-        </property>
-        <property name="rightMargin" >
-         <number>5</number>
-        </property>
-        <property name="bottomMargin" >
+        <property name="margin">
          <number>5</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" >
-          <property name="spacing" >
-           <number>0</number>
-          </property>
+         <layout class="QHBoxLayout">
           <item>
-           <layout class="QHBoxLayout" >
-            <property name="spacing" >
-             <number>5</number>
+           <widget class="QLabel" name="_cmnttypeLit">
+            <property name="text">
+             <string>Comment Type:</string>
             </property>
-            <item>
-             <widget class="QLabel" name="_cmnttypeLit" >
-              <property name="text" >
-               <string>Comment Type:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="XComboBox" name="_cmnttype" />
-            </item>
-           </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="XComboBox" name="_cmnttype"/>
           </item>
           <item>
            <spacer>
-            <property name="orientation" >
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeType" >
+            <property name="sizeType">
              <enum>QSizePolicy::Expanding</enum>
             </property>
-            <property name="sizeHint" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>51</width>
               <height>10</height>
@@ -376,7 +317,7 @@ to be bound by its terms.</comment>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="_comment" />
+         <widget class="QTextEdit" name="_comment"/>
         </item>
        </layout>
       </widget>
@@ -385,7 +326,7 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
@@ -394,9 +335,14 @@ to be bound by its terms.</comment>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>PoCluster</class>
+   <class>CurrDisplay</class>
    <extends>QWidget</extends>
-   <header>pocluster.h</header>
+   <header>currcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>OrderCluster</class>
+   <extends>QWidget</extends>
+   <header>ordercluster.h</header>
   </customwidget>
   <customwidget>
    <class>XCheckBox</class>
@@ -420,15 +366,15 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>_newQty</tabstop>
-  <tabstop>_freight</tabstop>
-  <tabstop>_change</tabstop>
-  <tabstop>_close</tabstop>
   <tabstop>_po</tabstop>
   <tabstop>_poitem</tabstop>
+  <tabstop>_newQty</tabstop>
+  <tabstop>_freight</tabstop>
   <tabstop>_postComment</tabstop>
-  <tabstop>_cmnttype</tabstop>
   <tabstop>_comment</tabstop>
+  <tabstop>_cmnttype</tabstop>
+  <tabstop>_change</tabstop>
+  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -438,11 +384,11 @@ to be bound by its terms.</comment>
    <receiver>changePoitemQty</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -454,11 +400,11 @@ to be bound by its terms.</comment>
    <receiver>_poitem</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -470,11 +416,11 @@ to be bound by its terms.</comment>
    <receiver>_change</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -486,11 +432,11 @@ to be bound by its terms.</comment>
    <receiver>_commentGroup</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

@@ -132,6 +132,8 @@ returnAuthorizationItem::returnAuthorizationItem(QWidget* parent, const char* na
     _tab->removeTab(_tab->indexOf(_lotserial));
   
   adjustSize();
+
+  _altcosAccntid->setType(GLCluster::cRevenue | GLCluster::cExpense);
   
   q.exec("BEGIN;"); //In case problems or we cancel out
 }
@@ -267,6 +269,8 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
       _salePrice->hide();
       _salePriceLit->hide();
       _item->setFocus();
+      _comments->setType(Comments::ReturnAuthItem);
+      _comments->setEnabled(false);
     }
     else if (param.toString() == "edit")
     {
@@ -276,6 +280,8 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
       _warehouse->setEnabled(FALSE);
       _shipWhs->setEnabled(FALSE);
       _qtyAuth->setFocus();
+      _comments->setType(Comments::ReturnAuthItem);
+      _comments->setEnabled(true);
 
       connect(_discountFromSale, SIGNAL(lostFocus()), this, SLOT(sCalculateFromDiscount()));
       connect(_saleDiscountFromSale, SIGNAL(lostFocus()), this, SLOT(sCalculateSaleFromDiscount()));
@@ -308,6 +314,8 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
       _createOrder->setEnabled(FALSE);
       _scheduledDate->setEnabled(FALSE);
       _warranty->setEnabled(FALSE);
+      _comments->setType(Comments::ReturnAuthItem);
+      _comments->setReadOnly(TRUE);
 
       _save->hide();
       _close->setText(tr("&Close"));
@@ -368,7 +376,10 @@ bool returnAuthorizationItem::sSave()
   {
     q.exec("SELECT NEXTVAL('raitem_raitem_id_seq') AS _raitem_id");
     if (q.first())
+    {
       _raitemid  = q.value("_raitem_id").toInt();
+      _comments->setId(_raitemid);
+    }
     else if (q.lastError().type() != QSqlError::NoError)
     {
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
@@ -854,6 +865,7 @@ void returnAuthorizationItem::populate()
                  " AND  (item_id=rcv.itemsite_item_id) "
                  " AND  (rahead_cust_id=crmacct_cust_id) );" );
   raitem.bindValue(":raitem_id", _raitemid);
+  _comments->setId(_raitemid);
   raitem.exec();
   if (raitem.first())
   {
@@ -1628,10 +1640,10 @@ void returnAuthorizationItem::sDetermineAvailability()
       _available->setDouble(availability.value("available").toDouble());
       _leadtime->setText(availability.value("itemsite_leadtime").toString());
 
+      QString stylesheet;
       if (availability.value("available").toDouble() < _availabilityQtyOrdered)
-        _available->setPaletteForegroundColor(QColor("red"));
-      else
-        _available->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
+      _available->setStyleSheet(stylesheet);
     }
     else if (availability.lastError().type() != QSqlError::NoError)
     {
@@ -1763,9 +1775,9 @@ void returnAuthorizationItem::sFillList()
   q.bindValue(":crmacct_id", _crmacctid);
   q.bindValue(":na", tr("N/A"));
   q.exec();
+  _raitemls->populate(q,true);
   _authLotSerial->setDisabled(q.first());
   _authLotSerial->setChecked(q.first());
-  _raitemls->populate(q,true);
   if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);

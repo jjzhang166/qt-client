@@ -10,6 +10,7 @@
 
 #include "currencyConversions.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -217,17 +218,15 @@ void currencyConversions::sFillList()
 
 void currencyConversions::sPopulateMenu( QMenu* pMenu)
 {
-    int menuItem;
-    
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainCurrencyRates"))
-	pMenu->setItemEnabled(menuItem, FALSE);
+  QAction *menuItem;
+  
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainCurrencyRates"));
 
-    menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-    menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainCurrencyRates"))
-	pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainCurrencyRates"));
 }
 
 void currencyConversions::setBaseCurrency()

@@ -17,6 +17,7 @@
 #
 # This is the relative directory path to the openrpt project.
 #
+
 exists(../../../openrpt) {
     OPENRPT_DIR = ../../../openrpt
 }
@@ -29,6 +30,16 @@ exists(../openrpt) {
 
 ! exists($${OPENRPT_DIR}) {
     error("Could not set the OPENRPT_DIR qmake variable.")
+}
+
+exists(../../../openrpt) {
+    OPENRPT_BLD = ../../../openrpt-build-desktop
+}
+exists(../../openrpt) {
+    OPENRPT_BLD = ../../openrpt-build-desktop
+}
+exists(../openrpt) {
+    OPENRPT_BLD = ../openrpt-build-desktop
 }
 
 exists(../../../csvimp) {
@@ -46,13 +57,17 @@ exists(../csvimp) {
 }
 
 INCLUDEPATH += ../$${OPENRPT_DIR}/common ../$${OPENRPT_DIR}/OpenRPT/renderer ../$${OPENRPT_DIR}/OpenRPT/wrtembed ../$${OPENRPT_DIR}/MetaSQL ../$${OPENRPT_DIR}/MetaSQL/tmp ../$${CSVIMP_DIR}/csvimpcommon
+exists($${OPENRPT_BLD}) {
+  INCLUDEPATH += ../$${OPENRPT_BLD}/common ../$${OPENRPT_BLD}/OpenRPT/renderer ../$${OPENRPT_BLD}/OpenRPT/wrtembed ../$${OPENRPT_BLD}/MetaSQL ../$${OPENRPT_BLD}/MetaSQL/tmp ../$${CSVIMP_BLD}/csvimpcommon
+}
 DEPENDPATH  += $${INCLUDEPATH}
 
+! exists($${OPENRPT_BLD}) {
+    OPENRPT_BLD = $${OPENRPT_DIR}
+}
 
 CONFIG += release thread
 #CONFIG += debug
-
-QT += qt3support
 
 macx:exists(macx.pri) {
   include(macx.pri)
@@ -65,3 +80,4 @@ win32:exists(win32.pri) {
 unix:exists(unix.pri) {
   include(unix.pri)
 }
+

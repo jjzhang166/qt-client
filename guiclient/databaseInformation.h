@@ -12,11 +12,11 @@
 #define DATABASEINFORMATION_H
 
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_databaseInformation.h"
 
-class databaseInformation : public XDialog, public Ui::databaseInformation
+class databaseInformation : public XAbstractConfigure, public Ui::databaseInformation
 {
   Q_OBJECT
 
@@ -27,7 +27,10 @@ class databaseInformation : public XDialog, public Ui::databaseInformation
   protected slots:
     virtual void languageChange();
 
-    virtual void sSave();
+    virtual bool sSave();
+
+  signals:
+    void saving();
 };
 
 #endif // DATABASEINFORMATION_H

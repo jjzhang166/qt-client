@@ -10,6 +10,7 @@
 
 #include "costCategories.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -156,25 +157,22 @@ void costCategories::sDelete()
 
 void costCategories::sPopulateMenu(QMenu *menu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = menu->insertItem(tr("Edit Inventory Cost Cateogry..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainCostCategories"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("Edit Inventory Cost Cateogry..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainCostCategories"));
 
-  menuItem = menu->insertItem(tr("View Inventory Cost Category..."), this, SLOT(sView()), 0);
-  if ((!_privileges->check("MaintainCostCategories")) && (!_privileges->check("ViewCostCategories")))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("View Inventory Cost Category..."), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("MaintainCostCategories") ||
+                       _privileges->check("ViewCostCategories"));
 
-  menuItem = menu->insertItem(tr("Delete Inventory Cost Category..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainCostCategories"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("Delete Inventory Cost Category..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainCostCategories"));
 
-  menu->insertSeparator();
+  menu->addSeparator();
 
-  menuItem = menu->insertItem(tr("List Items in this Inventory Cost Category..."), this, SLOT(sListItemSites()), 0);
-  if (!_privileges->check("ViewItemSites"))
-    menu->setItemEnabled(menuItem, FALSE);
+  menuItem = menu->addAction(tr("List Items in this Inventory Cost Category..."), this, SLOT(sListItemSites()));
+  menuItem->setEnabled(_privileges->check("ViewItemSites"));
 }
 
 void costCategories::sListItemSites()

@@ -10,24 +10,20 @@
 
 #include "reschedulePoitem.h"
 
-#include <QVariant>
 #include <QMessageBox>
+#include <QVariant>
 
 reschedulePoitem::reschedulePoitem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_reschedule, SIGNAL(clicked()), this, SLOT(sReschedule()));
   connect(_po, SIGNAL(valid(bool)), _poitem, SLOT(setEnabled(bool)));
-  connect(_po, SIGNAL(newId(int)), this, SLOT(sPopulatePoitem(int)));
+  connect(_po, SIGNAL(newId(int, QString)), this, SLOT(sPopulatePoitem(int)));
   connect(_poitem, SIGNAL(newID(int)), this, SLOT(sPopulate(int)));
   connect(_poitem, SIGNAL(valid(bool)), _reschedule, SLOT(setEnabled(bool)));
-
-  _po->setType(cPOOpen);
 }
 
 reschedulePoitem::~reschedulePoitem()
@@ -50,7 +46,7 @@ enum SetResponse reschedulePoitem::set(const ParameterList &pParams)
   if (valid)
   {
     _po->setId(param.toInt());
-    _po->setReadOnly(TRUE);
+    _po->setReadOnly(true);
     _new->setFocus();
   }
 
@@ -67,7 +63,7 @@ enum SetResponse reschedulePoitem::set(const ParameterList &pParams)
     if (q.first())
     {
       _po->setId(q.value("pohead_id").toInt());
-      _po->setReadOnly(TRUE);
+      _po->setReadOnly(true);
       _poitem->setId(param.toInt());
     }
     else
@@ -128,7 +124,8 @@ void reschedulePoitem::sReschedule()
   if (!_new->isValid())
   {
     QMessageBox::critical( this, tr("Invalid Reschedule Date"),
-                           tr("<p>You must enter a reschedule due date before you may save this Purchase Order Item.") );
+                           tr("<p>You must enter a reschedule due date before "
+                              "you may save this Purchase Order Item.") );
     _new->setFocus();
     return;
   }
@@ -138,7 +135,7 @@ void reschedulePoitem::sReschedule()
   q.bindValue(":dueDate", _new->date());
   q.exec();
 
-  omfgThis->sPurchaseOrdersUpdated(_po->id(), TRUE);
+  omfgThis->sPurchaseOrdersUpdated(_po->id(), true);
 
   accept();
 }

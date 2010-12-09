@@ -53,6 +53,7 @@
   <loadappscript file="client/scripts/taxCodes_Copy.js"		name="taxCodes">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/weatherForAddress.js"	name="weatherForAddress">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/windowSetTitle.js"	name="windowSetTitle">sample_scripts package</loadappscript>
+  <loadappscript file="client/scripts/xtreewidgetdemo.js"	name="xtreewidgetdemo">sample_scripts package</loadappscript>
 
   <loadappui file="client/uiforms/addressCoordinates.ui"	>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/addressDialog.ui"		>sample_scripts package</loadappui>
@@ -64,6 +65,17 @@
   <loadappui file="client/uiforms/itemSiteViewItem.ui"	>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/scriptCC.ui"		>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/weatherForAddress.ui"	>sample_scripts package</loadappui>
+  <loadappui file="client/uiforms/xtreewidgetdemo.ui"	>sample_scripts package</loadappui>
+
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist00.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist01.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist02.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist03.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist04.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist05.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist06.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist07.mql">sample_scripts package</loadmetasql>
+  <loadmetasql file="client/metasql/xtreewidgetdemo-sohist08.mql">sample_scripts package</loadmetasql>
 
   <finalscript file="database/misc/disablesamplescripts.sql"/>
 

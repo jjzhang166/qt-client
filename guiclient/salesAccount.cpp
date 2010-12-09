@@ -19,7 +19,7 @@ salesAccount::salesAccount(QWidget* parent, const char* name, bool modal, Qt::WF
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
   _warehouse->populate( "SELECT -1, 'Any'::text AS warehous_code, 0 AS sort "
 			"UNION SELECT warehous_id, warehous_code, 1 AS sort "
@@ -38,6 +38,13 @@ salesAccount::salesAccount(QWidget* parent, const char* name, bool modal, Qt::WF
     _cowLit->setVisible(false);
     _cow->setVisible(false);
   }
+
+  _sales->setType(GLCluster::cRevenue);
+  _credit->setType(GLCluster::cRevenue);
+  _cos->setType(GLCluster::cExpense);
+  _returns->setType(GLCluster::cRevenue);
+  _cor->setType(GLCluster::cExpense);
+  _cow->setType(GLCluster::cExpense);
 }
 
 salesAccount::~salesAccount()
@@ -72,7 +79,7 @@ enum SetResponse salesAccount::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -87,10 +94,9 @@ enum SetResponse salesAccount::set(const ParameterList &pParams)
       _returns->setReadOnly(TRUE);
       _cor->setReadOnly(TRUE);
       _cow->setReadOnly(TRUE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

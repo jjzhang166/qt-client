@@ -23,13 +23,12 @@ changePoitemQty::changePoitemQty(QWidget* parent, const char* name, bool modal, 
 
   connect(_change, SIGNAL(clicked()), this, SLOT(sChangeQty()));
   connect(_newQty, SIGNAL(lostFocus()), this, SLOT(sQtyChanged()));
-  connect(_po, SIGNAL(newId(int)), this, SLOT(sPopulatePoitem(int)));
+  connect(_po, SIGNAL(newId(int, QString)), this, SLOT(sPopulatePoitem(int)));
   connect(_poitem, SIGNAL(newID(int)), this, SLOT(sPopulate(int)));
 
-  _captive = FALSE;
+  _captive = false;
   _cacheFreight = 0.0;
 
-  _po->setType(cPOUnposted | cPOOpen);
   _commentGroup->setEnabled(_postComment->isChecked());
   
   _newQty->setValidator(omfgThis->qtyVal());
@@ -64,7 +63,7 @@ enum SetResponse changePoitemQty::set(const ParameterList &pParams)
   if (valid)
   {
     _po->setId(param.toInt());
-    _po->setReadOnly(TRUE);
+    _po->setReadOnly(true);
     _newQty->setFocus();
   }
 
@@ -79,7 +78,7 @@ enum SetResponse changePoitemQty::set(const ParameterList &pParams)
     if (q.first())
     {
       _po->setId(q.value("poitem_pohead_id").toInt());
-      _po->setReadOnly(TRUE);
+      _po->setReadOnly(true);
       _poitem->setId(param.toInt());
     }
 
@@ -214,7 +213,7 @@ void changePoitemQty::sChangeQty()
     }
   }
 
-  omfgThis->sPurchaseOrdersUpdated(_po->id(), TRUE);
+  omfgThis->sPurchaseOrdersUpdated(_po->id(), true);
   
   accept();
 }

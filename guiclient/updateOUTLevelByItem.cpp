@@ -10,6 +10,7 @@
 
 #include "updateOUTLevelByItem.h"
 
+#include <QMessageBox>
 #include <qvariant.h>
 #include <parameter.h>
 #include "submitAction.h"
@@ -100,6 +101,13 @@ void updateOUTLevelByItem::sUpdate()
 
     accept();
   }
+  else
+  {
+    QMessageBox::critical( this, tr("Incomplete Data"),
+                           tr("You must select at least one Period to continue.") );
+    _periods->setFocus();
+    return;
+  }
 }
 
 void updateOUTLevelByItem::sSubmit()
@@ -121,5 +129,12 @@ void updateOUTLevelByItem::sSubmit()
     newdlg.set(params);
     if (newdlg.exec() == XDialog::Accepted)
       accept();
+  }
+  else
+  {
+    QMessageBox::critical( this, tr("Incomplete Data"),
+                           tr("You must select at least one Period to continue.") );
+    _periods->setFocus();
+    return;
   }
 }

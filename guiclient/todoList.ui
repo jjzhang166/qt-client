@@ -13,314 +13,87 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>442</width>
+    <height>87</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>To-Do List</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="CRMAcctCluster" name="_crmAccount"/>
-       </item>
-       <item>
-        <widget class="ParameterWidget" name="_parameterWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="_showGroup">
-         <property name="title">
-          <string>Show</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="spacing">
-             <number>12</number>
-            </property>
-            <item>
-             <widget class="XCheckBox" name="_todolist">
-              <property name="text">
-               <string>To-Do List</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="XCheckBox" name="_incidents">
-              <property name="text">
-               <string>Incidents</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="XCheckBox" name="_projects">
-              <property name="text">
-               <string>Projects</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="XCheckBox" name="_completed">
-              <property name="text">
-               <string>Completed</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>17</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPushButton" name="_close">
-         <property name="text">
-          <string>Close</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="_query">
-         <property name="text">
-          <string>Query</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="_print">
-         <property name="text">
-          <string>Print</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <widget class="QFrame" name="_frame">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="_showGroup">
+     <property name="title">
+      <string>Show</string>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <property name="margin">
-       <number>0</number>
-      </property>
+     <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
         <item>
-         <widget class="XTreeWidget" name="_todoList">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>1</verstretch>
-           </sizepolicy>
+         <widget class="XCheckBox" name="_todolist">
+          <property name="text">
+           <string>To-Do List</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout">
-          <item>
-           <widget class="XCheckBox" name="_autoUpdate">
-            <property name="text">
-             <string>Automatically Update</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="_totalLit">
-            <property name="text">
-             <string>Total:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="_total">
-            <property name="text">
-             <string>0</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="XCheckBox" name="_incidents">
+          <property name="text">
+           <string>Incidents</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="XCheckBox" name="_projects">
+          <property name="text">
+           <string>Projects</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="XCheckBox" name="_completed">
+          <property name="text">
+           <string>Completed</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="1">
-    <layout class="QVBoxLayout">
-     <item>
-      <widget class="QPushButton" name="_new">
-       <property name="text">
-        <string>New</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_edit">
-       <property name="text">
-        <string>Edit</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_view">
-       <property name="text">
-        <string>View</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_delete">
-       <property name="text">
-        <string>Delete</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>71</width>
-         <height>13</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
-   <class>CRMAcctCluster</class>
-   <extends>QWidget</extends>
-   <header>crmacctcluster.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ParameterWidget</class>
-   <extends>QWidget</extends>
-   <header>parameterwidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>XCheckBox</class>
    <extends>QCheckBox</extends>
    <header>xcheckbox.h</header>
   </customwidget>
-  <customwidget>
-   <class>XTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>xtreewidget.h</header>
-   <container>1</container>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>_incidents</tabstop>
-  <tabstop>_todoList</tabstop>
-  <tabstop>_edit</tabstop>
-  <tabstop>_view</tabstop>
-  <tabstop>_delete</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>_crmAccount</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_projects</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>402</x>
-     <y>60</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>278</x>
-     <y>279</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

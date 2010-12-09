@@ -25,16 +25,14 @@ public:
     invoice(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~invoice();
 
-    static void newInvoice( int pCustid );
-    static void editInvoice( int pId );
-    static void viewInvoice( int pId );
+    static void newInvoice( int pCustid, QWidget *parent = 0 );
+    static void editInvoice( int pId, QWidget *parent = 0 );
+    static void viewInvoice( int pId, QWidget *parent = 0 );
 
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sClose();
     virtual void sPopulateCustomerInfo( int pCustid );
-    virtual void sShipToList();
-    virtual void sParseShipToNumber();
     virtual void populateShipto( int pShiptoid );
     virtual void sCopyToShipto();
     virtual void sSave();
@@ -51,6 +49,7 @@ public slots:
     virtual void sShipToModified();
     virtual void populateCMInfo();
     virtual void populateCCInfo();
+    virtual bool sCheckInvoiceNumber();
     virtual void sHandleShipchrg( int pShipchrgid );
     virtual void sTaxZoneChanged();
     virtual void sFreightChanged();
@@ -68,11 +67,11 @@ private:
     int		_custtaxzoneid;
     bool	_ffShipto;
     int		_invcheadid;
-    int		_shiptoid;
     int		_taxzoneidCache;
     bool        _loading;
     double      _freightCache;
-	bool		save();
+    bool        save();
+    bool        _posted;
 
 };
 

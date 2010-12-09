@@ -150,12 +150,7 @@ void assignLotSerial::sNew()
 
 void assignLotSerial::sDelete()
 {
-  q.prepare( "DELETE FROM itemlocdist "
-             "WHERE (itemlocdist_id=:itemlocdist_id);"
-
-             "DELETE FROM lsdetail "
-             "WHERE ( (lsdetail_source_type='I')"
-             " AND (lsdetail_source_id=:itemlocdist_id) );" );
+  q.prepare( "SELECT deleteItemlocdist(:itemlocdist_id);" );
   q.bindValue(":itemlocdist_id", _itemlocdist->id());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)

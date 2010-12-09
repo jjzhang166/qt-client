@@ -37,7 +37,7 @@ sysLocale::sysLocale(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   connect(_qtyPerScale,    SIGNAL(valueChanged(int)), this, SLOT(sUpdateSamples()));
   connect(_salesPriceScale,SIGNAL(valueChanged(int)), this, SLOT(sUpdateSamples()));
   connect(_percentScale,   SIGNAL(valueChanged(int)), this, SLOT(sUpdateSamples()));
-  connect(_save,           SIGNAL(clicked()),         this, SLOT(sSave()));
+  connect(_buttonBox,      SIGNAL(accepted()),        this, SLOT(sSave()));
   connect(_uomRatioScale,  SIGNAL(valueChanged(int)), this, SLOT(sUpdateSamples()));
   connect(_warning,        SIGNAL(editingFinished()), this, SLOT(sUpdateColors()));
 
@@ -125,10 +125,9 @@ enum SetResponse sysLocale::set(ParameterList &pParams)
       _qtyPerScale->setEnabled(FALSE);
       _uomRatioScale->setEnabled(FALSE);
       _comments->setReadOnly(TRUE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-      
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

@@ -10,10 +10,10 @@
 
 #include "customer.h"
 
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QCloseEvent>
 
 #include <comment.h>
 #include <metasql.h>
@@ -28,6 +28,7 @@
 #include "storedProcErrorLookup.h"
 #include "taxRegistration.h"
 #include "xcombobox.h"
+#include "parameterwidget.h"
 
 customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -36,57 +37,52 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   
   _todoList = new todoList(this, "todoList", Qt::Widget);
   _todoListPage->layout()->addWidget(_todoList);
-  _todoList->findChild<QWidget*>("_close")->hide();
-  _todoList->findChild<XCheckBox*>("_autoUpdate")->setForgetful(true);
-  _todoList->findChild<XCheckBox*>("_autoUpdate")->setChecked(false);
-  _todoList->findChild<XCheckBox*>("_autoUpdate")->hide();
-  _todoList->findChild<XTreeWidget*>("_todoList")->hideColumn("crmacct_number");
-  _todoList->findChild<XTreeWidget*>("_todoList")->hideColumn("crmacct_name");
+  _todoList->setCloseVisible(false);
+  _todoList->setParameterWidgetVisible(false);
+  _todoList->setQueryOnStartEnabled(false);
+  _todoList->parameterWidget()->setDefault(tr("Assigned"), QVariant(), true);
+  _todoList->list()->hideColumn("crmacct_number");
+  _todoList->list()->hideColumn("crmacct_name");
   
   _contacts = new contacts(this, "contacts", Qt::Widget);
   _contactsPage->layout()->addWidget(_contacts);
-  _contacts->findChild<QWidget*>("_close")->hide();
-  _contacts->findChild<QWidget*>("_activeOnly")->hide();
-  _contacts->findChild<QWidget*>("_contactsLit")->hide();
-  _contacts->findChild<QWidget*>("_attach")->show();
-  _contacts->findChild<QWidget*>("_detach")->show();
-  _contacts->findChild<XTreeWidget*>("_contacts")->hideColumn("crmacct_number");
-  _contacts->findChild<XTreeWidget*>("_contacts")->hideColumn("crmacct_name");
-  
+  _contacts->setCloseVisible(false);
+  _contacts->list()->hideColumn("crmacct_number");
+  _contacts->list()->hideColumn("crmacct_name");
+  _contacts->setParameterWidgetVisible(false);
+  _contacts->setQueryOnStartEnabled(false);
+
   _oplist = new opportunityList(this, "opportunityList", Qt::Widget);
   _opportunitiesPage->layout()->addWidget(_oplist);
-  _oplist->findChild<QWidget*>("_close")->hide();
-  _oplist->findChild<QWidget*>("_usrGroup")->hide();
-  _oplist->findChild<QWidget*>("_dates")->hide();
-  _oplist->findChild<QWidget*>("_more")->hide();
-  _oplist->findChild<QWidget*>("_crmAccountGroup")->hide();
-  _oplist->findChild<QRadioButton*>("_allUsers")->setChecked(true);
-  _oplist->findChild<XTreeWidget*>("_list")->hideColumn("crmacct_number");
-  _oplist->sHandleMore(false);
-  
+  _oplist->setCloseVisible(false);
+  _oplist->parameterWidget()->setDefault(tr("User"), QVariant(), true);
+  _oplist->list()->hideColumn("crmacct_number");
+  _oplist->setParameterWidgetVisible(false);
+  _oplist->setQueryOnStartEnabled(false);
+
   _quotes = new quotes(this, "quotes", Qt::Widget);
   _quotesPage->layout()->addWidget(_quotes);
-  _quotes->findChild<QWidget*>("_close")->hide();
-  _quotes->findChild<QWidget*>("_warehouse")->hide();
-  _quotes->findChild<QWidget*>("_quoteLit")->hide();
-  _quotes->findChild<WarehouseGroup*>("_warehouse")->setAll();
-  _quotes->findChild<XCheckBox*>("_showProspects")->setForgetful(true);
-  _quotes->findChild<XCheckBox*>("_showProspects")->setChecked(false);
-  _quotes->findChild<XCheckBox*>("_showProspects")->hide();
-  _quotes->findChild<XTreeWidget*>("_quote")->hideColumn("quhead_billtoname");
+  _quotes->setCloseVisible(false);
+  _quotes->setParameterWidgetVisible(false);
+  _quotes->setQueryOnStartEnabled(false);
+
+  if (_metrics->boolean("ShowQuotesAfterSO"))
+  {
+    _quotes->findChild<XCheckBox*>("_convertedtoSo")->show();
+    _quotes->findChild<XCheckBox*>("_convertedtoSo")->setForgetful(true);
+    _quotes->findChild<XCheckBox*>("_convertedtoSo")->setChecked(false);
+  }
+  _quotes->list()->hideColumn("quhead_billtoname");
   
   _orders = new openSalesOrders(this, "openSalesOrders", Qt::Widget);
   _ordersPage->layout()->addWidget(_orders);
-  _orders->findChild<QWidget*>("_close")->hide();
-  _orders->findChild<XCheckBox*>("_autoUpdate")->setForgetful(true);
-  _orders->findChild<XCheckBox*>("_autoUpdate")->setChecked(false);
-  _orders->findChild<XCheckBox*>("_autoUpdate")->hide();
-  _orders->findChild<QWidget*>("_warehouse")->hide();
-  _orders->findChild<QWidget*>("_salesOrdersLit")->hide();
-  _orders->findChild<WarehouseGroup*>("_warehouse")->setAll();
-  _orders->findChild<QWidget*>("_showGroup")->show();
-  _orders->findChild<XTreeWidget*>("_so")->hideColumn("cust_number");
-  _orders->findChild<XTreeWidget*>("_so")->hideColumn("cohead_billtoname");
+  _orders->setCloseVisible(false);
+  _orders->setParameterWidgetVisible(false);
+  _orders->setQueryOnStartEnabled(false);
+  _orders->setAutoUpdateEnabled(false);
+  _orders->optionsWidget()->show();
+  _orders->list()->hideColumn("cust_number");
+  _orders->list()->hideColumn("cohead_billtoname");
   
   _returns = new returnAuthorizationWorkbench(this, "returnAuthorizationWorkbench", Qt::Widget);
   _returnsPage->layout()->addWidget(_returns);
@@ -98,21 +94,21 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   _aritems = new dspAROpenItems(this, "dspAROpenItems", Qt::Widget);
   _aritems->setObjectName("dspAROpenItems");
   _aritemsPage->layout()->addWidget(_aritems);
-  _aritems->findChild<QWidget*>("_close")->hide();
+  _aritems->setCloseVisible(false);
   _aritems->findChild<QWidget*>("_customerSelector")->hide();
   _aritems->findChild<QWidget*>("_asofGroup")->hide();
   _aritems->findChild<DLineEdit*>("_asOf")->setDate(omfgThis->endOfTime());
   _aritems->findChild<XCheckBox*>("_closed")->show();
-  _aritems->findChild<XTreeWidget*>("_aropen")->hideColumn("cust_number");
-  _aritems->findChild<XTreeWidget*>("_aropen")->hideColumn("cust_name");
+  _aritems->list()->hideColumn("cust_number");
+  _aritems->list()->hideColumn("cust_name");
   
   _cashreceipts = new dspCashReceipts(this, "dspCashReceipts", Qt::Widget);
   _cashreceiptsPage->layout()->addWidget(_cashreceipts);
-  _cashreceipts->findChild<QWidget*>("_close")->hide();
+  _cashreceipts->setCloseVisible(false);
   _cashreceipts->findChild<QWidget*>("_customerSelector")->hide();
   _cashreceipts->findChild<DateCluster*>("_dates")->setStartDate(QDate().currentDate().addDays(-90));
-  _cashreceipts->findChild<XTreeWidget*>("_arapply")->hideColumn("cust_number");
-  _cashreceipts->findChild<XTreeWidget*>("_arapply")->hideColumn("cust_name");
+  _cashreceipts->list()->hideColumn("cust_number");
+  _cashreceipts->list()->hideColumn("cust_name");
   
   _cctrans = new dspCreditCardTransactions(this, "dspCreditCardTransactions", Qt::Widget);
   _cctransPage->layout()->addWidget(_cctrans);
@@ -126,7 +122,6 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_number, SIGNAL(newId(int)), this, SLOT(setId(int)));
   connect(_number, SIGNAL(editingFinished()), this, SLOT(sNumberEdited()));
   connect(_number, SIGNAL(editable(bool)), this, SLOT(sNumberEditable(bool)));
-  connect(_number, SIGNAL(deleteClicked()), this, SLOT(sDelete()));
   connect(_salesrep, SIGNAL(newID(int)), this, SLOT(sPopulateCommission()));
   connect(_newShipto, SIGNAL(clicked()), this, SLOT(sNewShipto()));
   connect(_editShipto, SIGNAL(clicked()), this, SLOT(sEditShipto()));
@@ -189,8 +184,8 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _currency->setLabel(_currencyLit);
   
-  _balanceMethod->insertItem(tr("Balance Forward"));
-  _balanceMethod->insertItem(tr("Open Items"));
+  _balanceMethod->append(0, tr("Balance Forward"), "B");
+  _balanceMethod->append(1, tr("Open Items"),      "O");
 
   _taxreg->addColumn(tr("Tax Authority"), 100, Qt::AlignLeft, true, "taxauth_code");
   _taxreg->addColumn(tr("Registration #"), -1, Qt::AlignLeft, true, "taxreg_number");
@@ -453,15 +448,15 @@ void customer::setValid(bool valid)
   if (!valid)
   {
     _documents->setId(-1);
-    _todoList->findChild<XTreeWidget*>("_todoList")->clear();
-    _contacts->findChild<XTreeWidget*>("_contacts")->clear();
-    _oplist->findChild<XTreeWidget*>("_list")->clear();
-    _quotes->findChild<XTreeWidget*>("_quote")->clear();
-    _orders->findChild<XTreeWidget*>("_so")->clear();
+    _todoList->list()->clear();
+    _contacts->list()->clear();
+    _oplist->list()->clear();
+    _quotes->list()->clear();
+    _orders->list()->clear();
     _returns->findChild<XTreeWidget*>("_ra")->clear();
     _returns->findChild<XTreeWidget*>("_radue")->clear();
-    _aritems->findChild<XTreeWidget*>("_aropen")->clear();
-    _cashreceipts->findChild<XTreeWidget*>("_arapply")->clear();
+    _aritems->list()->clear();
+    _cashreceipts->list()->clear();
     _cctrans->findChild<XTreeWidget*>("_preauth")->clear();
   }
 }
@@ -608,10 +603,7 @@ bool customer::sSave()
     q.bindValue(":cust_cntct_id", _billCntct->id());            // else NULL
   q.bindValue(":cust_custtype_id", _custtype->id());
 
-  if (_balanceMethod->currentIndex() == 0)
-    q.bindValue(":cust_balmethod", "B");
-  else
-    q.bindValue(":cust_balmethod", "O");
+  q.bindValue(":cust_balmethod", _balanceMethod->code());
 
   if (_inGoodStanding->isChecked())
     q.bindValue(":cust_creditstatus", "G");
@@ -757,6 +749,7 @@ void customer::sSaveClicked()
   _autoSaved=false;
   _NumberGen = -1;
   omfgThis->sCustomersUpdated(_custid, TRUE);
+  emit saved(_custid);
   if (_captive || isModal())
     close();
   else
@@ -962,7 +955,7 @@ void customer::sDeleteShipto()
       return;
     }
   }
-  else if (q.lastError().type() != QSqlError::None)
+  else if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
@@ -1078,9 +1071,9 @@ void customer::sFillCharacteristicList()
 
 void customer::sPopulateShiptoMenu(QMenu *menuThis)
 {
-  menuThis->insertItem(tr("Edit..."),   this, SLOT(sEdit()),   0 );
-  menuThis->insertItem(tr("View..."),   this, SLOT(sView()),   0 );
-  menuThis->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0 );
+  menuThis->addAction(tr("Edit..."),   this, SLOT(sEditShipto()));
+  menuThis->addAction(tr("View..."),   this, SLOT(sViewShipto()));
+  menuThis->addAction(tr("Delete..."), this, SLOT(sDeleteShipto()));
 }
 
 void customer::sFillShiptoList()
@@ -1247,10 +1240,7 @@ void customer::populate()
 
     _sellingWarehouse->setId(cust.value("cust_preferred_warehous_id").toInt());
 
-    if (cust.value("cust_balmethod").toString() == "B")
-      _balanceMethod->setCurrentIndex(0);
-    else if (cust.value("cust_balmethod").toString() == "O")
-      _balanceMethod->setCurrentIndex(1);
+    _balanceMethod->setCode(cust.value("cust_balmethod").toString());
 
     _active->setChecked(cust.value("cust_active").toBool());
     _backorders->setChecked(cust.value("cust_backorder").toBool());
@@ -1273,12 +1263,12 @@ void customer::populate()
     _comments->setId(_custid);
     _documents->setId(_crmacctid);
     
-    _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctid);
-    _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctid);
-    _oplist->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctid);
+    _todoList->parameterWidget()->setDefault(tr("CRM Account"), _crmacctid, true);
+    _contacts->setCrmacctid(_crmacctid);
+    _oplist->parameterWidget()->setDefault(tr("CRM Account"), _crmacctid, true);
     
-    _quotes->findChild<CustCluster*>("_cust")->setId(_custid);
-    _orders->findChild<CustCluster*>("_cust")->setId(_custid);
+    _quotes->parameterWidget()->setDefault(tr("Customer"), _custid, true);
+    _orders->setCustId(_custid);
     _returns->findChild<CustomerSelector*>("_customerSelector")->setCustId(_custid);
     _aritems->findChild<CustomerSelector*>("_customerSelector")->setCustId(_custid);
     _cashreceipts->findChild<CustomerSelector*>("_customerSelector")->setCustId(_custid);
@@ -1606,7 +1596,7 @@ void customer::sHandleButtons()
     _settingsStack->setCurrentIndex(1);
   else if (_taxButton->isChecked())
     _settingsStack->setCurrentIndex(2);
-  else
+  else if (_creditcardsButton->isVisible())
     _settingsStack->setCurrentIndex(3);
     
   if (_contactsButton->isChecked())
@@ -1629,7 +1619,7 @@ void customer::sHandleButtons()
     _receivablesStack->setCurrentIndex(0);
   else if (_cashreceiptsButton->isChecked())
     _receivablesStack->setCurrentIndex(1);
-  else
+  else if (_cctransButton->isVisible())
     _receivablesStack->setCurrentIndex(2);
     
   sFillList();
@@ -1693,10 +1683,7 @@ void customer::sClear()
     _creditLimit->setBaseValue(_metrics->value("SOCreditLimit").toDouble());
     _creditRating->setText(_metrics->value("SOCreditRate"));
 
-    if (_metrics->value("DefaultBalanceMethod") == "B")
-      _balanceMethod->setCurrentIndex(0);
-    else if (_metrics->value("DefaultBalanceMethod") == "O")
-      _balanceMethod->setCurrentIndex(1);
+    _balanceMethod->setCode(_metrics->value("DefaultBalanceMethod"));
 
     if(!_privileges->check("MaintainCustomerMastersCustomerType")
        && !_privileges->check("MaintainCustomerMastersCustomerTypeOnCreate")
@@ -1712,19 +1699,19 @@ void customer::sClear()
     _blanketPos->setEnabled(cView != _mode && _usesPOs->isChecked());
     _blanketPos->setChecked(false);
     _currency->setId(CurrCluster::baseId());
-    _inGoodStanding->setChecked(TRUE);
+    _inGoodStanding->setChecked(true);
 
     _shipto->clear();
     _custchar->removeRows(0, _custchar->rowCount());
     _charass->clear();
     _widgetStack->setCurrentIndex(0);
     
-    _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(-1);
-    _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(-1);
-    _oplist->findChild<CRMAcctCluster*>("_crmAccount")->setId(-1);
+    _todoList->parameterWidget()->setDefault(tr("CRM Account"), -1, true);
+    _contacts->setCrmacctid(_crmacctid);
+    _oplist->parameterWidget()->setDefault(tr("CRM Account"), -1, true);
     
-    _quotes->findChild<CustCluster*>("_cust")->setId(-1);
-    _orders->findChild<CustCluster*>("_cust")->setId(-1);
+    _quotes->parameterWidget()->setDefault(tr("Customer"), -1, true);
+    _orders->setCustId(-1);
     _returns->findChild<CustomerSelector*>("_customerSelector")->setCustId(-1);
     _aritems->findChild<CustomerSelector*>("_customerSelector")->setCustId(-1);
     _cashreceipts->findChild<CustomerSelector*>("_customerSelector")->setCustId(-1);
@@ -1770,39 +1757,25 @@ void customer::sPrepare()
                   .arg(__LINE__) );
     return;
   }
-  _number->findChild<QPushButton*>("_new")->click();
+
+  _number->setEditMode(true);
+  _number->clear();
+
+  // Handle Auto numbering
+  if(((_x_metrics &&
+       _x_metrics->value("CRMAccountNumberGeneration") == "A") ||
+      (_x_metrics->value("CRMAccountNumberGeneration") == "O"))
+    && _number->number().isEmpty() )
+  {
+    XSqlQuery num;
+    num.exec("SELECT fetchCRMAccountNumber() AS number;");
+    if (num.first())
+      _number->setNumber(num.value("number").toString());
+    _custtype->setFocus();
+  }
+  else
+    _number->setFocus();
+
   _NumberGen = _number->number().toInt();
-
 }
 
-void customer::sDelete()
-{
-  QString question = tr("Are you sure that you want to delete this customer?");
-  if (QMessageBox::question(this, tr("Delete Customer?"),
-                              question,
-                              QMessageBox::Yes,
-                              QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
-    return;
-
-  q.prepare("SELECT deleteCustomer(:cust_id) AS result;");
-  q.bindValue(":cust_id", _number->id());
-  q.exec();
-  if (q.first())
-  {
-    int returnVal = q.value("result").toInt();
-    if (returnVal < 0)
-    {
-      QMessageBox::critical(this, tr("Cannot Delete Customer"),
-			    storedProcErrorLookup("deleteCustomer", returnVal));
-      return;
-    }
-    sClear();
-    omfgThis->sCustomersUpdated(-1, TRUE);
-  }
-  else if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  _number->setFocus();
-}

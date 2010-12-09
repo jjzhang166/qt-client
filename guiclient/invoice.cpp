@@ -17,7 +17,6 @@
 #include <QVariant>
 
 #include "invoiceItem.h"
-#include "shipToList.h"
 #include "storedProcErrorLookup.h"
 #include "taxBreakdown.h"
 
@@ -33,16 +32,15 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
 
   connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_cust, SIGNAL(newId(int)),   _shipTo,     SLOT(setCustid(int)));
   connect(_cust, SIGNAL(newId(int)), this, SLOT(sPopulateCustomerInfo(int)));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_shipToList, SIGNAL(clicked()), this, SLOT(sShipToList()));
   connect(_copyToShipto, SIGNAL(clicked()), this, SLOT(sCopyToShipto()));
   connect(_taxLit, SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
-  connect(_shipToNumber, SIGNAL(lostFocus()), this, SLOT(sParseShipToNumber()));
-  connect(_shipToNumber, SIGNAL(returnPressed()), this, SLOT(sParseShipToNumber()));
+  connect(_shipTo, SIGNAL(newId(int)), this, SLOT(populateShipto(int)));
   connect(_shipToName, SIGNAL(textChanged(const QString&)), this, SLOT(sShipToModified()));
   connect(_subtotal, SIGNAL(valueChanged()), this, SLOT(sCalculateTotal()));
   connect(_tax, SIGNAL(valueChanged()), this, SLOT(sCalculateTotal()));
@@ -66,19 +64,19 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_shipChrgs, SIGNAL(newID(int)), this, SLOT(sHandleShipchrg(int)));
   connect(_cust, SIGNAL(newCrmacctId(int)), _billToAddr, SLOT(setSearchAcct(int)));
   connect(_cust, SIGNAL(newCrmacctId(int)), _shipToAddr, SLOT(setSearchAcct(int)));
+  connect(_invoiceNumber, SIGNAL(editingFinished()), this, SLOT(sCheckInvoiceNumber()));
 
   setFreeFormShipto(false);
 
-#ifndef Q_WS_MAC
-  _shipToList->setMaximumWidth(25);
-#endif
-
   _custtaxzoneid  = -1;
   _invcheadid	  = -1;
-  _shiptoid	  = -1;
   _taxzoneidCache = -1;
   _loading = false;
   _freightCache = 0;
+  _posted = false;
+
+  _shipTo->setNameVisible(false);
+  _shipTo->setDescriptionVisible(false);
 
   _invcitem->addColumn(tr("#"),           _seqColumn,      Qt::AlignCenter, true,  "invcitem_linenumber" );
   _invcitem->addColumn(tr("Order #"),     _itemColumn,     Qt::AlignLeft,   true,  "soitemnumber"   );
@@ -106,7 +104,8 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   _payment->hide(); // Issue 9895:  if no objections over time, we should ultimately remove this. 
 
   _recurring->setParent(-1, "I");
-  _recurring->setMax(_metrics->value("RecurringInvoiceBuffer").toInt());
+
+  _miscChargeAccount->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
 
 invoice::~invoice()
@@ -145,14 +144,26 @@ enum SetResponse invoice::set(const ParameterList &pParams)
 	    return UndefinedError;
       }
 
-      q.exec("SELECT fetchInvcNumber() AS number;");
-      if (q.first())
-        _invoiceNumber->setText(q.value("number").toString());
-      else if (q.lastError().type() != QSqlError::NoError)
+      if ((_metrics->value("InvcNumberGeneration") == "A") ||
+          (_metrics->value("InvcNumberGeneration") == "O"))
       {
-	    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-	    return UndefinedError;
+        q.exec("SELECT fetchInvcNumber() AS number;");
+        if (q.first())
+        {
+          _invoiceNumber->setText(q.value("number").toString());
+          if (_metrics->value("InvcNumberGeneration") == "A")
+            _invoiceNumber->setEnabled(false);
+        }
+        else if (q.lastError().type() != QSqlError::NoError)
+        {
+          systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+          return UndefinedError;
+        }
+
+        _cust->setFocus();
       }
+      else
+        sCheckInvoiceNumber();
 
       _orderDate->setDate(omfgThis->dbDate());
       _shipDate->setDate(omfgThis->dbDate());
@@ -170,7 +181,9 @@ enum SetResponse invoice::set(const ParameterList &pParams)
 				"    0, -1"
 				");");
       q.bindValue(":invchead_id",	 _invcheadid);
-      q.bindValue(":invchead_invcnumber",_invoiceNumber->text());
+      q.bindValue(":invchead_invcnumber",_invoiceNumber->text().isEmpty() ?
+                                               "TEMP" + QString(0 - _invcheadid)
+                                             : _invoiceNumber->text());
       q.bindValue(":invchead_orderdate", _orderDate->date());
       q.bindValue(":invchead_invcdate",	 _invoiceDate->date());
       q.exec();
@@ -183,8 +196,6 @@ enum SetResponse invoice::set(const ParameterList &pParams)
       connect(_cust,	    SIGNAL(valid(bool)), _new, SLOT(setEnabled(bool)));
       connect(_cust,        SIGNAL(valid(bool)), this, SLOT(populateCMInfo()));
       connect(_orderNumber, SIGNAL(lostFocus()), this, SLOT(populateCCInfo()));
-
-      _cust->setFocus();
     }
     else if (param.toString() == "edit")
     {
@@ -218,7 +229,7 @@ enum SetResponse invoice::set(const ParameterList &pParams)
       _billToName->setEnabled(FALSE);
       _billToAddr->setEnabled(FALSE);
       _billToPhone->setEnabled(FALSE);
-      _shipToNumber->setEnabled(FALSE);
+      _shipTo->setEnabled(FALSE);
       _shipToName->setEnabled(FALSE);
       _shipToAddr->setEnabled(FALSE);
       _shipToPhone->setEnabled(FALSE);
@@ -228,7 +239,6 @@ enum SetResponse invoice::set(const ParameterList &pParams)
       _freight->setEnabled(FALSE);
       _payment->setEnabled(FALSE);
       _notes->setReadOnly(TRUE);
-      _shipToList->hide();
       _edit->hide();
       _save->hide();
       _delete->hide();
@@ -282,19 +292,25 @@ void invoice::sPopulateCustomerInfo(int pCustid)
   if (pCustid != -1)
   {
     XSqlQuery cust;
-    cust.prepare( "SELECT cust_salesrep_id, cust_commprcnt * 100 AS commission,"
+    cust.prepare( "SELECT cust_name, COALESCE(cntct_addr_id,-1) AS addr_id, "
+                  "       cust_salesrep_id, cust_commprcnt * 100 AS commission,"
                   "       cust_creditstatus, cust_terms_id, "
                   "       COALESCE(cust_taxzone_id, -1) AS cust_taxzone_id,"
                   "       COALESCE(cust_shipchrg_id, -1) AS cust_shipchrg_id,"
                   "       cust_ffshipto, cust_ffbillto, "
                   "       COALESCE(shipto_id, -1) AS shiptoid, "
                   "       cust_curr_id "
-                  "FROM custinfo LEFT OUTER JOIN shipto ON ( (shipto_cust_id=cust_id) AND (shipto_default) ) "
+                  "FROM custinfo "
+                  "  LEFT OUTER JOIN cntct ON (cust_cntct_id=cntct_id) "
+                  "  LEFT OUTER JOIN shipto ON ( (shipto_cust_id=cust_id) "
+                  "                         AND (shipto_default) ) "
                   "WHERE (cust_id=:cust_id);" );
     cust.bindValue(":cust_id", pCustid);
     cust.exec();
     if (cust.first())
     {
+        _billToName->setText(cust.value("cust_name").toString());
+        _billToAddr->setId(cust.value("addr_id").toInt());
 	_salesrep->setId(cust.value("cust_salesrep_id").toInt());
 	_commission->setDouble(cust.value("commission").toDouble());
 	_terms->setId(cust.value("cust_terms_id").toInt());
@@ -313,7 +329,7 @@ void invoice::sPopulateCustomerInfo(int pCustid)
 	  populateShipto(cust.value("shiptoid").toInt());
 	else
 	{
-	  _shipToNumber->clear();
+          _shipTo->setId(-1);
 	  _shipToName->clear();
 	  _shipToAddr->clear();
 	  _shipToPhone->clear();
@@ -336,47 +352,12 @@ void invoice::sPopulateCustomerInfo(int pCustid)
   }
 }
 
-void invoice::sShipToList()
-{
-  ParameterList params;
-  params.append("cust_id", _cust->id());
-  params.append("shipto_id", _shiptoid);
-
-  shipToList newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  int shiptoid = newdlg.exec();
-  if (shiptoid != -1)
-    populateShipto(shiptoid);
-}
-
-void invoice::sParseShipToNumber()
-{
-  XSqlQuery shiptoid;
-  shiptoid.prepare( "SELECT shipto_id "
-                    "FROM shipto "
-                    "WHERE ( (shipto_cust_id=:shipto_cust_id)"
-                    " AND (UPPER(shipto_num)=UPPER(:shipto_num)) );" );
-  shiptoid.bindValue(":shipto_cust_id", _cust->id());
-  shiptoid.bindValue(":shipto_num", _shipToNumber->text());
-  shiptoid.exec();
-  if (shiptoid.first())
-    populateShipto(shiptoid.value("shipto_id").toInt());
-  else if (_shiptoid != -1)
-    populateShipto(-1);
-  if (shiptoid.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, shiptoid.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-}
-
 void invoice::populateShipto(int pShiptoid)
 {
   if (pShiptoid != -1)
   {
     XSqlQuery shipto;
-    shipto.prepare( "SELECT shipto_num, shipto_name, shipto_addr_id, "
+    shipto.prepare( "SELECT shipto_id, shipto_num, shipto_name, shipto_addr_id, "
                     "       cntct_phone, shipto_shipvia, shipto_salesrep_id, "
                     "       COALESCE(shipto_taxzone_id, -1) AS shipto_taxzone_id,"
                     "       COALESCE(shipto_shipchrg_id, -1) AS shipto_shipchrg_id,"
@@ -388,10 +369,21 @@ void invoice::populateShipto(int pShiptoid)
     shipto.exec();
     if (shipto.first())
     {
+      _shipToAddr->blockSignals(true);
+      _shipTo->blockSignals(true);
+      _shipToName->blockSignals(true);
+      _shipToPhone->blockSignals(true);
+
       _shipToName->setText(shipto.value("shipto_name"));
       _shipToAddr->setId(shipto.value("shipto_addr_id").toInt());
       _shipToPhone->setText(shipto.value("cntct_phone"));
-      _shipToNumber->setText(shipto.value("shipto_num"));
+      _shipTo->setId(shipto.value("shipto_id").toInt());
+
+      _shipToAddr->blockSignals(false);
+      _shipTo->blockSignals(false);
+      _shipToName->blockSignals(false);
+      _shipToPhone->blockSignals(false);
+
       _salesrep->setId(shipto.value("shipto_salesrep_id").toInt());
       _commission->setDouble(shipto.value("commission").toDouble());
       _shipVia->setText(shipto.value("shipto_shipvia"));
@@ -406,23 +398,26 @@ void invoice::populateShipto(int pShiptoid)
   }
   else
   {
-    _shipToNumber->clear();
+    _shipTo->blockSignals(true);
+    _shipTo->setId(-1);
+    _shipTo->blockSignals(false);
     _shipToName->clear();
     _shipToAddr->clear();
     _shipToPhone->clear();
   }
-
-  _shiptoid = pShiptoid;
 }
 
 void invoice::sCopyToShipto()
 {
-  _shiptoid = -1;
-  _shipToNumber->clear();
+  _shipTo->blockSignals(true);
+  _shipToAddr->blockSignals(true);
+  _shipTo->setId(-1);
   _shipToName->setText(_billToName->text());
   _shipToAddr->setId(_billToAddr->id());
   _shipToPhone->setText(_billToPhone->text());
   _taxzone->setId(_custtaxzoneid);
+  _shipTo->blockSignals(false);
+  _shipToAddr->blockSignals(false);
 }
 
 void invoice::sSave()
@@ -465,7 +460,7 @@ void invoice::sSave()
                              "indicating the G/L Sales Account number for the "
                              "charge.  Please set the Misc. Charge amount to 0 "
                              "or select a Misc. Charge Sales Account." ) );
-    _tabWidget->setCurrentPage(1);
+    _tabWidget->setCurrentIndex(_tabWidget->indexOf(lineItemsTab));
     _miscChargeAccount->setFocus();
     return;
   }
@@ -556,7 +551,7 @@ bool invoice::save()
   q.bindValue(":invchead_billto_zipcode",	_billToAddr->postalCode());
   q.bindValue(":invchead_billto_country",	_billToAddr->country());
   q.bindValue(":invchead_billto_phone",		_billToPhone->text());
-  q.bindValue(":invchead_shipto_id",		_shiptoid);
+  q.bindValue(":invchead_shipto_id",		_shipTo->id());
   q.bindValue(":invchead_shipto_name",		_shipToName->text());
   q.bindValue(":invchead_shipto_address1",	_shipToAddr->line1());
   q.bindValue(":invchead_shipto_address2",	_shipToAddr->line2());
@@ -746,21 +741,9 @@ void invoice::populate()
     _shipToAddr->setPostalCode(q.value("invchead_shipto_zipcode").toString());
     _shipToAddr->setCountry(q.value("invchead_shipto_country").toString());
     _shipToPhone->setText(q.value("invchead_shipto_phone").toString());
-    _shiptoid = q.value("invchead_shipto_id").toInt();
-    _shipToNumber->clear();
-    if(_shiptoid != -1)
-    {
-      XSqlQuery shipto;
-      shipto.prepare("SELECT shipto_num FROM shipto WHERE shipto_id=:shipto_id");
-      shipto.bindValue(":shipto_id", _shiptoid);
-      shipto.exec();
-      if(shipto.first())
-        _shipToNumber->setText(shipto.value("shipto_num"));
-      else
-        _shiptoid = -1;
-      if (shipto.lastError().type() != QSqlError::NoError)
-	systemError(this, shipto.lastError().databaseText(), __FILE__, __LINE__);
-    }
+    _shipTo->blockSignals(true);
+    _shipTo->setId(q.value("invchead_shipto_id").toInt());
+    _shipTo->blockSignals(false);
     
     _payment->setLocalValue(q.value("invchead_payment").toDouble());
     _miscChargeDescription->setText(q.value("invchead_misc_descrip"));
@@ -768,6 +751,26 @@ void invoice::populate()
     _miscAmount->setLocalValue(q.value("invchead_misc_amount").toDouble());
 
     _notes->setText(q.value("invchead_notes").toString());
+
+    _posted = q.value("invchead_posted").toBool();
+    if (_posted)
+    {
+      _new->setEnabled(false);
+      disconnect(_invcitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+      disconnect(_invcitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
+      _invoiceNumber->setEnabled(false);
+      _invoiceDate->setEnabled(false);
+      _terms->setEnabled(false);
+      _salesrep->setEnabled(false);
+      _commission->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _shipChrgs->setEnabled(false);
+      _project->setEnabled(false);
+      _miscChargeAccount->setEnabled(false);
+      _miscAmount->setEnabled(false);
+      _freight->setEnabled(false);
+    }
+
     _loading = false;
 
     sFillItemList();
@@ -865,7 +868,6 @@ void invoice::closeEvent(QCloseEvent *pEvent)
 
 void invoice::sTaxDetail()
 {
-  XSqlQuery taxq;
   if (_mode != cView)
   {
     if (!save())
@@ -876,7 +878,7 @@ void invoice::sTaxDetail()
   params.append("order_id", _invcheadid);
   params.append("order_type", "I");
 
-  if (_mode == cView)
+  if (_mode == cView || _posted)
     params.append("mode", "view");
   else if (_mode == cNew || _mode == cEdit)
     params.append("mode", "edit");
@@ -926,19 +928,21 @@ void invoice::setFreeFormShipto(bool pFreeForm)
 
 void invoice::sShipToModified()
 {
-  _shiptoid = -1;
-  _shipToNumber->clear();
+  _shipTo->blockSignals(true);
+  _shipTo->setId(-1);
+  _shipTo->setCustid(_cust->id());
+  _shipTo->blockSignals(false);
 }
 
 void invoice::keyPressEvent( QKeyEvent * e )
 {
 #ifdef Q_WS_MAC
-  if(e->key() == Qt::Key_N && e->state() == Qt::ControlModifier)
+  if(e->key() == Qt::Key_N && (e->modifiers() & Qt::ControlModifier))
   {
     _new->animateClick();
     e->accept();
   }
-  else if(e->key() == Qt::Key_E && e->state() == Qt::ControlModifier)
+  else if(e->key() == Qt::Key_E && (e->modifiers() & Qt::ControlModifier))
   {
     _edit->animateClick();
     e->accept();
@@ -949,14 +953,14 @@ void invoice::keyPressEvent( QKeyEvent * e )
   e->ignore();
 }
 
-void invoice::newInvoice(int pCustid)
+void invoice::newInvoice(int pCustid, QWidget *parent )
 {
   // Check for an Item window in new mode already.
   QWidgetList list = omfgThis->windowList();
   for(int i = 0; i < list.size(); i++)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), "invoice new")==0)
+    if(QString::compare(w->objectName(), "invoice new")==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -974,12 +978,12 @@ void invoice::newInvoice(int pCustid)
   if(-1 != pCustid)
     params.append("cust_id", pCustid);
 
-  invoice *newdlg = new invoice();
+  invoice *newdlg = new invoice(parent);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
 
-void invoice::editInvoice( int pId )
+void invoice::editInvoice( int pId, QWidget *parent  )
 {
   // Check for an Item window in edit mode for the specified invoice already.
   QString n = QString("invoice edit %1").arg(pId);
@@ -987,7 +991,7 @@ void invoice::editInvoice( int pId )
   for(int i = 0; i < list.size(); i++)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1004,12 +1008,12 @@ void invoice::editInvoice( int pId )
   params.append("invchead_id", pId);
   params.append("mode", "edit");
 
-  invoice *newdlg = new invoice();
+  invoice *newdlg = new invoice(parent);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
 
-void invoice::viewInvoice( int pId )
+void invoice::viewInvoice( int pId, QWidget *parent  )
 {
   // Check for an Item window in edit mode for the specified invoice already.
   QString n = QString("invoice view %1").arg(pId);
@@ -1017,7 +1021,7 @@ void invoice::viewInvoice( int pId )
   for(int i = 0; i < list.size(); i++)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1034,7 +1038,7 @@ void invoice::viewInvoice( int pId )
   params.append("invchead_id", pId);
   params.append("mode", "view");
 
-  invoice *newdlg = new invoice();
+  invoice *newdlg = new invoice(parent);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
@@ -1198,3 +1202,46 @@ void invoice::sFreightChanged()
   }   
 }
 
+bool invoice::sCheckInvoiceNumber()
+{
+  if (cNew == _mode)
+  {
+    if (_invoiceNumber->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Enter Invoice Number"),
+                           tr("<p>You must enter an Invoice Number before "
+                              "you may continue."));
+      _invoiceNumber->setFocus();
+    }
+    else
+    {
+      XSqlQuery checkq;
+      checkq.prepare("SELECT invchead_invcnumber"
+                     "  FROM invchead"
+                     " WHERE ((invchead_invcnumber=:number)"
+                     "   AND  (invchead_id != :id));");
+      checkq.bindValue(":number", _invoiceNumber->text());
+      checkq.bindValue(":id",     _invcheadid);
+      checkq.exec();
+      if (checkq.first())
+      {
+        QMessageBox::warning(this, tr("Duplicate Invoice Number"),
+                             tr("<p>%1 is already used by another Invoice. "
+                                "Please enter a different Invoice Number.")
+                             .arg(_invoiceNumber->text()));
+        _invoiceNumber->setFocus();
+      }
+      else if (checkq.lastError().type() != QSqlError::NoError)
+        systemError(this, q.lastError().text(), __FILE__, __LINE__);
+      else
+      {
+        _invoiceNumber->setEnabled(false);
+        return true;
+      }
+    }
+  }
+  else
+    qWarning("invoice::sHandleInvoiceNumber() called but mode isn't cNew");
+
+  return false;
+}

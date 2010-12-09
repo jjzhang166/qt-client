@@ -24,23 +24,23 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-#define TR(a)	QObject::tr(a)
+#define TR(a)	cashReceipt::tr(a)
 
 const struct {
-  QString full;
+  const char * full;
   QString abbr;
   bool    cc;
 } _fundsTypes[] = {
-  { TR("Check"),            "C", false },
-  { TR("Certified Check"),  "T", false },
-  { TR("Master Card"),      "M", true  },
-  { TR("Visa"),             "V", true  },
-  { TR("American Express"), "A", true  },
-  { TR("Discover Card"),    "D", true  },
-  { TR("Other Credit Card"),"R", true  },
-  { TR("Cash"),             "K", false },
-  { TR("Wire Transfer"),    "W", false },
-  { TR("Other"),            "O", false }
+  { QT_TRANSLATE_NOOP("cashReceipt", "Check"),            "C", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Certified Check"),  "T", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Master Card"),      "M", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Visa"),             "V", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "American Express"), "A", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Discover Card"),    "D", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Other Credit Card"),"R", true  },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Cash"),             "K", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Wire Transfer"),    "W", false },
+  { QT_TRANSLATE_NOOP("cashReceipt", "Other"),            "O", false }
 };
 
 cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
@@ -70,6 +70,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_received, SIGNAL(idChanged(int)), this, SLOT(sChangeCurrency(int)));
   connect(_distDate, SIGNAL(newDate(QDate)), this, SLOT(sDateChanged()));
   connect(_applDate, SIGNAL(newDate(QDate)), this, SLOT(sDateChanged()));
+  connect(_credits, SIGNAL(toggled(bool)), this, SLOT(sFillApplyList()));
   if (_metrics->boolean("CCAccept"))
   {
     connect(_newCC, SIGNAL(clicked()), this, SLOT(sNewCreditCard()));
@@ -86,8 +87,6 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _applied->clear();
 
-  _cust->setAutoFocus(false);
-
   _CCCVV->setValidator(new QIntValidator(100, 9999, this));
 
   _bankaccnt->setType(XComboBox::ARBankAccounts);
@@ -98,7 +97,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   _aropen->addColumn(tr("Ord. #"),    _orderColumn,    Qt::AlignCenter, true, "aropen_ordernumber");
   _aropen->addColumn(tr("Doc. Date"), _dateColumn,     Qt::AlignCenter, true, "aropen_docdate");
   _aropen->addColumn(tr("Due Date"),  _dateColumn,     Qt::AlignCenter, true, "aropen_duedate");
-  _aropen->addColumn(tr("Open"),      _bigMoneyColumn, Qt::AlignRight,  true, "balance");
+  _aropen->addColumn(tr("Balance"),   _bigMoneyColumn, Qt::AlignRight,  true, "balance");
   _aropen->addColumn(tr("Currency"),  _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "balance_curr");
   _aropen->addColumn(tr("Applied"),   _bigMoneyColumn, Qt::AlignRight,  true, "applied");
   _aropen->addColumn(tr("Currency"),  _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "applied_curr");
@@ -123,7 +122,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
     if (! _fundsTypes[i].cc ||
         (_fundsTypes[i].cc && _metrics->boolean("CCAccept") &&
          _privileges->check("ProcessCreditCards")) )
-      _fundsType->addItem(_fundsTypes[i].full, _fundsTypes[i].abbr);
+      _fundsType->append(i, tr(_fundsTypes[i].full), _fundsTypes[i].abbr);
   }
 
   if (!_metrics->boolean("CCAccept") && ! _privileges->check("ProcessCreditCards"))
@@ -286,10 +285,11 @@ void cashReceipt::sApplyToBalance()
   applyToBal.exec();
 
   applyToBal.prepare("SELECT applyCashReceiptToBalance(:cashrcpt_id, "
-                     "             :amount, :curr_id) AS result;");
+                     "             :amount, :curr_id, :inclCredits) AS result;");
   applyToBal.bindValue(":cashrcpt_id", _cashrcptid);
   applyToBal.bindValue(":amount", _received->localValue());
   applyToBal.bindValue(":curr_id", _received->id());
+  applyToBal.bindValue(":inclCredits", _credits->isChecked());
   applyToBal.exec();
   if (applyToBal.lastError().type() != QSqlError::NoError)
       systemError(this, applyToBal.lastError().databaseText(), __FILE__, __LINE__);
@@ -367,7 +367,18 @@ void cashReceipt::sApplyLineBalance()
 	       "            :cashrcptitem_aropen_id,:amount,:curr_id) AS result;" );
     q.bindValue(":cashrcpt_id", _cashrcptid);
     q.bindValue(":cashrcptitem_aropen_id", cursor->id());
-    q.bindValue(":amount", _received->localValue());
+    if (_aropen->rawValue("doctype").toString() == "I" ||
+        _aropen->rawValue("doctype").toString() == "D")
+      q.bindValue(":amount", _received->localValue());
+    else
+    {
+      // Total credit available is unapplied credit in receipt currency
+      double credit = _received->convert(_aropen->rawValue("balance_curr").toInt(),
+                                         _received->id(),
+                                         _aropen->rawValue("balance").toDouble(),
+                                         _distDate->date());
+      q.bindValue(":amount", credit);
+    }
     q.bindValue(":curr_id", _received->id());
     q.exec();
     if (q.first())
@@ -555,11 +566,11 @@ bool cashReceipt::save(bool partial)
   }
   _received->setCurrencyDisabled(true);
 
-  QString fundsType = _fundsType->itemData(_fundsType->currentIndex()).toString();
   if (!partial)
   {
     if (!_ccEdit &&
-        (fundsType == "A" || fundsType == "D" || fundsType == "M" || fundsType == "V"))
+        (_fundsType->code() == "A" || _fundsType->code() == "D" ||
+         _fundsType->code() == "M" || _fundsType->code() == "V"))
     {
       if (_cc->id() <= -1)
       {
@@ -640,7 +651,7 @@ bool cashReceipt::save(bool partial)
   q.bindValue(":cashrcpt_number", _number->text());
   q.bindValue(":cashrcpt_cust_id", _cust->id());
   q.bindValue(":cashrcpt_amount", _received->localValue());
-  q.bindValue(":cashrcpt_fundstype", fundsType);
+  q.bindValue(":cashrcpt_fundstype", _fundsType->code());
   q.bindValue(":cashrcpt_docnumber", _docNumber->text());
   q.bindValue(":cashrcpt_docdate", _docDate->date());
   q.bindValue(":cashrcpt_bankaccnt_id", _bankaccnt->id());
@@ -697,8 +708,12 @@ void cashReceipt::sFillApplyList()
     params.append("cust_id",     _cust->id());
     params.append("debitMemo",   tr("Debit Memo"));
     params.append("invoice",     tr("Invoice"));
+    params.append("creditMemo",  tr("Credit Memo"));
+    params.append("cashdeposit", tr("Customer Deposit"));
     if (_posted)
-       params.append("posted", true);
+      params.append("posted", true);
+    else if (!_credits->isChecked())
+      params.append("noCredits");
     XSqlQuery apply;
     apply = mql.toQuery(params);
     _aropen->populate(apply, true);
@@ -846,10 +861,8 @@ void cashReceipt::populate()
     else
       _balCreditMemo->setChecked(true);
 
-    _fundsType->setCurrentItem( _fundsType->findData(q.value("cashrcpt_fundstype"),
-                                                    Qt::UserRole));
-
     _origFunds = q.value("cashrcpt_fundstype").toString();
+    _fundsType->setCode(_origFunds);
     _cust->setId(q.value("cashrcpt_cust_id").toInt());
 
     sFillApplyList();
@@ -901,18 +914,14 @@ void cashReceipt::setCreditCard()
   if (! _metrics->boolean("CCAccept"))
     return;
 
-  for (unsigned int i = 0; i < sizeof(_fundsTypes) / sizeof(_fundsTypes[1]); i++)
-  {
-    if(_fundsType->itemData(_fundsType->currentIndex()) == _fundsTypes[i].abbr)
-      if(!_fundsTypes[i].cc)
-        return;
-  }
+  if (! _fundsTypes[_fundsType->id()].cc)
+    return;
 
   XSqlQuery bankq;
   bankq.prepare("SELECT ccbank_bankaccnt_id"
                 "  FROM ccbank"
                 " WHERE (ccbank_ccard_type=:cardtype);");
-  bankq.bindValue(":cardtype", _fundsType->itemData(_fundsType->currentIndex()));
+  bankq.bindValue(":cardtype", _fundsType->code());
   bankq.exec();
   if (bankq.first())
     _bankaccnt->setId(bankq.value("ccbank_bankaccnt_id").toInt());
@@ -954,7 +963,7 @@ void cashReceipt::setCreditCard()
   MetaSQLQuery mql = mqlLoad("creditCards", "detail");
   ParameterList params;
   params.append("cust_id",    _cust->id());
-  params.append("ccard_type", _fundsType->itemData(_fundsType->currentIndex()));
+  params.append("ccard_type", _fundsType->code());
   params.append("masterCard", tr("MasterCard"));
   params.append("visa",       tr("VISA"));
   params.append("americanExpress", tr("American Express"));

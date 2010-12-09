@@ -10,6 +10,7 @@
 
 #include "dspCheckRegister.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -47,7 +48,7 @@ dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WFlags
   _check->addColumn(tr("Amount"),      _moneyColumn,    Qt::AlignRight,  true,  "amount"  );
   _check->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignRight,  true,  "currAbbr"  );
   _check->addColumn(tr("Base Amount"), _bigMoneyColumn, Qt::AlignRight,  true,  "base_amount"  );
-  if (_metrics->boolean("ACHEnabled"))
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
     _check->addColumn(tr("EFT Batch"), _orderColumn,    Qt::AlignRight,  true,  "checkhead_ach_batch");
 
   _check->sortByColumn(4);
@@ -201,13 +202,12 @@ void dspCheckRegister::sFillList()
 
 void dspCheckRegister::sPopulateMenu( QMenu * pMenu )
 {
-  int menuItem;
+  QAction *menuItem;
 
   if(_check->altId() == 1)
   {
-    menuItem = pMenu->insertItem(tr("Void Posted Check"), this, SLOT(sVoidPosted()), 0);
-    if(!_privileges->check("VoidPostedAPCheck"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Void Posted Check..."), this, SLOT(sVoidPosted()));
+    menuItem->setEnabled(_privileges->check("VoidPostedAPCheck"));
   }
 }
 

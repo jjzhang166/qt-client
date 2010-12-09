@@ -10,76 +10,90 @@
 
 #include "contacts.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
+#include <QToolBar>
+#include <QToolButton>
 #include <QVariant>
 #include <QMessageBox>
 
-#include <openreports.h>
-#include <metasql.h>
-
 #include "contact.h"
-#include "mqlutil.h"
+#include "parameterwidget.h"
 #include "storedProcErrorLookup.h"
 
-contacts::contacts(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+contacts::contacts(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "contacts", fl)
 {
-    setupUi(this);
-    
-    _crmAccount->hide();
-    _attach->hide();
-    _detach->hide();
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Contacts"));
+  setReportName("ContactsMasterList");
+  setMetaSQLOptions("contacts", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
 
-    _activeOnly->setChecked(true);
+  _crmacctid = -1;
+  _attachAct = 0;
+  _detachAct = 0;
 
-    connect(_contacts, SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem*)));
-    connect(_edit,		SIGNAL(clicked()),	this, SLOT(sEdit()));
-    connect(_view,		SIGNAL(clicked()),	this, SLOT(sView()));
-    connect(_delete,		SIGNAL(clicked()),	this, SLOT(sDelete()));
-    connect(_print,		SIGNAL(clicked()),	this, SLOT(sPrint()));
-    connect(_close,		SIGNAL(clicked()),	this, SLOT(close()));
-    connect(_new,		SIGNAL(clicked()),	this, SLOT(sNew()));
-    connect(_activeOnly,	SIGNAL(toggled(bool)),	this, SLOT(sFillList()));
-    connect(_attach,            SIGNAL(clicked()),      this, SLOT(sAttach()));
-    connect(_detach,            SIGNAL(clicked()),      this, SLOT(sDetach()));
-    
-    _contacts->addColumn(tr("First Name"),    50, Qt::AlignLeft, true, "cntct_first_name");
-    _contacts->addColumn(tr("Last Name"),    100, Qt::AlignLeft, true, "cntct_last_name");
-    _contacts->addColumn(tr("Account #"),     80, Qt::AlignLeft, true, "crmacct_number");
-    _contacts->addColumn(tr("Account Name"), 160, Qt::AlignLeft, true, "crmacct_name");
-    _contacts->addColumn(tr("Title"),         50, Qt::AlignLeft, true, "cntct_title");
-    _contacts->addColumn(tr("Phone"),	     100, Qt::AlignLeft, true, "cntct_phone");
-    _contacts->addColumn(tr("Alternate"),    100, Qt::AlignLeft, true, "cntct_phone2");
-    _contacts->addColumn(tr("Fax"),	     100, Qt::AlignLeft, true, "cntct_fax");
-    _contacts->addColumn(tr("E-Mail"),	     100, Qt::AlignLeft, true, "cntct_email");
-    _contacts->addColumn(tr("Web Address"),  100, Qt::AlignLeft, true, "cntct_webaddr");
+  parameterWidget()->append(tr("CRM Account"), "crmacct_id", ParameterWidget::Crmacct);
+  parameterWidget()->append(tr("Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Email Pattern"), "cntct_email_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("City Pattern"), "addr_city_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
 
-	_contacts->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  parameterWidget()->applyDefaultFilterSet();
 
-    if (_privileges->check("MaintainContacts"))
-    {
-      _attach->setEnabled(true);
-      connect(_contacts, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_contacts, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
-      connect(_contacts, SIGNAL(valid(bool)), _detach, SLOT(setEnabled(bool)));
-      connect(_contacts, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    }
-    else
-    {
-      _new->setEnabled(FALSE);
-      connect(_contacts, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    }
-}
+  list()->addColumn(tr("First Name"), 80, Qt::AlignLeft, true, "cntct_first_name");
+  list()->addColumn(tr("Last Name"), 100, Qt::AlignLeft, true, "cntct_last_name");
+  list()->addColumn(tr("Account #"), 80, Qt::AlignLeft, true, "crmacct_number");
+  list()->addColumn(tr("Account Name"), -1, Qt::AlignLeft, true, "crmacct_name");
+  list()->addColumn(tr("Title"), -1, Qt::AlignLeft, true, "cntct_title");
+  list()->addColumn(tr("Phone"),	100, Qt::AlignLeft, true, "cntct_phone");
+  list()->addColumn(tr("Alternate"), 100, Qt::AlignLeft, true, "cntct_phone2");
+  list()->addColumn(tr("Fax"), 100, Qt::AlignLeft, false, "cntct_fax");
+  list()->addColumn(tr("E-Mail"), 100, Qt::AlignLeft, true, "cntct_email");
+  list()->addColumn(tr("Web Address"),  100, Qt::AlignLeft, false, "cntct_webaddr");
+  list()->addColumn(tr("Address"), -1, Qt::AlignLeft, false, "addr_line1");
+  list()->addColumn(tr("City"), 75, Qt::AlignLeft, false, "addr_city");
+  list()->addColumn(tr("State"), 50, Qt::AlignLeft, false, "addr_state");
+  list()->addColumn(tr("Country"), 100, Qt::AlignLeft, false, "addr_country");
+  list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft, false, "addr_postalcode");
 
-contacts::~contacts()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+  list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-void contacts::languageChange()
-{
-    retranslateUi(this);
+  QToolButton * attachBtn = new QToolButton(this);
+  attachBtn->setText(tr("Attach"));
+  _attachAct = toolBar()->insertWidget(filterSeparator(), attachBtn);
+  _attachAct->setEnabled(false);
+  _attachAct->setVisible(false);
+
+  QToolButton * detachBtn = new QToolButton(this);
+  detachBtn->setText(tr("Detach"));
+  _detachAct = toolBar()->insertWidget(filterSeparator(), detachBtn);
+  _detachAct->setEnabled(false);
+  _detachAct->setVisible(false);
+
+  connect(attachBtn, SIGNAL(clicked()),      this, SLOT(sAttach()));
+  connect(detachBtn, SIGNAL(clicked()),      this, SLOT(sDetach()));
+
+  if (_privileges->check("MaintainContacts"))
+  {
+    _attachAct->setEnabled(true);
+    connect(list(), SIGNAL(valid(bool)), _detachAct, SLOT(setEnabled(bool)));
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+  }
+  else
+  {
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
+  }
 }
 
 enum SetResponse contacts::set(const ParameterList& pParams)
@@ -93,10 +107,8 @@ enum SetResponse contacts::set(const ParameterList& pParams)
   {
     if (param.toString() == "view")
     {
-      _attach->setDisabled(true);
-      _new->setDisabled(true);
-      disconnect(_contacts, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
-      disconnect(_contacts, SIGNAL(valid(bool)), _detach, SLOT(setEnabled(bool)));
+      _attachAct->setEnabled(false);
+      disconnect(list(), SIGNAL(valid(bool)), _detachAct, SLOT(setEnabled(bool)));
     }
   }
 
@@ -107,37 +119,34 @@ enum SetResponse contacts::set(const ParameterList& pParams)
   return NoError;
 }
 
-void contacts::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem*)
+void contacts::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainContacts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainContacts"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
   XSqlQuery chk;
   chk.prepare("SELECT cntctused(:cntct_id) AS inUse");
-  chk.bindValue(":cntct_id", _contacts->id());
+  chk.bindValue(":cntct_id", list()->id());
   chk.exec();
   if (chk.lastError().type() != QSqlError::NoError) {
     systemError(this, chk.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if (chk.first() && !chk.value("inUse").toBool()) {
-    menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainContacts"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainContacts"));
   }
 }
 
 void contacts::sNew()
 {
   ParameterList params;
+  setParams(params);
   params.append("mode", "new");
-  if (_crmAccount->isValid())
-    params.append("crmacct_id", _crmAccount->id());
 
   contact newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -148,12 +157,12 @@ void contacts::sNew()
 
 void contacts::sEdit()
 {
-  QList<XTreeWidgetItem*> list = _contacts->selectedItems();
-  for (int i = 0; i < list.size(); i++)
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
+  for (int i = 0; i < selected.size(); i++)
   {
-	ParameterList params;
+    ParameterList params;
     params.append("mode", "edit");
-	params.append("cntct_id", ((XTreeWidgetItem*)(list[i]))->id());
+    params.append("cntct_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
     contact newdlg(this, "", TRUE);
     newdlg.set(params);
@@ -164,16 +173,16 @@ void contacts::sEdit()
 
 void contacts::sView()
 {
-  QList<XTreeWidgetItem*> list = _contacts->selectedItems();
-  for (int i = 0; i < list.size(); i++)
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
+  for (int i = 0; i < selected.size(); i++)
   {
-	  ParameterList params;
-	  params.append("mode", "view");
-	  params.append("cntct_id", ((XTreeWidgetItem*)(list[i]))->id());
+    ParameterList params;
+    params.append("mode", "view");
+    params.append("cntct_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
-	  contact newdlg(this, "", TRUE);
-	  newdlg.set(params);
-	  newdlg.exec();
+    contact newdlg(this, "", TRUE);
+    newdlg.set(params);
+    newdlg.exec();
   }
 }
 
@@ -188,10 +197,10 @@ void contacts::sDelete()
   {
     q.prepare("SELECT deleteContact(:cntct_id) AS result;");
 
-    QList<XTreeWidgetItem*> list = _contacts->selectedItems();
-    for (int i = 0; i < list.size(); i++)
+    QList<XTreeWidgetItem*> selected = list()->selectedItems();
+    for (int i = 0; i < selected.size(); i++)
     {
-	  q.bindValue(":cntct_id", ((XTreeWidgetItem*)(list[i]))->id());
+      q.bindValue(":cntct_id", ((XTreeWidgetItem*)(selected[i]))->id());
       q.exec();
 
       if (q.first())
@@ -208,43 +217,9 @@ void contacts::sDelete()
         systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
-	}
+    }
   }
   sFillList();
-}
-
-void contacts::setParams(ParameterList &params)
-{
-  if (_crmAccount->isValid())
-    params.append("crmAccountId", _crmAccount->id());
-  if (_activeOnly->isChecked())
-    params.append("activeOnly");
-}
-
-void contacts::sPrint()
-{
-  ParameterList params;
-  setParams(params);
-
-  orReport report("ContactsMasterList", params);
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
-}
-
-void contacts::sFillList()
-{
-  MetaSQLQuery mql = mqlLoad("contacts", "detail");
-  ParameterList params;
-  setParams(params);
-  XSqlQuery r = mql.toQuery(params);
-  _contacts->populate(r);
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
 }
 
 void contacts::sAttach()
@@ -255,7 +230,7 @@ void contacts::sAttach()
   {
     int answer = QMessageBox::Yes;
 
-    if (attached.crmAcctId() > 0 && attached.crmAcctId() != _crmAccount->id())
+    if (attached.crmAcctId() > 0 && attached.crmAcctId() != _crmacctid)
       answer = QMessageBox::question(this, tr("Detach Contact?"),
 			    tr("<p>This Contact is currently attached to a "
 			       "different CRM Account. Are you sure you want "
@@ -265,7 +240,7 @@ void contacts::sAttach()
     {
       q.prepare("SELECT attachContact(:cntct_id, :crmacct_id) AS returnVal;");
       q.bindValue(":cntct_id", attached.id());
-      q.bindValue(":crmacct_id", _crmAccount->id());
+      q.bindValue(":crmacct_id", _crmacctid);
       q.exec();
       if (q.first())
       {
@@ -295,10 +270,10 @@ void contacts::sDetach()
 			QMessageBox::Yes, QMessageBox::No | QMessageBox::Default);
   if (answer == QMessageBox::Yes)
   {
-    int cntctId = _contacts->id();
+    int cntctId = list()->id();
     q.prepare("SELECT detachContact(:cntct_id, :crmacct_id) AS returnVal;");
     q.bindValue(":cntct_id", cntctId);
-    q.bindValue(":crmacct_id", _crmAccount->id());
+    q.bindValue(":crmacct_id", _crmacctid);
     q.exec();
     if (q.first())
     {
@@ -321,22 +296,43 @@ void contacts::sDetach()
   }
 }
 
-void contacts::sHandleButtons()
+void contacts::setCrmacctid(int crmacctId)
 {
-  if (_contacts->id() == -1) {
-    _delete->setEnabled(false);
-    return;
+  _crmacctid = crmacctId;
+  if (_crmacctid == -1)
+  {
+    parameterWidget()->setDefault(tr("CRM Account"), QVariant(), true);
+    _attachAct->setVisible(false);
+    _detachAct->setVisible(false);
   }
-  
-  XSqlQuery chk;
-  chk.prepare("SELECT cntctused(:cntct_id) AS inUse");
-  chk.bindValue(":cntct_id", _contacts->id());
-  chk.exec();
-  chk.first();
-  if (chk.lastError().type() != QSqlError::NoError) {
-    systemError(this, chk.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+  else
+  {
+    parameterWidget()->setDefault(tr("CRM Account"), _crmacctid, true);
+    _attachAct->setVisible(true);
+    _detachAct->setVisible(true);
   }
-  _delete->setEnabled(_privileges->check("MaintainContacts") && !chk.value("inUse").toBool());
 }
 
+int contacts::crmacctId()
+{
+  return _crmacctid;
+}
+
+QAction* contacts::attachAction()
+{
+  return _attachAct;
+}
+
+QAction* contacts::detachAction()
+{
+  return _detachAct;
+}
+
+bool contacts::setParams(ParameterList &params)
+{
+  display::setParams(params);
+  if (_activeOnly->isChecked())
+    params.append("activeOnly",true);
+
+  return true;
+}

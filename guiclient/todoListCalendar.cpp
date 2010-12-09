@@ -11,12 +11,15 @@
 #include "todoListCalendar.h"
 
 #include "xdialog.h"
+
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
 #include <QVariant>
+
+#include <calendargraphicsitem.h>
 #include <metasql.h>
 #include <openreports.h>
-#include <calendargraphicsitem.h>
 
 #include "todoCalendarControl.h"
 #include "storedProcErrorLookup.h"
@@ -145,7 +148,7 @@ void todoListCalendar::handlePrivs()
 
 void todoListCalendar::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (_list->currentItem()->text(0) == "T")
   {
@@ -157,25 +160,25 @@ void todoListCalendar::sPopulateMenu(QMenu *pMenu)
         (omfgThis->username() == _list->currentItem()->text("todoitem_username") && _privileges->check("ViewPersonalTodoList")) ||
         (omfgThis->username() != _list->currentItem()->text("todoitem_username") && _privileges->check("ViewOtherTodoLists"));
 
-    menuItem = pMenu->insertItem(tr("New..."), this, SLOT(sNew()), 0);
-    pMenu->setItemEnabled(menuItem, editPriv);
+    menuItem = pMenu->addAction(tr("New..."), this, SLOT(sNew()));
+    menuItem->setEnabled(editPriv);
 
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, editPriv);
+    menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(editPriv);
 
-    menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-    pMenu->setItemEnabled(menuItem, viewPriv);
+    menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+    menuItem->setEnabled(viewPriv);
 
-    menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-    pMenu->setItemEnabled(menuItem, editPriv);
+    menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+    menuItem->setEnabled(editPriv);
   }
 
 /*
   if (! _list->currentItem()->text(8).isEmpty())
   {
-    menuItem = pMenu->insertItem(tr("Edit Incident"), this, SLOT(sEditIncident()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainIncidents"));
-    menuItem = pMenu->insertItem(tr("View Incident"), this, SLOT(sViewIncident()), 0);
+    menuItem = pMenu->addAction(tr("Edit Incident"), this, SLOT(sEditIncident()));
+    menuItem->setEnabled(_privileges->check("MaintainIncidents"));
+    menuItem = pMenu->addAction(tr("View Incident"), this, SLOT(sViewIncident()));
     pMenu->setItemEnabled(menuItem, _privileges->check("ViewIncidents") ||
                                     _privileges->check("MaintainIncidents"));
   }
@@ -183,10 +186,10 @@ void todoListCalendar::sPopulateMenu(QMenu *pMenu)
 
   if (! _list->currentItem()->text(9).isEmpty())
   {
-    menuItem = pMenu->insertItem(tr("Edit Customer"), this, SLOT(sEditCustomer()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCustomerMasters"));
-    menuItem = pMenu->insertItem(tr("View Customer"), this, SLOT(sViewCustomer()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCustomerMasters"));
+    menuItem = pMenu->addAction(tr("Edit Customer"), this, SLOT(sEditCustomer()));
+    menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
+    menuItem = pMenu->addAction(tr("View Customer"), this, SLOT(sViewCustomer()));
+    menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
   }
 }
 

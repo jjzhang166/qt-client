@@ -39,6 +39,9 @@ MenuButton::MenuButton(QWidget *pParent) :
   font.setPointSize(11);
   _label->setFont(font);
 #endif
+
+  _label->setWordWrap(true);
+  _label->setAlignment(Qt::AlignCenter);
 }
 
 MenuButton::~MenuButton()

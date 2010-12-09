@@ -12,6 +12,7 @@
 
 #include <math.h>
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -19,6 +20,9 @@
 #include <metasql.h>
 #include <parameter.h>
 #include <openreports.h>
+
+#include <metasql.h>
+#include "mqlutil.h"
 
 #include "countSlip.h"
 #include "countTag.h"
@@ -114,6 +118,16 @@ void dspCountTagEditList::setParams(ParameterList &params)
     params.append("ParameterType", "PlannerCode");
   _warehouse->appendValue(params);
   _parameter->appendValue(params);
+
+  params.append("all",	    tr("All"));
+  params.append("posted",   tr("Posted"));
+  params.append("unposted", tr("Unposted"));
+  if (_showSlips->isChecked())
+    params.append("showSlips");
+  if (_highlightValue->isChecked())
+    params.append("varianceValue",   _varianceValue->localValue());
+  else if (_highlightPercent->isChecked())
+    params.append("variancePercent", _variancePercent->toDouble());
 }
 
 void dspCountTagEditList::sPrint()
@@ -133,46 +147,46 @@ void dspCountTagEditList::sPrint()
 
 void dspCountTagEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (((XTreeWidgetItem *)pSelected)->altId() == -1)
   {
-    menuItem = pMenu->insertItem("Enter Count Slip...", this, SLOT(sEnterCountSlip()), 0);
+    menuItem = pMenu->addAction("Enter Count Slip...", this, SLOT(sEnterCountSlip()));
     if (!_privileges->check("EnterCountSlips"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
 
-    menuItem = pMenu->insertItem("Count Slip Edit List...", this, SLOT(sCountSlipEditList()), 0);
+    menuItem = pMenu->addAction("Count Slip Edit List...", this, SLOT(sCountSlipEditList()));
 
-    pMenu->insertSeparator();
+    pMenu->addSeparator();
 
-    menuItem = pMenu->insertItem("View Pending Inventory History...", this, SLOT(sViewInventoryHistory()), 0);
+    menuItem = pMenu->addAction("View Pending Inventory History...", this, SLOT(sViewInventoryHistory()));
     if (!_privileges->check("ViewInventoryHistory"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
 
-    pMenu->insertSeparator();
+    pMenu->addSeparator();
 
-    menuItem = pMenu->insertItem("Edit Count Tag...", this, SLOT(sEdit()), 0);
+    menuItem = pMenu->addAction("Edit Count Tag...", this, SLOT(sEdit()));
     if (!_privileges->check("EnterCountTags"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
 
     if (pSelected->text(5) != "")
     {
-      menuItem = pMenu->insertItem("Post Count Tag...", this, SLOT(sPost()), 0);
+      menuItem = pMenu->addAction("Post Count Tag...", this, SLOT(sPost()));
       if (!_privileges->check("PostCountTags"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+        menuItem->setEnabled(false);
     }
 
-    menuItem = pMenu->insertItem("Delete Count Tag", this, SLOT(sDelete()), 0);
+    menuItem = pMenu->addAction("Delete Count Tag", this, SLOT(sDelete()));
     if (!_privileges->check("DeleteCountTags"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem->setEnabled(false);
   }
   else
   {
     if (pSelected->text(3) == tr("Unposted"))
     {
-      menuItem = pMenu->insertItem("Edit Count Slip...", this, SLOT(sEdit()), 0);
+      menuItem = pMenu->addAction("Edit Count Slip...", this, SLOT(sEdit()));
       if (!_privileges->check("EnterCountSlips"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+        menuItem->setEnabled(false);
     }
   }
 }
@@ -536,122 +550,10 @@ void dspCountTagEditList::sSearch(const QString &pTarget)
 
 void dspCountTagEditList::sFillList()
 {
-  QString sql( "SELECT *, "
-               "       CASE WHEN (xtindentrole = 1) THEN NULL "
-               "<? if exists(\"varianceValue\") ?>"
-               "            WHEN (ABS(variancecost) >  <? value(\"varianceValue\") ?>) THEN 'error'"
-               "<? elseif exists(\"variancePercent\") ?>"
-               "            WHEN (ABS(varianceprcnt) >  <? value(\"variancePercent\") ?>) THEN 'error'"
-               "<? else ?>"
-               "            ELSE NULL"
-               "<? endif ?> END AS qtforegroundrole,"
-               "       CASE WHEN (xtindentrole = 1) THEN NULL "
-               "            WHEN (qohafter IS NOT NULL) THEN 'emphasis'"
-               "       END AS qohafter_qtforegroundrole,"
-               "       CASE WHEN (xtindentrole = 0) THEN NULL ELSE '' END AS invcnt_priority_qtdisplayrole,"
-               "       'qty' AS qoh_xtnumericrole,"
-               "       'qty' AS qohafter_xtnumericrole,"
-               "       'qty' AS variance_xtnumericrole,"
-               "       'percent' AS varianceprcnt_xtnumericrole,"
-               "       'curr' AS variancecost_xtnumericrole "
-               " FROM ("
-               "SELECT invcnt_id, -1 AS cntslip_id, invcnt_priority,"
-               "       COALESCE(invcnt_tagnumber, 'Misc.') AS tagnumber,"
-               "       invcnt_tagdate AS tagdate,"
-               "       item_number, warehous_code,"
-	       "       CASE WHEN (location_id IS NOT NULL) THEN"
-	       "                 location_name"
-	       "             ELSE <? value(\"all\") ?>  END AS loc_specific, "
-               "       CASE WHEN (invcnt_location_id IS NOT NULL)"
-               "                 THEN (SELECT SUM(itemloc_qty)"
-               "                         FROM itemloc"
-               "                        WHERE ((itemloc_itemsite_id=itemsite_id)"
-               "                          AND  (itemloc_location_id=invcnt_location_id)) )"
-               "            ELSE itemsite_qtyonhand"
-               "       END AS qoh,"
-               "       COALESCE(invcnt_qoh_after, (SELECT SUM(cntslip_qty)"
-               "                                   FROM cntslip"
-               "                                   WHERE (cntslip_cnttag_id=invcnt_id) )"
-               "               ) AS qohafter,"
-               "       (invcnt_qoh_after - itemsite_qtyonhand) AS variance,"
-               "       CASE WHEN (invcnt_qoh_after IS NULL) THEN NULL"
-               "            WHEN ((itemsite_qtyonhand = 0) AND (invcnt_qoh_after > 0)) THEN 1"
-               "            WHEN ((itemsite_qtyonhand = 0) AND (invcnt_qoh_after < 0)) THEN -1"
-               "            WHEN ((itemsite_qtyonhand = 0) AND (invcnt_qoh_after = 0)) THEN 0"
-               "            ELSE ((1 - (invcnt_qoh_after / itemsite_qtyonhand)) * -1)"
-               "       END AS varianceprcnt,"
-               "       (stdcost(item_id) * (invcnt_qoh_after - itemsite_qtyonhand)) AS variancecost,"
-               "       item_number AS orderby,"
-               "       0 AS xtindentrole "
-               "FROM invcnt LEFT OUTER JOIN location ON (invcnt_location_id=location_id),"
-	       "     item, warehous, itemsite "
-               "WHERE ( (invcnt_itemsite_id=itemsite_id)"
-               " AND (itemsite_item_id=item_id)"
-               " AND (itemsite_warehous_id=warehous_id)"
-               " AND (NOT invcnt_posted)"
-	       " <? if exists(\"warehous_id\") ?>"
-	       " AND (itemsite_warehous_id=<? value(\"warehous_id\") ?>)"
-	       " <? endif ?>"
-	       " <? if exists(\"classcode_id\") ?>"
-	       " AND (item_classcode_id=<? value(\"classcode_id\") ?>)"
-	       " <? elseif exists(\"classcode_pattern\") ?>"
-	       " AND (item_classcode_id IN (SELECT classcode_id FROM classcode WHERE (classcode_code ~ <? value(\"classcode_pattern\") ?>)))"
-	       " <? elseif exists(\"plancode_id\") ?>"
-	       " AND (itemsite_plancode_id=<? value(\"plancode_id\") ?>)"
-	       " <? elseif exists(\"plancode_pattern\") ?>"
-	       " AND (itemsite_plancode_id IN (SELECT plancode_id FROM plancode WHERE (plancode_code ~ <? value(\"plancode_pattern\") ?>)))"
-	       " <? endif ?>"
-	       " <? if exists(\"showSlips\") ?>"
-	       " ) "
-	       "UNION "
-	       "SELECT invcnt_id, cntslip_id, invcnt_priority,"
-               "       cntslip_number AS tagnumber,"
-	       "       cntslip_entered AS tagdate,"
-	       "       CASE WHEN (cntslip_posted) THEN <? value(\"posted\") ?>"
-	       "            ELSE <? value(\"unposted\") ?>"
-	       "       END AS item_number,"
-	       "       '' AS warehous_code, "
-	       "       '' AS loc_specific, "
-	       "       NULL AS qoh,"
-	       "       cntslip_qty AS qohafter,"
-	       "       NULL AS variance, NULL AS varianceprcnt, 0 AS variancecost,"
-	       "       item_number AS orderby,"
-               "       1 AS xtindentrole "
-	       "FROM cntslip, invcnt, itemsite, item "
-	       "WHERE ( (cntslip_cnttag_id=invcnt_id)"
-	       " AND (invcnt_itemsite_id=itemsite_id)"
-	       " AND (itemsite_item_id=item_id)"
-	       " AND (NOT invcnt_posted)"
-	       " <? if exists(\"warehous_id\") ?>"
-	       " AND (itemsite_warehous_id=<? value(\"warehous_id\") ?>)"
-	       " <? endif ?>"
-	       " <? if exists(\"classcode_id\") ?>"
-	       " AND (item_classcode_id=<? value(\"classcode_id\") ?>)"
-	       " <? elseif exists(\"classcode_pattern\") ?>"
-	       " AND (item_classcode_id IN (SELECT classcode_id FROM classcode WHERE (classcode_code ~ <? value(\"classcode_pattern\") ?>)))"
-	       " <? elseif exists(\"plancode_id\") ?>"
-	       " AND (itemsite_plancode_id=<? value(\"plancode_id\") ?>)"
-	       " <? elseif exists(\"plancode_pattern\") ?>"
-	       " AND (itemsite_plancode_id IN (SELECT plancode_id FROM plancode WHERE (plancode_code ~ <? value(\"plancode_pattern\") ?>)))"
-	       " <? endif ?>"
-	       " <? endif ?>"
-	       " ) "
-               " ) AS dummy "
-	       "ORDER BY invcnt_priority DESC, orderby, invcnt_id, cntslip_id;" );
-
+  MetaSQLQuery mql = mqlLoad("countTag", "detail");
   ParameterList params;
   setParams(params);
-  params.append("all",	    tr("All"));
-  params.append("posted",   tr("Posted"));
-  params.append("unposted", tr("Unposted"));
-  if (_showSlips->isChecked())
-    params.append("showSlips");
-  if (_highlightValue->isChecked())
-    params.append("varianceValue",   _varianceValue->localValue());
-  else if (_highlightPercent->isChecked())
-    params.append("variancePercent", _variancePercent->toDouble());
 
-  MetaSQLQuery mql(sql);
   q = mql.toQuery(params);
   _cnttag->populate(q, true);
   if (q.lastError().type() != QSqlError::NoError)

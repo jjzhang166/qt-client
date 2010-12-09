@@ -25,9 +25,10 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
   Q_ENUMS(RecurrencePeriod)
   Q_ENUMS(RecurrenceChangePolicy)
 
-  Q_PROPERTY(bool maxVisible       READ maxVisible       WRITE setMaxVisible)
+  Q_PROPERTY(bool maxVisible       READ maxVisible       WRITE setMaxVisible DESIGNABLE false)
   Q_PROPERTY(bool endTimeVisible   READ endTimeVisible   WRITE setEndTimeVisible)
   Q_PROPERTY(bool endDateVisible   READ endDateVisible   WRITE setEndDateVisible)
+  Q_PROPERTY(RecurrencePeriod minPeriod READ minPeriod   WRITE setMinPeriod)
   Q_PROPERTY(bool startDateVisible READ startDateVisible WRITE setStartDateVisible)
   Q_PROPERTY(bool startTimeVisible READ startTimeVisible WRITE setStartTimeVisible)
 
@@ -52,6 +53,7 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
     Q_INVOKABLE virtual bool             isRecurring()      const;
     Q_INVOKABLE virtual int              max()              const;
     /*useprop*/ virtual bool             maxVisible()       const;
+    Q_INVOKABLE virtual RecurrencePeriod minPeriod()        const;
     Q_INVOKABLE virtual bool             modified()         const;
     Q_INVOKABLE virtual int              parentId()         const;
     Q_INVOKABLE virtual QString          parentType()       const;
@@ -77,6 +79,7 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
     virtual void setFrequency(int p);
     virtual void setMax(int p);
     virtual void setMaxVisible(bool p);
+    virtual void setMinPeriod(RecurrencePeriod minPeriod);
     virtual bool setParent(int pid, QString ptype);
     virtual void setPeriod(RecurrencePeriod p);
     virtual void setPeriod(QString p);

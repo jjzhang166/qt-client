@@ -47,21 +47,9 @@ class menuSystem : public QObject
     void sRememberPositionToggle();
     void sRememberSizeToggle();
 
-    void sConfigureIE();
-    void sConfigureIM();
-    void sConfigurePD();
-    void sConfigureMS();
-    void sConfigureWO();
-    void sConfigureSO();
-    void sConfigurePO();
-    void sConfigureGL();
-    void sConfigureEncryption();
-    void sConfigureCC();
-    void sConfigureCRM();
+    void sSetup();
 
-    void sScheduleSystemMessage();
     void sEventManager();
-    void sBatchManager();
     void sPreferences();
     void sHotKeys();
     void sRescanPrivileges();
@@ -71,29 +59,14 @@ class menuSystem : public QObject
     void sListEmployees();
     void sSearchEmployees();
     void sEmployeeGroups();
-    void sScheduleServerMaintenance();
     void sErrorLog();
 
-    void sDatabaseInformation();
-
-    void sImages();
-    void sReports();
-    void sForms();
-    void sLabelForms();
-    void sCalendars();
-    void sCurrencies();
-    void sExchangeRates();
-    void sCountries();
-    void sStates();
-    void sLocales();
-    void sCommentTypes();
-    void sAccountNumbers();
-    void sDepartments();
     void sCustomCommands();
     void sScripts();
     void sUIForms();
     void sPackages();
     void sMetasqls();
+    void sReports();
 
     void sFixACL();
     void sFixSerial();
@@ -109,7 +82,6 @@ class menuSystem : public QObject
     void sTOC();
 
     void sCommunityHome();
-    //void sCommunityNewAccount();
     void sCommunityEditAccount();
     void sCommunityForums();
     void sCommunityBlogs();
@@ -121,13 +93,14 @@ class menuSystem : public QObject
     void sCommunityTranslation();
     void sCommunityXchange();
 
+    void sCheckForUpdates();
+
   private:
     GUIClient *parent;
 
     QToolBar *toolBar;
 
     QMenu *communityMenu;
-    QMenu *configModulesMenu;
     QMenu *designMenu;
     QMenu *employeeMenu;
     QMenu *helpMenu;

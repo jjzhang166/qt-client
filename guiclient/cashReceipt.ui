@@ -111,12 +111,6 @@ to be bound by its terms.</comment>
            <property name="text">
             <string>&amp;Save</string>
            </property>
-           <property name="autoDefault">
-            <bool>true</bool>
-           </property>
-           <property name="default">
-            <bool>true</bool>
-           </property>
           </widget>
          </item>
          <item row="0" column="1">
@@ -612,7 +606,7 @@ to be bound by its terms.</comment>
         <attribute name="title">
          <string>Applications</string>
         </attribute>
-        <layout class="QGridLayout">
+        <layout class="QGridLayout" name="gridLayout_5">
          <item row="0" column="0">
           <widget class="QLabel" name="_searchOpenItemsLit">
            <property name="text">
@@ -627,115 +621,124 @@ to be bound by its terms.</comment>
           <widget class="QLineEdit" name="_searchDocNum"/>
          </item>
          <item row="0" column="2">
+          <widget class="XCheckBox" name="_credits">
+           <property name="text">
+            <string>Include Credits</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3" colspan="2">
           <spacer>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
+            <enum>QSizePolicy::Expanding</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>441</width>
+             <width>0</width>
              <height>24</height>
             </size>
            </property>
           </spacer>
          </item>
-         <item row="1" column="0" colspan="3">
-          <layout class="QHBoxLayout">
+         <item row="1" column="0" colspan="4">
+          <widget class="XTreeWidget" name="_aropen">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="XTreeWidget" name="_aropen">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>1</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::ExtendedSelection</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <layout class="QVBoxLayout">
-               <item>
-                <layout class="QVBoxLayout">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QPushButton" name="_apply">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="text">
-                    <string>&amp;Apply</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="_applyLineBalance">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="text">
-                    <string>Apply &amp;Line Bal.</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="_clear">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="text">
-                    <string>Clear</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QPushButton" name="_applyToBalance">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Apply to &amp;Balance</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QPushButton" name="_apply">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>&amp;Apply</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <spacer>
+              <widget class="QPushButton" name="_applyLineBalance">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Apply &amp;Line Bal.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="_clear">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
+                <enum>QSizePolicy::Fixed</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>10</width>
-                 <height>0</height>
+                 <width>20</width>
+                 <height>5</height>
                 </size>
                </property>
               </spacer>
              </item>
+             <item>
+              <widget class="QPushButton" name="_applyToBalance">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Apply to &amp;Balance</string>
+               </property>
+              </widget>
+             </item>
             </layout>
+           </item>
+           <item>
+            <spacer>
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::MinimumExpanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>13</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -764,9 +767,6 @@ to be bound by its terms.</comment>
          </item>
          <item row="0" column="1">
           <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>0</number>
-           </property>
            <item>
             <widget class="QPushButton" name="_add">
              <property name="enabled">
@@ -824,9 +824,6 @@ to be bound by its terms.</comment>
          </item>
          <item>
           <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>5</number>
-           </property>
            <item>
             <widget class="QPushButton" name="_newCC">
              <property name="enabled">
@@ -969,6 +966,11 @@ to be bound by its terms.</comment>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
@@ -1001,6 +1003,8 @@ to be bound by its terms.</comment>
   <tabstop>_salescat</tabstop>
   <tabstop>_tab</tabstop>
   <tabstop>_searchDocNum</tabstop>
+  <tabstop>_credits</tabstop>
+  <tabstop>_aropen</tabstop>
   <tabstop>_apply</tabstop>
   <tabstop>_applyLineBalance</tabstop>
   <tabstop>_clear</tabstop>
@@ -1009,7 +1013,6 @@ to be bound by its terms.</comment>
   <tabstop>_add</tabstop>
   <tabstop>_edit</tabstop>
   <tabstop>_delete</tabstop>
-  <tabstop>_aropen</tabstop>
   <tabstop>_cc</tabstop>
   <tabstop>_newCC</tabstop>
   <tabstop>_editCC</tabstop>
@@ -1018,8 +1021,8 @@ to be bound by its terms.</comment>
   <tabstop>_downCC</tabstop>
   <tabstop>_CCCVV</tabstop>
   <tabstop>_notes</tabstop>
-  <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
+  <tabstop>_save</tabstop>
  </tabstops>
  <resources/>
  <connections>

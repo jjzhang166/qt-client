@@ -23,10 +23,17 @@ printSoForm::printSoForm(QWidget* parent, const char* name, bool modal, Qt::WFla
 {
   setupUi(this);
 
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  _so->setAllowedTypes(OrderLineEdit::Sales);
+
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sPrint()));
+  QPushButton *ok = _buttonBox->button(QDialogButtonBox::Ok);
+  if(ok)
+  {
+    connect(_so, SIGNAL(valid(bool)), ok, SLOT(setEnabled(bool)));
+    ok->setEnabled(false);
+  }
 
   _captive = FALSE; 
-  _so->setType(cSoOpen | cSoClosed);
   _report->populate( "SELECT form_id, form_name "
                      "FROM form "
                      "WHERE (form_key='SO') "
@@ -56,7 +63,7 @@ enum SetResponse printSoForm::set(const ParameterList &pParams)
   if (valid)
   {
     _so->setId(param.toInt());
-    _print->setFocus();
+    _buttonBox->setFocus();
   }
 
   return NoError;

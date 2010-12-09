@@ -10,10 +10,11 @@
 
 #include "returnAuthorizationWorkbench.h"
 
+#include <QAction>
 #include <QMenu>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QMessageBox>
 
 #include <openreports.h>
 #include <metasql.h>
@@ -576,14 +577,12 @@ void returnAuthorizationWorkbench::sFillListReview()
 	ra.bindValue(":closed",tr("Closed"));
         _dates->bindValue(ra);
 	ra.exec();
-	if (ra.first())
-		_ra->populate(ra);
-	else if (ra.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, ra.lastError().databaseText(), __FILE__, __LINE__);
-	  _ra->clear();
-      return;
-    }
+        _ra->populate(ra);
+        if (ra.lastError().type() != QSqlError::NoError)
+        {
+          systemError(this, ra.lastError().databaseText(), __FILE__, __LINE__);
+          return;
+        }
   }
 }
 
@@ -602,9 +601,8 @@ void returnAuthorizationWorkbench::sFillListDue()
     setParams(params);
 
     XSqlQuery radue = mql.toQuery(params);
-    if (radue.first())
-      _radue->populate(radue,TRUE);
-    else if (radue.lastError().type() != QSqlError::NoError)
+    _radue->populate(radue,TRUE);
+    if (radue.lastError().type() != QSqlError::NoError)
     {
       systemError(this, radue.lastError().databaseText(), __FILE__, __LINE__);
       return;
@@ -636,31 +634,31 @@ bool returnAuthorizationWorkbench::checkSitePrivs(int orderid)
 
 void returnAuthorizationWorkbench::sPopulateReviewMenu(QMenu *pMenu, QTreeWidgetItem * /*pSelected*/)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  pMenu->setItemEnabled(menuItem, _privileges->check("MaintainReturns"));
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainReturns"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 }
 
 void returnAuthorizationWorkbench::sPopulateDueMenu(QMenu *pMenu, QTreeWidgetItem * /*pSelected*/)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEditDue()), 0);
-  pMenu->setItemEnabled(menuItem, _privileges->check("MaintainReturns"));
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEditDue()));
+  menuItem->setEnabled(_privileges->check("MaintainReturns"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sViewDue()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sViewDue()));
   
-  menuItem = pMenu->insertItem(tr("Process..."), this, SLOT(sProcess()), 0);
-  pMenu->setItemEnabled(menuItem, 
-     (_radue->altId() == 1 && _privileges->check("MaintainCreditMemos")) ||
-	   (_radue->altId() == 2 && _privileges->check("MaintainPayments") && 
-                              _privileges->check("MaintainCreditMemos") && 
-								              _privileges->check("PostARDocuments")) ||
-	   (_radue->altId() == 3 && _privileges->check("ProcessCreditCards") &&
-				                      _privileges->check("PostARDocuments") &&
-	                            _privileges->check("MaintainCreditMemos")));
+  menuItem = pMenu->addAction(tr("Process..."), this, SLOT(sProcess()));
+  menuItem->setEnabled((_radue->altId() == 1 && _privileges->check("MaintainCreditMemos")) ||
+                       (_radue->altId() == 2 && _privileges->check("MaintainPayments") &&
+                        _privileges->check("MaintainCreditMemos") && 
+                        _privileges->check("PostARDocuments")) ||
+                       (_radue->altId() == 3 &&
+                        _privileges->check("ProcessCreditCards") &&
+                        _privileges->check("PostARDocuments") &&
+                        _privileges->check("MaintainCreditMemos")));
 }
 

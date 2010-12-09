@@ -2,7 +2,7 @@
 <report>
  <title>Order Activity By Project</title>
  <name>OrderActivityByProject</name>
- <description>Order Activity Report With Profit and Loss</description>
+ <description>Order Activity Report</description>
  <size>Letter</size>
  <portrait/>
  <topmargin>50</topmargin>
@@ -17,184 +17,249 @@
  </querysource>
  <querysource>
   <name>detail</name>
-  <sql>&lt;? if exists("showSo") ?>
+  <sql>-- Group: orderActivityByProject
+-- Name:  detail
+-- Notes: 
+
+SELECT *, 
+  formatQty(qty) AS f_qty,
+  formatMoney(value) AS f_value,
+  'curr' AS qty_xtnumericrole,
+  'curr' AS value_xtnumericrole
+FROM (
+&lt;? if exists("showSo") ?>
+----- QUOTES -----
 SELECT quhead_id AS id, 
-       10 AS typeid,
-       text('Section 1 - Pro Forma Revenue (Quotes)') AS section,
-       text('Quote') AS type, 
-       text(quhead_number) || '-' || text(quitem_linenumber) AS ordernumber,
-       CASE WHEN quhead_origin = 'C'  THEN 'Customer'
-            WHEN quhead_origin = 'S'  THEN 'Sales Rep'
-            WHEN quhead_origin = 'I'  THEN 'Internet'
+       15 AS type,
+       quhead_number::text AS subtype,
+       1 AS section,
+       &lt;? value("quotes") ?> AS section_qtdisplayrole,
+       quhead_number::text AS name,
+       CASE WHEN (quhead_status = 'C') THEN 
+         &lt;? value("converted") ?>
+            WHEN (quhead_status = 'X') THEN
+         &lt;? value("canceled") ?>
+            WHEN (COALESCE(quhead_expire, current_date + 1) > current_date) THEN
+         &lt;? value("open") ?>
+            ELSE
+         &lt;? value("expired") ?>
+       END AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       NULL AS value,
+       1 AS xtindentrole
+  FROM quhead
+    JOIN quitem ON (quitem_quhead_id = quhead_id)
+ WHERE (quhead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY quhead_id, quhead_number, quhead_status, quhead_expire, quhead_freight, quhead_misc
+
+UNION ALL
+
+SELECT quitem_id AS id, 
+       17 AS type,
+       quhead_number::text AS subtype,
+       1 AS section,
+       &lt;? value("quotes") ?> AS section_qtdisplayrole,
+       quitem_linenumber::text AS name, 
+       CASE WHEN (quhead_status = 'C') THEN 
+         &lt;? value("converted") ?>
+            WHEN (quhead_status = 'X') THEN
+         &lt;? value("canceled") ?>
+            WHEN (COALESCE(quhead_expire, current_date + 1) > current_date) THEN
+         &lt;? value("open") ?>
+            ELSE
+         &lt;? value("Expired") ?>
        END AS status,
        item_number AS item,
-       formatQty(quitem_qtyord) AS f_qty,
-       formatQty(quitem_qtyord * quitem_price) AS f_value,
-       quitem_qtyord * quitem_price AS amt_value,
-       quitem_qtyord * quitem_price AS amt_report
-  FROM quhead, quitem, itemsite, item
- WHERE ((quhead_prj_id = &lt;? value("prj_id") ?>)
-        AND (quitem_quhead_id = quhead_id)
-        AND (quitem_itemsite_id = itemsite_id)
-        AND (itemsite_item_id = item_id))
+       item_descrip1 || ' ' || item_descrip2 AS descrip,
+       quitem_qtyord,
+       uom_name AS uom,
+       (quitem_qtyord * quitem_qty_invuomratio) * (quitem_price / quitem_price_invuomratio) AS value,
+       2 AS xtindentrole
+  FROM quhead
+    JOIN quitem ON (quitem_quhead_id = quhead_id)
+    JOIN uom ON (quitem_qty_uom_id = uom_id)
+    JOIN itemsite ON (quitem_itemsite_id = itemsite_id)
+    JOIN item ON (itemsite_item_id = item_id)
+ WHERE (quhead_prj_id = &lt;? value("prj_id") ?>)
 
-UNION
+UNION ALL
 
-SELECT 
-       cohead_id AS id, 
-       20 AS typeid,
-       text('Section 2 - Booked Revenue') AS section,
-       text('Sales Order - See Invoice Section for Closed Line Amounts') AS type, 
-       text(cohead_number) || '-' || text(coitem_linenumber) AS ordernumber,
-       CASE WHEN cohead_holdtype = 'N'  THEN 'Not On Hold'
-            WHEN cohead_holdtype = 'C'  THEN 'On Credit Hold'
-            WHEN cohead_holdtype = 'S'  THEN 'On Shipping Hold'
-            WHEN cohead_holdtype = 'P'  THEN 'On Packing Hold'
-            WHEN cohead_holdtype = 'R'  THEN 'On Return Hold'
+SELECT quhead_id AS id, 
+       18 AS type,
+       quhead_number::text AS subtype,
+       1 AS section,
+       &lt;? value("quotes") ?> AS section_qtdisplayrole,
+       &lt;? value("total") ?> AS name,
+       NULL AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       SUM((quitem_qtyord * quitem_qty_invuomratio) * (quitem_price / quitem_price_invuomratio)) AS value,
+       1 AS xtindentrole
+  FROM quhead
+    JOIN quitem ON (quitem_quhead_id = quhead_id)
+ WHERE (quhead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY quhead_id, quhead_number
+
+UNION ALL
+
+------ SALES ORDERS ------
+SELECT cohead_id AS id, 
+       25 AS type,
+       cohead_number::text AS subtype,
+       2 AS section,
+       &lt;? value("sos") ?> AS section_qtdisplayrole,
+       cohead_number::text AS name,
+      COALESCE((SELECT 
+                  CASE WHEN (coitem_status = 'O') THEN
+                    &lt;? value("open") ?>
+                       WHEN (coitem_status = 'C') THEN
+                    &lt;? value("closed" ?>
+                      ELSE
+                    &lt;? value("canceled") ?>
+                  END
+                FROM 
+               (SELECT coitem_status,
+                   CASE 
+                     WHEN (coitem_status = 'O') THEN 1
+                     WHEN (coitem_status = 'C') then 2
+                     ELSE  3
+                  END AS type
+                  FROM coitem
+                 WHERE (coitem_cohead_id=cohead_id)
+                 ORDER BY type
+                 LIMIT 1) AS sts) ,'O')
+        AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       NULL AS value,
+       1 AS xtindentrole
+  FROM cohead
+    JOIN coitem ON (coitem_cohead_id = cohead_id)
+ WHERE (cohead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY cohead_id, cohead_number
+
+UNION ALL
+
+SELECT coitem_id AS id, 
+       27 AS type,
+       cohead_number::text AS subtype,
+       2 AS section,
+       &lt;? value("sos") ?> AS section_qtdisplayrole,
+       coitem_linenumber::text AS name, 
+       CASE WHEN (coitem_status = 'O') THEN
+         &lt;? value("open") ?>
+            WHEN (coitem_status = 'C') THEN
+         &lt;? value("closed") ?>
+            WHEN (coitem_status = 'X') THEN
+         &lt;? value("canceled") ?>
        END AS status,
        item_number AS item,
-       
-       formatQty(coitem_qtyord) AS f_qty,
-       CASE WHEN coitem_status = 'C' THEN 'SO Line Closed - See Invoice'
-            WHEN coitem_status &lt;> 'C' THEN formatQty((coitem_qtyord * coitem_qty_invuomratio) * (coitem_price * coitem_price_invuomratio))
-       END AS f_value,
-       
-       CASE WHEN coitem_status = 'C' THEN 0
-            WHEN coitem_status &lt;> 'C' THEN (coitem_qtyord * coitem_qty_invuomratio) * (coitem_price * coitem_price_invuomratio)
-       END AS amt_value,
-  
-       CASE WHEN coitem_status = 'C' THEN 0
-            WHEN coitem_status &lt;> 'C' THEN (coitem_qtyord * coitem_qty_invuomratio) * (coitem_price * coitem_price_invuomratio)
-       END AS amt_report
+       item_descrip1 || ' ' || item_descrip2 AS descrip,
+       coitem_qtyord,
+       uom_name AS uom,
+       (coitem_qtyord * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio) AS value,
+       2 AS xtindentrole
+  FROM cohead
+    JOIN coitem ON (coitem_cohead_id = cohead_id)
+    JOIN uom ON (coitem_qty_uom_id = uom_id)
+    JOIN itemsite ON (coitem_itemsite_id = itemsite_id)
+    JOIN item ON (itemsite_item_id = item_id)
+ WHERE (cohead_prj_id = &lt;? value("prj_id") ?>)
 
-  FROM cohead, coitem, itemsite, item 
- WHERE ((cohead_prj_id = &lt;? value("prj_id"?>) 
-        AND (coitem_cohead_id = cohead_id)
-        AND (coitem_itemsite_id = itemsite_id)
-        AND (itemsite_item_id = item_id))
+UNION ALL
 
-UNION
+SELECT cohead_id AS id, 
+       28 AS type,
+       cohead_number::text AS subtype,
+       2 AS section,
+       &lt;? value("sos") ?> AS section_qtdisplayrole,
+       &lt;? value("total") ?> AS name,
+       NULL AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       SUM((coitem_qtyord * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio)) AS value,
+       1 AS xtindentrole
+  FROM cohead
+    JOIN coitem ON (coitem_cohead_id = cohead_id)
+ WHERE (cohead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY cohead_id, cohead_number
+
+UNION ALL
+
+------ INVOICES -------
+SELECT invchead_id AS id,
+       35 AS type,
+       invchead_invcnumber::text AS subtype,
+       3 AS section,
+       &lt;? value("invoices") ?> AS section_qtdisplayrole,
+       invchead_invcnumber::text AS name,
+       CASE WHEN (invchead_posted) THEN
+         &lt;? value("posted") ?>
+       ELSE &lt;? value("unposted") ?>
+       END AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       NULL AS value,
+       1 AS xtindentrole
+  FROM invchead
+    JOIN invcitem ON (invcitem_invchead_id = invchead_id)
+ WHERE (invchead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY invchead_id, invchead_invcnumber, invchead_freight, invchead_misc_amount, invchead_posted
+
+UNION ALL
+
+SELECT invcitem_id AS id, 
+       37 AS type,
+       invchead_invcnumber::text AS subtype,
+       3 AS section,
+       &lt;? value("invoices") ?> AS section_qtdisplayrole,
+       invcitem_linenumber::text AS name, 
+       CASE WHEN (invchead_posted) THEN
+         &lt;? value("posted") ?>
+       ELSE &lt;? value("unposted") ?>
+       END AS status,
+       COALESCE(item_number,invcitem_number) AS item,
+       COALESCE(item_descrip1 || ' ' || item_descrip2,invcitem_descrip) AS descrip,
+       invcitem_billed AS qty,
+       uom_name AS uom,
+       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS value,
+       2 AS xtindentrole
+  FROM invchead
+    JOIN invcitem ON (invcitem_invchead_id = invchead_id)
+    LEFT OUTER JOIN item ON (invcitem_item_id = item_id)
+    LEFT OUTER JOIN uom ON (invcitem_qty_uom_id = uom_id)
+ WHERE (invchead_prj_id = &lt;? value("prj_id") ?>)
+
+UNION ALL
 
 SELECT invchead_id AS id, 
-       40 AS typeid,
-       text('Section 3 - Invoiced Revenue') AS section,
-       text('Invoice - Closed Sales Order Lines') AS type, 
-       text(invchead_invcnumber) || '-' || text(invcitem_linenumber) AS ordernumber,
-       CASE WHEN invchead_printed = 'Y'  THEN 'Printed'
-            WHEN invchead_printed = 'N'  THEN 'Not Printed'
-       END AS status,
-       
-       CASE WHEN invcitem_id &lt;> '-1'  THEN item_number
-             WHEN invcitem_id = '-1'  THEN invcitem_number
-       END AS item,
-       formatQty(invcitem_ordered) AS f_qty,
-       formatQty((invcitem_ordered * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio)) AS f_value,
-       (invcitem_ordered * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_value,
-       (invcitem_ordered * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_report
-
-  FROM invchead, invcitem, item
-  WHERE ((invchead_prj_id= &lt;? value("prj_id") ?> )
-        AND (invcitem_invchead_id = invchead_id)
-        AND (invcitem_item_id = item_id)
-        AND (invchead_ordernumber in (select cohead_number from coitem, cohead where coitem_cohead_id = cohead_id AND coitem_status = 'C')))
-
-UNION
-
-SELECT invchead_id AS id, 
-       45 AS typeid,
-       text('Section 3 - Invoiced Revenue') AS section,
-       text('Invoice - Open Sales Order Lines') AS type, 
-       text(invchead_invcnumber) || '-' || text(invcitem_linenumber) AS ordernumber,
-       CASE WHEN invchead_printed = 'Y'  THEN 'Printed'
-            WHEN invchead_printed = 'N'  THEN 'Not Printed'
-       END AS status,
-       
-       CASE WHEN invcitem_id &lt;> '-1'  THEN item_number
-             WHEN invcitem_id = '-1'  THEN invcitem_number
-       END AS item,
-       formatQty(invcitem_ordered) AS f_qty,
-       text('SO Line Open - See Sales Order') AS f_value,
-       0 AS amt_value,
-       0 AS amt_report
-
-  FROM invchead, invcitem, item
-  WHERE ((invchead_prj_id= &lt;? value("prj_id") ?> )
-        AND (invcitem_invchead_id = invchead_id)
-        AND (invcitem_item_id = item_id)
-        AND (invchead_ordernumber in (select cohead_number from coitem, cohead where coitem_cohead_id = cohead_id AND coitem_status &lt;> 'C')))
-
-UNION
-
-SELECT invchead_id AS id, 
-       50 AS typeid,
-       text('Section 3 - Invoiced Revenue') AS section,
-       text('Invoice - Misc., No SO Number - User Defined Item') AS type, 
-       text(invchead_invcnumber) || '-' || text(invcitem_linenumber) AS ordernumber,
-       CASE WHEN invchead_printed = 'Y'  THEN 'Printed'
-            WHEN invchead_printed = 'N'  THEN 'Not Printed'
-       END AS status,
-              
-       invcitem_number AS item,
-       formatQty(invcitem_billed) AS f_qty,
-       formatQty((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio)) AS f_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_report
-
-  FROM invchead, invcitem
-  WHERE ((invchead_prj_id= &lt;? value("prj_id") ?>)
-        AND (invcitem_invchead_id = invchead_id)
-        AND (invchead_ordernumber is null))
-
-
-UNION
-
-SELECT invchead_id AS id, 
-       52 AS typeid,
-       text('Section 3 - Invoiced Revenue') AS section,
-       text('Invoice - Misc., User SO Number - User Defined Item ') AS type, 
-       text(invchead_invcnumber) || '-' || text(invcitem_linenumber) AS ordernumber,
-       CASE WHEN invchead_printed = 'Y'  THEN 'Printed'
-            WHEN invchead_printed = 'N'  THEN 'Not Printed'
-       END AS status,
-              
-       invcitem_number AS item,
-       formatQty(invcitem_billed) AS f_qty,
-       formatQty((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio)) AS f_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_report
-
-  FROM invchead, invcitem
-  WHERE ((invchead_prj_id= &lt;? value("prj_id") ?>)
-        AND (invcitem_invchead_id = invchead_id)
-        AND (invchead_ordernumber is not null)
-        AND (invcitem_item_id = -1))
-
-UNION
-
-SELECT invchead_id AS id, 
-       56 AS typeid,
-       text('Section 3 - Invoiced Revenue') AS section,
-       text('Invoice - Misc., User SO Number - Normal Item') AS type, 
-       text(invchead_invcnumber) || '-' || text(invcitem_linenumber) AS ordernumber,
-       CASE WHEN invchead_printed = 'Y'  THEN 'Printed'
-            WHEN invchead_printed = 'N'  THEN 'Not Printed'
-       END AS status,
-       
-       CASE WHEN invcitem_id &lt;> '-1'  THEN item_number
-             WHEN invcitem_id = '-1'  THEN invcitem_number
-       END AS item,
-       formatQty(invcitem_billed) AS f_qty,
-       formatQty((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio)) AS f_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_value,
-       (invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio) AS amt_report
-
-  FROM invchead, invcitem, item
-  WHERE ((invchead_prj_id= &lt;? value("prj_id") ?> )
-        AND (invcitem_invchead_id = invchead_id)
-        AND (invcitem_item_id = item_id)
-        AND (invchead_ordernumber not in (select cohead_number from coitem, cohead where coitem_cohead_id = cohead_id)
-        AND (invchead_ordernumber is not null)))
-
+       38 AS type,
+       invchead_invcnumber::text AS subtype,
+       3 AS section,
+       &lt;? value("invoices") ?> AS section_qtdisplayrole,
+       &lt;? value("total") ?> AS name,
+       NULL AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       SUM((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / invcitem_price_invuomratio)) AS value,
+       1 AS xtindentrole
+  FROM invchead
+    JOIN invcitem ON (invcitem_invchead_id = invchead_id)
+ WHERE (invchead_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY invchead_id, invchead_invcnumber
 
 &lt;? endif ?>
 
@@ -203,112 +268,151 @@ SELECT invchead_id AS id,
 
 &lt;?   if exists("showSo") ?>
 
-UNION
+UNION ALL
 
 &lt;?   endif ?>
 
+------ WORK ORDERS -------
 SELECT wo_id AS id, 
-       90 AS typeid,
-       text('Section 6 - Work Order Expense') AS section,
-       text('Work Orders') AS type, 
-       formatWoNumber(wo_id) AS ordernumber,
-       wo_status AS status, 
+       45 AS type,
+       formatWoNumber(wo_id) AS subtype,
+       4 AS section,
+       &lt;? value("wos") ?> AS section_qtdisplayrole,
+       formatWoNumber(wo_id) AS name,
+       CASE WHEN (wo_status = 'O') THEN
+         &lt;? value("open") ?>
+            WHEN (wo_status = 'E') THEN
+         &lt;? value("exploded") ?>
+            WHEN (wo_status = 'R') THEN
+         &lt;? value("released") ?>
+            WHEN (wo_status = 'I') THEN
+         &lt;? value("inprocess") ?>
+            WHEN (wo_status = 'C') THEN
+         &lt;? value("closed") ?>
+       END AS status,
        item_number AS item,
-       formatQty(wo_qtyord) AS f_qty,
-             
-       CASE WHEN wo_status &lt;> 'I'  THEN formatQty(wo_postedvalue)
-            WHEN wo_status  = 'I' THEN formatQty(wo_wipvalue)
-       END AS f_value,
-       
-       CASE WHEN wo_status &lt;> 'I'  THEN wo_postedvalue 
-            WHEN wo_status  = 'I' THEN wo_wipvalue
-       END AS amt_value,
+       item_descrip1 || ' ' || item_descrip2 AS descrip,
+       wo_qtyord AS qty,
+       uom_name AS uom,
+       wo_postedvalue AS value,
+       1 AS xtindentrole
+  FROM wo
+    JOIN itemsite ON (itemsite_id=wo_itemsite_id)
+    JOIN item ON (itemsite_item_id=item_id)
+    JOIN uom ON (item_inv_uom_id=uom_id)
+ WHERE (wo_prj_id = &lt;? value("prj_id") ?>)
 
-       CASE WHEN wo_status &lt;> 'I'  THEN wo_postedvalue * -1
-            WHEN wo_status  = 'I' THEN wo_wipvalue * -1
-       END AS amt_report 
-      
-  FROM wo, itemsite, item
- WHERE ((wo_prj_id=&lt;? value("prj_id") ?>)
-       AND (wo_itemsite_id = itemsite_id)
-       AND (itemsite_item_id = item_id))
 &lt;? endif ?>
 
 
 &lt;? if exists("showPo") ?>
 &lt;?   if exists("showSo") ?>
- UNION
+ UNION ALL
 &lt;? elseif exists("showWo") ?>
- UNION
+ UNION ALL
 
 &lt;? endif ?>
-
+------ PURCHASE REQUESTS ------
 SELECT pr_id AS id, 
-       60 AS typeid,
-       text('Section 4 - Pro Forma Expense (Purchase Requests)') AS section,
-       text('Purchase Requests - Values At Standard') AS type, 
-       text(pr_number) AS ordernumber,
-       pr_status AS status, 
+       55 AS type,
+       pr_number::text || '-' || pr_subnumber::text AS subtype,
+       5 AS section,
+       &lt;? value("prs") ?> AS section_qtdisplayrole,
+       pr_number::text || '-' || pr_subnumber::text AS name,
+       &lt;? value("open") ?> AS status, 
        item_number AS item,
-       formatQty(pr_qtyreq) AS f_qty,
-       formatQty(stdcost(item_id) * pr_qtyreq) AS f_value,
-       stdcost(item_id) * pr_qtyreq AS amt_value,
-       stdcost(item_id) * pr_qtyreq * -1 AS amt_report 
-  FROM pr, item, itemsite
- WHERE ((pr_prj_id=&lt;? value("prj_id") ?>)
-       AND (pr_itemsite_id = itemsite_id)
-       AND (itemsite_item_id = item_id)
-       AND (pr_itemsite_id = itemsite_id)
-       AND (itemsite_item_id = item_id))
+       (item_descrip1 || ' ' || item_descrip2) AS descrip,
+       pr_qtyreq AS qty,
+       uom_name AS uom,
+       stdcost(item_id) * pr_qtyreq AS value,
+       1 AS xtindentrole
+  FROM pr
+    JOIN itemsite ON (itemsite_id = pr_itemsite_id)
+    JOIN item ON (itemsite_item_id = item_id)
+    JOIN uom ON (item_inv_uom_id = uom_id)
+ WHERE (pr_prj_id=&lt;? value("prj_id") ?>)
 
-UNION
+UNION ALL
+
+------ PURCHASE ORDERS ------
+SELECT pohead_id AS id,
+       65 AS type,
+       pohead_number::text AS subtype,
+       6 AS section,
+       &lt;? value("pos") ?> AS section_qtdisplayrole,
+       pohead_number::text AS name,
+       CASE WHEN (pohead_status = 'U') THEN
+         &lt;? value("unreleased") ?>
+            WHEN (pohead_status = 'O') THEN
+         &lt;? value("open") ?>
+            WHEN (pohead_status = 'C') THEN
+         &lt;? value("closed") ?>
+       END AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL AS uom,
+       NULL AS value,
+       1 AS xtindentrole
+  FROM pohead
+    JOIN poitem ON (poitem_pohead_id = pohead_id)
+ WHERE (poitem_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY pohead_id, pohead_number, pohead_freight, pohead_status
+
+UNION ALL
 
 SELECT poitem_id AS id, 
-       70 AS typeid,
-       text('Section 5 - Purchase Expense') AS section,
-       text('Purchase Order - Stocked Items') AS type, 
-       (text(pohead_number) || '-' || text(poitem_linenumber)) AS ordernumber,
-       poitem_status AS status, 
+       67 AS type,
+       pohead_number::text AS subtype,
+       6 AS section,
+       &lt;? value("pos") ?> AS section_qtdisplayrole,
+       poitem_linenumber::text AS name, 
+       CASE WHEN (poitem_status = 'U') THEN
+         &lt;? value("unreleased") ?>
+            WHEN (poitem_status = 'O') THEN
+         &lt;? value("open") ?>
+            WHEN (poitem_status = 'C') THEN
+         &lt;? value("closed") ?>
+       END AS status,
+       COALESCE(item_number,poitem_vend_item_number) AS item,
+       COALESCE((item_descrip1 || ' ' || item_descrip2),poitem_vend_item_descrip) AS descrip,
+       poitem_qty_ordered,
+       poitem_vend_uom AS uom,
+       (poitem_qty_ordered * poitem_unitprice) AS value,
+       2 AS xtindentrole
+  FROM pohead
+    JOIN poitem ON (poitem_pohead_id = pohead_id)
+    LEFT OUTER JOIN itemsite ON (poitem_itemsite_id=itemsite_id)
+    LEFT OUTER JOIN item ON (itemsite_item_id = item_id)
+ WHERE (poitem_prj_id = &lt;? value("prj_id") ?>)
 
-       item_number AS item,
+UNION ALL
 
-       formatQty(poitem_qty_ordered) AS f_qty,
-       formatQty(poitem_qty_ordered * poitem_unitprice) AS f_value,
-       poitem_qty_ordered * poitem_unitprice AS amt_value,
-       poitem_qty_ordered * poitem_unitprice * -1 AS amt_report
-  FROM pohead, poitem, itemsite, item
- WHERE ((poitem_pohead_id = pohead_id)
-   AND  (poitem_prj_id = &lt;? value("prj_id") ?>)
-   AND  (poitem_itemsite_id = itemsite_id)
-   AND  (itemsite_item_id = item_id))
-
-UNION
-
-SELECT poitem_id AS id, 
-       80 AS typeid,
-       text('Section 5 - Purchase Expense') AS section,
-       text('Purchase Order - Inventory Items') AS type, 
-       (text(pohead_number) || '-' || text(poitem_linenumber)) AS ordernumber,
-       poitem_status AS status, 
-
-       poitem_vend_item_number AS item,
-
-       formatQty(poitem_qty_ordered) AS f_qty,
-       formatQty(poitem_qty_ordered * poitem_unitprice) AS f_value,
-       poitem_qty_ordered * poitem_unitprice AS amt_value,
-       poitem_qty_ordered * poitem_unitprice * -1 AS amt_report
-
-  FROM pohead, poitem
- WHERE ((poitem_pohead_id = pohead_id)
-   AND  (poitem_prj_id = &lt;? value("prj_id") ?>)
-   AND  (poitem_itemsite_id is null))
+SELECT pohead_id AS id, 
+       68 AS type,
+       pohead_number::text AS subtype,
+       6 AS section,
+       &lt;? value("pos") ?> AS section_qtdisplayrole,
+       &lt;? value("total") ?> AS name,
+       NULL AS status,
+       NULL::text AS item,
+       NULL::text AS descrip,
+       NULL AS qty,
+       NULL::text AS uom,
+       SUM(poitem_qty_ordered * poitem_unitprice) AS value,
+       1 AS xtindentrole
+  FROM pohead
+    JOIN poitem ON (poitem_pohead_id = pohead_id)
+ WHERE (poitem_prj_id = &lt;? value("prj_id") ?>)
+GROUP BY pohead_id, pohead_number
 
 &lt;? endif ?>
 
-ORDER BY section, typeid, ordernumber;</sql>
+) data
+ORDER BY section, subtype, type, id;</sql>
  </querysource>
  <rpthead>
-  <height>103</height>
+  <height>75</height>
   <label>
    <rect>
     <x>5</x>
@@ -346,54 +450,6 @@ ORDER BY section, typeid, ordernumber;</sql>
   </field>
   <label>
    <rect>
-    <x>140</x>
-    <y>80</y>
-    <width>595</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>See Booked Order section for Open Sales Orders.</string>
-  </label>
-  <label>
-   <rect>
-    <x>375</x>
-    <y>10</y>
-    <width>350</width>
-    <height>38</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>18</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <string>Project Profit Statement</string>
-  </label>
-  <label>
-   <rect>
-    <x>140</x>
-    <y>65</y>
-    <width>585</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <string>Revenue does not display in the Invoiced Revenue section until Sales Order line is Closed. </string>
-  </label>
-  <label>
-   <rect>
     <x>30</x>
     <y>45</y>
     <width>80</width>
@@ -429,19 +485,19 @@ ORDER BY section, typeid, ordernumber;</sql>
   </field>
   <label>
    <rect>
-    <x>30</x>
-    <y>65</y>
-    <width>80</width>
-    <height>20</height>
+    <x>397</x>
+    <y>5.85</y>
+    <width>350</width>
+    <height>38</height>
    </rect>
    <font>
     <face>Arial</face>
-    <size>10</size>
-    <weight>normal</weight>
+    <size>18</size>
+    <weight>bold</weight>
    </font>
    <right/>
    <vcenter/>
-   <string>Note:</string>
+   <string>Order Activity by Project</string>
   </label>
  </rpthead>
  <section>
@@ -561,7 +617,7 @@ ORDER BY section, typeid, ordernumber;</sql>
      <vcenter/>
      <data>
       <query>detail</query>
-      <column>section</column>
+      <column>section_qtdisplayrole</column>
      </data>
     </field>
     <label>
@@ -622,7 +678,7 @@ ORDER BY section, typeid, ordernumber;</sql>
      <vcenter/>
      <data>
       <query>detail</query>
-      <column>amt_value</column>
+      <column>value</column>
      </data>
      <format builtin="true">money</format>
      <tracktotal subtotal="true"/>
@@ -669,26 +725,7 @@ ORDER BY section, typeid, ordernumber;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>ordernumber</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>545</x>
-     <y>0</y>
-     <width>165</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <right/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_value</column>
+     <column>name</column>
     </data>
    </field>
    <field>
@@ -727,6 +764,25 @@ ORDER BY section, typeid, ordernumber;</sql>
     <data>
      <query>detail</query>
      <column>f_qty</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>544</x>
+     <y>0</y>
+     <width>165</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>f_value</column>
     </data>
    </field>
   </detail>
@@ -811,58 +867,4 @@ ORDER BY section, typeid, ordernumber;</sql>
    </data>
   </field>
  </pgfoot>
- <rptfoot>
-  <height>38</height>
-  <field>
-   <rect>
-    <x>615</x>
-    <y>15</y>
-    <width>100</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <vcenter/>
-   <data>
-    <query>detail</query>
-    <column>amt_report</column>
-   </data>
-   <format builtin="true">qty</format>
-   <tracktotal/>
-  </field>
-  <line>
-   <xstart>305</xstart>
-   <ystart>5</ystart>
-   <xend>750</xend>
-   <yend>5</yend>
-   <weight>0</weight>
-  </line>
-  <line>
-   <xstart>305</xstart>
-   <ystart>10</ystart>
-   <xend>750</xend>
-   <yend>10</yend>
-   <weight>0</weight>
-  </line>
-  <label>
-   <rect>
-    <x>370</x>
-    <y>15</y>
-    <width>209</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <right/>
-   <top/>
-   <string>Project Profit / Loss:</string>
-  </label>
- </rptfoot>
 </report>

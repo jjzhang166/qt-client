@@ -11,26 +11,24 @@
 #ifndef OPENSALESORDERS_H
 #define OPENSALESORDERS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_openSalesOrders.h"
 
-class openSalesOrders : public XWidget, public Ui::openSalesOrders
+class openSalesOrders : public display, public Ui::openSalesOrders
 {
     Q_OBJECT
 
 public:
     openSalesOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~openSalesOrders();
-    virtual void setParams(ParameterList &);
     
+    Q_INVOKABLE virtual void setCustId(int custId);
+    Q_INVOKABLE virtual int custId();
     Q_INVOKABLE virtual bool checkSitePrivs();
 
 public slots:
     virtual enum SetResponse set(const ParameterList&);
-    virtual void sPrint();
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
@@ -38,16 +36,14 @@ public slots:
     virtual void sDelete();
     virtual void sPrintPackingList();
     virtual void sAddToPackingListBatch();
-    virtual void sPopulateMenu( QMenu * pMenu );
-    virtual void sFillList();
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
     virtual void sPrintForms(); 
-    virtual void sHandleAutoUpdate( bool pAutoUpdate );
     virtual void sDspShipmentStatus();
     virtual void sShipment();
+    virtual bool setParams(ParameterList &);
 
-protected slots:
-    virtual void languageChange();
-
+private:
+    int _custid;
 };
 
 #endif // OPENSALESORDERS_H

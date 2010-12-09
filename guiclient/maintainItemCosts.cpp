@@ -10,6 +10,7 @@
 
 #include "maintainItemCosts.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -18,18 +19,11 @@
 #include "dspItemCostDetail.h"
 #include "itemCost.h"
 
-/*
- *  Constructs a maintainItemCosts as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
 
-
-    // signals and slots connections
     connect(_item, SIGNAL(newId(int)), this, SLOT(sFillList()));
     connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
     connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -58,18 +52,11 @@ maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::WFla
       connect(_item, SIGNAL(valid(bool)), _new, SLOT(setEnabled(bool)));
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 maintainItemCosts::~maintainItemCosts()
 {
     // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void maintainItemCosts::languageChange()
 {
     retranslateUi(this);
@@ -96,61 +83,53 @@ void maintainItemCosts::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
   if (((XTreeWidgetItem *)pSelected)->id() == -1)
     return;
 
-  int menuItem;
+  QAction *menuItem;
 
   if (pSelected->text(1) == "No")
   {
     if (pSelected->text(0) == "Direct Labor")
     {
-      menuItem = pMenu->insertItem(tr("Update Actual Cost..."), this, SLOT(sUpdateDirectLabor()), 0);
-      if (!_privileges->check("UpdateActualCosts"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction(tr("Update Actual Cost..."), this, SLOT(sUpdateDirectLabor()));
+      menuItem->setEnabled(_privileges->check("UpdateActualCosts"));
     }
 
     else if (pSelected->text(0) == "Overhead")
     {
-      menuItem = pMenu->insertItem(tr("Update Actual Cost..."), this, SLOT(sUpdateOverhead()), 0);
-      if (!_privileges->check("UpdateActualCosts"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction(tr("Update Actual Cost..."), this, SLOT(sUpdateOverhead()));
+      menuItem->setEnabled(_privileges->check("UpdateActualCosts"));
     }
 
     else if (pSelected->text(0) == "Machine Overhead")
     {
-      menuItem = pMenu->insertItem(tr("Update Actual Cost..."), this, SLOT(sUpdateMachineOverhead()), 0);
-      if (!_privileges->check("UpdateActualCosts"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction(tr("Update Actual Cost..."), this, SLOT(sUpdateMachineOverhead()));
+      menuItem->setEnabled(_privileges->check("UpdateActualCosts"));
     }
   }
   else
   {
-    pMenu->insertItem(tr("View Costing Detail..."), this, SLOT(sViewDetail()), 0);
-    pMenu->insertSeparator();
+    pMenu->addAction(tr("View Costing Detail..."), this, SLOT(sViewDetail()));
+    pMenu->addSeparator();
 
-    menuItem = pMenu->insertItem(tr("Update Actual Cost..."), this, SLOT(sUpdateDetail()), 0);
-    if (!_privileges->check("UpdateActualCosts"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Update Actual Cost..."), this, SLOT(sUpdateDetail()));
+    menuItem->setEnabled(_privileges->check("UpdateActualCosts"));
   }
 
   if (((XTreeWidgetItem *)pSelected)->altId() == 0)
   {
-    menuItem = pMenu->insertItem(tr("Delete Cost..."), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("DeleteCosts"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Delete Cost..."), this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("DeleteCosts"));
   }
 
-  menuItem = pMenu->insertItem(tr("Post Actual Cost to Standard..."), this, SLOT(sPost()), 0);
-  if (!_privileges->check("PostActualCosts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Post Actual Cost to Standard..."), this, SLOT(sPost()));
+  menuItem->setEnabled(_privileges->check("PostActualCosts"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Edit Actual Cost..."), this, SLOT(sEnterActualCost()), 0);
-  if (!_privileges->check("EnterActualCosts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit Actual Cost..."), this, SLOT(sEnterActualCost()));
+  menuItem->setEnabled(_privileges->check("EnterActualCosts"));
 
-  menuItem = pMenu->insertItem(tr("New Actual Cost..."), this, SLOT(sCreateUserCost()), 0);
-  if (!_privileges->check("CreateCosts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("New Actual Cost..."), this, SLOT(sCreateUserCost()));
+  menuItem->setEnabled(_privileges->check("CreateCosts"));
 }
 
 void maintainItemCosts::sViewDetail()

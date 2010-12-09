@@ -12,36 +12,30 @@
 #define OPPORTUNITYLIST_H
 
 #include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_opportunityList.h"
 
-class opportunityList : public XWidget, public Ui::opportunityList
+class opportunityList : public display, public Ui::opportunityList
 {
   Q_OBJECT
 
   public:
     opportunityList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
 
+    Q_INVOKABLE virtual bool setParams(ParameterList &);
+
   public slots:
-    virtual void	languageChange();
     virtual SetResponse	set(const ParameterList&);
-    virtual void	sClose();
     virtual void	sDelete();
     virtual void	sEdit();
-    virtual void	sFillList();
     virtual void	sNew();
-    virtual void	sPopulateMenu(QMenu*);
-    virtual void	sPrint();
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
     virtual void	sView();
     virtual void	sDeactivate();
     virtual void	sActivate();
-    virtual void 	setParams(ParameterList &);
-    virtual void	sHandleMore(bool more);
 
-  private:
-    int		_mode;
 };
 
 #endif // OPPORTUNITYLIST_H

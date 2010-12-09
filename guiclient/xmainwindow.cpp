@@ -16,47 +16,38 @@
 #include <QStatusBar>
 #include <QCloseEvent>
 #include <QShowEvent>
-#include <QtScript>
 #include <QDebug>
-#include <QScriptEngineDebugger>
 
+#include "xcheckbox.h"
 #include "xtsettings.h"
 #include "guiclient.h"
-#include "scripttoolbox.h"
-
-#include "../scriptapi/qeventproto.h"
-#include "../scriptapi/parameterlistsetup.h"
+#include "scriptablePrivate.h"
+#include "shortcuts.h"
 
 //
 // XMainWindowPrivate
 //
-class XMainWindowPrivate
+class XMainWindowPrivate : public ScriptablePrivate
 {
   friend class XMainWindow;
 
   public:
-    XMainWindowPrivate();
+    XMainWindowPrivate(XMainWindow*);
     ~XMainWindowPrivate();
 
+    XMainWindow * _parent;
     bool _shown;
-    bool _scriptLoaded;
-    QScriptEngine * _engine;
-    QScriptEngineDebugger * _debugger;
     QAction *_action;
 };
 
-XMainWindowPrivate::XMainWindowPrivate()
+XMainWindowPrivate::XMainWindowPrivate(XMainWindow * parent) : ScriptablePrivate(false, parent), _parent(parent)
 {
   _shown = false;
-  _scriptLoaded = false;
-  _engine = 0;
   _action = 0;
 }
 
 XMainWindowPrivate::~XMainWindowPrivate()
 {
-  if(_engine)
-    delete _engine;
   if(_action)
     delete _action;
 }
@@ -64,15 +55,13 @@ XMainWindowPrivate::~XMainWindowPrivate()
 XMainWindow::XMainWindow(QWidget * parent, Qt::WindowFlags flags)
   : QMainWindow(parent, flags)
 {
-  _private = new XMainWindowPrivate();
+  _private = new XMainWindowPrivate(this);
 
   _private->_action = new QAction(this);
   _private->_action->setShortcutContext(Qt::ApplicationShortcut);
   _private->_action->setText(windowTitle());
   _private->_action->setCheckable(true);
   connect(_private->_action, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
-
-  ScriptToolbox::setLastWindow(this);
 }
 
 XMainWindow::XMainWindow(QWidget * parent, const char * name, Qt::WindowFlags flags)
@@ -81,7 +70,7 @@ XMainWindow::XMainWindow(QWidget * parent, const char * name, Qt::WindowFlags fl
   if(name)
     setObjectName(name);
 
-  _private = new XMainWindowPrivate();
+  _private = new XMainWindowPrivate(this);
 
   _private->_action = new QAction(this);
   _private->_action->setShortcutContext(Qt::ApplicationShortcut);
@@ -100,7 +89,7 @@ enum SetResponse XMainWindow::set(const ParameterList &pParams)
 {
   _lastSetParams = pParams;
 
-  loadScriptEngine();
+  _private->loadScriptEngine();
   QTimer::singleShot(0, this, SLOT(postSet()));
 
   return NoError;
@@ -108,18 +97,7 @@ enum SetResponse XMainWindow::set(const ParameterList &pParams)
 
 enum SetResponse XMainWindow::postSet()
 {
-  loadScriptEngine();
-
-  enum SetResponse returnValue = NoError;
-  if(_private->_engine && _private->_engine->globalObject().property("set").isFunction())
-  {
-    QScriptValueList args;
-    args << ParameterListtoScriptValue(_private->_engine, _lastSetParams);
-    QScriptValue tmp = _private->_engine->globalObject().property("set").call(QScriptValue(), args);
-    SetResponsefromScriptValue(tmp, returnValue);
-  }
-
-  return returnValue;
+  return _private->callSet(_lastSetParams);
 }
 
 ParameterList XMainWindow::get() const
@@ -130,12 +108,7 @@ ParameterList XMainWindow::get() const
 void XMainWindow::closeEvent(QCloseEvent *event)
 {
   event->accept(); // we have no reason not to accept and let the script change it if needed
-  if(_private->_engine && (_private->_engine->globalObject().property("closeEvent").isFunction()))
-  {
-    QScriptValueList args;
-    args << _private->_engine->toScriptValue((QEvent*)event);
-    _private->_engine->globalObject().property("closeEvent").call(QScriptValue(), args);
-  }
+  _private->callCloseEvent(event);
 
   if(event->isAccepted())
   {
@@ -187,16 +160,20 @@ void XMainWindow::showEvent(QShowEvent *event)
         fw->setFocus();
     }
 
-    loadScriptEngine();
+    _private->loadScriptEngine();
 
     QList<XCheckBox*> allxcb = findChildren<XCheckBox*>();
     for (int i = 0; i < allxcb.size(); ++i)
       allxcb.at(i)->init();
+
+    shortcuts::setStandardKeys(this);
   }
 
   bool blocked = _private->_action->blockSignals(true);
   _private->_action->setChecked(true);
   _private->_action->blockSignals(blocked);
+
+  _private->callShowEvent(event);
 
   QMainWindow::showEvent(event);
 }
@@ -241,63 +218,10 @@ void XMainWindow::showMe(bool v)
   target->setVisible(v);
 }
 
-void XMainWindow::loadScriptEngine()
-{
-  if(_private->_scriptLoaded)
-    return;
-  _private->_scriptLoaded = true;
-
-  QStringList parts = objectName().split(" ");
-  QStringList search_parts;
-  QString oName;
-  while(!parts.isEmpty())
-  {
-    search_parts.append(parts.takeFirst());
-    oName = search_parts.join(" ");
-    // load and run an QtScript that applies to this window
-    qDebug() << "Looking for a script on window " << oName;
-    XSqlQuery scriptq;
-    scriptq.prepare("SELECT script_source, script_order"
-              "  FROM script"
-              " WHERE((script_name=:script_name)"
-              "   AND (script_enabled))"
-              " ORDER BY script_order;");
-    scriptq.bindValue(":script_name", oName);
-    scriptq.exec();
-    while(scriptq.next())
-    {
-      if(engine(this))
-      {
-        QString script = scriptHandleIncludes(scriptq.value("script_source").toString());
-        QScriptValue result = _private->_engine->evaluate(script, objectName());
-        if (_private->_engine->hasUncaughtException())
-        {
-          int line = _private->_engine->uncaughtExceptionLineNumber();
-          qDebug() << "uncaught exception at line" << line << ":" << result.toString();
-        }
-      }
-    }
-  }
-}
-
 QScriptEngine *engine(XMainWindow *win)
 {
-  if(win)
-  {
-    if(!win->_private->_engine)
-    {
-      win->_private->_engine = new QScriptEngine(win);
-      if (_preferences->boolean("EnableScriptDebug"))
-      {
-        win->_private->_debugger = new QScriptEngineDebugger(win);
-        win->_private->_debugger->attachTo(win->_private->_engine);
-      }
-      omfgThis->loadScriptGlobals(win->_private->_engine);
-      QScriptValue mywindow = win->_private->_engine->newQObject(win);
-      win->_private->_engine->globalObject().setProperty("mywindow", mywindow);
-    }
-    return win->_private->_engine;
-  }
+  if(win && win->_private)
+    return win->_private->engine();
   return 0;
 }
 

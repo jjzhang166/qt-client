@@ -20,8 +20,6 @@
 #include "guiclient.h"
 #include "inputManager.h"
 
-#include <pocluster.h>
-
 #include "purchaseOrder.h"
 #include "unpostedPurchaseOrders.h"
 #include "printPurchaseOrder.h"
@@ -68,19 +66,14 @@
 #include "printVendorForm.h"
 
 #include "vendor.h"
-#include "searchForCRMAccount.h"
 #include "vendors.h"
-#include "vendorTypes.h"
 #include "vendorWorkBench.h"
-#include "plannerCodes.h"
-#include "rejectCodes.h"
-#include "termses.h"
-#include "expenseCategories.h"
-#include "apAccountAssignments.h"
 
 #include "dspItemsWithoutItemSources.h"
 #include "assignItemToPlannerCode.h"
 #include "assignClassCodeToPlannerCode.h"
+
+#include "setup.h"
 
 #include "menuPurchase.h"
 
@@ -109,7 +102,6 @@ menuPurchase::menuPurchase(GUIClient *Pparent) :
   reportsRcptRtrnMenu = new QMenu(parent);
   reportsPriceVarMenu = new QMenu(parent);
   reportsDelvVarMenu = new QMenu(parent);
-  masterInfoMenu = new QMenu(parent);
   utilitiesMenu = new QMenu(parent);
 
   mainMenu->setObjectName("menu.purch");
@@ -126,7 +118,6 @@ menuPurchase::menuPurchase(GUIClient *Pparent) :
   reportsRcptRtrnMenu->setObjectName("menu.purch.reportsrcptrtrn");
   reportsPriceVarMenu->setObjectName("menu.purch.reportspricevar");
   reportsDelvVarMenu->setObjectName("menu.purch.reportsdelvvar");
-  masterInfoMenu->setObjectName("menu.purch.masterinfo");
   utilitiesMenu->setObjectName("menu.purch.utilities");
 
   actionProperties acts[] = {
@@ -226,12 +217,9 @@ menuPurchase::menuPurchase(GUIClient *Pparent) :
     { "menu", tr("V&endor"), (char*)vendorMenu, mainMenu, "true", NULL, NULL, true , NULL },
     { "po.newVendor", tr("&New..."), SLOT(sNewVendor()), vendorMenu, "MaintainVendors", NULL, NULL, true , NULL },
     { "po.vendors", tr("&List..."), SLOT(sVendors()), vendorMenu, "MaintainVendors ViewVendors", NULL, NULL, true , NULL },
-    { "po.searchForVendor", tr("&Search..."), SLOT(sSearchForVendor()), vendorMenu, "MaintainVendors ViewVendors", NULL, NULL, true , NULL },
     { "separator", NULL, NULL, vendorMenu, "true", NULL, NULL, true , NULL },
     { "po.vendorWorkBench", tr("&Workbench..."), SLOT(sVendorWorkBench()), vendorMenu, "MaintainVendors", NULL, NULL, true , NULL },
-    { "separator", NULL, NULL, vendorMenu, "true", NULL, NULL, true , NULL },
-    { "po.vendorTypes", tr("&Types..."), SLOT(sVendorTypes()), vendorMenu, "MaintainVendorTypes ViewVendorTypes", NULL, NULL, true , NULL },
-    
+
      //  P/O | Item Source
     { "menu", tr("&Item Source"), (char*)itemSourcesMenu, mainMenu, "true", NULL, NULL, true , NULL },
     { "po.enterNewItemSource", tr("&New..."), SLOT(sNewItemSource()), itemSourcesMenu, "MaintainItemSources", NULL, NULL, true , NULL },
@@ -239,20 +227,14 @@ menuPurchase::menuPurchase(GUIClient *Pparent) :
 
     { "separator", NULL, NULL, mainMenu, "true", NULL, NULL, true , NULL },
 
-    //  Purchasing | Master Information
-    { "menu", tr("&Master Information"), (char*)masterInfoMenu, mainMenu, "true", NULL, NULL, true , NULL },
-    { "po.plannerCodes", tr("&Planner Codes..."), SLOT(sPlannerCodes()), masterInfoMenu, "MaintainPlannerCodes ViewPlannerCodes", NULL, NULL, true , NULL },
-    { "po.rejectCodes", tr("&Reject Codes..."), SLOT(sRejectCodes()), masterInfoMenu, "MaintainRejectCodes ViewRejectCodes", NULL, NULL, true , NULL },
-    { "separator", NULL, NULL, masterInfoMenu, "true", NULL, NULL, true , NULL },
-    { "po.terms", tr("&Terms..."), SLOT(sTerms()), masterInfoMenu, "MaintainTerms ViewTerms", NULL, NULL, true , NULL },
-    { "po.expenseCategories", tr("&Expense Categories..."), SLOT(sExpenseCategories()), masterInfoMenu, "MaintainExpenseCategories ViewExpenseCategories", NULL, NULL, true , NULL },
-    { "po.apAccountAssignments", tr("&A/P Account Assignments..."), SLOT(sAPAssignments()), masterInfoMenu, "MaintainVendorAccounts ViewVendorAccounts", NULL, NULL, true , NULL },
-
     // Purchasing | Utilities
     { "menu", tr("&Utilities"), (char*)utilitiesMenu, mainMenu, "true", NULL, NULL, true , NULL },
     { "po.itemsWithoutItemSources", tr("&Items without Item Sources..."), SLOT(sItemsWithoutItemSources()), utilitiesMenu, "ViewItemMasters", NULL, NULL, true , NULL },
     { "po.assignItemToPlannerCode", tr("&Assign Item to Planner Code..."), SLOT(sAssignItemToPlannerCode()), utilitiesMenu, "AssignItemsToPlannerCode", NULL, NULL, true , NULL },
     { "po.assignItemsToPlannerCodeByClassCode", tr("Assign Item&s to Planner Code..."), SLOT(sAssignClassCodeToPlannerCode()), utilitiesMenu, "AssignItemsToPlannerCode", NULL, NULL, true , NULL },
+
+    // Setup
+    { "po.setup",	tr("&Setup..."),	SLOT(sSetup()),	mainMenu,	NULL,	NULL,	NULL,	true, NULL}
   };
 
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
@@ -557,16 +539,6 @@ void menuPurchase::sNewVendor()
   omfgThis->handleNewWindow(newdlg);
 }
 
-void menuPurchase::sSearchForVendor()
-{
-  ParameterList params;
-  params.append("crmaccnt_subtype", "vend");
-
-  searchForCRMAccount *newdlg = new searchForCRMAccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
-}
-
 void menuPurchase::sVendors()
 {
   omfgThis->handleNewWindow(new vendors());
@@ -576,32 +548,6 @@ void menuPurchase::sVendorWorkBench()
 {
   omfgThis->handleNewWindow(new vendorWorkBench());
 }
-
-void menuPurchase::sVendorTypes()
-{
-  omfgThis->handleNewWindow(new vendorTypes());
-}
-
-void menuPurchase::sPlannerCodes()
-{
-  omfgThis->handleNewWindow(new plannerCodes());
-}
-
-void menuPurchase::sRejectCodes()
-{
-  omfgThis->handleNewWindow(new rejectCodes());
-}
-
-void menuPurchase::sTerms()
-{
-  omfgThis->handleNewWindow(new termses());
-}
-
-void menuPurchase::sExpenseCategories()
-{
-  omfgThis->handleNewWindow(new expenseCategories());
-}
-
 
 // Utilities
 void menuPurchase::sItemsWithoutItemSources()
@@ -619,7 +565,14 @@ void menuPurchase::sAssignClassCodeToPlannerCode()
   assignClassCodeToPlannerCode(parent, "", TRUE).exec();
 }
 
-void menuPurchase::sAPAssignments()
+void menuPurchase::sSetup()
 {
-  omfgThis->handleNewWindow(new apAccountAssignments());
+  ParameterList params;
+  params.append("module", Xt::PurchaseModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }
+
+

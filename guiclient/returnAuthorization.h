@@ -32,8 +32,6 @@ public slots:
     virtual void sCalculateTax();
     virtual bool sSave( bool partial );
     virtual void sSaveClick();
-    virtual void sShipToList();
-    virtual void sParseShipToNumber();
     virtual void populateShipto( int pShiptoid );
     virtual void sPopulateCustomerInfo();
     virtual void sCheckAuthorizationNumber();
@@ -83,10 +81,12 @@ public slots:
 protected slots:
     virtual void languageChange();
 
+signals:
+    void saved(int);
+
 private:
     int _mode;
     int _raheadid;
-    int _shiptoid;
     int	_custtaxzoneid;
     bool _custEmail;
     bool _ffBillto;

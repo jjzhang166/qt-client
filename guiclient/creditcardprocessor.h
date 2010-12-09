@@ -22,7 +22,31 @@ class CreditCardProcessor : public QObject
 {
   Q_OBJECT
 
+  Q_ENUMS(CCTransaction)
+  Q_ENUMS(CreditCardProcessor::FraudCheck)
+  Q_FLAGS(CreditCardProcessor::FraudChecks)
+
   public:
+    enum CCTransaction { Authorize, Reverse, Capture, Charge, Credit, Void };
+    enum FraudCheck    { Match              = 0x0000, NoMatch            = 0x0001,
+                         NotAvail           = 0x0002, Address            = 0x0004,
+                         PostalCode         = 0x0008, Name               = 0x0010,
+                         NotProcessed       = 0x0020, Invalid            = 0x0040,
+                         ServiceUnavailable = 0x0080, IssuerNotCertified = 0x0100,
+                         Suspicious         = 0x0200, Unsupported        = 0x0400
+    };
+    Q_DECLARE_FLAGS(FraudChecks, FraudCheck)
+
+    class FraudCheckResult
+    {
+      public:
+        QChar       code;
+        int         sev;  /*TODO: FraudChecks sev; */
+        QString     text;
+
+        FraudCheckResult(QChar pcode, int /*TODO: FraudChecks*/ psev, QString ptext);
+    };
+
     virtual ~CreditCardProcessor();
 
     // no public constructor for abstract class, just a factory
@@ -30,9 +54,10 @@ class CreditCardProcessor : public QObject
 
     // these are the primary transaction handlers and should not be overridden:
     virtual int authorize(const int pccardid, const int pcvv, const double pamount, double ptax, bool ptaxexempt, double pfreight, double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid);
-    virtual int charge(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, QString, int&);
-    virtual int chargePreauthorized(const int, const double, const int, QString&, QString&, int&);
-    virtual int credit(const int, const int, const double, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int, QString&, QString&, int&, QString, int&);
+    virtual int charge(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid);
+    virtual int chargePreauthorized(const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid);
+    virtual int credit(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid);
+    virtual int reversePreauthorized(const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int prefid);
     virtual int voidPrevious(int &);
     
     // methods for script access
@@ -55,26 +80,32 @@ class CreditCardProcessor : public QObject
     Q_INVOKABLE static  QString errorMsg();		// most recent error
     Q_INVOKABLE static  QString errorMsg(const int);
     Q_INVOKABLE static  int     printReceipt(const int);
+    Q_INVOKABLE static  QString typeToCode(CCTransaction ptranstype);
 
   protected:
     CreditCardProcessor();
 
     // do* handle the processor-specific processing and are expected to be overridden
-    virtual int doAuthorize(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList&);
+    virtual int  doAuthorize(const int pccardid, const int pcvv, double &pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString& pneworder, QString& preforder, int &pccpayid, ParameterList &pparams);
     virtual int doCharge(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList&);
     virtual int doChargePreauthorized(const int, const int, const double, const int, QString&, QString&, int&, ParameterList&);
     virtual int doCredit(const int, const int, const double, const double, const bool, const double, const double, const int, QString&, QString&, int&, ParameterList&);
+    virtual int doReversePreauthorized(const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int pccpayid, ParameterList &pparams);
     virtual int doVoidPrevious(const int, const int, const double, const int, QString&, QString&, QString&, int&, ParameterList&);
     virtual int doTestConfiguration();
 
+    virtual FraudCheckResult *avsCodeLookup(QChar pcode);
     virtual QString buildURL(const QString, const QString, const bool);
     virtual int     checkCreditCard(const int, const int, QString&);
     virtual int     checkCreditCardProcessor()	{ return false; };
+    virtual FraudCheckResult *cvvCodeLookup(QChar pcode);
     static  double  currToCurr(const int, const int, const double, int * = 0);
     virtual int     fraudChecks();
     virtual int     sendViaHTTP(const QString&, QString&);
     virtual int     updateCCPay(int &, ParameterList &);
 
+    QList<FraudCheckResult*> _avsCodes;
+    QList<FraudCheckResult*> _cvvCodes;
     QString		_defaultLiveServer;
     QString		_defaultTestServer;
     int			_defaultLivePort;

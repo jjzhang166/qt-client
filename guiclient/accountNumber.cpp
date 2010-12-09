@@ -121,7 +121,7 @@ enum SetResponse accountNumber::set(const ParameterList &pParams)
 void accountNumber::sSave()
 {
   QString sql("SELECT accnt_id "
-              "FROM accnt "
+              "FROM ONLY accnt "
               "WHERE ( (accnt_number=<? value(\"accnt_number\") ?>)"
 	      "<? if exists(\"accnt_company\") ?>"
 	      " AND (accnt_company=<? value(\"accnt_company\") ?>)"

@@ -9,18 +9,10 @@
  <bottommargin>50</bottommargin>
  <rightmargin>50</rightmargin>
  <leftmargin>50</leftmargin>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT vend_number,
-       vend_name, 
-       vend_address1, 
-       vend_address2,
-       vend_address3,
-       vend_city,
-       vend_state,
-       vend_zip
-FROM vend 
-ORDER BY vend_number</sql>
+  <mqlgroup>vendors</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>76</height>
@@ -181,7 +173,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_address2</column>
+     <column>addr_line2</column>
     </data>
    </field>
    <field>
@@ -200,7 +192,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_zip</column>
+     <column>addr_zip</column>
     </data>
    </field>
    <field>
@@ -238,7 +230,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_address1</column>
+     <column>addr_line1</column>
     </data>
    </field>
    <field>
@@ -257,7 +249,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_city</column>
+     <column>addr_city</column>
     </data>
    </field>
    <field>
@@ -295,7 +287,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_address3</column>
+     <column>addr_line3</column>
     </data>
    </field>
    <field>
@@ -314,7 +306,7 @@ ORDER BY vend_number</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>vend_state</column>
+     <column>addr_state</column>
     </data>
    </field>
   </detail>

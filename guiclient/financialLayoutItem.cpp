@@ -33,8 +33,7 @@ financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool
 
 
   // signals and slots connections
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_showBeginning, SIGNAL(toggled(bool)), _showBeginningPrcnt, SLOT(setEnabled(bool)));
   connect(_showBudget, SIGNAL(toggled(bool)), _showBudgetPrcnt, SLOT(setEnabled(bool)));
   connect(_showDB, SIGNAL(toggled(bool)), _showDBPrcnt, SLOT(setEnabled(bool)));
@@ -50,23 +49,23 @@ financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool
 
   _account->setShowExternal(true);
   _company->setType(XComboBox::Companies);
-  _company->append(-1,tr("All"));
-  _company->setText(tr("All"));
+  _company->append(-1,tr("All"),"All");
+  _company->setId(-1);
   _profit->setType(XComboBox::ProfitCenters);
-  _profit->append(-1,tr("All"));
-  _profit->setText(tr("All"));
+  _profit->append(-1,tr("All"),"All");
+  _profit->setId(-1);
   _type->setCurrentIndex(5);
   _sub->setType(XComboBox::Subaccounts);
-  _sub->append(-1,tr("All"));
-  _sub->setText(tr("All"));
+  _sub->append(-1,tr("All"),"All");
+  _sub->setId(-1);
 
-  q.prepare( "SELECT DISTINCT accnt_id, accnt_number "
-                  "FROM accnt "
+  q.prepare( "SELECT DISTINCT accnt_id, accnt_number, accnt_number "
+                  "FROM ONLY accnt "
                   "ORDER BY accnt_number;" );
   q.exec();
   _number->populate(q);
-  _number->append(-1,tr("All"));
-  _number->setText(tr("All"));
+  _number->append(-1,tr("All"),"All");
+  _number->setId(-1);
 
   _subType->setAllowNull(FALSE);
   populateSubTypes();
@@ -141,21 +140,22 @@ enum SetResponse financialLayoutItem::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _save->setHidden(TRUE);
-      _close->setText(tr("Close"));
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
       _selectAccount->setEnabled(FALSE);
-	  _selectSegment->setEnabled(FALSE);
-	  _operationGroup->setEnabled(FALSE);
-	  _showColumns->setEnabled(FALSE);
-	  _showPrcnt->setEnabled(FALSE);
-	  _group->setEnabled(FALSE);
-	  _showCustom->setEnabled(FALSE);
-      _close->setFocus();
+      _selectSegment->setEnabled(FALSE);
+      _operationGroup->setEnabled(FALSE);
+      _showColumns->setEnabled(FALSE);
+      _showPrcnt->setEnabled(FALSE);
+      _group->setEnabled(FALSE);
+      _showCustom->setEnabled(FALSE);
+      _buttonBox->setFocus();
     }
   }
   param = pParams.value("type", &valid);
@@ -348,10 +348,10 @@ void financialLayoutItem::sSave()
   if ( _selectSegment->isChecked() )
   {
     q.bindValue(":flitem_accnt_id", -1);
-    q.bindValue(":flitem_company", _company->currentText());
-    q.bindValue(":flitem_profit", _profit->currentText());
-    q.bindValue(":flitem_number", _number->currentText());
-    q.bindValue(":flitem_sub", _sub->currentText());
+    q.bindValue(":flitem_company", _company->code());
+    q.bindValue(":flitem_profit", _profit->code());
+    q.bindValue(":flitem_number", _number->code());
+    q.bindValue(":flitem_sub", _sub->code());
     q.bindValue(":subaccnttype_id", _subType->id());
 
     if (_type->currentIndex() == 0)
@@ -398,12 +398,12 @@ void financialLayoutItem::populate()
       _selectSegment->setChecked(TRUE);
 
       if (_metrics->value("GLCompanySize").toInt())
-        _company->setText(q.value("flitem_company"));
+        _company->setCode(q.value("flitem_company").toString());
       if (_metrics->value("GLProfitSize").toInt())
-        _profit->setText(q.value("flitem_profit"));
-      _number->setText(q.value("flitem_number"));
+        _profit->setCode(q.value("flitem_profit").toString());
+      _number->setCode(q.value("flitem_number").toString());
       if (_metrics->value("GLSubaccountSize").toInt())
-        _sub->setText(q.value("flitem_sub"));
+        _sub->setCode(q.value("flitem_sub").toString());
 
       if (q.value("flitem_type").toString() == "A")
         _type->setCurrentIndex(0);

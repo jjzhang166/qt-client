@@ -16,15 +16,13 @@
 #include "storedProcErrorLookup.h"
 #include "guiclient.h"
 
-configurePD::configurePD(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+configurePD::configurePD(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  if (name)
+    setObjectName(name);
 
   _inactiveBomItems->setChecked(_metrics->boolean("AllowInactiveBomItems"));
   _exclusive->setChecked(_metrics->boolean("DefaultSoldItemsExclusive"));
@@ -80,8 +78,10 @@ void configurePD::languageChange()
   retranslateUi(this);
 }
 
-void configurePD::sSave()
+bool configurePD::sSave()
 {
+  emit saving();
+
   if (!_metrics->boolean("RevControl") && (_revControl->isChecked()))
   {
     if (QMessageBox::warning(this, tr("Enable Revision Control"),
@@ -109,7 +109,7 @@ void configurePD::sSave()
         systemError(this, storedProcErrorLookup("CreateRevision", q.value("result").toInt()),
             __FILE__, __LINE__);
         _metrics->set("RevControl", FALSE);
-        return;
+        return false;
       }
       if (q.lastError().type() != QSqlError::NoError)
       {
@@ -118,11 +118,11 @@ void configurePD::sSave()
           .arg(__LINE__),
           q.lastError().databaseText());
         _metrics->set("RevControl", FALSE);
-        return;
+        return false;
       }
     }
     else
-      return;
+      return false;
   }
 
   _metrics->set("Transforms", ((_transforms->isChecked()) && (!_transforms->isHidden())));
@@ -139,11 +139,5 @@ void configurePD::sSave()
   else if (_issueMethod->currentIndex() == 2)
     _metrics->set("DefaultWomatlIssueMethod", QString("M"));
 
-  _metrics->load();
-  _privileges->load();
-  omfgThis->saveToolbarPositions();
-  _preferences->load();
-  omfgThis->initMenuBar();
-
-  accept();
+  return true;
 }

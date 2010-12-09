@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:str="http://exslt.org/strings"
+                extension-element-prefixes="str"
+>
+<!-- when using xsltproc:
+                xmlns:str="http://exslt.org/strings"
+     when using an xslt processor that understands xpath 2.0
+                xmlns:str="http://www.w3.org/2005/xpath-functions"
+-->
   <xsl:import href="utility.xsl"/>
   <xsl:output indent="yes" method="xml" doctype-system="xtupleapi.dtd" />
 
@@ -28,22 +36,22 @@
   <xsl:template name="customerNumberFromAddress">
     <xsl:param name="address"/>
     <xsl:param name="generate" select="'false'"/>
-    getCustNumberFromInfo('<xsl:value-of select="$address/Email"/>',
-			  '<xsl:value-of select="$address/Company"/>',
-			  '<xsl:value-of select="$address/Name/First"/>',
-			  '<xsl:value-of select="$address/Name/Last"/>',
-			  '<xsl:value-of select="$address/Name/Full"/>',
+    getCustNumberFromInfo('<xsl:value-of select="str:replace($address/Email, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			  '<xsl:value-of select="str:replace($address/Company, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			  '<xsl:value-of select="str:replace($address/Name/First, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			  '<xsl:value-of select="str:replace($address/Name/Last, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			  '<xsl:value-of select="str:replace($address/Name/Full, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
 			  '<xsl:value-of select="$generate"/>')
   </xsl:template>
 
   <xsl:template name="customerNameFromAddress">
     <xsl:param name="address"/>
     <xsl:param name="generate" select="'false'"/>
-    getCustNameFromInfo('<xsl:value-of select="$address/Email"/>',
-			'<xsl:value-of select="$address/Company"/>',
-			'<xsl:value-of select="$address/Name/First"/>',
-			'<xsl:value-of select="$address/Name/Last"/>',
-			'<xsl:value-of select="$address/Name/Full"/>',
+    getCustNameFromInfo('<xsl:value-of select="str:replace($address/Email, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			'<xsl:value-of select="str:replace($address/Company, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			'<xsl:value-of select="str:replace($address/Name/First, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			'<xsl:value-of select="str:replace($address/Name/Last, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			'<xsl:value-of select="str:replace($address/Name/Full, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
 			'<xsl:value-of select="$generate"/>')
   </xsl:template>
 
@@ -57,18 +65,18 @@
 				<xsl:with-param name="address" select="$billaddr"/>
 			      </xsl:call-template>
 			    </xsl:if>,
-			    '<xsl:value-of select="$address/Email"/>',
-			    '<xsl:value-of select="$address/Company"/>',
-			    '<xsl:value-of select="$address/Name/First"/>',
-			    '<xsl:value-of select="$address/Name/Last"/>',
-			    '<xsl:value-of select="$address/Name/Full"/>',
-			    '<xsl:value-of select="$address/Address1"/>',
-			    '<xsl:value-of select="$address/Address2"/>',
+			    '<xsl:value-of select="str:replace($address/Email, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Company, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Name/First, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Name/Last, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Name/Full, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Address1, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Address2, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
 			    NULL,
-			    '<xsl:value-of select="$address/City"/>',
-			    '<xsl:value-of select="$address/State"/>',
-			    '<xsl:value-of select="$address/Zip"/>',
-			    '<xsl:value-of select="$address/Country"/>',
+			    '<xsl:value-of select="str:replace($address/City, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/State, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Zip, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
+			    '<xsl:value-of select="str:replace($address/Country, &quot;&apos;&quot;, &quot;&apos;&apos;&quot;)"/>',
 			     <xsl:value-of select="$generate"/>,
 			     <xsl:value-of select="$create"/>)
   </xsl:template>

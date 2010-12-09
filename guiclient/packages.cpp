@@ -10,6 +10,7 @@
 
 #include "packages.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -243,19 +244,19 @@ void packages::sView()
 
 void packages::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-  pMenu->setItemEnabled(menuItem, package::userHasPriv(cView));
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem->setEnabled(package::userHasPriv(cView));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  pMenu->setItemEnabled(menuItem, package::userHasPriv(cNew));
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(package::userHasPriv(cNew));
 
-  menuItem = pMenu->insertItem(tr("Enable"), this, SLOT(sEnable()), 0);
-  pMenu->setItemEnabled(menuItem, package::userHasPriv(cNew));
+  menuItem = pMenu->addAction(tr("Enable"), this, SLOT(sEnable()));
+  menuItem->setEnabled(package::userHasPriv(cNew));
 
-  menuItem = pMenu->insertItem(tr("Disable"), this, SLOT(sDisable()), 0);
-  pMenu->setItemEnabled(menuItem, package::userHasPriv(cNew));
+  menuItem = pMenu->addAction(tr("Disable"), this, SLOT(sDisable()));
+  menuItem->setEnabled(package::userHasPriv(cNew));
 }
 
 void packages::sPrint()

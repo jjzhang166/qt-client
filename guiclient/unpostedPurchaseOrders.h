@@ -11,36 +11,28 @@
 #ifndef UNPOSTEDPURCHASEORDERS_H
 #define UNPOSTEDPURCHASEORDERS_H
 
-#include "xwidget.h"
+#include "display.h"
 
 #include "ui_unpostedPurchaseOrders.h"
 
-class unpostedPurchaseOrders : public XWidget, public Ui::unpostedPurchaseOrders
+class unpostedPurchaseOrders : public display, public Ui::unpostedPurchaseOrders
 {
     Q_OBJECT
 
 public:
     unpostedPurchaseOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~unpostedPurchaseOrders();
 
     virtual bool checkSitePrivs(int orderid);
 
 public slots:
     virtual void sDelete();
     virtual void sEdit();
-    virtual void sFillList();
-    virtual void sHandleButtons();
     virtual void sNew();
-    virtual void sPopulateMenu(QMenu*, QTreeWidgetItem*);
+    virtual void sPopulateMenu(QMenu*, QTreeWidgetItem*, int);
     virtual void sRelease();
     virtual void sPrint();
     virtual void sView();
-    virtual void sSearch( const QString & pTarget );
-    virtual void sSearchNext();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual bool setParams(ParameterList &);
 };
 
 #endif // UNPOSTEDPURCHASEORDERS_H

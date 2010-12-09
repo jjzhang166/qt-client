@@ -14,73 +14,10 @@
   <sql>SELECT formatwonumber(&lt;? value("wo_id") ?>) AS wonumber;
     </sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT  
-  id,
-  sort,
-  type,
-  code,
-  descrip,
-  f_qty,
-  uom,
-  f_cost,
-  cost
-FROM (
-&lt;? if exists("showsu") ?>	
-SELECT wooper_id AS id,1 AS sort,&lt;? value("setup") ?> AS type, wrkcnt_code AS code, wooper_descrip1 AS descrip,                                             
-  formatqty(SUM(COALESCE(wooperpost_sutime,0))/60) AS f_qty,&lt;? value("timeuom") ?> AS uom,  
-  formatCost(SUM(COALESCE(wooperpost_sucost,0))) as f_cost, wooper_seqnumber, 
-  SUM(COALESCE(wooperpost_sucost,0)) AS cost 
-FROM wooper 
-  LEFT OUTER JOIN wooperpost ON (wooper_id=wooperpost_wooper_id), 
-  wrkcnt 
-WHERE ((wooper_wo_id=&lt;? value("wo_id") ?>) 
-AND (wooper_wrkcnt_id=wrkcnt_id)) 
-GROUP BY wooper_id, wrkcnt_code, wooper_descrip1, wooper_seqnumber
-&lt;? endif ?>
-&lt;? if exists("showrt") ?>
-  &lt;? if exists("showsu") ?>
-UNION
-  &lt;? endif ?>
-SELECT wooper_id AS id,2 AS sort,&lt;? value("runtime") ?> AS type, wrkcnt_code AS code, wooper_descrip1 AS descrip, 
-  formatqty(SUM(COALESCE(wooperpost_rntime,0))/60) AS f_qty,&lt;? value("timeuom") ?> AS uom, 
-  formatCost(SUM(COALESCE(wooperpost_rncost,0))) AS f_cost, wooper_seqnumber, 
-  SUM(COALESCE(wooperpost_rncost,0)) AS cost 
-FROM wooper 
-  LEFT OUTER JOIN wooperpost ON (wooper_id=wooperpost_wooper_id), 
-  wrkcnt 
-WHERE ((wooper_wo_id=&lt;? value("wo_id") ?>) 
-AND (wooper_wrkcnt_id=wrkcnt_id)) 
-GROUP BY wooper_id, wrkcnt_code, wooper_descrip1, wooper_seqnumber 
-&lt;? endif ?>
-&lt;? if exists("showmatl") ?>
-  &lt;? if exists("showsu") ?>
-UNION
-  &lt;? elseif exists("showrt") ?>
-UNION
-  &lt;? endif ?>
-SELECT womatl_id AS id,3 AS sort,&lt;? value("material") ?> AS type, item_number AS code, item_descrip1 AS descrip, 
-  formatqty(SUM(COALESCE(invhist_invqty,0))) AS f_qty,uom_name AS uom, 
-  formatCost(SUM(COALESCE(invhist_invqty * invhist_unitcost,0))) AS f_cost, 
-  NULL as wooper_seqnumber, SUM(COALESCE(invhist_invqty * invhist_unitcost,0)) AS cost 
-  FROM womatl 
-    LEFT OUTER JOIN womatlpost ON (womatl_id=womatlpost_womatl_id) 
-    LEFT OUTER JOIN invhist ON (womatlpost_invhist_id=invhist_id), 
-  itemsite, item, uom 
-  WHERE ((womatl_wo_id=&lt;? value("wo_id") ?>) 
-  AND (womatl_itemsite_id=itemsite_id) 
-  AND (itemsite_item_id=item_id) 
-  AND (item_inv_uom_id=uom_id)) 
-  GROUP BY womatl_id, item_number, item_descrip1, uom_name
-&lt;? endif ?>
-) AS data ORDER BY
-&lt;? if exists("showsu") ?>
-wooper_seqnumber,
-&lt;? elseif exists("showrt") ?>
-wooper_seqnumber,
-&lt;? endif ?>
-sort,code;</sql>
+  <mqlgroup>manufacture</mqlgroup>
+  <mqlname>jobcosting</mqlname>
  </querysource>
  <rpthead>
   <height>141</height>
@@ -367,7 +304,7 @@ sort,code;</sql>
     <rect>
      <x>630</x>
      <y>0</y>
-     <width>38</width>
+     <width>29</width>
      <height>15</height>
     </rect>
     <font>
@@ -441,25 +378,6 @@ sort,code;</sql>
    </field>
    <field>
     <rect>
-     <x>675</x>
-     <y>0</y>
-     <width>75</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_cost</column>
-    </data>
-   </field>
-   <field>
-    <rect>
      <x>540</x>
      <y>0</y>
      <width>75</width>
@@ -474,8 +392,29 @@ sort,code;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_qty</column>
+     <column>qty</column>
     </data>
+    <format builtin="true">qty</format>
+   </field>
+   <field>
+    <rect>
+     <x>666</x>
+     <y>0</y>
+     <width>84</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>cost</column>
+    </data>
+    <format builtin="true">cost</format>
    </field>
   </detail>
  </section>
@@ -572,8 +511,8 @@ sort,code;</sql>
     <query>detail</query>
     <column>cost</column>
    </data>
-   <format builtin="true" >price</format>
-   <tracktotal subtotal="true" />
+   <format builtin="true">cost</format>
+   <tracktotal subtotal="true"/>
   </field>
   <label>
    <rect>

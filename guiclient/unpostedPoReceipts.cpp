@@ -11,6 +11,7 @@
 // TODO: rename unpostedReceipts
 #include "unpostedPoReceipts.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -29,11 +30,6 @@
 #include "storedProcErrorLookup.h"
 #include "transferOrderItem.h"
 #include "returnAuthorizationItem.h"
-
-#define RECV_ORDER_TYPE_COL	1
-#define RECV_QTY_COL		11
-#define RECV_DATE_COL		12
-#define RECV_GLDISTDATE_COL	13
 
 unpostedPoReceipts::unpostedPoReceipts(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -66,7 +62,7 @@ unpostedPoReceipts::unpostedPoReceipts(QWidget* parent, const char* name, Qt::WF
   _recv->addColumn(tr("G/L Post Date"), _dateColumn,  Qt::AlignCenter, true, "recv_gldistdate");
 
   if (! _privileges->check("ChangePORecvPostDate"))
-    _recv->hideColumn(RECV_GLDISTDATE_COL);
+    _recv->hideColumn(_recv->column("recv_gldistdate"));
 
   if(!_privileges->check("ViewPurchaseOrders"))
     disconnect(_recv, SIGNAL(valid(bool)), _viewOrderItem, SLOT(setEnabled(bool)));
@@ -90,6 +86,8 @@ void unpostedPoReceipts::setParams(ParameterList & params)
   params.append("na",		tr("N/A"));
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
+  if (_metrics->boolean("EnableReturnAuth"))
+    params.append("EnableReturnAuth");
 }
 
 void unpostedPoReceipts::sPrint()
@@ -152,21 +150,23 @@ void unpostedPoReceipts::sViewOrderItem()
 {
   ParameterList params;
   params.append("mode",		"view");
-  if (_recv->currentItem()->text(RECV_ORDER_TYPE_COL) == "PO")
+
+  QString ordertype = _recv->currentItem()->text(_recv->column("recv_order_type"));
+  if (ordertype == "PO")
   {
     params.append("poitem_id",	_recv->altId());
     purchaseOrderItem newdlg(this, "", TRUE);
     newdlg.set(params);
     newdlg.exec();
   }
-  else if (_recv->currentItem()->text(RECV_ORDER_TYPE_COL) == "TO")
+  else if (ordertype == "TO")
   {
     params.append("toitem_id",	_recv->altId());
     transferOrderItem newdlg(this, "", TRUE);
     newdlg.set(params);
     newdlg.exec();
   }
-  else if (_recv->currentItem()->text(RECV_ORDER_TYPE_COL) == "RA")
+  else if (ordertype == "RA")
   {
     params.append("raitem_id",	_recv->altId());
     returnAuthorizationItem newdlg(this, "", TRUE);
@@ -391,23 +391,24 @@ void unpostedPoReceipts::sPost()
 
 void unpostedPoReceipts::sPopulateMenu(QMenu *pMenu,QTreeWidgetItem *pItem)
 {
-  int menuItem;
+  QAction *menuItem;
+  QString ordertype = pItem->text(_recv->column("recv_order_type"));
 
-  menuItem = pMenu->insertItem(tr("Edit Receipt..."),	this, SLOT(sEdit()));
-  menuItem = pMenu->insertItem(tr("Delete Receipt..."),	this, SLOT(sDelete()));
+  menuItem = pMenu->addAction(tr("Edit Receipt..."),	this, SLOT(sEdit()));
+  menuItem = pMenu->addAction(tr("Delete Receipt..."),	this, SLOT(sDelete()));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Post Receipt..."),	this, SLOT(sPost()));
+  menuItem = pMenu->addAction(tr("Post Receipt..."),	this, SLOT(sPost()));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("View Order Item..."),this, SLOT(sViewOrderItem()));
-  pMenu->setItemEnabled(menuItem, (
-    (pItem->text(RECV_ORDER_TYPE_COL) == "PO" && _privileges->check("ViewPurchaseOrders")) ||
-    (pItem->text(RECV_ORDER_TYPE_COL) == "TO" && _privileges->check("ViewTransferOrders")) ||
-    (pItem->text(RECV_ORDER_TYPE_COL) == "RA" && _privileges->check("ViewReturns"))
-    ) );
+  menuItem = pMenu->addAction(tr("View Order Item..."),this, SLOT(sViewOrderItem()));
+  menuItem->setEnabled(
+      (ordertype == "PO" && _privileges->check("ViewPurchaseOrders")) ||
+      (ordertype == "TO" && _privileges->check("ViewTransferOrders")) ||
+      (ordertype == "RA" && _privileges->check("ViewReturns"))
+    );
 }
 
 void unpostedPoReceipts::sFillList()

@@ -10,6 +10,7 @@
 
 #include "voucheringEditList.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -65,15 +66,14 @@ void voucheringEditList::sPrint()
 
 void voucheringEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (_vo->altId() == -1)
   {
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainVouchers"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainVouchers"));
 
-    menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+    menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
   }
 }
 

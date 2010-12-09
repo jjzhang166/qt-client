@@ -22,21 +22,19 @@ printPurchaseOrder::printPurchaseOrder(QWidget* parent, const char* name, bool m
 
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _captive = FALSE;
-
-  _po->setType(cPOUnposted | cPOOpen);
+  _captive = false;
 
   _vendorCopy->setChecked(_metrics->boolean("POVendor"));
 
   if (_metrics->value("POInternal").toInt() > 0)
   {
-    _internalCopy->setChecked(TRUE);
+    _internalCopy->setChecked(true);
     _numOfCopies->setValue(_metrics->value("POInternal").toInt());
   }
   else
   {
-    _internalCopy->setChecked(FALSE);
-    _numOfCopies->setEnabled(FALSE);
+    _internalCopy->setChecked(false);
+    _numOfCopies->setEnabled(false);
   }
 }
 
@@ -53,7 +51,7 @@ void printPurchaseOrder::languageChange()
 enum SetResponse printPurchaseOrder::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -76,8 +74,9 @@ void printPurchaseOrder::sPrint()
   if(q.first() && (q.value("pohead_saved").toBool() == false))
   {
     QMessageBox::warning( this, tr("Cannot Print P/O"),
-      tr("The Purchase Order you are trying to print has not been completed.\n"
-         "Please wait until the Purchase Order has been completely saved.") );
+                         tr("<p>The Purchase Order you are trying to print has "
+                            "not been completed. Please wait until the "
+                            "Purchase Order has been completely saved.") );
     return;
   }
   else if (q.lastError().type() != QSqlError::NoError)
@@ -87,12 +86,14 @@ void printPurchaseOrder::sPrint()
   }
 
   QPrinter  *printer = new QPrinter(QPrinter::HighResolution);
-  bool      setupPrinter = TRUE;
+  bool      setupPrinter = true;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(printer, userCanceled) == false)
   {
     if(!userCanceled)
-      systemError(this, tr("Could not initialize printing system for multiple reports."));
+      systemError(this,
+                  tr("<p>Could not initialize printing system for multiple "
+                     "reports."));
     return;
   }
 
@@ -104,7 +105,7 @@ void printPurchaseOrder::sPrint()
 
     orReport report("PurchaseOrder", params);
     if (report.isValid() && report.print(printer, setupPrinter))
-      setupPrinter = FALSE;
+      setupPrinter = false;
     else
     {
       report.reportError(this);
@@ -124,7 +125,7 @@ void printPurchaseOrder::sPrint()
       orReport report("PurchaseOrder", params);
 
       if (report.isValid() && report.print(printer, setupPrinter))
-          setupPrinter = FALSE;
+          setupPrinter = false;
       else
       {
         report.reportError(this);

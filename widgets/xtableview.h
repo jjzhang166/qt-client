@@ -12,8 +12,9 @@
 #define XTABLEVIEW_H
 
 #include <QItemDelegate>
-#include <QTableView>
 #include <QMenu>
+#include <QSqlRecord>
+#include <QTableView>
 
 #include "xdatawidgetmapper.h"
 #include "xsqltablemodel.h"

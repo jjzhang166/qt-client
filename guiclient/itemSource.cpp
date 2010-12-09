@@ -10,6 +10,7 @@
 
 #include "itemSource.h"
 
+#include <QAction>
 #include <QCloseEvent>
 #include <QMenu>
 #include <QMessageBox>
@@ -25,18 +26,18 @@ itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WFlags
 {
   setupUi(this);
 
-  connect(_add, SIGNAL(clicked()), this, SLOT(sAdd()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSaveClicked()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(this, SIGNAL(rejected()), this, SLOT(sRejected()));
-  connect(_vendorCurrency, SIGNAL(newID(int)), this, SLOT(sFillPriceList()));
-  connect(_vendor, SIGNAL(newId(int)), this, SLOT(sVendorChanged(int)));
+  connect(_add,                SIGNAL(clicked()), this, SLOT(sAdd()));
+  connect(_close,              SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_delete,             SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_edit,               SIGNAL(clicked()), this, SLOT(sEdit()));
+  connect(_itemsrcp,SIGNAL(populateMenu(QMenu*, XTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*)));
+  connect(_save,               SIGNAL(clicked()), this, SLOT(sSaveClicked()));
+  connect(_vendor,            SIGNAL(newId(int)), this, SLOT(sVendorChanged(int)));
+  connect(_vendorCurrency,    SIGNAL(newID(int)), this, SLOT(sFillPriceList()));
+  connect(this,               SIGNAL(rejected()), this, SLOT(sRejected()));
 
   _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured | ItemLineEdit::cTooling);
   _item->setDefaultType(ItemLineEdit::cGeneralPurchased);
-  _vendor->setType(__activeVendors);
 
   _captive = false;
   _new = false;
@@ -69,7 +70,7 @@ itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WFlags
   
   q.exec("SELECT MAX(itemsrc_id),itemsrc_manuf_name, itemsrc_manuf_name FROM itemsrc GROUP BY itemsrc_manuf_name;");
   _manufName->populate(q);
-  _manufName->setCurrentText("");
+  _manufName->setCurrentIndex(0);
 }
 
 itemSource::~itemSource()
@@ -347,7 +348,7 @@ bool itemSource::sSave()
   q.bindValue(":itemsrc_comments", _notes->toPlainText().trimmed());
   q.bindValue(":itemsrc_manuf_name", _manufName->currentText());
   q.bindValue(":itemsrc_manuf_item_number", _manufItemNumber->text());
-  q.bindValue(":itemsrc_manuf_item_descrip", _manufItemDescrip->text());
+  q.bindValue(":itemsrc_manuf_item_descrip", _manufItemDescrip->toPlainText());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)
   {
@@ -427,17 +428,14 @@ void itemSource::sDelete()
 
 void itemSource::sPopulateMenu(QMenu *pMenu)
 {
-  int intMenuItem;
+  QAction *menuItem;
 
-  intMenuItem = pMenu->insertItem("Edit Item Source Price...", this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainItemSources"))
-    pMenu->setItemEnabled(intMenuItem, FALSE);
+  menuItem = pMenu->addAction("Edit Item Source Price...", this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
 
-  intMenuItem = pMenu->insertItem("Delete Item Source Price...", this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainItemSources"))
-    pMenu->setItemEnabled(intMenuItem, FALSE);
+  menuItem = pMenu->addAction("Delete Item Source Price...", this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
 }
-
 
 void itemSource::sFillPriceList()
 {
@@ -486,7 +484,7 @@ void itemSource::populate()
     _vendorRanking->setValue(itemsrcQ.value("itemsrc_ranking").toInt());
     _leadTime->setValue(itemsrcQ.value("itemsrc_leadtime").toInt());
     _notes->setText(itemsrcQ.value("itemsrc_comments").toString());
-    _manufName->setCurrentText(itemsrcQ.value("itemsrc_manuf_name").toString());
+    _manufName->setCode(itemsrcQ.value("itemsrc_manuf_name").toString());
     _manufItemNumber->setText(itemsrcQ.value("itemsrc_manuf_item_number").toString());
     _manufItemDescrip->setText(itemsrcQ.value("itemsrc_manuf_item_descrip").toString());
     sFillPriceList();

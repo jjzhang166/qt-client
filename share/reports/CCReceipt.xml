@@ -34,6 +34,7 @@ FROM remitto;</sql>
        CASE WHEN (ccpay_status='A') THEN &lt;? value("authorized") ?>
             WHEN (ccpay_status='C') THEN &lt;? value("approved") ?>
             WHEN (ccpay_status='D') THEN &lt;? value("declined") ?>
+            WHEN (ccpay_status='R') THEN &lt;? value("reversed") ?>
             WHEN (ccpay_status='V') THEN &lt;? value("voided") ?>
             WHEN (ccpay_status='X') THEN &lt;? value("noapproval") ?>
             ELSE ccpay_status

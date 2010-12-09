@@ -113,7 +113,7 @@ to be bound by its terms.</comment>
               </widget>
              </item>
              <item>
-              <widget class="Q3TimeEdit" name="_postedTime" >
+              <widget class="QTimeEdit" name="_postedTime" >
                <property name="enabled" >
                 <bool>false</bool>
                </property>
@@ -194,7 +194,7 @@ to be bound by its terms.</comment>
               </widget>
              </item>
              <item>
-              <widget class="Q3TimeEdit" name="_scheduledTime" />
+              <widget class="QTimeEdit" name="_scheduledTime" />
              </item>
             </layout>
            </item>
@@ -217,7 +217,7 @@ to be bound by its terms.</comment>
               </widget>
              </item>
              <item>
-              <widget class="Q3TimeEdit" name="_expiresTime" />
+              <widget class="QTimeEdit" name="_expiresTime" />
              </item>
             </layout>
            </item>
@@ -350,13 +350,6 @@ to be bound by its terms.</comment>
    <class>DLineEdit</class>
    <extends>XLineEdit</extends>
    <header>datecluster.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>Q3TimeEdit</class>
-   <extends>QWidget</extends>
-   <header>Qt3Support/Q3TimeEdit</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>

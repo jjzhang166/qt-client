@@ -29,15 +29,17 @@ printShippingForm::printShippingForm(QWidget* parent, const char * name, Qt::Win
   _shipchrg->hide();
   _shipchrgLit->hide();
 
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sPrint()));
   connect(_shipformNumOfCopies, SIGNAL(valueChanged(int)), this, SLOT(sHandleShippingFormCopies(int)));
   connect(_shipformWatermarks, SIGNAL(itemSelected(int)), this, SLOT(sEditShippingFormWatermark()));
   connect(_shipment,	SIGNAL(newId(int)),	this, SLOT(sHandleShipment()));
-  connect(_so,	SIGNAL(newId(int)),	this, SLOT(sHandleSo()));
-  connect(_to,	SIGNAL(newId(int)),	this, SLOT(sHandleTo()));
+  connect(_order,	SIGNAL(numberChanged(QString,QString)),	this, SLOT(sHandleOrder()));
 
   _captive = FALSE;
-  _so->setType(cSoAtShipping);
+  _order->setAllowedTypes(OrderLineEdit::Sales | OrderLineEdit::Transfer);
+  _order->setLabel("");
+  _shipment->setStatus(ShipmentClusterLineEdit::AllStatus);
+  _shipment->setStrict(true);
 
   _shipformWatermarks->addColumn( tr("Copy #"),      _dateColumn, Qt::AlignCenter );
   _shipformWatermarks->addColumn( tr("Watermark"),   -1,          Qt::AlignLeft   );
@@ -52,8 +54,6 @@ printShippingForm::printShippingForm(QWidget* parent, const char * name, Qt::Win
     _shipformWatermarks->topLevelItem(counter)->setText(2, ((_metrics->boolean(QString("ShippingFormShowPrices%1").arg(counter))) ? tr("Yes") : tr("No")));
     }
   }
-
-  _to->setVisible(_metrics->boolean("MultiWhs"));
 }
 
 printShippingForm::~printShippingForm()
@@ -87,8 +87,8 @@ enum SetResponse printShippingForm::set(const ParameterList &pParams)
     {
       _captive = TRUE;
 
-      _so->setId(q.value("cohead_id").toInt());
-      _so->setEnabled(FALSE);
+      _order->setId(q.value("cohead_id").toInt(),"SO");
+      _order->setEnabled(FALSE);
 
       _shipToName->setText(q.value("cohead_shiptoname").toString());
       _shipToAddr1->setText(q.value("cohead_shiptoaddress1").toString());
@@ -100,7 +100,7 @@ enum SetResponse printShippingForm::set(const ParameterList &pParams)
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
-    _print->setFocus();
+    _buttonBox->setFocus();
   }
 
   param = pParams.value("shiphead_id", &valid);
@@ -134,14 +134,12 @@ enum SetResponse printShippingForm::set(const ParameterList &pParams)
     if (ordertype == "SO")
     {
       headp.append("sohead_id", orderid);
-      _to->setId(-1);
-      _so->setId(orderid);
+      _order->setId(orderid, "SO");
     }
     else if (ordertype == "TO")
     {
       headp.append("tohead_id", orderid);
-      _so->setId(-1);
-      _to->setId(orderid);
+      _order->setId(orderid,"TO");
     }
 
     QString heads = "<? if exists(\"sohead_id\") ?>"
@@ -169,15 +167,14 @@ enum SetResponse printShippingForm::set(const ParameterList &pParams)
       if (_shippingForm->id() <= 0)
 	_shippingForm->setId(headq.value("shipform_id").toInt());
 
-      _so->setEnabled(false);
-      _to->setEnabled(false);
+      _order->setEnabled(false);
     }
     else if (headq.lastError().type() != QSqlError::NoError)
     {
       systemError(this, headq.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
-    _print->setFocus();
+    _buttonBox->setFocus();
   }
 
   return NoError;
@@ -217,8 +214,6 @@ void printShippingForm::sEditShippingFormWatermark()
 
 void printShippingForm::sPrint()
 {
-  _print->setFocus();
-
   if (!_shipment->isValid())
   {
     QMessageBox::warning(this, tr("Shipment Number Required"),
@@ -296,11 +291,9 @@ void printShippingForm::sPrint()
     else
     {
       _shipment->setId(-1);
-      _so->setId(-1);
-      _to->setId(-1);
-      _so->setEnabled(true);
-      _to->setEnabled(true);
-      _so->setFocus();
+      _order->setId(-1);
+      _order->setEnabled(true);
+      _order->setFocus();
     }
   }
   else if (q.lastError().type() != QSqlError::NoError)
@@ -322,25 +315,21 @@ void printShippingForm::sHandleShipment()
     params.append("shiphead_id", _shipment->id());
     if (_metrics->boolean("MultiWhs"))
       params.append("MultiWhs");
-    if (_so->isValid())
-      params.append("sohead_id", _so->id());
-    if (_to->isValid())
-      params.append("tohead_id", _to->id());
+    if (_order->isValid() && _order->isSO())
+      params.append("sohead_id", _order->id());
+    if (_order->isValid() && _order->isTO())
+      params.append("tohead_id", _order->id());
     q = mql.toQuery(params);
 
     if (q.first())
     {
       int orderid = q.value("order_id").toInt();
-      if (q.value("shiphead_order_type").toString() == "SO" && _so->id() != orderid)
-      {
-	_to->setId(-1);
-	_so->setId(orderid);
-      }
-      else if (q.value("shiphead_order_type").toString() == "TO" && _to->id() != orderid)
-      {
-	_so->setId(-1);
-	_to->setId(orderid);
-      }
+      if ((q.value("shiphead_order_type").toString() == "SO") &&
+          ((_order->id() != orderid) || (!_order->isSO())))
+        _order->setId(orderid, "SO");
+      else if ((q.value("shiphead_order_type").toString() == "TO") &&
+               ((_order->id() != orderid) || (!_order->isTO())))
+        _order->setId(orderid,"TO");
 
       _shipToName->setText(q.value("shipto").toString());
       _shipToAddr1->setText(q.value("addr1").toString());
@@ -352,23 +341,12 @@ void printShippingForm::sHandleShipment()
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
-    else if (_so->isValid())
-    {
-      _so->setId(-1);
-      sHandleShipment();
-    }
-    else if (_to->isValid())
-    {
-      _to->setId(-1);
-      sHandleShipment();
-    }
     else
     {
       QMessageBox::critical(this, tr("Could not find data"),
-			    tr("<p>Could not find a Sales Order or "
-			       "Transfer Order for this Shipment."));
+                            tr("<p>Could not find shipment on this order."));
 
-      depopulate();
+      _shipment->setId(-1);
     }
   }
   else
@@ -379,129 +357,114 @@ void printShippingForm::sHandleShipment()
 
 void printShippingForm::sHandleSo()
 {
-  if (_so->isValid())
+  _shipment->clear();
+  _shipment->setType(ShipmentClusterLineEdit::SalesOrder);
+  _shipment->limitToOrder(_order->id());
+
+  QString sql("SELECT cohead_id AS order_id, cohead_shiptoname AS shipto, "
+              "       cohead_shiptoaddress1 AS addr1, shiphead_order_type, "
+              "       shiphead_id, shiphead_shipchrg_id, shiphead_shipped, "
+              "	COALESCE(shiphead_shipform_id, cohead_shipform_id) AS shipform_id "
+              "FROM cohead, shiphead "
+              "WHERE ((cohead_id=shiphead_order_id)"
+              "  AND  (shiphead_order_type='SO')"
+              "  AND  (cohead_id=<? value(\"sohead_id\") ?> )"
+              "<? if exists(\"shiphead_id\") ?>"
+              "  AND  (shiphead_id=<? value(\"shiphead_id\") ?> )"
+              "<? endif ?>"
+              ") "
+              "ORDER BY shiphead_shipped "
+              "LIMIT 1;");
+
+  ParameterList params;
+  MetaSQLQuery mql(sql);
+  params.append("sohead_id", _order->id());
+  if (_shipment->isValid())
+    params.append("shiphead_id", _shipment->id());
+  q = mql.toQuery(params);
+
+  if (q.first())
   {
-    _to->setId(-1);
-    QString sql("SELECT cohead_id AS order_id, cohead_shiptoname AS shipto, "
-		"       cohead_shiptoaddress1 AS addr1, shiphead_order_type, "
-		"       shiphead_id, shiphead_shipchrg_id, shiphead_shipped, "
-		"	COALESCE(shiphead_shipform_id, cohead_shipform_id) AS shipform_id "
-		"FROM cohead, shiphead "
-		"WHERE ((cohead_id=shiphead_order_id)"
-		"  AND  (shiphead_order_type='SO')"
-		"  AND  (cohead_id=<? value(\"sohead_id\") ?> )"
-		"<? if exists(\"shiphead_id\") ?>"
-		"  AND  (shiphead_id=<? value(\"shiphead_id\") ?> )"
-		"<? endif ?>"
-		") "
-		"ORDER BY shiphead_shipped "
-		"LIMIT 1;");
+    if (_shipment->id() != q.value("shiphead_id").toInt())
+      _shipment->setId(q.value("shiphead_id").toInt());
 
-    ParameterList params;
-    MetaSQLQuery mql(sql);
-    params.append("sohead_id", _so->id());
-    if (_shipment->isValid())
-      params.append("shiphead_id", _shipment->id());
-    q = mql.toQuery(params);
-
-    if (q.first())
-    {
-      if (_shipment->id() != q.value("shiphead_id").toInt())
-	_shipment->setId(q.value("shiphead_id").toInt());
-
-      _shipToName->setText(q.value("shipto").toString());
-      _shipToAddr1->setText(q.value("addr1").toString());
-      _shippingForm->setId(q.value("shipform_id").toInt());
-      _shipchrg->setId(q.value("shiphead_shipchrg_id").toInt());
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-    else if (_shipment->isValid())
-    {
-      _shipment->setId(-1);
-      sHandleSo();
-    }
-    else
-    {
-      QMessageBox::critical(this, tr("Could not find data"),
-		      tr("<p>Could not find a Shipment for this Sales Order."));
-
-      depopulate();
-    }
+    _shipToName->setText(q.value("shipto").toString());
+    _shipToAddr1->setText(q.value("addr1").toString());
+    _shippingForm->setId(q.value("shipform_id").toInt());
+    _shipchrg->setId(q.value("shiphead_shipchrg_id").toInt());
+  }
+  else if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
   }
   else
+    depopulate();
+}
+
+void printShippingForm::sHandleOrder()
+{
+  if (_order->isSO())
+    sHandleSo();
+  else if (_order->isTO())
+    sHandleTo();
+  else
   {
+    _shipment->removeOrderLimit();
+    _shipment->clear();
     depopulate();
   }
 }
 
 void printShippingForm::sHandleTo()
 {
-  if (_to->isValid())
+  _shipment->clear();
+  _shipment->setType(ShipmentClusterLineEdit::TransferOrder);
+  _shipment->limitToOrder(_order->id());
+
+  QString sql("SELECT tohead_id AS order_id, tohead_destname AS shipto, "
+              "       tohead_destaddress1 AS addr1, shiphead_order_type, "
+              "       shiphead_id, shiphead_shipchrg_id, shiphead_shipped, "
+              "	COALESCE(shiphead_shipform_id, tohead_shipform_id) AS shipform_id "
+              "FROM tohead, shiphead "
+              "WHERE ((tohead_id=shiphead_order_id)"
+              "  AND  (shiphead_order_type='TO')"
+              "  AND  (tohead_id=<? value(\"tohead_id\") ?> )"
+              "<? if exists(\"shiphead_id\") ?>"
+              "  AND  (shiphead_id=<? value(\"shiphead_id\") ?> )"
+              "<? endif ?>"
+              ") "
+              "ORDER BY shiphead_shipped "
+              "LIMIT 1;");
+
+  ParameterList params;
+  MetaSQLQuery mql(sql);
+  params.append("tohead_id", _order->id());
+  if (_shipment->isValid())
+    params.append("shiphead_id", _shipment->id());
+  q = mql.toQuery(params);
+
+  if (q.first())
   {
-    _so->setId(-1);
-    QString sql("SELECT tohead_id AS order_id, tohead_destname AS shipto, "
-		"       tohead_destaddress1 AS addr1, shiphead_order_type, "
-		"       shiphead_id, shiphead_shipchrg_id, shiphead_shipped, "
-		"	COALESCE(shiphead_shipform_id, tohead_shipform_id) AS shipform_id "
-		"FROM tohead, shiphead "
-		"WHERE ((tohead_id=shiphead_order_id)"
-		"  AND  (shiphead_order_type='TO')"
-		"  AND  (tohead_id=<? value(\"tohead_id\") ?> )"
-		"<? if exists(\"shiphead_id\") ?>"
-		"  AND  (shiphead_id=<? value(\"shiphead_id\") ?> )"
-		"<? endif ?>"
-		") "
-		"ORDER BY shiphead_shipped "
-		"LIMIT 1;");
+    if (_shipment->id() != q.value("shiphead_id").toInt())
+      _shipment->setId(q.value("shiphead_id").toInt());
 
-    ParameterList params;
-    MetaSQLQuery mql(sql);
-    params.append("tohead_id", _to->id());
-    if (_shipment->isValid())
-      params.append("shiphead_id", _shipment->id());
-    q = mql.toQuery(params);
-
-    if (q.first())
-    {
-      if (_shipment->id() != q.value("shiphead_id").toInt())
-	_shipment->setId(q.value("shiphead_id").toInt());
-
-      _shipToName->setText(q.value("shipto").toString());
-      _shipToAddr1->setText(q.value("addr1").toString());
-      _shippingForm->setId(q.value("shipform_id").toInt());
-      _shipchrg->setId(q.value("shiphead_shipchrg_id").toInt());
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-    else if (_shipment->isValid())
-    {
-      _shipment->setId(-1);
-      sHandleTo();
-    }
-    else
-    {
-      QMessageBox::critical(this, tr("Could not find data"),
-		  tr("<p>Could not find a Shipment for this Transfer Order."));
-
-      depopulate();
-    }
+    _shipToName->setText(q.value("shipto").toString());
+    _shipToAddr1->setText(q.value("addr1").toString());
+    _shippingForm->setId(q.value("shipform_id").toInt());
+    _shipchrg->setId(q.value("shiphead_shipchrg_id").toInt());
+  }
+  else if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return;
   }
   else
-  {
     depopulate();
-  }
 }
 
 void printShippingForm::depopulate()
 {
-  _shipment->removeOrderLimit();
   //_shipment->clear();
   _shipToName->clear();
   _shipToAddr1->clear();

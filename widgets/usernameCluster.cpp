@@ -163,7 +163,6 @@ UsernameCluster::UsernameCluster(QWidget * parent, const char * name)
   : VirtualCluster(parent, name)
 {
   addNumberWidget(new UsernameLineEdit(this, name));
-  _info->hide();
   _name->setHidden(false);
 }
 
@@ -176,8 +175,6 @@ void UsernameCluster::addNumberWidget(UsernameLineEdit* pNumberWidget)
     _grid->addWidget(_number, 0, 1);
     setFocusProxy(pNumberWidget);
 
-    connect(_list,      SIGNAL(clicked()),      this, SLOT(sEllipses()));
-    connect(_info,      SIGNAL(clicked()),      this, SLOT(sInfo()));
     connect(_number,	SIGNAL(newId(int)),	this,	 SIGNAL(newId(int)));
     connect(_number,	SIGNAL(parsed()), 	this, 	 SLOT(sRefresh()));
     connect(_number,	SIGNAL(valid(bool)),	this,	 SIGNAL(valid(bool)));
@@ -185,10 +182,6 @@ void UsernameCluster::addNumberWidget(UsernameLineEdit* pNumberWidget)
 
 void UsernameCluster::setReadOnly(const bool pReadOnly)
 {
-  if(pReadOnly)
-    _list->hide();
-  else
-    _list->show();
   _number->setEnabled(!pReadOnly);
 }
 

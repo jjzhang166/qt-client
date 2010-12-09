@@ -10,80 +10,66 @@
 
 #include "addresses.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QSqlError>
 #include <QMessageBox>
+#include <QSqlError>
 #include <QVariant>
+
 #include <openreports.h>
 #include <metasql.h>
+
 #include "addresses.h"
 #include "address.h"
 
 #include "storedProcErrorLookup.h"
 
-addresses::addresses(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+addresses::addresses(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "addresses", fl)
 {
-    setupUi(this);
+  setupUi(optionsWidget());
+  setReportName("AddressesMasterList");
+  setWindowTitle(tr("Addresses"));
+  setMetaSQLOptions("addresses", "detail");
+  setNewVisible(true);
+  queryAction()->setVisible(false);
+  queryAction()->setEnabled(false);
 
-    // signals and slots connections
-    connect(_address, SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*, int)), this, SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem*, int)));
-    connect(_edit,		SIGNAL(clicked()),	this, SLOT(sEdit()));
-    connect(_view,		SIGNAL(clicked()),	this, SLOT(sView()));
-    connect(_delete,		SIGNAL(clicked()),	this, SLOT(sDelete()));
-    connect(_print,		SIGNAL(clicked()),	this, SLOT(sPrint()));
-    connect(_close,		SIGNAL(clicked()),	this, SLOT(close()));
-    connect(_new,		SIGNAL(clicked()),	this, SLOT(sNew()));
-    connect(_activeOnly,	SIGNAL(toggled(bool)),	this, SLOT(sFillList()));
+  _activeOnly->setChecked(true);
 
-    _activeOnly->setChecked(true);
-    
-    _address->addColumn(tr("Line 1"),	 -1, Qt::AlignLeft, true, "addr_line1");
-    _address->addColumn(tr("Line 2"),	 75, Qt::AlignLeft, true, "addr_line2");
-    _address->addColumn(tr("Line 3"),	 75, Qt::AlignLeft, true, "addr_line3");
-    _address->addColumn(tr("City"),	 75, Qt::AlignLeft, true, "addr_city");
-    _address->addColumn(tr("State"),	 50, Qt::AlignLeft, true, "addr_state");
-    _address->addColumn(tr("Country"),	 50, Qt::AlignLeft, true, "addr_country");
-    _address->addColumn(tr("Postal Code"),50,Qt::AlignLeft, true, "addr_postalcode");
+  list()->addColumn(tr("Line 1"),	 -1, Qt::AlignLeft, true, "addr_line1");
+  list()->addColumn(tr("Line 2"),	 75, Qt::AlignLeft, true, "addr_line2");
+  list()->addColumn(tr("Line 3"),	 75, Qt::AlignLeft, true, "addr_line3");
+  list()->addColumn(tr("City"),	 75, Qt::AlignLeft, true, "addr_city");
+  list()->addColumn(tr("State"),	 50, Qt::AlignLeft, true, "addr_state");
+  list()->addColumn(tr("Country"),	 50, Qt::AlignLeft, true, "addr_country");
+  list()->addColumn(tr("Postal Code"),50,Qt::AlignLeft, true, "addr_postalcode");
 
-    if (_privileges->check("MaintainAddresses"))
-    {
-      connect(_address, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_address, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-      connect(_address, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    }
-    else
-    {
-      _new->setEnabled(FALSE);
-      connect(_address, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    }
+  connect(_activeOnly,	SIGNAL(toggled(bool)),	this, SLOT(sFillList()));
 
-    sFillList();
-}
+  if (_privileges->check("MaintainAddresses"))
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+  else
+  {
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
+  }
 
-addresses::~addresses()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void addresses::languageChange()
-{
-  retranslateUi(this);
+  sFillList();
 }
 
 void addresses::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem*, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainAddresses"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainAddresses"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("ViewAddresses"));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainAddresses"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainAddresses"));
 }
 
 void addresses::sNew()
@@ -102,7 +88,7 @@ void addresses::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("addr_id", _address->id());
+  params.append("addr_id", list()->id());
 
   address newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -115,7 +101,7 @@ void addresses::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("addr_id", _address->id());
+  params.append("addr_id", list()->id());
 
   address newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -125,7 +111,7 @@ void addresses::sView()
 void addresses::sDelete()
 {
   q.prepare("SELECT deleteAddress(:addr_id) AS result;");
-  q.bindValue(":addr_id", _address->id());
+  q.bindValue(":addr_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -146,30 +132,10 @@ void addresses::sDelete()
   }
 }
 
-void addresses::sPrint()
+bool addresses::setParams(ParameterList &params)
 {
-  ParameterList params;
   if (_activeOnly->isChecked())
     params.append("activeOnly");
 
-  orReport report("AddressesMasterList", params);
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
-}
-
-void addresses::sFillList()
-{
-  QString sql("SELECT addr_id, addr_line1, addr_line2, addr_line3, "
-	      "       addr_city, addr_state, addr_country, addr_postalcode "
-              "FROM addr "
-	      "<? if exists(\"activeOnly\") ?> WHERE addr_active <? endif ?>"
-              "ORDER BY addr_country, addr_state, addr_city, addr_line1;");
-  ParameterList params;
-  if (_activeOnly->isChecked())
-    params.append("activeOnly");
-  MetaSQLQuery mql(sql);
-  XSqlQuery r = mql.toQuery(params);
-  _address->populate(r);
+  return true;
 }

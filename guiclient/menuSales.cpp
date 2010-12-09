@@ -123,24 +123,11 @@
 #include "printRaForm.h"
 
 #include "customer.h"
-#include "searchForCRMAccount.h"
 #include "customers.h"
 #include "prospect.h"
 #include "prospects.h"
 #include "updateCreditStatusByCustomer.h"
 #include "customerGroups.h"
-#include "shipVias.h"
-#include "shippingChargeTypes.h"
-#include "taxCodes.h"
-#include "customerTypes.h"
-#include "termses.h"
-#include "salesReps.h"
-#include "shippingZones.h"
-#include "shippingForms.h"
-#include "salesAccounts.h"
-#include "arAccountAssignments.h"
-#include "customerFormAssignments.h"
-#include "salesCategories.h"
 
 #include "dspCustomerInformationExport.h"
 #include "reassignCustomerTypeByCustomerType.h"
@@ -149,6 +136,8 @@
 #include "printSASpecialCalendarForm.h"
 #include "archRestoreSalesHistory.h"
 #include "allocateReservations.h"
+
+#include "setup.h"
 
 #include "menuSales.h"
 
@@ -191,7 +180,6 @@ menuSales::menuSales(GUIClient *pParent) :
   pricingReportsMenu = new QMenu(parent);
   pricingMenu = new QMenu(parent);
   pricingUpdateMenu = new QMenu(parent);
-  masterInfoMenu = new QMenu(parent);
   utilitiesMenu = new QMenu(parent);
 
   mainMenu->setObjectName("menu.sales");
@@ -222,7 +210,6 @@ menuSales::menuSales(GUIClient *pParent) :
   pricingReportsMenu->setObjectName("menu.sales.pricingreports");
   pricingMenu->setObjectName("menu.sales.pricing");
   pricingUpdateMenu->setObjectName("menu.sales.pricingupdate");
-  masterInfoMenu->setObjectName("menu.sales.masterinfo");
   utilitiesMenu->setObjectName("menu.sales.utilities");
 
   actionProperties acts[] = {
@@ -268,7 +255,6 @@ menuSales::menuSales(GUIClient *pParent) :
     { "so.printInvoices",		     tr("&Print Invoices..."),		SLOT(sPrintInvoices()), billingFormsMenu, "PrintInvoices",	NULL, NULL, true, NULL },
     { "so.printInvoicesByShipvia",	     tr("Print Invoices by Ship &Via..."),	SLOT(sPrintInvoicesByShipvia()), billingFormsMenu, "PrintInvoices",	NULL, NULL, true, NULL },
     { "so.reprintInvoices",		     tr("&Re-Print Invoices..."),	SLOT(sReprintInvoices()), billingFormsMenu, "PrintInvoices",	NULL, NULL, true, NULL },
-    { "separator",	NULL,	NULL,	billingFormsMenu,	"true",		NULL, NULL,  _metrics->boolean("EnableBatchManager") , NULL },
     { "separator",	NULL,	NULL,	billingFormsMenu,	"true",		NULL, NULL, true , NULL },
     { "so.printCreditMemos",		     tr("Print &Credit Memos..."),	SLOT(sPrintCreditMemos()), billingFormsMenu, "PrintCreditMemos",	NULL, NULL, true, NULL },
     { "so.reprintCreditMemos",		     tr("Re-Print Credit &Memos..."),	SLOT(sReprintCreditMemos()), billingFormsMenu, "PrintCreditMemos",	NULL, NULL, true, NULL },
@@ -419,17 +405,14 @@ menuSales::menuSales(GUIClient *pParent) :
     { "menu",	tr("&Prospect"),       (char*)prospectMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
     { "so.enterNewProspect", tr("&New..."),	SLOT(sNewProspect()), prospectMenu, "MaintainProspectMasters",	NULL, NULL, true, NULL },
     { "so.prospects", tr("&List..."),	SLOT(sProspects()), prospectMenu, "MaintainProspectMasters ViewProspectMasters",	NULL, NULL, true, NULL },
-    { "so.searchForProspect", tr("&Search..."),	SLOT(sSearchForProspect()), prospectMenu, "MaintainProspects ViewProspects",	NULL, NULL, true, NULL },
-   
+
     // Sales | Customer
     { "menu",	tr("&Customer"),       (char*)customerMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
     { "so.enterNewCustomer", tr("&New..."),	SLOT(sNewCustomer()), customerMenu, "MaintainCustomerMasters",	NULL, NULL, true, NULL },
     { "so.customers", tr("&List..."),	SLOT(sCustomers()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	NULL, NULL, true, NULL },
-    { "so.searchForCustomer", tr("&Search..."),	SLOT(sSearchForCustomer()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	NULL, NULL, true, NULL  }, 
     { "separator",	NULL,	NULL,	customerMenu,	"true",		NULL, NULL, true, NULL },
     { "so.customerWorkbench", tr("&Workbench..."),	SLOT(sCustomerWorkbench()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	QPixmap(":/images/customerInformationWorkbench.png"), toolBar,  true, tr("Customer Workbench") }, 
     { "separator",	NULL,	NULL,	customerMenu,	"true",		NULL, NULL, true, NULL },
-    { "so.customerTypes", tr("&Types..."),	SLOT(sCustomerTypes()), customerMenu, "MaintainCustomerTypes ViewCustomerTypes",	NULL, NULL, true, NULL },
     { "so.customerGroups", tr("&Groups..."),	SLOT(sCustomerGroups()), customerMenu, "MaintainCustomerGroups ViewCustomerGroups",	NULL, NULL, true, NULL },
    
     // Sales | Pricing
@@ -454,21 +437,6 @@ menuSales::menuSales(GUIClient *pParent) :
     
     { "separator",	NULL,	NULL,	mainMenu,	"true",		NULL, NULL, true, NULL },
 
-    { "menu",	tr("&Master Information"), (char*)masterInfoMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
-    { "so.characteristics", tr("C&haracteristics..."),	SLOT(sCharacteristics()), masterInfoMenu, "MaintainCharacteristics ViewCharacteristics",	NULL, NULL, true, NULL },
-    { "so.salesReps", tr("&Sales Reps..."),	SLOT(sSalesReps()), masterInfoMenu, "MaintainSalesReps ViewSalesReps",	NULL, NULL, true, NULL },
-    { "so.shippingZones", tr("Shipping &Zones..."),	SLOT(sShippingZones()), masterInfoMenu, "MaintainShippingZones ViewShippingZones",	NULL, NULL, true, NULL },
-    { "so.shipVias", tr("Ship &Vias..."),	SLOT(sShipVias()), masterInfoMenu, "MaintainShipVias ViewShipVias",	NULL, NULL, true, NULL },
-    { "so.shippingChargeTypes", tr("Shipping &Charge Types..."),	SLOT(sShippingChargeTypes()), masterInfoMenu, "MaintainShippingChargeTypes ViewShippingChargeTypes",	NULL, NULL, true, NULL },
-    { "so.taxCodes", tr("Ta&x Codes..."),	SLOT(sTaxCodes()), masterInfoMenu, "MaintainTaxCodes ViewTaxCodes",	NULL, NULL, true, NULL },
-    { "so.shippingForms", tr("Shipping &Forms..."),	SLOT(sShippingForms()), masterInfoMenu, "MaintainShippingForms ViewShippingForms",	NULL, NULL, true, NULL },
-    { "so.salesCategories", tr("Sales Cate&gories..."),	SLOT(sSalesCategories()), masterInfoMenu, "MaintainSalesCategories ViewSalesCategories",	NULL, NULL, true, NULL },
-    { "separator",	NULL,	NULL,	masterInfoMenu,	"true",		NULL, NULL, true, NULL },
-    { "so.terms", tr("&Terms..."),	SLOT(sTerms()), masterInfoMenu, "MaintainTerms ViewTerms",	NULL, NULL, true, NULL },
-    { "so.salesAccountAssignments", tr("Sa&les Account Assignments..."),	SLOT(sSalesAccountAssignments()), masterInfoMenu, "MaintainSalesAccount ViewSalesAccount",	NULL, NULL, true, NULL },
-    { "so.arAccountAssignments", tr("&A/R Account Assignments..."),	SLOT(sARAccountAssignments()), masterInfoMenu, "MaintainSalesAccount ViewSalesAccount",	NULL, NULL, true, NULL },
-    { "so.customerFormAssignments", tr("C&ustomer Form Assignments..."),	SLOT(sCustomerFormAssignments()), masterInfoMenu, "MaintainCustomerMasters",	NULL, NULL, true, NULL },
-
     { "menu",	tr("&Utilities"),         (char*)utilitiesMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
     { "so.customerInformationExport", tr("&Customer Information Export..."),	SLOT(sDspCustomerInformationExport()), utilitiesMenu, "MaintainCustomerMasters",	NULL, NULL, true, NULL },
     { "so.reassignCustomerTypeByCustomerType", tr("&Reassign Customer Type by Customer Type..."),	SLOT(sReassignCustomerTypeByCustomerType()), utilitiesMenu, "MaintainCustomerMasters",	NULL, NULL, true, NULL },
@@ -481,6 +449,9 @@ menuSales::menuSales(GUIClient *pParent) :
     { "separator",	NULL,	NULL,	utilitiesMenu,	"true",		NULL, NULL, true, NULL },
     { "sa.archieveSalesHistory", tr("&Archive Sales History..."), SLOT(sArchiveSalesHistory()), utilitiesMenu, "ArchiveSalesHistory", NULL, NULL, true , NULL },
     { "sa.restoreSalesHistory", tr("Restore &Sales History..."), SLOT(sRestoreSalesHistory()), utilitiesMenu, "RestoreSalesHistory", NULL, NULL, true , NULL },
+
+    { "so.setup",	tr("&Setup..."),	SLOT(sSetup()),	mainMenu,	NULL,	NULL,	NULL,	true, NULL	},
+
   };
 
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
@@ -557,11 +528,7 @@ void menuSales::sNewSalesOrder()
 
 void menuSales::sOpenSalesOrders()
 {
-  ParameterList params;
-  params.append("run");
-  openSalesOrders* win = new openSalesOrders();
-  win->set(params);
-  omfgThis->handleNewWindow(win);
+  omfgThis->handleNewWindow(new openSalesOrders());
 }
 
 void menuSales::sPackingListBatch()
@@ -586,11 +553,7 @@ void menuSales::sNewQuote()
 
 void menuSales::sQuotes()
 {
-  ParameterList params;
-  params.append("run");
-  quotes* win = new quotes();
-  win->set(params);
-  omfgThis->handleNewWindow(win);
+  omfgThis->handleNewWindow(new quotes());
 }
 
 //  Billing
@@ -1133,17 +1096,6 @@ void menuSales::sCustomerWorkbench()
   omfgThis->handleNewWindow(newdlg);
 }
 
-
-void menuSales::sSearchForCustomer()
-{
-  ParameterList params;
-  params.append("crmaccnt_subtype", "cust");
-
-  searchForCRMAccount *newdlg = new searchForCRMAccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
-}
-
 void menuSales::sCustomers()
 {
   omfgThis->handleNewWindow(new customers());
@@ -1159,11 +1111,6 @@ void menuSales::sCustomerGroups()
   omfgThis->handleNewWindow(new customerGroups());
 }
 
-void menuSales::sCustomerTypes()
-{
-  omfgThis->handleNewWindow(new customerTypes());
-}
-
 void menuSales::sNewProspect()
 {
   ParameterList params;
@@ -1174,74 +1121,9 @@ void menuSales::sNewProspect()
   omfgThis->handleNewWindow(newdlg);
 }
 
-void menuSales::sSearchForProspect()
-{
-  ParameterList params;
-  params.append("crmaccnt_subtype", "prospect");
-
-  searchForCRMAccount *newdlg = new searchForCRMAccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
-}
-
 void menuSales::sProspects()
 {
   omfgThis->handleNewWindow(new prospects());
-}
-
-void menuSales::sSalesReps()
-{
-  omfgThis->handleNewWindow(new salesReps());
-}
-
-void menuSales::sShippingZones()
-{
-  omfgThis->handleNewWindow(new shippingZones());
-}
-
-void menuSales::sShipVias()
-{
-  omfgThis->handleNewWindow(new shipVias());
-}
-
-void menuSales::sShippingChargeTypes()
-{
-  omfgThis->handleNewWindow(new shippingChargeTypes());
-}
-
-void menuSales::sTaxCodes()
-{
-  omfgThis->handleNewWindow(new taxCodes());
-}
-
-void menuSales::sTerms()
-{
-  omfgThis->handleNewWindow(new termses());
-}
-
-void menuSales::sShippingForms()
-{
-  omfgThis->handleNewWindow(new shippingForms());
-}
-
-void menuSales::sSalesCategories()
-{
-  omfgThis->handleNewWindow(new salesCategories());
-}
-
-void menuSales::sSalesAccountAssignments()
-{
-  omfgThis->handleNewWindow(new salesAccounts());
-}
-
-void menuSales::sARAccountAssignments()
-{
-  omfgThis->handleNewWindow(new arAccountAssignments());
-}
-
-void menuSales::sCustomerFormAssignments()
-{
-  omfgThis->handleNewWindow(new customerFormAssignments());
 }
 
 void menuSales::sDspCustomerInformationExport()
@@ -1252,11 +1134,6 @@ void menuSales::sDspCustomerInformationExport()
 void menuSales::sReassignCustomerTypeByCustomerType()
 {
   reassignCustomerTypeByCustomerType(parent, "", TRUE).exec();
-}
-
-void menuSales::sCharacteristics()
-{
-  omfgThis->handleNewWindow(new characteristics());
 }
 
 void menuSales::sArchiveSalesHistory()
@@ -1289,3 +1166,13 @@ void menuSales::sAllocateReservations()
   allocateReservations(parent, "", TRUE).exec();
 }
 
+
+void menuSales::sSetup()
+{
+  ParameterList params;
+  params.append("module", Xt::SalesModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
+}

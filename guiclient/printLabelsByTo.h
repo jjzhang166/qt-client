@@ -11,6 +11,7 @@
 #ifndef PRINTLABELSBYTO_H
 #define PRINTLABELSBYTO_H
 
+#include <QPushButton>
 #include "xdialog.h"
 #include "ui_printLabelsByTo.h"
 
@@ -28,6 +29,9 @@ public slots:
 
 protected slots:
     virtual void languageChange();
+
+private:
+    QPushButton* _print;
 
 };
 

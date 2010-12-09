@@ -11,6 +11,8 @@
 #ifndef GLSERIES_H
 #define GLSERIES_H
 
+#include <QPushButton>
+
 #include "guiclient.h"
 #include "xdialog.h"
 #include <parameter.h>
@@ -41,8 +43,10 @@ protected slots:
 private:
     int _mode;
     int _glsequence;
+    int _journal;
     bool update();
     bool _submit;
+    QPushButton* _post;
 
 };
 

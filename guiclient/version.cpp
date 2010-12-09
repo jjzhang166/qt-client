@@ -13,10 +13,17 @@
 QString _Name = "xTuple ERP: %1 Edition";
 
 #ifndef __USEALTVERSION__
-QString _Version   = "3.5.6";
-QString _dbVersion = "3.5.6";
+QString _Version   = "3.6.0";
+QString _dbVersion = "3.6.0";
+
 #else
 #include "../altVersion.cpp"
 #endif
 QString _Copyright = "Copyright (c) 1999-2010, OpenMFG, LLC.";
 
+/*: Please translate this Version string to the base version of the application
+    you are translating. This is a hack to embed the application version number
+    into the translation file so the Update Manager can find
+    the best translation file for a given version of the application.
+ */
+static QString _translationFileVersionPlaceholder = QT_TRANSLATE_NOOP("xTuple", "Version");

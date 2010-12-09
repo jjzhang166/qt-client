@@ -23,6 +23,9 @@ cashReceiptMiscDistrib::cashReceiptMiscDistrib(QWidget* parent, const char* name
   // signals and slots connections
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+
+  _account->setType(GLCluster::cRevenue | GLCluster::cExpense |
+                    GLCluster::cAsset | GLCluster::cLiability);
 }
 
 cashReceiptMiscDistrib::~cashReceiptMiscDistrib()

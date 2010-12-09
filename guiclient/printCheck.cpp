@@ -46,7 +46,7 @@ printCheck::printCheck(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _bankaccnt->setType(XComboBox::APBankAccounts);
 
-  _createEFT->setVisible(_metrics->boolean("ACHEnabled"));
+  _createEFT->setVisible(_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"));
 }
 
 printCheck::~printCheck()
@@ -465,7 +465,7 @@ void printCheck::sCreateEFT()
 void printCheck::sEnableCreateEFT()
 {
   if (_bankaccnt->isValid() && _check->isValid() &&
-      _metrics->boolean("ACHEnabled"))
+      _metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
   {
     q.prepare("SELECT bankaccnt_ach_enabled AND vend_ach_enabled AS eftenabled "
               "FROM bankaccnt"
@@ -494,7 +494,7 @@ void printCheck::sEnableCreateEFT()
 
 void printCheck::storeEftFileDir()
 {
-  if (_metrics->boolean("ACHEnabled") && !eftFileDir.isEmpty())
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled") && !eftFileDir.isEmpty())
   {
     xtsettingsSetValue("ACHOutputDirectory", eftFileDir);
   }

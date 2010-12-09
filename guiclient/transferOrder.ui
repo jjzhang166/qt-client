@@ -238,7 +238,11 @@ to be bound by its terms.</comment>
             </layout>
            </item>
            <item row="1" column="5" rowspan="3">
-            <widget class="ProjectCluster" name="_project"/>
+            <widget class="ProjectCluster" name="_project">
+             <property name="label">
+              <string/>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0" rowspan="2">
             <widget class="QLabel" name="_shipDateLit">

@@ -8,49 +8,42 @@
  * to be bound by its terms.
  */
 
+// TODO: move individual credit card config to separate classes like cybersource
+
 #include "configureCC.h"
 
 #include <QMessageBox>
 #include <QSqlError>
 
+#include "configcybersourceprocessor.h"
 #include "configureEncryption.h"
 #include "creditcardprocessor.h"
 
-// Change these definitions to match the indices in the _ccCompany combo box
-#define ANINDEX 0
-#define YPINDEX 1
-#define PTINDEX 2
-#define EXTINDEX 3
-
-configureCC::configureCC(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
+  if (name)
+    setObjectName(name);
+
   connect(_anDuplicateWindow, SIGNAL(valueChanged(int)), this, SLOT(sDuplicateWindow(int)));
   connect(_ccCompany, SIGNAL(currentIndexChanged(int)), this, SLOT(sCCCompanyChanged(int)));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_save,  SIGNAL(clicked()), this, SLOT(sSave()));
 
   _enableChargePreauth->setVisible(false);
   _enableCredit->setVisible(false);
 
-  if (_metricsenc == 0)
-  {
-    QMessageBox::critical( this, tr("Cannot Read Configuration"),
-		    tr("<p>Cannot read encrypted information from database."));
-  }
+  // these ids must match the pages in the stack widget
+  _ccCompany->append(0, "Authorize.Net", "AN");
+  _ccCompany->append(1, "YourPay",       "YP");
+  _ccCompany->append(2, "CyberSource",   "CS");
+  _ccCompany->append(3, "External",      "EXT");
+  if (_metrics->boolean("CCEnablePaymentech"))
+    _ccCompany->append(4, "Paymentech",  "PT");
 
-  _ccCompany->addItem("Authorize.Net");
-  _ccCompany->addItem("YourPay");
-  _ccCompany->addItem("Paymentech");
-  _ccCompany->addItem("External");
-
-  if (! _metrics->boolean("CCEnablePaymentech"))
-  {
-    _ccCompany->removeItem(PTINDEX);
-    _ccWidgetStack->removeWidget(_ccWidgetStack->widget(PTINDEX));
-  }
+  ConfigCyberSourceProcessor *cs = new ConfigCyberSourceProcessor(this);
+  _configcclist.append(cs);
+  _ccWidgetStack->insertWidget(_ccWidgetStack->indexOf(_externalStack), cs);
 
   _ccAccept->setChecked(_metrics->boolean("CCAccept"));
   _ccTest->setChecked(_metrics->boolean("CCTest"));
@@ -88,9 +81,9 @@ configureCC::configureCC(QWidget* parent, const char* name, bool modal, Qt::WFla
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
 
   if (_metrics->value("CCANVer").isEmpty())
-    _anVersion->setCurrentText("3.1");
+    _anVersion->setItemText(0, "3.1");
   else
-    _anVersion->setCurrentText(_metrics->value("CCANVer"));
+    _anVersion->setItemText(0, _metrics->value("CCANVer"));
   _anDelim->setText(_metrics->value("CCANDelim"));
   _anEncap->setText(_metrics->value("CCANEncap"));
   _anDuplicateWindow->setValue(_metrics->value("CCANDuplicateWindow").toInt());
@@ -190,16 +183,22 @@ configureCC::configureCC(QWidget* parent, const char* name, bool modal, Qt::WFla
 
   sDuplicateWindow(_anDuplicateWindow->value());
 
-  QWidget *encryption = new configureEncryption(this);
-  encryption->setName("_encryption");
-  _keyPage->layout()->addWidget(encryption);
-  QPushButton *encbutton = encryption->findChild<QPushButton*>("_save");
-  if (encbutton)
-    encbutton->hide();
-  encbutton = encryption->findChild<QPushButton*>("_close");
-  if (encbutton)
-    encbutton->hide();
-  encryption->show();
+  XAbstractConfigure *encryption = new configureEncryption(this);
+  if (encryption)
+  {
+    encryption->setObjectName("_encryption");
+    _keyPage->layout()->addWidget(encryption);
+    QPushButton *encbutton = encryption->findChild<QPushButton*>("_save");
+    if (encbutton)
+      encbutton->hide();
+    encbutton = encryption->findChild<QPushButton*>("_close");
+    if (encbutton)
+      encbutton->hide();
+    encryption->show();
+  }
+  else if (_metricsenc == 0)
+    QMessageBox::critical( this, tr("Cannot Read Configuration"),
+		    tr("<p>Cannot read encrypted information from database."));
 }
 
 configureCC::~configureCC()
@@ -212,8 +211,10 @@ void configureCC::languageChange()
   retranslateUi(this);
 }
 
-void configureCC::sSave()
+bool configureCC::sSave()
 {
+  emit saving();
+
   _metrics->set("CCAccept",          _ccAccept->isChecked());
   _metrics->set("CCTest",            _ccTest->isChecked());
   _metrics->set("CCValidDays",       _ccValidDays->value());
@@ -236,7 +237,8 @@ void configureCC::sSave()
   if (ccbankq.lastError().type() != QSqlError::NoError)
   {
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
-    return;
+    _amexBank->setFocus();
+    return false;
   }
 
   ccbankq.bindValue(":cctype", "D");
@@ -248,7 +250,8 @@ void configureCC::sSave()
   if (ccbankq.lastError().type() != QSqlError::NoError)
   {
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
-    return;
+    _discoverBank->setFocus();
+    return false;
   }
 
   ccbankq.bindValue(":cctype", "M");
@@ -260,7 +263,8 @@ void configureCC::sSave()
   if (ccbankq.lastError().type() != QSqlError::NoError)
   {
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
-    return;
+    _mastercardBank->setFocus();
+    return false;
   }
 
   /*
@@ -273,7 +277,8 @@ void configureCC::sSave()
   if (ccbankq.lastError().type() != QSqlError::NoError)
   {
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
-    return;
+    _paypalBank->setFocus();
+    return false;
   }
   */
 
@@ -286,7 +291,8 @@ void configureCC::sSave()
   if (ccbankq.lastError().type() != QSqlError::NoError)
   {
     systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
-    return;
+    _visaBank->setFocus();
+    return false;
   }
 
   _metrics->set("CCANVer",               _anVersion->currentText());
@@ -385,34 +391,41 @@ void configureCC::sSave()
     _metricsenc->load();
   }
 
-  CreditCardProcessor *cardproc =
-		  CreditCardProcessor::getProcessor(_ccCompany->currentText());
-  if (! cardproc)
+  for (int i = 0; i < _configcclist.size(); i++)
+    if (! _configcclist.at(i)->sSave())
+      return false;
+
+  if (_ccAccept->isChecked())
   {
-    QMessageBox::warning(this, tr("Error getting Credit Card Processor"),
-			 tr("<p>Internal error finding the right Credit Card "
-			    "Processor. The application saved what it could "
-			    "but you should re-open this window and double-"
-			    "check all of the settings before continuing."));
-  }
-  else if (cardproc && cardproc->testConfiguration() != 0)
-  {
-    if (QMessageBox::question(this, tr("Invalid Credit Card Configuration"),
-			      tr("<p>The configuration has been saved but "
-				 "at least one configuration option appears "
-				 "to be invalid:<p>%1"
-				 "<p>Would you like to fix it now?")
-			      .arg(cardproc->errorMsg()),
-			      QMessageBox::Yes | QMessageBox::Default,
-			      QMessageBox::No) == QMessageBox::Yes)
-      return;
+    CreditCardProcessor *cardproc =
+        CreditCardProcessor::getProcessor(_ccCompany->currentText());
+    if (! cardproc)
+    {
+      QMessageBox::warning(this, tr("Error getting Credit Card Processor"),
+                           tr("<p>Internal error finding the right Credit Card "
+                              "Processor. The application saved what it could "
+                              "but you should re-open this window and double-"
+                              "check all of the settings before continuing."));
+    }
+    else if (cardproc && cardproc->testConfiguration() != 0)
+    {
+      if (QMessageBox::question(this, tr("Invalid Credit Card Configuration"),
+                                tr("<p>The configuration has been saved but "
+                                   "at least one configuration option appears "
+                                   "to be invalid:<p>%1"
+                                   "<p>Would you like to fix it now?")
+        .arg(cardproc->errorMsg()),
+        QMessageBox::Yes | QMessageBox::Default,
+        QMessageBox::No) == QMessageBox::Yes)
+        return false;
+    }
   }
 
   configureEncryption *encryption = _keyPage->findChild<configureEncryption*>("_encryption");
-  if (encryption)
-    encryption->sSave();
+  if (encryption && ! encryption->sSave())
+    return false;
 
-  accept();
+  return true;
 }
 
 void configureCC::sDuplicateWindow(int p)
@@ -422,9 +435,9 @@ void configureCC::sDuplicateWindow(int p)
   _anDuplicateWindowAsHMS->setText(time.toString("HH:mm:ss"));
 }
 
-void configureCC::sCCCompanyChanged(const int pindex)
+void configureCC::sCCCompanyChanged(const int /*pindex*/)
 {
-  if (pindex == ANINDEX)
+  if (_ccCompany->code() == "AN")
   {
     _fraudDetectionIgnoredLit->setText(tr("For Authorize.Net please configure "
                                           "CVV and AVS using the Merchant "
@@ -435,7 +448,7 @@ void configureCC::sCCCompanyChanged(const int pindex)
     _avsCheckGroup->setEnabled(false);
     _avsFailGroup->setEnabled(false);
   }
-  else if (pindex == YPINDEX)
+  else if (_ccCompany->code() == "YP")
   {
     _fraudDetectionIgnoredLit->setText("");
     _ccPasswordLit->setText(tr("Password:"));
@@ -444,12 +457,17 @@ void configureCC::sCCCompanyChanged(const int pindex)
     _avsCheckGroup->setEnabled(true);
     _avsFailGroup->setEnabled(true);
   }
-  else if (pindex == PTINDEX)
+  else if (_ccCompany->code() == "PT")
   {
     _fraudDetectionIgnoredLit->setText("");
     _ccPasswordLit->setText(tr("Password:"));
   }
-  else if (pindex == EXTINDEX)
+  else if (_ccCompany->code() == "CS")
+  {
+    _ccLoginLit->setText(tr("Merchant Id:"));
+    _ccPasswordLit->setText(tr("Transaction Key:"));
+  }
+  else if (_ccCompany->code() == "EXT")
   {
   }
 }

@@ -157,7 +157,10 @@ void freightBreakdown::sSave()
                 "WHERE (quhead_id=:ordid); ");
   }
   else
+  {
     accept();
+    return;
+  }
 
   ord.bindValue(":ordid", _orderid);
   ord.bindValue(":calc", QVariant(_calculated->isChecked()));

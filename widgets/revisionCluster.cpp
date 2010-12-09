@@ -22,12 +22,6 @@ RevisionCluster::RevisionCluster(QWidget *pParent, const char *pName) :
 {
   setLabel("Revision: ");
   addNumberWidget(new RevisionLineEdit(this, pName));
-  _info->hide();
-  if (_x_metrics)
-  {
-    if (!_x_metrics->boolean("RevControl"))
-      _list->hide();
-  }
 
   _description->show();
 
@@ -149,14 +143,9 @@ void RevisionCluster::sModeChanged()
     else
       (static_cast<RevisionLineEdit*>(_number))->setEnabled(TRUE);
 
-    if (_x_preferences->boolean("ClusterButtons"))
-      _list->setVisible(canSearch);
-    else
-    {
-      static_cast<RevisionLineEdit*>(_number)->_listAct->setEnabled(canSearch);
-      static_cast<RevisionLineEdit*>(_number)->_searchAct->setEnabled(canSearch);
-      static_cast<RevisionLineEdit*>(_number)->sUpdateMenu();
-    }
+    static_cast<RevisionLineEdit*>(_number)->_listAct->setEnabled(canSearch);
+    static_cast<RevisionLineEdit*>(_number)->_searchAct->setEnabled(canSearch);
+    static_cast<RevisionLineEdit*>(_number)->sUpdateMenu();
   }
 }
 

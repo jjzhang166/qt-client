@@ -26,8 +26,8 @@ opportunitySource::opportunitySource(QWidget* parent, const char* name, bool mod
   setupUi(this);
 
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
 }
 
@@ -79,9 +79,9 @@ enum SetResponse opportunitySource::set(const ParameterList &pParams)
       _mode = cView;
       _name->setEnabled(FALSE);
       _description->setEnabled(FALSE);
-      _save->hide();
-      _close->setText(tr("&Close"));
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

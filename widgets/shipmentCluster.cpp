@@ -16,7 +16,6 @@ ShipmentCluster::ShipmentCluster(QWidget* pParent, const char* pName) :
     VirtualCluster(pParent, pName)
 {
     addNumberWidget(new ShipmentClusterLineEdit(this, pName));
-    setInfoVisible(false);
 }
 
 // should limitToOrder and removeOrderLimit be at the lineedit level?

@@ -36,7 +36,7 @@
 #include "dspExpediteExceptionsByPlannerCode.h"
 #include "dspReorderExceptionsByPlannerCode.h"
 
-#include "plannerCodes.h"
+#include "setup.h"
 
 #include "menuSchedule.h"
 
@@ -56,14 +56,12 @@ menuSchedule::menuSchedule(GUIClient *Pparent) :
   plannedOrdersMrpMenu = new QMenu(parent);
   reportsMenu = new QMenu(parent);
   reportsPlannedMenu = new QMenu(parent);
-  masterInfoMenu = new QMenu(parent);
 
   mainMenu->setObjectName("menu.sched");
   plannedOrdersMenu->setObjectName("menu.sched.plannedorders");
   plannedOrdersMrpMenu->setObjectName("menu.sched.plannedordersmrp");
   reportsMenu->setObjectName("menu.sched.reports");
   reportsPlannedMenu->setObjectName("menu.sched.reportsplanned");
-  masterInfoMenu->setObjectName("menu.sched.masterinfo");
 
   actionProperties acts[] = {
   
@@ -102,10 +100,8 @@ menuSchedule::menuSchedule(GUIClient *Pparent) :
     { "ms.dspReorderExceptionsByPlannerCode", tr("Reorder &Exceptions..."), SLOT(sDspReorderExceptionsByPlannerCode()),reportsMenu, "ViewInventoryAvailability", NULL, NULL, true , NULL },
 
     { "separator", NULL, NULL, mainMenu, "true", NULL, NULL, true , NULL },
-    
-    //  Master Information
-    { "menu",	tr("&Master Information"), (char*)masterInfoMenu, mainMenu, "true", NULL, NULL, true , NULL },
-    { "ms.plannerCodes", tr("&Planner Codes..."), SLOT(sPlannerCodes()), masterInfoMenu, "MaintainPlannerCodes ViewPlannerCodes", NULL, NULL, true , NULL },
+    { "ms.setup",	tr("&Setup..."),	SLOT(sSetup()),	mainMenu,	NULL,	NULL,	NULL,	true, NULL}
+
   };
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
 
@@ -248,8 +244,13 @@ void menuSchedule::sDspReorderExceptionsByPlannerCode()
   omfgThis->handleNewWindow(new dspReorderExceptionsByPlannerCode());
 }
 
-void menuSchedule::sPlannerCodes()
+void menuSchedule::sSetup()
 {
-  omfgThis->handleNewWindow(new plannerCodes());
+  ParameterList params;
+  params.append("module", Xt::ScheduleModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }
 

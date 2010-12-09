@@ -21,9 +21,11 @@ currency::currency(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
     setupUi(this);
 
-    connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+    _select = _buttonBox->addButton(tr("Select"), QDialogButtonBox::ActionRole);
+
+    connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
     connect(_currBase, SIGNAL(toggled(bool)), this, SLOT(sConfirmBaseFlag()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
+    connect(_buttonBox, SIGNAL(rejected()), this, SLOT(sClose()));
     connect(_select,	SIGNAL(clicked()),	this, SLOT(sSelect()));
 
     // avoid sConfirmBaseFlag() when calling populate for editing base currency
@@ -98,10 +100,9 @@ enum SetResponse currency::set(const ParameterList &pParams)
       _currSymbol->setEnabled(FALSE);
       _currAbbr->setEnabled(FALSE);
       _currBase->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-      
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

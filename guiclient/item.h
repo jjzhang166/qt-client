@@ -35,6 +35,7 @@ public:
 
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
+    virtual void setId(int);
     virtual void sSave();
     virtual void sNew();
     virtual void sEdit();
@@ -81,12 +82,17 @@ public slots:
     virtual void sViewSource();
     virtual void sCopySource();
     virtual void sDeleteSource();
+    virtual void sMaintainItemCosts();
 
 protected:
     virtual void keyPressEvent( QKeyEvent * e );
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void newId(int);
+    void saved(int);
 
 private:
     int _mode;

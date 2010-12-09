@@ -13,189 +13,74 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
-    <height>180</height>
+    <width>510</width>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Sales Category</string>
   </property>
-  <layout class="QVBoxLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="margin">
-    <number>5</number>
-   </property>
-   <item>
-    <layout class="QVBoxLayout">
-     <property name="margin">
-      <number>0</number>
-     </property>
-     <item>
-      <layout class="QHBoxLayout">
-       <property name="margin">
-        <number>0</number>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="_categoryLit">
+       <property name="text">
+        <string>Ca&amp;tegory:</string>
        </property>
-       <item>
-        <layout class="QVBoxLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <layout class="QHBoxLayout">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QVBoxLayout">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="_categoryLit">
-               <property name="text">
-                <string>Ca&amp;tegory:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-               <property name="buddy">
-                <cstring>_category</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="_descriptionLit">
-               <property name="text">
-                <string>&amp;Description:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-               <property name="buddy">
-                <cstring>_description</cstring>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item>
-              <layout class="QHBoxLayout">
-               <property name="margin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="XLineEdit" name="_category"/>
-               </item>
-               <item>
-                <layout class="QHBoxLayout">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="margin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="_active">
-                   <property name="text">
-                    <string>&amp;Active</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="Spacer72">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Expanding</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>65</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="XLineEdit" name="_description"/>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="Spacer12">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Preferred</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout">
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="_close">
-           <property name="text">
-            <string>&amp;Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_save">
-           <property name="text">
-            <string>&amp;Save</string>
-           </property>
-           <property name="autoDefault">
-            <bool>true</bool>
-           </property>
-           <property name="default">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>_category</cstring>
+       </property>
+      </widget>
      </item>
-     <item>
-      <layout class="QGridLayout">
-       <property name="margin">
-        <number>0</number>
+     <item row="0" column="1">
+      <widget class="XLineEdit" name="_category"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QCheckBox" name="_active">
+       <property name="text">
+        <string>&amp;Active</string>
        </property>
-       <item row="0" column="1">
-        <widget class="GLCluster" name="_sales"/>
-       </item>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="_descriptionLit">
+       <property name="text">
+        <string>&amp;Description:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>_description</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="XLineEdit" name="_description"/>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QDialogButtonBox" name="_buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QLabel" name="_salesLit">
          <property name="text">
@@ -208,6 +93,9 @@ to be bound by its terms.</comment>
           <cstring>_sales</cstring>
          </property>
         </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="GLCluster" name="_sales"/>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="_prepaidLit">
@@ -222,10 +110,13 @@ to be bound by its terms.</comment>
          </property>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="GLCluster" name="_prepaid"/>
+       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="_araccntLit">
          <property name="text">
-          <string>A/R Account:</string>
+          <string>Receivables Account:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -235,31 +126,28 @@ to be bound by its terms.</comment>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="GLCluster" name="_prepaid"/>
-       </item>
        <item row="2" column="1">
         <widget class="GLCluster" name="_araccnt"/>
        </item>
       </layout>
      </item>
+     <item>
+      <spacer name="spacer6">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
-   </item>
-   <item>
-    <spacer name="spacer6">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Expanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>16</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
@@ -284,29 +172,10 @@ to be bound by its terms.</comment>
   <tabstop>_sales</tabstop>
   <tabstop>_prepaid</tabstop>
   <tabstop>_araccnt</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <includes>
   <include location="global">parameter.h</include>
  </includes>
  <resources/>
- <connections>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>salesCategory</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -236,9 +236,12 @@ void Screen::clear()
 void Screen::insert()
 {
   unlock();
-  _mapper->model()->insertRows(_model->rowCount(),1);
-  _mapper->toLast();
-  _mapper->clear();
+  if (_mapper->model())
+  {
+    _mapper->model()->insertRows(_model->rowCount(),1);
+    _mapper->toLast();
+    _mapper->clear();
+  }
 }
 
 void Screen::loadAll()

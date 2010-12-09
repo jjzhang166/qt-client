@@ -10,180 +10,146 @@
 
 #include "todoList.h"
 #include "xdialog.h"
-#include "mqlutil.h"
 #include "todoItem.h"
 #include "incident.h"
 #include "customer.h"
 #include "project.h"
 #include "storedProcErrorLookup.h"
 #include "task.h"
+#include "parameterwidget.h"
 
-#include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QVariant>
+#include <QToolBar>
 
-#include <metasql.h>
-#include <openreports.h>
-
-
-todoList::todoList(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+todoList::todoList(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "todoList", fl)
 {
-  setupUi(this);
+  setupUi(optionsWidget());
+  setWindowTitle(tr("To-Do Items"));
+  setReportName("TodoList");
+  setMetaSQLOptions("todolist", "detail");
+  setUseAltId(true);
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setQueryOnStartEnabled(true);
 
-	QSqlDatabase db = QSqlDatabase::database();
+  parameterWidget()->append(tr("Assigned"), "assigned_username", ParameterWidget::User, omfgThis->username());
+  parameterWidget()->append(tr("Assigned Pattern"), "assigned_usr_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Owner"), "owner_username", ParameterWidget::User);
+  parameterWidget()->append(tr("Owner Pattern"), "owner_usr_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("CRM Account"), "crmacct_id", ParameterWidget::Crmacct);
+  parameterWidget()->append(tr("Start Date Before"), "startStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Start Date After"), "startEndDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Due Date Before"), "dueStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Due Date After"), "dueEndDate", ParameterWidget::Date);
 
-  _parameterWidget->append(tr("Assigned"), "assigned_username", ParameterWidget::User, db.userName());
-  _parameterWidget->append(tr("Assigned Pattern"), "assigned_usr_pattern", ParameterWidget::Text);
-  _parameterWidget->append(tr("Owner"), "owner_username", ParameterWidget::User);
-  _parameterWidget->append(tr("Owner Pattern"), "owner_usr_pattern", ParameterWidget::Text);
-  _parameterWidget->append(tr("CRM Account"), "crmAccountId", ParameterWidget::Crmacct);
-  _parameterWidget->append(tr("Start Date Before"), "startStartDate", ParameterWidget::Date);
-  _parameterWidget->append(tr("Start Date After"), "startEndDate", ParameterWidget::Date);
-  _parameterWidget->append(tr("Due Date Before"), "dueStartDate", ParameterWidget::Date);
-  _parameterWidget->append(tr("Due Date After"), "dueEndDate", ParameterWidget::Date);
-  _parameterWidget->applyDefaultFilterSet();
+  parameterWidget()->applyDefaultFilterSet();
 
-  _crmAccount->hide();
-  
-  q.exec("SELECT current_user;");
+  connect(_completed, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_todolist, SIGNAL(toggled(bool)), this,   SLOT(sFillList()));
+  connect(_incidents, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_projects, SIGNAL(toggled(bool)), this,	SLOT(sFillList()));
+  connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
 
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    close();
-  }
+  list()->addColumn(tr("Type"),      _userColumn,  Qt::AlignCenter, true, "type");
+  list()->addColumn(tr("Seq"),        _seqColumn,  Qt::AlignRight,  false, "seq");
+  list()->addColumn(tr("Priority"),  _userColumn,  Qt::AlignLeft,   true, "priority");
+  list()->addColumn(tr("Assigned To"),_userColumn,  Qt::AlignLeft,   true, "usr");
+  list()->addColumn(tr("Name"),              100,  Qt::AlignLeft,   true, "name");
+  list()->addColumn(tr("Description"),        -1,  Qt::AlignLeft,   true, "descrip");
+  list()->addColumn(tr("Status"),  _statusColumn,  Qt::AlignLeft,   true, "status");
+  list()->addColumn(tr("Start Date"),_dateColumn,  Qt::AlignLeft,   false, "start");
+  list()->addColumn(tr("Due Date"),  _dateColumn,  Qt::AlignLeft,   true, "due");
+  list()->addColumn(tr("Parent#"),  _orderColumn,  Qt::AlignLeft,   true, "number");
+  list()->addColumn(tr("Customer#"),_orderColumn,  Qt::AlignLeft,   false, "cust");
+  list()->addColumn(tr("Account#"), _orderColumn,  Qt::AlignLeft,   false, "crmacct_number");
+  list()->addColumn(tr("Account Name"),      100,  Qt::AlignLeft,   true, "crmacct_name");
+  list()->addColumn(tr("Owner"),     _userColumn,  Qt::AlignLeft,   false,"owner");
 
-  connect(_parameterWidget, SIGNAL(updated()), this, SLOT(sFillList()));
-
-	connect(_query, SIGNAL(clicked()), this, SLOT(sFillList()));
-  connect(_autoUpdate,	SIGNAL(toggled(bool)),	this,	SLOT(sHandleAutoUpdate(bool)));
-  connect(_close,	SIGNAL(clicked()),	this,	SLOT(sClose()));
-  connect(_completed,	SIGNAL(toggled(bool)),	this,	SLOT(sFillList()));
-  connect(_delete,	SIGNAL(clicked()),	this,	SLOT(sDelete()));
-
-  connect(_todolist,    SIGNAL(toggled(bool)),  this,   SLOT(sFillList()));
-  connect(_incidents,	SIGNAL(toggled(bool)),	this,	SLOT(sFillList()));
-  connect(_projects,	SIGNAL(toggled(bool)),	this,	SLOT(sFillList()));
-  connect(_new,		SIGNAL(clicked()),	this,	SLOT(sNew()));
-  connect(_print,	SIGNAL(clicked()),	this,	SLOT(sPrint()));
-  connect(_todoList,	SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  connect(_todoList,	SIGNAL(populateMenu(QMenu*, QTreeWidgetItem*, int)),
-	    this,	SLOT(sPopulateMenu(QMenu*)));
-  connect(_todoList,	SIGNAL(itemSelectionChanged()),	this,	SLOT(handlePrivs()));
-
-  connect(_edit,	SIGNAL(clicked()),	this,	SLOT(sEdit()));
-  connect(_view,	SIGNAL(clicked()),	this,	SLOT(sView()));
-  
-
-  _todoList->addColumn(tr("Type"),      _userColumn,  Qt::AlignCenter, true, "type");
-  _todoList->addColumn(tr("Seq"),        _seqColumn,  Qt::AlignRight,  false, "seq");
-  _todoList->addColumn(tr("Priority"),  _userColumn,  Qt::AlignLeft,   true, "priority");
-  _todoList->addColumn(tr("Assigned To"),_userColumn,  Qt::AlignLeft,   true, "usr");
-  _todoList->addColumn(tr("Name"),              100,  Qt::AlignLeft,   true, "name");
-  _todoList->addColumn(tr("Description"),        -1,  Qt::AlignLeft,   true, "descrip");
-  _todoList->addColumn(tr("Status"),  _statusColumn,  Qt::AlignLeft,   true, "status");
-  _todoList->addColumn(tr("Start Date"),_dateColumn,  Qt::AlignLeft,   false, "start");
-  _todoList->addColumn(tr("Due Date"),  _dateColumn,  Qt::AlignLeft,   true, "due");
-  _todoList->addColumn(tr("Parent#"),  _orderColumn,  Qt::AlignLeft,   true, "number");
-  _todoList->addColumn(tr("Customer#"),_orderColumn,  Qt::AlignLeft,   false, "cust");
-  _todoList->addColumn(tr("Account#"), _orderColumn,  Qt::AlignLeft,   false, "crmacct_number");
-  _todoList->addColumn(tr("Account Name"),      100,  Qt::AlignLeft,   true, "crmacct_name");
-  _todoList->addColumn(tr("Owner"),     _userColumn,  Qt::AlignLeft,   false,"owner");
-
-  int menuItem;
+  newAction()->disconnect();
+  QToolButton * newBtn = (QToolButton*)toolBar()->widgetForAction(newAction());
+  newBtn->setPopupMode(QToolButton::MenuButtonPopup);
+  QAction *menuItem;
   QMenu * todoMenu = new QMenu;
-  menuItem = todoMenu->insertItem(tr("Incident"), this, SLOT(sNewIncdt()));
-  if (!_privileges->check("MaintainIncidents"))
-    todoMenu->setItemEnabled(menuItem, FALSE);
-  menuItem = todoMenu->insertItem(tr("To-Do Item"),   this, SLOT(sNew()));
-  if (!_privileges->check("MaintainPersonalTodoList") &&
-      !_privileges->check("MaintainOtherTodoLists"))
-    todoMenu->setItemEnabled(menuItem, FALSE);
-  _new->setMenu(todoMenu);
-
-  if (_preferences->boolean("XCheckBox/forgetful"))
-    _incidents->setChecked(true);
-
-  handlePrivs();
-  sHandleAutoUpdate(_autoUpdate->isChecked());
+  menuItem = todoMenu->addAction(tr("Incident"), this, SLOT(sNewIncdt()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidents"));
+  menuItem = todoMenu->addAction(tr("To-Do Item"),   this, SLOT(sNew()));
+  menuItem->setShortcut(QKeySequence::New);
+  menuItem->setEnabled(_privileges->check("MaintainPersonalTodoList") ||
+                       _privileges->check("MaintainOtherTodoLists"));
+  newBtn->setMenu(todoMenu);
 }
 
-void todoList::languageChange()
+void todoList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)
 {
-    retranslateUi(this);
-}
-
-void todoList::sPopulateMenu(QMenu *pMenu)
-{
-  int menuItem;
+  QAction *menuItem;
 
   bool editPriv =
-      (omfgThis->username() == _todoList->currentItem()->text(3) && _privileges->check("MaintainPersonalTodoList")) ||
-      (omfgThis->username() != _todoList->currentItem()->text(3) && _privileges->check("MaintainOtherTodoLists"));
+      (omfgThis->username() == list()->currentItem()->text(3) && _privileges->check("MaintainPersonalTodoList")) ||
+      (omfgThis->username() != list()->currentItem()->text(3) && _privileges->check("MaintainOtherTodoLists"));
 
   bool viewPriv =
-      (omfgThis->username() == _todoList->currentItem()->text(3) && _privileges->check("ViewPersonalTodoList")) ||
-      (omfgThis->username() != _todoList->currentItem()->text(3) && _privileges->check("ViewOtherTodoLists"));
+      (omfgThis->username() == list()->currentItem()->text(3) && _privileges->check("ViewPersonalTodoList")) ||
+      (omfgThis->username() != list()->currentItem()->text(3) && _privileges->check("ViewOtherTodoLists"));
 
-  menuItem = pMenu->insertItem(tr("New To-Do..."), this, SLOT(sNew()), 0);
-  pMenu->setItemEnabled(menuItem, editPriv);
+  menuItem = pMenu->addAction(tr("New To-Do..."), this, SLOT(sNew()));
+  menuItem->setEnabled(editPriv);
 
-  if (_todoList->currentItem()->altId() == 1)
+  if (list()->currentItem()->altId() == 1)
   {
-    menuItem = pMenu->insertItem(tr("Edit To-Do..."), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, editPriv);
+    menuItem = pMenu->addAction(tr("Edit To-Do..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(editPriv);
 
-    menuItem = pMenu->insertItem(tr("View To-Do..."), this, SLOT(sView()), 0);
-    pMenu->setItemEnabled(menuItem, viewPriv);
+    menuItem = pMenu->addAction(tr("View To-Do..."), this, SLOT(sView()));
+    menuItem->setEnabled(viewPriv);
 
-    menuItem = pMenu->insertItem(tr("Delete To-Do"), this, SLOT(sDelete()), 0);
-    pMenu->setItemEnabled(menuItem, editPriv);
+    menuItem = pMenu->addAction(tr("Delete To-Do"), this, SLOT(sDelete()));
+    menuItem->setEnabled(editPriv);
   }
 
   pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("New Incident..."), this, SLOT(sNewIncdt()), 0);
-  pMenu->setItemEnabled(menuItem,  _privileges->check("MaintainIncidents"));
+  menuItem = pMenu->addAction(tr("New Incident..."), this, SLOT(sNewIncdt()));
+  menuItem->setEnabled( _privileges->check("MaintainIncidents"));
 
-  if ((_todoList->altId() == 1 && !_todoList->currentItem()->text(9).isEmpty()) ||
-       _todoList->altId() == 2)
+  if ((list()->altId() == 1 && !list()->currentItem()->text(9).isEmpty()) ||
+       list()->altId() == 2)
   {
-    menuItem = pMenu->insertItem(tr("Edit Incident"), this, SLOT(sEditIncident()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainIncidents"));
-    menuItem = pMenu->insertItem(tr("View Incident"), this, SLOT(sViewIncident()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewIncidents") ||
-				    _privileges->check("MaintainIncidents"));
+    menuItem = pMenu->addAction(tr("Edit Incident"), this, SLOT(sEditIncident()));
+    menuItem->setEnabled(_privileges->check("MaintainIncidents"));
+    menuItem = pMenu->addAction(tr("View Incident"), this, SLOT(sViewIncident()));
+    menuItem->setEnabled(_privileges->check("ViewIncidents") ||
+                         _privileges->check("MaintainIncidents"));
   }
   pMenu->addSeparator();
 
-  if (_todoList->altId() == 3)
+  if (list()->altId() == 3)
   {
-    menuItem = pMenu->insertItem(tr("Edit Task"), this, SLOT(sEditTask()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainProjects"));
-    menuItem = pMenu->insertItem(tr("View Task"), this, SLOT(sViewTask()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewProjects") ||
-      _privileges->check("MaintainProjects"));
+    menuItem = pMenu->addAction(tr("Edit Task"), this, SLOT(sEditTask()));
+    menuItem->setEnabled(_privileges->check("MaintainProjects"));
+    menuItem = pMenu->addAction(tr("View Task"), this, SLOT(sViewTask()));
+    menuItem->setEnabled(_privileges->check("ViewProjects") ||
+                         _privileges->check("MaintainProjects"));
     pMenu->addSeparator();
   }
 
-  if (_todoList->altId() >= 3)
+  if (list()->altId() >= 3)
   {
-    menuItem = pMenu->insertItem(tr("Edit Project"), this, SLOT(sEditProject()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainProjects"));
-    menuItem = pMenu->insertItem(tr("View Project"), this, SLOT(sViewProject()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewProjects") ||
-      _privileges->check("MaintainProjects"));
+    menuItem = pMenu->addAction(tr("Edit Project"), this, SLOT(sEditProject()));
+    menuItem->setEnabled(_privileges->check("MaintainProjects"));
+    menuItem = pMenu->addAction(tr("View Project"), this, SLOT(sViewProject()));
+    menuItem->setEnabled(_privileges->check("ViewProjects") ||
+                         _privileges->check("MaintainProjects"));
   }
 
-  if (!_todoList->currentItem()->text(10).isEmpty())
+  if (!list()->currentItem()->text(10).isEmpty())
   {
     pMenu->addSeparator();
-    menuItem = pMenu->insertItem(tr("Edit Customer"), this, SLOT(sEditCustomer()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCustomerMasters") || _privileges->check("ViewCustomerMasters"));
-    menuItem = pMenu->insertItem(tr("View Customer"), this, SLOT(sViewCustomer()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewCustomerMasters"));
+    menuItem = pMenu->addAction(tr("Edit Customer"), this, SLOT(sEditCustomer()));
+    menuItem->setEnabled(_privileges->check("MaintainCustomerMasters") || _privileges->check("ViewCustomerMasters"));
+    menuItem = pMenu->addAction(tr("View Customer"), this, SLOT(sViewCustomer()));
+    menuItem->setEnabled(_privileges->check("ViewCustomerMasters"));
   }
 }
 
@@ -193,14 +159,6 @@ enum SetResponse todoList::set(const ParameterList& pParams)
   QVariant param;
   bool	   valid;
 
-  param = pParams.value("usr_id", &valid);
-  if (valid)
-  {
-    //_usr->setId(param.toInt());
-    handlePrivs();
-    sFillList();
-  }
-
   param = pParams.value("run", &valid);
   if (valid)
     sFillList();
@@ -208,69 +166,10 @@ enum SetResponse todoList::set(const ParameterList& pParams)
   return NoError;
 }
 
-void todoList::handlePrivs()
-{
-  //bool editNewPriv  = false;
-  bool editTodoPriv = false;
-  bool viewTodoPriv = false;
-
-  if (! _todoList->currentItem())
-  {
-  }
-  else if (_todoList->altId() == 1)
-  {
-    editTodoPriv =
-      (omfgThis->username() == _todoList->currentItem()->text(3) && _privileges->check("MaintainPersonalTodoList")) ||
-      (_privileges->check("MaintainOtherTodoLists"));
-
-    viewTodoPriv =
-      (omfgThis->username() == _todoList->currentItem()->text(3) && _privileges->check("ViewPersonalTodoList")) ||
-      (_privileges->check("ViewOtherTodoLists"));
-  }
-  else if (_todoList->altId() == 2)
-  {
-    editTodoPriv = _privileges->check("MaintainIncidents");
-    viewTodoPriv = (_privileges->check("ViewIncidents") ||
-				            _privileges->check("MaintainIncidents"));
-  }
-  else if (_todoList->altId() >= 3)
-  {
-    editTodoPriv = _privileges->check("MaintainProjects");
-    viewTodoPriv = (_privileges->check("ViewProjects") ||
-				            _privileges->check("MaintainProjects"));
-  }
-
-  //_usrGroup->setEnabled(_privileges->check("MaintainOtherTodoLists") ||
-		   //original - _privileges->check("ViewOtherTodoLists"));
-		   _privileges->check("ViewOtherTodoLists");
-  _new->setEnabled(_privileges->check("MaintainOtherTodoLists") ||
-                   _privileges->check("ViewOtherTodoLists"));
-  _edit->setEnabled(editTodoPriv && _todoList->id() > 0);
-  _view->setEnabled((editTodoPriv || viewTodoPriv) && _todoList->id() > 0);
-  _delete->setEnabled(editTodoPriv && _todoList->id() > 0 && _todoList->altId() != 2);
-
-  if (editTodoPriv)
-  {
-    disconnect(_todoList,SIGNAL(itemSelected(int)),_view, SLOT(animateClick()));
-    connect(_todoList,	SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
-  else if (viewTodoPriv)
-  {
-    disconnect(_todoList,SIGNAL(itemSelected(int)),_edit, SLOT(animateClick()));
-    connect(_todoList,	SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-  }
-}
-
-void todoList::sClose()
-{
-  close();
-}
-
 void todoList::sNew()
 {
   ParameterList params;
-  if (_crmAccount->isValid())
-    params.append("crmacct_id", _crmAccount->id());
+  parameterWidget()->appendValue(params);
   params.append("mode", "new");
   //if (_selected->isChecked())
   //  params.append("username", _usr->username());
@@ -285,8 +184,7 @@ void todoList::sNew()
 void todoList::sNewIncdt()
 {
   ParameterList params;
-  if (_crmAccount->isValid())
-    params.append("crmacct_id", _crmAccount->id());
+  parameterWidget()->appendValue(params);
   params.append("mode", "new");
 
   incident newdlg(this, "", true);
@@ -297,17 +195,17 @@ void todoList::sNewIncdt()
 
 void todoList::sEdit()
 {
-  if (_todoList->altId() ==2)
+  if (list()->altId() ==2)
     sEditIncident();
-  else if (_todoList->altId() == 3)
+  else if (list()->altId() == 3)
     sEditTask();
-  else if (_todoList->altId() == 4)
+  else if (list()->altId() == 4)
     sEditProject();
   else
   {
     ParameterList params;
     params.append("mode", "edit");
-    params.append("todoitem_id", _todoList->id());
+    params.append("todoitem_id", list()->id());
 
     todoItem newdlg(this, "", TRUE);
     newdlg.set(params);
@@ -319,17 +217,17 @@ void todoList::sEdit()
 
 void todoList::sView()
 {
-  if (_todoList->altId() ==2)
+  if (list()->altId() ==2)
     sViewIncident();
-  else if (_todoList->altId() == 3)
+  else if (list()->altId() == 3)
     sViewTask();
-  else if (_todoList->altId() == 4)
+  else if (list()->altId() == 4)
     sViewProject();
   else
   {
     ParameterList params;
     params.append("mode", "view");
-    params.append("todoitem_id", _todoList->id());
+    params.append("todoitem_id", list()->id());
 
     todoItem newdlg(this, "", TRUE);
     newdlg.set(params);
@@ -342,7 +240,7 @@ void todoList::sDelete()
 {
   QString recurstr;
   QString recurtype;
-  if (_todoList->altId() == 1)
+  if (list()->altId() == 1)
   {
     recurstr = "SELECT MAX(todoitem_due_date) AS max"
                "  FROM todoitem"
@@ -351,7 +249,7 @@ void todoList::sDelete()
     recurtype = "TODO";
   }
   /* TODO: can't delete incidents from here. why not?
-  else if (_todoList->altId() == 2)
+  else if (list()->altId() == 2)
   {
     recurstr = "SELECT MAX(incdt_timestamp) AS max"
                "   FROM incdt"
@@ -366,7 +264,7 @@ void todoList::sDelete()
   {
     XSqlQuery recurq;
     recurq.prepare(recurstr);
-    recurq.bindValue(":id", _todoList->id());
+    recurq.bindValue(":id", list()->id());
     recurq.exec();
     if (recurq.first() && !recurq.value("max").isNull())
     {
@@ -412,7 +310,7 @@ void todoList::sDelete()
     procname = "deleteOpenRecurringItems";
     q.prepare("SELECT deleteOpenRecurringItems(:id, :type, NULL, TRUE)"
               "       AS result;");
-    q.bindValue(":id",   _todoList->id());
+    q.bindValue(":id",   list()->id());
     q.bindValue(":type", recurtype);
     q.exec();
     if (q.first())
@@ -422,7 +320,7 @@ void todoList::sDelete()
   {
     procname = "createRecurringItems";
     q.prepare("SELECT createRecurringItems(:id, :type) AS result;");
-    q.bindValue(":id",   _todoList->id());
+    q.bindValue(":id",   list()->id());
     q.bindValue(":type", recurtype);
     q.exec();
     if (q.first())
@@ -441,16 +339,16 @@ void todoList::sDelete()
     return;
   }
 
-  if (_todoList->altId() == 1)
+  if (list()->altId() == 1)
     q.prepare("SELECT deleteTodoItem(:todoitem_id) AS result;");
-  else if (_todoList->altId() == 3)
+  else if (list()->altId() == 3)
     q.prepare("DELETE FROM prjtask"
               " WHERE (prjtask_id=:todoitem_id); ");
-  else if (_todoList->altId() == 4)
+  else if (list()->altId() == 4)
     q.prepare("SELECT deleteProject(:todoitem_id) AS result");
   else
     return;
-  q.bindValue(":todoitem_id", _todoList->id());
+  q.bindValue(":todoitem_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -469,10 +367,16 @@ void todoList::sDelete()
   sFillList();
 }
 
-void todoList::setParams(ParameterList &params)
+bool todoList::setParams(ParameterList &params)
 {
-  if (_crmAccount->isValid())
-    params.append("crmAccountId",_crmAccount->id());
+  if (!_todolist->isChecked() &&
+      !_incidents->isChecked() &&
+      !_projects->isChecked())
+  {
+    list()->clear();
+    return false;
+  }
+
   if (_todolist->isChecked())
     params.append("todoList");
   if (_completed->isChecked())
@@ -486,73 +390,32 @@ void todoList::setParams(ParameterList &params)
   params.append("incident", tr("Incident"));
   params.append("task", tr("Task"));
   params.append("project", tr("Project"));
-  _parameterWidget->appendValue(params);
-}
+  params.append("complete", tr("Completed"));
+  params.append("deferred", tr("Deferred"));
+  params.append("pending", tr("Pending"));
+  params.append("inprocess", tr("InProcess"));
+  params.append("feedback", tr("Feedback"));
+  params.append("confirmed", tr("Confirmed"));
+  params.append("assigned", tr("Assigned"));
+  params.append("resolved", tr("Resolved"));
+  params.append("concept", tr("concept"));
+  params.append("new", tr("New"));
+  parameterWidget()->appendValue(params);
 
-void todoList::sPrint()
-{
-  ParameterList params;
-  setParams(params);
-
-  if (_todoList->topLevelItemCount() == 0)
-  {
-    QMessageBox::information( this, tr("Cannot Print To-do List"),
-                              tr("The list is empty, the is nothing to print.")  );
-    return;
-  }
-
-  orReport report("TodoList", params);
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
-}
-
-void todoList::sFillList()
-{
-  if (!_todolist->isChecked() && !_incidents->isChecked() && !_projects->isChecked())
-  {
-    _todoList->clear();
-    return;
-  }
-
-  MetaSQLQuery mql = mqlLoad("todolist", "detail");
-  ParameterList params;
-  setParams(params);
-
-  XSqlQuery itemQ = mql.toQuery(params);
-
-  _todoList->populate(itemQ, true);
-
-  if (itemQ.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, itemQ.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  handlePrivs();
-
-  _total->setText(QString::number(_todoList->topLevelItemCount()));
-}
-
-void todoList::sHandleAutoUpdate(bool pAutoUpdate)
-{
-  if (pAutoUpdate)
-    connect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
-  else
-    disconnect(omfgThis, SIGNAL(tick()), this, SLOT(sFillList()));
+  return true;
 }
 
 int todoList::getIncidentId()
 {
   int returnVal = -1;
 
-  if (_todoList->currentItem()->altId() == 2)
-    returnVal = _todoList->id();
-  else if (! _todoList->currentItem()->text(9).isEmpty())
+  if (list()->currentItem()->altId() == 2)
+    returnVal = list()->id();
+  else if (! list()->currentItem()->text(9).isEmpty())
   {
     XSqlQuery incdt;
     incdt.prepare("SELECT incdt_id FROM incdt WHERE (incdt_number=:number);");
-    incdt.bindValue(":number", _todoList->currentItem()->text(9).toInt());
+    incdt.bindValue(":number", list()->currentItem()->text(9).toInt());
     if (incdt.exec() && incdt.first())
      returnVal = incdt.value("incdt_id").toInt();
     else if (incdt.lastError().type() != QSqlError::NoError)
@@ -566,23 +429,23 @@ int todoList::getProjectId()
 {
   int returnVal = -1;
 
-  if (_todoList->currentItem()->altId() == 4)
-    returnVal = _todoList->id();
-  else if (_todoList->currentItem()->altId() == 3)
+  if (list()->currentItem()->altId() == 4)
+    returnVal = list()->id();
+  else if (list()->currentItem()->altId() == 3)
   {
     XSqlQuery prj;
     prj.prepare("SELECT prjtask_prj_id FROM prjtask WHERE (prjtask_id=:prjtask_id);");
-    prj.bindValue(":prjtask_id", _todoList->id());
+    prj.bindValue(":prjtask_id", list()->id());
     if (prj.exec() && prj.first())
      returnVal = prj.value("prjtask_prj_id").toInt();
     else if (prj.lastError().type() != QSqlError::NoError)
      systemError(this, prj.lastError().databaseText(), __FILE__, __LINE__);
   }
-  else if (! _todoList->currentItem()->text(9).isEmpty())
+  else if (! list()->currentItem()->text(9).isEmpty())
   {
     XSqlQuery prj;
     prj.prepare("SELECT prj_id FROM prj WHERE (prj_number=:number);");
-    prj.bindValue(":number", _todoList->currentItem()->text(9));
+    prj.bindValue(":number", list()->currentItem()->text(9));
     if (prj.exec() && prj.first())
      returnVal = prj.value("prj_id").toInt();
     else if (prj.lastError().type() != QSqlError::NoError)
@@ -648,7 +511,7 @@ void todoList::sEditTask()
 
   ParameterList params;
   params.append("mode", "edit");
-  params.append("prjtask_id", _todoList->id());
+  params.append("prjtask_id", list()->id());
 
   task newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -661,7 +524,7 @@ void todoList::sViewTask()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("prjtask_id", _todoList->id());
+  params.append("prjtask_id", list()->id());
 
   task newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -673,7 +536,7 @@ void todoList::sEditCustomer()
 {
   XSqlQuery cust;
   cust.prepare("SELECT cust_id FROM cust WHERE (cust_number=:number);");
-  cust.bindValue(":number", _todoList->currentItem()->text(10));
+  cust.bindValue(":number", list()->currentItem()->text(10));
   if (cust.exec() && cust.first())
   {
     ParameterList params;
@@ -692,7 +555,7 @@ void todoList::sViewCustomer()
 {
   XSqlQuery cust;
   cust.prepare("SELECT cust_id FROM cust WHERE (cust_number=:number);");
-  cust.bindValue(":number", _todoList->currentItem()->text(10));
+  cust.bindValue(":number", list()->currentItem()->text(10));
   if (cust.exec() && cust.first())
   {
     ParameterList params;

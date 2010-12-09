@@ -10,6 +10,7 @@
 
 #include "searchForEmp.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QSqlError>
 #include <QVariant>
@@ -131,18 +132,18 @@ void searchForEmp::sPrint()
 
 void searchForEmp::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  pMenu->setItemEnabled(menuItem, _privileges->check("MaintainEmployees"));
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainEmployees"));
 
   if (((XTreeWidgetItem *)pSelected)->altId() > 0)
   {
-    pMenu->insertSeparator();
-    menuItem = pMenu->insertItem(tr("View Manager..."), this, SLOT(sViewMgr()), 0);
-    menuItem = pMenu->insertItem(tr("Edit Manager..."), this, SLOT(sEditMgr()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainEmployees"));
+    pMenu->addSeparator();
+    menuItem = pMenu->addAction(tr("View Manager..."), this, SLOT(sViewMgr()));
+    menuItem = pMenu->addAction(tr("Edit Manager..."), this, SLOT(sEditMgr()));
+    menuItem->setEnabled(_privileges->check("MaintainEmployees"));
   }
 }
 

@@ -11,11 +11,11 @@
 #ifndef CONFIGUREGL_H
 #define CONFIGUREGL_H
 
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureGL.h"
 
-class configureGL : public XDialog, public Ui::configureGL
+class configureGL : public XAbstractConfigure, public Ui::configureGL
 {
     Q_OBJECT
 
@@ -24,10 +24,13 @@ public:
     ~configureGL();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void saving();
 
 };
 

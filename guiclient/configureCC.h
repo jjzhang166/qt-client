@@ -11,12 +11,16 @@
 #ifndef CONFIGURECC_H
 #define CONFIGURECC_H
 
+#include <QList>
+
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureCC.h"
 
-class configureCC : public XDialog, public Ui::configureCC
+class ConfigCreditCardProcessor;
+
+class configureCC : public XAbstractConfigure, public Ui::configureCC
 {
     Q_OBJECT
 
@@ -26,13 +30,17 @@ public:
 
 public slots:
     virtual void sDuplicateWindow(int);
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
     virtual void sCCCompanyChanged(const int);
 
-private:
+  protected:
+    QList<ConfigCreditCardProcessor*> _configcclist;
+
+signals:
+    void saving();
 
 };
 

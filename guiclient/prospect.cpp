@@ -10,11 +10,12 @@
 
 #include "prospect.h"
 
+#include <QAction>
+#include <QCloseEvent>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QCloseEvent>
 
 #include <openreports.h>
 
@@ -146,12 +147,12 @@ enum SetResponse prospect::set(const ParameterList &pParams)
       _newQuote->setEnabled(FALSE);
       _save->hide();
 
-      disconnect(_quotes, SIGNAL(itemSelected(int)), _editQuote, SLOT(animateClick(QMenu*)));
+      disconnect(_quotes, SIGNAL(itemSelected(int)), _editQuote, SLOT(animateClick()));
       disconnect(_quotes, SIGNAL(valid(bool)),       _editQuote, SLOT(setEnabled(bool)));
       disconnect(_quotes, SIGNAL(valid(bool)),       _editQuote, SLOT(setEnabled(bool)));
       disconnect(_quotes, SIGNAL(valid(bool)),     _deleteQuote, SLOT(setEnabled(bool)));
 
-      connect(_quotes, SIGNAL(itemSelected(int)), _viewQuote, SLOT(animateClick(QMenu*)));
+      connect(_quotes, SIGNAL(itemSelected(int)), _viewQuote, SLOT(animateClick()));
 
       _close->setText(tr("&Close"));
       _close->setFocus();
@@ -286,52 +287,11 @@ void prospect::sSave()
 	return;
     }
   }
-  else
-  {
-/*
-// This is now done in a trigger
-    q.prepare( "SELECT createCrmAcct(:number, :name, :active, :type, NULL, "
-	       "      NULL, NULL, :prospect_id, NULL, NULL, :cntct, NULL) AS crmacctid;");
-    q.bindValue(":number",	_number->text().trimmed());
-    q.bindValue(":name",	_name->text().trimmed());
-    q.bindValue(":active",	QVariant(true, 0));
-    q.bindValue(":type",	"O");	// TODO - when will this be "I"?
-    q.bindValue(":prospect_id",	_prospectid);
-    if (_contact->id() > 0)
-      q.bindValue(":cntct",	_contact->id());
-    q.exec();
-    if (q.first())
-    {
-      int crmacctid = q.value("crmacctid").toInt();
-      if (crmacctid <= 0)
-      {
-	rollback.exec();
-	systemError(this, storedProcErrorLookup("createCrmAcct", crmacctid),
-		    __FILE__, __LINE__);
-	return;
-      }
-      _crmacct->setId(crmacctid);
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      rollback.exec();
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-
-    // need to save contacts again with updated CRM Account
-    if (saveContact(_contact) < 0)
-    {
-      rollback.exec();
-      _contact->setFocus();
-      return;
-    }
- */
-  }
 
   q.exec("COMMIT;");
   _NumberGen = -1;
   omfgThis->sProspectsUpdated();
+  emit saved(_prospectid);
   if (_mode == cNew)
   {
     omfgThis->sCrmAccountsUpdated(_crmacct->id());
@@ -463,10 +423,10 @@ void prospect::sFillQuotesList()
 
 void prospect::sPopulateQuotesMenu(QMenu *menuThis)
 {
-  menuThis->insertItem(tr("Edit..."),   this, SLOT(sEditQuote()),   0 );
-  menuThis->insertItem(tr("View..."),   this, SLOT(sViewQuote()),   0 );
-  menuThis->insertItem(tr("Delete..."), this, SLOT(sDeleteQuote()), 0 );
-  menuThis->insertItem(tr("Print..."),  this, SLOT(sPrintQuote()),  0 );
+  menuThis->addAction(tr("Edit..."),   this, SLOT(sEditQuote()));
+  menuThis->addAction(tr("View..."),   this, SLOT(sViewQuote()));
+  menuThis->addAction(tr("Delete..."), this, SLOT(sDeleteQuote()));
+  menuThis->addAction(tr("Print..."),  this, SLOT(sPrintQuote()));
 }
 
 void prospect::populate()

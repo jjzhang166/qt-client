@@ -11,34 +11,26 @@
 #ifndef ITEMS_H
 #define ITEMS_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
 #include <parameter.h>
 
 #include "ui_items.h"
 
-class items : public XWidget, public Ui::items
+class items : public display, public Ui::items
 {
     Q_OBJECT
 
 public:
     items(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~items();
 
 public slots:
-    virtual void sPopulateMenu( QMenu * );
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
     virtual void sDelete();
-    virtual void sFillList( int pItemid, bool pLocal );
-    virtual void sFillList();
-    virtual void sSearch( const QString & pTarget );
     virtual void sCopy();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual bool setParams(ParameterList &);
 };
 
 #endif // ITEMS_H

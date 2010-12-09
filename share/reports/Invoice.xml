@@ -3,7 +3,7 @@
  <title>Invoice</title>
  <name>Invoice</name>
  <description>With Logo - With Invoice Currency</description>
- <parameter default="97" active="true" listtype="dynamic" type="string" name="invchead_id" >
+ <parameter default="97" active="true" listtype="dynamic" type="string" name="invchead_id">
   <description></description>
   <query>SELECT invchead_id, invchead_invcnumber FROM invchead ORDER BY invchead_invcnumber;</query>
  </parameter>
@@ -14,6 +14,12 @@
   </data>
   <opacity>25</opacity>
  </watermark>
+ <grid>
+  <snap/>
+  <show/>
+  <x>0.05</x>
+  <y>0.05</y>
+ </grid>
  <size>Letter</size>
  <portrait/>
  <topmargin>50</topmargin>
@@ -53,36 +59,29 @@ ORDER BY ordernumber;</sql>
  </querysource>
  <querysource>
   <name>Detail</name>
-  <sql>SELECT invcitem_linenumber,&#xd;
-      formatQty(invcitem_billed) AS f_billed,&#xd;
-      (select uom_name from uom where uom_id = invcitem_qty_uom_id) AS invuom,&#xd;
-      CASE WHEN (item_number IS NULL) THEN invcitem_number&#xd;
-           WHEN (invcitem_custpn != '') THEN invcitem_custpn&#xd;
-           else item_number&#xd;
-      END AS number,&#xd;
-      CASE WHEN (item_number IS NULL) THEN invcitem_descrip&#xd;
-           WHEN (invcitem_custpn != '' AND itemalias_usedescrip=TRUE) THEN itemalias_descrip1&#xd;
-           ELSE item_descrip1&#xd;
-      END AS descrip1,&#xd;
-      CASE WHEN (invcitem_custpn != '' AND itemalias_usedescrip=TRUE) THEN itemalias_descrip2&#xd;
-           ELSE item_descrip2&#xd;
-      END AS descrip2,&#xd;
-      formatPrice(invcitem_qty_invuomratio * invcitem_price / COALESCE(invcitem_price_invuomratio,1)) AS f_unitprice,&#xd;
-      formatMoney(round((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / COALESCE(invcitem_price_invuomratio,1)),2)) AS f_extprice,&#xd;
-      invcitem_notes,&#xd;
-      getInvcitemLotSerial(invcitem_id) AS lotserial,&#xd;
---Sub-select updated for 3.1 to support kitting&#xd;
-      characteristicsToString('SI',(SELECT coitem_id FROM coitem, cohead, invchead, itemsite &#xd;
-      WHERE (cohead_number=invchead_ordernumber and invchead_id=&lt;? value("invchead_id") ?>&#xd;
-      and coitem_cohead_id=cohead_id &#xd;
-      and invcitem_item_id = item_id&#xd;
-      and coitem_itemsite_id = itemsite_id&#xd;
-      and itemsite_item_id = item_id&#xd;
-      and coitem_linenumber=invcitem_linenumber)&#xd;
-      ), '=', ', ') &#xd;
-      AS coitem_characteristics&#xd;
-FROM invcitem LEFT OUTER JOIN (item JOIN uom ON (item_inv_uom_id=uom_id)) ON (invcitem_item_id=item_id) LEFT OUTER JOIN itemalias ON (itemalias_item_id=item_id AND itemalias_number=invcitem_custpn)&#xd;
-WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>)&#xd;
+  <sql>SELECT invcitem_linenumber,
+      formatQty(invcitem_billed) AS f_billed,
+      (select uom_name from uom where uom_id = invcitem_qty_uom_id) AS invuom,
+      CASE WHEN (item_number IS NULL) THEN invcitem_number
+           WHEN (invcitem_custpn != '') THEN invcitem_custpn
+           else item_number
+      END AS number,
+      CASE WHEN (item_number IS NULL) THEN invcitem_descrip
+           WHEN (invcitem_custpn != '' AND itemalias_usedescrip=TRUE) THEN itemalias_descrip1
+           ELSE item_descrip1
+      END AS descrip1,
+      CASE WHEN (invcitem_custpn != '' AND itemalias_usedescrip=TRUE) THEN itemalias_descrip2
+           ELSE item_descrip2
+      END AS descrip2,
+      formatPrice(invcitem_qty_invuomratio * invcitem_price / COALESCE(invcitem_price_invuomratio,1)) AS f_unitprice,
+      formatMoney(round((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / COALESCE(invcitem_price_invuomratio,1)),2)) AS f_extprice,
+      invcitem_notes,
+      getInvcitemLotSerial(invcitem_id) AS lotserial,
+--Sub-select updated for 3.1 to support kitting
+      characteristicsToString('SI',invcitem_coitem_id, '=', ', ') 
+      AS coitem_characteristics
+FROM invcitem LEFT OUTER JOIN (item JOIN uom ON (item_inv_uom_id=uom_id)) ON (invcitem_item_id=item_id) LEFT OUTER JOIN itemalias ON (itemalias_item_id=item_id AND itemalias_number=invcitem_custpn)
+WHERE (invcitem_invchead_id=&lt;? value("invchead_id") ?>)
 ORDER BY invcitem_linenumber;</sql>
  </querysource>
  <querysource>
@@ -265,6 +264,19 @@ order by cosmisc_shipdate;</sql>
  <pghead>
   <firstpage/>
   <height>360</height>
+  <image>
+   <rect>
+    <x>215</x>
+    <y>5</y>
+    <width>270</width>
+    <height>111</height>
+   </rect>
+   <mode>stretch</mode>
+   <data>
+    <query>logo</query>
+    <column>image_data</column>
+   </data>
+  </image>
   <label>
    <rect>
     <x>500</x>
@@ -557,19 +569,6 @@ order by cosmisc_shipdate;</sql>
     <column>f_billtoaddress</column>
    </data>
   </text>
-  <image>
-   <rect>
-    <x>215</x>
-    <y>5</y>
-    <width>270</width>
-    <height>111</height>
-   </rect>
-   <mode>stretch</mode>
-   <data>
-    <query>logo</query>
-    <column>image_data</column>
-   </data>
-  </image>
   <label>
    <rect>
     <x>350</x>
@@ -1543,7 +1542,7 @@ order by cosmisc_shipdate;</sql>
       <query>allocatedCMs</query>
       <column>allocated_invccurr</column>
      </data>
-     <format builtin="true" >extprice</format>
+     <format builtin="true">extprice</format>
      <tracktotal/>
     </field>
    </foot>

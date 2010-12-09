@@ -3,7 +3,7 @@
  <title>Purchase Order</title>
  <name>PurchaseOrder</name>
  <description>Selecting an Alt Address on the PO will cause the printed PO to display that address as the Ship To on the printed document.</description>
- <parameter default="999" active="true" listtype="static" type="string" name="pohead_id" >
+ <parameter default="999" active="true" listtype="static" type="string" name="pohead_id">
   <description></description>
  </parameter>
  <watermark>
@@ -82,14 +82,22 @@ ORDER BY poitem_linenumber;</sql>
  </querysource>
  <querysource>
   <name>Foot</name>
-  <sql>SELECT formatExtPrice(COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)) AS f_subtotal,
-       formatExtPrice(COALESCE(SUM(poitem_freight)+pohead_freight,0)) AS f_totalfreight,
-       formatExtPrice(COALESCE(pohead_tax,0)) AS f_tax,
-       formatExtPrice(COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0)+COALESCE(SUM(poitem_freight)+pohead_freight,0)+COALESCE(pohead_tax,0)) AS f_totaldue
-  FROM poitem, pohead
- WHERE ( (poitem_pohead_id=&lt;? value("pohead_id") ?>)
-  AND (pohead_id=poitem_pohead_id) )
- GROUP BY pohead_freight, pohead_tax;</sql>
+  <sql>SELECT formatExtPrice(subtotal) AS f_subtotal,
+       formatExtPrice(totalfreight) AS f_totalfreight,
+       formatExtPrice(tax) AS f_tax,
+       formatExtPrice(subtotal + totalfreight + tax) AS f_totaldue
+FROM
+( SELECT COALESCE(SUM(poitem_qty_ordered * poitem_unitprice), 0) AS subtotal,
+         COALESCE(SUM(poitem_freight)+pohead_freight,0) AS totalfreight,
+         (SELECT COALESCE(SUM(tax), 0.0)
+          FROM (SELECT ROUND(SUM(taxdetail_tax),2) AS tax
+                FROM tax
+                     JOIN calculateTaxDetailSummary('PO', &lt;? value("pohead_id") ?>, 'T') ON (taxdetail_tax_id=tax_id)
+                GROUP BY tax_id) AS taxdata) AS tax
+  FROM pohead JOIN poitem ON (poitem_pohead_id=pohead_id)
+  WHERE (pohead_id=&lt;? value("pohead_id") ?>)
+  GROUP BY pohead_freight ) AS data;
+</sql>
  </querysource>
  <querysource>
   <name>Logo</name>
@@ -159,6 +167,19 @@ WHERE
  </querysource>
  <pghead>
   <height>376</height>
+  <image>
+   <rect>
+    <x>290</x>
+    <y>10</y>
+    <width>225</width>
+    <height>75</height>
+   </rect>
+   <mode>stretch</mode>
+   <data>
+    <query>Logo</query>
+    <column>image_data</column>
+   </data>
+  </image>
   <label>
    <rect>
     <x>550</x>
@@ -596,19 +617,6 @@ WHERE
    <vcenter/>
    <string>LINE</string>
   </label>
-  <image>
-   <rect>
-    <x>290</x>
-    <y>10</y>
-    <width>225</width>
-    <height>75</height>
-   </rect>
-   <mode>stretch</mode>
-   <data>
-    <query>Logo</query>
-    <column>image_data</column>
-   </data>
-  </image>
   <label>
    <rect>
     <x>65</x>

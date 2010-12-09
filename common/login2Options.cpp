@@ -21,7 +21,7 @@ login2Options::login2Options(QWidget* parent, const char* name, bool modal, Qt::
   setObjectName(name);
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox2, SIGNAL(accepted()), this, SLOT(sSave()));
 
   _saveSettings = true;
 }

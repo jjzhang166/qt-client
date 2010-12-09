@@ -12,11 +12,11 @@
 #define CONFIGUREPO_H
 
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configurePO.h"
 
-class configurePO : public XDialog, public Ui::configurePO
+class configurePO : public XAbstractConfigure, public Ui::configurePO
 {
     Q_OBJECT
 
@@ -25,10 +25,13 @@ public:
     ~configurePO();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
+
+signals:
+    void saving();
 
 };
 

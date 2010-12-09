@@ -25,7 +25,7 @@ public:
     ~plannedOrder();
 
 public slots:
-    virtual enum SetResponse set( ParameterList & pParams );
+    virtual enum SetResponse set(const ParameterList & pParams);
     virtual void sClose();
     virtual void sCreate();
     virtual void sUpdateStartDate();

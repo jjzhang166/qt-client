@@ -24,7 +24,9 @@ lotSerial::lotSerial(QWidget* parent, const char* name, bool modal, Qt::WFlags f
 {
     setupUi(this);
 
-    connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+    _print = _buttonBox->addButton(tr("Print Label"),QDialogButtonBox::ActionRole);
+
+    connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
     connect(_lotSerial, SIGNAL(valid(bool)), this, SLOT(populate()));
     connect(_notes, SIGNAL(textChanged()), this, SLOT(sChanged()));
     connect(_deleteChar,  SIGNAL(clicked()), this, SLOT(sDeleteCharass()));

@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>618</height>
+    <height>630</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -227,6 +227,16 @@ to be bound by its terms.</comment>
           <widget class="QPushButton" name="_workbench">
            <property name="text">
             <string>Workbench...</string>
+           </property>
+           <property name="autoDefault">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_cost">
+           <property name="text">
+            <string>Costs...</string>
            </property>
            <property name="autoDefault">
             <bool>true</bool>
@@ -852,11 +862,7 @@ to be bound by its terms.</comment>
              <widget class="QWidget" name="_notesPage">
               <layout class="QGridLayout">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="_notes">
-                 <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
-                 </property>
-                </widget>
+                <widget class="XTextEdit" name="_notes"/>
                </item>
               </layout>
              </widget>
@@ -1565,6 +1571,11 @@ to be bound by its terms.</comment>
    <header>xtreewidget.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>XTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>xtextedit.h</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>_itemNumber</tabstop>
@@ -1589,7 +1600,6 @@ to be bound by its terms.</comment>
   <tabstop>_packWeight</tabstop>
   <tabstop>_tab</tabstop>
   <tabstop>_notesButton</tabstop>
-  <tabstop>_notes</tabstop>
   <tabstop>_extDescripButton</tabstop>
   <tabstop>_extDescription</tabstop>
   <tabstop>_commentsButton</tabstop>

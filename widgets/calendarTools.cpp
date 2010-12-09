@@ -77,8 +77,8 @@ PeriodsListView::PeriodsListView(QWidget *pParent, const char *pName) :
         return;
     }
   
-    addColumn(tr("Name"),             _itemColumn, Qt::AlignLeft   );
-    addColumn(tr("Selected Periods"), -1,          Qt::AlignCenter );
+    addColumn(tr("Name"),    _itemColumn, Qt::AlignLeft,   true, "periodname");
+    addColumn(tr("Selected Periods"), -1, Qt::AlignCenter, true, "periodrange");
   }
 }
 
@@ -96,8 +96,8 @@ void PeriodsListView::populate(int pCalheadid)
     clear();
 
     if (caltype.value("calhead_type").toString() == "A")
-      sql = QString( "SELECT acalitem_id, periodstart, periodend, acalitem_name,"
-                     "       (formatDate(periodstart) || ' - ' || formatDate(periodend)) "
+      sql = QString( "SELECT acalitem_id, periodstart, periodend, acalitem_name AS periodname,"
+                     "       (formatDate(periodstart) || ' - ' || formatDate(periodend)) AS periodrange "
                      "FROM ( SELECT acalitem_id, acalitem_name,"
                      "              findPeriodStart(acalitem_id) AS periodstart,"
                      "              findPeriodEnd(acalitem_id) AS periodend "
@@ -107,8 +107,8 @@ void PeriodsListView::populate(int pCalheadid)
               .arg(pCalheadid);
 
     else if (caltype.value("calhead_type").toString() == "R")
-      sql = QString( "SELECT rcalitem_id, periodstart, periodend, rcalitem_name,"
-                     "       (formatDate(periodstart) || ' - ' || formatDate(periodend)) "
+      sql = QString( "SELECT rcalitem_id, periodstart, periodend, rcalitem_name AS periodname,"
+                     "       (formatDate(periodstart) || ' - ' || formatDate(periodend)) AS periodrange "
                      "FROM ( SELECT rcalitem_id, rcalitem_name,"
                      "              findPeriodStart(rcalitem_id) AS periodstart,"
                      "              findPeriodEnd(rcalitem_id) AS periodend "

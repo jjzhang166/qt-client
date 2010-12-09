@@ -29,8 +29,11 @@ QString buildItemLineEditQuery(const QString, const QStringList, const QString, 
 QString buildItemLineEditTitle(const unsigned int, const QString);
 
 itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl) :
- QDialog( parent, name, modal, fl )
+  QDialog(parent, fl)
 {
+  setObjectName(name ? name : "itemAliasList");
+  setModal(modal);
+
   setWindowTitle(tr( "Item Aliases"));
 
   _itemType = ItemLineEdit::cUndefined;
@@ -38,20 +41,37 @@ itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::
   if ( !name )
    setObjectName( "itemAliasList" );
 
-  QVBoxLayout *_mainLayout = new QVBoxLayout(this, 5, 5); 
-  QHBoxLayout *_itemLayout = new QHBoxLayout(0, 0, 5); 
-  QHBoxLayout *_line1Layout = new QHBoxLayout(0, 0, 7); 
-  QVBoxLayout *_enterLayout = new QVBoxLayout(0, 0, 5); 
-  QHBoxLayout *_topLayout = new QHBoxLayout( 0, 0, 7); 
-  QVBoxLayout *_buttonsLayout= new QVBoxLayout(0, 0, 5); 
-  QVBoxLayout *_listLayout = new QVBoxLayout(0, 0, 0); 
+  QVBoxLayout *_mainLayout = new QVBoxLayout(this);
+  QHBoxLayout *_itemLayout = new QHBoxLayout(0);
+  QHBoxLayout *_line1Layout = new QHBoxLayout(0);
+  QVBoxLayout *_enterLayout = new QVBoxLayout(0);
+  QHBoxLayout *_topLayout = new QHBoxLayout( 0);
+  QVBoxLayout *_buttonsLayout= new QVBoxLayout(0);
+  QVBoxLayout *_listLayout = new QVBoxLayout(0);
+
+  _mainLayout->setContentsMargins(5, 5, 5, 5); 
+  _itemLayout->setContentsMargins(0, 0, 0, 0); 
+  _line1Layout->setContentsMargins(0, 0, 0, 0); 
+  _enterLayout->setContentsMargins(0, 0, 0, 0); 
+  _topLayout->setContentsMargins(0, 0, 0, 0); 
+  _buttonsLayout->setContentsMargins(0, 0, 0, 0); 
+  _listLayout->setContentsMargins(0, 0, 0, 0); 
+
+  _mainLayout->setSpacing(5); 
+  _itemLayout->setSpacing(5); 
+  _line1Layout->setSpacing(7); 
+  _enterLayout->setSpacing(5); 
+  _topLayout->setSpacing(7); 
+  _buttonsLayout->setSpacing(5); 
+  _listLayout->setSpacing(0); 
 
   QLabel *_aliasLit = new QLabel(tr("&Alias:"), this);
   _aliasLit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   _aliasLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
   _itemLayout->addWidget(_aliasLit);
 
-  _alias = new QLineEdit( this, "_alias" );
+  _alias = new QLineEdit(this);
+  _alias->setObjectName("_alias");
   _alias->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   _aliasLit->setBuddy(_alias);
   _itemLayout->addWidget(_alias);

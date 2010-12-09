@@ -21,12 +21,10 @@
 
 #include "contact.h"
 #include "contacts.h"
-#include "searchForContact.h"
 #include "address.h"
 #include "addresses.h"
 #include "crmaccount.h"
 #include "crmaccounts.h"
-#include "searchForCRMAccount.h"
 #include "dspIncidentsByCRMAccount.h"
 #include "dspTodoByUserAndIncident.h"
 #include "incidentWorkbench.h"
@@ -35,21 +33,12 @@
 #include "todoListCalendar.h"
 #include "todoItem.h"
 
-#include "honorifics.h"
-#include "incidentCategories.h"
-#include "incidentPriorities.h"
-#include "incidentSeverities.h"
-#include "incidentResolutions.h"
-#include "characteristics.h"
-
 #include "opportunity.h"
-#include "opportunityList.h"
-#include "opportunitySources.h"
-#include "opportunityStages.h"
-#include "opportunityTypes.h"
 
 #include "editOwners.h"
 #include "createRecurringItems.h"
+
+#include "setup.h"
 
 #include "menuCRM.h"
 
@@ -74,10 +63,7 @@ menuCRM::menuCRM(GUIClient *Pparent) :
   contactsMenu      = new QMenu(parent);
   addressMenu       = new QMenu(parent);
   utilitiesMenu     = new QMenu(parent);
-  masterMenu        = new QMenu(parent);
-  masterIncdMenu    = new QMenu(parent);
   opportunityMenu   = new QMenu(parent);
-  masterOppMenu     = new QMenu(parent);
 
   crmMenu->setObjectName("menu.crm");
   projectsMenu->setObjectName("menu.crm.projects");
@@ -88,17 +74,13 @@ menuCRM::menuCRM(GUIClient *Pparent) :
   contactsMenu->setObjectName("menu.crm.contacts");
   addressMenu->setObjectName("menu.crm.address");
   utilitiesMenu->setObjectName("menu.crm.utilities");
-  masterMenu->setObjectName("menu.crm.master");
-  masterIncdMenu->setObjectName("menu.crm.masterincd");
   opportunityMenu->setObjectName("menu.crm.opportunity");
-  masterOppMenu->setObjectName("menu.crm.masteropp");
 
   actionProperties acts[] = {
     // CRM | Incident
     { "menu",			tr("&Incident"),	(char*)incidentMenu,		crmMenu,	"true", NULL, NULL, true	, NULL },
     { "crm.incident",		tr("&New..."),		SLOT(sIncident()),		incidentMenu,	"AddIncidents MaintainIncidents", NULL, NULL, true , NULL },
-    { "separator",		NULL,				NULL,			incidentMenu,	"true", NULL, NULL, true	, NULL },
-    { "crm.incidentWorkbench",	tr("&Workbench..."),	SLOT(sIncidentWorkbench()),	incidentMenu,	"ViewIncidents MaintainIncidents", QPixmap(":/images/incidents.png"), toolBar, true , tr("Incident Workbench") },
+    { "crm.incidentList",	tr("&List..."),	SLOT(sIncidentWorkbench()),	incidentMenu,	"ViewIncidents MaintainIncidents", QPixmap(":/images/incidents.png"), toolBar, true , tr("Incident List") },
 
     // CRM / To Do
     { "menu",			tr("&To-Do"),	(char*)todoMenu,	crmMenu,	"true", NULL, NULL, true	, NULL },
@@ -131,13 +113,11 @@ menuCRM::menuCRM(GUIClient *Pparent) :
     { "menu",		tr("&Account"),		(char*)accountsMenu,	crmMenu,		"true", NULL, NULL, true	, NULL },
     { "crm.crmaccount",		tr("&New..."),	SLOT(sCRMAccount()),	accountsMenu,	"MaintainCRMAccounts", NULL, NULL, true , NULL },
     { "crm.crmaccounts",	tr("&List..."),	SLOT(sCRMAccounts()),	accountsMenu,	"MaintainCRMAccounts ViewCRMAccounts", QPixmap(":/images/accounts.png"), toolBar, true , tr("List Accounts") },
-    { "crm.crmaccountsearch",	tr("&Search..."),SLOT(sSearchForCRMAccount()),accountsMenu,	"MaintainCRMAccounts ViewCRMAccounts", NULL, NULL, true , NULL },
       
     // CRM | Contact
     { "menu",		tr("&Contact"),		(char*)contactsMenu,	crmMenu,		"true", NULL, NULL, true	, NULL },
     { "crm.contact",	tr("&New..."),		SLOT(sContact()),	contactsMenu,	"MaintainContacts", NULL, NULL, true	, NULL },
     { "crm.contacts",	tr("&List..."),		SLOT(sContacts()),	contactsMenu,	"MaintainContacts ViewContacts", QPixmap(":/images/contacts.png"), toolBar, true , tr("List Contacts") },
-    { "crm.contactsearch",	tr("&Search..."),		SLOT(sSearchForContact()),	contactsMenu,	"MaintainContacts ViewContacts", NULL, NULL, true	, NULL },
     
     // CRM | Address
     { "menu",		tr("A&ddress"),		(char*)addressMenu,	crmMenu,		"true", NULL, NULL, true	, NULL },
@@ -146,27 +126,12 @@ menuCRM::menuCRM(GUIClient *Pparent) :
 
     { "separator",		NULL,				NULL,			crmMenu,	"true", NULL, NULL, true	, NULL },
 
-    // Master Information
-    { "menu",			tr("&Master Information"),		(char*)masterMenu,		crmMenu,	"true", NULL, NULL, true	, NULL },
-    { "crm.honorifics",		tr("&Titles..."),			SLOT(sHonorifics()),		masterMenu,	"MaintainTitles ViewTitles", NULL, NULL, true	, NULL },
-   
-    { "menu",			tr("&Incident"),		(char*)masterIncdMenu,		masterMenu,	"true", NULL, NULL, true	, NULL },
-    { "crm.incidentCategories",	tr("&Categories..."),		SLOT(sIncidentCategories()),	masterIncdMenu,	"MaintainIncidentCategories", NULL, NULL, true , NULL },
-    { "crm.incidentSeverities",	tr("&Severities..."),		SLOT(sIncidentSeverities()),	masterIncdMenu,	"MaintainIncidentSeverities", NULL, NULL, true , NULL },
-    { "crm.incidentResolutions", tr("&Resolutions..."),		SLOT(sIncidentResolutions()),	masterIncdMenu,	"MaintainIncidentResolutions", NULL, NULL, true , NULL },
-
-    { "menu",			tr("&Opportunity"),		(char*)masterOppMenu,		masterMenu,	"true", NULL, NULL, true	, NULL },
-    { "crm.opportunitySources",	tr("&Sources..."),		SLOT(sOpportunitySources()),	masterOppMenu,	"MaintainOpportunitySources", NULL, NULL, true , NULL },
-    { "crm.opportunityStages",	tr("St&ages..."),		SLOT(sOpportunityStages()),	masterOppMenu,	"MaintainOpportunityStages", NULL, NULL, true , NULL },
-    { "crm.opportunityTypes",	tr("&Types..."),		SLOT(sOpportunityTypes()),	masterOppMenu,	"MaintainOpportunityTypes", NULL, NULL, true , NULL },
-
-    { "crm.incidentPriorities",	tr("&Priorities..."),		SLOT(sIncidentPriorities()),	masterMenu,	"MaintainIncidentPriorities", NULL, NULL, true , NULL },
-    { "crm.characteristics",	tr("C&haracteristics..."),		SLOT(sCharacteristics()),	masterMenu,	"MaintainCharacteristics ViewCharacteristics", NULL, NULL, true , NULL },
-
     //Utilities
     { "menu",			tr("&Utilities"),		(char*)utilitiesMenu,		crmMenu,	"true", NULL, NULL, true	, NULL },
     { "crm.replaceOwner",	tr("Edit O&wners"),		SLOT(sEditOwners()),	utilitiesMenu,	"EditOwner", NULL, NULL, true, NULL },
-    { "crm.createRecurringItems",tr("Create &Recurring Items..."), SLOT(sCreateRecurringItems()),utilitiesMenu, "MaintainIncidents MaintainProjects MaintainPersonalTodoList MaintainOthertodoLists", NULL, NULL, true, NULL }
+    { "crm.createRecurringItems",tr("Create &Recurring Items..."), SLOT(sCreateRecurringItems()),utilitiesMenu, "MaintainIncidents MaintainProjects MaintainPersonalTodoList MaintainOthertodoLists", NULL, NULL, true, NULL },
+
+    { "crm.setup",	tr("&Setup..."),	SLOT(sSetup()),	crmMenu,	NULL,	NULL,	NULL,	true, NULL}
 
   };
 
@@ -270,11 +235,6 @@ void menuCRM::sCRMAccounts()
   omfgThis->handleNewWindow(new crmaccounts());
 }
 
-void menuCRM::sSearchForCRMAccount()
-{
-  omfgThis->handleNewWindow(new searchForCRMAccount());
-}
-
 void menuCRM::sEditOwners()
 {
   omfgThis->handleNewWindow(new editOwners());
@@ -296,16 +256,7 @@ void menuCRM::sContact()
 
 void menuCRM::sContacts()
 {
-  ParameterList params;
-  params.append("run");
-  contacts* win = new contacts();
-  win->set(params);
-  omfgThis->handleNewWindow(win);
-}
-
-void menuCRM::sSearchForContact()
-{
-  omfgThis->handleNewWindow(new searchForContact());
+  omfgThis->handleNewWindow(new contacts());
 }
 
 void menuCRM::sAddress()
@@ -359,36 +310,6 @@ void menuCRM::sTodoItem()
   omfgThis->handleNewWindow(newdlg);
 }
 
-void menuCRM::sHonorifics()
-{
-  omfgThis->handleNewWindow(new honorifics());
-}
-
-void menuCRM::sIncidentCategories()
-{
-  omfgThis->handleNewWindow(new incidentCategories());
-}
-
-void menuCRM::sIncidentPriorities()
-{
-  omfgThis->handleNewWindow(new incidentPriorities());
-}
-
-void menuCRM::sIncidentSeverities()
-{
-  omfgThis->handleNewWindow(new incidentSeverities());
-}
-
-void menuCRM::sIncidentResolutions()
-{
-  omfgThis->handleNewWindow(new incidentResolutions());
-}
-
-void menuCRM::sCharacteristics()
-{
-  omfgThis->handleNewWindow(new characteristics());
-}
-
 void menuCRM::sDspIncidentsByCRMAccount()
 {
   omfgThis->handleNewWindow(new dspIncidentsByCRMAccount());
@@ -397,21 +318,6 @@ void menuCRM::sDspIncidentsByCRMAccount()
 void menuCRM::sDspTodoByUserAndIncident()
 {
   omfgThis->handleNewWindow(new dspTodoByUserAndIncident());
-}
-
-void menuCRM::sOpportunitySources()
-{
-  omfgThis->handleNewWindow(new opportunitySources());
-}
-
-void menuCRM::sOpportunityStages()
-{
-  omfgThis->handleNewWindow(new opportunityStages());
-}
-
-void menuCRM::sOpportunityTypes()
-{
-  omfgThis->handleNewWindow(new opportunityTypes());
 }
 
 void menuCRM::sNewOpportunity()
@@ -431,4 +337,14 @@ void menuCRM::sOpportunities()
   opportunityList* win = new opportunityList();
   win->set(params);
   omfgThis->handleNewWindow(win);
+}
+
+void menuCRM::sSetup()
+{
+  ParameterList params;
+  params.append("module", Xt::CRMModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }

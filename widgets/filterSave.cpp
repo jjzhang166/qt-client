@@ -9,6 +9,7 @@
  */
 
 #include "filtersave.h"
+#include "shortcuts.h"
 #include <xsqlquery.h>
 #include <QMessageBox>
 #include <QSqlError>
@@ -26,6 +27,7 @@ filterSave::filterSave(QWidget* parent, const char* name)
 
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(save()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  shortcuts::setStandardKeys(this);
 }
 
 void filterSave::set(ParameterList &pParams)

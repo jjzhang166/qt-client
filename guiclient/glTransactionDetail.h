@@ -35,6 +35,9 @@ protected:
 protected slots:
     virtual void languageChange();
 
+private:
+    QString _table;
+
 };
 
 #endif // GLTRANSACTIONDETAIL_H

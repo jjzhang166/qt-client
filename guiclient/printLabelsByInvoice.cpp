@@ -103,5 +103,5 @@ void printLabelsByInvoice::sParseInvoiceNumber()
 
 void printLabelsByInvoice::sSetToMin(int pValue)
 {
-  _to->setMinValue(pValue);
+  _to->setMinimum(pValue);
 }

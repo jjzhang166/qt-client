@@ -169,7 +169,7 @@ enum SetResponse createLotSerial::set(const ParameterList &pParams)
 
 void createLotSerial::sHandleLotSerial()
 {
-  _lotSerial->setCurrentText(_lotSerial->currentText().toUpper());
+  _lotSerial->setText(_lotSerial->currentText().toUpper());
 }
 
 void createLotSerial::sAssign()

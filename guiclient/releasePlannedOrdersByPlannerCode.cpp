@@ -15,20 +15,11 @@
 
 #include "submitAction.h"
 
-/*
- *  Constructs a releasePlannedOrdersByPlannerCode as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 releasePlannedOrdersByPlannerCode::releasePlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_release, SIGNAL(clicked()), this, SLOT(sRelease()));
   connect(_submit, SIGNAL(clicked()), this, SLOT(sSubmit()));
 
@@ -42,18 +33,11 @@ releasePlannedOrdersByPlannerCode::releasePlannedOrdersByPlannerCode(QWidget* pa
   _appendTransferOrder->setChecked(TRUE);
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 releasePlannedOrdersByPlannerCode::~releasePlannedOrdersByPlannerCode()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void releasePlannedOrdersByPlannerCode::languageChange()
 {
   retranslateUi(this);
@@ -116,7 +100,7 @@ void releasePlannedOrdersByPlannerCode::sSubmit()
   _warehouse->appendValue(params);
 
   if(_firmedOnly->isChecked())
-    params.append("firmedOnly", QVariant(true,0));
+    params.append("firmedOnly", true);
 
   params.append("cutoff_offset", QDate::currentDate().daysTo(_cutoffDate->date()));
 

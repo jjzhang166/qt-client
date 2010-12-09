@@ -10,9 +10,9 @@
 
 #include "contact.h"
 
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QVariant>
 
 #include "characteristicAssignment.h"
 #include "contactcluster.h"
@@ -194,7 +194,7 @@ enum SetResponse contact::set(const ParameterList &pParams)
 
 void contact::sPopulateUsesMenu(QMenu* pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
   QString editStr = tr("Edit...");
   QString viewStr = tr("View...");
   QString detachStr = tr("Detach");
@@ -203,77 +203,77 @@ void contact::sPopulateUsesMenu(QMenu* pMenu)
   {
     case 1:
     case 2:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditCRMAccount()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCRMAccounts") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewCRMAccount()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewCRMAccounts"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCRMAccounts") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditCRMAccount()));
+      menuItem->setEnabled(_privileges->check("MaintainCRMAccounts") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewCRMAccount()));
+      menuItem->setEnabled(_privileges->check("ViewCRMAccounts"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainCRMAccounts") && (cView != _mode));
       break;
 
     case 3:
     case 4:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditCustomer()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCustomerMasters") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewCustomer()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewCustomerMasters"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainCustomerMasters") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditCustomer()));
+      menuItem->setEnabled(_privileges->check("MaintainCustomerMasters") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewCustomer()));
+      menuItem->setEnabled(_privileges->check("ViewCustomerMasters"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainCustomerMasters") && (cView != _mode));
       break;
 
     case 5:
     case 6:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditVendor()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendors") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewVendor()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewVendors"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendors") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditVendor()));
+      menuItem->setEnabled(_privileges->check("MaintainVendors") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewVendor()));
+      menuItem->setEnabled(_privileges->check("ViewVendors"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainVendors") && (cView != _mode));
       break;
 
     case 7:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditProspect()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainProspects") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewProspect()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewProspects"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainProspects") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditProspect()));
+      menuItem->setEnabled(_privileges->check("MaintainProspects") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewProspect()));
+      menuItem->setEnabled(_privileges->check("ViewProspects"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainProspects") && (cView != _mode));
       break;
 
     case 8:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditShipto()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainShiptos") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewShipto()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewShiptos"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainShiptos") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditShipto()));
+      menuItem->setEnabled(_privileges->check("MaintainShiptos") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewShipto()));
+      menuItem->setEnabled(_privileges->check("ViewShiptos"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainShiptos") && (cView != _mode));
       break;
 
     case 9:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditVendorAddress()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendorAddresses") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewVendorAddress()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewVendorAddresses"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendorAddresses") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditVendorAddress()));
+      menuItem->setEnabled(_privileges->check("MaintainVendorAddresses") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewVendorAddress()));
+      menuItem->setEnabled(_privileges->check("ViewVendorAddresses"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainVendorAddresses") && (cView != _mode));
       break;
 
     case 10:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditWarehouse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainWarehouses") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewWarehouse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewWarehouses"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainWarehouses") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditWarehouse()));
+      menuItem->setEnabled(_privileges->check("MaintainWarehouses") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewWarehouse()));
+      menuItem->setEnabled(_privileges->check("ViewWarehouses"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainWarehouses") && (cView != _mode));
       break;
 
     case 11:
-      menuItem = pMenu->insertItem(editStr, this, SLOT(sEditEmployee()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainEmployees") && (cView != _mode));
-      menuItem = pMenu->insertItem(viewStr, this, SLOT(sViewEmployee()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("ViewEmployees"));
-      menuItem = pMenu->insertItem(detachStr, this, SLOT(sDetachUse()));
-      pMenu->setItemEnabled(menuItem, _privileges->check("MaintainEmployees") && (cView != _mode));
+      menuItem = pMenu->addAction(editStr, this, SLOT(sEditEmployee()));
+      menuItem->setEnabled(_privileges->check("MaintainEmployees") && (cView != _mode));
+      menuItem = pMenu->addAction(viewStr, this, SLOT(sViewEmployee()));
+      menuItem->setEnabled(_privileges->check("ViewEmployees"));
+      menuItem = pMenu->addAction(detachStr, this, SLOT(sDetachUse()));
+      menuItem->setEnabled(_privileges->check("MaintainEmployees") && (cView != _mode));
 
     default:
       break;

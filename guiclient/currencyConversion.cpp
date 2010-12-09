@@ -29,8 +29,10 @@ class RateValidator : public QDoubleValidator {
 };
 
 RateValidator::RateValidator(QObject* parent, const char* name) :
-  QDoubleValidator(0.00001, 99999.99999, 5, parent, name)
+  QDoubleValidator(0.00001, 99999.99999, 5, parent)
 {
+  if (name)
+    setObjectName(name);
 }
 
 void RateValidator::fixup ( QString & input ) const
@@ -52,8 +54,8 @@ currencyConversion::currencyConversion(QWidget* parent, const char* name, bool m
 {
   setupUi(this);
 
-  connect(_close, SIGNAL(clicked()), this, SLOT(_sClose()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(_sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(_sClose()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(_sSave()));
   connect(_rate, SIGNAL(lostFocus()), this, SLOT(sFixRate()));
 
   _currency->setType(XComboBox::CurrenciesNotBase);
@@ -70,7 +72,7 @@ void currencyConversion::languageChange()
   retranslateUi(this);
 }
 
-enum SetResponse currencyConversion::set(ParameterList &pParams)
+enum SetResponse currencyConversion::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
   QVariant param;
@@ -117,10 +119,9 @@ enum SetResponse currencyConversion::set(ParameterList &pParams)
       _rate->setEnabled(FALSE);
       _dateCluster->setEnabled(FALSE);
       
-      _close->setText(tr("&Close"));
-      _save->hide();
-      
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

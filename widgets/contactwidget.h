@@ -243,6 +243,9 @@ public slots:
   inline virtual void setWebAddress(const QString& p)   { _webaddr->setText(p); }
   inline virtual void setOwnerUsername(const QString& p){ _owner->setUsername(p); }
   inline virtual void setOwnerId(const int p) { _owner->setId(p); }
+
+  Q_INVOKABLE void setEmailSubjectText(const QString text);
+  Q_INVOKABLE void setEmailBodyText(const QString text);
   
   virtual void	clear();
   virtual void	check();
@@ -360,6 +363,8 @@ private:
   virtual void	silentSetId(const int);
   XDataWidgetMapper* _mapper;
 
+  QPushButton* _list;
+
   int	_id;
   bool _layoutDone;
   int	 _limits;
@@ -394,6 +399,8 @@ private:
   QString  _fieldNamePostalCode;
   QString  _fieldNameState;
   QString  _fieldNameCountry;
+  QString  _subjText;
+  QString  _bodyText;
 };
 
 #endif

@@ -44,6 +44,7 @@ public slots:
 signals:
             void newId(int);
             void populated();
+            void saved(int);
 
 protected slots:
     virtual void languageChange();

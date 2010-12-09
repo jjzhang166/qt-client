@@ -54,7 +54,7 @@
 
 // AR
 #include "invoice.h"
-#include "dspRecurringInvoices.h"
+#include "listRecurringInvoices.h"
 #include "unpostedInvoices.h"
 #include "printInvoices.h"
 #include "reprintInvoices.h"
@@ -92,6 +92,7 @@
 #include "standardJournalGroups.h"
 #include "postStandardJournal.h"
 #include "postStandardJournalGroup.h"
+#include "postJournals.h"
 #include "dspStandardJournalHistory.h"
 
 #include "financialLayouts.h"
@@ -102,6 +103,7 @@
 #include "dspSummarizedGLTransactions.h"
 #include "dspGLSeries.h"
 #include "dspTrialBalances.h"
+#include "dspJournals.h"
 
 #include "companies.h"
 #include "profitCenters.h"
@@ -115,7 +117,6 @@
 #include "taxTypes.h"
 #include "taxZones.h"
 #include "taxAuthorities.h"
-#include "searchForCRMAccount.h"
 #include "taxAssignments.h"
 #include "taxRegistrations.h"
 #include "dspTaxHistory.h"
@@ -123,7 +124,6 @@
 #include "reconcileBankaccount.h"
 #include "bankAdjustment.h"
 #include "bankAdjustmentEditList.h"
-#include "bankAdjustmentTypes.h"
 #include "dspBankrecHistory.h"
 #include "dspSummarizedBankrecHistory.h"
 
@@ -132,24 +132,16 @@
 #include "forwardUpdateAccounts.h"
 #include "duplicateAccountNumbers.h"
 #include "vendors.h"
-#include "termses.h"
 #include "bankAccounts.h"
 #include "checkFormats.h"
-#include "apAccountAssignments.h"
-#include "costCategories.h"
-#include "expenseCategories.h"
 
 #include "customers.h"
-#include "customerType.h"
-#include "customerTypes.h"
-#include "vendorTypes.h"
-#include "salesCategories.h"
-#include "reasonCodes.h"
-#include "arAccountAssignments.h"
 
 #include "updateLateCustCreditStatus.h"
 #include "createRecurringInvoices.h"
 #include "syncCompanies.h"
+
+#include "setup.h"
 
 #include "menuAccounting.h"
 
@@ -191,7 +183,6 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
   budgetMenu = new QMenu(parent);
   taxMenu = new QMenu(parent);
   taxReportsMenu = new QMenu(parent);
-  masterInfoMenu = new QMenu(parent);
   utilitiesMenu = new QMenu(parent);
 
   mainMenu->setObjectName("menu.accnt");
@@ -220,7 +211,6 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
   budgetMenu->setObjectName("menu.accnt.budget");
   taxMenu->setObjectName("menu.accnt.tax");
   taxMenu->setObjectName("menu.accnt.tax.taxreports");
-  masterInfoMenu->setObjectName("menu.accnt.masterinfo");
   utilitiesMenu->setObjectName("menu.accnt.utilities");
 
   actionProperties acts[] = { 
@@ -301,7 +291,7 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     // Accounting | Accounts Receivable | Invoices
     { "menu", tr("&Invoice"), (char*)arInvoicesMenu,	arMenu, "true",	 NULL, NULL, true, NULL },
     { "ar.createInvoice", tr("&New..."), SLOT(sCreateInvoice()), arInvoicesMenu, "MaintainMiscInvoices", NULL, NULL, true , NULL },
-    { "ar.dspRecurringInvoices", tr("&List Recurring Invoices..."),	SLOT(sRecurringInvoices()), arInvoicesMenu, "SelectBilling",	NULL, NULL,  true, NULL },
+    { "ar.listRecurringInvoices", tr("&List Recurring Invoices..."),	SLOT(sRecurringInvoices()), arInvoicesMenu, "SelectBilling",	NULL, NULL,  true, NULL },
     { "ar.listUnpostedInvoices", tr("&List Unposted..."), SLOT(sUnpostedInvoices()), arInvoicesMenu, "SelectBilling", QPixmap(":/images/unpostedInvoices.png"), toolBar, true , tr("List Unposted Invoices") },
     { "separator", NULL, NULL, arInvoicesMenu, "true", NULL, NULL, true, NULL },
     { "ar.postInvoices", tr("&Post..."), SLOT(sPostInvoices()), arInvoicesMenu, "PostMiscInvoices", NULL, NULL, true , NULL },
@@ -369,7 +359,11 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "separator",		     NULL,				   NULL,			     glStandardJournalsMenu, "true",					      NULL, NULL, true, NULL },
     { "gl.postStandardJournal",	     tr("&Post..."),	   SLOT(sPostStandardJournal()),     glStandardJournalsMenu, "PostStandardJournals",	      NULL, NULL, true, NULL },
     { "gl.postStandardJournalGroup", tr("Post G&roup..."), SLOT(sPostStandardJournalGroup()),glStandardJournalsMenu, "PostStandardJournalGroups",    NULL, NULL, true, NULL },
-    
+
+    { "separator",		     NULL,				   NULL,  glMenu, "true",					      NULL, NULL, _metrics->boolean("UseJournals"), NULL },
+    { "gl.postJournals",   tr("&Post Journals to Ledger..."),	   SLOT(sPostJournals()), glMenu, "PostJournals",	      NULL, NULL, _metrics->boolean("UseJournals"), NULL },
+
+
     { "separator", NULL, NULL, glMenu, "true", NULL, NULL, true, NULL },
     
     // Accounting | General Ledger |  Reports
@@ -378,6 +372,8 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "gl.dspSummarizedGLTransactions",	tr("Su&mmarized Transactions..."),	SLOT(sDspSummarizedGLTransactions()),	glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
     { "gl.dspGLSeries",			tr("&Series..."),			SLOT(sDspGLSeries()),			glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
     { "gl.dspStandardJournalHistory",	tr("Standard &Journal History..."),	SLOT(sDspStandardJournalHistory()),	glReportsMenu, "ViewGLTransactions",	NULL, NULL, true, NULL },
+    { "separator", NULL, NULL, glReportsMenu, "true", NULL, NULL, _metrics->boolean("UseJournals"), NULL },
+    { "gl.dspJournals",	tr("Journals..."),	SLOT(sDspJournals()),	glReportsMenu, "ViewJournals",	NULL, NULL, _metrics->boolean("UseJournals"), NULL },
 
     { "menu",			tr("&Bank Reconciliation"), 	(char*)bankrecMenu,		mainMenu,    "true",						NULL, NULL, true, NULL },
     { "gl.reconcileBankaccnt",	tr("&Reconcile..."),SLOT(sReconcileBankaccount()),	bankrecMenu, "MaintainBankRec", QPixmap(":/images/bankReconciliation.png"), toolBar,  true, tr("Reconcile Bank Account") },
@@ -424,7 +420,6 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
 
     // Accounting | Tax
     { "menu", tr("&Tax"), (char*)taxMenu, mainMenu,	"true",	NULL, NULL, true, NULL },
-    { "gl.searchForTaxAuth",	tr("&Search for Tax Authority..."), SLOT(sTaxAuthoritySearch()),taxMenu,	"MaintainTaxAuthorities ViewTaxAuthorities", NULL, NULL, true, NULL },
     { "gl.taxAuthorities",	tr("Tax &Authorities..."),	SLOT(sTaxAuthorities()),	taxMenu,	"MaintainTaxAuthorities ViewTaxAuthorities", NULL, NULL, true, NULL },
     { "gl.taxZones",		tr("Tax &Zones..."),		SLOT(sTaxZones()),		taxMenu,	"MaintainTaxZones ViewTaxZones",             NULL, NULL, true, NULL }, 
     { "gl.taxClasses",		tr("Tax &Classes..."),		SLOT(sTaxClasses()),		taxMenu,	"MaintainTaxClasses ViewTaxClasses",         NULL, NULL, true, NULL }, 
@@ -435,29 +430,10 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "separator",		NULL,			        NULL,			        taxMenu,	"true",	                                     NULL, NULL, true, NULL },
  
     // Accounting | Tax | Reports
-    { "menu",			tr("&Reports"),	                (char*)taxReportsMenu,		taxMenu,	"true",					     NULL, NULL, true, NULL },
+    { "menu",			tr("&Reports"),	                (char*)taxReportsMenu,		taxMenu,	"true",			    NULL, NULL, true, NULL },
     { "gl.dspTaxHistory",	tr("&Tax History..."),           SLOT(sDspTaxHistory()),        taxReportsMenu, "ViewTaxReconciliations",   NULL, NULL, true, NULL },
      
     { "separator",		  NULL,					NULL,					mainMenu,		"true",					       NULL, NULL, true, NULL },
-   
-    // Accounting | Master Information
-    { "menu",			tr("&Master Information"),	(char*)masterInfoMenu,		mainMenu,	"true",						NULL, NULL, true, NULL },
-    { "gl.postTransactionsToExternalAccountingSystem", tr("Post Transactions to External Accounting System..."), SLOT(sPostTransactionsToExternal()), utilitiesMenu, "ViewGLTransactions", NULL, NULL, _metrics->boolean("EnableExternalAccountingInterface") , NULL },                             
-    { "ap.terms", tr("Ter&ms..."), SLOT(sTerms()), masterInfoMenu, "MaintainTerms ViewTerms", NULL, NULL, true , NULL },
-    { "separator",			NULL,					NULL,				masterInfoMenu,	"true",	NULL, NULL, true , NULL },
-    { "ap.bankAccounts", tr("&Bank Accounts..."), SLOT(sBankAccounts()), masterInfoMenu, "MaintainBankAccounts ViewBankAccounts", NULL, NULL, true, NULL },
-    { "ap.checkFormats", tr("&Check Formats..."), SLOT(sCheckFormats()), masterInfoMenu, "MaintainCheckFormats ViewCheckFormats", NULL, NULL, true, NULL },
-    { "ap.costCategories", tr("C&ost Categories..."), SLOT(sCostCategories()), masterInfoMenu, "MaintainCostCategories ViewCostCategories", NULL, NULL, true, NULL },
-    { "ap.expenseCategories", tr("&Expense Categories..."), SLOT(sExpenseCategories()), masterInfoMenu, "MaintainExpenseCategories ViewExpenseCategories", NULL, NULL, true, NULL },
-    { "ap.apAccountAssignments", tr("A/&P Account Assignments..."), SLOT(sAPAssignments()), masterInfoMenu, "MaintainVendorAccounts ViewVendorAccounts", NULL, NULL, true , NULL },
-    { "separator",		  NULL,					NULL,					masterInfoMenu,		"true",					       NULL, NULL, true, NULL },
-    { "ar.customerTypes", tr("Customer &Types..."), SLOT(sCustomerTypes()), masterInfoMenu, "MaintainCustomerTypes ViewCustomerTypes", NULL, NULL, true , NULL },
-    { "ar.vendorTypes", tr("&Vendor Types..."), SLOT(sVendorTypes()), masterInfoMenu, "MaintainVendorTypes ViewVendorTypes", NULL, NULL, true , NULL },
-    { "ar.salesCategories", tr("&Sales Categories..."), SLOT(sSalesCategories()), masterInfoMenu, "MaintainSalesCategories ViewSalesCategories", NULL, NULL, true , NULL },
-    { "ar.arAccountAssignments", tr("A/R Account Assi&gnments..."), SLOT(sARAccountAssignments()), masterInfoMenu, "MaintainSalesAccount ViewSalesAccount", NULL, NULL, true , NULL },
-    { "ar.reasonCodes", tr("&Reason Codes..."), SLOT(sReasonCodes()), masterInfoMenu, "MaintainReasonCodes", NULL, NULL, true , NULL },
-    { "separator",		  NULL,					NULL,					masterInfoMenu,		"true",					       NULL, NULL, true, NULL },
-    { "gl.adjustmentTypes",	tr("&Adjustment Types..."),	SLOT(sAdjustmentTypes()),	masterInfoMenu,	"MaintainAdjustmentTypes ViewAdjustmentTypes",	NULL, NULL, true, NULL },
 
     // Accounting | Utilities
     { "menu",				tr("&Utilities"),			(char*)utilitiesMenu,		mainMenu,	"true",	NULL, NULL, true, NULL },
@@ -469,6 +445,9 @@ menuAccounting::menuAccounting(GUIClient *Pparent) :
     { "ar.createRecurringInvoices", tr("&Create Recurring Invoices..."), SLOT(sCreateRecurringInvoices()), utilitiesMenu, "MaintainMiscInvoices", NULL, NULL, true, NULL },
     { "separator",		  NULL,					NULL,					utilitiesMenu,		"true",					       NULL, NULL, _metrics->boolean("MultiCompanyFinancialConsolidation"), NULL },
     { "gl.syncCompanies",           tr("&Synchronize Companies"),        SLOT(sSyncCompanies()),           utilitiesMenu, "SynchronizeCompanies", NULL, NULL, _metrics->boolean("MultiCompanyFinancialConsolidation"), NULL },
+
+    { "gl.setup",	tr("&Setup..."),	SLOT(sSetup()),	mainMenu,	NULL,	NULL,	NULL,	true,	NULL},
+
   };
 
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
@@ -736,7 +715,7 @@ void menuAccounting::sCreateInvoice()
 
 void menuAccounting::sRecurringInvoices()
 {
-  omfgThis->handleNewWindow(new dspRecurringInvoices());
+  omfgThis->handleNewWindow(new listRecurringInvoices());
 }
 
 void menuAccounting::sUnpostedInvoices()
@@ -934,6 +913,11 @@ void menuAccounting::sPostStandardJournalGroup()
   postStandardJournalGroup(parent, "", TRUE).exec();
 }
 
+void menuAccounting::sPostJournals()
+{
+  omfgThis->handleNewWindow(new postJournals());
+}
+
 void menuAccounting::sSimpleEntry()
 {
   ParameterList params;
@@ -995,6 +979,11 @@ void menuAccounting::sDspSummarizedGLTransactions()
 void menuAccounting::sDspGLSeries()
 {
   omfgThis->handleNewWindow(new dspGLSeries());
+}
+
+void menuAccounting::sDspJournals()
+{
+  omfgThis->handleNewWindow(new dspJournals());
 }
 
 void menuAccounting::sDspStandardJournalHistory()
@@ -1068,26 +1057,10 @@ void menuAccounting::sAdjustmentEditList()
   omfgThis->handleNewWindow(new bankAdjustmentEditList());
 }
 
-void menuAccounting::sAdjustmentTypes()
-{
-  omfgThis->handleNewWindow(new bankAdjustmentTypes());
-}
-
 void menuAccounting::sTaxAuthorities()
 {
   omfgThis->handleNewWindow(new taxAuthorities());
 }
-
-void menuAccounting::sTaxAuthoritySearch()
-{
-  ParameterList params;
-  params.append("crmaccnt_subtype", "taxauth");
-
-  searchForCRMAccount *newdlg = new searchForCRMAccount();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
-}
-
 
 void menuAccounting::sTaxZones()
 {
@@ -1155,39 +1128,14 @@ void menuAccounting::sForwardUpdateAccounts()
   forwardUpdateAccounts(parent, "", TRUE).exec();
 }
 
-void menuAccounting::sTerms()
-{
-  omfgThis->handleNewWindow(new termses());
-}
-
 void menuAccounting::sVendors()
 {
   omfgThis->handleNewWindow(new vendors());
 }
 
-void menuAccounting::sBankAccounts()
-{
-  omfgThis->handleNewWindow(new bankAccounts());
-}
-
 void menuAccounting::sCheckFormats()
 {
   omfgThis->handleNewWindow(new checkFormats());
-}
-
-void menuAccounting::sAPAssignments()
-{
-  omfgThis->handleNewWindow(new apAccountAssignments());
-}
-
-void menuAccounting::sCostCategories()
-{
-  omfgThis->handleNewWindow(new costCategories());
-}
-
-void menuAccounting::sExpenseCategories()
-{
-  omfgThis->handleNewWindow(new expenseCategories());
 }
 
 void menuAccounting::sPrintStatementByCustomer()
@@ -1205,31 +1153,6 @@ void menuAccounting::sCustomers()
   omfgThis->handleNewWindow(new customers());
 }
 
-void menuAccounting::sCustomerTypes()
-{
-  omfgThis->handleNewWindow(new customerTypes());
-}
-
-void menuAccounting::sVendorTypes()
-{
-  omfgThis->handleNewWindow(new vendorTypes());
-}
-
-void menuAccounting::sSalesCategories()
-{
-  omfgThis->handleNewWindow(new salesCategories());
-}
-
-void menuAccounting::sReasonCodes()
-{
-  omfgThis->handleNewWindow(new reasonCodes());
-}
-
-void menuAccounting::sARAccountAssignments()
-{
-  omfgThis->handleNewWindow(new arAccountAssignments());
-}
-
 void menuAccounting::sUpdateLateCustCreditStatus()
 {
   updateLateCustCreditStatus newdlg(parent, "", TRUE);
@@ -1245,4 +1168,15 @@ void menuAccounting::sCreateRecurringInvoices()
 void menuAccounting::sSyncCompanies()
 {
   omfgThis->handleNewWindow(new syncCompanies());
+}
+
+
+void menuAccounting::sSetup()
+{
+  ParameterList params;
+  params.append("module", Xt::AccountingModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }

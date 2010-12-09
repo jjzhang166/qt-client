@@ -51,7 +51,7 @@
             <string/>
            </property>
            <property name="fieldName">
-            <string>order_number</string>
+            <string notr="true">order_number</string>
            </property>
           </widget>
          </item>
@@ -215,7 +215,7 @@
                   <enum>CLineEdit::ActiveCustomers</enum>
                  </property>
                  <property name="fieldName">
-                  <string>customer_number</string>
+                  <string notr="true">customer_number</string>
                  </property>
                 </widget>
                </item>
@@ -254,7 +254,7 @@
                   <enum>XComboBox::None</enum>
                  </property>
                  <property name="fieldName">
-                  <string>sales_rep</string>
+                  <string notr="true">sales_rep</string>
                  </property>
                 </widget>
                </item>
@@ -282,25 +282,25 @@
                 <item row="0" column="0">
                  <widget class="AddressCluster" name="_address">
                   <property name="fieldNameLine1">
-                   <string>shipto_address1</string>
+                   <string notr="true">shipto_address1</string>
                   </property>
                   <property name="fieldNameLine2">
-                   <string>shipto_address2</string>
+                   <string notr="true">shipto_address2</string>
                   </property>
                   <property name="fieldNameLine3">
-                   <string>shipto_address3</string>
+                   <string notr="true">shipto_address3</string>
                   </property>
                   <property name="fieldNameCity">
-                   <string>shipto_city</string>
+                   <string notr="true">shipto_city</string>
                   </property>
                   <property name="fieldNameState">
-                   <string>shipto_state</string>
+                   <string notr="true">shipto_state</string>
                   </property>
                   <property name="fieldNamePostalCode">
-                   <string>shipto_postal_code</string>
+                   <string notr="true">shipto_postal_code</string>
                   </property>
                   <property name="fieldNameCountry">
-                   <string>shipto_country</string>
+                   <string notr="true">shipto_country</string>
                   </property>
                  </widget>
                 </item>
@@ -337,7 +337,7 @@
                  <item row="0" column="1">
                   <widget class="XLineEdit" name="_custponumber">
                    <property name="fieldName">
-                    <string>cust_po_number</string>
+                    <string notr="true">cust_po_number</string>
                    </property>
                   </widget>
                  </item>
@@ -359,7 +359,7 @@
                       <enum>XComboBox::ShipVias</enum>
                      </property>
                      <property name="fieldName">
-                      <string>ship_via</string>
+                      <string notr="true">ship_via</string>
                      </property>
                     </widget>
                    </item>
@@ -399,7 +399,7 @@
                       <enum>XComboBox::TaxZones</enum>
                      </property>
                      <property name="fieldName">
-                      <string>tax_zone</string>
+                      <string notr="true">tax_zone</string>
                      </property>
                     </widget>
                    </item>
@@ -433,7 +433,7 @@
                    <item>
                     <widget class="WComboBox" name="_site">
                      <property name="fieldName">
-                      <string>site</string>
+                      <string notr="true">site</string>
                      </property>
                      <property name="type">
                       <enum>WComboBox::Sold</enum>
@@ -580,7 +580,7 @@
                     <enum>Qt::StrongFocus</enum>
                    </property>
                    <property name="fieldName">
-                    <string>item_number</string>
+                    <string notr="true">item_number</string>
                    </property>
                   </widget>
                  </item>
@@ -607,7 +607,7 @@
                      <item>
                       <widget class="XLineEdit" name="_qty">
                        <property name="fieldName">
-                        <string>qty_ordered</string>
+                        <string notr="true">qty_ordered</string>
                        </property>
                        <property name="defaultText">
                         <string>1</string>
@@ -666,7 +666,7 @@
                         </sizepolicy>
                        </property>
                        <property name="fieldNameValue">
-                        <string>net_unit_price</string>
+                        <string notr="true">net_unit_price</string>
                        </property>
                        <property name="format">
                         <enum>CurrDisplay::SalesPrice</enum>
@@ -705,7 +705,7 @@
                         </sizepolicy>
                        </property>
                        <property name="fieldNameValue">
-                        <string>extension</string>
+                        <string notr="true">extension</string>
                        </property>
                        <property name="format">
                         <enum>CurrDisplay::ExtPrice</enum>
@@ -753,7 +753,7 @@
                       <enum>XDateEdit::Current</enum>
                      </property>
                      <property name="fieldName">
-                      <string>scheduled_date</string>
+                      <string notr="true">scheduled_date</string>
                      </property>
                     </widget>
                    </item>

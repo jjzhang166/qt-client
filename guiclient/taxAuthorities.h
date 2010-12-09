@@ -11,29 +11,21 @@
 #ifndef TAXAUTHORITIES_H
 #define TAXAUTHORITIES_H
 
-#include "guiclient.h"
-#include "xwidget.h"
-#include "ui_taxAuthorities.h"
+#include "display.h"
 
-class taxAuthorities : public XWidget, public Ui::taxAuthorities
+class taxAuthorities : public display
 {
     Q_OBJECT
 
 public:
     taxAuthorities(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~taxAuthorities();
 
 public slots:
     virtual void sDelete();
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
-    virtual void sFillList(int pId);
-    virtual void sPrint();
-
-protected slots:
-    virtual void languageChange();
-
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 };
 
 #endif // TAXAUTHORITIES_H

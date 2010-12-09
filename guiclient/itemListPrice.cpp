@@ -14,20 +14,11 @@
 #include <QMessageBox>
 #include <QValidator>
 
-/*
- *  Constructs a itemListPrice as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 itemListPrice::itemListPrice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_item, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
@@ -53,18 +44,11 @@ itemListPrice::itemListPrice(QWidget* parent, const char* name, bool modal, Qt::
   }
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 itemListPrice::~itemListPrice()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void itemListPrice::languageChange()
 {
   retranslateUi(this);
@@ -139,34 +123,31 @@ void itemListPrice::sUpdateMargins()
 
     _extPrice->setDouble(price);
 
+    QString stylesheet;
+
     if (_cachedStdCost > 0.0)
     {
       _stdMargin->setDouble((price - _cachedStdCost) / price * 100);
 
       if (_cachedStdCost > price)
-        _stdMargin->setPaletteForegroundColor(QColor("red"));
-      else
-        _stdMargin->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }
     else
-    {
       _stdMargin->setText("N/A");
-      _stdMargin->setPaletteForegroundColor(QColor("black"));
-    }
 
+    _stdMargin->setStyleSheet(stylesheet);
+
+    stylesheet = "";
     if (_cachedActCost > 0.0)
     {
       _actMargin->setDouble((price - _cachedActCost) / price * 100);
 
       if (_cachedActCost > price)
-        _actMargin->setPaletteForegroundColor(QColor("red"));
-      else
-        _actMargin->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }
     else
-    {
       _actMargin->setText("N/A");
-      _actMargin->setPaletteForegroundColor(QColor("black"));
-    }
+
+    _actMargin->setStyleSheet(stylesheet);
   }
 }

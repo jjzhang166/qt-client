@@ -14,6 +14,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QtScript>
+#include <QSqlRecord>
 
 #include <xsqlquery.h>
 

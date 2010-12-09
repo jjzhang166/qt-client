@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2010 by OpenMFG LLC, d/b/a xTuple.
@@ -8,251 +8,161 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>financialLayoutColumns</class>
- <widget class="QDialog" name="financialLayoutColumns" >
-  <property name="geometry" >
+ <widget class="QDialog" name="financialLayoutColumns">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>739</width>
-    <height>377</height>
+    <width>609</width>
+    <height>361</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Column Layout</string>
   </property>
-  <layout class="QGridLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
-   <property name="spacing" >
-    <number>6</number>
-   </property>
-   <item row="1" column="3" >
-    <widget class="QGroupBox" name="_budget" >
-     <property name="title" >
-      <string>Budget</string>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="_nameLit">
+     <property name="text">
+      <string>Name</string>
      </property>
-     <property name="checkable" >
-      <bool>true</bool>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
-     <property name="checked" >
-      <bool>false</bool>
-     </property>
-     <layout class="QGridLayout" >
-      <property name="margin" >
-       <number>9</number>
-      </property>
-      <property name="spacing" >
-       <number>6</number>
-      </property>
-      <item row="0" column="0" >
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
-         <number>6</number>
-        </property>
-        <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QCheckBox" name="_budgetprcnt" >
-            <property name="text" >
-             <string>% of Group Total</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="_budgetdiff" >
-            <property name="text" >
-             <string>Difference</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="_budgetdiffprcnt" >
-            <property name="text" >
-             <string>% Difference</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" >
-           <size>
-            <width>119</width>
-            <height>81</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item row="0" column="1" colspan="3" >
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
-      <number>6</number>
-     </property>
+   <item row="0" column="1" colspan="3">
+    <layout class="QHBoxLayout">
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
-        <number>6</number>
-       </property>
-       <item>
-        <widget class="XLineEdit" name="_name" />
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation" >
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" >
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+      <widget class="XLineEdit" name="_name"/>
      </item>
      <item>
-      <widget class="XLineEdit" name="_descrip" />
-     </item>
-     <item>
-      <layout class="QHBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
+      <spacer>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="spacing" >
-        <number>6</number>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-       <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
-          <number>6</number>
-         </property>
-         <item>
-          <widget class="XComboBox" name="_report" >
-           <property name="minimumSize" >
-            <size>
-             <width>150</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="type" >
-            <enum>XComboBox::Reports</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_edit" >
-           <property name="enabled" >
-            <bool>true</bool>
-           </property>
-           <property name="text" >
-            <string>&amp;Edit</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation" >
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" >
-          <size>
-           <width>141</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+      </spacer>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" colspan="2" >
-    <widget class="QGroupBox" name="_selected" >
-     <property name="title" >
+   <item row="0" column="4" rowspan="3">
+    <widget class="QDialogButtonBox" name="_buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="_descipLit">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="3">
+    <widget class="XLineEdit" name="_descrip"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="_reportLit">
+     <property name="text">
+      <string>Report Template</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="3">
+    <layout class="QHBoxLayout">
+     <item>
+      <layout class="QHBoxLayout">
+       <item>
+        <widget class="XComboBox" name="_report">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="type">
+          <enum>XComboBox::Reports</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="_edit">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>&amp;Edit</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>141</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="_selected">
+     <property name="title">
       <string>Selected Period</string>
      </property>
-     <layout class="QGridLayout" >
-      <property name="margin" >
-       <number>9</number>
-      </property>
-      <property name="spacing" >
-       <number>6</number>
-      </property>
-      <item row="0" column="0" >
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
-         <number>6</number>
-        </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout">
         <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
-           <number>6</number>
-          </property>
+         <layout class="QVBoxLayout">
           <item>
-           <layout class="QVBoxLayout" >
-            <property name="margin" >
-             <number>0</number>
-            </property>
-            <property name="spacing" >
+           <layout class="QVBoxLayout">
+            <property name="spacing">
              <number>0</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="_month" >
-              <property name="text" >
+             <widget class="QCheckBox" name="_month">
+              <property name="text">
                <string>Month</string>
               </property>
-              <property name="checked" >
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_quarter" >
-              <property name="text" >
+             <widget class="QCheckBox" name="_quarter">
+              <property name="text">
                <string>Quarter</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_year" >
-              <property name="text" >
+             <widget class="QCheckBox" name="_year">
+              <property name="text">
                <string>Year</string>
               </property>
              </widget>
@@ -260,23 +170,20 @@ to be bound by its terms.</comment>
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" >
-            <property name="margin" >
-             <number>0</number>
-            </property>
-            <property name="spacing" >
+           <layout class="QVBoxLayout">
+            <property name="spacing">
              <number>0</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="_showdb" >
-              <property name="text" >
+             <widget class="QCheckBox" name="_showdb">
+              <property name="text">
                <string>Show Debits and Credits</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_prcnt" >
-              <property name="text" >
+             <widget class="QCheckBox" name="_prcnt">
+              <property name="text">
                <string>% of Group Total</string>
               </property>
              </widget>
@@ -287,13 +194,13 @@ to be bound by its terms.</comment>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
-            <width>174</width>
-            <height>20</height>
+            <width>20</width>
+            <height>0</height>
            </size>
           </property>
          </spacer>
@@ -303,121 +210,38 @@ to be bound by its terms.</comment>
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" >
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
-      <number>6</number>
-     </property>
-     <item>
-      <widget class="QLabel" name="_nameLit" >
-       <property name="text" >
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="_descipLit" >
-       <property name="text" >
-        <string>Description</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="_reportLit" >
-       <property name="text" >
-        <string>Report Template</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item rowspan="2" row="0" column="4" >
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
-      <number>6</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="_save" >
-       <property name="text" >
-        <string>Save</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="_close" >
-       <property name="text" >
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation" >
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" >
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="2" >
-    <widget class="QGroupBox" name="_prior" >
-     <property name="title" >
+   <item row="3" column="2">
+    <widget class="QGroupBox" name="_prior">
+     <property name="title">
       <string>Prior</string>
      </property>
-     <property name="checkable" >
+     <property name="checkable">
       <bool>false</bool>
      </property>
-     <property name="checked" >
+     <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QGridLayout" >
-      <property name="margin" >
-       <number>9</number>
-      </property>
-      <property name="spacing" >
-       <number>6</number>
-      </property>
-      <item row="0" column="0" >
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
-         <number>6</number>
-        </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout">
         <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
+         <layout class="QVBoxLayout">
+          <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QRadioButton" name="_priorperiod" >
-            <property name="text" >
+           <widget class="QRadioButton" name="_priorperiod">
+            <property name="text">
              <string>Period</string>
             </property>
-            <property name="checked" >
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="_prioryear" >
-            <property name="text" >
+           <widget class="QRadioButton" name="_prioryear">
+            <property name="text">
              <string>Year</string>
             </property>
            </widget>
@@ -425,49 +249,46 @@ to be bound by its terms.</comment>
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
+         <layout class="QVBoxLayout">
+          <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="_fullmonth" >
-            <property name="text" >
+           <widget class="QCheckBox" name="_fullmonth">
+            <property name="text">
              <string>Full Month</string>
             </property>
-            <property name="checked" >
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="_fullquarter" >
-            <property name="enabled" >
+           <widget class="QCheckBox" name="_fullquarter">
+            <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Full Quarter</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="_fullyear" >
-            <property name="enabled" >
+           <widget class="QCheckBox" name="_fullyear">
+            <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Full Year</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="_yeartodate" >
-            <property name="enabled" >
+           <widget class="QCheckBox" name="_yeartodate">
+            <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Year To Date</string>
             </property>
            </widget>
@@ -475,30 +296,27 @@ to be bound by its terms.</comment>
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
+         <layout class="QVBoxLayout">
+          <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="_priorprcnt" >
-            <property name="text" >
+           <widget class="QCheckBox" name="_priorprcnt">
+            <property name="text">
              <string>% of Group Total</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="_priordiff" >
-            <property name="text" >
+           <widget class="QCheckBox" name="_priordiff">
+            <property name="text">
              <string>Difference</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="_priordiffprcnt" >
-            <property name="text" >
+           <widget class="QCheckBox" name="_priordiffprcnt">
+            <property name="text">
              <string>% Difference</string>
             </property>
            </widget>
@@ -507,13 +325,73 @@ to be bound by its terms.</comment>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
-            <width>119</width>
-            <height>16</height>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="2">
+    <widget class="QGroupBox" name="_budget">
+     <property name="title">
+      <string>Budget</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout">
+        <item>
+         <layout class="QVBoxLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QCheckBox" name="_budgetprcnt">
+            <property name="text">
+             <string>% of Group Total</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="_budgetdiff">
+            <property name="text">
+             <string>Difference</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="_budgetdiffprcnt">
+            <property name="text">
+             <string>% Difference</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
            </size>
           </property>
          </spacer>
@@ -559,38 +437,36 @@ to be bound by its terms.</comment>
   <tabstop>_budgetprcnt</tabstop>
   <tabstop>_budgetdiff</tabstop>
   <tabstop>_budgetdiffprcnt</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>_save</sender>
-   <signal>clicked()</signal>
+   <sender>_buttonBox</sender>
+   <signal>accepted()</signal>
    <receiver>financialLayoutColumns</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>351</x>
-     <y>38</y>
+    <hint type="sourcelabel">
+     <x>721</x>
+     <y>180</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>233</x>
      <y>29</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
+   <sender>_buttonBox</sender>
+   <signal>rejected()</signal>
    <receiver>financialLayoutColumns</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>330</x>
-     <y>66</y>
+    <hint type="sourcelabel">
+     <x>721</x>
+     <y>180</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>197</x>
      <y>125</y>
     </hint>
@@ -602,11 +478,11 @@ to be bound by its terms.</comment>
    <receiver>_fullmonth</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>110</x>
      <y>165</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>285</x>
      <y>206</y>
     </hint>

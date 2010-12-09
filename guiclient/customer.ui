@@ -38,18 +38,18 @@ to be bound by its terms.</comment>
        <item row="0" column="1">
         <layout class="QHBoxLayout">
          <item>
-          <widget class="CustInfo" name="_number">
-           <property name="labelVisible">
+          <widget class="CustCluster" name="_number">
+           <property name="label">
+            <string/>
+           </property>
+           <property name="nameVisible">
+            <bool>false</bool>
+           </property>
+           <property name="descriptionVisible">
             <bool>false</bool>
            </property>
            <property name="canEdit">
             <bool>true</bool>
-           </property>
-           <property name="infoVisible" stdset="0">
-            <bool>false</bool>
-           </property>
-           <property name="showLabel" stdset="0">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -2237,7 +2237,7 @@ to be bound by its terms.</comment>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>CustInfo</class>
+   <class>CustCluster</class>
    <extends>QWidget</extends>
    <header>custcluster.h</header>
   </customwidget>
@@ -2281,6 +2281,7 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_number</tabstop>
   <tabstop>_custtype</tabstop>
   <tabstop>_name</tabstop>
   <tabstop>_active</tabstop>

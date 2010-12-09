@@ -10,6 +10,7 @@
 
 #include "bankAdjustmentEditList.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -157,23 +158,21 @@ void bankAdjustmentEditList::sFillList()
 
 void bankAdjustmentEditList::sPopulateMenu( QMenu * pMenu )
 {
-  int menuItem;
+  QAction *menuItem;
   
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainBankAdjustments"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainBankAdjustments"));
   
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("ViewBankAdjustments"));
   
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainBankAdjustments"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainBankAdjustments"));
   
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
   
-  menuItem = pMenu->insertItem(tr("Post..."), this, SLOT(sPost()), 0);
-  if (!_privileges->check("PostBankAdjustments"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Post..."), this, SLOT(sPost()));
+  menuItem->setEnabled(_privileges->check("PostBankAdjustments"));
 }
 
 

@@ -54,7 +54,7 @@ void issueLineToShipping::languageChange()
   retranslateUi(this);
 }
 
-enum SetResponse issueLineToShipping::set(ParameterList &pParams)
+enum SetResponse issueLineToShipping::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
   QVariant param;
@@ -120,7 +120,7 @@ void issueLineToShipping::sIssue()
 {
   if (_qtyToIssue->toDouble() <= 0)
   {
-    XMessageBox::message( (isShown() ? this : parentWidget()), QMessageBox::Warning, tr("Invalid Quantity to Issue to Shipping"),
+    XMessageBox::message( (isVisible() ? this : parentWidget()), QMessageBox::Warning, tr("Invalid Quantity to Issue to Shipping"),
                           tr(  "<p>Please enter a non-negative, non-zero value to indicate the amount "
                                "of Stock you wish to Issue to Shipping for this Order Line." ),
                           QString::null, QString::null, _snooze );
@@ -214,7 +214,7 @@ void issueLineToShipping::sIssue()
   q = mql.toQuery(params);
   if (q.next() && q.value("overship").toBool())
   {
-    if(XMessageBox::message( (isShown() ? this : parentWidget()) , QMessageBox::Question, tr("Inventory Overshipped"),
+    if(XMessageBox::message( (isVisible() ? this : parentWidget()) , QMessageBox::Question, tr("Inventory Overshipped"),
         tr("<p>You have selected to ship more inventory than required. Do you want to continue?"),
         tr("Yes"), tr("No"), _snooze, 0, 1) == 1)
       return;

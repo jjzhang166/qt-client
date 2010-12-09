@@ -89,7 +89,7 @@ class ReceiverItem
     inline int type()        { return _type;   };
     inline QObject *parent() { return _parent; };
     inline QObject *target() { return _target; };
-    inline QString slot()    { return _slot;   };
+    inline char* slot()    { return _slot.toAscii().data();   };
     inline bool isNull()     { return _null;   };
     bool operator==(const ReceiverItem &value) const
     {
@@ -159,7 +159,7 @@ void InputManager::sRemove(QObject *pTarget)
 {
   for (int counter = 0; counter < _private->_receivers.count(); counter++)
     if (_private->_receivers[counter].target() == pTarget)
-      _private->_receivers.remove(_private->_receivers.at(counter));
+      _private->_receivers.removeAt(counter);
 }
 
 bool InputManager::eventFilter(QObject *, QEvent *pEvent)
@@ -171,7 +171,7 @@ bool InputManager::eventFilter(QObject *, QEvent *pEvent)
     if (((QKeyEvent *)pEvent)->key() == Qt::Key_Shift)
       return FALSE;
 
-    int character = ((QKeyEvent *)pEvent)->ascii();
+    int character = ((QKeyEvent *)pEvent)->text().data()->toAscii();
     /* qDebug("Scanned %d (key %d) at _private->_state=%d",
            character, ((QKeyEvent *)pEvent)->key(), _private->_state);
      */

@@ -10,72 +10,59 @@
 
 #include "taxAuthorities.h"
 
-#include <QVariant>
 #include <QMessageBox>
-//#include <QStatusBar>
 #include <parameter.h>
-#include <openreports.h>
+
 #include "taxAuthority.h"
+#include "parameterwidget.h"
 
 /*
  *  Constructs a taxAuthorities as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
  *
  */
-taxAuthorities::taxAuthorities(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+taxAuthorities::taxAuthorities(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "taxAuthorities", fl)
 {
-  setupUi(this);
+  setWindowTitle(tr("Tax Authorities"));
+  setReportName("TaxAuthoritiesMasterList");
+  setMetaSQLOptions("taxAuthorities", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
 
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-  connect(_taxauth, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
+  parameterWidget()->append(tr("Tax Authority Code Pattern"), "taxauth_code_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Tax Authority Name Pattern"), "taxauth_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("City Pattern"), "addr_city_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
+
   connect(omfgThis, SIGNAL(taxAuthsUpdated(int)), this, SLOT(sFillList(int)));
 
-  _taxauth->addColumn(tr("Code"), 70, Qt::AlignLeft,   true,  "taxauth_code" );
-  _taxauth->addColumn(tr("Name"), -1, Qt::AlignLeft,   true,  "taxauth_name" );
+  list()->addColumn(tr("Code"), 70, Qt::AlignLeft,   true,  "taxauth_code" );
+  list()->addColumn(tr("Name"), -1, Qt::AlignLeft,   true,  "taxauth_name" );
+  list()->addColumn(tr("Address"), -1, Qt::AlignLeft  , true, "addr_line1" );
+  list()->addColumn(tr("City"),    75, Qt::AlignLeft  , true, "addr_city" );
+  list()->addColumn(tr("State"),   50, Qt::AlignLeft  , true, "addr_state" );
+  list()->addColumn(tr("Country"), 100, Qt::AlignLeft  , true, "addr_country" );
+  list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft  , false, "addr_postalcode" );
 
   if (_privileges->check("MaintainTaxAuthorities"))
-  {
-    connect(_taxauth, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_taxauth, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_taxauth, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    connect(_taxauth, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-
-    _new->setEnabled(FALSE);
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
-
-  sFillList(-1);
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-taxAuthorities::~taxAuthorities()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void taxAuthorities::languageChange()
-{
-    retranslateUi(this);
 }
 
 void taxAuthorities::sDelete()
 {
   q.prepare("SELECT deleteTaxAuthority(:taxauth_id) AS result;");
-  q.bindValue(":taxauth_id", _taxauth->id());
+  q.bindValue(":taxauth_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -87,8 +74,8 @@ void taxAuthorities::sDelete()
       return;
     }
 
-    omfgThis->sTaxAuthsUpdated(_taxauth->id());
-    sFillList(-1);
+    omfgThis->sTaxAuthsUpdated(list()->id());
+    sFillList();
   }
   else
     systemError(this, tr("A System Error occurred at %1::%2.")
@@ -106,47 +93,44 @@ void taxAuthorities::sNew()
   
   int result = newdlg.exec();
   if (result != XDialog::Rejected)
-    sFillList(result);
+    sFillList();
 }
 
 void taxAuthorities::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("taxauth_id", _taxauth->id());
+  params.append("taxauth_id", list()->id());
 
   taxAuthority newdlg(this, "", TRUE);
   newdlg.set(params);
   
   int result = newdlg.exec();
   if (result != XDialog::Rejected)
-    sFillList(result);
+    sFillList();
 }
 
 void taxAuthorities::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("taxauth_id", _taxauth->id());
+  params.append("taxauth_id", list()->id());
 
   taxAuthority newdlg(this, "", TRUE);
   newdlg.set(params);
   newdlg.exec();
 }
 
-void taxAuthorities::sPrint()
+void taxAuthorities::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  orReport report("TaxAuthoritiesMasterList");
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
-}
+  QAction *menuItem;
 
-void taxAuthorities::sFillList(int pId)
-{
-  _taxauth->populate( "SELECT taxauth_id, taxauth_code, taxauth_name "
-                      "FROM taxauth "
-                      "ORDER BY taxauth_code;", pId );
+  menuItem = pMenu->addAction("View...", this, SLOT(sView()));
+
+  menuItem = pMenu->addAction("Edit...", this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainTaxAuthorities"));
+
+  menuItem = pMenu->addAction("Delete", this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainTaxAuthorities"));
 }
 

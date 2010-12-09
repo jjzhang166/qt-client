@@ -27,6 +27,7 @@
 #include "vendorWorkBench.h"
 #include "mqlutil.h"
 #include "lotSerialRegistration.h"
+#include "parameterwidget.h"
 
 #define DEBUG false
 
@@ -37,33 +38,33 @@ crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _todoList = new todoList(this, "todoList", Qt::Widget);
   _todoListTab->layout()->addWidget(_todoList);
-  _todoList->findChild<QWidget*>("_close")->hide();
-  _todoList->findChild<XTreeWidget*>("_todoList")->hideColumn("crmacct_number");
-  _todoList->findChild<XTreeWidget*>("_todoList")->hideColumn("crmacct_name");
+  _todoList->setCloseVisible(false);
+  _todoList->list()->hideColumn("crmacct_number");
+  _todoList->list()->hideColumn("crmacct_name");
+  _todoList->parameterWidget()->setDefault(tr("Assigned"), QVariant(), true);
+  _todoList->setParameterWidgetVisible(false);
+  _todoList->setQueryOnStartEnabled(false);
   
   _contacts = new contacts(this, "contacts", Qt::Widget);
   _allPage->layout()->addWidget(_contacts);
-  _contacts->findChild<QWidget*>("_close")->hide();
-  _contacts->findChild<QWidget*>("_activeOnly")->hide();
-  _contacts->findChild<QWidget*>("_attach")->show();
-  _contacts->findChild<QWidget*>("_detach")->show();
-  _contacts->findChild<XTreeWidget*>("_contacts")->hideColumn("crmacct_number");
-  _contacts->findChild<XTreeWidget*>("_contacts")->hideColumn("crmacct_name");
+  _contacts->setCloseVisible(false);
+  _contacts->list()->hideColumn("crmacct_number");
+  _contacts->list()->hideColumn("crmacct_name");
+  _contacts->setParameterWidgetVisible(false);
+  _contacts->setQueryOnStartEnabled(false);
   
   _oplist = new opportunityList(this, "opportunityList", Qt::Widget);
   _oplistTab->layout()->addWidget(_oplist);
-  _oplist->findChild<QWidget*>("_close")->hide();
-  _oplist->findChild<QWidget*>("_usrGroup")->hide();
-  _oplist->findChild<QWidget*>("_dates")->hide();
-  _oplist->findChild<QWidget*>("_more")->hide();
-  _oplist->findChild<QWidget*>("_crmAccountGroup")->hide();
-  _oplist->findChild<QRadioButton*>("_allUsers")->setChecked(true);
-  _oplist->findChild<XTreeWidget*>("_list")->hideColumn("crmacct_number");
-  _oplist->sHandleMore(false);
+  _oplist->setCloseVisible(false);
+  _oplist->list()->hideColumn("crmacct_number");
+  _oplist->parameterWidget()->setDefault(tr("User"), QVariant(), true);
+  _oplist->setParameterWidgetVisible(false);
+  _oplist->setQueryOnStartEnabled(false);
     
   if(!_privileges->check("EditOwner")) _owner->setEnabled(false);
 
   _owner->setUsername(omfgThis->username());
+  _owner->setType(UsernameLineEdit::UsersActive);
     
   connect(_close,		SIGNAL(clicked()), this, SLOT(sClose()));
   connect(_competitor,		SIGNAL(clicked()), this, SLOT(sCompetitor()));
@@ -175,17 +176,17 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
       if (q.first())
       {
         _crmacctId = q.value("result").toInt();
-        _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-        _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-        _oplist->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
+        _todoList->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
+        _contacts->setCrmacctid(_crmacctId);
+        _oplist->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
         if (_crmacctId < 0)
         {
           QMessageBox::critical(this, tr("Error creating Initial Account"),
                 storedProcErrorLookup("createCrmAcct", _crmacctId));
           _crmacctId = -1;
-          _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-          _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-          _oplist->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
+          _todoList->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
+          _contacts->setCrmacctid(_crmacctId);
+          _oplist->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
           return UndefinedError;
         }
         _comments->setId(_crmacctId);
@@ -239,6 +240,10 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
       _newCharacteristic->setEnabled(FALSE);
       _editCharacteristic->setEnabled(FALSE);
       _save->hide();
+      _newReg->setEnabled(false);
+      disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(setEnabled(bool)));
+      disconnect(_reg, SIGNAL(valid(bool)), _deleteReg, SLOT(setEnabled(bool)));
+      disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(animateClick()));
 
       _close->setFocus();
 
@@ -252,9 +257,9 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
   if (valid)
   {
     _crmacctId = param.toInt();
-    _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-    _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-    _oplist->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
+    _todoList->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
+    _contacts->setCrmacctid(_crmacctId);
+    _oplist->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
     sPopulate();
   }
 
@@ -591,6 +596,7 @@ void crmaccount::sSave()
   omfgThis->sProspectsUpdated();
   omfgThis->sVendorsUpdated();
   omfgThis->sTaxAuthsUpdated(-1);
+  emit saved(_crmacctId);
   close();
 }
 
@@ -746,14 +752,15 @@ void crmaccount::sPopulate()
       disconnect(_vendorButton, SIGNAL(clicked()), this, SLOT(sEditVendor()));
       
       QMenu * vendorMenu = new QMenu;
-      int menuItem;
-      menuItem=vendorMenu->insertItem(tr("Edit..."), this, SLOT(sEditVendor()));
-      vendorMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendors") && (_mode = cEdit));
-      menuItem=vendorMenu->insertItem(tr("View..."), this, SLOT(sViewVendor()));
-      vendorMenu->setItemEnabled(menuItem, _privileges->check("ViewVendors") || 
-                                           _privileges->check("MaintainVendors"));
-      menuItem=vendorMenu->insertItem(tr("Workbench..."),   this, SLOT(sVendorInfo()));
-      vendorMenu->setItemEnabled(menuItem, _privileges->check("MaintainVendors"));
+      QAction *menuItem;
+      menuItem=vendorMenu->addAction(tr("Edit..."), this, SLOT(sEditVendor()));
+      menuItem->setEnabled(_privileges->check("MaintainVendors") &&
+                           (_mode == cEdit));
+      menuItem=vendorMenu->addAction(tr("View..."), this, SLOT(sViewVendor()));
+      menuItem->setEnabled(_privileges->check("ViewVendors") ||
+                           _privileges->check("MaintainVendors"));
+      menuItem=vendorMenu->addAction(tr("Workbench..."), this, SLOT(sVendorInfo()));
+      menuItem->setEnabled(_privileges->check("MaintainVendors"));
       _vendorButton->setMenu(vendorMenu);  
       
     }
@@ -1149,8 +1156,8 @@ void crmaccount::sCheckNumber()
       }
       
       _crmacctId = newq.value("crmacct_id").toInt();
-      _todoList->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
-      _contacts->findChild<CRMAcctCluster*>("_crmAccount")->setId(_crmacctId);
+      _todoList->parameterWidget()->setDefault(tr("CRM Account"), _crmacctId, true);
+      _contacts->setCrmacctid(_crmacctId);
       _mode = cEdit;
       sPopulate();
 

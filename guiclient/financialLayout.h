@@ -13,7 +13,7 @@
 
 #include "guiclient.h"
 #include "xdialog.h"
-#include <Q3PtrStack>
+#include <QStack>
 #include <parameter.h>
 
 #include "ui_financialLayout.h"
@@ -60,7 +60,7 @@ protected slots:
 
 private:
     XTreeWidgetItem * _last;
-    Q3PtrStack<XTreeWidgetItem> _lastStack;
+    QStack<XTreeWidgetItem*> _lastStack;
     int _flheadid;
     int _mode;
     int _cachedType;

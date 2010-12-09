@@ -11,36 +11,32 @@
 #ifndef QUOTES_H
 #define QUOTES_H
 
-#include "guiclient.h"
-#include "xwidget.h"
+#include "display.h"
+
 #include "ui_quotes.h"
 
-class quotes : public XWidget, public Ui::quotes
+class quotes : public display, public Ui::quotes
 {
     Q_OBJECT
 
 public:
     quotes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
-    ~quotes();
     
     virtual bool checkSitePrivs(int orderid);
 
 public slots:
     virtual enum SetResponse set(const ParameterList&);
-    virtual void sPopulateMenu( QMenu * );
+    virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
     virtual void sPrint();
     virtual void sConvert();
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
     virtual void sDelete();
-    virtual void sFillList();
+    virtual bool setParams(ParameterList &);
 
 signals:
     void finishedPrinting(int);
-
-protected slots:
-    virtual void languageChange();
 };
 
 #endif // QUOTES_H

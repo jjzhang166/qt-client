@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>989</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,19 +44,10 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <layout class="QHBoxLayout">
-       <property name="spacing">
-        <number>5</number>
-       </property>
        <item>
         <widget class="QPushButton" name="_save">
          <property name="text">
           <string>&amp;Save</string>
-         </property>
-         <property name="autoDefault">
-          <bool>true</bool>
-         </property>
-         <property name="default">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -296,11 +287,7 @@ to be bound by its terms.</comment>
            <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="XLineEdit" name="_invoiceNumber">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-              </widget>
+              <widget class="XLineEdit" name="_invoiceNumber"/>
              </item>
              <item>
               <spacer name="horizontalSpacer">
@@ -413,9 +400,12 @@ to be bound by its terms.</comment>
              <item row="0" column="0">
               <layout class="QHBoxLayout">
                <item>
-                <widget class="CustInfo" name="_cust">
-                 <property name="focusPolicy">
-                  <enum>Qt::StrongFocus</enum>
+                <widget class="CustCluster" name="_cust">
+                 <property name="nameVisible">
+                  <bool>false</bool>
+                 </property>
+                 <property name="descriptionVisible">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -523,34 +513,7 @@ to be bound by its terms.</comment>
              <item row="0" column="0">
               <layout class="QHBoxLayout">
                <item>
-                <widget class="QLabel" name="_shipToNumberLit">
-                 <property name="text">
-                  <string>Ship-To #:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                 <property name="buddy">
-                  <cstring>_shipToNumber</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="XLineEdit" name="_shipToNumber">
-                 <property name="focusPolicy">
-                  <enum>Qt::StrongFocus</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="_shipToList">
-                 <property name="focusPolicy">
-                  <enum>Qt::NoFocus</enum>
-                 </property>
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
+                <widget class="ShiptoCluster" name="_shipTo"/>
                </item>
                <item>
                 <spacer>
@@ -820,9 +783,6 @@ to be bound by its terms.</comment>
        </item>
        <item row="0" column="1" rowspan="2">
         <layout class="QVBoxLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
          <item>
           <widget class="QPushButton" name="_new">
            <property name="enabled">
@@ -1334,8 +1294,8 @@ to be bound by its terms.</comment>
        </item>
        <item row="0" column="0" rowspan="2">
         <widget class="RecurrenceWidget" name="_recurring">
-         <property name="maxVisible">
-          <bool>true</bool>
+         <property name="minPeriod">
+          <enum>RecurrenceWidget::Daily</enum>
          </property>
         </widget>
        </item>
@@ -1364,7 +1324,7 @@ to be bound by its terms.</comment>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>CustInfo</class>
+   <class>CustCluster</class>
    <extends>QWidget</extends>
    <header>custcluster.h</header>
   </customwidget>
@@ -1388,6 +1348,11 @@ to be bound by its terms.</comment>
    <class>RecurrenceWidget</class>
    <extends>QWidget</extends>
    <header>recurrencewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ShiptoCluster</class>
+   <extends>QWidget</extends>
+   <header>shiptocluster.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
@@ -1424,7 +1389,7 @@ to be bound by its terms.</comment>
   <tabstop>_billToPhone</tabstop>
   <tabstop>_billToAddr</tabstop>
   <tabstop>_copyToShipto</tabstop>
-  <tabstop>_shipToNumber</tabstop>
+  <tabstop>_shipTo</tabstop>
   <tabstop>_shipToName</tabstop>
   <tabstop>_shipToPhone</tabstop>
   <tabstop>_shipToAddr</tabstop>
@@ -1468,22 +1433,6 @@ to be bound by its terms.</comment>
    </hints>
   </connection>
   <connection>
-   <sender>_cust</sender>
-   <signal>nameChanged(QString)</signal>
-   <receiver>_billToName</receiver>
-   <slot>setText(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>_custCurrency</sender>
    <signal>newID(int)</signal>
    <receiver>_subtotal</receiver>
@@ -1800,22 +1749,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_cust</sender>
-   <signal>addressChanged(int)</signal>
-   <receiver>_billToAddr</receiver>
-   <slot>setId(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>129</x>
-     <y>210</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>209</x>
-     <y>313</y>
     </hint>
    </hints>
   </connection>

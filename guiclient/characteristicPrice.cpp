@@ -14,19 +14,11 @@
 #include <QSqlError>
 #include <QVariant>
 
-/*
- *  Constructs a characteristicPrice as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 characteristicPrice::characteristicPrice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-  // signals and slots connections
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_char, SIGNAL(newID(int)), this, SLOT(sCharIdChanged()));
   connect(_char, SIGNAL(newID(int)), this, SLOT(sCheck()));
@@ -38,18 +30,11 @@ characteristicPrice::characteristicPrice(QWidget* parent, const char* name, bool
                     "stop editing this Pricing Schedule.\n%1");
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 characteristicPrice::~characteristicPrice()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void characteristicPrice::languageChange()
 {
   retranslateUi(this);
@@ -147,7 +132,7 @@ void characteristicPrice::sSave()
   q.bindValue(":ipsitemchar_id", _ipsitemcharid);
   q.bindValue(":ipsitemchar_char_id", _char->id());
   q.bindValue(":ipsitemchar_value", _value->currentText());
-  q.bindValue(":ipsitemchar_price", _price->localValue());;
+  q.bindValue(":ipsitemchar_price", _price->localValue());
   q.exec();
   if (q.lastError().type() != QSqlError::NoError)
   {

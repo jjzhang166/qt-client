@@ -29,6 +29,8 @@ class QToolBarProto : public QObject, public QScriptable
 
     Q_INVOKABLE void addAction ( QAction * action );
     Q_INVOKABLE void addWidget ( QWidget * widget );
+    Q_INVOKABLE QWidget * widgetForAction ( QAction * action ) const;
+    Q_INVOKABLE QAction * insertWidget ( QAction * before, QWidget * widget );
     // TODO: fill in the rest of the function this class has
 };
 

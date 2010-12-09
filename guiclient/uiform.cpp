@@ -60,9 +60,10 @@ uiform::uiform(QWidget* parent, const char* name, Qt::WFlags fl)
                      "ORDER BY pkghead_name;");
   _package->setEnabled(package::userHasPriv(cEdit));
 
-  _uiformid = -1;
-  _changed = false;
+  _uiformid      = -1;
+  _changed       = false;
   _pkgheadidOrig = -1;
+  _source        = QString::null;
 }
 
 uiform::~uiform()
@@ -333,11 +334,18 @@ void uiform::sEdit()
 
     // Create the form independently, get size, then apply size to widget in designer
     QByteArray ba;
-    ba.append(_source);
+    ba.append(_source.toUtf8());
     QBuffer uiFile(&ba);
     XUiLoader loader;
     ui = loader.load(&uiFile);
-    size = ui->size();
+    if (ui)
+      size = ui->size();
+    else
+    {
+      systemError(this,
+                  tr("Could not load .ui (%1)").arg(uiFile.errorString()));
+      return;
+    }
   }
 
   connect(designer, SIGNAL(formEnabledChanged(bool)),_enabled,SLOT(setChecked(bool)));

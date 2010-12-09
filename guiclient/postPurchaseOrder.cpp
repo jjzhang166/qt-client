@@ -10,57 +10,34 @@
 
 #include "postPurchaseOrder.h"
 
-#include <qvariant.h>
+#include <QVariant>
 
-/*
- *  Constructs a postPurchaseOrder as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
 postPurchaseOrder::postPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
+  connect(_close,   SIGNAL(clicked()), this,     SLOT(reject()));
+  connect(_po,    SIGNAL(valid(bool)), _release, SLOT(setEnabled(bool)));
+  connect(_release, SIGNAL(clicked()), this,     SLOT(sRelease()));
 
-    // signals and slots connections
-    connect(_po, SIGNAL(valid(bool)), _release, SLOT(setEnabled(bool)));
-    connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(_release, SIGNAL(clicked()), this, SLOT(sRelease()));
-    init();
+  _captive = false;
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 postPurchaseOrder::~postPurchaseOrder()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void postPurchaseOrder::languageChange()
 {
-    retranslateUi(this);
-}
-
-
-void postPurchaseOrder::init()
-{
-  _captive = FALSE;
-
-  _po->setType(cPOUnposted);
+  retranslateUi(this);
 }
 
 enum SetResponse postPurchaseOrder::set(ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -81,7 +58,7 @@ void postPurchaseOrder::sRelease()
   q.bindValue(":pohead_id", _po->id());
   q.exec();
 
-  omfgThis->sPurchaseOrdersUpdated(_po->id(), TRUE);
+  omfgThis->sPurchaseOrdersUpdated(_po->id(), true);
 
   if (_captive)
     accept();

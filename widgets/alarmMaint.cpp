@@ -14,17 +14,26 @@
 #include <QMessageBox>
 
 #include "alarmMaint.h"
+#include "shortcuts.h"
 
 const char *_alarmQualifiers[] = { "MB", "HB", "DB", "MA", "HA", "DA" };
 
 alarmMaint::alarmMaint(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-  : QDialog(parent, name, modal, fl)
+  : QDialog(parent, fl)
 {
   setupUi(this);
 
+  setObjectName(name ? name : "alarmMaint");
+  setModal(modal);
+
+  _userLookup = _buttonBox->addButton(tr("&User..."), QDialogButtonBox::ActionRole);
+  _contactLookup = _buttonBox->addButton(tr("&Contact..."), QDialogButtonBox::ActionRole);
+
   // signals and slots connections
-  connect(_cancel, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_userLookup, SIGNAL(clicked()), _usernameCluster, SLOT(sList()));
+  connect(_contactLookup, SIGNAL(clicked()), _contactCluster, SLOT(sList()));
   connect(_contactCluster, SIGNAL(newId(int)), this, SLOT(sContactLookup(int)));
   connect(_usernameCluster, SIGNAL(newId(int)), this, SLOT(sUserLookup(int)));
 
@@ -53,7 +62,11 @@ alarmMaint::alarmMaint(QWidget* parent, const char* name, bool modal, Qt::WFlags
   }
   _sysmsgAlarm->setChecked(_x_preferences && _x_preferences->boolean("AlarmSysmsgDefault"));
 
-  sHandleButtons();
+  _contactCluster->hide();
+  _usernameCluster->hide();
+  adjustSize();
+
+  shortcuts::setStandardKeys(this);
 }
 
 alarmMaint::~alarmMaint()
@@ -123,7 +136,7 @@ void alarmMaint::set( const ParameterList & pParams )
     else if(param.toString() == "view")
     {
       _mode = cView;
-      _save->hide();
+      _buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
     }
   }
 
@@ -147,27 +160,22 @@ void alarmMaint::sSave()
             "                 :alarm_sysmsg, :alarm_sysmsg_recipient,"
             "                 :alarm_source, :alarm_source_id, 'CHANGEALL') AS result; ");
 
-  q.bindValue(":alarm_event", QVariant(_eventAlarm->isChecked(), 0));
-  q.bindValue(":alarm_email", QVariant(_emailAlarm->isChecked(), 0));
-  q.bindValue(":alarm_sysmsg", QVariant(_sysmsgAlarm->isChecked(), 0));
+  q.bindValue(":alarm_event", QVariant(_eventAlarm->isChecked()));
+  q.bindValue(":alarm_email", QVariant(_emailAlarm->isChecked()));
+  q.bindValue(":alarm_sysmsg", QVariant(_sysmsgAlarm->isChecked()));
   q.bindValue(":alarm_event_recipient", _eventRecipient->text());
   q.bindValue(":alarm_email_recipient", _emailRecipient->text());
   q.bindValue(":alarm_sysmsg_recipient", _sysmsgRecipient->text());
   q.bindValue(":alarm_date", _alarmDate->date());
   q.bindValue(":alarm_time", _alarmTime->time());
   q.bindValue(":alarm_time_offset", _alarmOffset->value());
-  q.bindValue(":alarm_time_qualifier", _alarmQualifiers[_alarmQualifier->currentItem()]);
+  q.bindValue(":alarm_time_qualifier", _alarmQualifiers[_alarmQualifier->currentIndex()]);
   q.bindValue(":alarm_source", Alarms::_alarmMap[_source].ident);
   q.bindValue(":alarm_source_id", _sourceid);
   q.bindValue(":alarm_id", _alarmid);
   q.exec();
 
   accept();
-}
-
-void alarmMaint::sHandleButtons()
-{
-  _contactCluster->hide();
 }
 
 void alarmMaint::sUserLookup(int pId)
@@ -275,7 +283,7 @@ void alarmMaint::sPopulate()
     for (int pcounter = 0; pcounter < _alarmQualifier->count(); pcounter++)
     {
       if (QString(q.value("alarm_time_qualifier").toString()) == _alarmQualifiers[pcounter])
-        _alarmQualifier->setCurrentItem(pcounter);
+        _alarmQualifier->setCurrentIndex(pcounter);
     }
     _alarmDate->setDate(q.value("alarm_time").toDate());
     _alarmTime->setTime(q.value("alarm_time").toTime());

@@ -15,17 +15,17 @@
 addPoComment::addPoComment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
-    setupUi(this);
+  setupUi(this);
 }
 
 addPoComment::~addPoComment()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 void addPoComment::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
 enum SetResponse addPoComment::set(const ParameterList &pParams)
@@ -38,7 +38,7 @@ enum SetResponse addPoComment::set(const ParameterList &pParams)
   if (valid)
   {
     _po->setId(param.toInt());
-    _po->setReadOnly(TRUE);
+    _po->setReadOnly(true);
   }
 
   return NoError;

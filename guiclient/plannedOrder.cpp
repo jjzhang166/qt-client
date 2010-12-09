@@ -10,10 +10,10 @@
 
 #include "plannedOrder.h"
 
-#include <QVariant>
 #include <QMessageBox>
-#include <QValidator>
 #include <QSqlError>
+#include <QValidator>
+#include <QVariant>
 
 plannedOrder::plannedOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -36,25 +36,17 @@ plannedOrder::plannedOrder(QWidget* parent, const char* name, bool modal, Qt::WF
   }
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 plannedOrder::~plannedOrder()
 {
     // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void plannedOrder::languageChange()
 {
     retranslateUi(this);
 }
 
-
-enum SetResponse plannedOrder::set(ParameterList &pParams)
+enum SetResponse plannedOrder::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
   QVariant param;
@@ -238,7 +230,7 @@ void plannedOrder::sCreate()
   q.bindValue(":qty", _qty->toDouble());
   q.bindValue(":dueDate", _dueDate->date());
   q.bindValue(":leadTime", _leadTime->value());
-  q.bindValue(":notes", _notes->text());
+  q.bindValue(":notes",    _notes->toPlainText());
   if (_poButton->isChecked())
     q.bindValue(":type", "P");
   else if (_woButton->isChecked())

@@ -10,11 +10,11 @@
 
 #include "unpostedPurchaseOrders.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QWorkspace>
 
 #include <metasql.h>
 #include <parameter.h>
@@ -23,53 +23,51 @@
 #include "printPurchaseOrder.h"
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "unpostedPurchaseOrders", fl)
 {
-  setupUi(this);
+  setupUi(optionsWidget());
+  setUseAltId(true);
+  setWindowTitle(tr("Open Purchase Orders"));
+  setMetaSQLOptions("openpurchaseorders", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setQueryOnStartEnabled(true);
+  setAutoUpdateEnabled(true);
+  setSearchVisible(true);
 
-  connect(_showUnreleased, SIGNAL(toggled(bool)), this,	SLOT(sFillList()));
-  connect(_showOpen, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_delete,	SIGNAL(clicked()),	this,	SLOT(sDelete()));
-  connect(_edit,	SIGNAL(clicked()),	this,	SLOT(sEdit()));
-  connect(_new,         SIGNAL(clicked()),	this,	SLOT(sNew()));
-  connect(_pohead,	SIGNAL(populateMenu(QMenu *, QTreeWidgetItem *)),
-                                                this,	SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem *)));
-  connect(_pohead,	SIGNAL(valid(bool)),	this,	SLOT(sHandleButtons()));
-  connect(_release,	SIGNAL(clicked()),	this,	SLOT(sRelease()));
-  connect(_print,	SIGNAL(clicked()),	this,	SLOT(sPrint()));
-  connect(_view,	SIGNAL(clicked()),	this,	SLOT(sView()));
-  connect(_searchFor, SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
-  connect(_next, SIGNAL(clicked()), this, SLOT(sSearchNext()));
+  if (_metrics->boolean("MultiWhs"))
+    parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
+  parameterWidget()->append(tr("Vendor"), "vend_id", ParameterWidget::Vendor);
+  parameterWidget()->appendComboBox(tr("Vendor Type"), "vendtype_id", XComboBox::VendorTypes);
+  parameterWidget()->append(tr("Vendor Type Pattern"), "vendtype_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Purchase Agent"), "pohead_agent_usr_id", XComboBox::Agent);
 
   connect(omfgThis,	SIGNAL(purchaseOrdersUpdated(int, bool)),
                                               this,	SLOT(sFillList()));
 
-  _pohead->addColumn(tr("P/O #"),     _orderColumn, Qt::AlignLeft,   true, "pohead_number" );
-  _pohead->addColumn(tr("Vendor"),    -1,           Qt::AlignLeft,   true, "vend_name"   );
-  _pohead->addColumn(tr("Due Date"),  _dateColumn,  Qt::AlignCenter, true, "min_duedate" );
-  _pohead->addColumn(tr("Status"),    _ynColumn,    Qt::AlignCenter, true, "pohead_status" );
-  _pohead->addColumn(tr("Printed"),   _ynColumn,    Qt::AlignCenter, true, "pohead_printed");
+  list()->addColumn(tr("P/O #"),     _orderColumn, Qt::AlignLeft,   true, "pohead_number" );
+  list()->addColumn(tr("Vendor #"),  _orderColumn, Qt::AlignLeft,   true, "vend_number"   );
+  list()->addColumn(tr("Vendor"),    -1,           Qt::AlignLeft,   true, "vend_name"   );
+  list()->addColumn(tr("Due Date"),  _dateColumn,  Qt::AlignCenter, true, "min_duedate" );
+  list()->addColumn(tr("Status"),    _ynColumn,    Qt::AlignCenter, true, "pohead_status" );
+  list()->addColumn(tr("Printed"),   _ynColumn,    Qt::AlignCenter, true, "pohead_printed");
+  list()->addColumn(tr("Vend. Type"), -1,          Qt::AlignLeft,   false,"vendtype_code" );
+  list()->addColumn(tr("Agent"),      -1,          Qt::AlignLeft,   true, "pohead_agent_username");
 
-  _pohead->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-  _showUnreleased->setChecked(FALSE);
+  _showUnreleased->setChecked(false);
 
   if (_privileges->check("MaintainPurchaseOrders"))
-    _new->setEnabled(TRUE);
-
-  sFillList();
-}
-
-unpostedPurchaseOrders::~unpostedPurchaseOrders()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void unpostedPurchaseOrders::languageChange()
-{
-    retranslateUi(this);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+  else
+  {
+    newAction()->setEnabled(false);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
+  }
 }
 
 void unpostedPurchaseOrders::sNew()
@@ -84,17 +82,17 @@ void unpostedPurchaseOrders::sNew()
 
 void unpostedPurchaseOrders::sEdit()
 {
-  QList<XTreeWidgetItem*> list = _pohead->selectedItems();
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
   bool done = false;
-  for (int i = 0; i < list.size(); i++)
+  for (int i = 0; i < selected.size(); i++)
   {
-    if (((list[i]->text(3) == "U" && _privileges->check("MaintainPurchaseOrders")) ||
-	(list[i]->text(3) == "O" && _privileges->check("MaintainPostedPurchaseOrders"))) &&
-        (checkSitePrivs(((XTreeWidgetItem*)(list[i]))->id())))
+    if (((selected[i]->rawValue("pohead_status").toString() == "U" && _privileges->check("MaintainPurchaseOrders")) ||
+        (selected[i]->rawValue("pohead_status").toString() == "O" && _privileges->check("MaintainPostedPurchaseOrders"))) &&
+        (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id())))
     {
       ParameterList params;
       params.append("mode", "edit");
-      params.append("pohead_id", ((XTreeWidgetItem*)(list[i]))->id());
+      params.append("pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
       purchaseOrder *newdlg = new purchaseOrder();
       newdlg->set(params);
@@ -114,15 +112,15 @@ void unpostedPurchaseOrders::sEdit()
 
 void unpostedPurchaseOrders::sView()
 {
-  QList<XTreeWidgetItem*> list = _pohead->selectedItems();
-  for (int i = 0; i < list.size(); i++)
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
+  for (int i = 0; i < selected.size(); i++)
   {
-    if (checkSitePrivs(((XTreeWidgetItem*)(list[i]))->id()))
+    if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
     {
 
       ParameterList params;
       params.append("mode", "view");
-      params.append("pohead_id", ((XTreeWidgetItem*)(list[i]))->id());
+      params.append("pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
       purchaseOrder *newdlg = new purchaseOrder();
       newdlg->set(params);
@@ -142,15 +140,15 @@ void unpostedPurchaseOrders::sDelete()
   {
     q.prepare("SELECT deletePo(:pohead_id) AS result;");
 
-    QList<XTreeWidgetItem*> list = _pohead->selectedItems();
+    QList<XTreeWidgetItem*> selected = list()->selectedItems();
     bool done = false;
-    for (int i = 0; i < list.size(); i++)
+    for (int i = 0; i < selected.size(); i++)
     {
-      if (checkSitePrivs(((XTreeWidgetItem*)(list[i]))->id()))
+      if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
       {
-        if (list[i]->text(3) == "U")
+        if (selected[i]->rawValue("pohead_status").toString() == "U")
         {
-          if (list[i]->altId() != -1)
+          if (selected[i]->altId() != -1)
 		  {
             QString question = tr("<p>The Purchase Order that you selected to delete was created "
             "to satisfy Sales Order demand. If you delete the selected "
@@ -163,13 +161,13 @@ void unpostedPurchaseOrders::sDelete()
                                       QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
 			  continue;
 		  }
-          q.bindValue(":pohead_id", ((XTreeWidgetItem*)(list[i]))->id());
+          q.bindValue(":pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
           q.exec();
           if (q.first() && ! q.value("result").toBool())
               systemError(this, tr("<p>Only Unposted Purchase Orders may be "
                                    "deleted. Check the status of Purchase Order "
                                    "%1. If it is 'U' then contact your system "
-                                   "Administrator.").arg(list[i]->text(0)),
+                                   "Administrator.").arg(selected[i]->text(0)),
                           __FILE__, __LINE__);
           else if (q.lastError().type() != QSqlError::NoError)
             systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
@@ -190,13 +188,13 @@ void unpostedPurchaseOrders::sDelete()
 
 void unpostedPurchaseOrders::sPrint()
 {
-  QList<XTreeWidgetItem*> list = _pohead->selectedItems();
-  for (int i = 0; i < list.size(); i++)
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
+  for (int i = 0; i < selected.size(); i++)
   {
-    if (checkSitePrivs(((XTreeWidgetItem*)(list[i]))->id()))
+    if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
     {
       ParameterList params;
-      params.append("pohead_id", ((XTreeWidgetItem*)(list[i]))->id());
+      params.append("pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
       printPurchaseOrder newdlg(this, "", TRUE);
       newdlg.set(params);
@@ -209,112 +207,74 @@ void unpostedPurchaseOrders::sPrint()
 
 void unpostedPurchaseOrders::sRelease()
 {
-  if ( QMessageBox::warning( this, tr("Release Selected Purchase Orders"),
-                             tr("<p>Are you sure that you want to release "
-			        "the selected Purchase Orders?" ),
-                             tr("&Yes"), tr("&No"), QString::null, 0, 1 ) == 0)
-  {
-    q.prepare("SELECT releasePurchaseOrder(:pohead_id) AS result;");
+  q.prepare("SELECT releasePurchaseOrder(:pohead_id) AS result;");
 
-    QList<XTreeWidgetItem*> list = _pohead->selectedItems();
-    bool done = false;
-    for (int i = 0; i < list.size(); i++)
-    {
-      if ((list[i]->text(3) == "U")
-        && (_privileges->check("ReleasePurchaseOrders"))
-        && (checkSitePrivs(((XTreeWidgetItem*)(list[i]))->id())))
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
+  bool done = false;
+  for (int i = 0; i < selected.size(); i++)
+  {
+    if ((selected[i]->rawValue("pohead_status").toString() == "U")
+      && (_privileges->check("ReleasePurchaseOrders"))
+      && (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id())))
       {
-        q.bindValue(":pohead_id", ((XTreeWidgetItem*)(list[i]))->id());
-        q.exec();
-        if (q.first())
-        {
-          int result = q.value("result").toInt();
-          if (result < 0)
-            systemError(this, storedProcErrorLookup("releasePurchaseOrder", result),
-                        __FILE__, __LINE__);
-          else
-			done = true;
-		}
-        else if (q.lastError().type() != QSqlError::NoError)
-          systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      q.bindValue(":pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
+      q.exec();
+      if (q.first())
+      {
+        int result = q.value("result").toInt();
+        if (result < 0)
+          systemError(this, storedProcErrorLookup("releasePurchaseOrder", result),
+                      __FILE__, __LINE__);
+        else
+          done = true;
       }
+      else if (q.lastError().type() != QSqlError::NoError)
+        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     }
-    if (done)
-      omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
-    else
-      QMessageBox::information(this, tr("Nothing To Post"),
-			       tr("<p>There were no selected Purchase Orders "
-				  "to be posted."),
-			       QMessageBox::Ok|QMessageBox::Default);
   }
-}
-
-void unpostedPurchaseOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem)
-{
-  int menuItem;
-
-  bool canMaintain = (pItem->text(3) == "U" && _privileges->check("MaintainPurchaseOrders")) ||
-		     (pItem->text(3) == "O" && _privileges->check("MaintainPostedPurchaseOrders"));
-
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  pMenu->setItemEnabled(menuItem, canMaintain);
-
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-  pMenu->setItemEnabled(menuItem, canMaintain || _privileges->check("ViewPurchaseOrders"));
-
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  pMenu->setItemEnabled(menuItem, (pItem->text(3) == "U" && _privileges->check("MaintainPurchaseOrders")));
-
-  pMenu->insertSeparator();
-
-  menuItem = pMenu->insertItem(tr("Print..."), this, SLOT(sPrint()), 0);
-  pMenu->setItemEnabled(menuItem, canMaintain);
-
-  menuItem = pMenu->insertItem(tr("Release..."), this, SLOT(sRelease()), 0);
-  pMenu->setItemEnabled(menuItem, _privileges->check("ReleasePurchaseOrders") &&
-				  pItem->text(3) == "U");
-}
-
-void unpostedPurchaseOrders::sHandleButtons()
-{
-  // see if the selected items list contains both unposted and open/posted items
-  bool unposted = false;
-  bool open = false;
-  QList<XTreeWidgetItem*> list = _pohead->selectedItems();
-  for (int i = 0; i < list.size(); i++)
-  {
-    if (! unposted && list[i]->text(3) == "U")
-      unposted = true;
-    if (! open && list[i]->text(3) == "O")
-      open = true;
-    if (open && unposted)
-      break;
-  }
-
-  _delete->setEnabled(unposted && _privileges->check("MaintainPurchaseOrders"));
-  _edit->setEnabled((unposted && _privileges->check("MaintainPurchaseOrders")) ||
-		    (open && _privileges->check("MaintainPostedPurchaseOrders")));
-  _release->setEnabled(unposted && _privileges->check("ReleasePurchaseOrders"));
-  _print->setEnabled(_privileges->check("PrintPurchaseOrders"));
-
-  if ((unposted && _privileges->check("MaintainPurchaseOrders")) ||
-      (open && _privileges->check("MaintainPostedPurchaseOrders")))
-  {
-    disconnect(_pohead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    connect(_pohead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+  if (done)
+    omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
   else
-  {
-    disconnect(_pohead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    connect(_pohead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-  }
+    QMessageBox::information(this, tr("Nothing To Post"),
+                             tr("<p>There were no selected Purchase Orders "
+                                "to be posted."),
+                             QMessageBox::Ok|QMessageBox::Default);
 }
 
-void unpostedPurchaseOrders::sFillList()
+void unpostedPurchaseOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem, int)
 {
-  _pohead->clear();
+  QAction *menuItem;
 
-  ParameterList params;
+  XTreeWidgetItem* item = (XTreeWidgetItem*)pItem;
+  bool canMaintain = (item->rawValue("pohead_status").toString() == "U" && _privileges->check("MaintainPurchaseOrders")) ||
+                     (item->rawValue("pohead_status").toString()  == "O" && _privileges->check("MaintainPostedPurchaseOrders"));
+
+
+  menuItem = pMenu->addAction(tr("Print..."), this, SLOT(sPrint()));
+  menuItem->setEnabled(canMaintain);
+
+  pMenu->addSeparator();
+
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(canMaintain);
+
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem->setEnabled(canMaintain || _privileges->check("ViewPurchaseOrders"));
+
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled((item->rawValue("pohead_status").toString() == "U" && _privileges->check("MaintainPurchaseOrders")));
+
+  pMenu->addSeparator();
+
+  menuItem = pMenu->addAction(tr("Release..."), this, SLOT(sRelease()));
+  menuItem->setEnabled(_privileges->check("ReleasePurchaseOrders") &&
+                       item->rawValue("pohead_status").toString() == "U");
+}
+
+bool unpostedPurchaseOrders::setParams(ParameterList &params)
+{
+  display::setParams(params);
+
   if (_showUnreleased->isChecked() && _showOpen->isChecked() )
     params.append("showBoth");
   else if (_showUnreleased->isChecked())
@@ -324,37 +284,7 @@ void unpostedPurchaseOrders::sFillList()
   else
     params.append("shownothing");
 
-  QString sql( "SELECT pohead_id, COALESCE(pohead_cohead_id, -1) AS pohead_cohead_id,"
-               "       pohead_number, vend_name,"
-               "       MIN(poitem_duedate) AS min_duedate, "
-               "       pohead_status, pohead_printed "
-               "FROM vend, pohead LEFT OUTER JOIN "
-               "     poitem ON (poitem_pohead_id=pohead_id) "
-               "WHERE ( (pohead_vend_id=vend_id)"
-               "<? if exists(\"showUnreleased\") ?> "
-               "  AND (pohead_status ='U') "
-               "<? endif ?> "
-               "<? if exists(\"showOpen\") ?>"
-               "  AND (pohead_status='O' )"
-               "<? endif ?> "
-               "<? if exists(\"showBoth\") ?> "
-               "  AND (pohead_status IN ('U', 'O') ) "
-               "<? endif ?> "
-               "<? if exists(\"shownothing\") ?> "
-               "  AND (pohead_status NOT IN ('U', 'O', 'C')) "
-               "<? endif ?> "
-               ") "
-               "GROUP BY pohead_number, pohead_id, pohead_cohead_id,"
-			   "         vend_name, pohead_status, pohead_printed "
-               "ORDER BY pohead_number;" );
-  MetaSQLQuery mql(sql);
-  XSqlQuery r = mql.toQuery(params);
-  if (r.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, r.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  _pohead->populate(r, true);
+  return true;
 }
 
 bool unpostedPurchaseOrders::checkSitePrivs(int orderid)
@@ -378,44 +308,4 @@ bool unpostedPurchaseOrders::checkSitePrivs(int orderid)
     }
   }
   return true;
-}
-
-
-void unpostedPurchaseOrders::sSearch( const QString &pTarget )
-{
-  _pohead->clearSelection();
-  int i;
-  for (i = 0; i < _pohead->topLevelItemCount(); i++)
-  {
-    if ( _pohead->topLevelItem(i)->text(0).startsWith(pTarget, Qt::CaseInsensitive) ||
-         _pohead->topLevelItem(i)->text(1).contains(pTarget, Qt::CaseInsensitive) )
-      break;
-  }
-
-  if (i < _pohead->topLevelItemCount())
-  {
-    _pohead->setCurrentItem(_pohead->topLevelItem(i));
-    _pohead->scrollToItem(_pohead->topLevelItem(i));
-  }
-}
-
-void unpostedPurchaseOrders::sSearchNext()
-{
-  QString target = _searchFor->text();
-  int i;
-  int currentIndex = _pohead->indexOfTopLevelItem(_pohead->currentItem()) + 1;
-  if(currentIndex < 0 || currentIndex > _pohead->topLevelItemCount())
-    currentIndex = 0;
-  for (i = currentIndex; i < _pohead->topLevelItemCount(); i++)
-  {
-    if ( _pohead->topLevelItem(i)->text(0).startsWith(target, Qt::CaseInsensitive) ||
-         _pohead->topLevelItem(i)->text(1).contains(target, Qt::CaseInsensitive) )
-      break;
-  }
-
-  if (i < _pohead->topLevelItemCount())
-  {
-    _pohead->setCurrentItem(_pohead->topLevelItem(i));
-    _pohead->scrollToItem(_pohead->topLevelItem(i));
-  }
 }

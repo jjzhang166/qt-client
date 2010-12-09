@@ -10,10 +10,10 @@
 
 #include "openVouchers.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
 #include <QVariant>
 
 #include <metasql.h>
@@ -30,8 +30,6 @@ openVouchers::openVouchers(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
-
-//  (void)statusBar();
 
   connect(_vendorgroup, SIGNAL(updated()), this, SLOT(sFillList()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
@@ -333,23 +331,20 @@ void openVouchers::sPost()
 
 void openVouchers::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit Voucher..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainVouchers"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit Voucher..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainVouchers"));
 
-  menuItem = pMenu->insertItem(tr("View Voucher..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View Voucher..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete Voucher..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainVouchers"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete Voucher..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainVouchers"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Post Voucher..."), this, SLOT(sPost()), 0);
-  if (!_privileges->check("PostVouchers"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Post Voucher..."), this, SLOT(sPost()));
+  menuItem->setEnabled(_privileges->check("PostVouchers"));
 }
 
 

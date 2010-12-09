@@ -21,23 +21,36 @@
 
 #include "xtreewidget.h"
 #include "warehousegroup.h"
-#include "socluster.h"
+#include "salesOrderList.h"
 
-transferOrderList::transferOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog( parent, name, modal, fl )
+transferOrderList::transferOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+  : QDialog(parent, fl)
 {
-  if ( !name )
-    setObjectName( "transferOrderList" );
+  setObjectName(name ? name : "transferOrderList");
+  setModal(modal);
 
   _toheadid = -1;
   _type = (cToOpen | cToClosed);
 
   setWindowTitle(tr("Transfer Orders"));
 
-  QVBoxLayout *mainLayout	= new QVBoxLayout(this, 5, 5, "mainLayout"); 
-  QHBoxLayout *warehouseLayout	= new QHBoxLayout(0, 0, 0, "warehouseLayout"); 
-  QHBoxLayout *topLayout	= new QHBoxLayout( 0, 0, 7, "topLayout"); 
-  QVBoxLayout *buttonsLayout	= new QVBoxLayout(0, 0, 5, "buttonsLayout");
-  QVBoxLayout *listLayout	= new QVBoxLayout( 0, 0, 0, "listLayout"); 
+  QVBoxLayout *mainLayout	= new QVBoxLayout(this);
+  QHBoxLayout *warehouseLayout	= new QHBoxLayout(0);
+  QHBoxLayout *topLayout	= new QHBoxLayout(0);
+  QVBoxLayout *buttonsLayout	= new QVBoxLayout(0);
+  QVBoxLayout *listLayout	= new QVBoxLayout(0);
+
+  mainLayout->setContentsMargins(5, 5, 5, 5);
+  warehouseLayout->setContentsMargins(0, 0, 0, 0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
+  buttonsLayout->setContentsMargins(0, 0, 0, 0);
+  listLayout->setContentsMargins(0, 0, 0, 0);
+
+  mainLayout->setSpacing(5);
+  warehouseLayout->setSpacing(0);
+  topLayout->setSpacing(7);
+  buttonsLayout->setSpacing(5);
+  listLayout->setSpacing(0);
 
   _srcwhs = new WarehouseGroup(this, "_srcwhs");
   _srcwhs->setTitle(tr("From Site:"));
@@ -54,17 +67,20 @@ transferOrderList::transferOrderList( QWidget* parent, const char* name, bool mo
   QSpacerItem* spacer_2 = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
   topLayout->addItem(spacer_2);
 
-  _close = new QPushButton(tr("&Cancel"), this, "_close");
+  _close = new QPushButton(tr("&Cancel"), this);
+  _close->setObjectName("_close");
   buttonsLayout->addWidget(_close);
 
-  _select = new QPushButton(tr("&Select"), this, "_select");
+  _select = new QPushButton(tr("&Select"), this);
+  _select->setObjectName("_select");
   _select->setEnabled( FALSE );
   _select->setDefault( TRUE );
   buttonsLayout->addWidget(_select);
   topLayout->addLayout(buttonsLayout);
   mainLayout->addLayout(topLayout);
 
-  QLabel *_transferOrdersLit = new QLabel(tr("Transfer Orders:"), this, "_transferOrdersLit");
+  QLabel *_transferOrdersLit = new QLabel(tr("Transfer Orders:"), this);
+  _transferOrdersLit->setObjectName("_transferOrdersLit");
   listLayout->addWidget(_transferOrdersLit);
 
   _to = new XTreeWidget(this);

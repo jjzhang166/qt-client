@@ -10,6 +10,7 @@
 
 #include "unpostedInvoices.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -354,29 +355,29 @@ void unpostedInvoices::sPost()
 
 void unpostedInvoices::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainMiscInvoices"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
   if ((!_privileges->check("MaintainMiscInvoices")) && (!_privileges->check("ViewMiscInvoices")))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainMiscInvoices"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Print..."), this, SLOT(sPrint()), 0);
+  menuItem = pMenu->addAction(tr("Print..."), this, SLOT(sPrint()));
   if (!_privileges->check("PrintInvoices"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  menuItem = pMenu->insertItem(tr("Post..."), this, SLOT(sPost()), 0);
+  menuItem = pMenu->addAction(tr("Post..."), this, SLOT(sPost()));
   if (!_privileges->check("PostMiscInvoices"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 }
 
 void unpostedInvoices::sFillList()

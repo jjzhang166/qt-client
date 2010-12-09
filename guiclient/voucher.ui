@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>617</height>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,25 +126,6 @@ to be bound by its terms.</comment>
               </item>
              </layout>
             </item>
-            <item row="2" column="1">
-             <widget class="VendorLineEdit" name="_vendor">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item row="4" column="1">
              <widget class="QLabel" name="_vendAddress1">
               <property name="sizePolicy">
@@ -212,7 +193,10 @@ to be bound by its terms.</comment>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="2" column="1">
+             <widget class="XLabel" name="_vendor"/>
+            </item>
+            <item row="2" column="0">
              <widget class="QLabel" name="_vendorLit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -859,11 +843,6 @@ to be bound by its terms.</comment>
    <header>ordercluster.h</header>
   </customwidget>
   <customwidget>
-   <class>VendorLineEdit</class>
-   <extends>XLineEdit</extends>
-   <header>vendorlineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
@@ -1135,54 +1114,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>767</x>
      <y>573</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_vendor</sender>
-   <signal>address1Changed(QString)</signal>
-   <receiver>_vendAddress1</receiver>
-   <slot>setText(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>267</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>374</x>
-     <y>249</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_vendor</sender>
-   <signal>address2Changed(QString)</signal>
-   <receiver>_vendAddress2</receiver>
-   <slot>setText(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>267</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>374</x>
-     <y>270</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_vendor</sender>
-   <signal>nameChanged(QString)</signal>
-   <receiver>_vendName</receiver>
-   <slot>setText(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>236</x>
-     <y>195</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>237</x>
-     <y>219</y>
     </hint>
    </hints>
   </connection>

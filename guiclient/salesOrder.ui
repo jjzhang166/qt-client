@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>898</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -430,7 +430,7 @@ to be bound by its terms.</comment>
            </property>
           </widget>
          </item>
-         <item row="3" column="7">
+         <item row="3" column="8">
           <widget class="DLineEdit" name="_expire">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -440,7 +440,7 @@ to be bound by its terms.</comment>
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
+         <item row="0" column="8">
           <layout class="QHBoxLayout">
            <item>
             <spacer>
@@ -470,6 +470,20 @@ to be bound by its terms.</comment>
            </item>
           </layout>
          </item>
+         <item row="2" column="6">
+          <widget class="QLabel" name="_quotestatusLit">
+           <property name="text">
+            <string>Quote Status:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="8">
+          <widget class="XLineEdit" name="_quotestaus">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="1" column="0">
@@ -481,25 +495,12 @@ to be bound by its terms.</comment>
           <item row="0" column="0">
            <layout class="QHBoxLayout">
             <item>
-             <widget class="CustInfo" name="_cust">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>36</height>
-               </size>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::StrongFocus</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="_newCust">
-              <property name="enabled">
+             <widget class="CustCluster" name="_cust">
+              <property name="nameVisible">
                <bool>false</bool>
               </property>
-              <property name="text">
-               <string>+</string>
+              <property name="descriptionVisible">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -580,25 +581,12 @@ to be bound by its terms.</comment>
           <item row="0" column="0">
            <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="_shipToNumberLit">
-              <property name="text">
-               <string>Ship-To #:</string>
+             <widget class="ShiptoCluster" name="_shipTo">
+              <property name="nameVisible">
+               <bool>false</bool>
               </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="XLineEdit" name="_shipToNumber"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="_shipToList">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>...</string>
+              <property name="descriptionVisible">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -905,9 +893,6 @@ to be bound by its terms.</comment>
         <widget class="XTreeWidget" name="_soitem">
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>false</bool>
          </property>
          <property name="rootIsDecorated">
           <bool>true</bool>
@@ -1551,6 +1536,9 @@ to be bound by its terms.</comment>
                <property name="focusPolicy">
                 <enum>Qt::StrongFocus</enum>
                </property>
+               <property name="label">
+                <string/>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
@@ -1911,7 +1899,7 @@ to be bound by its terms.</comment>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
-   <class>CustInfo</class>
+   <class>CustCluster</class>
    <extends>QWidget</extends>
    <header>custcluster.h</header>
   </customwidget>
@@ -1940,6 +1928,11 @@ to be bound by its terms.</comment>
    <class>ProjectCluster</class>
    <extends>QWidget</extends>
    <header>projectcluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ShiptoCluster</class>
+   <extends>QWidget</extends>
+   <header>shiptocluster.h</header>
   </customwidget>
   <customwidget>
    <class>WComboBox</class>
@@ -1985,12 +1978,11 @@ to be bound by its terms.</comment>
   <tabstop>_more</tabstop>
   <tabstop>_expire</tabstop>
   <tabstop>_cust</tabstop>
-  <tabstop>_newCust</tabstop>
   <tabstop>_billToName</tabstop>
   <tabstop>_billToAddr</tabstop>
   <tabstop>_billToCntct</tabstop>
   <tabstop>_copyToShipto</tabstop>
-  <tabstop>_shipToNumber</tabstop>
+  <tabstop>_shipTo</tabstop>
   <tabstop>_shipToName</tabstop>
   <tabstop>_shipToAddr</tabstop>
   <tabstop>_shipToCntct</tabstop>
@@ -2154,22 +2146,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_cust</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_shipToList</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>49</x>
-     <y>279</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>851</x>
-     <y>281</y>
     </hint>
    </hints>
   </connection>

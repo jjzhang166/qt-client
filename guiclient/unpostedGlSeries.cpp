@@ -10,6 +10,7 @@
 
 #include "unpostedGlSeries.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -190,17 +191,17 @@ void unpostedGlSeries::sPost()
 
 void unpostedGlSeries::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit G/L Series..."),  this, SLOT(sEdit()));
-  menuItem = pMenu->insertItem(tr("View G/L Series..."),  this, SLOT(sView()));
-  menuItem = pMenu->insertItem(tr("Delete G/L Series..."),this, SLOT(sDelete()));
+  menuItem = pMenu->addAction(tr("Edit G/L Series..."),  this, SLOT(sEdit()));
+  menuItem = pMenu->addAction(tr("View G/L Series..."),  this, SLOT(sView()));
+  menuItem = pMenu->addAction(tr("Delete G/L Series..."),this, SLOT(sDelete()));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Post G/L Series..."),  this, SLOT(sPost()));
+  menuItem = pMenu->addAction(tr("Post G/L Series..."),  this, SLOT(sPost()));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 }
 
 void unpostedGlSeries::sFillList()

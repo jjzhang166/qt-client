@@ -361,7 +361,7 @@ bool itemSite::sSave()
   }
 
   bool isLocationControl = _locationControl->isChecked();
-  bool isLotSerial = (((_controlMethod->currentIndex() == 2) || (_controlMethod->currentItem() == 3)) ? TRUE : FALSE);
+  bool isLotSerial = ((_controlMethod->currentIndex() == 2) || (_controlMethod->currentIndex() == 3));
   if ( ( (_mode == cNew) && (isLocationControl) ) ||
        ( (_mode == cEdit) && (isLocationControl) && (!_wasLocationControl) ) )
   {
@@ -1396,7 +1396,7 @@ void itemSite::populate()
     _locationComments->setText(itemsite.value("itemsite_location_comments").toString());
 
     for (int counter = 0; counter < _abcClass->count(); counter++)
-      if (_abcClass->text(counter) == itemsite.value("itemsite_abcclass").toString())
+      if (_abcClass->itemText(counter) == itemsite.value("itemsite_abcclass").toString())
         _abcClass->setCurrentIndex(counter);
 
     _autoUpdateABCClass->setChecked(itemsite.value("itemsite_autoabcclass").toBool());

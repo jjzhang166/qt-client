@@ -13,9 +13,12 @@
 
 #include "customerselector.h"
 
-CustomerSelector::CustomerSelector(QWidget *pParent, const char *pName) : QWidget(pParent, pName)
+CustomerSelector::CustomerSelector(QWidget *pParent, const char *pName) : QWidget(pParent)
 {
   setupUi(this);
+
+  if (pName)
+    setObjectName(pName);
 
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 

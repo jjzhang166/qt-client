@@ -28,8 +28,33 @@
 
 #include "exporthelper.h"
 
-#define MAXCSVFIRSTLINE 2048
-#define DEBUG           false
+#define MAXCSVFIRSTLINE     2048
+#define DEFAULT_SAVE_DIR    "done"
+#define DEFAULT_ERR_DIR     "error"
+#define DEFAULT_SAVE_SUFFIX ".done"
+#define DEFAULT_ERR_SUFFIX  ".err"
+
+#define DEBUG false
+
+static QString getUniqueFileName(QString poriginalname)
+{
+  QString newname = poriginalname;
+
+  if (QFile::exists(newname))
+    newname = newname + QDate::currentDate().toString(".yyyy.MM.dd");
+  if (QFile::exists(newname))
+    newname = newname + QDateTime::currentDateTime().toString(".hh.mm");
+  if (QFile::exists(newname))
+    newname = newname + QDateTime::currentDateTime().toString(".ss");
+
+  for (int i = 0; QFile::exists(newname) ; i++)
+    newname = newname + "." + QString::number(i);
+
+  if (DEBUG)
+    qDebug("getUniqueFileName returning %s", qPrintable(newname));
+
+  return newname;
+}
 
 CSVImpPluginInterface *ImportHelper::_csvimpplugin = 0;
 
@@ -82,20 +107,45 @@ CSVImpPluginInterface *ImportHelper::getCSVImpPlugin(QObject *parent)
   return _csvimpplugin;
 }
 
-bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, QString &errmsg)
+/** \brief Obey the import file configuration and remove or rename the file
+           that has just been imported.
+
+    \param[in]  pfilename The name of the file that has just been imported.
+    \param[in]  success   An indication of whether the import succeeded or not.
+                          This controls whether the import file pfilename will
+                          be handled using the configuration for successful
+                          imports or failed imports.
+    \param[out] errmsg    Any error message generated during file handling.
+    \param[in]  savetoErrorFile If this is not an empty string, the string is
+                          saved to an error file using the configuration for
+                          handling error files.
+    \return true if the file was handled successfully, false if there was an
+                 error moving or deleting the file.
+  */
+bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, QString &errmsg, const QString &saveToErrorFile)
 {
-  if (! success)
-    return true;   // do nothing for now; maybe move error files in the future
+  if (DEBUG)
+    qDebug("handleFilePostImport(%s, %d, errmsg, %s)",
+           qPrintable(pfilename), success, qPrintable(saveToErrorFile));
+
+  bool returnValue = false;
 
   QString xmldir;
-  QString xmlsuccessdir;
-  QString xmlsuccesssuffix;
-  QString xmlsuccesstreatment;
+  QString destdir;
+  QString suffix;
+  QString filetreatment;
+  QString errfiledir;
+  QString errfilesuffix;
+  QString errtreatment;
   XSqlQuery q;
+
   q.prepare("SELECT fetchMetricText(:xmldir)               AS xmldir,"
             "       fetchMetricText('XMLSuccessDir')       AS successdir,"
             "       fetchMetricText('XMLSuccessSuffix')    AS successsuffix,"
-            "       fetchMetricText('XMLSuccessTreatment') AS successtreatment;");
+            "       fetchMetricText('XMLSuccessTreatment') AS successtreatment,"
+            "       fetchMetricText('ImportFailureDir')       AS failuredir,"
+            "       fetchMetricText('ImportFailureSuffix')    AS failuresuffix,"
+            "       fetchMetricText('ImportFailureTreatment') AS failuretreatment;");
 #if defined Q_WS_MACX
   q.bindValue(":xmldir",  "XMLDefaultDirMac");
 #elif defined Q_WS_WIN
@@ -106,10 +156,22 @@ bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, 
   q.exec();
   if (q.first())
   {
-    xmldir              = q.value("xmldir").toString();
-    xmlsuccessdir       = q.value("successdir").toString();
-    xmlsuccesssuffix    = q.value("successsuffix").toString();
-    xmlsuccesstreatment = q.value("successtreatment").toString();
+    xmldir = q.value("xmldir").toString();
+    if (success)
+    {
+      destdir       = q.value("successdir").toString();
+      suffix        = q.value("successsuffix").toString();
+      filetreatment = q.value("successtreatment").toString();
+    }
+    else
+    {
+      destdir       = q.value("failuredir").toString();
+      suffix        = q.value("failuresuffix").toString();
+      filetreatment = q.value("failuretreatment").toString();
+    }
+    errfiledir      = q.value("failuredir").toString();
+    errfilesuffix   = q.value("failuresuffix").toString();
+    errtreatment    = q.value("failuretreatment").toString();
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {
@@ -122,65 +184,113 @@ bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, 
     return false;
   }
 
+  if (xmldir.isEmpty())
+    xmldir = ".";
+
+  if (destdir.isEmpty())
+    destdir = success ? DEFAULT_SAVE_DIR : DEFAULT_ERR_DIR;
+  if (suffix.isEmpty())
+    suffix = success ? DEFAULT_SAVE_SUFFIX : DEFAULT_ERR_SUFFIX;
+
+  if (errfiledir.isEmpty())
+    errfiledir = DEFAULT_ERR_DIR;
+  if (errfilesuffix.isEmpty())
+    errfilesuffix = DEFAULT_ERR_SUFFIX;
+
   QFile file(pfilename);
-  if (xmlsuccesstreatment == "Delete")
+
+  // handle error file first. if it fails, don't delete the primary import file
+  if (! saveToErrorFile.isEmpty() &&
+      errtreatment != "Delete" && errtreatment != "None")
   {
-    if (! file.remove())
+    if (errtreatment == "Move")
+      errfilesuffix  = "";
+    else if (errtreatment == "Rename")
+      errfiledir = ".";
+    /*
+    else if (errtreatment == "Delete")
+      ; // should never reach here
+    else if (errtreatment == "None")
+      ; // should never reach here
+    */
+
+    if (QDir::isRelativePath(errfiledir))
+      errfiledir = xmldir + QDir::separator() + errfiledir;
+
+    QString errname = errfiledir + QDir::separator() +
+                      QFileInfo(file).fileName() + errfilesuffix;
+    errname = getUniqueFileName(errname);
+
+    if (DEBUG)
+      qDebug("handleFilePostImport about to try saving err file %s",
+             qPrintable(errname));
+
+    QFile *errorfile = new QFile(errname);
+    if (! errorfile->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text) ||
+        ! errorfile->write(saveToErrorFile.toUtf8()) >= saveToErrorFile.length())
     {
+      // don't delete the original import file if we couldn't save the error file
+      errmsg += (errmsg.isEmpty() ? "" : "\n") + 
+               tr("<p>Could not write error file %1 after processing %2 (%3). %4")
+                        .arg(errname, pfilename, errorfile->errorString(),
+                             (filetreatment == "Delete" ?
+                              tr("Trying to save backup copy.") : QString()));
+      if (filetreatment == "Delete")
+      {
+        filetreatment == "Rename";
+        suffix = DEFAULT_ERR_SUFFIX;
+      }
+    }
+    errorfile->close();
+  }
+
+  if (filetreatment == "Delete")
+  {
+    if (file.remove())
+      returnValue = true;
+    else
       errmsg = tr("Could not remove %1 after successful processing (%2).")
                         .arg(pfilename, file.error());
-      return false;
-    }
   }
-  else if (xmlsuccesstreatment == "Rename")
+  else if (filetreatment == "Rename")
   {
-    if (xmlsuccesssuffix.isEmpty())
-      xmlsuccesssuffix = ".done";
-
-    QString newname = pfilename + xmlsuccesssuffix;
-    for (int i = 0; QFile::exists(newname) ; i++)
-      newname = pfilename + xmlsuccesssuffix + "." + QString::number(i);
-
-    if (! file.rename(newname))
-    {
+    QString newname = pfilename + suffix;
+    newname = getUniqueFileName(newname);
+    if (file.rename(newname))
+      returnValue = true;
+    else
       errmsg = tr("Could not rename %1 to %2 after successful processing (%3).")
                         .arg(pfilename, newname).arg(file.error());
-      return false;
-    }
   }
-  else if (xmlsuccesstreatment == "Move")
+  else if (filetreatment == "Move")
   {
-    if (xmldir.isEmpty())
-      xmldir = ".";
+    if (QDir::isRelativePath(destdir))
+      destdir = xmldir + QDir::separator() + destdir;
 
-    if (xmlsuccessdir.isEmpty())
-      xmlsuccessdir = "done";
-    if (QDir::isRelativePath(xmlsuccessdir))
-      xmlsuccessdir = xmldir + QDir::separator() + xmlsuccessdir;
-
-    QDir donedir(xmlsuccessdir);
+    QDir donedir(destdir);
     if (! donedir.exists())
-      donedir.mkpath(xmlsuccessdir);
+      donedir.mkpath(destdir);
 
-    QString newname = xmlsuccessdir + QDir::separator() + QFileInfo(file).fileName(); 
-    if (QFile::exists(newname))
-      newname = newname + QDate::currentDate().toString(".yyyy.MM.dd");
-    if (QFile::exists(newname))
-      newname = newname + QDateTime::currentDateTime().toString(".hh.mm");
-    if (QFile::exists(newname))
-      newname = newname + QDateTime::currentDateTime().toString(".ss");
-
-    if (! file.rename(newname))
-    {
+    QString newname = destdir + QDir::separator() + QFileInfo(file).fileName(); 
+    newname = getUniqueFileName(newname);
+    if (file.rename(newname))
+      returnValue = true;
+    else
       errmsg = tr("<p>Could not move %1 to %2 after successful processing (%3).")
                         .arg(pfilename, newname).arg(file.error());
-      return false;
-    }
   }
 
-  // else if (xmlsuccesstreatment == "None") {}
+  else if (filetreatment == "None")
+    returnValue = true;
 
-  return true;
+  else
+    errmsg = tr("<p>Don't know what to do %1 after import "
+                "so leaving it where it was.").arg(pfilename);
+
+  if (DEBUG)
+    qDebug("ImportHelper::handleFilePostImport returning %d", returnValue);
+
+  return returnValue;
 }
 
 bool ImportHelper::importCSV(const QString &pFileName, QString &errmsg)
@@ -248,18 +358,23 @@ bool ImportHelper::importCSV(const QString &pFileName, QString &errmsg)
   return errmsg.isEmpty();
 }
 
-bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
+bool ImportHelper::importXML(const QString &pFileName, QString &errmsg, QString &warnmsg)
 {
+  if (DEBUG)
+    qDebug("ImportHelper::importXML(%s, errmsg)", qPrintable(pFileName));
+
   QString xmldir;
   QString xsltdir;
   QString xsltcmd;
   QStringList errors;
   QStringList warnings;
+  bool        saveErrorXML = false;
 
   XSqlQuery q;
   q.prepare("SELECT fetchMetricText(:xmldir)  AS xmldir,"
             "       fetchMetricText(:xsltdir) AS xsltdir,"
-            "       fetchMetricText(:xsltcmd) AS xsltcmd;");
+            "       fetchMetricText(:xsltcmd) AS xsltcmd,"
+            "       fetchMetricBool('ImportXMLCreateErrorFile') AS createerr;");
 #if defined Q_WS_MACX
   q.bindValue(":xmldir",  "XMLDefaultDirMac");
   q.bindValue(":xsltdir", "XSLTDefaultDirMac");
@@ -279,6 +394,7 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
     xmldir  = q.value("xmldir").toString();
     xsltdir = q.value("xsltdir").toString();
     xsltcmd = q.value("xsltcmd").toString();
+    saveErrorXML = q.value("createerr").toBool();
   }
   else if (q.lastError().type() != QSqlError::NoError)
   {
@@ -359,6 +475,8 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
   // the silent attribute provides the user the option to turn off 
   // the interactive message for the view-level element
 
+  QDomDocument errorDoc;
+  QDomElement errorRoot = errorDoc.appendChild(errorDoc.createElement("xtupleimport")).toElement();
 
   q.exec("BEGIN;");
   if (q.lastError().type() != QSqlError::NoError)
@@ -382,8 +500,8 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
     bool ignoreErr = (viewElem.attribute("ignore", "false").isEmpty() ||
                       viewElem.attribute("ignore", "false") == "true");
 
-    bool silent = (viewElem.attribute("silent", "true").isEmpty() ||
-                   viewElem.attribute("silent", "true") == "true");
+    bool silent = (viewElem.attribute("silent", "false").isEmpty() ||
+                   viewElem.attribute("silent", "false") == "true");
 
     QString mode = viewElem.attribute("mode", "insert");
     QStringList keyList;
@@ -398,8 +516,16 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
     else // backwards compatibility - must be in the api schema
       viewName = "api." + viewName;
 
-    // TODO: fix QtXML classes so they read default attribute values from the DTD
-    // then remove this code
+    QString savepointName = viewName;
+    savepointName.remove(".");
+    XSqlQuery rollbacktosavepoint;
+    if (ignoreErr || saveErrorXML)
+    {
+      q.exec("SAVEPOINT " + savepointName + ";");
+      rollbacktosavepoint.prepare("ROLLBACK TO SAVEPOINT " + savepointName + ";");
+    }
+    bool haveSavepoint = (ignoreErr || saveErrorXML);
+
     if (mode.isEmpty())
       mode = "insert";
     else if (mode == "update" && keyList.isEmpty())
@@ -408,21 +534,23 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
         keyList.append(viewName + "_number");
       else if (! viewElem.namedItem("order_number").isNull())
         keyList.append("order_number");
-      else if (! ignoreErr)
+      else
       {
-        rollback.exec();
-        errmsg = tr("Cannot process %1 element without a key attribute");
-        return false;
+        if (haveSavepoint)
+          rollbacktosavepoint.exec();
+        if (ignoreErr || saveErrorXML)
+        {
+          warnings.append(tr("Cannot process %1 element without a key attribute"));
+          if (saveErrorXML)
+            errorRoot.appendChild(errorDoc.importNode(viewElem, true));
+        }
+        else
+          errors.append(tr("Cannot process %1 element without a key attribute"));
+        continue;       // back to top of viewElem for loop
       }
       if (! viewElem.namedItem("line_number").isNull())
         keyList.append("line_number");
     }
-    // end of code to remove
-
-    QString savepointName = viewName;
-    savepointName.remove(".");
-    if (ignoreErr)
-      q.exec("SAVEPOINT " + savepointName + ";");
 
     for (QDomElement columnElem = viewElem.firstChildElement();
          ! columnElem.isNull();
@@ -472,37 +600,42 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
             columnValueList.join(", ") + ";" ;
     else
     {
-      if (ignoreErr)
-        q.exec("ROLLBACK TO SAVEPOINT " + savepointName + ";");
-      else
-      {
-        rollback.exec();
-        errmsg = tr("Could not process %1: invalid mode %2")
-                    .arg(viewElem.tagName(), mode);
-        return false;
-      }
+      if (haveSavepoint)
+        rollbacktosavepoint.exec();
+      if (! ignoreErr)
+        errors.append(tr("Could not process %1: invalid mode %2")
+                      .arg(viewElem.tagName(), mode));
+      continue;       // back to top of viewElem for loop
     }
 
     if (DEBUG) qDebug("About to run this: %s", qPrintable(sql));
     q.exec(sql);
     if (q.lastError().type() != QSqlError::NoError)
     {
+      if (haveSavepoint)
+        rollbacktosavepoint.exec();
       if (ignoreErr)
       {
         if (! silent)
-          warnings.append(QString("Ignored error while importing %1:\n%2")
+          warnings.append(tr("Ignored error while importing %1:\n%2")
                               .arg(viewElem.tagName(), q.lastError().text()));
-        q.exec("ROLLBACK TO SAVEPOINT " + savepointName + ";");
+      }
+      else if (saveErrorXML)
+      {
+        warnings.append(tr("Error processing %1. Saving to retry later:\t%2")
+                              .arg(viewElem.tagName(), q.lastError().text()));
+        QDomNode nodecopy = errorDoc.importNode(viewElem, true);
+        nodecopy.appendChild(errorDoc.createComment(q.lastError().text()));
+        errorRoot.appendChild(nodecopy);
       }
       else
       {
-        rollback.exec();
-        errmsg = tr("Error importing %1: %2")
-                    .arg(pFileName, q.lastError().databaseText());
-        return false;
+        errors.append(tr("Error importing %1: %2")
+                      .arg(pFileName, q.lastError().databaseText()));
+        continue;       // back to top of viewElem for loop
       }
     }
-    else if (ignoreErr)
+    else if (haveSavepoint)
       q.exec("RELEASE SAVEPOINT " + savepointName + ";");
   }
 
@@ -518,15 +651,22 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg)
     QFile::remove(tmpfileName);
 
   if (warnings.size() > 0)
-    QMessageBox::warning(0, tr("XML Import Warnings"), warnings.join("\n"));
+    warnmsg = warnings.join("\n");
 
-  if (! handleFilePostImport(pFileName, true, errmsg))
+  QString fileerrmsg;
+  if (! handleFilePostImport(pFileName,
+                             errors.size() == 0,
+                             fileerrmsg,
+                             errorRoot.hasChildNodes() ? errorDoc.toString()
+                                                       : QString()))
   {
-    QMessageBox::critical(0, tr("XML Import Post-processing Error"), errmsg);
+    errors.append(fileerrmsg);
     return false;
   }
 
-  return true;
+  errmsg = errors.join(tr("\n"));
+
+  return errors.size() == 0;
 }
 
 bool ImportHelper::openDomDocument(const QString &pFileName, QDomDocument &pDoc, QString &errmsg)
@@ -583,10 +723,11 @@ static QScriptValue importXML(QScriptContext *context,
     context->throwError(QScriptContext::UnknownError,
                         "not enough args passed to importXML");
   QString errmsg;
+  QString warnmsg;
   bool result = ImportHelper::importXML(context->argument(0).toString(),
-                                        errmsg);
+                                        errmsg, warnmsg);
 
-  // TODO: how to we pass back errmsg output parameter?
+  // TODO: how to we pass back errmsg and warnmsg output parameter?
 
   return QScriptValue(result);
 }

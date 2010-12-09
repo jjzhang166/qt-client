@@ -21,8 +21,8 @@ arAccountAssignment::arAccountAssignment(QWidget* parent, const char* name, bool
   _araccntid = -1;
 
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_selectedCustomerType, SIGNAL(toggled(bool)), _customerTypes, SLOT(setEnabled(bool)));
   connect(_customerTypePattern, SIGNAL(toggled(bool)), _customerType, SLOT(setEnabled(bool)));
 
@@ -33,6 +33,12 @@ arAccountAssignment::arAccountAssignment(QWidget* parent, const char* name, bool
     _deferred->hide();
     _deferredLit->hide();
   }
+
+  _ar->setType(GLCluster::cAsset);
+  _prepaid->setType(GLCluster::cRevenue);
+  _freight->setType(GLCluster::cRevenue | GLCluster::cLiability);
+  _deferred->setType(GLCluster::cLiability);
+  _discount->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
 
 arAccountAssignment::~arAccountAssignment()
@@ -69,7 +75,7 @@ enum SetResponse arAccountAssignment::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -80,11 +86,10 @@ enum SetResponse arAccountAssignment::set(const ParameterList &pParams)
       _prepaid->setReadOnly(TRUE);
       _freight->setReadOnly(TRUE);
       _deferred->setReadOnly(TRUE);
-	  _discount->setReadOnly(TRUE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _discount->setReadOnly(TRUE);
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

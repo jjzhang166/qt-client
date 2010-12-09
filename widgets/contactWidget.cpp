@@ -36,11 +36,21 @@ void ContactWidget::init()
     _minimalLayout = false;
     _searchAcctId = -1;
 
+    _list = new QPushButton(tr("..."), this);
+    _list->setObjectName("_list");
+    _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+  #ifndef Q_WS_MAC
+    _list->setMaximumWidth(25);
+  #else
+    _list->setMinimumWidth(60);
+    _list->setMinimumHeight(32);
+  #endif
+
     _grid->removeWidget(_label);	// will be reinserted
     _grid->removeWidget(_description);
-    _grid->removeWidget(_list);		// will be reinserted
-    _grid->removeWidget(_info);		// will be reinserted
     delete _description;
+    _description = 0;
 
     _grid->setMargin(0);
     _grid->setSpacing(2);
@@ -87,7 +97,6 @@ void ContactWidget::init()
     _nameBox->addWidget(_last,		2);
     _nameBox->addWidget(_suffix,	0);
     _nameBox->addWidget(_list,		0, Qt::AlignRight);
-    _nameBox->addWidget(_info,		0, Qt::AlignRight);
     
     //_initialsBox->addWidget(_initialsLit, 0);
     _initialsBox->addWidget(_initials,	  0);
@@ -163,7 +172,6 @@ void ContactWidget::init()
     layout();
 
     connect(_list,	SIGNAL(clicked()),	this, SLOT(sEllipses()));
-    connect(_info,	SIGNAL(clicked()),	this, SLOT(sInfo()));
 
     connect(_honorific,	SIGNAL(newID(int)),		     this, SIGNAL(changed()));
     connect(_first,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
@@ -211,7 +219,6 @@ void ContactWidget::init()
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setLabel("");
     _limits = 0;
-    setInfoVisible(false);	// TODO - remove this and implement Info button
     silentSetId(-1);
     setOwnerVisible(false);
     _mode = Edit;
@@ -1003,7 +1010,22 @@ void ContactWidget::setChange(QString p)
 
 void ContactWidget::sLaunchEmail()
 {
-  QDesktopServices::openUrl(QUrl("mailto:" + _email->text()));
+  QString extUrl = QString(_email->text());
+  if (!_subjText.isEmpty() ||
+      !_bodyText.isEmpty())
+    extUrl.append("?");
+
+  if (!_subjText.isEmpty())
+  {
+    extUrl.append(_subjText.prepend("subject="));
+    if (!_bodyText.isEmpty())
+      extUrl.append("&");
+  }
+
+  if (!_bodyText.isEmpty())
+    extUrl.append(_bodyText.prepend("body="));
+
+  QDesktopServices::openUrl(QUrl("mailto:" + extUrl));
 }
 
 void ContactWidget::sLaunchWebaddr()
@@ -1161,17 +1183,18 @@ ContactSearch::ContactSearch(QWidget* pParent, Qt::WindowFlags pFlags)
     delete _searchNumber;
     delete _searchName;
     delete _searchDescrip;
+    _searchNumber = _searchName = _searchDescrip = 0;
 
     _listTab->setColumnCount(0);
 
-    _searchFirst	= new XCheckBox(tr("Search First Name"));
-    _searchLast		= new XCheckBox(tr("Search Last Name"));
-    _searchCRMAcct	= new XCheckBox(tr("Search CRM Account"));
-    _searchTitle	= new XCheckBox(tr("Search Title"));
-    _searchPhones	= new XCheckBox(tr("Search Phone Numbers"));
-    _searchEmail	= new XCheckBox(tr("Search Email Address"));
-    _searchWebAddr	= new XCheckBox(tr("Search Web Address"));
-    _searchInactive	= new XCheckBox(tr("Show Inactive Contacts"));
+    _searchFirst	= new XCheckBox(tr("Search First Name"),this);
+    _searchLast		= new XCheckBox(tr("Search Last Name"),this);
+    _searchCRMAcct	= new XCheckBox(tr("Search CRM Account"),this);
+    _searchTitle	= new XCheckBox(tr("Search Title"),this);
+    _searchPhones	= new XCheckBox(tr("Search Phone Numbers"),this);
+    _searchEmail	= new XCheckBox(tr("Search Email Address"),this);
+    _searchWebAddr	= new XCheckBox(tr("Search Web Address"),this);
+    _searchInactive	= new XCheckBox(tr("Show Inactive Contacts"),this);
     
     _searchFirst->setObjectName("_searchName");
     _searchLast->setObjectName("_searchLast");
@@ -1367,5 +1390,14 @@ void ContactWidget::setMode(Mode p)
     widgets.at(i)->setEnabled(enabled);
   if (p == Select)
     _list->setEnabled(true);
-  _info->setEnabled(true);
+}
+
+void ContactWidget::setEmailSubjectText(const QString text)
+{
+  _subjText = text;
+}
+
+void ContactWidget::setEmailBodyText(const QString text)
+{
+  _bodyText = text;
 }

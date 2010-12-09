@@ -10,6 +10,7 @@
 
 #include "filterManager.h"
 #include "parameterwidget.h"
+#include "shortcuts.h"
 #include <xtreewidget.h>
 #include <xsqlquery.h>
 #include <QMessageBox>
@@ -35,6 +36,8 @@ filterManager::filterManager(QWidget* parent, const char* name)
   connect(_unshare, SIGNAL(clicked()), this, SLOT( unshareFilter() ));
   connect(_delete, SIGNAL(clicked()), this, SLOT( deleteFilter() ) );
   connect(this, SIGNAL(filterDeleted()), parent, SLOT(setSavedFilters()) );
+
+  shortcuts::setStandardKeys(this);
 }
 
 void filterManager::set(ParameterList &pParams)

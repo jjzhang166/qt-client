@@ -27,7 +27,6 @@ public:
 
 public slots:
     virtual SetResponse set( ParameterList & pParams );
-    virtual void sSoList();
     virtual void sPopulateSoInfo( int pSoid );
     virtual void sCopy();
 

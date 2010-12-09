@@ -83,8 +83,6 @@ void ImageCluster::setNumberVisible(const bool p)
 {
   _number->setVisible(p);
   _label->setVisible(!_label->text().trimmed().isEmpty() || p ||
-                     _list->isVisible() ||
-                     _info->isVisible() ||
                      _name->isVisible());
 }
 

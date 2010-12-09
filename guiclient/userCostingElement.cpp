@@ -24,6 +24,7 @@ userCostingElement::userCostingElement(QWidget* parent, const char* name, bool m
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_acceptPO, SIGNAL(toggled(bool)), _useCostItem, SLOT(setDisabled(bool)));
+  connect(_acceptPO, SIGNAL(toggled(bool)), _expense, SLOT(setDisabled(bool)));
 
   _item->setType(ItemLineEdit::cCosting);
 }
@@ -148,7 +149,8 @@ void userCostingElement::sSave()
   q.bindValue(":costelem_type", _name->text().trimmed());
   q.bindValue(":costelem_active", QVariant(_active->isChecked()));
   q.bindValue(":costelem_po", QVariant(_acceptPO->isChecked()));
-  q.bindValue(":costelem_exp_accnt_id",_expense->id());
+  if (_expense->isEnabled())
+    q.bindValue(":costelem_exp_accnt_id",_expense->id());
 
   if (_useCostItem->isChecked())
     q.bindValue(":costelem_cost_item_id", _item->id());

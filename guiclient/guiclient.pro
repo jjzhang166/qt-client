@@ -6,7 +6,12 @@ TEMPLATE = app
 
 INCLUDEPATH += ../scriptapi \
                ../common \
-               ../widgets ../widgets/tmp/lib .
+               ../widgets ../widgets/tmp/lib \
+               ../../xtuple-build-desktop/scriptapi \
+               ../../xtuple-build-desktop/common \
+               ../../xtuple-build-desktop/widgets \
+               ../../xtuple-build-desktop/widgets/tmp/lib \
+               ../../xtuple-build-desktop/guiclient .
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -18,13 +23,13 @@ win32-msvc* {
   PRE_TARGETDEPS += ../lib/libxtuplecommon.a    \
                     ../lib/libxtuplescriptapi.a \
                     ../lib/libxtuplewidgets.a   \
-                    ../$${OPENRPT_DIR}/lib/libMetaSQL.a  \
-                    ../$${OPENRPT_DIR}/lib/librenderer.a \
-                    ../$${OPENRPT_DIR}/lib/libwrtembed.a \
-                    ../$${OPENRPT_DIR}/lib/libcommon.a
+                    ../$${OPENRPT_BLD}/lib/libMetaSQL.a  \
+                    ../$${OPENRPT_BLD}/lib/librenderer.a \
+                    ../$${OPENRPT_BLD}/lib/libwrtembed.a \
+                    ../$${OPENRPT_BLD}/lib/libcommon.a
 }
 
-LIBS        += -L../lib -L../$${OPENRPT_DIR}/lib -lxtuplecommon \
+LIBS        += -L../lib -L../$${OPENRPT_BLD}/lib -lxtuplecommon \
                -lxtuplewidgets -lwrtembed -lcommon -lrenderer \
                -lxtuplescriptapi -lMetaSQL
 
@@ -56,9 +61,7 @@ DESTDIR     = ../bin
 MOC_DIR     = moc
 UI_DIR      = ui
 
-FORMS =   ../common/batchItem.ui                \
-          ../common/batchManager.ui             \
-          absoluteCalendarItem.ui               \
+FORMS =   absoluteCalendarItem.ui               \
           accountNumber.ui                      \
           accountNumbers.ui                     \
           accountingPeriod.ui                   \
@@ -116,6 +119,7 @@ FORMS =   ../common/batchItem.ui                \
           check.ui                              \
           checkFormat.ui                        \
           checkFormats.ui                       \
+          checkForUpdates.ui                    \
           classCode.ui                          \
           classCodes.ui                         \
           closePurchaseOrder.ui                 \
@@ -124,6 +128,7 @@ FORMS =   ../common/batchItem.ui                \
           commentTypes.ui                       \
           companies.ui                          \
           company.ui                            \
+          configcybersourceprocessor.ui         \
           configureCC.ui                        \
           configureCRM.ui                       \
           configureEncryption.ui                \
@@ -168,7 +173,6 @@ FORMS =   ../common/batchItem.ui                \
           creditMemoEditList.ui                 \
           creditMemoItem.ui                     \
           crmaccount.ui                         \
-          crmaccounts.ui                        \
           currencies.ui                         \
           currency.ui                           \
           currencyConversion.ui                 \
@@ -185,201 +189,29 @@ FORMS =   ../common/batchItem.ui                \
           customerType.ui                       \
           customerTypeList.ui                   \
           customerTypes.ui                      \
-          customers.ui                          \
           databaseInformation.ui                \
           deletePlannedOrder.ui                 \
           deletePlannedOrdersByPlannerCode.ui   \
           department.ui                         \
           departments.ui                        \
+          display.ui                            \
+          displayTimePhased.ui                  \
           distributeInventory.ui                \
           distributeToLocation.ui               \
-          dspAPApplications.ui                  \
-          dspAPOpenItemsByVendor.ui             \
-          dspARApplications.ui                  \
           dspAROpenItems.ui                     \
-          dspAllocations.ui                     \
-          dspBacklogByCustomer.ui               \
-          dspBacklogByItem.ui                   \
-          dspBacklogByParameterList.ui          \
-          dspBacklogBySalesOrder.ui             \
           dspBankrecHistory.ui                  \
           dspBillingSelections.ui               \
-          dspBookingsByCustomer.ui              \
-          dspBookingsByCustomerGroup.ui         \
-          dspBookingsByItem.ui                  \
-          dspBookingsByProductCategory.ui       \
-          dspBookingsBySalesRep.ui              \
-          dspBookingsByShipTo.ui                \
-          dspBriefEarnedCommissions.ui          \
-          dspBriefSalesHistoryByCustomer.ui     \
-          dspBriefSalesHistoryByCustomerType.ui \
-          dspBriefSalesHistoryBySalesRep.ui     \
-          dspCapacityUOMsByClassCode.ui         \
-          dspCapacityUOMsByProductCategory.ui   \
           dspCashReceipts.ui                    \
           dspCheckRegister.ui                   \
-          dspCostedIndentedBOM.ui               \
-          dspCostedSingleLevelBOM.ui            \
-          dspCostedSummarizedBOM.ui             \
           dspCountSlipEditList.ui               \
-          dspCountSlipsByWarehouse.ui           \
           dspCountTagEditList.ui                \
-          dspCountTagsByClassCode.ui            \
-          dspCountTagsByItem.ui                 \
-          dspCountTagsByWarehouse.ui            \
           dspCreditCardTransactions.ui          \
-          dspCustomerARHistory.ui               \
-          dspCustomerInformationExport.ui       \
-          dspCustomersByCharacteristic.ui       \
-          dspCustomersByCustomerType.ui         \
-          dspDepositsRegister.ui                \
-          dspDetailedInventoryHistoryByLocation.ui      \
-          dspDetailedInventoryHistoryByLotSerial.ui     \
-          dspEarnedCommissions.ui                       \
-          dspExpediteExceptionsByPlannerCode.ui         \
-          dspExpiredInventoryByClassCode.ui             \
           dspFinancialReport.ui                         \
-          dspFreightPricesByCustomer.ui                 \
-          dspFreightPricesByCustomerType.ui             \
-          dspFrozenItemSites.ui                         \
-          dspGLSeries.ui                                \
-          dspGLTransactions.ui                          \
-          dspIncidentsByCRMAccount.ui                   \
-          dspIndentedBOM.ui                             \
-          dspIndentedWhereUsed.ui                       \
-          dspInvalidBillsOfMaterials.ui                 \
-          dspInventoryAvailabilityByCustomerType.ui     \
-          dspInventoryAvailabilityByItem.ui             \
-          dspInventoryAvailabilityByParameterList.ui    \
-          dspInventoryAvailabilityBySalesOrder.ui       \
-          dspInventoryAvailabilityBySourceVendor.ui     \
-          dspInventoryAvailabilityByWorkOrder.ui        \
-          dspInventoryHistoryByItem.ui                  \
-          dspInventoryHistoryByOrderNumber.ui           \
-          dspInventoryHistoryByParameterList.ui         \
-          dspInventoryLocator.ui                        \
           dspInvoiceInformation.ui                      \
-          dspInvoiceRegister.ui                         \
-          dspItemCostDetail.ui                          \
-          dspItemCostHistory.ui                         \
-          dspItemCostSummary.ui                         \
-          dspItemCostsByClassCode.ui                    \
-          dspItemSitesByItem.ui                         \
-          dspItemSitesByParameterList.ui                \
-          dspItemSourcesByItem.ui                       \
-          dspItemSourcesByVendor.ui                     \
-          dspItemsByCharacteristic.ui                   \
-          dspItemsByClassCode.ui                        \
-          dspItemsByProductCategory.ui                  \
-          dspItemsWithoutItemSources.ui                 \
-          dspJobCosting.ui                              \
           dspMRPDetail.ui                               \
-          dspMaterialUsageVarianceByBOMItem.ui          \
-          dspMaterialUsageVarianceByComponentItem.ui    \
-          dspMaterialUsageVarianceByItem.ui             \
-          dspMaterialUsageVarianceByWarehouse.ui        \
-          dspMaterialUsageVarianceByWorkOrder.ui        \
-          dspOrderActivityByProject.ui                  \
-          dspOrders.ui                                  \
-          dspPOsByDate.ui                               \
-          dspPOsByVendor.ui                             \
-          dspPartiallyShippedOrders.ui                  \
-          dspPendingAvailability.ui                     \
-          dspPendingBOMChanges.ui                       \
-          dspPlannedOrdersByItem.ui                     \
-          dspPlannedOrdersByPlannerCode.ui              \
-          dspPoDeliveryDateVariancesByItem.ui           \
-          dspPoDeliveryDateVariancesByVendor.ui         \
-          dspPoHistory.ui                               \
-          dspPoItemReceivingsByDate.ui                  \
-          dspPoItemReceivingsByItem.ui                  \
-          dspPoItemReceivingsByVendor.ui                \
-          dspPoItemsByDate.ui                           \
-          dspPoItemsByItem.ui                           \
-          dspPoItemsByVendor.ui                         \
-          dspPoPriceVariancesByItem.ui                  \
-          dspPoPriceVariancesByVendor.ui                \
-          dspPoReturnsByVendor.ui                       \
-          dspPricesByCustomer.ui                        \
-          dspPricesByCustomerType.ui                    \
-          dspPricesByItem.ui                            \
-          dspPurchaseReqsByItem.ui                      \
-          dspPurchaseReqsByPlannerCode.ui               \
-          dspQOHByItem.ui                               \
-          dspQOHByLocation.ui                           \
-          dspQOHByParameterList.ui                      \
-          dspQuotesByCustomer.ui                        \
-          dspQuotesByItem.ui                            \
-          dspRecurringInvoices.ui                       \
-          dspReorderExceptionsByPlannerCode.ui          \
-          dspReservations.ui                            \
-          dspRunningAvailability.ui                     \
-          dspSalesHistoryByBilltoName.ui                \
-          dspSalesHistoryByCustomer.ui                  \
-          dspSalesHistoryByItem.ui                      \
-          dspSalesHistoryByParameterList.ui             \
-          dspSalesHistoryBySalesrep.ui                  \
-          dspSalesHistoryByShipTo.ui                    \
-          dspSalesOrderStatus.ui                        \
-          dspSalesOrdersByCustomer.ui                   \
-          dspSalesOrdersByCustomerPO.ui                 \
-          dspSalesOrdersByItem.ui                       \
-          dspSalesOrdersByParameterList.ui              \
-          dspShipmentsByDate.ui                         \
-          dspShipmentsBySalesOrder.ui                   \
-          dspShipmentsByShipment.ui                     \
-          dspSingleLevelBOM.ui                          \
-          dspSingleLevelWhereUsed.ui                    \
-          dspSlowMovingInventoryByClassCode.ui          \
-          dspStandardJournalHistory.ui                  \
-          dspSubstituteAvailabilityByItem.ui            \
-          dspSummarizedBOM.ui                           \
-          dspSummarizedBacklogByWarehouse.ui            \
-          dspSummarizedBankrecHistory.ui                \
-          dspSummarizedGLTransactions.ui                \
-          dspSummarizedSalesByCustomer.ui               \
-          dspSummarizedSalesByCustomerByItem.ui         \
-          dspSummarizedSalesByCustomerType.ui           \
-          dspSummarizedSalesByCustomerTypeByItem.ui     \
-          dspSummarizedSalesByItem.ui                   \
-          dspSummarizedSalesBySalesRep.ui               \
-          dspSummarizedSalesHistoryByShippingZone.ui    \
           dspTaxHistory.ui                              \
-          dspTimePhasedAvailability.ui                  \
-          dspTimePhasedBookingsByCustomer.ui            \
-          dspTimePhasedBookingsByItem.ui                \
-          dspTimePhasedBookingsByProductCategory.ui     \
           dspTimePhasedOpenAPItems.ui           \
           dspTimePhasedOpenARItems.ui           \
-          dspTimePhasedSalesByCustomer.ui       \
-          dspTimePhasedSalesByCustomerByItem.ui \
-          dspTimePhasedSalesByCustomerGroup.ui  \
-          dspTimePhasedSalesByItem.ui           \
-          dspTimePhasedSalesByProductCategory.ui\
-          dspTimePhasedUsageStatisticsByItem.ui \
-          dspTodoByUserAndIncident.ui           \
-          dspTrialBalances.ui                   \
-          dspUnbalancedQOHByClassCode.ui        \
-          dspUndefinedManufacturedItems.ui      \
-          dspUninvoicedReceivings.ui            \
-          dspUnusedPurchasedItems.ui            \
-          dspUsageStatisticsByClassCode.ui      \
-          dspUsageStatisticsByItem.ui           \
-          dspUsageStatisticsByItemGroup.ui      \
-          dspUsageStatisticsByWarehouse.ui      \
-          dspValidLocationsByItem.ui            \
-          dspVendorAPHistory.ui                 \
-          dspVoucherRegister.ui                 \
-          dspWoHistoryByClassCode.ui            \
-          dspWoHistoryByItem.ui                 \
-          dspWoHistoryByNumber.ui               \
-          dspWoMaterialsByItem.ui               \
-          dspWoMaterialsByWorkOrder.ui          \
-          dspWoScheduleByItem.ui                \
-          dspWoScheduleByParameterList.ui       \
-          dspWoScheduleByWorkOrder.ui           \
-          dspWoSoStatus.ui                      \
-          dspWoSoStatusMismatch.ui              \
           duplicateAccountNumbers.ui            \
           editICMWatermark.ui           \
           editOwners.ui                 \
@@ -446,7 +278,6 @@ FORMS =   ../common/batchItem.ui                \
           incidentResolutions.ui        \
           incidentSeverities.ui         \
           incidentSeverity.ui           \
-          incidentWorkbench.ui          \
           invoice.ui                    \
           invoiceItem.ui                \
           invoiceList.ui                \
@@ -478,6 +309,7 @@ FORMS =   ../common/batchItem.ui                \
           itemtax.ui                    \
           labelForm.ui                  \
           labelForms.ui                 \
+          listRecurringInvoices.ui      \
           locales.ui                    \
           location.ui                   \
           locations.ui                  \
@@ -521,8 +353,8 @@ FORMS =   ../common/batchItem.ui                \
           postCountSlips.ui             \
           postCountTags.ui              \
           postCreditMemos.ui            \
-          postGLTransactionsToExternal.ui       \
           postInvoices.ui                       \
+          postJournals.ui                       \
           postMiscProduction.ui                 \
           postPoReturnCreditMemo.ui             \
           postProduction.ui                     \
@@ -575,7 +407,6 @@ FORMS =   ../common/batchItem.ui                \
           project.ui                            \
           projects.ui                           \
           prospect.ui                           \
-          prospects.ui                          \
           purchaseOrder.ui                      \
           purchaseOrderItem.ui                  \
           purchaseRequest.ui                    \
@@ -595,6 +426,7 @@ FORMS =   ../common/batchItem.ui                \
           recallOrders.ui                       \
           reconcileBankaccount.ui               \
           registration.ui                       \
+          registrationKey.ui                    \
           rejectCode.ui                         \
           rejectCodes.ui                        \
           relativeCalendarItem.ui               \
@@ -634,10 +466,7 @@ FORMS =   ../common/batchItem.ui                \
           scrapWoMaterialFromWIP.ui             \
           scriptEditor.ui                       \
           scripts.ui                            \
-          searchForCRMAccount.ui                \
-          searchForContact.ui                   \
           searchForEmp.ui                       \
-          searchForItem.ui                      \
           selectBankAccount.ui                  \
           selectBillingQty.ui                   \
           selectOrderForBilling.ui              \
@@ -645,6 +474,7 @@ FORMS =   ../common/batchItem.ui                \
           selectPayments.ui                     \
           selectShippedOrders.ui                \
           selectedPayments.ui                   \
+          setup.ui                              \
           shipOrder.ui                          \
           shipTo.ui                             \
           shipVia.ui                            \
@@ -682,7 +512,6 @@ FORMS =   ../common/batchItem.ui                \
           taxAdjustment.ui                      \
           taxAssignment.ui                      \
           taxAssignments.ui                     \
-          taxAuthorities.ui                     \
           taxAuthority.ui                       \
           taxBreakdown.ui                       \
           taxClass.ui                           \
@@ -748,7 +577,6 @@ FORMS =   ../common/batchItem.ui                \
           vendorType.ui                         \
           vendorTypes.ui                        \
           vendorWorkBench.ui                    \
-          vendors.ui                            \
           viewCheckRun.ui                       \
           voidChecks.ui                         \
           voucher.ui                            \
@@ -766,9 +594,7 @@ FORMS =   ../common/batchItem.ui                \
           xsltMap.ui                            \
           zeroUncountedCountTagsByWarehouse.ui  \
 
-HEADERS = ../common/batchItem.h                 \
-          ../common/batchManager.h              \
-          ../common/format.h                    \
+HEADERS = ../common/format.h                    \
           SaveSizePositionEventFilter.h         \
           absoluteCalendarItem.h                \
           accountNumber.h                       \
@@ -829,6 +655,7 @@ HEADERS = ../common/batchItem.h                 \
           check.h                       \
           checkFormat.h                 \
           checkFormats.h                \
+          checkForUpdates.h             \
           classCode.h                   \
           classCodes.h                  \
           closePurchaseOrder.h          \
@@ -837,6 +664,8 @@ HEADERS = ../common/batchItem.h                 \
           commentTypes.h                \
           companies.h                   \
           company.h                     \
+          configcreditcardprocessor.h   \
+          configcybersourceprocessor.h  \
           configureCC.h                 \
           configureCRM.h                \
           configureEncryption.h         \
@@ -901,200 +730,30 @@ HEADERS = ../common/batchItem.h                 \
           customerTypeList.h                    \
           customerTypes.h                       \
           customers.h                           \
+          cybersourceprocessor.h                \
           databaseInformation.h                 \
           deletePlannedOrder.h                  \
           deletePlannedOrdersByPlannerCode.h    \
           department.h                          \
           departments.h                         \
+          display.h                             \
+          displayTimePhased.h                   \
           distributeInventory.h                 \
           distributeToLocation.h                \
-          dspAPApplications.h                   \
-          dspAPOpenItemsByVendor.h              \
-          dspARApplications.h                   \
           dspAROpenItems.h                      \
-          dspAllocations.h                      \
-          dspBacklogByCustomer.h                \
-          dspBacklogByItem.h                    \
-          dspBacklogByParameterList.h           \
-          dspBacklogBySalesOrder.h              \
           dspBankrecHistory.h                   \
           dspBillingSelections.h                \
-          dspBookingsByCustomer.h               \
-          dspBookingsByCustomerGroup.h          \
-          dspBookingsByItem.h                   \
-          dspBookingsByProductCategory.h        \
-          dspBookingsBySalesRep.h               \
-          dspBookingsByShipTo.h                 \
-          dspBriefEarnedCommissions.h           \
-          dspBriefSalesHistoryByCustomer.h      \
-          dspBriefSalesHistoryByCustomerType.h  \
-          dspBriefSalesHistoryBySalesRep.h      \
-          dspCapacityUOMsByClassCode.h          \
-          dspCapacityUOMsByProductCategory.h    \
           dspCashReceipts.h                     \
           dspCheckRegister.h                    \
-          dspCostedIndentedBOM.h                \
-          dspCostedSingleLevelBOM.h             \
-          dspCostedSummarizedBOM.h              \
           dspCountSlipEditList.h                \
-          dspCountSlipsByWarehouse.h            \
           dspCountTagEditList.h                 \
-          dspCountTagsByClassCode.h             \
-          dspCountTagsByItem.h                  \
-          dspCountTagsByWarehouse.h             \
           dspCreditCardTransactions.h           \
-          dspCustomerARHistory.h                \
-          dspCustomerInformationExport.h        \
-          dspCustomersByCharacteristic.h        \
-          dspCustomersByCustomerType.h          \
-          dspDepositsRegister.h                 \
-          dspDetailedInventoryHistoryByLocation.h       \
-          dspDetailedInventoryHistoryByLotSerial.h      \
-          dspEarnedCommissions.h                        \
-          dspExpediteExceptionsByPlannerCode.h          \
-          dspExpiredInventoryByClassCode.h              \
           dspFinancialReport.h                          \
-          dspFreightPricesByCustomer.h                  \
-          dspFreightPricesByCustomerType.h              \
-          dspFrozenItemSites.h                          \
-          dspGLSeries.h                                 \
-          dspGLTransactions.h                           \
-          dspIncidentsByCRMAccount.h                    \
-          dspIndentedBOM.h                              \
-          dspIndentedWhereUsed.h                        \
-          dspInvalidBillsOfMaterials.h                  \
-          dspInventoryAvailabilityByCustomerType.h      \
-          dspInventoryAvailabilityByItem.h              \
-          dspInventoryAvailabilityByParameterList.h     \
-          dspInventoryAvailabilityBySalesOrder.h        \
-          dspInventoryAvailabilityBySourceVendor.h      \
-          dspInventoryAvailabilityByWorkOrder.h         \
-          dspInventoryHistoryByItem.h                   \
-          dspInventoryHistoryByOrderNumber.h            \
-          dspInventoryHistoryByParameterList.h          \
-          dspInventoryLocator.h                         \
           dspInvoiceInformation.h                       \
-          dspInvoiceRegister.h                          \
-          dspItemCostDetail.h                           \
-          dspItemCostHistory.h                          \
-          dspItemCostSummary.h                          \
-          dspItemCostsByClassCode.h                     \
-          dspItemSitesByItem.h                          \
-          dspItemSitesByParameterList.h                 \
-          dspItemSourcesByItem.h                        \
-          dspItemSourcesByVendor.h                      \
-          dspItemsByCharacteristic.h                    \
-          dspItemsByClassCode.h                         \
-          dspItemsByProductCategory.h                   \
-          dspItemsWithoutItemSources.h                  \
-          dspJobCosting.h                               \
           dspMRPDetail.h                                \
-          dspMaterialUsageVarianceByBOMItem.h           \
-          dspMaterialUsageVarianceByComponentItem.h     \
-          dspMaterialUsageVarianceByItem.h              \
-          dspMaterialUsageVarianceByWarehouse.h         \
-          dspMaterialUsageVarianceByWorkOrder.h         \
-          dspOrderActivityByProject.h                   \
-          dspOrders.h                                   \
-          dspPOsByDate.h                                \
-          dspPOsByVendor.h                              \
-          dspPartiallyShippedOrders.h                   \
-          dspPendingAvailability.h                      \
-          dspPendingBOMChanges.h                        \
-          dspPlannedOrdersByItem.h                      \
-          dspPlannedOrdersByPlannerCode.h               \
-          dspPoDeliveryDateVariancesByItem.h            \
-          dspPoDeliveryDateVariancesByVendor.h          \
-          dspPoHistory.h                                \
-          dspPoItemReceivingsByDate.h                   \
-          dspPoItemReceivingsByItem.h                   \
-          dspPoItemReceivingsByVendor.h                 \
-          dspPoItemsByDate.h                    \
-          dspPoItemsByItem.h                    \
-          dspPoItemsByVendor.h                  \
-          dspPoPriceVariancesByItem.h           \
-          dspPoPriceVariancesByVendor.h         \
-          dspPoReturnsByVendor.h                \
-          dspPricesByCustomer.h                 \
-          dspPricesByCustomerType.h             \
-          dspPricesByItem.h                     \
-          dspPurchaseReqsByItem.h               \
-          dspPurchaseReqsByPlannerCode.h        \
-          dspQOHByItem.h                        \
-          dspQOHByLocation.h                    \
-          dspQOHByParameterList.h               \
-          dspQuotesByCustomer.h                 \
-          dspQuotesByItem.h                     \
-          dspRecurringInvoices.h                \
-          dspReorderExceptionsByPlannerCode.h   \
-          dspReservations.h                     \
-          dspRunningAvailability.h              \
-          dspSalesHistoryByBilltoName.h         \
-          dspSalesHistoryByCustomer.h           \
-          dspSalesHistoryByItem.h               \
-          dspSalesHistoryByParameterList.h      \
-          dspSalesHistoryBySalesrep.h           \
-          dspSalesHistoryByShipTo.h             \
-          dspSalesOrderStatus.h                 \
-          dspSalesOrdersByCustomer.h            \
-          dspSalesOrdersByCustomerPO.h          \
-          dspSalesOrdersByItem.h                \
-          dspSalesOrdersByParameterList.h       \
-          dspShipmentsByDate.h                  \
-          dspShipmentsBySalesOrder.h            \
-          dspShipmentsByShipment.h              \
-          dspSingleLevelBOM.h                   \
-          dspSingleLevelWhereUsed.h             \
-          dspSlowMovingInventoryByClassCode.h   \
-          dspStandardJournalHistory.h           \
-          dspSubstituteAvailabilityByItem.h     \
-          dspSummarizedBOM.h                    \
-          dspSummarizedBacklogByWarehouse.h     \
-          dspSummarizedBankrecHistory.h         \
-          dspSummarizedGLTransactions.h         \
-          dspSummarizedSalesByCustomer.h        \
-          dspSummarizedSalesByCustomerByItem.h  \
-          dspSummarizedSalesByCustomerType.h    \
-          dspSummarizedSalesByCustomerTypeByItem.h      \
-          dspSummarizedSalesByItem.h                    \
-          dspSummarizedSalesBySalesRep.h                \
-          dspSummarizedSalesHistoryByShippingZone.h     \
           dspTaxHistory.h                               \
-          dspTimePhasedAvailability.h                   \
-          dspTimePhasedBookingsByCustomer.h             \
-          dspTimePhasedBookingsByItem.h                 \
-          dspTimePhasedBookingsByProductCategory.h      \
           dspTimePhasedOpenAPItems.h            \
           dspTimePhasedOpenARItems.h            \
-          dspTimePhasedSalesByCustomer.h        \
-          dspTimePhasedSalesByCustomerByItem.h  \
-          dspTimePhasedSalesByCustomerGroup.h   \
-          dspTimePhasedSalesByItem.h            \
-          dspTimePhasedSalesByProductCategory.h \
-          dspTimePhasedUsageStatisticsByItem.h  \
-          dspTodoByUserAndIncident.h            \
-          dspTrialBalances.h                    \
-          dspUnbalancedQOHByClassCode.h         \
-          dspUndefinedManufacturedItems.h       \
-          dspUninvoicedReceivings.h             \
-          dspUnusedPurchasedItems.h             \
-          dspUsageStatisticsByClassCode.h       \
-          dspUsageStatisticsByItem.h            \
-          dspUsageStatisticsByItemGroup.h       \
-          dspUsageStatisticsByWarehouse.h       \
-          dspValidLocationsByItem.h             \
-          dspVendorAPHistory.h                  \
-          dspVoucherRegister.h                  \
-          dspWoHistoryByClassCode.h             \
-          dspWoHistoryByItem.h                  \
-          dspWoHistoryByNumber.h                \
-          dspWoMaterialsByItem.h                \
-          dspWoMaterialsByWorkOrder.h           \
-          dspWoScheduleByItem.h                 \
-          dspWoScheduleByParameterList.h        \
-          dspWoScheduleByWorkOrder.h            \
-          dspWoSoStatus.h                       \
-          dspWoSoStatusMismatch.h               \
           duplicateAccountNumbers.h             \
           editICMWatermark.h                    \
           editOwners.h                          \
@@ -1201,6 +860,7 @@ HEADERS = ../common/batchItem.h                 \
           jsHighlighter.h               \
           labelForm.h                   \
           labelForms.h                  \
+          listRecurringInvoices.h       \
           locales.h                     \
           location.h                    \
           locations.h                   \
@@ -1256,8 +916,8 @@ HEADERS = ../common/batchItem.h                 \
           postCountSlips.h              \
           postCountTags.h               \
           postCreditMemos.h             \
-          postGLTransactionsToExternal.h\
           postInvoices.h                \
+          postJournals.h                \
           postMiscProduction.h          \
           postPoReturnCreditMemo.h      \
           postProduction.h              \
@@ -1330,6 +990,7 @@ HEADERS = ../common/batchItem.h                 \
           recallOrders.h                        \
           reconcileBankaccount.h                \
           registration.h                        \
+          registrationKey.h                     \
           rejectCode.h                          \
           rejectCodes.h                         \
           relativeCalendarItem.h                \
@@ -1367,13 +1028,11 @@ HEADERS = ../common/batchItem.h                 \
           salesReps.h                           \
           scrapTrans.h                          \
           scrapWoMaterialFromWIP.h              \
+          scriptablePrivate.h                   \
           scriptEditor.h                        \
           scripts.h                             \
           scripttoolbox.h                       \
-          searchForCRMAccount.h                 \
-          searchForContact.h                    \
           searchForEmp.h                        \
-          searchForItem.h                       \
           selectBankAccount.h                   \
           selectBillingQty.h                    \
           selectOrderForBilling.h               \
@@ -1381,6 +1040,7 @@ HEADERS = ../common/batchItem.h                 \
           selectPayments.h                      \
           selectShippedOrders.h                 \
           selectedPayments.h                    \
+          setup.h                               \
           shipOrder.h                           \
           shipTo.h                              \
           shipVia.h                             \
@@ -1507,20 +1167,20 @@ HEADERS = ../common/batchItem.h                 \
           workOrderMaterials.h          \
           xTupleDesigner.h              \
           xTupleDesignerActions.h       \
+          xabstractconfigure.h          \
           xdateinputdialog.h            \
           xdialog.h                     \
           xerrormessage.h               \
           xmainwindow.h                 \
           xmessagebox.h                 \
+          xmessageboxmessagehandler.h   \
           xsltMap.h                     \
           xuiloader.h                   \
           xwidget.h                     \
           yourpayprocessor.h            \
-          zeroUncountedCountTagsByWarehouse.h   \
+          zeroUncountedCountTagsByWarehouse.h
 
-SOURCES = ../common/batchItem.cpp               \
-          ../common/batchManager.cpp            \
-          absoluteCalendarItem.cpp              \
+SOURCES = absoluteCalendarItem.cpp              \
           accountNumber.cpp                     \
           accountNumbers.cpp                    \
           accountingPeriod.cpp                  \
@@ -1579,6 +1239,7 @@ SOURCES = ../common/batchItem.cpp               \
           check.cpp                             \
           checkFormat.cpp                       \
           checkFormats.cpp                      \
+          checkForUpdates.cpp                   \
           classCode.cpp                         \
           classCodes.cpp                        \
           closePurchaseOrder.cpp                \
@@ -1588,6 +1249,8 @@ SOURCES = ../common/batchItem.cpp               \
           commentTypes.cpp                      \
           companies.cpp                         \
           company.cpp                           \
+          configcreditcardprocessor.cpp         \
+          configcybersourceprocessor.cpp        \
           configureCC.cpp                       \
           configureCRM.cpp                      \
           configureEncryption.cpp               \
@@ -1652,200 +1315,30 @@ SOURCES = ../common/batchItem.cpp               \
           customerTypeList.cpp                  \
           customerTypes.cpp                     \
           customers.cpp                         \
+          cybersourceprocessor.cpp              \
           databaseInformation.cpp               \
           deletePlannedOrder.cpp                \
           deletePlannedOrdersByPlannerCode.cpp  \
           department.cpp                        \
           departments.cpp                       \
+          display.cpp                           \
+          displayTimePhased.cpp                 \
           distributeInventory.cpp               \
           distributeToLocation.cpp              \
-          dspAPApplications.cpp                 \
-          dspAPOpenItemsByVendor.cpp            \
-          dspARApplications.cpp                 \
           dspAROpenItems.cpp                    \
-          dspAllocations.cpp                    \
-          dspBacklogByCustomer.cpp              \
-          dspBacklogByItem.cpp                  \
-          dspBacklogByParameterList.cpp         \
-          dspBacklogBySalesOrder.cpp            \
           dspBankrecHistory.cpp                 \
           dspBillingSelections.cpp              \
-          dspBookingsByCustomer.cpp             \
-          dspBookingsByCustomerGroup.cpp        \
-          dspBookingsByItem.cpp                 \
-          dspBookingsByProductCategory.cpp      \
-          dspBookingsBySalesRep.cpp             \
-          dspBookingsByShipTo.cpp               \
-          dspBriefEarnedCommissions.cpp         \
-          dspBriefSalesHistoryByCustomer.cpp    \
-          dspBriefSalesHistoryByCustomerType.cpp        \
-          dspBriefSalesHistoryBySalesRep.cpp            \
-          dspCapacityUOMsByClassCode.cpp                \
-          dspCapacityUOMsByProductCategory.cpp          \
           dspCashReceipts.cpp                   \
           dspCheckRegister.cpp                  \
-          dspCostedIndentedBOM.cpp              \
-          dspCostedSingleLevelBOM.cpp           \
-          dspCostedSummarizedBOM.cpp            \
           dspCountSlipEditList.cpp              \
-          dspCountSlipsByWarehouse.cpp          \
           dspCountTagEditList.cpp               \
-          dspCountTagsByClassCode.cpp           \
-          dspCountTagsByItem.cpp                \
-          dspCountTagsByWarehouse.cpp           \
           dspCreditCardTransactions.cpp         \
-          dspCustomerARHistory.cpp              \
-          dspCustomerInformationExport.cpp      \
-          dspCustomersByCharacteristic.cpp      \
-          dspCustomersByCustomerType.cpp        \
-          dspDepositsRegister.cpp               \
-          dspDetailedInventoryHistoryByLocation.cpp     \
-          dspDetailedInventoryHistoryByLotSerial.cpp    \
-          dspEarnedCommissions.cpp                      \
-          dspExpediteExceptionsByPlannerCode.cpp        \
-          dspExpiredInventoryByClassCode.cpp            \
           dspFinancialReport.cpp                        \
-          dspFreightPricesByCustomer.cpp                \
-          dspFreightPricesByCustomerType.cpp            \
-          dspFrozenItemSites.cpp                        \
-          dspGLSeries.cpp                               \
-          dspGLTransactions.cpp                         \
-          dspIncidentsByCRMAccount.cpp                  \
-          dspIndentedBOM.cpp                            \
-          dspIndentedWhereUsed.cpp                      \
-          dspInvalidBillsOfMaterials.cpp                \
-          dspInventoryAvailabilityByCustomerType.cpp    \
-          dspInventoryAvailabilityByItem.cpp            \
-          dspInventoryAvailabilityByParameterList.cpp   \
-          dspInventoryAvailabilityBySalesOrder.cpp      \
-          dspInventoryAvailabilityBySourceVendor.cpp    \
-          dspInventoryAvailabilityByWorkOrder.cpp       \
-          dspInventoryHistoryByItem.cpp                 \
-          dspInventoryHistoryByOrderNumber.cpp          \
-          dspInventoryHistoryByParameterList.cpp        \
-          dspInventoryLocator.cpp                       \
           dspInvoiceInformation.cpp                     \
-          dspInvoiceRegister.cpp                        \
-          dspItemCostDetail.cpp                         \
-          dspItemCostHistory.cpp                        \
-          dspItemCostSummary.cpp                        \
-          dspItemCostsByClassCode.cpp                   \
-          dspItemSitesByItem.cpp                        \
-          dspItemSitesByParameterList.cpp               \
-          dspItemSourcesByItem.cpp                      \
-          dspItemSourcesByVendor.cpp                    \
-          dspItemsByCharacteristic.cpp                  \
-          dspItemsByClassCode.cpp                       \
-          dspItemsByProductCategory.cpp                 \
-          dspItemsWithoutItemSources.cpp                \
-          dspJobCosting.cpp                             \
           dspMRPDetail.cpp                              \
-          dspMaterialUsageVarianceByBOMItem.cpp         \
-          dspMaterialUsageVarianceByComponentItem.cpp   \
-          dspMaterialUsageVarianceByItem.cpp            \
-          dspMaterialUsageVarianceByWarehouse.cpp       \
-          dspMaterialUsageVarianceByWorkOrder.cpp       \
-          dspOrderActivityByProject.cpp                 \
-          dspOrders.cpp                                 \
-          dspPOsByDate.cpp                              \
-          dspPOsByVendor.cpp                            \
-          dspPartiallyShippedOrders.cpp                 \
-          dspPendingAvailability.cpp                    \
-          dspPendingBOMChanges.cpp                      \
-          dspPlannedOrdersByItem.cpp                    \
-          dspPlannedOrdersByPlannerCode.cpp             \
-          dspPoDeliveryDateVariancesByItem.cpp          \
-          dspPoDeliveryDateVariancesByVendor.cpp        \
-          dspPoHistory.cpp                              \
-          dspPoItemReceivingsByDate.cpp                 \
-          dspPoItemReceivingsByItem.cpp                 \
-          dspPoItemReceivingsByVendor.cpp               \
-          dspPoItemsByDate.cpp                          \
-          dspPoItemsByItem.cpp                          \
-          dspPoItemsByVendor.cpp                        \
-          dspPoPriceVariancesByItem.cpp                 \
-          dspPoPriceVariancesByVendor.cpp               \
-          dspPoReturnsByVendor.cpp                      \
-          dspPricesByCustomer.cpp                       \
-          dspPricesByCustomerType.cpp                   \
-          dspPricesByItem.cpp                           \
-          dspPurchaseReqsByItem.cpp                     \
-          dspPurchaseReqsByPlannerCode.cpp              \
-          dspQOHByItem.cpp                              \
-          dspQOHByLocation.cpp                          \
-          dspQOHByParameterList.cpp                     \
-          dspQuotesByCustomer.cpp                       \
-          dspQuotesByItem.cpp                           \
-          dspRecurringInvoices.cpp                      \
-          dspReorderExceptionsByPlannerCode.cpp         \
-          dspReservations.cpp                           \
-          dspRunningAvailability.cpp                    \
-          dspSalesHistoryByBilltoName.cpp               \
-          dspSalesHistoryByCustomer.cpp                 \
-          dspSalesHistoryByItem.cpp                     \
-          dspSalesHistoryByParameterList.cpp            \
-          dspSalesHistoryBySalesrep.cpp                 \
-          dspSalesHistoryByShipTo.cpp                   \
-          dspSalesOrderStatus.cpp                       \
-          dspSalesOrdersByCustomer.cpp                  \
-          dspSalesOrdersByCustomerPO.cpp                \
-          dspSalesOrdersByItem.cpp                      \
-          dspSalesOrdersByParameterList.cpp             \
-          dspShipmentsByDate.cpp                        \
-          dspShipmentsBySalesOrder.cpp                  \
-          dspShipmentsByShipment.cpp                    \
-          dspSingleLevelBOM.cpp                         \
-          dspSingleLevelWhereUsed.cpp                   \
-          dspSlowMovingInventoryByClassCode.cpp         \
-          dspStandardJournalHistory.cpp                 \
-          dspSubstituteAvailabilityByItem.cpp           \
-          dspSummarizedBOM.cpp                          \
-          dspSummarizedBacklogByWarehouse.cpp           \
-          dspSummarizedBankrecHistory.cpp               \
-          dspSummarizedGLTransactions.cpp               \
-          dspSummarizedSalesByCustomer.cpp              \
-          dspSummarizedSalesByCustomerByItem.cpp        \
-          dspSummarizedSalesByCustomerType.cpp          \
-          dspSummarizedSalesByCustomerTypeByItem.cpp    \
-          dspSummarizedSalesByItem.cpp                  \
-          dspSummarizedSalesBySalesRep.cpp              \
-          dspSummarizedSalesHistoryByShippingZone.cpp   \
           dspTaxHistory.cpp                             \
-          dspTimePhasedAvailability.cpp                 \
-          dspTimePhasedBookingsByCustomer.cpp           \
-          dspTimePhasedBookingsByItem.cpp               \
-          dspTimePhasedBookingsByProductCategory.cpp    \
           dspTimePhasedOpenAPItems.cpp                  \
           dspTimePhasedOpenARItems.cpp                  \
-          dspTimePhasedSalesByCustomer.cpp              \
-          dspTimePhasedSalesByCustomerByItem.cpp        \
-          dspTimePhasedSalesByCustomerGroup.cpp         \
-          dspTimePhasedSalesByItem.cpp                  \
-          dspTimePhasedSalesByProductCategory.cpp       \
-          dspTimePhasedUsageStatisticsByItem.cpp        \
-          dspTodoByUserAndIncident.cpp          \
-          dspTrialBalances.cpp                  \
-          dspUnbalancedQOHByClassCode.cpp       \
-          dspUndefinedManufacturedItems.cpp     \
-          dspUninvoicedReceivings.cpp           \
-          dspUnusedPurchasedItems.cpp           \
-          dspUsageStatisticsByClassCode.cpp     \
-          dspUsageStatisticsByItem.cpp          \
-          dspUsageStatisticsByItemGroup.cpp     \
-          dspUsageStatisticsByWarehouse.cpp     \
-          dspValidLocationsByItem.cpp           \
-          dspVendorAPHistory.cpp                \
-          dspVoucherRegister.cpp                \
-          dspWoHistoryByClassCode.cpp           \
-          dspWoHistoryByItem.cpp                \
-          dspWoHistoryByNumber.cpp              \
-          dspWoMaterialsByItem.cpp              \
-          dspWoMaterialsByWorkOrder.cpp         \
-          dspWoScheduleByItem.cpp               \
-          dspWoScheduleByParameterList.cpp      \
-          dspWoScheduleByWorkOrder.cpp          \
-          dspWoSoStatus.cpp                     \
-          dspWoSoStatusMismatch.cpp             \
           duplicateAccountNumbers.cpp           \
           editICMWatermark.cpp                  \
           editOwners.cpp                        \
@@ -1950,6 +1443,7 @@ SOURCES = ../common/batchItem.cpp               \
           jsHighlighter.cpp             \
           labelForm.cpp                 \
           labelForms.cpp                \
+          listRecurringInvoices.cpp     \
           locales.cpp                   \
           location.cpp                  \
           locations.cpp                 \
@@ -2006,8 +1500,8 @@ SOURCES = ../common/batchItem.cpp               \
           postCountSlips.cpp            \
           postCountTags.cpp             \
           postCreditMemos.cpp           \
-          postGLTransactionsToExternal.cpp      \
           postInvoices.cpp                      \
+          postJournals.cpp                      \
           postMiscProduction.cpp                \
           postPoReturnCreditMemo.cpp            \
           postProduction.cpp                    \
@@ -2080,6 +1574,7 @@ SOURCES = ../common/batchItem.cpp               \
           recallOrders.cpp                      \
           reconcileBankaccount.cpp              \
           registration.cpp                      \
+          registrationKey.cpp                   \
           rejectCode.cpp                        \
           rejectCodes.cpp                       \
           relativeCalendarItem.cpp              \
@@ -2117,13 +1612,11 @@ SOURCES = ../common/batchItem.cpp               \
           salesReps.cpp                         \
           scrapTrans.cpp                        \
           scrapWoMaterialFromWIP.cpp            \
+          scriptablePrivate.cpp                 \
           scriptEditor.cpp                      \
           scripts.cpp                           \
           scripttoolbox.cpp                     \
-          searchForCRMAccount.cpp               \
-          searchForContact.cpp                  \
           searchForEmp.cpp                      \
-          searchForItem.cpp                     \
           selectBankAccount.cpp                 \
           selectBillingQty.cpp                  \
           selectOrderForBilling.cpp             \
@@ -2131,6 +1624,7 @@ SOURCES = ../common/batchItem.cpp               \
           selectPayments.cpp                    \
           selectShippedOrders.cpp               \
           selectedPayments.cpp                  \
+          setup.cpp                             \
           shipOrder.cpp                         \
           shipTo.cpp                            \
           shipVia.cpp                           \
@@ -2257,16 +1751,21 @@ SOURCES = ../common/batchItem.cpp               \
           workOrderMaterials.cpp                \
           xTupleDesigner.cpp                    \
           xTupleDesignerActions.cpp             \
+          xabstractconfigure.cpp                \
           xdateinputdialog.cpp                  \
           xdialog.cpp                           \
           xerrormessage.cpp                     \
           xmainwindow.cpp                       \
           xmessagebox.cpp                       \
+          xmessageboxmessagehandler.cpp         \
           xsltMap.cpp                           \
           xuiloader.cpp                         \
           xwidget.cpp                           \
           yourpayprocessor.cpp                  \
-          zeroUncountedCountTagsByWarehouse.cpp \
+          zeroUncountedCountTagsByWarehouse.cpp
+
+include( displays/displays.pri )
+include( hunspell.pri )
 
 QT += xml sql script scripttools network
 QT += webkit xmlpatterns

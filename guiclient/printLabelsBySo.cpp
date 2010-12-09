@@ -21,13 +21,14 @@ printLabelsBySo::printLabelsBySo(QWidget* parent, const char* name, bool modal, 
 {
   setupUi(this);
 
-  // signals and slots connections
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
+  _so->setAllowedTypes(OrderLineEdit::Sales);
+  QPushButton* _print = _buttonBox->button(QDialogButtonBox::Ok);
+  _print->setEnabled(false);
+
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sPrint()));
   connect(_so, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
   connect(_from, SIGNAL(valueChanged(int)), this, SLOT(sSetToMin(int)));
-
-  _so->setType(cSoOpen | cSoClosed);
 
   _report->populate( "SELECT labelform_id, labelform_name "
                      "FROM labelform "
@@ -78,5 +79,5 @@ void printLabelsBySo::sPrint()
 
 void printLabelsBySo::sSetToMin(int pValue)
 {
-  _to->setMinValue(pValue);
+  _to->setMinimum(pValue);
 }

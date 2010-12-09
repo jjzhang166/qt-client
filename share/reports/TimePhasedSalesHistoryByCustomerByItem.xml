@@ -11,28 +11,22 @@
  <leftmargin>50</leftmargin>
  <querysource>
   <name>head</name>
-  <sql>SELECT &lt;? if exists(&quot;cust_id&quot;) ?>
-         (SELECT cust_name from cust where cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
-       &lt;? elseif exists(&quot;custtype_id&quot;) ?>
-         (SELECT (custtype_code||'-'||custtype_descrip)
-            FROM custtype
-           WHERE custtype_id=&lt;? value(&quot;custtype_id&quot;) ?>)
-       &lt;? elseif exists(&quot;custtype_pattern&quot;) ?>
-         text(&lt;? value(&quot;custtype_pattern&quot;) ?>)
-       &lt;? else ?>
-         text('All Customers')
-       &lt;? endif ?>
-       AS custtype,
-       &lt;? if exists(&quot;procat_id&quot;) ?>
+  <sql>SELECT cust_number,
+       cust_name,
+       salesrep_number,
+       salesrep_name,
+       &lt;? if exists("procat_id") ?>
          (SELECT (prodcat_code||'-'||prodcat_descrip)
             FROM prodcat
-           WHERE prodcat_id=&lt;? value(&quot;prodcat_id&quot;) ?>)
-       &lt;? elseif exists(&quot;prodcat_pattern&quot;) ?>
-         text(&lt;? value(&quot;prodcat_pattern&quot;) ?>)
+           WHERE prodcat_id=&lt;? value("prodcat_id") ?>)
+       &lt;? elseif exists("prodcat_pattern") ?>
+         text(&lt;? value("prodcat_pattern") ?>)
        &lt;? else ?>
          text('All Product Categories')
        &lt;? endif ?>
-       AS prodcat;</sql>
+       AS prodcat
+FROM custinfo JOIN salesrep ON (salesrep_id=cust_salesrep_id)
+WHERE (cust_id=&lt;? value("cust_id") ?>);</sql>
  </querysource>
  <querysource>
   <name>detail</name>
@@ -77,22 +71,22 @@ FROM ( SELECT itemsite_id, pstart, pend,
                      findPeriodEnd(rcalitem_id) AS pend
               FROM rcalitem
               WHERE (rcalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
               UNION SELECT acalitem_id AS calitem_id,
                            findPeriodStart(acalitem_id) AS pstart,
                            findPeriodEnd(acalitem_id) AS pend
               FROM acalitem
               WHERE (acalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
              ) AS calitem
        WHERE ( (itemsite_item_id=item_id)
@@ -101,21 +95,21 @@ FROM ( SELECT itemsite_id, pstart, pend,
         AND (cohist_cust_id=cust_id)
         AND (cust_salesrep_id=salesrep_id)
         AND (cohist_invcdate BETWEEN findPeriodStart(calitem_id) AND findPeriodEnd(calitem_id))
-&lt;? if exists(&quot;cust_id&quot;) ?>
-        AND (cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_id&quot;) ?>
-        AND (cust_custtype_id=&lt;? value(&quot;custtype_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_pattern&quot;) ?>
+&lt;? if exists("cust_id") ?>
+        AND (cust_id=&lt;? value("cust_id") ?>)
+&lt;? elseif exists("custtype_id") ?>
+        AND (cust_custtype_id=&lt;? value("custtype_id") ?>)
+&lt;? elseif exists("custtype_pattern") ?>
         AND (cust_custtype_id IN ( SELECT custtype_id
                                      FROM custtype
-                                    WHERE (custtype_code ~ &lt;? value(&quot;custtype_pattern&quot;) ?>) ))
+                                    WHERE (custtype_code ~ &lt;? value("custtype_pattern") ?>) ))
 &lt;? endif ?>
-&lt;? if exists(&quot;prodcat_id&quot;) ?>
-        AND (item_prodcat_id=&lt;? value(&quot;prodcat_id&quot;) ?>)
-&lt;? elseif exists(&quot;prodcat_pattern&quot;) ?>
+&lt;? if exists("prodcat_id") ?>
+        AND (item_prodcat_id=&lt;? value("prodcat_id") ?>)
+&lt;? elseif exists("prodcat_pattern") ?>
         AND (item_prodcat_id IN ( SELECT prodcat_id
                                     FROM prodcat
-                                   WHERE (prodcat_code ~ &lt;? value(&quot;prodcat_pattern&quot;) ?>) ))
+                                   WHERE (prodcat_code ~ &lt;? value("prodcat_pattern") ?>) ))
 &lt;? endif ?>
 )
        GROUP BY itemsite_id,
@@ -135,43 +129,43 @@ FROM ( SELECT itemsite_id, pstart, pend,
                      findPeriodEnd(rcalitem_id) AS pend
               FROM rcalitem
               WHERE (rcalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
               UNION SELECT acalitem_id AS calitem_id,
                            findPeriodStart(acalitem_id) AS pstart,
                            findPeriodEnd(acalitem_id) AS pend
               FROM acalitem
               WHERE (acalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
              ) AS calitem
        WHERE ( (itemsite_item_id=item_id)
         AND (cohist_itemsite_id=itemsite_id)
         AND (cohist_cust_id=cust_id)
         AND (cohist_invcdate BETWEEN findPeriodStart(calitem_id) AND findPeriodEnd(calitem_id))
-&lt;? if exists(&quot;cust_id&quot;) ?>
-        AND (cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_id&quot;) ?>
-        AND (cust_custtype_id=&lt;? value(&quot;custtype_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_pattern&quot;) ?>
+&lt;? if exists("cust_id") ?>
+        AND (cust_id=&lt;? value("cust_id") ?>)
+&lt;? elseif exists("custtype_id") ?>
+        AND (cust_custtype_id=&lt;? value("custtype_id") ?>)
+&lt;? elseif exists("custtype_pattern") ?>
         AND (cust_custtype_id IN ( SELECT custtype_id
                                      FROM custtype
-                                    WHERE (custtype_code ~ &lt;? value(&quot;custtype_pattern&quot;) ?>) ))
+                                    WHERE (custtype_code ~ &lt;? value("custtype_pattern") ?>) ))
 &lt;? endif ?>
-&lt;? if exists(&quot;prodcat_id&quot;) ?>
-        AND (item_prodcat_id=&lt;? value(&quot;prodcat_id&quot;) ?>)
-&lt;? elseif exists(&quot;prodcat_pattern&quot;) ?>
+&lt;? if exists("prodcat_id") ?>
+        AND (item_prodcat_id=&lt;? value("prodcat_id") ?>)
+&lt;? elseif exists("prodcat_pattern") ?>
         AND (item_prodcat_id IN ( SELECT prodcat_id
                                     FROM prodcat
-                                   WHERE (prodcat_code ~ &lt;? value(&quot;prodcat_pattern&quot;) ?>) ))
+                                   WHERE (prodcat_code ~ &lt;? value("prodcat_pattern") ?>) ))
 &lt;? endif ?>
 )
        GROUP BY itemsite_id, cust_number
@@ -186,43 +180,43 @@ FROM ( SELECT itemsite_id, pstart, pend,
                      findPeriodEnd(rcalitem_id) AS pend
               FROM rcalitem
               WHERE (rcalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
               UNION SELECT acalitem_id AS calitem_id,
                            findPeriodStart(acalitem_id) AS pstart,
                            findPeriodEnd(acalitem_id) AS pend
               FROM acalitem
               WHERE (acalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
              ) AS calitem
        WHERE ( (itemsite_item_id=item_id)
         AND (cohist_itemsite_id=itemsite_id)
         AND (cohist_cust_id=cust_id)
         AND (cohist_invcdate BETWEEN findPeriodStart(calitem_id) AND findPeriodEnd(calitem_id))
-&lt;? if exists(&quot;cust_id&quot;) ?>
-        AND (cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_id&quot;) ?>
-        AND (cust_custtype_id=&lt;? value(&quot;custtype_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_pattern&quot;) ?>
+&lt;? if exists("cust_id") ?>
+        AND (cust_id=&lt;? value("cust_id") ?>)
+&lt;? elseif exists("custtype_id") ?>
+        AND (cust_custtype_id=&lt;? value("custtype_id") ?>)
+&lt;? elseif exists("custtype_pattern") ?>
         AND (cust_custtype_id IN ( SELECT custtype_id
                                      FROM custtype
-                                    WHERE (custtype_code ~ &lt;? value(&quot;custtype_pattern&quot;) ?>) ))
+                                    WHERE (custtype_code ~ &lt;? value("custtype_pattern") ?>) ))
 &lt;? endif ?>
-&lt;? if exists(&quot;prodcat_id&quot;) ?>
-        AND (item_prodcat_id=&lt;? value(&quot;prodcat_id&quot;) ?>)
-&lt;? elseif exists(&quot;prodcat_pattern&quot;) ?>
+&lt;? if exists("prodcat_id") ?>
+        AND (item_prodcat_id=&lt;? value("prodcat_id") ?>)
+&lt;? elseif exists("prodcat_pattern") ?>
         AND (item_prodcat_id IN ( SELECT prodcat_id
                                     FROM prodcat
-                                   WHERE (prodcat_code ~ &lt;? value(&quot;prodcat_pattern&quot;) ?>) ))
+                                   WHERE (prodcat_code ~ &lt;? value("prodcat_pattern") ?>) ))
 &lt;? endif ?>
 )
        GROUP BY cust_number
@@ -247,11 +241,11 @@ ORDER BY custsubsales DESC, cust_number, itemsubsales DESC, item_number, warehou
                         findPeriodEnd(rcalitem_id) AS pend
                    FROM rcalitem
                   WHERE (rcalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
                   UNION
                  SELECT acalitem_id AS calitem_id,
@@ -259,32 +253,32 @@ ORDER BY custsubsales DESC, cust_number, itemsubsales DESC, item_number, warehou
                         findPeriodEnd(acalitem_id) AS pend
                    FROM acalitem
                   WHERE (acalitem_id in (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>))
                ) AS calitem
          WHERE ( (itemsite_item_id=item_id)
            AND (cohist_itemsite_id=itemsite_id)
            AND (cohist_cust_id=cust_id)
            AND (cohist_invcdate BETWEEN findPeriodStart(calitem_id) AND findPeriodEnd(calitem_id))
-&lt;? if exists(&quot;cust_id&quot;) ?>
-           AND (cust_id=&lt;? value(&quot;cust_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_id&quot;) ?>
-           AND (cust_custtype_id=&lt;? value(&quot;custtype_id&quot;) ?>)
-&lt;? elseif exists(&quot;custtype_pattern&quot;) ?>
+&lt;? if exists("cust_id") ?>
+           AND (cust_id=&lt;? value("cust_id") ?>)
+&lt;? elseif exists("custtype_id") ?>
+           AND (cust_custtype_id=&lt;? value("custtype_id") ?>)
+&lt;? elseif exists("custtype_pattern") ?>
            AND (cust_custtype_id IN ( SELECT custtype_id
                                         FROM custtype
-                                       WHERE (custtype_code ~ &lt;? value(&quot;custtype_pattern&quot;) ?>) ))
+                                       WHERE (custtype_code ~ &lt;? value("custtype_pattern") ?>) ))
 &lt;? endif ?>
-&lt;? if exists(&quot;prodcat_id&quot;) ?>
-           AND (item_prodcat_id=&lt;? value(&quot;prodcat_id&quot;) ?>)
-&lt;? elseif exists(&quot;prodcat_pattern&quot;) ?>
+&lt;? if exists("prodcat_id") ?>
+           AND (item_prodcat_id=&lt;? value("prodcat_id") ?>)
+&lt;? elseif exists("prodcat_pattern") ?>
            AND (item_prodcat_id IN ( SELECT prodcat_id
                                        FROM prodcat
-                                      WHERE (prodcat_code ~ &lt;? value(&quot;prodcat_pattern&quot;) ?>) ))
+                                      WHERE (prodcat_code ~ &lt;? value("prodcat_pattern") ?>) ))
 &lt;? endif ?>
                )
        ) AS data</sql>
@@ -303,11 +297,11 @@ ORDER BY custsubsales DESC, cust_number, itemsubsales DESC, item_number, warehou
                 findPeriodEnd(rcalitem_id) AS calitem_enddate
            FROM rcalitem
           WHERE (rcalitem_id IN (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>
                                 ))
           UNION
@@ -317,11 +311,11 @@ ORDER BY custsubsales DESC, cust_number, itemsubsales DESC, item_number, warehou
                 findPeriodEnd(acalitem_id) AS calitem_enddate
            FROM acalitem
           WHERE (acalitem_id IN (
-&lt;? foreach(&quot;period_id_list&quot;) ?>
-  &lt;? if not isfirst(&quot;period_id_list&quot;) ?>
+&lt;? foreach("period_id_list") ?>
+  &lt;? if not isfirst("period_id_list") ?>
     ,
   &lt;? endif ?>
-  &lt;? value(&quot;period_id_list&quot;) ?>
+  &lt;? value("period_id_list") ?>
 &lt;? endforeach ?>
                                 ))
 
@@ -366,25 +360,6 @@ ORDER BY calitem_startdate, calitem_enddate </sql>
    <vcenter/>
    <string>Product Category:</string>
   </label>
-  <field>
-   <rect>
-    <x>140</x>
-    <y>70</y>
-    <width>430</width>
-    <height>20</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>10</size>
-    <weight>bold</weight>
-   </font>
-   <left/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>custtype</column>
-   </data>
-  </field>
   <field>
    <rect>
     <x>140</x>
@@ -438,10 +413,10 @@ ORDER BY calitem_startdate, calitem_enddate </sql>
   </label>
   <label>
    <rect>
-    <x>15</x>
-    <y>70</y>
-    <width>120</width>
-    <height>20</height>
+    <x>27</x>
+    <y>55</y>
+    <width>108</width>
+    <height>15</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -450,8 +425,132 @@ ORDER BY calitem_startdate, calitem_enddate </sql>
    </font>
    <right/>
    <vcenter/>
-   <string>Cust./Cust. Type:</string>
+   <string>Cust. Number:</string>
   </label>
+  <label>
+   <rect>
+    <x>31</x>
+    <y>73</y>
+    <width>105</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Cust. Name:</string>
+  </label>
+  <field>
+   <rect>
+    <x>142</x>
+    <y>55</y>
+    <width>158</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>cust_number</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>141</x>
+    <y>72</y>
+    <width>250</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>cust_name</column>
+   </data>
+  </field>
+  <label>
+   <rect>
+    <x>430</x>
+    <y>54</y>
+    <width>111</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Sales Rep. #:</string>
+  </label>
+  <label>
+   <rect>
+    <x>427</x>
+    <y>70</y>
+    <width>114</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <string>Sales Rep. Name:</string>
+  </label>
+  <field>
+   <rect>
+    <x>546</x>
+    <y>53</y>
+    <width>163</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>salesrep_number</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>545</x>
+    <y>70</y>
+    <width>152</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>salesrep_name</column>
+   </data>
+  </field>
  </rpthead>
  <pghead>
   <firstpage/>
@@ -631,358 +730,6 @@ ORDER BY calitem_startdate, calitem_enddate </sql>
  </section>
  <section>
   <name>detail</name>
-  <group>
-   <name>Customer</name>
-   <column>cust_number</column>
-   <head>
-    <height>77</height>
-    <label>
-     <rect>
-      <x>10</x>
-      <y>55</y>
-      <width>250</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Period</string>
-    </label>
-    <label>
-     <rect>
-      <x>525</x>
-      <y>55</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Margin</string>
-    </label>
-    <field>
-     <rect>
-      <x>95</x>
-      <y>10</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>cust_number</column>
-     </data>
-    </field>
-    <label>
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <string>Cust. Number:</string>
-    </label>
-    <field>
-     <rect>
-      <x>484</x>
-      <y>10</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>salesrep_number</column>
-     </data>
-    </field>
-    <line>
-     <xstart>15</xstart>
-     <ystart>70</ystart>
-     <xend>735</xend>
-     <yend>70</yend>
-     <weight>0</weight>
-    </line>
-    <label>
-     <rect>
-      <x>10</x>
-      <y>25</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <string>Cust. Name:</string>
-    </label>
-    <field>
-     <rect>
-      <x>95</x>
-      <y>25</y>
-      <width>250</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>cust_name</column>
-     </data>
-    </field>
-    <label>
-     <rect>
-      <x>400</x>
-      <y>10</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <string>Sales Rep. #:</string>
-    </label>
-    <label>
-     <rect>
-      <x>615</x>
-      <y>55</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Margin %</string>
-    </label>
-    <field>
-     <rect>
-      <x>484</x>
-      <y>25</y>
-      <width>250</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <left/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>salesrep_name</column>
-     </data>
-    </field>
-    <label>
-     <rect>
-      <x>270</x>
-      <y>55</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Qty.</string>
-    </label>
-    <label>
-     <rect>
-      <x>355</x>
-      <y>55</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Sales</string>
-    </label>
-    <label>
-     <rect>
-      <x>375</x>
-      <y>25</y>
-      <width>105</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <string>Sales Rep. Name:</string>
-    </label>
-    <label>
-     <rect>
-      <x>440</x>
-      <y>55</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <hcenter/>
-     <vcenter/>
-     <string>Costs</string>
-    </label>
-   </head>
-   <foot>
-    <height>22</height>
-    <field>
-     <rect>
-      <x>434</x>
-      <y>0</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>f_custsubcosts</column>
-     </data>
-    </field>
-    <field>
-     <rect>
-      <x>605</x>
-      <y>0</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>f_custsubprcnt</column>
-     </data>
-    </field>
-    <line>
-     <xstart>30</xstart>
-     <ystart>15</ystart>
-     <xend>690</xend>
-     <yend>15</yend>
-     <weight>0</weight>
-    </line>
-    <field>
-     <rect>
-      <x>520</x>
-      <y>0</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>f_custsubmargin</column>
-     </data>
-    </field>
-    <label>
-     <rect>
-      <x>150</x>
-      <y>0</y>
-      <width>95</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>normal</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <string>Customer Totals:</string>
-    </label>
-    <field>
-     <rect>
-      <x>350</x>
-      <y>0</y>
-      <width>80</width>
-      <height>15</height>
-     </rect>
-     <font>
-      <face>Arial</face>
-      <size>8</size>
-      <weight>bold</weight>
-     </font>
-     <right/>
-     <vcenter/>
-     <data>
-      <query>detail</query>
-      <column>f_custsubsales</column>
-     </data>
-    </field>
-   </foot>
-  </group>
   <group>
    <name>itemsite</name>
    <column>itemsite_id</column>

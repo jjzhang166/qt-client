@@ -10,27 +10,20 @@
 
 #include "incidentSeverities.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
+#include <QVariant>
+
 #include <openreports.h>
 #include "incidentSeverity.h"
 
-/*
- *  Constructs an incidentSeverities as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-//  (void)statusBar();
-
-  // signals and slots connections
   connect(_close,  SIGNAL(clicked()), this, SLOT(close()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,   SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -40,11 +33,10 @@ incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WF
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_view,  SIGNAL(clicked()), this, SLOT(sView()));
 
-//  statusBar()->hide();
-  
   _incidentSeverities->addColumn(tr("Order"),  _seqColumn, Qt::AlignRight, true, "incdtseverity_order");
   _incidentSeverities->addColumn(tr("Severity"),      100, Qt::AlignLeft, true, "incdtseverity_name" );
   _incidentSeverities->addColumn(tr("Description"),    -1, Qt::AlignLeft, true, "incdtseverity_descrip" );
+
 
   if (_privileges->check("MaintainIncidentSeverities"))
   {
@@ -139,17 +131,15 @@ void incidentSeverities::sView()
 
 void incidentSeverities::sPopulateMenu( QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainIncidentSeverities"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentSeverities"));
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainIncidentSeverities"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainIncidentSeverities"));
 }
 
 void incidentSeverities::sPrint()

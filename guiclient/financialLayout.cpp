@@ -35,7 +35,7 @@ financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, 
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_layout, SIGNAL(itemSelectionChanged()), this, SLOT(sHandleButtons()));
   connect(_addTopLevelGroup, SIGNAL(clicked()), this, SLOT(sAddTopLevelGroup()));
@@ -120,7 +120,7 @@ enum SetResponse financialLayout::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
       _view->setHidden(TRUE);
       _viewCol->setHidden(TRUE);
     }
@@ -145,7 +145,9 @@ enum SetResponse financialLayout::set(const ParameterList &pParams)
       _editCol->setHidden(TRUE);
       _deleteCol->setHidden(TRUE);
 
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -167,6 +169,7 @@ void financialLayout::sCheck()
     {
       _flheadid = q.value("flhead_id").toInt();
       _mode = cEdit;
+      _layout->setColumnCount(1);
       populate();
 
       _name->setEnabled(FALSE);
@@ -184,52 +187,33 @@ void financialLayout::sSave()
     return;
   }
   
-/*
-  if (_mode == cNew)
-    q.prepare( "INSERT INTO flhead "
-               "( flhead_id, flhead_name, flhead_descrip, flhead_showtotal,"
-               "  flhead_showstart, flhead_showend,"
-               "  flhead_showdelta, flhead_showbudget, flhead_showdiff,"
-               "  flhead_showcustom, flhead_custom_label,"
-               "  flhead_usealttotal, flhead_alttotal, "
-               "  flhead_type, flhead_active ) "
-               "VALUES "
-               "( :flhead_id, :flhead_name, :flhead_descrip, :showtotal,"
-               "  :flhead_showstart, :flhead_showend,"
-               "  :flhead_showdelta, :flhead_showbudget, :flhead_showdiff,"
-               "  :flhead_showcustom, :flhead_custom_label,"
-               "  :flhead_usealttotal, :flhead_alttotal, "
-               "  :flhead_type, :flhead_active" );" );
-
-  else if (_mode == cEdit)
-*/
-    q.prepare( "UPDATE flhead "
-               "SET flhead_name=:flhead_name, flhead_descrip=:flhead_descrip,"
-               "    flhead_showtotal=:showtotal,"
-               "    flhead_showstart=:flhead_showstart,"
-               "    flhead_showend=:flhead_showend,"
-               "    flhead_showdelta=:flhead_showdelta,"
-               "    flhead_showbudget=:flhead_showbudget,"
-               "    flhead_showdiff=:flhead_showdiff,"
-               "    flhead_showcustom=:flhead_showcustom,"
-               "    flhead_type=:flhead_type,"
-               "    flhead_active=:flhead_active,"
-               "    flhead_custom_label=:flhead_custom_label,"
-               "    flhead_usealtbegin=:flhead_usealtbegin,"
-               "    flhead_altbegin=:flhead_altbegin,"
-               "    flhead_usealtend=:flhead_usealtend,"
-               "    flhead_altend=:flhead_altend,"
-               "    flhead_usealtdebits=:flhead_usealtdebits,"
-               "    flhead_altdebits=:flhead_altdebits,"
-               "    flhead_usealtcredits=:flhead_usealtcredits,"
-               "    flhead_altcredits=:flhead_altcredits,"
-               "    flhead_usealtbudget=:flhead_usealtbudget,"
-               "    flhead_altbudget=:flhead_altbudget,"
-               "    flhead_usealtdiff=:flhead_usealtdiff,"
-               "    flhead_altdiff=:flhead_altdiff,"
-               "    flhead_usealttotal=:flhead_usealttotal,"
-               "    flhead_alttotal=:flhead_alttotal"
-               " WHERE (flhead_id=:flhead_id);" );
+  q.prepare( "UPDATE flhead "
+             "SET flhead_name=:flhead_name, flhead_descrip=:flhead_descrip,"
+             "    flhead_showtotal=:showtotal,"
+             "    flhead_showstart=:flhead_showstart,"
+             "    flhead_showend=:flhead_showend,"
+             "    flhead_showdelta=:flhead_showdelta,"
+             "    flhead_showbudget=:flhead_showbudget,"
+             "    flhead_showdiff=:flhead_showdiff,"
+             "    flhead_showcustom=:flhead_showcustom,"
+             "    flhead_type=:flhead_type,"
+             "    flhead_active=:flhead_active,"
+             "    flhead_custom_label=:flhead_custom_label,"
+             "    flhead_usealtbegin=:flhead_usealtbegin,"
+             "    flhead_altbegin=:flhead_altbegin,"
+             "    flhead_usealtend=:flhead_usealtend,"
+             "    flhead_altend=:flhead_altend,"
+             "    flhead_usealtdebits=:flhead_usealtdebits,"
+             "    flhead_altdebits=:flhead_altdebits,"
+             "    flhead_usealtcredits=:flhead_usealtcredits,"
+             "    flhead_altcredits=:flhead_altcredits,"
+             "    flhead_usealtbudget=:flhead_usealtbudget,"
+             "    flhead_altbudget=:flhead_altbudget,"
+             "    flhead_usealtdiff=:flhead_usealtdiff,"
+             "    flhead_altdiff=:flhead_altdiff,"
+             "    flhead_usealttotal=:flhead_usealttotal,"
+             "    flhead_alttotal=:flhead_alttotal"
+             " WHERE (flhead_id=:flhead_id);" );
 
   q.bindValue(":flhead_name", _name->text());
   q.bindValue(":flhead_descrip", _descrip->text());

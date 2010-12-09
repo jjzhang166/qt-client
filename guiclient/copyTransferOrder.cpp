@@ -23,10 +23,12 @@ copyTransferOrder::copyTransferOrder(QWidget* parent, const char* name, bool mod
 {
   setupUi(this);
 
-  connect(_copy,	SIGNAL(clicked()), this, SLOT(sCopy()));
+  connect(_buttonBox,	SIGNAL(accepted()), this, SLOT(sCopy()));
   connect(_to,	       SIGNAL(newId(int)), this, SLOT(populate()));
 
   _captive = FALSE;
+  _to->setAllowedTypes(OrderLineEdit::Transfer);
+  _to->setLabel("");
 
   _item->addColumn(tr("#"),       _seqColumn, Qt::AlignRight, true, "toitem_linenumber");
   _item->addColumn(tr("Item"),   _itemColumn, Qt::AlignLeft,  true, "item_number");
@@ -54,10 +56,11 @@ enum SetResponse copyTransferOrder::set(const ParameterList &pParams)
   if (valid)
   {
     _captive = TRUE;
+    _to->setAllowedType("TO");
     _to->setId(param.toInt());
     _to->setEnabled(FALSE);
-
-    _copy->setFocus();
+    populate();
+    _buttonBox->setFocus();
   }
 
   return NoError;

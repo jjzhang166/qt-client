@@ -49,7 +49,7 @@ viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WFlags fl)
   _check->addColumn(tr("Check Date") ,      _dateColumn, Qt::AlignCenter,true, "checkdate" );
   _check->addColumn(tr("Amount"),          _moneyColumn, Qt::AlignRight, true, "amount"  );
   _check->addColumn(tr("Currency"),     _currencyColumn, Qt::AlignLeft,  true, "currAbbr" );
-  if (_metrics->boolean("ACHEnabled"))
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
     _check->addColumn(tr("EFT Batch"),     _orderColumn, Qt::AlignLeft,  true, "checkhead_ach_batch" );
 
   if (omfgThis->singleCurrency())

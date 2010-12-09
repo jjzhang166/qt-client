@@ -17,6 +17,9 @@
 
 #include <openreports.h>
 #include <invoiceList.h>
+#include <metasql.h>
+#include "mqlutil.h"
+
 
 dspInvoiceInformation::dspInvoiceInformation(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -97,7 +100,7 @@ void dspInvoiceInformation::sParseInvoiceNumber()
              "WHERE (invchead_invcnumber=:invoiceNumber) "
              "GROUP BY invchead_id, invchead_cust_id, invchead_ponumber,"
              "         invchead_shipdate, invchead_invcdate,"
-             "         invchead_misc_amount, invchead_freight, invchead_tax,"
+             "         invchead_misc_amount, invchead_freight,"
              "         invchead_billto_name, invchead_billto_address1,"
              "         invchead_billto_address2, invchead_billto_address3,"
              "         invchead_billto_city, invchead_billto_state, invchead_billto_zipcode,"
@@ -138,56 +141,13 @@ void dspInvoiceInformation::sParseInvoiceNumber()
 
     _notes->setText(q.value("invchead_notes").toString());
 
-    q.prepare( "SELECT arapply_id,"
-               "       CASE WHEN (arapply_source_doctype = 'C') THEN :creditMemo"
-               "            WHEN (arapply_source_doctype = 'R') THEN :cashdeposit"
-               "            WHEN (arapply_fundstype='C') THEN :check"
-               "            WHEN (arapply_fundstype='T') THEN :certifiedCheck"
-               "            WHEN (arapply_fundstype='M') THEN :masterCard"
-               "            WHEN (arapply_fundstype='V') THEN :visa"
-               "            WHEN (arapply_fundstype='A') THEN :americanExpress"
-               "            WHEN (arapply_fundstype='D') THEN :discoverCard"
-               "            WHEN (arapply_fundstype='R') THEN :otherCreditCard"
-               "            WHEN (arapply_fundstype='K') THEN :cash"
-               "            WHEN (arapply_fundstype='W') THEN :wireTransfer"
-               "            WHEN (arapply_fundstype='O') THEN :other"
-               "       END AS doctype,"
-               "       CASE WHEN (arapply_source_doctype IN ('C','R')) THEN arapply_source_docnumber"
-               "            WHEN (arapply_source_doctype = 'K') THEN arapply_refnumber"
-               "            ELSE :error"
-               "       END AS docnumber,"
-               "       arapply_postdate, arapply_applied,"
-               "       currConcat(arapply_curr_id) AS currabbr,"
-               "       currToBase(arapply_curr_id, arapply_applied, arapply_postdate) AS baseapplied,"
-               "       'curr' AS arapply_applied_xtnumericrole,"
-               "       'curr' AS baseapplied_xtnumericrole "
-               "FROM arapply "
-               "WHERE ( (arapply_target_doctype='I') "
-               " AND (arapply_target_docnumber=:aropen_docnumber) ) "
-               "ORDER BY arapply_postdate;" );
-
-    q.bindValue(":creditMemo", tr("C/M"));
-    q.bindValue(":cashdeposit", tr("Cash Deposit"));
-    q.bindValue(":error", tr("Error"));
-    q.bindValue(":check", tr("Check"));
-    q.bindValue(":certifiedCheck", tr("Certified Check"));
-    q.bindValue(":masterCard", tr("Master Card"));
-    q.bindValue(":visa", tr("Visa"));
-    q.bindValue(":americanExpress", tr("American Express"));
-    q.bindValue(":discoverCard", tr("Discover Card"));
-    q.bindValue(":otherCreditCard", tr("Other Credit Card"));
-    q.bindValue(":cash", tr("Cash"));
-    q.bindValue(":wireTransfer", tr("Wire Transfer"));
-    q.bindValue(":other", tr("Other"));
-    q.bindValue(":aropen_docnumber", _invoiceNumber->invoiceNumber());
-    q.exec();
-    _arapply->clear();
-    _arapply->populate(q);
-    if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    MetaSQLQuery mql = mqlLoad("invoiceInformation", "detail");
+    ParameterList params;
+    if (! setParams(params))
       return;
-    }
+
+    q = mql.toQuery(params);
+    _arapply->populate(q);
   }
   else
   {
@@ -199,6 +159,27 @@ void dspInvoiceInformation::sParseInvoiceNumber()
     _arapply->clear();
     _invcheadid = -1;
   }
+}
+
+bool dspInvoiceInformation::setParams(ParameterList &params)
+{
+  params.append("creditMemo", tr("C/M"));
+  params.append("cashdeposit", tr("Cash Deposit"));
+  params.append("error", tr("Error"));
+  params.append("check", tr("Check"));
+  params.append("certifiedCheck", tr("Certified Check"));
+  params.append("masterCard", tr("Master Card"));
+  params.append("visa", tr("Visa"));
+  params.append("americanExpress", tr("American Express"));
+  params.append("discoverCard", tr("Discover Card"));
+  params.append("otherCreditCard", tr("Other Credit Card"));
+  params.append("cash", tr("Cash"));
+  params.append("wireTransfer", tr("Wire Transfer"));
+  params.append("other", tr("ther"));
+ 
+  params.append("aropen_docnumber", _invoiceNumber->invoiceNumber());
+
+  return true;
 }
 
 void dspInvoiceInformation::sPrint()

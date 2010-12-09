@@ -22,7 +22,7 @@ shippingForm::shippingForm(QWidget* parent, const char* name, bool modal, Qt::WF
   _shipformid = -1;
 
   connect(_name,	SIGNAL(lostFocus()),	this, SLOT(sCheck()));
-  connect(_save,	SIGNAL(clicked()),	this, SLOT(sSave()));
+  connect(_buttonBox,	SIGNAL(accepted()),	this, SLOT(sSave()));
 }
 
 shippingForm::~shippingForm()
@@ -59,17 +59,16 @@ enum SetResponse shippingForm::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
       _name->setEnabled(FALSE);
       _report->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

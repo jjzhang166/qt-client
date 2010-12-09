@@ -78,8 +78,9 @@ const Comments::CommentMap Comments::_commentMap[] =
   };
 
 Comments::Comments(QWidget *pParent, const char *name) :
-  QWidget(pParent, name)
+  QWidget(pParent)
 {
+  setObjectName(name);
   _source = Uninitialized;
   _sourceid = -1;
   _editable = true;
@@ -119,14 +120,17 @@ Comments::Comments(QWidget *pParent, const char *name) :
   _browser->setOpenLinks(false);
   hbox->addWidget(_browser);
 
-  _newComment = new QPushButton(tr("New"), buttons, "_newComment");
+  _newComment = new QPushButton(tr("New"), buttons);
+  _newComment->setObjectName("_newComment");
   buttonsLayout->addWidget(_newComment);
 
-  _viewComment = new QPushButton(tr("View"), buttons, "_viewComment");
+  _viewComment = new QPushButton(tr("View"), buttons);
+  _viewComment->setObjectName("_viewComment");
   _viewComment->setEnabled(FALSE);
   buttonsLayout->addWidget(_viewComment);
 
-  _editComment = new QPushButton(tr("Edit"), buttons, "_editComment");
+  _editComment = new QPushButton(tr("Edit"), buttons);
+  _editComment->setObjectName("_editComment");
   _editComment->setEnabled(false);
   buttonsLayout->addWidget(_editComment);
 

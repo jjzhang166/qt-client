@@ -20,7 +20,7 @@
        &lt;? elseif exists("onlyShowInsufficientInventory") ?>
          text('Only Show Insufficient Inventory')
        &lt;? else ?>
-         text('None')
+         text('All Materials')
        &lt;? endif ?>
        AS itemfiltertext,
        &lt;? if exists("IndentedParentChild") ?>
@@ -836,7 +836,7 @@ false)
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>woinvav_woavaill</column>
+     <column>woinvav_woavail</column>
     </data>
    </field>
    <field>

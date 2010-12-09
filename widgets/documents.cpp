@@ -147,12 +147,12 @@ void Documents::setReadOnly(bool pReadOnly)
   _detachDoc->setEnabled(!pReadOnly);
 
   disconnect(_doc, SIGNAL(valid(bool)), _editDoc, SLOT(setEnabled(bool)));
-  disconnect(_doc, SIGNAL(valid(bool)), _viewDoc, SLOT(setEnabled(bool)));
+//  disconnect(_doc, SIGNAL(valid(bool)), _viewDoc, SLOT(setEnabled(bool)));
   disconnect(_doc, SIGNAL(valid(bool)), this, SLOT(handleSelection()));
   if(!pReadOnly)
   {
     connect(_doc, SIGNAL(valid(bool)), _editDoc, SLOT(setEnabled(bool)));
-    connect(_doc, SIGNAL(valid(bool)), _viewDoc, SLOT(setEnabled(bool)));
+//    connect(_doc, SIGNAL(valid(bool)), _viewDoc, SLOT(setEnabled(bool)));
     connect(_doc, SIGNAL(valid(bool)), this, SLOT(handleSelection()));
   }
   handleSelection(pReadOnly);
@@ -288,7 +288,8 @@ void Documents::sOpenDoc(QString mode)
 
       if (!tfile.open(QIODevice::WriteOnly))
       {
-        QMessageBox::warning( this, tr("File Open Error"),tr("Could Not Create File " + tfile.fileName() + ".") );
+        QMessageBox::warning( this, tr("File Open Error"),
+                             tr("Could Not Create File %1.").arg(tfile.fileName()) );
         return;
       }
       tfile.write(qfile.value("url_stream").toByteArray());
@@ -534,7 +535,7 @@ void Documents::refresh()
 
 void Documents::handleSelection(bool pReadOnly)
 {
-  disconnect(_doc, SIGNAL(itemSelected(int)), this, SLOT(sViewDoc()));
+//  disconnect(_doc, SIGNAL(itemSelected(int)), this, SLOT(sViewDoc()));
   disconnect(_doc, SIGNAL(itemSelected(int)), this, SLOT(sEditDoc()));
   if (pReadOnly)
     return;
@@ -543,7 +544,7 @@ void Documents::handleSelection(bool pReadOnly)
       (_doc->currentItem()->rawValue("target_type").toString() == "URL" ||
        _doc->currentItem()->rawValue("target_type").toString() == "FILE" ))
   {
-    connect(_doc, SIGNAL(itemSelected(int)), this, SLOT(sViewDoc()));
+//    connect(_doc, SIGNAL(itemSelected(int)), this, SLOT(sViewDoc()));
     _viewDoc->setText(tr("Open"));
   }
   else

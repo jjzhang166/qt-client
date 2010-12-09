@@ -23,7 +23,7 @@ country::country(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   connect(_abbr,	SIGNAL(lostFocus()),	this,	SLOT(sToUpper()));
   connect(_currAbbr,	SIGNAL(lostFocus()),	this,	SLOT(sToUpper()));
-  connect(_save,	SIGNAL(clicked()),	this,	SLOT(sSave()));
+  connect(_buttonBox,	SIGNAL(accepted()),	this,	SLOT(sSave()));
 
   _currNumber->setValidator(new QRegExpValidator(QRegExp("[0-9][0-9][0-9]"), this));
 }
@@ -75,10 +75,9 @@ enum SetResponse country::set(const ParameterList &pParams)
       _currSymbol->setEnabled(false);
       _currNumber->setEnabled(false);
 
-      _close->setText(tr("&Close"));
-      _save->hide();
-      
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

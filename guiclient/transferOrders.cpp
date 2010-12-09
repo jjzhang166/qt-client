@@ -10,6 +10,7 @@
 
 #include "transferOrders.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QVariant>
@@ -329,48 +330,41 @@ void transferOrders::sHandleButtons()
 
 void transferOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
-  int menuItem;
+  QAction *menuItem;
   XTreeWidgetItem * item = (XTreeWidgetItem*)pSelected;
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
   if (item->altId() == 1 || item->altId() == 2)
   {
-    menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-    if (!_privileges->check("MaintainTransferOrders"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainTransferOrders"));
 
-    menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-    if (!_privileges->check("MaintainTransferOrders"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainTransferOrders"));
   }
 
   if (item->altId() == 1)
   {  
-    menuItem = pMenu->insertItem(tr("Release..."), this, SLOT(sRelease()), 0);
-    if (!_privileges->check("ReleaseTransferOrders"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Release..."), this, SLOT(sRelease()));
+    menuItem->setEnabled(_privileges->check("ReleaseTransferOrders"));
   }
 
-  menuItem = pMenu->insertItem(tr("Copy..."), this, SLOT(sCopy()), 0);
-  if (!_privileges->check("MaintainTransferOrders"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Copy..."), this, SLOT(sCopy()));
+  menuItem->setEnabled(_privileges->check("MaintainTransferOrders"));
 
   if (item->altId() == 2)
   {
-    pMenu->insertSeparator();
+    pMenu->addSeparator();
 
-    menuItem = pMenu->insertItem(tr("Issue To Shipping..."), this, SLOT(sIssue()), 0);
-    if (!_privileges->check("IssueStockToShipping"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Issue To Shipping..."), this, SLOT(sIssue()));
+    menuItem->setEnabled(_privileges->check("IssueStockToShipping"));
 
-    menuItem = pMenu->insertItem(tr("Print Packing List..."), this, SLOT(sPrintPackingList()), 0);
-    if (!_privileges->check("PrintPackingLists"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Print Packing List..."), this, SLOT(sPrintPackingList()));
+    menuItem->setEnabled(_privileges->check("PrintPackingLists"));
 
-    menuItem = pMenu->insertItem(tr("Add to Packing List Batch..."), this, SLOT(sAddToPackingListBatch()), 0);
-    if (!_privileges->check("MaintainPackingListBatch"))
-      pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem = pMenu->addAction(tr("Add to Packing List Batch..."), this, SLOT(sAddToPackingListBatch()));
+    menuItem->setEnabled(_privileges->check("MaintainPackingListBatch"));
   }
 }
 

@@ -10,6 +10,7 @@
 
 #include "quotes.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -17,69 +18,54 @@
 
 #include <parameter.h>
 #include <openreports.h>
-#include <metasql.h>
 
 #include "failedPostList.h"
-#include "mqlutil.h"
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
 #include "customer.h"
+#include "parameterwidget.h"
 
-quotes::quotes(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+quotes::quotes(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "vendors", fl)
 {
-  setupUi(this);
-  
-  _cust->hide();
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Quotes"));
+  setMetaSQLOptions("quotes", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setQueryOnStartEnabled(true);
 
-  connect(_quote, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_convert, SIGNAL(clicked()), this, SLOT(sConvert()));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_showExpired, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  _convertedtoSo->setVisible(false);
 
-  _quote->addColumn(tr("Quote #"),    _orderColumn, Qt::AlignRight, true, "quhead_number");
-  _quote->addColumn(tr("Customer"),   -1,           Qt::AlignLeft,  true, "quhead_billtoname");
-  _quote->addColumn(tr("P/O Number"), -1,           Qt::AlignLeft,  true, "quhead_custponumber");
-  _quote->addColumn(tr("Quote Date"), _dateColumn,  Qt::AlignCenter,true, "quhead_quotedate");
-  _quote->addColumn(tr("Expires"),    _dateColumn,  Qt::AlignCenter,true, "quhead_expire");
-  _quote->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  if (_metrics->boolean("MultiWhs"))
+    parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
+  parameterWidget()->append(tr("Exclude Prospects"), "customersOnly", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Customer"), "cust_id", ParameterWidget::Customer);
+  parameterWidget()->appendComboBox(tr("Customer Type"), "custtype_id", XComboBox::CustomerTypes);
+  parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("P/O Number"), "poNumber", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesRepsActive);
+  parameterWidget()->append(tr("Start Date"), "startDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("End Date"),   "endDate",   ParameterWidget::Date);
 
-  if (_privileges->check("PrintQuotes"))
-    connect(_quote, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
-
-  if (_privileges->check("ConvertQuotes"))
-    connect(_quote, SIGNAL(valid(bool)), _convert, SLOT(setEnabled(bool)));
+  list()->addColumn(tr("Quote #"),    _orderColumn, Qt::AlignRight, true, "quhead_number");
+  list()->addColumn(tr("Customer"),   -1,           Qt::AlignLeft,  true, "quhead_billtoname");
+  list()->addColumn(tr("P/O Number"), -1,           Qt::AlignLeft,  true, "quhead_custponumber");
+  list()->addColumn(tr("Status"),    _dateColumn,   Qt::AlignCenter,true, "quhead_status");
+  list()->addColumn(tr("Quote Date"), _dateColumn,  Qt::AlignCenter,true, "quhead_quotedate");
+  list()->addColumn(tr("Expire Date"), _dateColumn,  Qt::AlignCenter,false, "quhead_expire");
+  list()->addColumn(tr("Notes"),      -1,           Qt::AlignCenter,true, "notes");
+  list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   if (_privileges->check("MaintainQuotes"))
-  {
-    connect(_quote, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_quote, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_quote, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_quote, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(FALSE);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 
   connect(omfgThis, SIGNAL(quotesUpdated(int, bool)), this, SLOT(sFillList()));
-
-  if (_preferences->boolean("XCheckBox/forgetful"))
-    _showProspects->setChecked(true);
-}
-
-quotes::~quotes()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void quotes::languageChange()
-{
-  retranslateUi(this);
 }
 
 enum SetResponse quotes::set(const ParameterList& pParams)
@@ -90,40 +76,32 @@ enum SetResponse quotes::set(const ParameterList& pParams)
   
   param = pParams.value("run", &valid);
   if (valid)
-  {
-    connect(_showProspects, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_warehouse, SIGNAL(updated()), this, SLOT(sFillList()));
     sFillList();
-  }
 
   return NoError;
 }
 
-void quotes::sPopulateMenu(QMenu *pMenu)
+void quotes::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Print..."), this, SLOT(sPrint()), 0);
-  if (!_privileges->check("PrintQuotes"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Print..."), this, SLOT(sPrint()));
+  menuItem->setEnabled(_privileges->check("PrintQuotes"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Convert..."), this, SLOT(sConvert()), 0);
-  if (!_privileges->check("ConvertQuotes"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Convert..."), this, SLOT(sConvert()));
+  menuItem->setEnabled(_privileges->check("ConvertQuotes"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainQuotes"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainQuotes"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainQuotes"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainQuotes"));
 }
 
 void quotes::sPrint()
@@ -134,7 +112,7 @@ void quotes::sPrint()
              "FROM quhead "
              "WHERE (quhead_id=:quheadid); " );
   bool userCanceled = false;
-  QList<XTreeWidgetItem*> selected = _quote->selectedItems();
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
 
   if (selected.size() > 0 &&
       orReport::beginMultiPrint(&printer, userCanceled) == false)
@@ -203,7 +181,7 @@ void quotes::sConvert()
     QList<int> converted;
     do {
       int soheadid = -1;
-      QList<XTreeWidgetItem*> selected = _quote->selectedItems();
+      QList<XTreeWidgetItem*> selected = list()->selectedItems();
       QList<XTreeWidgetItem*> notConverted;
 
       for (int i = 0; i < selected.size(); i++)
@@ -211,8 +189,23 @@ void quotes::sConvert()
         if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
         {
           int quheadid = ((XTreeWidgetItem*)(selected[i]))->id();
+          XSqlQuery check;
+          check.prepare("SELECT * FROM quhead WHERE (quhead_id = :quhead_id) AND (quhead_status ='C');");
+          check.bindValue(":quhead_id", quheadid);
+          check.exec();
+          if (check.first())
+          {
+            QMessageBox::critical(this, tr("Can not Convert"),
+                                tr("<p>One or more of the Selected Quotes have already "
+                                   " been converted to Sales Order."
+                                   "You can not Convert a Sales Order back to Quote."));
+            return;
+          }
+          else
+          {
           convert.bindValue(":quhead_id", quheadid);
           convert.exec();
+          }
           if (convert.first())
           {
             soheadid = convert.value("sohead_id").toInt();
@@ -315,7 +308,7 @@ void quotes::sConvert()
       {
 	failedPostList newdlg(this, "", true);
 	newdlg.setLabel(tr("<p>The following Quotes could not be converted."));
-	newdlg.sSetList(notConverted, _quote->headerItem(), _quote->header());
+        newdlg.sSetList(notConverted, list()->headerItem(), list()->header());
 	tryagain = (newdlg.exec() == XDialog::Accepted);
 	selected = notConverted;
 	notConverted.clear();
@@ -332,8 +325,7 @@ void quotes::sNew()
 {
   ParameterList params;
   params.append("mode", "newQuote");
-  if (_cust->isValid())
-    params.append("cust_id", _cust->id());
+  parameterWidget()->appendValue(params); // To pick up customer id, if any
       
   salesOrder *newdlg = new salesOrder(this);
   newdlg->set(params);
@@ -342,7 +334,7 @@ void quotes::sNew()
 
 void quotes::sEdit()
 {
-  QList<XTreeWidgetItem*> selected = _quote->selectedItems();
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
     if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
@@ -361,7 +353,7 @@ void quotes::sEdit()
 
 void quotes::sView()
 {
-  QList<XTreeWidgetItem*> selected = _quote->selectedItems();
+  QList<XTreeWidgetItem*> selected = list()->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
     if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
@@ -390,7 +382,7 @@ void quotes::sDelete()
     q.prepare("SELECT deleteQuote(:quhead_id) AS result;");
 
     int counter = 0;
-    QList<XTreeWidgetItem*> selected = _quote->selectedItems();
+    QList<XTreeWidgetItem*> selected = list()->selectedItems();
     for (int i = 0; i < selected.size(); i++)
     {
       if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
@@ -423,28 +415,6 @@ void quotes::sDelete()
   }
 }
 
-void quotes::sFillList()
-{
-  MetaSQLQuery mql = mqlLoad("quotes", "detail");
-  ParameterList params;
-  if (_cust->isValid())
-    params.append("cust_id", _cust->id());
-  if (_warehouse->isSelected())
-    params.append("warehous_id", _warehouse->id());
-  if (! _showProspects->isChecked())
-    params.append("customersOnly");
-  if ( _showExpired->isChecked())
-    params.append("showExpired");
-  q = mql.toQuery(params);
-  _quote->clear();
-  _quote->populate(q);
-  if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-}
-
 bool quotes::checkSitePrivs(int orderid)
 {
   if (_preferences->boolean("selectedSites"))
@@ -464,5 +434,16 @@ bool quotes::checkSitePrivs(int orderid)
       }
     }
   }
+  return true;
+}
+
+bool quotes::setParams(ParameterList &params)
+{
+  display::setParams(params);
+  if(_showExpired->isChecked())
+    params.append("showExpired");
+  if(_convertedtoSo->isChecked())
+    params.append("showConverted");
+
   return true;
 }

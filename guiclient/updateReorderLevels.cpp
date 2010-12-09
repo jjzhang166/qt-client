@@ -138,11 +138,11 @@ void updateReorderLevels::sUpdate()
 
     if (_preview->isChecked())
     {
+      _results->populate(q, true);
       if (q.first())
       {
         _totalDays->setText(q.value("reordlvl_total_days").toString());
         disconnect(_results, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sItemChanged(XTreeWidgetItem*, int)));
-        _results->populate(q, true);
         connect(_results, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sItemChanged(XTreeWidgetItem*, int)));
         _tab->setCurrentIndex(1);
       }

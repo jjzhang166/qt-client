@@ -8,421 +8,568 @@
  * to be bound by its terms.
  */
 
-#include <QLineEdit>
-#include <QLabel>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QMessageBox>
-#include <QKeyEvent>
-#include <QFocusEvent>
-
-#include <xsqlquery.h>
-#include <parameter.h>
-
-#include "widgets.h"
 #include "glcluster.h"
-#include "accountList.h"
-#include "accountSearch.h"
 
-QPalette GLCluster::_disabledPalette = QPalette(QColor("black"),   // windowtext
-                                                QColor("black"),   // button
-                                                QColor("lightgrey"), // light
-                                                QColor("darkgrey"),  // dark
-                                                QColor("darkgrey"),  // mid
-                                                QColor("black"),     // text
-                                                QColor("darkgrey"),// brighttext
-                                                QColor("lightgrey"), // base
-                                                QColor("lightgrey")  // window
-                                               );
-
-GLCluster::GLCluster(QWidget *pParent, const char *name) :
-  QWidget(pParent)
+GLClusterLineEdit::GLClusterLineEdit(QWidget* pParent, const char* pName) :
+    VirtualClusterLineEdit(pParent, "accnt", "accnt_id", "formatGLAccount(accnt_id)", "accnt_descrip", "accnt_extref", 0, pName)
 {
-  setObjectName(name);
-
-//  Create and place the component Widgets
-  QHBoxLayout *_layoutMain = new QHBoxLayout(this);
-  _layoutMain->setMargin(0);
-  _layoutMain->setSpacing(5);
-  QWidget * _layoutFieldsWidget = new QWidget(this);
-  QHBoxLayout *_layoutFields = new QHBoxLayout(_layoutFieldsWidget);
-  _layoutFields->setMargin(0);
-  _layoutFields->setSpacing(2);
-
-  _type = cUndefined;
-
-  _company = 0;
-  _profit = 0;
-  _sub = 0;
-  if (_x_metrics && !_x_metrics->boolean("AllowManualGLAccountEntry")) 
-  {
-    if (_x_metrics->value("GLCompanySize").toInt() > 0)
-    {
-      _company = new QLineEdit(_layoutFieldsWidget);
-      _company->setObjectName("_company");
-      _company->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-      _company->setMaximumWidth(40);
-      _company->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _company->setDisabled(TRUE);
-      _company->setPalette(_disabledPalette);
-      _company->setFocusPolicy(Qt::NoFocus);
-      _layoutFields->addWidget(_company);
-
-      QLabel *_sep1Lit = new QLabel(tr("-"), _layoutFieldsWidget);
-      _sep1Lit->setObjectName("_sep1Lit");
-      _sep1Lit->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _layoutFields->addWidget(_sep1Lit);
-    }
-
-    if (_x_metrics->value("GLProfitSize").toInt() > 0)
-    {
-      _profit = new QLineEdit(_layoutFieldsWidget);
-      _profit->setObjectName("_profit");
-      _profit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-      _profit->setMaximumWidth(40);
-      _profit->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _profit->setDisabled(TRUE);
-      _profit->setPalette(_disabledPalette);
-      _profit->setFocusPolicy(Qt::NoFocus);
-      _layoutFields->addWidget(_profit);
-
-      QLabel *_sep2Lit = new QLabel(tr("-"), _layoutFieldsWidget);
-      _sep2Lit->setObjectName("_sep2Lit");
-      _sep2Lit->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _layoutFields->addWidget(_sep2Lit);
-    }
-  }
-
-  _main = new XLineEdit(_layoutFieldsWidget);
-  _main->setObjectName("_main");
-  _main->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-  _main->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-  if(!(_x_metrics && _x_metrics->boolean("AllowManualGLAccountEntry")))
-  {
-    _main->setDisabled(TRUE);
-    _main->setPalette(_disabledPalette);
-    _main->setFocusPolicy(Qt::NoFocus);
-  }
-  _layoutFields->addWidget(_main);
-
-  if (_x_metrics && !_x_metrics->boolean("AllowManualGLAccountEntry"))
-  {
-    if (_x_metrics->value("GLSubaccountSize").toInt() > 0)
-    {
-      QLabel *_sep3Lit = new QLabel(tr("-"), _layoutFieldsWidget);
-      _sep3Lit->setObjectName("_sep3Lit");
-      _sep3Lit->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _layoutFields->addWidget(_sep3Lit);
-
-      _sub = new QLineEdit(_layoutFieldsWidget);
-      _sub->setObjectName("_sub");
-      _sub->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-      _sub->setMaximumWidth(40);
-      _sub->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-      _sub->setDisabled(TRUE);
-      _sub->setPalette(_disabledPalette);
-      _sub->setFocusPolicy(Qt::NoFocus);
-      _layoutFields->addWidget(_sub);
-    }
-  }
-
-  _layoutFieldsWidget->setLayout(_layoutFields);
-  _layoutMain->addWidget(_layoutFieldsWidget);
-
-  _account = new QLineEdit(this);
-  _account->setObjectName("_account");
-  _account->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-  _account->setDisabled(TRUE);
-  _account->setPalette(_disabledPalette);
-  _account->setFocusPolicy(Qt::NoFocus);
-  _layoutMain->addWidget(_account);
-
-  _list = new QPushButton(tr("..."), this);
-  _list->setObjectName("_list");
-#ifndef Q_WS_MAC
-  _list->setMaximumWidth(25);
-#endif
-  _list->setFocusPolicy(Qt::NoFocus);
-  _layoutMain->addWidget(_list);
-
-  setLayout(_layoutMain);
-#ifdef Q_WS_MAC
-  setMinimumSize(250, 34);
-#endif
-
-//  Make some internal connections
-  connect(_list, SIGNAL(clicked()), this, SLOT(sEllipses()));
-  if(_x_metrics && _x_metrics->boolean("AllowManualGLAccountEntry"))
-  {
-    connect(_main, SIGNAL(lostFocus()), this, SLOT(sParse()));
-    connect(_main, SIGNAL(textChanged(const QString &)), this, SLOT(sTextChanged(const QString &)));
-    connect(_main, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_main, SIGNAL(requestSearch()), this, SLOT(sSearch()));
-  }
-
-  setTabOrder(_main, _list);
-  setTabOrder(_list, _main);
-  setFocusProxy(_main);
-
-  _accntid = -1;
-  _valid = FALSE;
-  _parsed = TRUE;
+  setTitles(tr("Account"), tr("Accounts"));
+  setUiName("accountNumber");
+  setEditPriv("MaintainChartOfAccounts");
+  setViewPriv("ViewChartOfAccounts");
+  setNewPriv("MaintainChartOfAccounts");
 
   _showExternal = false;
-  
-  _mapper = new XDataWidgetMapper(this);
+
+  _query = "SELECT accnt_id AS id, public.formatGLAccount(accnt_id) AS number, "
+           "  accnt_descrip AS name, accnt_extref AS description, "
+           "  NULL AS active, accnt_type, "
+           "  COALESCE(company_external,false) AS external "
+           "FROM ONLY accnt "
+           "  LEFT OUTER JOIN company ON (accnt_company=company_number) "
+           "WHERE (true) ";
+
+  _typeMap.insert("A", tr("Asset"));
+  _typeMap.insert("L",tr("Liability"));
+  _typeMap.insert("R", tr("Revenue"));
+  _typeMap.insert("E",tr("Expense"));
+  _typeMap.insert("Q", tr("Equity"));
+
+  setType(GLCluster::cUndefined);
 }
 
-void GLCluster::setReadOnly(bool pReadOnly)
+void GLClusterLineEdit::setId(const int pId)
 {
-  if (pReadOnly)
-    _list->hide();
-  else
-    _list->show();
-  if(_x_metrics && _x_metrics->boolean("AllowManualGLAccountEntry"))
-    _main->setDisabled(pReadOnly);
+  _query.replace("FROM ONLY accnt","FROM accnt");
+  VirtualClusterLineEdit::setId(pId);
+  _query.replace("FROM accnt","FROM ONLY accnt");
 }
 
-void GLCluster::setId(int pId)
+void GLClusterLineEdit::setType(unsigned int pType)
 {
-  if (_accntid == pId)
-    return;
+  _type = pType;
+  buildExtraClause();
+}
 
-  XSqlQuery _query;
-  if (_showExternal)
-    _query.prepare("SELECT *, formatGLAccount(accnt_id) AS f_accnt "
-                   "  FROM accnt "
-                   " WHERE (accnt_id=:accnt_id);" );
-  else
-    _query.prepare("SELECT *, formatGLAccount(accnt_id) AS f_accnt "
-                   "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
-                   " WHERE (NOT COALESCE(company_external, false) AND (accnt_id=:accnt_id));" );
-  _query.bindValue(":accnt_id", pId);
-  _query.exec();
-  if (_query.first())
+void GLClusterLineEdit::setShowExternal(bool p)
+{
+  _showExternal = p;
+  buildExtraClause();
+}
+
+void GLClusterLineEdit::buildExtraClause()
+{
+  _extraClause.clear();
+  _types.clear();
+
+  if(_type > 0)
   {
-    if (_company)
-      _company->setText(_query.value("accnt_company").toString());
-
-    if (_profit)
-      _profit->setText(_query.value("accnt_profit").toString());
-
-    if(_x_metrics && _x_metrics->boolean("AllowManualGLAccountEntry"))
-      _main->setText(_query.value("f_accnt").toString());
-    else
-      _main->setText(_query.value("accnt_number").toString());
-
-    if (_sub)
-      _sub->setText(_query.value("accnt_sub").toString());
-
-    _account->setText(_query.value("accnt_descrip").toString());
-    _accntid = pId;
-    _number = _query.value("f_accnt").toString();
-    _valid = TRUE;
-
-    if (_mapper->model() &&
-      _mapper->model()->data(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this))).toString() != _number)
-        _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this)), _number);
-
-    emit newId(_accntid);
-  }
-  else
-  {
-    if (_company)
-      _company->setText("");
-
-    if (_profit)
-      _profit->setText("");
-
-    if (_sub)
-      _sub->setText("");
-
-    _main->setText("");
-    _account->setText("");
-    _accntid = -1;
-    _valid = FALSE;
-    _number = "";
-    emit newId(-1);
+    if(_type & GLCluster::cAsset ||
+       _type & GLCluster::cUndefined)
+      _types << ("A");
+    if(_type & GLCluster::cLiability ||
+       _type & GLCluster::cUndefined)
+      _types << ("L");
+    if(_type & GLCluster::cExpense ||
+       _type & GLCluster::cUndefined)
+      _types << ("E");
+    if(_type & GLCluster::cRevenue ||
+       _type & GLCluster::cUndefined)
+      _types << ("R");
+    if(_type & GLCluster::cEquity ||
+       _type & GLCluster::cUndefined)
+      _types << ("Q");
   }
 
-  _parsed = true;
+  if(!_types.isEmpty())
+    _extraClause = "(accnt_type IN ('" + _types.join("','") + "'))";
+
+  if (!_extraClause.isEmpty() && !_showExternal)
+    _extraClause += " AND ";
+
+  if (!_showExternal)
+    _extraClause += "(NOT COALESCE(company_external, false)) ";
 }
 
-void GLCluster::sParse()
+void GLClusterLineEdit::sList()
 {
-  if(!_parsed && _x_metrics && _x_metrics->boolean("AllowManualGLAccountEntry"))
+  disconnect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
+
+  accountList* newdlg = listFactory();
+  if (newdlg)
   {
-    _parsed = true;
-
-    if(_main->text().length() == 0)
-    {
-      setId(-1);
-      return;
-    }
-
-    XSqlQuery qgl;
+    ParameterList params;
+    params.append("accnt_id", _id);
+    params.append("type", _type);
     if (_showExternal)
-      qgl.prepare("SELECT DISTINCT accnt_id"
-                  "  FROM accnt"
-                  " WHERE (formatGLAccount(accnt_id)=:searchString);");
-    else
-      qgl.prepare("SELECT DISTINCT accnt_id"
-                  "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
-                  " WHERE (NOT COALESCE(company_external, false)"
-                  "   AND  (formatGLAccount(accnt_id)=:searchString));");
-    qgl.bindValue(":searchString", _main->text().trimmed());
-    qgl.exec();
-    if(qgl.first())
-      setId(qgl.value("accnt_id").toInt());
-    else
+      params.append("showExternal");
+    newdlg->set(params);
+
+    int id = newdlg->exec();
+    setId(id);
+  }
+  else
+    QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
+                          .arg(__FILE__)
+                          .arg(__LINE__),
+                          tr("%1::sList() not yet defined")
+                          .arg(metaObject()->className()));
+
+  connect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
+}
+
+void GLClusterLineEdit::sSearch()
+{
+  disconnect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
+
+  accountSearch* newdlg = searchFactory();
+  if (newdlg)
+  {
+    ParameterList params;
+    params.append("accnt_id", _id);
+    params.append("type", _type);
+    if (_showExternal)
+      params.append("showExternal");
+    newdlg->set(params);
+    newdlg->setSearchText(text());
+    int id = newdlg->exec();
+    setId(id);
+  }
+  else
+    QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
+                          .arg(__FILE__)
+                          .arg(__LINE__),
+                          tr("%1::sSearch() not yet defined")
+                          .arg(metaObject()->className()));
+
+  connect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
+}
+
+void GLClusterLineEdit::sParse()
+{
+  int oldid = _id;
+  setStrict(false);
+  VirtualClusterLineEdit::sParse();
+
+  if (_id != oldid &&
+      model()->rowCount())
+  {
+    bool external = model()->data(model()->index(0,6)).toBool();
+    QString type = model()->data(model()->index(0,5)).toString();
+
+    if (external)
     {
+      QMessageBox::critical(this,tr("External Number"),
+                            tr("You may not use an Account associated with an external Company."));
       setId(-1);
-      focusNextPrevChild(FALSE);
-      QMessageBox::warning( this, tr("Invalid Account Number"),
-        tr("<p>The Account Number you entered is Invalid<p>") );
     }
+    else if (_type && !_types.contains(type))
+    {
+      QStringList _typeNameList;
+      for (int i = 0; i < _types.count(); i++)
+        _typeNameList.append(_typeMap.value(_types.at(i)));
+      QString _typeNames = _typeNameList.join(" or ");
+
+      QString msg = tr("The Account used here would typically be type %1. "
+                       "Selecting this Account may cause unexpected results in your "
+                       "General Ledger. Are you sure this is the Account you "
+                       "want to use here?").arg(_typeNames);
+      if (QMessageBox::warning(this, tr("Non-standard Account Type"),msg,
+                               QMessageBox::No | QMessageBox::Default |
+                               QMessageBox::Yes  | QMessageBox::Escape) == QMessageBox::No)
+        setId(-1);
+    }
+  }
+  setStrict(true);
+}
+
+accountList* GLClusterLineEdit::listFactory()
+{
+  return new accountList(this);
+}
+
+accountSearch* GLClusterLineEdit::searchFactory()
+{
+  return new accountSearch(this);
+}
+
+//////////////////////////////////////
+
+GLCluster::GLCluster(QWidget *pParent, const char *pName) :
+    VirtualCluster(pParent, pName)
+{
+  addNumberWidget(new GLClusterLineEdit(this, pName));
+  _name->show();
+
+  _projectVisible = false;
+
+  _projectLit = new QLabel("-", this);
+  _projectLit->setVisible(false);
+  _grid->addWidget(_projectLit, 0, 2);
+
+  _project = new ProjectLineEdit(this);
+  _project->setAllowedStatuses(ProjectLineEdit::InProcess);
+  _project->setEnabled(false);
+  _project->setVisible(false);
+  _project->setNullStr(tr("project"));
+  _grid->addWidget(_project, 0, 3);
+
+  setFocusProxy(_number);
+  setOrientation(Qt::Horizontal);
+}
+
+bool GLCluster::projectVisible()
+{
+  return _project->isVisible();
+}
+
+void GLCluster::setId(const int p)
+{
+  int id = p;
+
+  if (_x_metrics)
+  {
+    if (_x_metrics->boolean("EnableProjectAccounting"))
+    {
+      XSqlQuery qry;
+      qry.prepare("SELECT accnt_id, prjaccnt_prj_id "
+                  "FROM xtprjaccnt.prjaccnt "
+                  "WHERE (accnt_id=:accnt_id); ");
+      qry.bindValue(":accnt_id", p);
+      qry.exec();
+      if (qry.first())
+      {
+        id = qry.value("accnt_id").toInt();
+        if (qry.value("prjaccnt_prj_id").toInt() != -1 &&
+            !_projectVisible)
+          setProjectVisible(true);
+        if (_projectVisible)
+          _project->setId(qry.value("prjaccnt_prj_id").toInt());
+      }
+    }
+
+    VirtualCluster::setId(id);
   }
 }
 
-void GLCluster::setEnabled(bool pEnabled)
+bool GLCluster::setProjectVisible(bool p)
 {
-  if (pEnabled)
-    _list->show();
+  if (_x_metrics && p == true)
+  {
+    if (!_x_metrics->boolean("EnableProjectAccounting"))
+      return false;
+  }
+
+  GLClusterLineEdit* number = static_cast<GLClusterLineEdit*>(_number);
+  number->disconnect(this, SLOT(sHandleProjectState(int)));
+  _project->disconnect(this, SLOT(sHandleProjectId()));
+
+  _projectLit->setVisible(p);
+  _project->setVisible(p);
+  _projectVisible = p;
+
+  if (p)
+  {
+    setOrientation(Qt::Vertical);
+    connect(number, SIGNAL(newId(int)), this, SLOT(sHandleProjectState(int)));
+    connect(_project, SIGNAL(newId(int)), this, SLOT(sHandleProjectId()));
+  }
   else
-    _list->hide();
-  QWidget::setEnabled(pEnabled);
+    setOrientation(Qt::Horizontal);
+
+  return (p);
 }
 
-void GLCluster::setNumber(QString number)
+void GLCluster::sHandleProjectState(int p)
 {
-  if (_number==number)
+  if (p == -1)
+  {
+    _project->setId(-1);
+    _project->setEnabled(false);
+  }
+  else if (_project->isEnabled())
     return;
-    
-  if (number.isEmpty())
-  {
-    setId(-1);
-    return;
-  }
-    
-  XSqlQuery qgl;
-  if (_showExternal)
-    qgl.prepare("SELECT DISTINCT accnt_id"
-                "  FROM accnt"
-                " WHERE (formatGLAccount(accnt_id)=:number);");
-  else
-    qgl.prepare("SELECT DISTINCT accnt_id"
-                "  FROM accnt LEFT OUTER JOIN company ON (accnt_company=company_number)"
-                " WHERE (NOT COALESCE(company_external, false)"
-                "   AND  (formatGLAccount(accnt_id)=:number));");
-  qgl.bindValue(":number", number);
-  qgl.exec();
-  if(qgl.first())
-    setId(qgl.value("accnt_id").toInt());
   else
   {
-    setId(-1);
-    focusNextPrevChild(FALSE);
-    QMessageBox::warning( this, tr("Invalid Account Number"),
-      tr("<p>The Account Number you entered is Invalid<p>") );
+    _project->setEnabled(true);
+    _project->setFocus();
   }
-
-  _parsed = true;
 }
 
-void GLCluster::sEllipses()
+void GLCluster::sHandleProjectId()
 {
-  if(_x_preferences)
+  XSqlQuery qry;
+  qry.prepare("SELECT getPrjAccntId(:prj_id,:accnt_id) AS accnt_id");
+  qry.bindValue(":prj_id", _project->id());
+  qry.bindValue(":accnt_id", _number->id());
+  qry.exec();
+  qry.first();
+  _number->setId(qry.value("accnt_id").toInt());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+accountList::accountList(QWidget* pParent, Qt::WFlags pFlags) :
+    VirtualList(pParent, pFlags)
+{
+  setObjectName("accountList");
+  setMinimumWidth(600);
+  _search->hide();
+  _searchLit->hide();
+  disconnect(_search,  SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
+
+  _listTab->setColumnCount(0);
+  if (_x_metrics)
   {
-    if(_x_preferences->value("DefaultEllipsesAction") == "search")
-    {
-      sSearch();
-      return;
-    }
+    if (_x_metrics->value("GLCompanySize").toInt() > 0)
+      _listTab->addColumn(tr("Company"), 50, Qt::AlignCenter, true, "accnt_company");
+
+    if (_x_metrics->value("GLProfitSize").toInt() > 0)
+      _listTab->addColumn(tr("Profit"), 50, Qt::AlignCenter,  true, "accnt_profit");
   }
 
-  sList();
-}
+  _listTab->addColumn(tr("Account Number"), 100, Qt::AlignCenter, true, "accnt_number");
 
-void GLCluster::sSearch()
-{
-  ParameterList params;
-  params.append("accnt_id", _accntid);
-  params.append("type", _type);
-  if (_showExternal)
-    params.append("showExternal");
-
-  accountSearch newdlg(parentWidget(), "", TRUE);
-  newdlg.set(params);
-  setId(newdlg.exec());
-}
-
-void GLCluster::sList()
-{
-  ParameterList params;
-  params.append("accnt_id", _accntid);
-  params.append("type", _type);
-  if (_showExternal)
-    params.append("showExternal");
-
-  accountList newdlg(parentWidget(), "", TRUE);
-  newdlg.set(params);
-  setId(newdlg.exec());
-}
-
-bool GLCluster::isValid()
-{
-  sParse();
-  return _valid;
-}
-
-int GLCluster::id()
-{
-  sParse();
-  return _accntid;
-}
-
-void GLCluster::keyPressEvent(QKeyEvent *event)
-{
-  if (event->modifiers() & Qt::ControlModifier)
+  if (_x_metrics)
   {
-    if (event->key() == Qt::Key_L)
-    {
-      _parsed = TRUE;
-      sList();
-    }
+    if (_x_metrics->value("GLSubaccountSize").toInt() > 0)
+      _listTab->addColumn(tr("Sub."), 50, Qt::AlignCenter, true, "accnt_sub");
+  }
 
-    else if (event->key() == Qt::Key_S)
-    {
-      _parsed = TRUE;
-      sSearch();
-    }
+  _listTab->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "accnt_descrip");
+  _listTab->addColumn(tr("Type"),            75, Qt::AlignLeft ,  true, "accnt_type");
+  _listTab->addColumn(tr("Sub. Type Code"),  75, Qt::AlignLeft,  false, "subaccnttype_code");
+  _listTab->addColumn(tr("Sub. Type"),      100, Qt::AlignLeft,  false, "subaccnttype_descrip");
 
-    else if (event->key() == Qt::Key_A)
+  setWindowTitle(tr("Account Numbers"));
+  _titleLit->setText(tr("Chart of Accounts"));
+  _parent = (GLClusterLineEdit*)(pParent);
+}
+
+XTreeWidget* accountList::xtreewidget()
+{
+  return _listTab;
+}
+
+void accountList::set(const ParameterList &pParams)
+{
+  QVariant param;
+  bool     valid;
+
+  param = pParams.value("accnt_id", &valid);
+  if (valid)
+    _accntid = param.toInt();
+
+  param = pParams.value("type", &valid);
+  if (valid)
+    _type = param.toUInt();
+
+  _showExternal = pParams.inList("showExternal");
+}
+
+void accountList::sFillList()
+{
+  QString sql("SELECT accnt_id, *, "
+              "       CASE WHEN(accnt_type='A') THEN '" + tr("Asset") + "'"
+              "            WHEN(accnt_type='E') THEN '" + tr("Expense") + "'"
+              "            WHEN(accnt_type='L') THEN '" + tr("Liability") + "'"
+              "            WHEN(accnt_type='Q') THEN '" + tr("Equity") + "'"
+              "            WHEN(accnt_type='R') THEN '" + tr("Revenue") + "'"
+              "            ELSE accnt_type"
+              "       END AS accnt_type_qtdisplayrole "
+              "FROM (ONLY accnt LEFT OUTER JOIN"
+              "     company ON (accnt_company=company_number)) "
+              "     LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type AND accnt_subaccnttype_code=subaccnttype_code) ");
+
+  QStringList types;
+  QStringList where;
+
+  if(_type > 0)
+  {
+    if(_type & GLCluster::cAsset)
+      types << ("'A'");
+    if(_type & GLCluster::cLiability)
+      types << ("'L'");
+    if(_type & GLCluster::cExpense)
+      types << ("'E'");
+    if(_type & GLCluster::cRevenue)
+      types << ("'R'");
+    if(_type & GLCluster::cEquity)
+      types << ("'Q'");
+  }
+  if(!types.isEmpty())
+    where << ("(accnt_type IN (" + types.join(",") + ")) ");
+
+  if (! _showExternal)
+    where << "(NOT COALESCE(company_external, false)) ";
+
+  if (!where.isEmpty())
+    sql += " WHERE " + where.join(" AND ");
+
+  sql += "ORDER BY accnt_number, accnt_sub, accnt_profit;";
+
+  _listTab->populate(sql, _accntid);
+}
+
+///////////////////////////
+
+accountSearch::accountSearch(QWidget* pParent, Qt::WindowFlags pFlags)
+    : VirtualSearch(pParent, pFlags)
+{
+  setAttribute(Qt::WA_DeleteOnClose);
+  setObjectName( "accountSearch" );
+  setMinimumWidth(600);
+
+  _accntid = -1;
+  _typeval = 0;
+
+  setWindowTitle( tr( "Search for Account" ) );
+
+  _typeLit = new QLabel(tr("Type:"));
+  _type = new QComboBox();
+  _type->addItem(tr("ALL"), QVariant(""));
+  _type->addItem(tr("Asset"), QVariant("A"));
+  _type->addItem(tr("Liability"), QVariant("L"));
+  _type->addItem(tr("Expense"), QVariant("E"));
+  _type->addItem(tr("Revenue"), QVariant("R"));
+  _type->addItem(tr("Equity"), QVariant("Q"));
+
+  _typeStrLyt = new QHBoxLayout(this);
+  _typeStrLyt->setObjectName("typeStrLyt");
+  _typeStrLyt->addWidget(_typeLit);
+  _typeStrLyt->addWidget(_type);
+  _typeStrLyt->addItem(new QSpacerItem(0,0,QSizePolicy::Expanding,QSizePolicy::Fixed));
+  searchLyt->addItem(_typeStrLyt);
+
+  // signals and slots connections
+  connect( _type, SIGNAL(currentIndexChanged(int)), this, SLOT( sFillList()));
+
+  _listTab->setColumnCount(0);
+  if (_x_metrics)
+  {
+    if (_x_metrics->value("GLCompanySize").toInt() > 0)
+      _listTab->addColumn(tr("Company"), 50, Qt::AlignCenter, true, "accnt_company");
+
+    if (_x_metrics->value("GLProfitSize").toInt() > 0)
+      _listTab->addColumn(tr("Profit"), 50, Qt::AlignCenter, true, "accnt_profit");
+  }
+
+  _listTab->addColumn(tr("Account Number"), 100, Qt::AlignCenter, true, "accnt_number");
+
+  if (_x_metrics)
+  {
+    if (_x_metrics->value("GLSubaccountSize").toInt() > 0)
+      _listTab->addColumn(tr("Sub."), 50, Qt::AlignCenter, true, "accnt_sub");
+  }
+
+  _listTab->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "accnt_descrip");
+  _listTab->addColumn(tr("Type"),            75, Qt::AlignLeft ,  true, "accnt_type");
+  _listTab->addColumn(tr("Sub. Type Code"),  75, Qt::AlignLeft,  false, "subaccnttype_code");
+  _listTab->addColumn(tr("Sub. Type"),      100, Qt::AlignLeft,  false, "subaccnttype_descrip");
+
+  disconnect(_searchNumber,  SIGNAL(clicked()),	        this, SLOT(sFillList()));
+  disconnect(_searchDescrip, SIGNAL(clicked()),  	this, SLOT(sFillList()));
+  _searchNumber->hide();
+  _searchName->hide();
+  _searchDescrip->hide();
+
+  _showExternal = false;
+}
+
+void accountSearch::showEvent(QShowEvent* e)
+{
+  if (!_search->text().isEmpty())
+    sFillList();
+  VirtualSearch::showEvent(e);
+}
+
+void accountSearch::set(ParameterList &pParams)
+{
+  QVariant param;
+  bool     valid;
+
+  param = pParams.value("accnt_id", &valid);
+  if (valid)
+    _accntid = param.toInt();
+
+  param = pParams.value("type", &valid);
+  if (valid)
+  {
+    _typeval = param.toUInt();
+    if(_typeval > 0)
     {
-      _parsed = TRUE;
-      sEllipses();
+      if(!(_typeval & GLCluster::cEquity))
+        _type->removeItem(5);
+      if(!(_typeval & GLCluster::cRevenue))
+        _type->removeItem(4);
+      if(!(_typeval & GLCluster::cExpense))
+        _type->removeItem(3);
+      if(!(_typeval & GLCluster::cLiability))
+        _type->removeItem(2);
+      if(!(_typeval & GLCluster::cAsset))
+        _type->removeItem(1);
     }
   }
-  else
-    _parsed = FALSE;
 
-  QWidget::keyPressEvent(event);
+  _showExternal = pParams.inList("showExternal");
 }
 
-void GLCluster::focusInEvent(QFocusEvent *pEvent)
+void accountSearch::sFillList()
 {
-  if(!_main->text().isEmpty())
-    _main->setSelection(0, _main->text().length());
+  QString sql("SELECT accnt_id, *,"
+              "       CASE WHEN(accnt_type='A') THEN '" + tr("Asset") + "'"
+              "            WHEN(accnt_type='E') THEN '" + tr("Expense") + "'"
+              "            WHEN(accnt_type='L') THEN '" + tr("Liability") + "'"
+              "            WHEN(accnt_type='Q') THEN '" + tr("Equity") + "'"
+              "            WHEN(accnt_type='R') THEN '" + tr("Revenue") + "'"
+              "            ELSE accnt_type"
+              "       END AS accnt_type_qtdisplayrole "
+              "FROM (ONLY accnt LEFT OUTER JOIN"
+              "     company ON (accnt_company=company_number)) "
+              "     LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type AND accnt_subaccnttype_code=subaccnttype_code) ");
 
-  QWidget::focusInEvent(pEvent);
+  QStringList types;
+  QStringList where;
+
+  if(_type->currentIndex() > 0)
+  {
+    where << "(accnt_type = '" + _type->itemData(_type->currentIndex()).toString() + "')";
+  }
+  else if(_typeval > 0)
+  {
+    if(_typeval & GLCluster::cAsset)
+      types << ("'A'");
+    if(_typeval & GLCluster::cLiability)
+      types << ("'L'");
+    if(_typeval & GLCluster::cExpense)
+      types << ("'E'");
+    if(_typeval & GLCluster::cRevenue)
+      types << ("'R'");
+    if(_typeval & GLCluster::cEquity)
+      types << ("'Q'");
+  }
+  if(!types.isEmpty())
+    where << "(accnt_type IN (" + types.join(",") + "))";
+
+  if (!_search->text().isEmpty())
+    where << "((formatglaccount(accnt_id) ~* :descrip) OR (accnt_descrip ~* :descrip) OR (accnt_extref ~* :descrip))";
+
+  if (! _showExternal)
+    where << "(NOT COALESCE(company_external, false))";
+
+  if (!where.isEmpty())
+    sql += " WHERE " + where.join(" AND ");
+
+  sql += "ORDER BY accnt_number, accnt_sub, accnt_profit;";
+
+  XSqlQuery qry;
+  qry.prepare(sql);
+  qry.bindValue(":descrip", _search->text());
+  qry.exec();
+  _listTab->populate(qry, _accntid);
 }
 
-void GLCluster::sTextChanged(const QString &)
-{
-  _parsed = false;
-}
 
-void GLCluster::setDataWidgetMap(XDataWidgetMapper* m)
-{
-  m->addMapping(this, _fieldName, "number", "defaultNumber");
-}
+

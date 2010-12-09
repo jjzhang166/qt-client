@@ -10,63 +10,61 @@
 
 #include "vendors.h"
 
-#include <QMessageBox>
+#include <QAction>
 #include <QMenu>
+#include <QMessageBox>
 
 #include <openreports.h>
 #include "vendor.h"
 #include "storedProcErrorLookup.h"
+#include "parameterwidget.h"
 
-vendors::vendors(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+vendors::vendors(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "vendors", fl)
 {
-  setupUi(this);
+  setWindowTitle(tr("Vendors"));
+  setReportName("VendorMasterList");
+  setMetaSQLOptions("vendors", "detail");
+  setParameterWidgetVisible(true);
+  setNewVisible(true);
+  setSearchVisible(true);
+  setQueryOnStartEnabled(true);
 
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_edit,   SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_new,    SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_print,  SIGNAL(clicked()), this, SLOT(sPrint()));
-  connect(_vendor, SIGNAL(populateMenu(QMenu *, QTreeWidgetItem *)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_view,   SIGNAL(clicked()), this, SLOT(sView()));
+  parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Vendor Number Pattern"), "vend_number_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Vendor Name Pattern"), "vend_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Vendor Type Pattern"), "vendtype_code_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Contact Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Email Pattern"), "cntct_email_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("City Pattern"), "addr_city_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
 
-  _vendor->addColumn(tr("Type"),   _itemColumn, Qt::AlignCenter, true, "vendtype_code");
-  _vendor->addColumn(tr("Number"), _itemColumn, Qt::AlignLeft,   true, "vend_number");
-  _vendor->addColumn(tr("Name"),   -1,          Qt::AlignLeft,   true, "vend_name");
+  list()->addColumn(tr("Type"),   _itemColumn, Qt::AlignCenter, true, "vendtype_code");
+  list()->addColumn(tr("Number"), _itemColumn, Qt::AlignLeft,   true, "vend_number");
+  list()->addColumn(tr("Name"),   -1,          Qt::AlignLeft,   true, "vend_name");
+  list()->addColumn(tr("First"),   50, Qt::AlignLeft  , true, "cntct_first_name" );
+  list()->addColumn(tr("Last"),    -1, Qt::AlignLeft  , true, "cntct_last_name" );
+  list()->addColumn(tr("Phone"),   100, Qt::AlignLeft  , true, "cntct_phone" );
+  list()->addColumn(tr("Email"),   100, Qt::AlignLeft  , true, "cntct_email" );
+  list()->addColumn(tr("Address"), -1, Qt::AlignLeft  , false, "addr_line1" );
+  list()->addColumn(tr("City"),    75, Qt::AlignLeft  , false, "addr_city" );
+  list()->addColumn(tr("State"),   50, Qt::AlignLeft  , false, "addr_state" );
+  list()->addColumn(tr("Country"), 100, Qt::AlignLeft  , false, "addr_country" );
+  list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft  , false, "addr_postalcode" );
 
   connect(omfgThis, SIGNAL(vendorsUpdated()), SLOT(sFillList()));
 
   if (_privileges->check("MaintainVendors"))
-  {
-    connect(_vendor, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-    connect(_vendor, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_vendor, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-  }
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    _new->setEnabled(FALSE);
-    connect(_vendor, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
+    newAction()->setEnabled(FALSE);
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
-
-  sFillList();
-}
-
-vendors::~vendors()
-{
-  // no need to delete child widgets, Qt does it all for us
-}
-
-void vendors::languageChange()
-{
-  retranslateUi(this);
-}
-
-void vendors::sPrint()
-{
-  orReport report("VendorMasterList");
-  if (report.isValid())
-    report.print();
-  else
-    report.reportError(this);
 }
 
 void vendors::sNew()
@@ -83,7 +81,7 @@ void vendors::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("vend_id", _vendor->id());
+  params.append("vend_id", list()->id());
   params.append("showNextPrev");
 
   vendor *newdlg = new vendor();
@@ -95,16 +93,12 @@ void vendors::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("vend_id", _vendor->id());
+  params.append("vend_id", list()->id());
   params.append("showNextPrev");
 
   vendor *newdlg = new vendor();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
-}
-
-void vendors::sCopy()
-{
 }
 
 void vendors::sDelete()
@@ -117,7 +111,7 @@ void vendors::sDelete()
     return;
 
   q.prepare("SELECT deleteVendor(:vend_id) AS result;");
-  q.bindValue(":vend_id", _vendor->id());
+  q.bindValue(":vend_id", list()->id());
   q.exec();
   if (q.first())
   {
@@ -133,27 +127,17 @@ void vendors::sDelete()
   }
 }
 
-void vendors::sPopulateMenu(QMenu *menuThis)
+void vendors::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
-  int intMenuItem;
+  QAction *menuItem;
 
-  intMenuItem = menuThis->insertItem(tr("Edit Vendor..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainVendors"))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit Vendor..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainVendors"));
 
-  intMenuItem = menuThis->insertItem(tr("View Vendor..."), this, SLOT(sView()), 0);
-  if ((!_privileges->check("MaintainVendors")) && (!_privileges->check("ViewVendors")))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = pMenu->addAction(tr("View Vendor..."), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("MaintainVendors") || _privileges->check("ViewVendors"));
 
-  intMenuItem = menuThis->insertItem(tr("Delete Vendor..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainVendors"))
-    menuThis->setItemEnabled(intMenuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete Vendor..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainVendors"));
 }
 
-void vendors::sFillList()
-{
-  _vendor->populate( "SELECT vend_id, * "
-                     "FROM vendinfo, vendtype "
-                     "WHERE (vend_vendtype_id=vendtype_id) "
-                     "ORDER BY vend_number;" );
-}

@@ -21,7 +21,7 @@ commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::WFla
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
   connect(_add, SIGNAL(clicked()), this, SLOT(sAdd()));
   connect(_addAll, SIGNAL(clicked()), this, SLOT(sAddAll()));
@@ -37,8 +37,8 @@ commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::WFla
   q.exec( "SELECT DISTINCT source_module "
           "FROM source "
           "ORDER BY source_module;" );
-  while (q.next())
-    _module->insertItem(q.value("source_module").toString());
+  for (int i = 0; q.next(); i++)
+    _module->insertItem(i, q.value("source_module").toString());
 }
 
 commentType::~commentType()
@@ -81,13 +81,13 @@ enum SetResponse commentType::set(const ParameterList &pParams)
       }
 
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
     }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -96,10 +96,9 @@ enum SetResponse commentType::set(const ParameterList &pParams)
       _name->setEnabled(FALSE);
       _description->setEnabled(FALSE);
       _editable->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -191,17 +190,17 @@ void commentType::populate()
     {
       for (int counter = 0; counter < _module->count(); counter++)
       {
-        if (_module->text(counter) == q.value("source_module").toString())
+        if (_module->itemText(counter) == q.value("source_module").toString())
         {
           _module->setCurrentIndex(counter);
-          sModuleSelected(_module->text(counter));
+          sModuleSelected(_module->itemText(counter));
         }
       }
     }
     else
     {
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
     }
   }
 }

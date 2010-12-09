@@ -10,10 +10,11 @@
 
 #include "honorifics.h"
 
+#include <QAction>
 #include <QMenu>
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QVariant>
 
 #include <openreports.h>
 
@@ -133,17 +134,17 @@ void honorifics::sView()
 
 void honorifics::sPopulateMenu( QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainTitles"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainTitles"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+    menuItem->setEnabled(false);
 }
 
 void honorifics::sPrint()

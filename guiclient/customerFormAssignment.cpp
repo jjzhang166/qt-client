@@ -19,7 +19,7 @@ customerFormAssignment::customerFormAssignment(QWidget* parent, const char* name
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 }
 
 customerFormAssignment::~customerFormAssignment()
@@ -56,7 +56,7 @@ enum SetResponse customerFormAssignment::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -69,10 +69,9 @@ enum SetResponse customerFormAssignment::set(const ParameterList &pParams)
       _quoteForm->setEnabled(FALSE);
       _packingListForm->setEnabled(FALSE);
       _soPickListForm->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

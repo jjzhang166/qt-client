@@ -129,9 +129,6 @@ to be bound by its terms.</comment>
         <property name="label">
          <string>CRM Account:</string>
         </property>
-        <property name="listVisible">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
       <item row="0" column="1">

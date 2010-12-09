@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>567</width>
-    <height>228</height>
+    <width>547</width>
+    <height>227</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -234,28 +234,14 @@ to be bound by its terms.</comment>
           <number>5</number>
          </property>
          <item>
-          <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>5</number>
+          <widget class="QDialogButtonBox" name="_buttonBox">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-           <item>
-            <widget class="QPushButton" name="_close">
-             <property name="text">
-              <string>&amp;Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="_save">
-             <property name="text">
-              <string>&amp;Save</string>
-             </property>
-             <property name="default">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
+           <property name="standardButtons">
+            <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="Spacer20">
@@ -321,29 +307,10 @@ to be bound by its terms.</comment>
   <tabstop>_nextValue</tabstop>
   <tabstop>_length</tabstop>
   <tabstop>_suffix</tabstop>
-  <tabstop>_save</tabstop>
-  <tabstop>_close</tabstop>
  </tabstops>
  <includes>
   <include location="global">parameter.h</include>
  </includes>
  <resources/>
- <connections>
-  <connection>
-   <sender>_close</sender>
-   <signal>clicked()</signal>
-   <receiver>lotSerialSequence</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

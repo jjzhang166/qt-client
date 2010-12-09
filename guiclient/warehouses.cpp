@@ -10,9 +10,9 @@
 
 #include "warehouses.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
-//#include <QStatusBar>
 #include <QVariant>
 
 #include <metasql.h>
@@ -137,18 +137,16 @@ void warehouses::sListItemSites()
 
 void warehouses::sPopulateMenu( QMenu * pMenu )
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainWarehouses"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainWarehouses"));
 
-  pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
-  pMenu->insertSeparator();
+  pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("List Item Sites..."), this, SLOT(sListItemSites()), 0);
-  if (!_privileges->check("ViewItemSites"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("List Item Sites..."), this, SLOT(sListItemSites()));
+  menuItem->setEnabled(_privileges->check("ViewItemSites"));
 }
 
 void warehouses::sPrint()

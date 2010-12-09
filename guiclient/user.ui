@@ -59,7 +59,7 @@ to be bound by its terms.</comment>
          <item>
           <widget class="QLabel" name="_company">
            <property name="text">
-            <string>_company</string>
+            <string notr="true">_company</string>
            </property>
           </widget>
          </item>

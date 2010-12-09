@@ -14,21 +14,21 @@
   <sql>SELECT item_number,
        item_descrip1,
        item_descrip2,
-       formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;warehous_id&quot;) ?>
-         (select warehous_code from warehous where warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
+       formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("warehous_id") ?>
+         (select warehous_code from warehous where warehous_id=&lt;? value("warehous_id") ?>)
        &lt;? else ?>
          text('All Sites')
        &lt;? endif ?>
        AS warehouse,
-       &lt;? if exists(&quot;agentUsername&quot;) ?>
-       TEXT(&lt;? value(&quot;agentUsername&quot; ?>)
+       &lt;? if exists("agentUsername") ?>
+       TEXT(&lt;? value("agentUsername" ?>)
        &lt;? else ?>
        TEXT('All Agents')
        &lt;? endif ?>
        AS agentUsername,
-       &lt;? if exists(&quot;showVariances&quot;) ?>
+       &lt;? if exists("showVariances") ?>
          text('Purch. Cost') AS f_purchcost,
          text('Recv. Cost') AS f_recvcost
        &lt;? else ?>
@@ -36,65 +36,12 @@
          text('') AS f_recvcost
        &lt;? endif ?>
   FROM item
- WHERE (item_id=&lt;? value(&quot;item_id&quot;) ?>);</sql>
+ WHERE (item_id=&lt;? value("item_id") ?>);</sql>
  </querysource>
- <querysource>
+ <querysource loadFromDb="true">
   <name>detail</name>
-  <sql>SELECT porecv_id, porecv_ponumber, vend_name,
-       formatDate(porecv_duedate) as f_scheddate,
-       formatDate(porecv_date) as f_recvdate,
-       porecv_vend_item_number,
-       porecv_vend_item_descrip,
-       text('Received') as f_rcvdrtnd,
-       formatQty(porecv_qty) as f_qty,
-       &lt;? if exists(&quot;showVariances&quot;) ?>
-         formatCost(porecv_purchcost)
-       &lt;? else ?>
-         text('')
-       &lt;? endif ?>
-       AS f_purchcost,
-       &lt;? if exists(&quot;showVariances&quot;) ?>
-         CASE WHEN (porecv_recvcost IS NULL) THEN text('N/A')
-              ELSE formatCost(porecv_recvcost)
-         END
-       &lt;? else ?>
-         text('')
-       &lt;? endif ?>
-       AS f_recvcost,
-       porecv_date AS sortdate
-FROM porecv, vend, itemsite
-WHERE ( (porecv_vend_id=vend_id)
- AND (porecv_itemsite_id=itemsite_id)
- AND (date(porecv_date) BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
- AND (itemsite_item_id=&lt;? value(&quot;item_id&quot;) ?>)
-&lt;? if exists(&quot;warehous_id&quot;) ?>
- AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
-&lt;? endif ?>
-&lt;? if exists(&quot;agentUsername&quot;) ?>
- AND (porecv_agent_username=&lt;? value(&quot;agentUsername&quot;) ?>)
-&lt;? endif ?>
-)
-UNION SELECT poreject_id, poreject_ponumber, vend_name,
-             '',
-             formatDate(poreject_date),
-             poreject_vend_item_number, poreject_vend_item_descrip, 'Returned',
-             formatQty(poreject_qty),
-             '',
-             '',
-             poreject_date AS sortdate
-FROM poreject, vend, itemsite
-WHERE ( (poreject_vend_id=vend_id)
- AND (poreject_itemsite_id=itemsite_id)
- AND (date(poreject_date) BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
- AND (itemsite_item_id=&lt;? value(&quot;item_id&quot;) ?>)
-&lt;? if exists(&quot;warehous_id&quot;) ?>
- AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
-&lt;? endif ?>
-&lt;? if exists(&quot;agentUsername&quot;) ?>
- AND (poreject_agent_username=&lt;? value(&quot;agentUsername&quot;) ?>)
-&lt;? endif ?>
-)
-ORDER BY sortdate DESC</sql>
+  <mqlgroup>receivings</mqlgroup>
+  <mqlname>detail</mqlname>
  </querysource>
  <rpthead>
   <height>221</height>
@@ -704,7 +651,7 @@ ORDER BY sortdate DESC</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>porecv_vend_item_number</column>
+     <column>venditemnumber</column>
     </data>
    </field>
    <field>
@@ -742,7 +689,7 @@ ORDER BY sortdate DESC</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>porecv_vend_item_descrip</column>
+     <column>venditemdescrip</column>
     </data>
    </field>
    <field>
@@ -761,7 +708,7 @@ ORDER BY sortdate DESC</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_rcvdrtnd</column>
+     <column>sense</column>
     </data>
    </field>
    <field>
@@ -799,7 +746,7 @@ ORDER BY sortdate DESC</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_scheddate</column>
+     <column>f_duedate</column>
     </data>
    </field>
    <field>
@@ -818,7 +765,7 @@ ORDER BY sortdate DESC</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>porecv_ponumber</column>
+     <column>ponumber</column>
     </data>
    </field>
    <field>

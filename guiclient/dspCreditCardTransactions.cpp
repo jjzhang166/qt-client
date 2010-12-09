@@ -44,7 +44,7 @@ dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char
   _preauth->addColumn(tr("Status"),  _bigMoneyColumn, Qt::AlignLeft,  true,  "status"  );
   _preauth->addColumn(tr("Document #"),           -1, Qt::AlignLeft,  true,  "docnumber"  );
   _preauth->addColumn(tr("Amount"),     _moneyColumn, Qt::AlignRight, true, "ccpay_amount");
-  _preauth->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  true, "currabbr");;
+  _preauth->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  true, "currabbr");
   _preauth->addColumn(tr("Entered By"),   _userColumn,     Qt::AlignLeft,   false,  "ccpay_by_username"  );
   _preauth->addColumn(tr("Reference"),    _orderColumn,    Qt::AlignLeft,   false,  "ccpay_r_ref"  );
   _preauth->addColumn(tr("Allocated"),    _moneyColumn,    Qt::AlignRight,  false,  "allocated" );

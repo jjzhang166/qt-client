@@ -10,41 +10,31 @@
 
 #include "dspTimePhasedOpenAPItems.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 
 #include <metasql.h>
-
-#include <metasql.h>
 #include "mqlutil.h"
 
-#include <openreports.h>
 #include <datecluster.h>
 
 #include "dspAPOpenItemsByVendor.h"
-#include "guiclient.h"
 #include "submitReport.h"
 
-dspTimePhasedOpenAPItems::dspTimePhasedOpenAPItems(QWidget* parent, const char* name, Qt::WFlags fl)
-    : XWidget(parent, name, fl)
+dspTimePhasedOpenAPItems::dspTimePhasedOpenAPItems(QWidget* parent, const char*, Qt::WFlags fl)
+  : display(parent, "dspTimePhasedOpenAPItems", fl)
 {
-  setupUi(this);
+  setupUi(optionsWidget());
+  setWindowTitle(tr("Payables Aging"));
+  setReportName("APAging");
 
-//  (void)statusBar();
-
-  connect(_apopen, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*,QTreeWidgetItem*,int)));
   connect(_custom, SIGNAL(toggled(bool)), this, SLOT(sToggleCustom()));
-  connect(_print,  SIGNAL(clicked()),     this, SLOT(sPrint()));
-  connect(_query,  SIGNAL(clicked()),     this, SLOT(sFillList()));
-  connect(_submit, SIGNAL(clicked()),     this, SLOT(sSubmit()));
 
   _asOf->setDate(omfgThis->dbDate(), true);
   sToggleCustom();
-
-  if (!_metrics->boolean("EnableBatchManager"))
-    _submit->hide();
 
   if(_preferences->value("APAgingDefaultDate") == "doc")
     _useDocDate->setChecked(true);
@@ -59,11 +49,6 @@ dspTimePhasedOpenAPItems::~dspTimePhasedOpenAPItems()
   if(_useDocDate->isChecked())
     str = "doc";
   _preferences->set("APAgingDefaultDate", str);
-}
-
-void dspTimePhasedOpenAPItems::languageChange()
-{
-  retranslateUi(this);
 }
 
 bool dspTimePhasedOpenAPItems::setParams(ParameterList &params)
@@ -103,51 +88,10 @@ bool dspTimePhasedOpenAPItems::setParams(ParameterList &params)
   return true;
 }
 
-void dspTimePhasedOpenAPItems::sPrint()
-{
-  ParameterList params;
-  if (! setParams(params))
-    return;
-
-  QString reportName;
-  if(_custom->isChecked())
-    reportName = "TimePhasedOpenAPItems";
-  else
-    reportName = "APAging";
-  
-  orReport report(reportName, params);
-  if (report.isValid())
-    report.print();
-  else
-  {
-    report.reportError(this);
-    return;
-  }
-}
-
-void dspTimePhasedOpenAPItems::sSubmit()
-{
-  ParameterList params;
-  if (! setParams(params))
-    return;
-
-  submitReport newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.check() == cNoReportDefinition)
-    QMessageBox::critical(this, tr("Report Definition Not Found"),
-                          tr("<p>The report defintions for this report, "
-                             "\"TimePhasedOpenAPItems\" cannot be found. "
-                             "Please contact your Systems Administrator and "
-                             "report this issue." ) );
-  else
-    newdlg.exec();
-}
-
 void dspTimePhasedOpenAPItems::sViewOpenItems()
 {
   ParameterList params;
-  params.append("vend_id", _apopen->id());
+  params.append("vend_id", list()->id());
   if (_custom->isChecked())
   {
     QDate checkDate = _columnDates[_column - 2].startDate;
@@ -193,11 +137,10 @@ void dspTimePhasedOpenAPItems::sViewOpenItems()
 
 void dspTimePhasedOpenAPItems::sPopulateMenu(QMenu *menuThis, QTreeWidgetItem *, int pColumn)
 {
-  int intMenuItem;
   _column = pColumn;
 
-  if ((_column > 1) && (_apopen->id() > 0))
-    intMenuItem = menuThis->insertItem(tr("View Open Items..."), this, SLOT(sViewOpenItems()), 0);
+  if ((_column > 1) && (list()->id() > 0))
+    menuThis->addAction(tr("View Open Items..."), this, SLOT(sViewOpenItems()));
 }
 
 void dspTimePhasedOpenAPItems::sFillList()
@@ -219,7 +162,7 @@ void dspTimePhasedOpenAPItems::sFillCustom()
   }
 
   _columnDates.clear();
-  _apopen->setColumnCount(2);
+  list()->setColumnCount(2);
 
   QString sql("SELECT vend_id, vend_number, vend_name");
   QStringList linetotal;
@@ -237,12 +180,12 @@ void dspTimePhasedOpenAPItems::sFillCustom()
           .arg(bucketname)
           .arg(bucketname);
 
-    _apopen->addColumn(formatDate(cursor->startDate()), _bigMoneyColumn, Qt::AlignRight, true, bucketname);
+    list()->addColumn(formatDate(cursor->startDate()), _bigMoneyColumn, Qt::AlignRight, true, bucketname);
     _columnDates.append(DatePair(cursor->startDate(), cursor->endDate()));
     linetotal << QString("openAPItemsValue(vend_id, %1)").arg(cursor->id());
   }
 
-  _apopen->addColumn(tr("Total"), _bigMoneyColumn, Qt::AlignRight, true, "linetotal");
+  list()->addColumn(tr("Total"), _bigMoneyColumn, Qt::AlignRight, true, "linetotal");
   _columnDates.append(DatePair());
   sql += ", " + linetotal.join("+") + " AS linetotal,"
          " 'curr' AS linetotal_xtnumericrole,"
@@ -264,7 +207,7 @@ void dspTimePhasedOpenAPItems::sFillCustom()
     return;
 
   q = mql.toQuery(params);
-  _apopen->populate(q);
+  list()->populate(q);
   if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
@@ -279,7 +222,7 @@ void dspTimePhasedOpenAPItems::sFillStd()
   if (! setParams(params))
     return;
   q = mql.toQuery(params);
-  _apopen->populate(q);
+  list()->populate(q);
   if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
@@ -289,8 +232,10 @@ void dspTimePhasedOpenAPItems::sFillStd()
 
 void dspTimePhasedOpenAPItems::sToggleCustom()
 {
+  list()->clear();
   if (_custom->isChecked())
   {
+    setReportName("TimePhasedOpenAPItems");
     _calendarLit->setHidden(FALSE);
     _calendar->setHidden(FALSE);
     _periods->setHidden(FALSE);
@@ -298,32 +243,33 @@ void dspTimePhasedOpenAPItems::sToggleCustom()
     _asOf->setEnabled(FALSE);
     _useGroup->setHidden(TRUE);
 
-    _apopen->setColumnCount(0);
-    _apopen->addColumn(tr("Vend. #"), _orderColumn, Qt::AlignLeft, true, "vend_number");
-    _apopen->addColumn(tr("Vendor"),  180,          Qt::AlignLeft, true, "vend_name");
+    list()->setColumnCount(0);
+    list()->addColumn(tr("Vend. #"), _orderColumn, Qt::AlignLeft, true, "vend_number");
+    list()->addColumn(tr("Vendor"),  180,          Qt::AlignLeft, true, "vend_name");
   }
   else
   {
+    setReportName("APAging");
     _calendarLit->setHidden(TRUE);
     _calendar->setHidden(TRUE);
     _periods->setHidden(TRUE);
     _asOf->setEnabled(TRUE);
     _useGroup->setHidden(FALSE);
 
-    _apopen->addColumn(tr("Total Open"), _bigMoneyColumn, Qt::AlignRight, true, "total_val");
-    _apopen->addColumn(tr("0+ Days"),    _bigMoneyColumn, Qt::AlignRight, true, "cur_val");
-    _apopen->addColumn(tr("0-30 Days"),  _bigMoneyColumn, Qt::AlignRight, true, "thirty_val");
-    _apopen->addColumn(tr("31-60 Days"), _bigMoneyColumn, Qt::AlignRight, true, "sixty_val");
-    _apopen->addColumn(tr("61-90 Days"), _bigMoneyColumn, Qt::AlignRight, true, "ninety_val");
-    _apopen->addColumn(tr("90+ Days"),   _bigMoneyColumn, Qt::AlignRight, true, "plus_val");
-    _apopen->setColumnCount(0);
-    _apopen->addColumn(tr("Vend. #"), _orderColumn, Qt::AlignLeft, true, "apaging_vend_number");
-    _apopen->addColumn(tr("Vendor"),  -1,          Qt::AlignLeft, true, "apaging_vend_name");
-    _apopen->addColumn(tr("Total Open"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_total_val_sum");
-    _apopen->addColumn(tr("0+ Days"),    _bigMoneyColumn, Qt::AlignRight, true, "apaging_cur_val_sum");
-    _apopen->addColumn(tr("0-30 Days"),  _bigMoneyColumn, Qt::AlignRight, true, "apaging_thirty_val_sum");
-    _apopen->addColumn(tr("31-60 Days"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_sixty_val_sum");
-    _apopen->addColumn(tr("61-90 Days"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_ninety_val_sum");
-    _apopen->addColumn(tr("90+ Days"),   _bigMoneyColumn, Qt::AlignRight, true, "apaging_plus_val_sum");
+    list()->addColumn(tr("Total Open"), _bigMoneyColumn, Qt::AlignRight, true, "total_val");
+    list()->addColumn(tr("0+ Days"),    _bigMoneyColumn, Qt::AlignRight, true, "cur_val");
+    list()->addColumn(tr("0-30 Days"),  _bigMoneyColumn, Qt::AlignRight, true, "thirty_val");
+    list()->addColumn(tr("31-60 Days"), _bigMoneyColumn, Qt::AlignRight, true, "sixty_val");
+    list()->addColumn(tr("61-90 Days"), _bigMoneyColumn, Qt::AlignRight, true, "ninety_val");
+    list()->addColumn(tr("90+ Days"),   _bigMoneyColumn, Qt::AlignRight, true, "plus_val");
+    list()->setColumnCount(0);
+    list()->addColumn(tr("Vend. #"), _orderColumn, Qt::AlignLeft, true, "apaging_vend_number");
+    list()->addColumn(tr("Vendor"),  -1,          Qt::AlignLeft, true, "apaging_vend_name");
+    list()->addColumn(tr("Total Open"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_total_val_sum");
+    list()->addColumn(tr("0+ Days"),    _bigMoneyColumn, Qt::AlignRight, true, "apaging_cur_val_sum");
+    list()->addColumn(tr("0-30 Days"),  _bigMoneyColumn, Qt::AlignRight, true, "apaging_thirty_val_sum");
+    list()->addColumn(tr("31-60 Days"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_sixty_val_sum");
+    list()->addColumn(tr("61-90 Days"), _bigMoneyColumn, Qt::AlignRight, true, "apaging_ninety_val_sum");
+    list()->addColumn(tr("90+ Days"),   _bigMoneyColumn, Qt::AlignRight, true, "apaging_plus_val_sum");
   }
 }

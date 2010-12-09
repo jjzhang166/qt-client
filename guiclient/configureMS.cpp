@@ -13,14 +13,13 @@
 #include <QVariant>
 #include <QValidator>
 
-configureMS::configureMS(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+configureMS::configureMS(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
-  // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  if (name)
+    setObjectName(name);
 
   _nextPlanNumber->setValidator(omfgThis->orderVal());
 
@@ -45,15 +44,15 @@ void configureMS::languageChange()
   retranslateUi(this);
 }
 
-void configureMS::sSave()
+bool configureMS::sSave()
 {
-  q.prepare("SELECT setNextPlanNumber(:planord_number) AS result;");
-  q.bindValue(":planord_number", _nextPlanNumber->text().toInt());
-  q.exec();
+  emit saving();
+
+  XSqlQuery configq;
+  configq.prepare("SELECT setNextPlanNumber(:planord_number) AS result;");
+  configq.bindValue(":planord_number", _nextPlanNumber->text().toInt());
+  configq.exec();
 
   _metrics->set("DefaultMSCalendar", _calendar->id());
-
-  _metrics->load();
-
-  accept();
+  return true;
 }

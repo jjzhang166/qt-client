@@ -17,12 +17,16 @@
          text('All Sites')
        &lt;? endif ?>
        AS warehouse,
-       &lt;? if exists("vend_id") ?>
-         (select vend_number from vend where vend_id=&lt;? value("vend_id" ?>)
-       &lt;? else ?>
-       TEXT('All Vendors')
-       &lt;? endif ?>
-       AS f_vend,
+&lt;? if exists("vend_id") ?>
+       (SELECT ('Vendor = ' || vend_name) FROM vendinfo WHERE vend_id=&lt;? value("vend_id") ?>)
+&lt;? elseif exists("vendtype_id") ?>
+       (SELECT ('Vendor Type = ' || vendtype_code) FROM vendtype WHERE vendtype_id=&lt;? value("vendtype_id") ?>)
+&lt;? elseif exists("vendtype_pattern") ?>
+       ('Vendor Type pattern = ' || &lt;? value("vendtype_pattern") ?>)
+&lt;? else ?>
+       'All Vendors'
+&lt;? endif ?>
+       AS selection,
        formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
        formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
        &lt;? if exists("byReceiptDate") ?>
@@ -316,7 +320,7 @@ ORDER BY sortDate
    <vcenter/>
    <data>
     <query>head</query>
-    <column>f_vend</column>
+    <column>selection</column>
    </data>
   </field>
   <label>
@@ -368,7 +372,7 @@ ORDER BY sortDate
    </font>
    <right/>
    <vcenter/>
-   <string>Vendor #:</string>
+   <string>Selection:</string>
   </label>
   <field>
    <rect>

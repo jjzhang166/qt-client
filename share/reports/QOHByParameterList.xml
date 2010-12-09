@@ -124,13 +124,13 @@
        &lt;? endif ?>
        AS f_unitcost,
        &lt;? if exists("showValue") ?>
-         formatExtPrice(noNeg(standardcost * qoh))
+         formatExtPrice((standardcost * qoh))
        &lt;? else ?>
          text('')
        &lt;? endif ?>
        AS f_value,
        &lt;? if exists("showValue") ?>
-         CASE WHEN (itemsite_loccntrl) THEN formatExtPrice(noNeg(standardcost * nonnetable))
+         CASE WHEN (itemsite_loccntrl) THEN formatExtPrice((standardcost * nonnetable))
               ELSE 'N/A'
          END
        &lt;? else ?>
@@ -140,16 +140,16 @@
        standardcost,
        qoh,
        nonnetable,
-       noNeg(qoh) AS r_qoh,
-       noNeg(nonnetable) AS r_nonnetable,
+       qoh AS r_qoh,
+       nonnetable AS r_nonnetable,
        &lt;? if exists("showValue") ?>
-         noNeg(standardcost * qoh)
+         (standardcost * qoh)
        &lt;? else ?>
          0
        &lt;? endif ?>
        AS r_value,
        &lt;? if exists("showValue") ?>
-         CASE WHEN (itemsite_loccntrl) THEN noNeg(standardcost * nonnetable)
+         CASE WHEN (itemsite_loccntrl) THEN (standardcost * nonnetable)
               ELSE 0
          END
        &lt;? else ?>

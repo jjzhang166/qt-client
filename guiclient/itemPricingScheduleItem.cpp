@@ -11,18 +11,16 @@
 #include "itemPricingScheduleItem.h"
 #include "characteristicPrice.h"
 
-#include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QValidator>
+#include <QVariant>
 
 itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_item, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
@@ -521,12 +519,12 @@ void itemPricingScheduleItem::populate()
       {
         _selectedShipViaFreight->setChecked(true);
         for (int counter = 0; counter < _shipViaFreight->count(); counter++)
-          if (_shipViaFreight->text(counter) == shipvia)
+          if (_shipViaFreight->itemText(counter) == shipvia)
             _shipViaFreight->setCurrentIndex(counter);
 
         if (_shipViaFreight->id() == -1)
         {
-          _shipViaFreight->insertItem(shipvia);
+          _shipViaFreight->addItem(shipvia);
           _shipViaFreight->setCurrentIndex(_shipViaFreight->count() - 1);
         }
       }
@@ -617,36 +615,31 @@ void itemPricingScheduleItem::sUpdateMargins()
   if (_item->isValid())
   {
     double price = _price->baseValue();
+    QString stylesheet;
 
     if (_stdCost->baseValue() > 0.0)
     {
       _stdMargin->setDouble((price - _stdCost->baseValue()) / price * 100);
 
       if (_stdCost->baseValue() > price)
-        _stdMargin->setPaletteForegroundColor(QColor("red"));
-      else
-        _stdMargin->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }
     else
-    {
       _stdMargin->setText("N/A");
-      _stdMargin->setPaletteForegroundColor(QColor("black"));
-    }
+
+    _stdMargin->setStyleSheet(stylesheet);
 
     if (_actCost->baseValue() > 0.0)
     {
       _actMargin->setDouble((price - _actCost->baseValue()) / price * 100);
 
       if (_actCost->baseValue() > price)
-        _actMargin->setPaletteForegroundColor(QColor("red"));
-      else
-        _actMargin->setPaletteForegroundColor(QColor("black"));
+        stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }
     else
-    {
       _actMargin->setText("N/A");
-      _actMargin->setPaletteForegroundColor(QColor("black"));
-    }
+
+    _actMargin->setStyleSheet(stylesheet);
   }
 }
 

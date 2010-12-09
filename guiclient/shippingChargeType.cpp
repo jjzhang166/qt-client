@@ -21,8 +21,8 @@ shippingChargeType::shippingChargeType(QWidget* parent, const char* name, bool m
   _shipchrgid = -1;
 
   // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
 }
 
@@ -62,7 +62,7 @@ enum SetResponse shippingChargeType::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _save->setFocus();
+      _buttonBox->setFocus();
     }
     else if (param.toString() == "view")
     {
@@ -71,10 +71,9 @@ enum SetResponse shippingChargeType::set(const ParameterList &pParams)
       _name->setEnabled(FALSE);
       _description->setEnabled(FALSE);
       _customerFreight->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 

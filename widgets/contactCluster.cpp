@@ -153,6 +153,11 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   for (int i = 0; i < 5; ++i)
     _fname->append("");
 
+  _label = new QLabel(this);
+  _label->setObjectName("_label");
+  _label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
   _name->setVisible(false);
   _description->setVisible(true);
 
@@ -209,7 +214,7 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   _addrLayout->addSpacerItem(_addrSpacer);
 
   connect(this, SIGNAL(valid(bool)), this, SLOT(populate()));
-  connect(_email, SIGNAL(leftClickedURL(QString)), this, SLOT(openUrl(QString)));
+  connect(_email, SIGNAL(leftClickedURL(QString)), this, SLOT(launchEmail(QString)));
   connect(_webaddr, SIGNAL(leftClickedURL(QString)), this, SLOT(openUrl(QString)));
   connect(this, SIGNAL(newId(int)), this, SIGNAL(changed()));
 
@@ -355,6 +360,26 @@ void ContactCluster::populate()
   }
 }
 
+void ContactCluster::launchEmail(QString url)
+{
+  QString extUrl = QString(url);
+  if (!_subjText.isEmpty() ||
+      !_bodyText.isEmpty())
+    extUrl.append("?");
+
+  if (!_subjText.isEmpty())
+  {
+    extUrl.append(_subjText.prepend("subject="));
+    if (!_bodyText.isEmpty())
+      extUrl.append("&");
+  }
+
+  if (!_bodyText.isEmpty())
+    extUrl.append(_bodyText.prepend("body="));
+
+  QDesktopServices::openUrl(QUrl(extUrl));
+}
+
 void ContactCluster::openUrl(QString url)
 {
   QDesktopServices::openUrl(QUrl(url));
@@ -371,14 +396,10 @@ void ContactCluster::addNumberWidget(ContactClusterLineEdit* pNumberWidget)
     QHBoxLayout* hbox = new QHBoxLayout;
     QSpacerItem* item = new QSpacerItem(100, 20, QSizePolicy::Fixed, QSizePolicy::Fixed);
     hbox->addWidget(_number);
-    hbox->addWidget(_list);
-    hbox->addWidget(_info);
     hbox->addItem(item);
     _grid->addLayout(hbox, 0, 1, 1, 3);
     setFocusProxy(pNumberWidget);
 
-    connect(_list,      SIGNAL(clicked()),      this,   SLOT(sEllipses()));
-    connect(_info,      SIGNAL(clicked()),      this,   SLOT(sInfo()));
     connect(_number,	SIGNAL(newId(int)),	this,	SIGNAL(newId(int)));
     connect(_number,	SIGNAL(parsed()), 	this, 	SLOT(sRefresh()));
     connect(_number,	SIGNAL(valid(bool)),	this,	SIGNAL(valid(bool)));
@@ -438,5 +459,15 @@ void ContactCluster::setFax(const QString fax)
 void ContactCluster::setEmailAddress(const QString email)
 {
   _email->setText(email);
+}
+
+void ContactCluster::setEmailSubjectText(const QString text)
+{
+  _subjText = text;
+}
+
+void ContactCluster::setEmailBodyText(const QString text)
+{
+  _bodyText = text;
 }
 

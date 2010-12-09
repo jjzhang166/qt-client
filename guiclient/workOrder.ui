@@ -32,10 +32,7 @@ to be bound by its terms.</comment>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QGridLayout">
-     <property name="margin">
-      <number>12</number>
-     </property>
-     <property name="spacing">
+     <property name="verticalSpacing">
       <number>12</number>
      </property>
      <item row="0" column="0" colspan="3">
@@ -439,6 +436,9 @@ to be bound by its terms.</comment>
               </property>
               <property name="focusPolicy">
                <enum>Qt::StrongFocus</enum>
+              </property>
+              <property name="label">
+               <string/>
               </property>
              </widget>
             </item>

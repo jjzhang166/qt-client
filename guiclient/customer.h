@@ -81,7 +81,6 @@ public slots:
     virtual void sClear();
     virtual void sNumberEditable(bool);
     virtual void sPrepare();
-    virtual void sDelete();
 
 protected slots:
     virtual void languageChange();
@@ -90,6 +89,7 @@ protected slots:
 signals:
     void populated();
     void newId(int);
+    void saved(int);
 
 protected:
     virtual void closeEvent(QCloseEvent*);

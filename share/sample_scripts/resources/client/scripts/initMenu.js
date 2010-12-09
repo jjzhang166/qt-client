@@ -16,3 +16,11 @@ if(lis != null)
 
 // find one of the module objects and call a slot directly
 mainwindow.findChild("crmModule").sOpportunityTypes();
+
+/*: Please translate this Version string to the base version of the package
+    you are translating. This is a hack to embed the package version number
+    into the translation file so the Update Manager can find
+    the best translation file for a given version of the package.
+ */
+var _translationFileVersionPlaceholder = QT_TRANSLATE_NOOP("sample_scripts", "Version");
+

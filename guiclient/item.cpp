@@ -11,14 +11,14 @@
 #include "item.h"
 
 #include <QCloseEvent>
+#include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
-#include <QDir>
-#include <QDirIterator>
-#include <QFileInfo>
 
 #include <metasql.h>
 #include <openreports.h>
@@ -36,22 +36,20 @@
 #include "itemtax.h"
 #include "itemSource.h"
 #include "storedProcErrorLookup.h"
+#include "maintainItemCosts.h"
 
 const char *_itemTypes[] = { "P", "M", "F", "R", "S", "T", "O", "L", "K", "B", "C", "Y" };
 
-/*
- *  Constructs a item as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 item::item(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
+  _notes->setSpellEnable(true); 
+
   _mode=0;
+  _itemid = -1;
   
-  // signals and slots connections
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_itemNumber, SIGNAL(lostFocus()), this, SLOT(sFormatItemNumber()));
@@ -95,6 +93,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_viewSrc, SIGNAL(clicked()), this, SLOT(sViewSource()));
   connect(_copySrc, SIGNAL(clicked()), this, SLOT(sCopySource()));
   connect(_deleteSrc, SIGNAL(clicked()), this, SLOT(sDeleteSource()));
+  connect(_cost, SIGNAL(clicked()), this, SLOT(sMaintainItemCosts()));
   
   _disallowPlanningType = false;
   _inTransaction = false;
@@ -160,7 +159,11 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
     
   if((!_privileges->check("MaintainItemSites")) || (_metrics->boolean("MultiWhs")))
     _site->hide();
-    
+
+  if((!_privileges->check("CreateCosts")) && (!_privileges->check("EnterActualCosts")) &&
+    (!_privileges->check("UpdateActualCosts")))
+    _cost->hide();
+
   if (_privileges->check("MaintainItemSources"))
   {
     connect(_itemsrc, SIGNAL(valid(bool)), _editSrc, SLOT(setEnabled(bool)));
@@ -236,10 +239,7 @@ enum SetResponse item::set(const ParameterList &pParams)
 
   param = pParams.value("item_id", &valid);
   if (valid)
-  {
-    _itemid = param.toInt();
-    populate();
-  }
+    setId(param.toInt());
 
   param = pParams.value("mode", &valid);
   if (valid)
@@ -247,6 +247,8 @@ enum SetResponse item::set(const ParameterList &pParams)
     if (param.toString() == "new")
     {
       _tab->setEnabled(false);
+
+      _cost->hide();
       
       setObjectName("item new");
       _mode = cNew;
@@ -283,6 +285,8 @@ enum SetResponse item::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _tab->setEnabled(true);
+
+      _cost->show();
     	
       setObjectName(QString("item edit %1").arg(_itemid));
       _mode = cEdit;
@@ -318,6 +322,8 @@ enum SetResponse item::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _tab->setEnabled(true);
+
+      _cost->show();
       
       setObjectName(QString("item view %1").arg(_itemid));
       _mode = cView;
@@ -451,6 +457,10 @@ void item::saveCore()
     // TODO: We can enable certain functionality here that needs a saved record
     _newUOM->setEnabled(true);
     _tab->setEnabled(true);
+
+    _cost->show();
+
+    if(QString(_itemTypes[_itemtype->currentIndex()]) == "M") _bom->show(); else _bom->hide();
   }
 } 
 
@@ -648,8 +658,9 @@ void item::sSave()
   if (cEdit == _mode && _itemtype->currentText() != _originalItemType)
   {
     if ((QString(_itemTypes[_itemtype->currentIndex()]) == "R") ||
-        (QString(_itemTypes[_itemtype->currentIndex()]) == "S"))
-	{
+        (QString(_itemTypes[_itemtype->currentIndex()]) == "S") ||
+        (QString(_itemTypes[_itemtype->currentIndex()]) == "T"))
+        {
       q.prepare( "SELECT itemsite_id "
                  "  FROM itemsite "
                  " WHERE ((itemsite_item_id=:item_id) "
@@ -900,6 +911,8 @@ void item::sSave()
       newdlg.exec();
     }
   }
+
+  emit saved(_itemid);
 
   close();
 }
@@ -1437,7 +1450,7 @@ void item::sFillTransformationList()
 void item::keyPressEvent( QKeyEvent * e )
 {
 #ifdef Q_WS_MAC
-  if(e->key() == Qt::Key_S && e->state() == Qt::ControlModifier)
+  if(e->key() == Qt::Key_S && (e->modifiers() & Qt::ControlModifier))
   {
     _save->animateClick();
     e->accept();
@@ -1455,7 +1468,7 @@ void item::newItem()
   for(int i = 0; i < list.size(); ++i)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), "item new")==0)
+    if(QString::compare(w->objectName(), "item new")==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1484,7 +1497,7 @@ void item::editItem( int pId )
   for(int i = 0; i < list.size(); ++i)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1514,7 +1527,7 @@ void item::viewItem( int pId )
   for(int i = 0; i < list.size(); ++i)
   {
     QWidget * w = list.at(i);
-    if(QString::compare(w->name(), n)==0)
+    if(QString::compare(w->objectName(), n)==0)
     {
       w->setFocus();
       if(omfgThis->showTopLevel())
@@ -1575,7 +1588,7 @@ void item::sNewItemSite()
 void item::sEditItemSite()
 {
   ParameterList params;
-  if (_mode == cEdit)
+  if (_mode == cEdit || _mode == cNew)
     params.append("mode", "edit");
   else
     params.append("mode", "view");
@@ -1769,6 +1782,7 @@ void item::sNewUOM()
   ParameterList params;
   params.append("mode", "new");
   params.append("item_id", _itemid);
+  params.append("inventoryUOM", _inventoryUOM->id());
 
   itemUOM newdlg(this, "", TRUE);
   newdlg.set(params);
@@ -1988,11 +2002,7 @@ void item::sFillSourceList()
   MetaSQLQuery mql(sql);
   params.append("item_id", _itemid);
   q = mql.toQuery(params);
-
-  if (q.first())
-    _itemsrc->populate(q);
-  else
-    _itemsrc->clear();
+  _itemsrc->populate(q);
 }
 
 void item::sNewSource()
@@ -2092,4 +2102,23 @@ void item::sDeleteSource()
   }
 }
 
+void item::sMaintainItemCosts()
+{
+  ParameterList params;
+  params.append("item_id", _itemid);
+
+  maintainItemCosts *newdlg = new maintainItemCosts();
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
+}
+
+void item::setId(int p)
+{
+  if (_itemid==p)
+    return;
+
+  _itemid=p;
+  populate();
+  emit newId(_itemid);
+}
 

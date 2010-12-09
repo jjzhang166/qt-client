@@ -64,8 +64,8 @@ user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   q.exec( "SELECT DISTINCT priv_module "
           "FROM priv "
           "ORDER BY priv_module;" );
-  while (q.next())
-    _module->insertItem(q.value("priv_module").toString());
+  for (int i = 0; q.next(); i++)
+    _module->append(i, q.value("priv_module").toString());
 
   _authCache = false;
   if(_evaluation == true)
@@ -117,7 +117,7 @@ enum SetResponse user::set(const ParameterList &pParams)
     {
       _mode = cNew;
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
 
       if (_cUsername.isEmpty())
         _username->setFocus();
@@ -182,7 +182,7 @@ void user::sSave()
 
 bool user::save()
 {
-  QString username = _username->text().trimmed().lower();
+  QString username = _username->text().trimmed().toLower();
   if(omfgThis->useCloud())
     username = username + "_" + omfgThis->company();
   if (username.length() == 0)
@@ -589,19 +589,13 @@ void user::populate()
     q.exec();
     if (q.first())
     {
-      for (int counter = 0; counter < _module->count(); counter++)
-      {
-        if (_module->text(counter) == q.value("priv_module").toString())
-        {
-          _module->setCurrentIndex(counter);
-          sModuleSelected(_module->text(counter));
-        }
-      }
+      _module->setCode(q.value("priv_module").toString());
+      sModuleSelected(_module->currentText());
     }
     else
     {
       _module->setCurrentIndex(0);
-      sModuleSelected(_module->text(0));
+      sModuleSelected(_module->itemText(0));
     }
   }
   
@@ -695,9 +689,9 @@ void user::populateSite()
   {
     
     if(omfgThis->useCloud())
-      params.append("username", _username->text().trimmed().lower() + "_" + omfgThis->company());
+      params.append("username", _username->text().trimmed().toLower() + "_" + omfgThis->company());
     else
-      params.append("username", _username->text().trimmed().lower());
+      params.append("username", _username->text().trimmed().toLower());
 
     sql = "SELECT warehous_id, warehous_code "
           " FROM whsinfo "

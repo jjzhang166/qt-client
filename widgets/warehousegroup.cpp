@@ -36,9 +36,12 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
   _selectedGroup = new QWidget(this);
   QButtonGroup * buttonGroup = new QButtonGroup(this);
   
-  _all = new QRadioButton(tr("All Sites"), this, "_all");
-  _site = new QLabel(tr("Site:"),this,"_site");
-  _selected = new QRadioButton(tr("Selected:"), _selectedGroup, "_selected");
+  _all = new QRadioButton(tr("All Sites"), this);
+  _all->setObjectName("_all");
+  _site = new QLabel(tr("Site:"),this);
+  _site->setObjectName("_site");
+  _selected = new QRadioButton(tr("Selected:"), _selectedGroup);
+  _selected->setObjectName("_selected");
 	 
   if (!_selectedOnly)
   {
@@ -52,7 +55,7 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
   if(_selectedOnly)
   {
     QHBoxLayout *hLayout = new QHBoxLayout(_selectedGroup);
-    hLayout->setMargin(0);
+    hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(5);
     hLayout->addWidget(_site);
     hLayout->addWidget(_warehouses);
@@ -60,7 +63,7 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
     _selectedGroup->setLayout(hLayout);
     
     QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->setMargin(5);
+    vLayout->setContentsMargins(5, 5, 5, 5);
     vLayout->setSpacing(0);
     vLayout->addWidget(_selectedGroup);
     setLayout(vLayout);

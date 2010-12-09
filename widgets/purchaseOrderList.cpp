@@ -27,10 +27,10 @@
 #include "pocluster.h"
 
 purchaseOrderList::purchaseOrderList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl) :
-  QDialog(parent, name, modal, fl)
+  QDialog(parent, fl)
 {
-  if (!name)
-    setObjectName("purchaseOrderList");
+  setObjectName(name ? name : "purchaseOrderList");
+  setModal(modal);
 
   _poheadid = -1;
   _type = (cPOUnposted | cPOOpen | cPOClosed);
@@ -38,16 +38,20 @@ purchaseOrderList::purchaseOrderList(QWidget* parent, const char* name, bool mod
   setWindowTitle(tr("Purchase Orders"));
 
   QHBoxLayout *purchaseOrderListLayout = new QHBoxLayout(this);
-  QVBoxLayout *tableLayout = new QVBoxLayout(purchaseOrderListLayout);
-  QVBoxLayout *buttonLayout = new QVBoxLayout(purchaseOrderListLayout);
+  QVBoxLayout *tableLayout  = new QVBoxLayout();
+  QVBoxLayout *buttonLayout = new QVBoxLayout();
+  purchaseOrderListLayout->addLayout(tableLayout);
+  purchaseOrderListLayout->addLayout(buttonLayout);
 
-  QHBoxLayout *vendLayout = new QHBoxLayout(tableLayout);
+  QHBoxLayout *vendLayout = new QHBoxLayout();
   _vend = new VendorCluster(this, "_vend");
   vendLayout->addWidget(_vend);
   vendLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding,
 				      QSizePolicy::Minimum));
+  tableLayout->addLayout(vendLayout);
 
-  QLabel *_poheadLit = new QLabel(tr("&Purchase Orders:"), this, "_poheadLit");
+  QLabel *_poheadLit = new QLabel(tr("&Purchase Orders:"), this);
+  _poheadLit->setObjectName("_poheadLit");
   tableLayout->addWidget( _poheadLit );
 
   _pohead = new XTreeWidget(this);
@@ -55,10 +59,12 @@ purchaseOrderList::purchaseOrderList(QWidget* parent, const char* name, bool mod
   _poheadLit->setBuddy(_pohead);
   tableLayout->addWidget(_pohead);
 
-  _close = new QPushButton(tr("&Cancel"), this, "_close");
+  _close = new QPushButton(tr("&Cancel"), this);
+  _close->setObjectName("_close");
   buttonLayout->addWidget( _close );
 
-  _select = new QPushButton(tr("&Select"), this, "_select");
+  _select = new QPushButton(tr("&Select"), this);
+  _select->setObjectName("_select");
   _select->setEnabled( FALSE );
   _select->setDefault( TRUE );
   buttonLayout->addWidget( _select );

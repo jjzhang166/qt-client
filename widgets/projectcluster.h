@@ -45,15 +45,18 @@ class XTUPLEWIDGETS_EXPORT ProjectLineEdit : public VirtualClusterLineEdit
       Q_INVOKABLE virtual ProjectStatuses allowedStatuses() const { return _allowedStatuses; }
       
     public slots:
-      virtual void setAllowedStatuses(const ProjectStatuses);
-      virtual void setType(enum ProjectType ptype);
+      void setExtraClause(const QString &pExt);
+      void setAllowedStatuses(const ProjectStatuses);
+      void setType(enum ProjectType ptype);
 
     protected:
+      void buildExtraClause();
+
+      QString          _prjExtraClause;
       ProjectStatuses  _allowedStatuses;
       
     private:
       enum ProjectType _type;
-      QString _statusClause;
 
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(ProjectLineEdit::ProjectStatuses)

@@ -18,6 +18,7 @@
 #include "currdisplaysetup.h"
 #include "documentssetup.h"
 #include "exporthelper.h"
+#include "filemoveselector.h"
 #include "glclustersetup.h"
 #include "include.h"
 #include "itemlineeditsetup.h"
@@ -28,12 +29,12 @@
 #include "parametergroupsetup.h"
 #include "parameterlistsetup.h"
 #include "parameterwidget.h"
-#include "polineeditsetup.h"
 #include "projectlineeditsetup.h"
 #include "qactionproto.h"
 #include "qboxlayoutproto.h"
 #include "qbytearrayproto.h"
 #include "qdialogsetup.h"
+#include "qdialogbuttonboxproto.h"
 #include "qdockwidgetproto.h"
 #include "qdomattrproto.h"
 #include "qdomcdatasectionproto.h"
@@ -67,6 +68,7 @@
 #include "qnetworkreplyproto.h"
 #include "qnetworkrequestproto.h"
 #include "qprinterproto.h"
+#include "qpushbuttonproto.h"
 #include "qsizepolicyproto.h"
 #include "qspaceritemproto.h"
 #include "qsqldatabaseproto.h"
@@ -92,8 +94,6 @@
 #include "screensetup.h"
 #include "setupscriptapi.h"
 #include "shipmentclusterlineeditsetup.h"
-#include "solineeditsetup.h"
-#include "tolineeditsetup.h"
 #include "usernamecluster.h"
 #include "vendorgroupsetup.h"
 #include "wcomboboxsetup.h"
@@ -106,6 +106,7 @@
 #include "xnetworkaccessmanager.h"
 #include "xsqltablemodelproto.h"
 #include "xsqlqueryproto.h"
+#include "xt.h"
 #include "xtreewidget.h"
 #include "xvariantsetup.h"
 
@@ -127,6 +128,7 @@ void setupScriptApi(QScriptEngine *engine)
   setupCurrDisplay(engine);
   setupDocuments(engine);
   setupExportHelper(engine);
+  setupFileMoveSelector(engine);
   setupGLCluster(engine);
   setupInclude(engine);
   setupItemLineEdit(engine);
@@ -138,12 +140,12 @@ void setupScriptApi(QScriptEngine *engine)
   setupParameterList(engine);
   setupParameterWidget(engine);
   setupPeriodListViewItem(engine);
-  setupPoLineEdit(engine);
   setupProjectLineEdit(engine);
   setupQActionProto(engine);
   setupQBoxLayoutProto(engine);
   setupQByteArrayProto(engine);
   setupQDialog(engine);
+  setupQDialogButtonBoxProto(engine);
   setupQDockWidgetProto(engine);
   setupQDomAttrProto(engine);
   setupQDomCDATASectionProto(engine);
@@ -178,6 +180,7 @@ void setupScriptApi(QScriptEngine *engine)
   setupQNetworkReplyProto(engine);
   setupQNetworkRequestProto(engine);
   setupQPrinterProto(engine);
+  setupQPushButtonProto(engine);
   setupQSizePolicy(engine);
   setupQSpacerItem(engine);
   setupQSqlDatabaseProto(engine);
@@ -202,8 +205,6 @@ void setupScriptApi(QScriptEngine *engine)
   setupRevisionLineEdit(engine);
   setupScreen(engine);
   setupShipmentClusterLineEdit(engine);
-  setupSoLineEdit(engine);
-  setupToLineEdit(engine);
   setupUsernameCluster(engine);
   setupUsernameLineEdit(engine);
   setupVendorGroup(engine);
@@ -216,6 +217,7 @@ void setupScriptApi(QScriptEngine *engine)
   setupXDateEdit(engine);
   setupXSqlTableModelProto(engine);
   setupXSqlQueryProto(engine);
+  setupXt(engine);
   setupXTreeWidget(engine);
   setupXTreeWidgetItem(engine);
   setupXVariant(engine);

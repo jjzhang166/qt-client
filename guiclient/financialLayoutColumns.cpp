@@ -23,7 +23,7 @@ financialLayoutColumns::financialLayoutColumns(QWidget* parent, const char* name
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_month, SIGNAL(toggled(bool)), this, SLOT(sToggleMonth()));
   connect(_quarter, SIGNAL(toggled(bool)), this, SLOT(sToggleQuarter()));
@@ -80,20 +80,21 @@ enum SetResponse financialLayoutColumns::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
     _mode = cEdit;
-    _save->setFocus();
+    _buttonBox->setFocus();
     populate();
     }
     else if (param.toString() == "view")
     {
-    	_name->setEnabled(FALSE);
-    	_descrip->setEnabled(FALSE);
-   		_report->setEnabled(FALSE);
-		_save->setHidden(TRUE);
-		_close->setText(tr("&Close"));
-		_selected->setEnabled(FALSE);
-		_prior->setEnabled(FALSE);
-		_budget->setEnabled(FALSE);
-		_showdb->setEnabled(FALSE);
+      _name->setEnabled(FALSE);
+      _descrip->setEnabled(FALSE);
+      _report->setEnabled(FALSE);
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
+      _selected->setEnabled(FALSE);
+      _prior->setEnabled(FALSE);
+      _budget->setEnabled(FALSE);
+      _showdb->setEnabled(FALSE);
     }
   }
   

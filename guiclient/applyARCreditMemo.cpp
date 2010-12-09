@@ -215,14 +215,14 @@ void applyARCreditMemo::sClose()
 void applyARCreditMemo::populate()
 {
   q.prepare( "SELECT aropen_cust_id, aropen_docnumber, aropen_docdate,"
-             "       (aropen_amount - aropen_paid - COALESCE(prepared,0.0)) AS available,"
+             "       (aropen_amount - aropen_paid - COALESCE(prepared,0.0) - COALESCE(cashapplied,0.0)) AS available,"
              "       COALESCE(SUM(currToCurr(arcreditapply_curr_id, "
-	         "				     aropen_curr_id, "
-	         "				     arcreditapply_amount, "
-	         "				     current_date)), 0) AS f_applied, "
-	         "	     aropen_curr_id "
+             "				     aropen_curr_id, "
+             "				     arcreditapply_amount, "
+             "				     current_date)), 0) AS f_applied, "
+             "	     aropen_curr_id "
              "FROM aropen LEFT OUTER JOIN arcreditapply ON (arcreditapply_source_aropen_id=aropen_id) "
- 	         "       LEFT OUTER JOIN (SELECT aropen_id AS prepared_aropen_id,"
+             "       LEFT OUTER JOIN (SELECT aropen_id AS prepared_aropen_id,"
              "                               COALESCE(SUM(checkitem_amount + checkitem_discount),0) AS prepared"
              "                          FROM checkhead JOIN checkitem ON (checkitem_checkhead_id=checkhead_id)"
              "                                     JOIN aropen ON (checkitem_aropen_id=aropen_id)"
@@ -230,9 +230,16 @@ void applyARCreditMemo::populate()
              "                           AND  (NOT checkhead_void))"
              "                         GROUP BY aropen_id) AS sub1"
              "         ON (prepared_aropen_id=aropen_id)"
+             "       LEFT OUTER JOIN (SELECT aropen_id AS cash_aropen_id,"
+             "                               SUM(cashrcptitem_amount + cashrcptitem_discount) * -1.0 AS cashapplied"
+             "                          FROM cashrcpt JOIN cashrcptitem ON (cashrcptitem_cashrcpt_id=cashrcpt_id)"
+             "                                     JOIN aropen ON (cashrcptitem_aropen_id=aropen_id)"
+             "                         WHERE (NOT cashrcpt_posted)"
+             "                         GROUP BY aropen_id ) AS sub2"
+             "         ON (cash_aropen_id=aropen_id)"
              "WHERE (aropen_id=:aropen_id) "
              "GROUP BY aropen_cust_id, aropen_docnumber, aropen_docdate,"
-             "         aropen_amount, aropen_paid, aropen_curr_id, prepared;" );
+             "         aropen_amount, aropen_paid, aropen_curr_id, prepared, cashapplied;" );
   q.bindValue(":aropen_id", _aropenid);
   q.exec();
   if (q.first())

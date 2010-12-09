@@ -92,6 +92,16 @@ enum SetResponse itemUOM::set(const ParameterList &pParams)
     }
   }
 
+  param = pParams.value("inventoryUOM", &valid);
+  if (valid)
+  {
+      _uomidFrom = param.toInt();
+      _ignoreSignals = true;
+      _uomFrom->setId(_uomidFrom);
+      _uomTo->setId(_uomidFrom);
+      _ignoreSignals = false;
+  }
+
   param = pParams.value("itemuomconv_id", &valid);
   if (valid)
   {

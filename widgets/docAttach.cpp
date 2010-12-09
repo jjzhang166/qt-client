@@ -18,7 +18,7 @@
 
 #include "documents.h"
 #include "docAttach.h"
-
+#include "../common/shortcuts.h"
 #include "imageview.h"
 
 /*
@@ -35,11 +35,16 @@
  */
 
 docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-  : QDialog(parent, name, modal, fl)
+  : QDialog(parent, fl)
 {
   setupUi(this);
+  setObjectName(name ? name : "docAttach");
+  setModal(modal);
 
   // signals and slots connections
+  _save = _buttonBox->button(QDialogButtonBox::Save);
+  _save->setEnabled(false);
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_docType, SIGNAL(currentIndexChanged(int)), this, SLOT(sHandleButtons()));
   connect(_fileList, SIGNAL(clicked()), this, SLOT(sFileList()));
 
@@ -59,7 +64,8 @@ docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WFlags f
     _fileList->setMinimumHeight(32);
 #endif
 
-  adjustSize();
+    shortcuts::setStandardKeys(this);
+    adjustSize();
 }
 
 /*
@@ -365,13 +371,16 @@ void docAttach::sSave()
     {
       if (!fi.exists())
       {
-        QMessageBox::warning( this, tr("File Error"),tr("File " + url.toLocalFile() + " Was Not Found And Will Not Be Saved.") );
+        QMessageBox::warning( this, tr("File Error"),
+                             tr("File %1 was not found and will not be saved.").arg(url.toLocalFile()));
         return;
       }
       QFile sourceFile(url.toLocalFile());
       if (!sourceFile.open(QIODevice::ReadOnly))
       {
-        QMessageBox::warning( this, tr("File Open Error"),tr("Could Not Open Source File " + url.toLocalFile() + "File For Read.") );
+        QMessageBox::warning( this, tr("File Open Error"),
+                             tr("Could not open source file %1 for read.")
+                                .arg(url.toLocalFile()));
         return;
       }
       bytarr = sourceFile.readAll();

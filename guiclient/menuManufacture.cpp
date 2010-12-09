@@ -65,6 +65,8 @@
 
 #include "printWoForm.h"
 
+#include "setup.h"
+
 #include "menuManufacture.h"
 
 menuManufacture::menuManufacture(GUIClient *Pparent) :
@@ -206,6 +208,7 @@ menuManufacture::menuManufacture(GUIClient *Pparent) :
     { "separator",              NULL,                               NULL,                           mainMenu,      "true",            0, 0, true, NULL },
     { "menu",                   tr("&Utilities"),                   (char*)utilitiesMenu,           mainMenu,      "true",            0, 0, true, NULL },
     { "wo.purgeClosedWorkOrder",tr("Pur&ge Closed Work Orders..."), SLOT(sPurgeClosedWorkOrders()), utilitiesMenu, "PurgeWorkOrders", 0, 0, true, NULL },
+    { "wo.setup",	tr("&Setup..."),	SLOT(sSetup()),	mainMenu,	NULL,	NULL,	NULL,	true, NULL}
   };
 
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
@@ -515,3 +518,12 @@ void menuManufacture::sPrintWorkOrderForm()
   printWoForm(parent, "", TRUE).exec();
 }
 
+void menuManufacture::sSetup()
+{
+  ParameterList params;
+  params.append("module", Xt::ManufactureModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
+}

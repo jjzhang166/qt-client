@@ -10,28 +10,30 @@
 
 #include "xlistbox.h"
 
-XListBoxText::XListBoxText( Q3ListBox* listbox, const QString & text, int id )
-  : Q3ListBoxText(listbox, text)
+XListBoxText::XListBoxText(QListWidget* listbox, const QString &text, int id)
+  : QListWidgetItem(text, listbox)
 {
   _id = id;
 }
 
-XListBoxText::XListBoxText( const QString & text, int id )
-  : Q3ListBoxText(text)
+XListBoxText::XListBoxText(const QString & text, int id)
+  : QListWidgetItem(text)
 {
   _id = id;
 }
 
-XListBoxText::XListBoxText( Q3ListBox* listbox, const QString & text, Q3ListBoxItem *after )
-  : Q3ListBoxText(listbox, text, after)
+XListBoxText::XListBoxText(QListWidget* listbox, const QString &text, QListWidgetItem *after)
+  : QListWidgetItem(text, listbox)
 {
   _id = -1;
+  listbox->insertItem(listbox->row(after) + 1, this);
 }
 
-XListBoxText::XListBoxText( Q3ListBox* listbox, const QString & text, int id, Q3ListBoxItem *after )
-  : Q3ListBoxText(listbox, text, after)
+XListBoxText::XListBoxText(QListWidget* listbox, const QString & text, int id, QListWidgetItem *after)
+  : QListWidgetItem(text, listbox)
 {
   _id = id;
+  listbox->insertItem(listbox->row(after) + 1, this);
 }
 
 XListBoxText::~XListBoxText()

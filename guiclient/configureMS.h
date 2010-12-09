@@ -12,11 +12,11 @@
 #define CONFIGUREMS_H
 
 #include "guiclient.h"
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configureMS.h"
 
-class configureMS : public XDialog, public Ui::configureMS
+class configureMS : public XAbstractConfigure, public Ui::configureMS
 {
     Q_OBJECT
 
@@ -25,11 +25,13 @@ public:
     ~configureMS();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
 
+signals:
+    void saving();
 };
 
 #endif // CONFIGUREMS_H

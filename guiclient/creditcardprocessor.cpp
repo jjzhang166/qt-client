@@ -33,8 +33,9 @@
 #include "verisignprocessor.h"
 #include "yourpayprocessor.h"
 #include "paymentechprocessor.h"
+#include "cybersourceprocessor.h"
 
-#define DEBUG true
+#define DEBUG false
 
 /** \class CreditCardProcessor
 
@@ -51,6 +52,7 @@
     \li doCharge
     \li doChargePreauthorized
     \li doCredit
+    \li doReversePreauthorized
     \li doVoidPrevious
     \li doTestConfiguration
 
@@ -70,13 +72,14 @@
 
     In addition to subclassing CreditCardProcessor, alternate credit
     card processing services require changing
-    CreditCardProcessor::getProcessor and configureCC.
+    CreditCardProcessor::getProcessor and configureCC, and to subclass
+    ConfigCreditCardProcessor.
     CreditCardProcessor::getProcessor must be modified to instantiate the
     right subclass of CreditCardProcessor based on the \c CCCompany
     metric or its QString argument.  configureCC must be modified
-    to allow editing and saving service-specific metrics and to
-    store the service-specific \c CCCompany value checked by
-    getProcessor.
+    to store the service-specific \c CCCompany value checked by getProcessor
+    and to instantiate a ConfigCreditCardProcessor, which allows
+    editing and saving service-specific metrics
 
     \b Error \b handling:
 
@@ -123,9 +126,10 @@
     and should be loaded into _msgHash in the subclass' constructor.
 
     \see AuthorizeDotNetProcessor
+    \see CyberSourceProcessor
     \see ExternalCCProcessor
-    \see YourPayProcessor
     \see PaymentechProcessor
+    \see YourPayProcessor
     \see configureCC
 
     \todo figure out how to expose portions of this in the scriptapi doxygen module
@@ -134,112 +138,119 @@
 QString			 CreditCardProcessor::_errorMsg = "";
 QHash<int, QString>	 CreditCardProcessor::_msgHash;
 
-#define TR(a)	QObject::tr(a)
 static struct {
     int		code;
-    QString	text;
+    const char*	text;
 } messages[] = {
 
-  {   0, TR("This transaction was approved.\n%1")			},
+  {   0, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction was approved.\n%1")			},
 
-  {  -1, TR("Database Error")						},
-  {  -2, TR("You don't have permission to process Credit Card transactions.") },
-  {  -3, TR("The application is not set up to process credit cards.")	},
-  {  -4, TR("The Bank Accounts are not set for all Credit Card types.") },
-  {  -5, TR("The encryption key is not defined.")			},
-  {  -6, TR("The login for the proxy server is not defined.")		},
-  {  -7, TR("The password for the proxy server is not defined.")	},
-  {  -8, TR("The proxy server is not defined.")				},
-  {  -9, TR("The port to use for the proxy server is not defined.")	},
-  { -10, TR("Credit Card %1 is not active. Make it active or select "
+  {  -1, QT_TRANSLATE_NOOP("CreditCardProcessor", "Database Error")						},
+  {  -2, QT_TRANSLATE_NOOP("CreditCardProcessor", "You don't have permission to process Credit Card transactions.") },
+  {  -3, QT_TRANSLATE_NOOP("CreditCardProcessor", "The application is not set up to process credit cards.")	},
+  {  -4, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Bank Accounts are not set for all Credit Card types.") },
+  {  -5, QT_TRANSLATE_NOOP("CreditCardProcessor", "The encryption key is not defined.")			},
+  {  -6, QT_TRANSLATE_NOOP("CreditCardProcessor", "The login for the proxy server is not defined.")		},
+  {  -7, QT_TRANSLATE_NOOP("CreditCardProcessor", "The password for the proxy server is not defined.")	},
+  {  -8, QT_TRANSLATE_NOOP("CreditCardProcessor", "The proxy server is not defined.")				},
+  {  -9, QT_TRANSLATE_NOOP("CreditCardProcessor", "The port to use for the proxy server is not defined.")	},
+  { -10, QT_TRANSLATE_NOOP("CreditCardProcessor", "Credit Card %1 is not active. Make it active or select "
 	    "another Credit Card.")					},
-  { -11, TR("Credit Card %1 has expired.")				},
-  { -12, TR("The Credit Card Processing Company reported an error:\n%1")		},
-  { -13, TR("The Credit Card configuration is inconsistent and the application "
+  { -11, QT_TRANSLATE_NOOP("CreditCardProcessor", "Credit Card %1 has expired.")				},
+  { -12, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card Processing Company reported an error:\n%1")		},
+  { -13, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card configuration is inconsistent and the application "
 	    "cannot determine whether to run in Test or Live mode.")	},
-  { -14, TR("Could not figure out which Credit Card Processing Company "
+  { -14, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not figure out which Credit Card Processing Company "
 	    "to set up (based on %1).")					},
-  { -15, TR("The digital certificate (.pem file) is not set.")		},
-  { -16, TR("Could not open digital certificate (.pem file) %1.")	},
-  { -17, TR("Could not find a Credit Card with internal ID %1.")	},
-  { -18, TR("Error with message transfer program:\n%1 %2\n\n%3")	},
-  { -19, TR("%1 is not implemented.")					},
-  { -20, TR("The application does not support either Credit Cards or "
+  { -15, QT_TRANSLATE_NOOP("CreditCardProcessor", "The digital certificate (.pem file) is not set.")		},
+  { -16, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not open digital certificate (.pem file) %1.")	},
+  { -17, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find a Credit Card with internal ID %1.")	},
+  { -18, QT_TRANSLATE_NOOP("CreditCardProcessor", "Error with message transfer program:\n%1 %2\n\n%3")	},
+  { -19, QT_TRANSLATE_NOOP("CreditCardProcessor", "%1 is not implemented.")					},
+  { -20, QT_TRANSLATE_NOOP("CreditCardProcessor", "The application does not support either Credit Cards or "
 	    "Checks with %1. Please choose a different company.")	}, 
   // preauthorizing charges
-  { -21, TR("The amount to charge must be greater than 0.00.")		},
-  { -24, TR("Could not generate a sequence number while preauthorizing.") },
+  { -21, QT_TRANSLATE_NOOP("CreditCardProcessor", "The amount to charge must be greater than 0.00.")		},
+  { -24, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a sequence number while preauthorizing.") },
 
   // processing charges based on a pre-authorization
-  { -30, TR("Could not find the Credit Card preauthorization to charge.") },
-  { -32, TR("You must select a preauthorization to charge.") 		},
-  { -33, TR("The preauthorization (for %1) is not sufficient to cover "
+  { -30, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find the Credit Card preauthorization to charge.") },
+  { -32, QT_TRANSLATE_NOOP("CreditCardProcessor", "You must select a preauthorization to charge.") 		},
+  { -33, QT_TRANSLATE_NOOP("CreditCardProcessor", "The preauthorization (for %1) is not sufficient to cover "
 		 "the desired transaction amount (%2).")		},
-  { -34, TR("No Preauthorization found")				},
-  { -35, TR("This preauthorization may not be charged. It was created "
+  { -34, QT_TRANSLATE_NOOP("CreditCardProcessor", "No Preauthorization found")				},
+  { -35, QT_TRANSLATE_NOOP("CreditCardProcessor", "This preauthorization may not be charged. It was created "
 	    "for a Sales Order which has been canceled.")	},
 
   // stand-alone charges
-  { -40, TR("Inconsistent data passed to charge(): [%1] [%2]")	},
-  { -44, TR("Could not generate a sequence number while charging.")	},
+  { -40, QT_TRANSLATE_NOOP("CreditCardProcessor", "Inconsistent data passed to charge(): [%1] [%2]")	},
+  { -44, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a sequence number while charging.")	},
 
   // credits
-  { -50, TR("Could not find original Credit Card payment to credit.")	},
+  { -50, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find original Credit Card payment to credit.")	},
 
   // voids
-  { -60, TR("Could not find the Credit Card transaction to void.")	},
+  { -60, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not find the Credit Card transaction to void.")	},
 
   // user chose to cancel
-  { -70, TR("User chose not to process the preauthorization.")		},
-  { -71, TR("User chose not to post-authorize process the charge.")	},
-  { -72, TR("User chose not to process the charge.")			},
-  { -73, TR("User chose not to process the credit.")			},
-  { -74, TR("User chose not to process the void.")			},
-  { -75, TR("User chose not to proceed without CVV code.")		},
+  { -70, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the preauthorization.")		},
+  { -71, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to post-authorize process the charge.")	},
+  { -72, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the charge.")			},
+  { -73, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the credit.")			},
+  { -74, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to process the void.")			},
+  { -75, QT_TRANSLATE_NOOP("CreditCardProcessor", "User chose not to proceed without CVV code.")		},
 
   // scripting errors
-  { -81, TR("Scripting error in %1: Input parameter %2 is not a(n) %3") },
+  { -81, QT_TRANSLATE_NOOP("CreditCardProcessor", "Scripting error in %1: Input parameter %2 is not a(n) %3") },
 
   // transaction was processed fine but was not successful
-  { -90, TR("This Credit Card transaction was denied.\n%1")		},
-  { -91, TR("This Credit Card transaction is a duplicate.\n%1")		},
-  { -92, TR("This Credit Card transaction was declined.\n%1")		},
-  { -93, TR("This Credit Card transaction was denied "
+  { -90, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was denied.\n%1")		},
+  { -91, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction is a duplicate.\n%1")		},
+  { -92, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was declined.\n%1")		},
+  { -93, QT_TRANSLATE_NOOP("CreditCardProcessor", "This Credit Card transaction was denied "
 	    "because of possible fraud.\n%1")				},
 
   // other misc errors
-  { -94, TR("The Bank Account is not set for Credit Card type %1. Either this "
+  { -94, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Bank Account is not set for Credit Card type %1. Either this "
             "card type is not accepted or the Credit Card configuration is not "
             "complete.")                                                },
-  { -95, TR("The Credit Card Processor returned an error: %1")		},
-  { -96, TR("This transaction failed the CVV check.")			},
-  { -97, TR("This transaction failed the Address Verification check.")	},
-  { -98, TR("You may not process this transaction without a CVV code. "
+  { -95, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card Processor returned an error: %1")		},
+  { -96, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the CVV check.")			},
+  { -97, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the Address Verification check.")	},
+  { -98, QT_TRANSLATE_NOOP("CreditCardProcessor", "You may not process this transaction without a CVV code. "
 	    "Please enter one and try again.")				},
-  { -99, TR("The CVV value is not valid.")				},
-  {-100, TR("No approval code was received:\n%1\n%2\n%3")		},
+  { -99, QT_TRANSLATE_NOOP("CreditCardProcessor", "The CVV value is not valid.")				},
+  {-100, QT_TRANSLATE_NOOP("CreditCardProcessor", "No approval code was received:\n%1\n%2\n%3")		},
 
   // positive values: credit card company successfully processed the
   // transaction but there was a local failure
-  {   1, TR("Database Error")						},
-  {   2, TR("Could not generate a unique key for the ccpay table.")	},
-  {   3, TR("Stored Procedure Error")					},
-  {   4, TR("The Credit Card transaction completed successfully but "
+  {   1, QT_TRANSLATE_NOOP("CreditCardProcessor", "Database Error")						},
+  {   2, QT_TRANSLATE_NOOP("CreditCardProcessor", "Could not generate a unique key for the ccpay table.")	},
+  {   3, QT_TRANSLATE_NOOP("CreditCardProcessor", "Stored Procedure Error")					},
+  {   4, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Credit Card transaction completed successfully but "
 	    "it was not recorded correctly:\n%1")			},
-  {   5, TR("The Server is %2 and is expected to be %3 in %1 mode, "
+  {   5, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Server is %2 and is expected to be %3 in %1 mode, "
             "while the Port is %4 and is expected to be %5. Credit Card "
             "processing transactions may fail.")                        },
-  {   6, TR("The Server is %2 and is expected to be %3 in %1 mode."
+  {   6, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Server is %2 and is expected to be %3 in %1 mode."
             "Credit Card processing transactions may fail.")            },
-  {   7, TR("The Port is %2 and is expected to be %3 in %1 mode. "
+  {   7, QT_TRANSLATE_NOOP("CreditCardProcessor", "The Port is %2 and is expected to be %3 in %1 mode. "
             "Credit Card processing transactions may fail.")            },
-  {  94, TR("There was a problem printing the credit card receipt.")    },
-  {  96, TR("This transaction failed the CVV check but will be "
+  {  94, QT_TRANSLATE_NOOP("CreditCardProcessor", "There was a problem printing the credit card receipt.")    },
+  {  96, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the CVV check but will be "
 	    "processed anyway.")					},
-  {  97, TR("This transaction failed the Address Verification check "
+  {  97, QT_TRANSLATE_NOOP("CreditCardProcessor", "This transaction failed the Address Verification check "
 	    "but will be processed anyway.")				},
 
 };
+
+CreditCardProcessor::FraudCheckResult::FraudCheckResult(QChar pcode, int /*TODO: FraudChecks*/ psev, QString ptext)
+{
+  code = pcode;
+  sev  = psev;
+  text = ptext;
+}
+
 /** \brief Construct and initialize a default CreditCardProcessor.
 
     This should never be called except by the constructor of a subclass.
@@ -260,11 +271,37 @@ CreditCardProcessor::CreditCardProcessor()
   _http = 0;
 
   for (unsigned int i = 0; i < sizeof(messages) / sizeof(messages[0]); i++)
-    _msgHash.insert(messages[i].code, messages[i].text);
+    _msgHash.insert(messages[i].code, tr(messages[i].text));
+
+  _avsCodes.append(new FraudCheckResult('A', NoMatch  | PostalCode, tr("Street Address matches but not Postal Code")));
+  _avsCodes.append(new FraudCheckResult('B', NotAvail | Address,    tr("Address not provided for AVS check")));
+  _avsCodes.append(new FraudCheckResult('E', Invalid,               tr("Address Verification error")));
+  _avsCodes.append(new FraudCheckResult('G', Unsupported,           tr("Card issuing bank is not a U.S. bank")));
+  _avsCodes.append(new FraudCheckResult('N', NoMatch | Address | PostalCode, tr("No match on Street Address or Postal Code")));
+  _avsCodes.append(new FraudCheckResult('P', Unsupported,           tr("Address Verification does not apply to this transaction")));
+  _avsCodes.append(new FraudCheckResult('R', ServiceUnavailable,    tr("Retry - system unavailable or timed out")));
+  _avsCodes.append(new FraudCheckResult('S', Unsupported,           tr("Address Verification service not supported")));
+  _avsCodes.append(new FraudCheckResult('U', NotAvail | Address,    tr("Address information not available")));
+  _avsCodes.append(new FraudCheckResult('W', NoMatch  | Address,    tr("9-Digit Postal Code matches but not Street Address")));
+  _avsCodes.append(new FraudCheckResult('X', Match,                 tr("Street Address and 9-digit Postal Code match")));
+  _avsCodes.append(new FraudCheckResult('Y', Match,                 tr("Street Address and 5-digit Postal Code match")));
+  _avsCodes.append(new FraudCheckResult('Z', NoMatch  | Address,    tr("5-Digit Postal Code matches but not Street Address")));
+
+  _cvvCodes.append(new FraudCheckResult('M', Match,        tr("CVV matches")));
+  _cvvCodes.append(new FraudCheckResult('N', NoMatch,      tr("CVV does not match")));
+  _cvvCodes.append(new FraudCheckResult('P', NotProcessed, tr("CVV was not processed")));
+  _cvvCodes.append(new FraudCheckResult('S', NotAvail,     tr("CVV should be on the card but was not supplied")));
+  _cvvCodes.append(new FraudCheckResult('U', Unsupported,  tr("Card issuing bank was not certified for CVV")));
+  _cvvCodes.append(new FraudCheckResult('X', Unsupported,  tr("Card Verification is not supported for this processor or card type")));
 }
 
 CreditCardProcessor::~CreditCardProcessor()
 {
+  while (! _avsCodes.isEmpty())
+    delete _avsCodes.takeFirst();
+
+  while (! _cvvCodes.isEmpty())
+    delete _cvvCodes.takeFirst();
 }
 
 /** \brief Get a new instance of a specific CreditCardProcessor subclass.
@@ -301,6 +338,9 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
   else if (pcompany == "Paymentech")
     return new PaymentechProcessor();
 
+  else if (pcompany == "CyberSource")
+    return new CyberSourceProcessor();
+
   else if (pcompany == "External")
     return new ExternalCCProcessor();
 
@@ -323,6 +363,9 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
 
   else if ((_metrics->value("CCCompany") == "Paymentech"))
     processor = new PaymentechProcessor();
+
+  else if ((_metrics->value("CCCompany") == "CyberSource"))
+    processor = new CyberSourceProcessor();
 
   else if ((_metrics->value("CCCompany") == "External"))
     processor = new ExternalCCProcessor();
@@ -356,7 +399,12 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
 
     \param[in]  pccardid   The internal id of the credit card to preauthorize
     \param[in]  pcvv       The CVV/CCV code of the credit card to preauthorize
-    \param[in]  pamount    The total amount to preauthorize
+    \param[in]  pamount    The total amount to preauthorize. If the credit card processor
+                           does not preauthorize the full amount requested, the
+                           database will store the actual amount that was authorized
+                           If this occurs, the application will display an error if the
+                           amount authorized is 0 or a warning if the amount authorized is
+                           greater than 0.
     \param[in]  ptax       The subportion of the total which is tax
     \param[in]  ptaxexempt Whether or not this transaction is tax exempt
     \param[in]  pfreight   The subportion of the total which is freight
@@ -410,7 +458,8 @@ int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const dou
   }
 
   ParameterList dbupdateinfo;
-  returnVal = doAuthorize(pccardid, pcvv, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid, pneworder, preforder, pccpayid, dbupdateinfo);
+  double amount = pamount;
+  returnVal = doAuthorize(pccardid, pcvv, amount, ptax, ptaxexempt, pfreight, pduty, pcurrid, pneworder, preforder, pccpayid, dbupdateinfo);
   if (returnVal == -70)
     return -70;
   else if (returnVal > 0)
@@ -471,7 +520,7 @@ int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const dou
 
       cashq.bindValue(":cashrcptid",   prefid);
       cashq.bindValue(":ccardid",      pccardid);
-      cashq.bindValue(":amount",       pamount);
+      cashq.bindValue(":amount",       amount);
       cashq.bindValue(":curr_id",      pcurrid);
       cashq.bindValue(":notes",        "Credit Card Pre-Authorization");
       cashq.bindValue(":custdeposit",  _metrics->boolean("EnableCustomerDeposits"));
@@ -490,7 +539,7 @@ int CreditCardProcessor::authorize(const int pccardid, const int pcvv, const dou
 		    "  :payco_amount, :payco_curr_id);");
       cashq.bindValue(":payco_ccpay_id",  pccpayid);
       cashq.bindValue(":payco_cohead_id", prefid);
-      cashq.bindValue(":payco_amount",    pamount);
+      cashq.bindValue(":payco_amount",    amount);
       cashq.bindValue(":payco_curr_id",   pcurrid);
       cashq.exec();
       if (cashq.lastError().type() != QSqlError::NoError)
@@ -942,9 +991,10 @@ int CreditCardProcessor::testConfiguration()
   // now handle warnings
   if (returnValue >= 0)
   {
-    QString serverStr = buildURL(_metrics->value("CCServer"), _metrics->value("CCPort"), false);
+    QString serverStr  = buildURL(_metrics->value("CCServer"), _metrics->value("CCPort"), false);
+    QString defaultStr = buildURL(defaultServer(),        QString(defaultPort(isLive())), false);
 
-    if (serverStr != defaultServer() && ! _metrics->value("CCPort").isEmpty() &&
+    if (serverStr != defaultStr &&
         _metrics->value("CCPort").toInt() != defaultPort(isLive()) &&
         _metrics->value("CCPort").toInt() != 0)
     {
@@ -955,7 +1005,7 @@ int CreditCardProcessor::testConfiguration()
                              .arg(defaultPort(isLive()));
       returnValue = 5;
     }
-    else if (serverStr != defaultServer())
+    else if (serverStr != defaultStr)
     {
       _errorMsg = errorMsg(6).arg(isLive() ? tr("Live") : tr("Test"))
                              .arg(_metrics->value("CCServer"))
@@ -1171,6 +1221,164 @@ int CreditCardProcessor::credit(const int pccardid, const int pcvv, const double
       if (receiptReturn != 0 && returnVal == 0)
         returnVal = receiptReturn;
     }
+  }
+
+  return returnVal;
+}
+
+/** \brief Reverse a preauthorization.
+
+    This method performs application-level error checking and all
+    of the database work required to reverse a prior preauthorization.
+    This makes available to the card holder the funds that have been
+    reserved by that preauthorization.
+
+    \warning This method should never be overridden.
+              Service-specific functionality should be implemented in
+              the doReversePreauthorized method of the service' subclass.
+
+    \param pamount   The amount to be reversed, not necessarily the same
+                     as the amount originally authorized.
+    \param pcurrid   The currency of the amount.
+    \param pneworder The order number associated with the preauthorization
+    \param preforder The reference number (preforder) generated by
+                     the preauthorization transaction
+    \param pccpayid  The internal id of the preauthorization transaction
+    \param preftype  Either \c cohead or \c cashrcpt or blank
+    \param prefid    The cashrcpt_id or cohead_id associated with the
+                     preauthorization transaction
+
+    \return An index into _errMsg; 0 indicates success
+  */
+int CreditCardProcessor::reversePreauthorized(const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int prefid)
+{
+  if (DEBUG)
+    qDebug("CCP:reversePreauthorized(%f, %d, %s, %s, %d)",
+           pamount, pcurrid, qPrintable(pneworder), qPrintable(preforder), pccpayid);
+  reset();
+
+  XSqlQuery ccq;
+  ccq.prepare("SELECT * FROM ccpay WHERE (ccpay_id=:ccpayid AND ccpay_status = 'A');");
+  ccq.bindValue(":ccpayid", pccpayid);
+  ccq.exec();
+
+  int ccardid;
+  if (ccq.first())
+    ccardid = ccq.value("ccpay_ccard_id").toInt();
+  else if (ccq.lastError().type() != QSqlError::NoError)
+  {
+    _errorMsg = ccq.lastError().databaseText();
+    return -1;
+  }
+  else
+  {
+    _errorMsg = errorMsg(-60);
+    return -60;
+  }
+
+  // don't checkCreditCard because we want to reverse the authorization regardless
+
+  QString neworder = ccq.value("ccpay_order_number").toString();
+  QString reforder = ccq.value("ccpay_r_ordernum").toString();
+  QString approval = ccq.value("ccpay_r_ref").toString();
+  ParameterList dbupdateinfo;
+  int returnVal = doReversePreauthorized(ccq.value("ccpay_amount").toDouble(),
+                                         ccq.value("ccpay_curr_id").toInt(),
+                                         neworder, reforder,
+                                         pccpayid, dbupdateinfo);
+  if (returnVal == -74)
+    return -74;
+  else if (returnVal < 0)
+    return returnVal;
+  else if (returnVal > 0)
+    _errorMsg = errorMsg(4).arg(_errorMsg);
+
+  returnVal = updateCCPay(pccpayid, dbupdateinfo);
+  if (returnVal < 0)
+    return returnVal;
+
+  double newamount = 0.0;
+  ccq.prepare("UPDATE ccpay SET ccpay_amount = ccpay_amount - :revamount,"
+              "             ccpay_status = CASE WHEN ccpay_amount - :revamount = 0 THEN 'R'"
+              "                                 ELSE ccpay_status END"
+              " WHERE ccpay_id = :ccpayid RETURNING ccpay_amount;");
+  ccq.bindValue(":ccpayid", pccpayid);
+  ccq.bindValue(":revamount", pamount);
+  ccq.exec();
+  if (ccq.first())
+  {
+    newamount = ccq.value("ccpay_amount").toDouble();
+    if (DEBUG)
+      qDebug("CCP::reverseAuthorization() set ccpay_amount to %f", newamount);
+  }
+  else if (ccq.lastError().type() != QSqlError::NoError)
+  {
+    _errorMsg = errorMsg(4).arg(ccq.lastError().databaseText());
+    returnVal = 1;
+  }
+
+  XSqlQuery cashq;
+  if (preftype == "cashrcpt")
+  {
+    cashq.prepare( "UPDATE cashrcpt "
+                   "SET cashrcpt_cust_id=ccard_cust_id,"
+                   "    cashrcpt_amount=:amount,"
+                   "    cashrcpt_fundstype=ccard_type,"
+                   "    cashrcpt_bankaccnt_id=ccbank_bankaccnt_id,"
+                   "    cashrcpt_distdate=CURRENT_DATE,"
+                   "    cashrcpt_notes=cashrcpt || E'\\n' || :notes, "
+                   "    cashrcpt_curr_id=:curr_id,"
+                   "    cashrcpt_usecustdeposit=:custdeposit "
+                   "FROM ccard LEFT OUTER JOIN ccbank ON (ccard_type=ccbank_ccard_type) "
+                   "WHERE ((cashrcpt_id=:cashrcptid)"
+                   "  AND  (ccard_id=:ccardid)"
+                   "  AND NOT cashrcpt_posted);" );
+
+    cashq.bindValue(":cashrcptid",   prefid);
+    cashq.bindValue(":ccardid",      ccardid);
+    cashq.bindValue(":amount",       newamount);
+    cashq.bindValue(":curr_id",      pcurrid);
+    cashq.bindValue(":notes",        tr("Credit Card Pre-Authorization %1 reversed")
+                                     .arg(newamount == 0.0 ? tr("fully") : tr("partially")));
+    cashq.bindValue(":custdeposit",  _metrics->boolean("EnableCustomerDeposits"));
+    cashq.exec();
+    if (cashq.lastError().type() != QSqlError::NoError)
+    {
+      _errorMsg = errorMsg(4).arg(cashq.lastError().databaseText());
+      // TODO: log an event?
+      returnVal = 1;
+    }
+  }
+  else if (preftype == "cohead")
+  {
+    if (newamount == 0.0)
+      cashq.prepare("DELETE FROM payco"
+                    " WHERE ((payco_ccpay_id=:payco_ccpay_id)"
+                    "    AND (payco_cohead_id=:payco_cohead_id));");
+    else
+    {
+      cashq.prepare("INSERT INTO payco VALUES"
+                    " (:payco_ccpay_id, :payco_cohead_id,"
+                    "  :payco_amount, :payco_curr_id);");
+      cashq.bindValue(":payco_amount",    pamount);
+      cashq.bindValue(":payco_curr_id",   pcurrid);
+    }
+    cashq.bindValue(":payco_ccpay_id",  pccpayid);
+    cashq.bindValue(":payco_cohead_id", prefid);
+    cashq.exec();
+    if (cashq.lastError().type() != QSqlError::NoError)
+    {
+      _errorMsg = errorMsg(4).arg(cashq.lastError().databaseText());
+      // TODO: log an event?
+      returnVal = 1;
+    }
+  }
+
+  if (_metrics->boolean("CCPrintReceipt"))
+  {
+    int receiptReturn = printReceipt(pccpayid);
+    if (receiptReturn != 0 && returnVal == 0)
+      returnVal = receiptReturn;
   }
 
   return returnVal;
@@ -1400,7 +1608,7 @@ int CreditCardProcessor::checkCreditCard(const int pccid, const int pcvv, QStrin
 /** \brief Placeholder for subclasses to override.
      \see authorize
  */
-int CreditCardProcessor::doAuthorize(const int pccardid, const int pcvv, const double pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &)
+int CreditCardProcessor::doAuthorize(const int pccardid, const int pcvv, double &pamount, const double ptax, const bool ptaxexempt, const double pfreight, const double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &)
 {
   if (DEBUG)
     qDebug("CCP:doAuthorize(%d, %d, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
@@ -1460,6 +1668,18 @@ int CreditCardProcessor::doCredit(const int pccardid, const int pcvv, const doub
 }
 
 /** \brief Placeholder for subclasses to override.
+    \see   reversePreauthorized
+  */
+int CreditCardProcessor::doReversePreauthorized(const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int pccpayid, ParameterList &/*pparams*/)
+{
+  if (DEBUG)
+    qDebug("CCP:doReversePreauthorized(%f, %d, %s, %s, %d)",
+	   pamount, pcurrid, qPrintable(pneworder), qPrintable(preforder), pccpayid);
+  _errorMsg = errorMsg(-19).arg("doReversePreauthorized");
+  return -19;
+}
+
+/** \brief Placeholder for subclasses to override.
     \see   voidPrevious
  */
 int CreditCardProcessor::doVoidPrevious(const int pccardid, const int pcvv, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, QString &papproval, int &pccpayid, ParameterList &)
@@ -1512,21 +1732,32 @@ int CreditCardProcessor::sendViaHTTP(const QString &prequest,
 #ifndef QT_NO_OPENSSL
   if(!_metrics->boolean("CCUseCurl"))
   {
+    // PEM files are currently only used for YourPay
     // TODO: The specific reference to YourPay should go away, especially when something other than YourPay starts to use this
-    if (!pemfile.isEmpty() && (_metrics->value("CCCompany") == "YourPay")) // This is currently only used for YourPay
+    if (!pemfile.isEmpty() && (_metrics->value("CCCompany") == "YourPay"))
     {
       QFile pemio(pemfile);
-      QSslCertificate localcert(&pemio);
-      if(!localcert.isNull())
-      {
-        QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
-        sslconf.setLocalCertificate(localcert);
-        QSslConfiguration::setDefaultConfiguration(sslconf);
-      }
+      if (pemio.error() != QFile::NoError)
+        QMessageBox::warning(0, tr("Could not open PEM file"),
+                             tr("<p>Failed to open the PEM file %1: %2")
+                             .arg(pemfile, pemio.errorString()));
       else
       {
-        QMessageBox::critical(0, tr("Failed to load PEM file"),
-          tr("Failed to load the PEM file. This may cause communication problems."));
+        QSslCertificate localcert(&pemio);
+        if(!localcert.isNull())
+        {
+          QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
+          sslconf.setLocalCertificate(localcert);
+          QSslConfiguration::setDefaultConfiguration(sslconf);
+        }
+        else
+        {
+          QMessageBox::warning(0, tr("Failed to load Certificate"),
+                               tr("<p>Failed to load a Certificate from "
+                                  "the PEM file %1. "
+                                  "This may cause communication problems.")
+                               .arg(pemfile));
+        }
       }
     }
 
@@ -1550,7 +1781,7 @@ int CreditCardProcessor::sendViaHTTP(const QString &prequest,
     request.setValue("Host", ccurl.host());
     
     QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
-    _http->request(request, prequest.utf8());
+    _http->request(request, prequest.toUtf8());
     while(_http->hasPendingRequests() || _http->currentId() != 0)
     {
       QApplication::processEvents(QEventLoop::WaitForMoreEvents);
@@ -1911,24 +2142,24 @@ int CreditCardProcessor::fraudChecks()
 
   if (! _passedAvs && _metrics->value("CCAvsCheck") == "F")
   {
-    _errorMsg = errorMsg(-97);
+    _errorMsg = errorMsg(-97) + "\n" + _errorMsg;
     returnValue = -97;
   }
   else if (! _passedAvs && _metrics->value("CCAvsCheck") == "W")
   {
-    _errorMsg = errorMsg(97);
+    _errorMsg = errorMsg(97) + "\n" + _errorMsg;
     returnValue = 97;
   }
 
   // not "else if" - maybe this next check will be fatal
   if (! _passedCvv && _metrics->value("CCCVVCheck") == "F")
   {
-    _errorMsg = errorMsg(-96);
+    _errorMsg = errorMsg(-96) + "\n" + _errorMsg;
     returnValue = -96;
   }
   else if (! _passedCvv && _metrics->value("CCCVVCheck") == "W")
   {
-    _errorMsg = errorMsg(96);
+    _errorMsg = errorMsg(96) + "\n" + _errorMsg;
     returnValue = 96;
   }
 
@@ -1959,6 +2190,7 @@ int CreditCardProcessor::printReceipt(const int pccpayid)
   params.append("authorized",tr("Authorized"));
   params.append("approved",  tr("Approved"));
   params.append("declined",  tr("Declined"));
+  params.append("reversed",  tr("Reversed"));
   params.append("voided",    tr("Voided"));
   params.append("noapproval",tr("No Approval Code"));
   params.append("key",       omfgThis->_key);
@@ -1979,6 +2211,22 @@ int CreditCardProcessor::printReceipt(const int pccpayid)
 	   returnValue, _errorMsg.toAscii().data());
 
   return returnValue;
+}
+
+QString CreditCardProcessor::typeToCode(CCTransaction ptranstype)
+{
+  // TODO: do we need to distinguish between Capture and Charge? Reverse and Void
+  switch (ptranstype)
+  {
+    case Authorize: return QString("A");
+    case Capture:   return QString("C");
+    case Charge:    return QString("C");
+    case Credit:    return QString("R");
+    case Reverse:   return QString("V");
+    case Void:      return QString("V");
+  }
+
+  return QString::null;
 }
 
 /** \brief Convert between two %currencies.
@@ -2759,3 +3007,20 @@ ParameterList CreditCardProcessor::voidPrevious(const ParameterList &pinput)
   return *poutput;
 }
 
+CreditCardProcessor::FraudCheckResult *CreditCardProcessor::avsCodeLookup(QChar pcode)
+{
+  for (int i = 0; i < _avsCodes.length(); i++)
+    if (_avsCodes.at(i)->code == pcode)
+      return _avsCodes.at(i);
+
+  return 0;
+}
+
+CreditCardProcessor::FraudCheckResult *CreditCardProcessor::cvvCodeLookup(QChar pcode)
+{
+  for (int i = 0; i < _cvvCodes.length(); i++)
+    if (_cvvCodes.at(i)->code == pcode)
+      return _cvvCodes.at(i);
+
+  return 0;
+}

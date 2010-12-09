@@ -10,64 +10,37 @@
 
 #include "itemGroup.h"
 
-#include <QVariant>
 #include <QMessageBox>
-//#include <QStatusBar>
-#include <Q3DragObject>
+#include <QVariant>
+
 #include "itemcluster.h"
 
-/*
- *  Constructs a itemGroup as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
 itemGroup::itemGroup(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
-    setupUi(this);
+  setupUi(this);
 
-//    (void)statusBar();
-
-    // signals and slots connections
-    connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-    connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-    connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-    connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-    connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-itemGroup::~itemGroup()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
-void itemGroup::languageChange()
-{
-    retranslateUi(this);
-}
-
-//Added by qt3to4:
-#include <QDragEnterEvent>
-#include <QDropEvent>
-
-void itemGroup::init()
-{
-//  statusBar()->hide();
-  setAcceptDrops(TRUE);
+  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
+  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
+  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
+  connect(_name, SIGNAL(lostFocus()), this, SLOT(sCheck()));
 
   _itemgrpitem->addColumn(tr("Name"),        _itemColumn,  Qt::AlignLeft, true, "item_number" );
   _itemgrpitem->addColumn(tr("Description"), -1,           Qt::AlignLeft, true, "item_descrip" );
 }
 
-enum SetResponse itemGroup::set(ParameterList &pParams)
+itemGroup::~itemGroup()
+{
+    // no need to delete child widgets, Qt does it all for us
+}
+
+void itemGroup::languageChange()
+{
+    retranslateUi(this);
+}
+
+enum SetResponse itemGroup::set(const ParameterList &pParams)
 {
   XWidget::set(pParams);
   QVariant param;
@@ -256,58 +229,5 @@ void itemGroup::populate()
     _descrip->setText(q.value("itemgrp_descrip").toString());
 
     sFillList();
-  }
-}
-
-void itemGroup::dragEnterEvent(QDragEnterEvent *pEvent)
-{
-  QString dragData;
-
-  if (Q3TextDrag::decode(pEvent, dragData))
-  {
-    if (dragData.contains("itemid="))
-      pEvent->accept(TRUE);
-  }
-  else
-    pEvent->accept(FALSE);
-}
-
-void itemGroup::dropEvent(QDropEvent *pEvent)
-{
-  QString dropData;
-
-  if (Q3TextDrag::decode(pEvent, dropData))
-  {
-    if (dropData.contains("itemid="))
-    {
-      QString target = dropData.mid((dropData.find("itemid=") + 7), (dropData.length() - 7));
-
-      if (target.contains(","))
-        target = target.left(target.find(","));
-
-      q.prepare( "SELECT itemgrpitem_id "
-                 "FROM itemgrpitem "
-                 "WHERE ( (itemgrpitem_itemgrp_id=:itemgrp_id)"
-                 " AND (itemgrpitem_item_id=:item_id) );" );
-      q.bindValue(":itemgrp_id", _itemgrpid);
-      q.bindValue(":item_id", target.toInt());
-      q.exec();
-      if (q.first())
-      {
-        QMessageBox::warning( this, tr("Cannot Add Item to Item Group"),
-                              tr("The selected Item is already a member of this Item Group") );
-        return;
-      }
-
-      q.prepare( "INSERT INTO itemgrpitem "
-                 "(itemgrpitem_itemgrp_id, itemgrpitem_item_id) "
-                 "VALUES "
-                 "(:itemgrpitem_itemgrp_id, :itemgrpitem_item_id);" );
-      q.bindValue(":itemgrpitem_itemgrp_id", _itemgrpid);
-      q.bindValue(":itemgrpitem_item_id", target.toInt());
-      q.exec();
-
-      sFillList();
-    }
   }
 }

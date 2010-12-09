@@ -3,11 +3,11 @@
  <title>Financial Report Month and Prior Quarter</title>
  <name>FinancialReportMonthPriorQuarter</name>
  <description></description>
- <parameter default="" active="false" listtype="dynamic" type="integer" name="flcol_id" >
+ <parameter default="" active="false" listtype="dynamic" type="integer" name="flcol_id">
   <description>Financial Report Column Layout</description>
   <query>SELECT flcol_id, flhead_name || ' - ' || flcol_name FROM flcol, flhead WHERE ((flcol_flhead_id=flhead_id) AND (flhead_active))</query>
  </parameter>
- <parameter default="" active="false" listtype="dynamic" type="integer" name="period_id" >
+ <parameter default="" active="false" listtype="dynamic" type="integer" name="period_id">
   <description>Accounting Period Reference</description>
   <query>SELECT period_id, 
   CASE
@@ -26,6 +26,8 @@ ORDER BY period_end DESC</query>
  <querysource>
   <name>head</name>
   <sql>SELECT 
+    &lt;? value("project") ?> AS project,
+    (SELECT prj_name FROM prj WHERE prj_id=&lt;? value("prj_id") ?>) AS prj_name,
     flstmthead_username,
     flstmthead_flhead_name || ' - ' || flstmthead_flcol_name AS f_name,
     flstmthead_typedescrip1,
@@ -96,7 +98,7 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
 &lt;? else ?>
   false
 &lt;? endif ?>
-,True)
+,True,&lt;? value("prj_id") ?>)
 &lt;? if not exists("showzeros") ?>
   WHERE ((flstmtitem_month &lt;> 0) OR (flstmtitem_prqtr &lt;> 0) OR (flstmtitem_type &lt;> 'I'))
 &lt;? endif ?>
@@ -302,10 +304,10 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
    </data>
   </field>
   <line>
-   <xstart>10</xstart>
-   <ystart>160</ystart>
-   <xend>1000</xend>
-   <yend>160</yend>
+   <xstart>2.16957</xstart>
+   <ystart>161.835</ystart>
+   <xend>750</xend>
+   <yend>161.669</yend>
    <weight>2</weight>
   </line>
   <field>
@@ -363,6 +365,44 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
    <data>
     <query>head</query>
     <column>flstmthead_month</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>99</x>
+    <y>59.6</y>
+    <width>459</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>prj_name</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>15</x>
+    <y>59.5</y>
+    <width>80</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>project</column>
    </data>
   </field>
  </rpthead>
@@ -487,15 +527,15 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
    </data>
   </field>
   <line>
-   <xstart>5</xstart>
-   <ystart>30</ystart>
-   <xend>994</xend>
-   <yend>30</yend>
+   <xstart>1.79722</xstart>
+   <ystart>30.5393</ystart>
+   <xend>749.933</xend>
+   <yend>30.9493</yend>
    <weight>2</weight>
   </line>
   <label>
    <rect>
-    <x>10</x>
+    <x>1</x>
     <y>0</y>
     <width>55</width>
     <height>15</height>

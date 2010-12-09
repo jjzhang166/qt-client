@@ -117,10 +117,10 @@ SELECT  cohead_id 								AS orderid,
         formatExtPrice(calcCobmiscTax(cobmisc_id))				AS price,
         formatExtPrice(calcCobmiscTax(cobmisc_id))				AS extprice,
 	calcCobmiscTax(cobmisc_id)						AS subextprice,
-	currtobase(cobmisc_tax_curr_id, calcCobmiscTax(cobmisc_id), cobmisc_invcdate) AS runningextprice,
+	currtobase(cobmisc_curr_id, calcCobmiscTax(cobmisc_id), cobmisc_invcdate) AS runningextprice,
        '' AS debit,
        '' AS credit,
-        currConcat(cobmisc_tax_curr_id)     AS currabbr
+        currConcat(cobmisc_curr_id)     AS currabbr
 FROM cobmisc, cohead
 WHERE ( (cobmisc_cohead_id=cohead_id)
  AND (NOT cobmisc_posted)
@@ -668,8 +668,8 @@ ORDER BY ordernumber, linenumber;
       <query>detail</query>
       <column>subextprice</column>
      </data>
-     <format builtin="true" >extprice</format>
-     <tracktotal subtotal="true" />
+     <format builtin="true">extprice</format>
+     <tracktotal subtotal="true"/>
     </field>
     <line>
      <xstart>5</xstart>
@@ -1008,7 +1008,7 @@ ORDER BY ordernumber, linenumber;
     <query>detail</query>
     <column>runningextprice</column>
    </data>
-   <format builtin="true" >extprice</format>
+   <format builtin="true">extprice</format>
    <tracktotal/>
   </field>
   <label>

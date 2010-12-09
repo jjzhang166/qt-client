@@ -15,6 +15,7 @@ ProjectCluster::ProjectCluster(QWidget* pParent, const char* pName) :
 {
     addNumberWidget(new ProjectLineEdit(this, pName));
     _name->setVisible(true);
+    setLabel(tr("Project #:"));
 }
 
 void ProjectCluster::setType(ProjectLineEdit::ProjectType ptype)
@@ -63,38 +64,72 @@ ProjectLineEdit::ProjectLineEdit(enum ProjectType pPrjType, QWidget *pParent, co
   setViewPriv("ViewProjects");
 
   _type = pPrjType;
+  _allowedStatuses = 0x00;
 }
 
-void ProjectLineEdit::setType(ProjectType ptype)
+void ProjectLineEdit::buildExtraClause()
 {
+  QString extraClause = _prjExtraClause;
+  QString typeClause;
+  QString statusClause;
   QStringList clauses;
-  if (ptype & SalesOrder)    clauses << "(prj_so)";
-  if (ptype & WorkOrder)     clauses << "(prj_wo)";
-  if (ptype & PurchaseOrder) clauses << "(prj_po)";
 
-  VirtualClusterLineEdit::setExtraClause( "(" + clauses.join(" OR ") + ")");
+  // Add in type clause
+  if (_type & SalesOrder)    clauses << "(prj_so)";
+  if (_type & WorkOrder)     clauses << "(prj_wo)";
+  if (_type & PurchaseOrder) clauses << "(prj_po)";
 
-  _type = ptype;
-}
+  if (clauses.count())
+    typeClause =  "(" + clauses.join(" OR ") + ")";
 
-void ProjectLineEdit::setAllowedStatuses(const ProjectLineEdit::ProjectStatuses p)
-{
-  if (p && (p != Concept + InProcess + Complete))
+  if (!extraClause.isEmpty() &&
+      !typeClause.isEmpty())
+    extraClause.append(" AND ");
+
+  if (!typeClause.isEmpty())
+    extraClause.append(typeClause);
+
+  // Add in status clause
+  if (_allowedStatuses &&
+      (_allowedStatuses != Concept + InProcess + Complete))
   {
     QStringList statusList;
 
-    if (p & Concept)	statusList << "'P'";
-    if (p & InProcess)	statusList << "'O'";
-    if (p & Complete)	statusList << "'C'";
+    if (_allowedStatuses & Concept)	statusList << "'P'";
+    if (_allowedStatuses & InProcess)	statusList << "'O'";
+    if (_allowedStatuses & Complete)	statusList << "'C'";
 
-    _statusClause = "(prj_status IN (" +
+    statusClause = "(prj_status IN (" +
                     statusList.join(", ") +
                     "))";
   }
   else
-    _statusClause = "";
+    statusClause = "";
 
-  VirtualClusterLineEdit::setExtraClause(_statusClause);
+  if (!extraClause.isEmpty() &&
+      !statusClause.isEmpty())
+    extraClause.append(" AND ");
 
+  if (!statusClause.isEmpty())
+    extraClause.append(statusClause);
+
+  VirtualClusterLineEdit::setExtraClause(extraClause);
+}
+
+void ProjectLineEdit::setExtraClause(const QString& pExt)
+{
+  _prjExtraClause = pExt;
+  buildExtraClause();
+}
+
+void ProjectLineEdit::setType(ProjectType ptype)
+{
+  _type = ptype;
+  buildExtraClause();
+}
+
+void ProjectLineEdit::setAllowedStatuses(const ProjectLineEdit::ProjectStatuses p)
+{
   _allowedStatuses = p;
+  buildExtraClause();
 }

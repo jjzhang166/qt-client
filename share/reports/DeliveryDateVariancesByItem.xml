@@ -13,52 +13,57 @@
   <name>head</name>
   <sql>SELECT item_number, item_descrip1,
        item_descrip2, uom_name,
-       formatDate(&lt;? value(&quot;startDate&quot;) ?>, 'Earliest') AS startdate,
-       formatDate(&lt;? value(&quot;endDate&quot;) ?>, 'Latest') AS enddate,
-       &lt;? if exists(&quot;warehous_id&quot;) ?>
-         (select warehous_code from warehous where warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
+       formatDate(&lt;? value("startDate") ?>, 'Earliest') AS startdate,
+       formatDate(&lt;? value("endDate") ?>, 'Latest') AS enddate,
+       &lt;? if exists("warehous_id") ?>
+         (select warehous_code from warehous where warehous_id=&lt;? value("warehous_id") ?>)
        &lt;? else ?>
          text('All Sites')
        &lt;? endif ?>
        AS warehouse,
-       &lt;? if exists(&quot;agentUsername&quot;) ?>
-       TEXT(&lt;? value(&quot;agentUsername&quot;) ?>)
+       &lt;? if exists("agentUsername") ?>
+       TEXT(&lt;? value("agentUsername") ?>)
        &lt;? else ?>
        TEXT('All Agents')
        &lt;? endif ?>
        AS agentUsername
   FROM item JOIN uom ON (item_inv_uom_id=uom_id)
- WHERE (item_id=&lt;? value(&quot;item_id&quot;) ?>);</sql>
+ WHERE (item_id=&lt;? value("item_id") ?>);</sql>
  </querysource>
  <querysource>
   <name>detail</name>
-  <sql>SELECT porecv_id, porecv_ponumber, vend_name,
-       formatDate(porecv_date) as f_date,
-       firstLine(porecv_vend_item_number) as f_itemnum,
-       firstLine(porecv_vend_item_descrip) as f_itemdescrip,
-       formatQty(porecv_qty) as f_qty,
-       formatDate(porecv_duedate) as f_duedate,
-       formatDate(porecv_date) as f_recvdate 
+  <sql>SELECT porecv_ponumber, vend_name,
+       formatDate(COALESCE(porecv_released, porecv_orderdate)) AS orderdate,
+       DATE(porecv_rlsd_duedate) - DATE(COALESCE(porecv_released, porecv_orderdate)) AS req_leadtime, 
+       DATE(porecv_duedate) - DATE(COALESCE(porecv_released, porecv_orderdate)) AS agrd_leadtime, 		       DATE(porecv_date) - DATE(COALESCE(porecv_released, porecv_orderdate)) AS real_leadtime, 
+       DATE(porecv_date) - DATE(porecv_rlsd_duedate) AS req_diff, 
+       DATE(porecv_date) - DATE(porecv_duedate) AS argd_diff, 
+       formatDate(porecv_date) AS receivedate,
+       porecv_date,			  
+       firstLine(porecv_vend_item_number) AS  venditemnumber,
+       firstLine(porecv_vend_item_descrip) AS venditemdescrip, formatQty(porecv_qty) as f_qty,
+       porecv_qty, formatDate(porecv_rlsd_duedate) AS release_duedate,   
+       formatDate(porecv_duedate) AS argd_duedate
   FROM porecv, vend, itemsite 
  WHERE ( (porecv_vend_id=vend_id)
    AND (porecv_itemsite_id=itemsite_id)
-   AND (itemsite_item_id=&lt;? value(&quot;item_id&quot;) ?>)
-   AND (date(porecv_date) BETWEEN &lt;? value(&quot;startDate&quot;) ?> AND &lt;? value(&quot;endDate&quot;) ?>)
-&lt;? if exists(&quot;warehous_id&quot;) ?>
-   AND (itemsite_warehous_id=&lt;? value(&quot;warehous_id&quot;) ?>)
+   AND (itemsite_item_id=&lt;? value("item_id") ?>)
+   AND (date(porecv_date) BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?>)
+&lt;? if exists("warehous_id") ?>
+   AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>)
 &lt;? endif ?>
-&lt;? if exists(&quot;agentUsername&quot;) ?>
-   AND (porecv_agent_username=&lt;? value(&quot;agentUsername&quot;) ?>)
+&lt;? if exists("agentUsername") ?>
+   AND (porecv_agent_username=&lt;? value("agentUsername") ?>)
 &lt;? endif ?>
  )
 ORDER BY porecv_date DESC;</sql>
  </querysource>
  <rpthead>
-  <height>236</height>
+  <height>185</height>
   <field>
    <rect>
     <x>310</x>
-    <y>65</y>
+    <y>47</y>
     <width>100</width>
     <height>20</height>
    </rect>
@@ -92,8 +97,8 @@ ORDER BY porecv_date DESC;</sql>
   </label>
   <label>
    <rect>
-    <x>300</x>
-    <y>200</y>
+    <x>196</x>
+    <y>152</y>
     <width>112</width>
     <height>15</height>
    </rect>
@@ -109,7 +114,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>442</x>
-    <y>65</y>
+    <y>47</y>
     <width>100</width>
     <height>20</height>
    </rect>
@@ -125,7 +130,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>580</x>
-    <y>200</y>
+    <y>153</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -136,12 +141,12 @@ ORDER BY porecv_date DESC;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Due Date</string>
+   <string>Agrd. Due Date</string>
   </label>
   <field>
    <rect>
     <x>95</x>
-    <y>85</y>
+    <y>67</y>
     <width>300</width>
     <height>20</height>
    </rect>
@@ -160,7 +165,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>30</x>
-    <y>65</y>
+    <y>47</y>
     <width>60</width>
     <height>20</height>
    </rect>
@@ -176,7 +181,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>442</x>
-    <y>85</y>
+    <y>67</y>
     <width>100</width>
     <height>20</height>
    </rect>
@@ -192,7 +197,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>5</x>
-    <y>155</y>
+    <y>129</y>
     <width>85</width>
     <height>20</height>
    </rect>
@@ -208,7 +213,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>5</x>
-    <y>200</y>
+    <y>153</y>
     <width>50</width>
     <height>15</height>
    </rect>
@@ -224,7 +229,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>665</x>
-    <y>200</y>
+    <y>153</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -240,7 +245,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>252</x>
-    <y>65</y>
+    <y>47</y>
     <width>50</width>
     <height>20</height>
    </rect>
@@ -256,7 +261,7 @@ ORDER BY porecv_date DESC;</sql>
   <field>
    <rect>
     <x>95</x>
-    <y>65</y>
+    <y>47</y>
     <width>150</width>
     <height>20</height>
    </rect>
@@ -275,7 +280,7 @@ ORDER BY porecv_date DESC;</sql>
   <field>
    <rect>
     <x>95</x>
-    <y>102</y>
+    <y>84</y>
     <width>300</width>
     <height>20</height>
    </rect>
@@ -293,8 +298,8 @@ ORDER BY porecv_date DESC;</sql>
   </field>
   <label>
    <rect>
-    <x>300</x>
-    <y>215</y>
+    <x>196</x>
+    <y>167</y>
     <width>112</width>
     <height>15</height>
    </rect>
@@ -305,12 +310,12 @@ ORDER BY porecv_date DESC;</sql>
    </font>
    <left/>
    <vcenter/>
-   <string>Vendor Description</string>
+   <string>Description</string>
   </label>
   <field>
    <rect>
     <x>95</x>
-    <y>135</y>
+    <y>109</y>
     <width>300</width>
     <height>20</height>
    </rect>
@@ -328,15 +333,15 @@ ORDER BY porecv_date DESC;</sql>
   </field>
   <line>
    <xstart>5</xstart>
-   <ystart>229</ystart>
+   <ystart>182</ystart>
    <xend>745</xend>
-   <yend>229</yend>
+   <yend>182</yend>
    <weight>2</weight>
   </line>
   <field>
    <rect>
     <x>550</x>
-    <y>65</y>
+    <y>47</y>
     <width>100</width>
     <height>20</height>
    </rect>
@@ -355,7 +360,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>492</x>
-    <y>200</y>
+    <y>153</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -371,7 +376,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>60</x>
-    <y>200</y>
+    <y>153</y>
     <width>100</width>
     <height>15</height>
    </rect>
@@ -387,7 +392,7 @@ ORDER BY porecv_date DESC;</sql>
   <label>
    <rect>
     <x>5</x>
-    <y>135</y>
+    <y>109</y>
     <width>85</width>
     <height>20</height>
    </rect>
@@ -403,7 +408,7 @@ ORDER BY porecv_date DESC;</sql>
   <field>
    <rect>
     <x>95</x>
-    <y>155</y>
+    <y>129</y>
     <width>300</width>
     <height>20</height>
    </rect>
@@ -419,26 +424,10 @@ ORDER BY porecv_date DESC;</sql>
     <column>agentUsername</column>
    </data>
   </field>
-  <label>
-   <rect>
-    <x>215</x>
-    <y>200</y>
-    <width>80</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Date</string>
-  </label>
   <field>
    <rect>
     <x>550</x>
-    <y>85</y>
+    <y>67</y>
     <width>100</width>
     <height>20</height>
    </rect>
@@ -454,13 +443,61 @@ ORDER BY porecv_date DESC;</sql>
     <column>enddate</column>
    </data>
   </field>
+  <label>
+   <rect>
+    <x>665</x>
+    <y>167</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Order Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>581</x>
+    <y>167</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Reqd. Due Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>494</x>
+    <y>167</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Lead Time</string>
+  </label>
  </rpthead>
  <pghead>
   <firstpage/>
   <height>6</height>
  </pghead>
  <pghead>
-  <height>41</height>
+  <height>39</height>
   <label>
    <rect>
     <x>5</x>
@@ -534,8 +571,8 @@ ORDER BY porecv_date DESC;</sql>
   </label>
   <label>
    <rect>
-    <x>300</x>
-    <y>5</y>
+    <x>196</x>
+    <y>4</y>
     <width>112</width>
     <height>15</height>
    </rect>
@@ -550,8 +587,8 @@ ORDER BY porecv_date DESC;</sql>
   </label>
   <label>
    <rect>
-    <x>300</x>
-    <y>20</y>
+    <x>196</x>
+    <y>19</y>
     <width>112</width>
     <height>15</height>
    </rect>
@@ -582,8 +619,8 @@ ORDER BY porecv_date DESC;</sql>
   </label>
   <label>
    <rect>
-    <x>215</x>
-    <y>5</y>
+    <x>665</x>
+    <y>19</y>
     <width>80</width>
     <height>15</height>
    </rect>
@@ -594,7 +631,39 @@ ORDER BY porecv_date DESC;</sql>
    </font>
    <hcenter/>
    <vcenter/>
-   <string>Date</string>
+   <string>Order Date</string>
+  </label>
+  <label>
+   <rect>
+    <x>494</x>
+    <y>19</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Lead Time</string>
+  </label>
+  <label>
+   <rect>
+    <x>581</x>
+    <y>19</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Reqd. Due Date</string>
   </label>
  </pghead>
  <section>
@@ -603,7 +672,7 @@ ORDER BY porecv_date DESC;</sql>
    <key>
     <query>detail</query>
    </key>
-   <height>36</height>
+   <height>32</height>
    <field>
     <rect>
      <x>665</x>
@@ -620,12 +689,12 @@ ORDER BY porecv_date DESC;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_recvdate</column>
+     <column>receivedate</column>
     </data>
    </field>
    <field>
     <rect>
-     <x>300</x>
+     <x>195</x>
      <y>0</y>
      <width>150</width>
      <height>15</height>
@@ -639,26 +708,7 @@ ORDER BY porecv_date DESC;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_itemnum</column>
-    </data>
-   </field>
-   <field>
-    <rect>
-     <x>215</x>
-     <y>0</y>
-     <width>80</width>
-     <height>15</height>
-    </rect>
-    <font>
-     <face>Arial</face>
-     <size>8</size>
-     <weight>bold</weight>
-    </font>
-    <hcenter/>
-    <vcenter/>
-    <data>
-     <query>detail</query>
-     <column>f_date</column>
+     <column>venditemnumber</column>
     </data>
    </field>
    <field>
@@ -677,14 +727,14 @@ ORDER BY porecv_date DESC;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_duedate</column>
+     <column>argd_duedate</column>
     </data>
    </field>
    <line>
-    <xstart>5</xstart>
-    <ystart>30</ystart>
-    <xend>745</xend>
-    <yend>30</yend>
+    <xstart>7</xstart>
+    <ystart>31</ystart>
+    <xend>747</xend>
+    <yend>31</yend>
     <weight>0</weight>
    </line>
    <field>
@@ -708,7 +758,7 @@ ORDER BY porecv_date DESC;</sql>
    </field>
    <field>
     <rect>
-     <x>300</x>
+     <x>195</x>
      <y>15</y>
      <width>200</width>
      <height>15</height>
@@ -722,7 +772,7 @@ ORDER BY porecv_date DESC;</sql>
     <vcenter/>
     <data>
      <query>detail</query>
-     <column>f_itemdescrip</column>
+     <column>venditemdescrip</column>
     </data>
    </field>
    <field>
@@ -761,6 +811,63 @@ ORDER BY porecv_date DESC;</sql>
     <data>
      <query>detail</query>
      <column>f_qty</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>493</x>
+     <y>15</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>real_leadtime</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>665</x>
+     <y>15</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>orderdate</column>
+    </data>
+   </field>
+   <field>
+    <rect>
+     <x>581</x>
+     <y>15</y>
+     <width>80</width>
+     <height>15</height>
+    </rect>
+    <font>
+     <face>Arial</face>
+     <size>8</size>
+     <weight>bold</weight>
+    </font>
+    <right/>
+    <vcenter/>
+    <data>
+     <query>detail</query>
+     <column>release_duedate</column>
     </data>
    </field>
   </detail>

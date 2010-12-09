@@ -29,8 +29,9 @@ public slots:
     virtual void sEditShippingFormWatermark();
     virtual void sHandleShipment();
     virtual void sHandleShippingFormCopies( int pValue );
-    virtual void sHandleSo();
+    virtual void sHandleOrder();
     virtual void sHandleTo();
+    virtual void sHandleSo();
     virtual void sPrint();
 
 protected slots:

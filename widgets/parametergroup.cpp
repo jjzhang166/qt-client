@@ -35,19 +35,24 @@ ParameterGroup::ParameterGroup(QWidget *pParent, const char *pName) :
   _selectedGroup = new QWidget(this);
   _patternGroup = new QWidget(this);
   
-  _all= new QRadioButton(QObject::tr("All"), this, "_all");
+  _all= new QRadioButton(QObject::tr("All"), this);
+  _all->setObjectName("_all");
   _all->setChecked(TRUE);
 
-  _selected = new QRadioButton(tr("Selected:"), this, "_selected");
+  _selected = new QRadioButton(tr("Selected:"), this);
+  _selected->setObjectName("_selected");
   
-  _items = new XComboBox(FALSE, _selectedGroup, "_items");
+  _items = new XComboBox(FALSE, _selectedGroup);
+  _items->setObjectName("_items");
   
   _items->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
   _items->setEnabled(FALSE);
   
-  _usePattern = new QRadioButton(tr("Pattern:"),this, "_usePattern");
+  _usePattern = new QRadioButton(tr("Pattern:"), this);
+  _usePattern->setObjectName("_usePattern");
   
-  _pattern = new QLineEdit(this, "_pattern");
+  _pattern = new QLineEdit(this);
+  _pattern->setObjectName("_pattern");
   _pattern->setEnabled(FALSE);
   
   _buttonGroup = new QButtonGroup(this);
@@ -298,7 +303,7 @@ void ParameterGroup::appendValue(ParameterList &pParams)
     else if (_type == User || _type == ActiveUser )
     {
       pParams.append("usr_id", _items->id());
-      pParams.append("username", _items->itemText(_items->currentItem()));
+      pParams.append("username", _items->itemText(_items->currentIndex()));
     }
   }
   else if (_usePattern->isChecked() && !_pattern->text().isEmpty())

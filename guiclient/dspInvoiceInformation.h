@@ -24,6 +24,7 @@ class dspInvoiceInformation : public XWidget, public Ui::dspInvoiceInformation
 public:
     dspInvoiceInformation(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~dspInvoiceInformation();
+    virtual bool setParams(ParameterList &);
 
 public slots:
     virtual SetResponse set(const ParameterList & pParams );

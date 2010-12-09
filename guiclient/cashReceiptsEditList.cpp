@@ -10,6 +10,7 @@
 
 #include "cashReceiptsEditList.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -81,23 +82,20 @@ void cashReceiptsEditList::languageChange()
 
 void cashReceiptsEditList::sPopulateMenu(QMenu *pMenu)
 {
-  int menuItem;
+  QAction *menuItem;
 
-  menuItem = pMenu->insertItem(tr("Edit..."), this, SLOT(sEdit()), 0);
-  if (!_privileges->check("MaintainCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainCashReceipts"));
 
-  menuItem = pMenu->insertItem(tr("View..."), this, SLOT(sView()), 0);
+  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
 
-  menuItem = pMenu->insertItem(tr("Delete..."), this, SLOT(sDelete()), 0);
-  if (!_privileges->check("MaintainCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainCashReceipts"));
 
-  pMenu->insertSeparator();
+  pMenu->addSeparator();
 
-  menuItem = pMenu->insertItem(tr("Post..."), this, SLOT(sPost()), 0);
-  if (!_privileges->check("PostCashReceipts"))
-    pMenu->setItemEnabled(menuItem, FALSE);
+  menuItem = pMenu->addAction(tr("Post..."), this, SLOT(sPost()));
+  menuItem->setEnabled(_privileges->check("PostCashReceipts"));
 }
 
 void cashReceiptsEditList::sNew()
@@ -170,10 +168,12 @@ void cashReceiptsEditList::sPost()
   }
 
   QList<XTreeWidgetItem*> selected = _cashrcpt->selectedItems();
+  XTreeWidgetItem *cursor = 0;
   for (int i = 0; i < selected.size(); i++)
   {
+    cursor = (XTreeWidgetItem*)selected.at(i);
     q.prepare("SELECT postCashReceipt(:cashrcpt_id, :journalNumber) AS result;");
-    q.bindValue(":cashrcpt_id", ((XTreeWidgetItem*)(selected[i]))->id());
+    q.bindValue(":cashrcpt_id", cursor->id());
     q.bindValue(":journalNumber", journalNumber);
     q.exec();
     if (q.first())
@@ -193,9 +193,9 @@ void cashReceiptsEditList::sPost()
       tx.exec("ROLLBACK;");
       return;
     }
-    omfgThis->sCashReceiptsUpdated(((XTreeWidgetItem*)(selected[i]))->id(), TRUE);
   }
   tx.exec("COMMIT;");
+  omfgThis->sCashReceiptsUpdated(-1, TRUE);
   sFillList();
 }
 

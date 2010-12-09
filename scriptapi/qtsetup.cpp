@@ -223,11 +223,9 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("color0", QScriptValue(engine, Qt::color0), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("color1", QScriptValue(engine, Qt::color1), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
-  /*
   qScriptRegisterMetaType(engine, HitTestAccuracytoScriptValue,	HitTestAccuracyfromScriptValue);
   widget.setProperty("ExactHit", QScriptValue(engine, Qt::ExactHit), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("FuzzyHit", QScriptValue(engine, Qt::FuzzyHit), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  */
 
   qScriptRegisterMetaType(engine, ImageConversionFlagtoScriptValue,	ImageConversionFlagfromScriptValue);
   widget.setProperty("AutoColor", QScriptValue(engine, Qt::AutoColor), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -721,7 +719,6 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("TextWrapAnywhere", QScriptValue(engine, Qt::TextWrapAnywhere), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("TextHideMnemonic", QScriptValue(engine, Qt::TextHideMnemonic), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("TextDontPrint", QScriptValue(engine, Qt::TextDontPrint), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("IncludeTrailingSpaces", QScriptValue(engine, Qt::IncludeTrailingSpaces), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("TextIncludeTrailingSpaces", QScriptValue(engine, Qt::TextIncludeTrailingSpaces), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("TextJustificationForced", QScriptValue(engine, Qt::TextJustificationForced), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
@@ -772,12 +769,10 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("UI_FadeTooltip", QScriptValue(engine, Qt::UI_FadeTooltip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("UI_AnimateToolBox", QScriptValue(engine, Qt::UI_AnimateToolBox), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
-  /*
   qScriptRegisterMetaType(engine, WhiteSpaceModetoScriptValue,	WhiteSpaceModefromScriptValue);
   widget.setProperty("WhiteSpaceNormal", QScriptValue(engine, Qt::WhiteSpaceNormal), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WhiteSpacePre", QScriptValue(engine, Qt::WhiteSpacePre), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WhiteSpaceNoWrap", QScriptValue(engine, Qt::WhiteSpaceNoWrap), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  */
 
   qScriptRegisterMetaType(engine, WidgetAttributetoScriptValue,	WidgetAttributefromScriptValue);
   widget.setProperty("WA_AcceptDrops", QScriptValue(engine, Qt::WA_AcceptDrops), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -914,44 +909,6 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("WindowOkButtonHint", QScriptValue(engine, Qt::WindowOkButtonHint), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WindowCancelButtonHint", QScriptValue(engine, Qt::WindowCancelButtonHint), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WindowType_Mask", QScriptValue(engine, Qt::WindowType_Mask), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WMouseNoMask", QScriptValue(engine, Qt::WMouseNoMask), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WDestructiveClose", QScriptValue(engine, Qt::WDestructiveClose), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStaticContents", QScriptValue(engine, Qt::WStaticContents), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WGroupLeader", QScriptValue(engine, Qt::WGroupLeader), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WShowModal", QScriptValue(engine, Qt::WShowModal), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WNoMousePropagation", QScriptValue(engine, Qt::WNoMousePropagation), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_TopLevel", QScriptValue(engine, Qt::WType_TopLevel), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_Dialog", QScriptValue(engine, Qt::WType_Dialog), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_Popup", QScriptValue(engine, Qt::WType_Popup), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_Desktop", QScriptValue(engine, Qt::WType_Desktop), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_Mask", QScriptValue(engine, Qt::WType_Mask), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Customize", QScriptValue(engine, Qt::WStyle_Customize), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_NormalBorder", QScriptValue(engine, Qt::WStyle_NormalBorder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_DialogBorder", QScriptValue(engine, Qt::WStyle_DialogBorder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_NoBorder", QScriptValue(engine, Qt::WStyle_NoBorder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Title", QScriptValue(engine, Qt::WStyle_Title), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_SysMenu", QScriptValue(engine, Qt::WStyle_SysMenu), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Minimize", QScriptValue(engine, Qt::WStyle_Minimize), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Maximize", QScriptValue(engine, Qt::WStyle_Maximize), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_MinMax", QScriptValue(engine, Qt::WStyle_MinMax), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Tool", QScriptValue(engine, Qt::WStyle_Tool), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_StaysOnTop", QScriptValue(engine, Qt::WStyle_StaysOnTop), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_ContextHelp", QScriptValue(engine, Qt::WStyle_ContextHelp), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WPaintDesktop", QScriptValue(engine, Qt::WPaintDesktop), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WPaintClever", QScriptValue(engine, Qt::WPaintClever), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WX11BypassWM", QScriptValue(engine, Qt::WX11BypassWM), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WWinOwnDC", QScriptValue(engine, Qt::WWinOwnDC), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WMacSheet", QScriptValue(engine, Qt::WMacSheet), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WMacDrawer", QScriptValue(engine, Qt::WMacDrawer), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Splash", QScriptValue(engine, Qt::WStyle_Splash), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WNoAutoErase", QScriptValue(engine, Qt::WNoAutoErase), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WRepaintNoErase", QScriptValue(engine, Qt::WRepaintNoErase), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WNorthWestGravity", QScriptValue(engine, Qt::WNorthWestGravity), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WType_Modal", QScriptValue(engine, Qt::WType_Modal), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_Dialog", QScriptValue(engine, Qt::WStyle_Dialog), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WStyle_NoBorderEx", QScriptValue(engine, Qt::WStyle_NoBorderEx), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WResizeNoErase", QScriptValue(engine, Qt::WResizeNoErase), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WMacNoSheet", QScriptValue(engine, Qt::WMacNoSheet), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   engine->globalObject().setProperty("Qt", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
 }
@@ -980,7 +937,7 @@ Q_DECLARE_METATYPE(enum Qt::FillRule);
 Q_DECLARE_METATYPE(enum Qt::FocusPolicy);
 Q_DECLARE_METATYPE(enum Qt::FocusReason);
 Q_DECLARE_METATYPE(enum Qt::GlobalColor);
-//Q_DECLARE_METATYPE(enum Qt::HitTestAccuracy);
+Q_DECLARE_METATYPE(enum Qt::HitTestAccuracy);
 Q_DECLARE_METATYPE(enum Qt::ImageConversionFlag);
 Q_DECLARE_METATYPE(enum Qt::InputMethodQuery);
 Q_DECLARE_METATYPE(enum Qt::ItemDataRole);
@@ -1012,7 +969,7 @@ Q_DECLARE_METATYPE(enum Qt::ToolBarArea);
 Q_DECLARE_METATYPE(enum Qt::ToolButtonStyle);
 Q_DECLARE_METATYPE(enum Qt::TransformationMode);
 Q_DECLARE_METATYPE(enum Qt::UIEffect);
-//Q_DECLARE_METATYPE(enum Qt::WhiteSpaceMode);
+Q_DECLARE_METATYPE(enum Qt::WhiteSpaceMode);
 Q_DECLARE_METATYPE(enum Qt::WidgetAttribute);
 Q_DECLARE_METATYPE(enum Qt::WindowFrameSection);
 Q_DECLARE_METATYPE(enum Qt::WindowModality);
@@ -1139,12 +1096,10 @@ QScriptValue GlobalColortoScriptValue(QScriptEngine *engine, const enum Qt::Glob
   return QScriptValue(engine, (int)p);
 }
 
-/*
 QScriptValue HitTestAccuracytoScriptValue(QScriptEngine *engine, const enum Qt::HitTestAccuracy &p)
 {
   return QScriptValue(engine, (int)p);
 }
-*/
 
 QScriptValue ImageConversionFlagtoScriptValue(QScriptEngine *engine, const enum Qt::ImageConversionFlag &p)
 {
@@ -1211,10 +1166,12 @@ QScriptValue MouseButtontoScriptValue(QScriptEngine *engine, const enum Qt::Mous
   return QScriptValue(engine, (int)p);
 }
 
+/*
 QScriptValue OrientationtoScriptValue(QScriptEngine *engine, const enum Qt::Orientation &p)
 {
   return QScriptValue(engine, (int)p);
 }
+*/
 
 QScriptValue PenCapStyletoScriptValue(QScriptEngine *engine, const enum Qt::PenCapStyle &p)
 {
@@ -1301,12 +1258,10 @@ QScriptValue UIEffecttoScriptValue(QScriptEngine *engine, const enum Qt::UIEffec
   return QScriptValue(engine, (int)p);
 }
 
-/*
 QScriptValue WhiteSpaceModetoScriptValue(QScriptEngine *engine, const enum Qt::WhiteSpaceMode &p)
 {
   return QScriptValue(engine, (int)p);
 }
-*/
 
 QScriptValue WidgetAttributetoScriptValue(QScriptEngine *engine, const enum Qt::WidgetAttribute &p)
 {
@@ -1453,12 +1408,10 @@ void GlobalColorfromScriptValue(const QScriptValue &obj, enum Qt::GlobalColor &p
   p = (enum Qt::GlobalColor)obj.toInt32();
 }
 
-/*
 void HitTestAccuracyfromScriptValue(const QScriptValue &obj, enum Qt::HitTestAccuracy &p)
 {
   p = (enum Qt::HitTestAccuracy)obj.toInt32();
 }
-*/
 
 void ImageConversionFlagfromScriptValue(const QScriptValue &obj, enum Qt::ImageConversionFlag &p)
 {
@@ -1525,10 +1478,12 @@ void MouseButtonfromScriptValue(const QScriptValue &obj, enum Qt::MouseButton &p
   p = (enum Qt::MouseButton)obj.toInt32();
 }
 
+/*
 void OrientationfromScriptValue(const QScriptValue &obj, enum Qt::Orientation &p)
 {
   p = (enum Qt::Orientation)obj.toInt32();
 }
+*/
 
 void PenCapStylefromScriptValue(const QScriptValue &obj, enum Qt::PenCapStyle &p)
 {
@@ -1615,12 +1570,10 @@ void UIEffectfromScriptValue(const QScriptValue &obj, enum Qt::UIEffect &p)
   p = (enum Qt::UIEffect)obj.toInt32();
 }
 
-/*
 void WhiteSpaceModefromScriptValue(const QScriptValue &obj, enum Qt::WhiteSpaceMode &p)
 {
   p = (enum Qt::WhiteSpaceMode)obj.toInt32();
 }
-*/
 
 void WidgetAttributefromScriptValue(const QScriptValue &obj, enum Qt::WidgetAttribute &p)
 {

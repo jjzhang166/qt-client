@@ -39,16 +39,17 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
   {
     _po = new dspPOsByVendor(this, "dspPOsByVendor", Qt::Widget);
     _poTab->layout()->addWidget(_po);
-    hideme = _po->findChild<QWidget*>("_close");
-    hideme->hide();
+    _po->setCloseVisible(false);
     hideme = _po->findChild<QWidget*>("_vendGroup");
     hideme->hide();
-    QRadioButton *radiobutton = _po->findChild<QRadioButton*>("_selectedVendor");
-    radiobutton->setChecked(true);
-    VendorInfo *povend = _po->findChild<VendorInfo*>("_vend");
+    VendorGroup *povend = _po->findChild<VendorGroup*>("_vend");
+    if (povend)
+    {
+      povend->setState(VendorGroup::Selected);
+      connect(povend, SIGNAL(newVendId(int)), _po,    SLOT(sFillList()));
+      connect(_vend,      SIGNAL(newId(int)), povend, SLOT(setVendId(int)));
+    }
     _po->show();
-    connect(povend,      SIGNAL(newId(int)), _po,           SLOT(sFillList()));
-    connect(_vend,       SIGNAL(newId(int)), povend,        SLOT(setId(int)));
   }
   else
     _tabWidget->setTabEnabled(_tabWidget->indexOf(_poTab), false);
@@ -57,9 +58,10 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
   {
     _receipts = new dspPoItemReceivingsByVendor(this, "dspPoItemReceivingsByVendor", Qt::Widget);
     _receiptsTab->layout()->addWidget(_receipts);
-    hideme = _receipts->findChild<QWidget*>("_close");
+    _receipts->setCloseVisible(false);
+    hideme = _receipts->findChild<QWidget*>("_vendorGroup");
     hideme->hide();
-    VendorCluster *rcptvend = _receipts->findChild<VendorCluster*>("_vendor");
+    QWidget *rcptvend = _receipts->findChild<QWidget*>("_vendor");
     rcptvend->hide();
     connect(rcptvend,    SIGNAL(newId(int)), _receipts,     SLOT(sFillList()));
     connect(_vend,       SIGNAL(newId(int)), rcptvend,      SLOT(setId(int)));
@@ -118,7 +120,7 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
   {
     _history = new dspVendorAPHistory(this, "dspVendorAPHistory", Qt::Widget);
     _historyTab->layout()->addWidget(_history);
-    _history->findChild<QWidget*>("_close")->hide();
+    _history->setCloseVisible(false);
     _history->findChild<QWidget*>("_vendGroup")->hide();
     _history->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
     _history->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   TRUE);

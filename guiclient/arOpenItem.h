@@ -27,6 +27,8 @@ public:
 
     virtual void populate();
 
+    QPushButton* _save;
+
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sSave();

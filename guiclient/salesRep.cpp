@@ -22,7 +22,7 @@ salesRep::salesRep(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_number, SIGNAL(lostFocus()), this, SLOT(sCheck()));
 
   _commPrcnt->setValidator(omfgThis->percentVal());
@@ -85,9 +85,9 @@ enum SetResponse salesRep::set(const ParameterList &pParams)
       _active->setEnabled(FALSE);
       _commPrcnt->setEnabled(FALSE);
       _employee->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _save->hide();
-      _close->setFocus();
+      _buttonBox->clear();
+      _buttonBox->addButton(QDialogButtonBox::Close);
+      _buttonBox->setFocus();
     }
   }
 
@@ -141,8 +141,8 @@ void salesRep::sSave()
   if(_employee->id() != -1 && _employee->number() != _number->text().trimmed())
   {
     QMessageBox::critical( this, tr("Cannot Save Sales Rep."),
-                           tr("The Sales Rep. Number and Employee Number do not match. "
-                              "If you specify an Employee Number then it must match the "
+                           tr("The Sales Rep. Number and Employee Code do not match. "
+                              "If you specify an Employee then it must match the "
                               "Sales Rep. Number before you may save."));	
 	_number->setFocus();
     return;

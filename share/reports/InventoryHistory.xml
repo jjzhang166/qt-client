@@ -82,7 +82,7 @@
   <name>detail</name>
   <sql>SELECT invhist_id,
        invhist_transdate,
-       formatDateTime(invhist_transdate) AS transdate,
+       formatDateTime(invhist_transdate) AS f_transdate,
        invhist_transtype,
        whs1.warehous_code AS warehous_code,
        item_number,
@@ -153,8 +153,7 @@
    AND (invhist_itemsite_id=itemsite_id)
    AND (itemsite_item_id=item_id)
    AND (itemsite_warehous_id=whs1.warehous_id)
-  AND  ((invhist_transdate > DATE &lt;? value("startDate") ?> - 1 AND
-	 invhist_transdate &lt; DATE &lt;? value("endDate") ?> + 1) )
+  AND  (DATE(invhist_transdate) BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?> )
    AND (transType(invhist_transtype, &lt;? value("transType") ?>))
 &lt;? if exists("orderType") ?>
   AND  (invhist_ordtype=&lt;? value("orderType") ?>)
@@ -165,6 +164,9 @@
 &lt;? endif ?>
 &lt;? if exists("warehous_id") ?>
    AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>)
+&lt;? endif ?>
+&lt;? if exists("item_id") ?>
+  AND  (itemsite_item_id=&lt;? value("item_id") ?>)
 &lt;? endif ?>
 &lt;? if exists("itemgrp_id") ?>
    AND (item_id IN (SELECT itemgrpitem_item_id
@@ -267,8 +269,7 @@ SELECT invhist_id,
    AND (itemsite_item_id=item_id)
    AND (itemsite_warehous_id=whs1.warehous_id)
    AND (invdetail_invhist_id=invhist_id)
-   AND  ((invhist_transdate > DATE &lt;? value("startDate") ?> - 1 AND
-	 invhist_transdate &lt; DATE &lt;? value("endDate") ?> + 1) )
+   AND  (DATE(invhist_transdate) BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?> )
    AND (transType(invhist_transtype, &lt;? value("transType") ?>))
 &lt;? if exists("orderType") ?>
   AND  (invhist_ordtype=&lt;? value("orderType") ?>)
@@ -279,6 +280,9 @@ SELECT invhist_id,
 &lt;? endif ?>
 &lt;? if exists("warehous_id") ?>
    AND (itemsite_warehous_id=&lt;? value("warehous_id") ?>)
+&lt;? endif ?>
+&lt;? if exists("item_id") ?>
+  AND  (itemsite_item_id=&lt;? value("item_id") ?>)
 &lt;? endif ?>
 &lt;? if exists("itemgrp_id") ?>
    AND (item_id IN (SELECT itemgrpitem_item_id
@@ -314,8 +318,7 @@ FROM itemsite, item, warehous AS whs1, invhist LEFT OUTER JOIN
 WHERE ( (invhist_itemsite_id=itemsite_id)
   AND  (itemsite_item_id=item_id) 
   AND  (itemsite_warehous_id=whs1.warehous_id)
-  AND  ((invhist_transdate > DATE &lt;? value("startDate") ?> - 1 AND
-	 invhist_transdate &lt; DATE &lt;? value("endDate") ?> + 1) )
+  AND  (DATE(invhist_transdate) BETWEEN &lt;? value("startDate") ?> AND &lt;? value("endDate") ?> )
   AND  (transType(invhist_transtype, &lt;? value("transType") ?>))
 &lt;? if exists("orderType") ?>
   AND  (invhist_ordtype=&lt;? value("orderType") ?>)
@@ -1623,7 +1626,7 @@ WHERE ( (invhist_itemsite_id=itemsite_id)
     <query>footer</query>
     <column>transvalue_total</column>
    </data>
-   <format builtin="true" >money</format>
+   <format builtin="true">money</format>
   </field>
   <label>
    <rect>

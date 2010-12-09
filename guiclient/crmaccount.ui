@@ -509,9 +509,6 @@ to be bound by its terms.</comment>
                 <layout class="QVBoxLayout" name="verticalLayout">
                  <item>
                   <widget class="ContactCluster" name="_primary">
-                   <property name="listVisible">
-                    <bool>true</bool>
-                   </property>
                    <property name="accountVisible" stdset="0">
                     <bool>false</bool>
                    </property>
@@ -566,9 +563,6 @@ to be bound by its terms.</comment>
                 <layout class="QVBoxLayout" name="verticalLayout_2">
                  <item>
                   <widget class="ContactCluster" name="_secondary">
-                   <property name="listVisible">
-                    <bool>false</bool>
-                   </property>
                    <property name="accountVisible" stdset="0">
                     <bool>false</bool>
                    </property>

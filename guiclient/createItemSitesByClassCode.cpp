@@ -75,10 +75,10 @@ createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const ch
   _costcat->setAllowNull(TRUE);
   _costcat->setType(XComboBox::CostCategories);
 
-  _controlMethod->insertItem("None");
-  _controlMethod->insertItem("Regular");
-  _controlMethod->insertItem("Lot #");
-  _controlMethod->insertItem("Serial #");
+  _controlMethod->append(0, "None",     "N");
+  _controlMethod->append(1, "Regular",  "R");
+  _controlMethod->append(2, "Lot #",    "L");
+  _controlMethod->append(3, "Serial #", "S");
   _controlMethod->setCurrentIndex(-1);
 
   _reorderLevel->setDouble(0.0);
@@ -346,14 +346,7 @@ void createItemSitesByClassCode::sSave()
     q.bindValue(":itemsite_location_id", -1);
   }
 
-  if (_controlMethod->currentIndex() == 0)
-    q.bindValue(":itemsite_controlmethod", "N");
-  else if (_controlMethod->currentIndex() == 1)
-    q.bindValue(":itemsite_controlmethod", "R");
-  else if (_controlMethod->currentIndex() == 2)
-    q.bindValue(":itemsite_controlmethod", "L");
-  else if (_controlMethod->currentIndex() == 3)
-    q.bindValue(":itemsite_controlmethod", "S");
+  q.bindValue(":itemsite_controlmethod", _controlMethod->code());
 
   if(_costNone->isChecked())
     q.bindValue(":itemsite_costmethod", "N");

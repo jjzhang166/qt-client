@@ -149,6 +149,9 @@ to be bound by its terms.</comment>
         <property name="focusPolicy">
          <enum>Qt::StrongFocus</enum>
         </property>
+        <property name="label">
+         <string>Vendor #:</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -533,7 +536,7 @@ to be bound by its terms.</comment>
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="widget">
+     <widget class="QWidget" name="_notesTab">
       <attribute name="title">
        <string>&amp;Notes</string>
       </attribute>
@@ -549,7 +552,7 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="widget">
+     <widget class="QWidget" name="_pricesTab">
       <attribute name="title">
        <string>&amp;Prices</string>
       </attribute>
@@ -628,7 +631,7 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="_vendorTab">
       <attribute name="title">
        <string>Vendor &amp;Description</string>
       </attribute>

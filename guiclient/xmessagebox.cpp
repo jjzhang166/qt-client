@@ -8,10 +8,22 @@
  * to be bound by its terms.
  */
 
-
 #include "xmessagebox.h"
 
-#include <qapplication.h>
+#include <QApplication>
+#include <QPushButton>
+
+/** \brief XMessageBox should be used for cases where the user might
+           be in a loop that has a lot of dialogs and the application
+           needs to get the user's attention.
+
+           For example, if there is a loop where the user needs to enter
+           a series of values into individual dialogs and an error occurs,
+           the XMessageBox might make sense to display the error. That's because
+           the default button causes the XMessageBox to repeat the error dialog.
+
+           Other good uses are places where the user is scanning a series of barcodes.
+  */
 
 int XMessageBox::message( QWidget * parent, QMessageBox::Icon severity,
                           const QString & caption, const QString & text,
@@ -19,51 +31,53 @@ int XMessageBox::message( QWidget * parent, QMessageBox::Icon severity,
                           const QString & button1Text,
                           bool snooze, int defaultButtonNumber, int escapeButtonNumber )
 {
-  int snoozeButtonNumber = -1;
+  QPushButton *button0   = 0;
+  QPushButton *button1   = 0;
+  QPushButton *buttonsnooze = 0;
 
-  int b[3];
-  b[0] = 1;
-  b[1] = button1Text.isEmpty() ? 0 : 2;
-  b[2] = 0;
+  QMessageBox *mb = new QMessageBox(severity, caption, text, QMessageBox::NoButton, parent);
+  mb->setObjectName("xtuple_msgbox_snooze");
 
-  if(snooze)
-  {
-    if(b[1] == 0)
-      snoozeButtonNumber = 1;
-    else
-      snoozeButtonNumber = 2;
-    defaultButtonNumber = snoozeButtonNumber;
-    escapeButtonNumber = snoozeButtonNumber;
-    b[snoozeButtonNumber] = 3;
-  }
-
-  int i;
-  for( i=0; i<3; i++ ) {
-    if ( b[i] && defaultButtonNumber == i )
-      b[i] += QMessageBox::Default;
-    if ( b[i] && escapeButtonNumber == i )
-      b[i] += QMessageBox::Escape;
-  }
-
-  QMessageBox *mb = new QMessageBox( caption, text, severity,
-                                     b[0], b[1], b[2],
-                                     parent, "xtuple_msgbox_snooze", TRUE);
   Q_CHECK_PTR( mb );
-  if ( !button0Text.isEmpty() )
-    mb->setButtonText( 1, button0Text );
-  if ( !button1Text.isEmpty() )
-    mb->setButtonText( 2, button1Text );
+
+  if (button0Text.isEmpty())
+  {
+    button0 = mb->addButton(QMessageBox::Ok);
+    defaultButtonNumber = snooze ? -1 : 0;
+  }
+  else
+    button0 = mb->addButton(button0Text,
+                            defaultButtonNumber == 0 ? QMessageBox::AcceptRole : QMessageBox::RejectRole);
+
+  if (!button1Text.isEmpty())
+    button1 = mb->addButton(button1Text,
+                            defaultButtonNumber == 1 ? QMessageBox::AcceptRole : QMessageBox::RejectRole);
+
   if ( snooze )
-    mb->setButtonText( 3, QObject::tr("Snooze") );
+    buttonsnooze = mb->addButton(QObject::tr("Snooze"), QMessageBox::RejectRole);
+
+  if (defaultButtonNumber == 0)
+    mb->setDefaultButton(button0);
+  else if (defaultButtonNumber == 1)
+    mb->setDefaultButton(button1);
+  else if (snooze)
+    mb->setDefaultButton(buttonsnooze);
+
+  if (escapeButtonNumber == 0)
+    mb->setEscapeButton(button0);
+  else if (escapeButtonNumber == 1)
+    mb->setEscapeButton(button1);
+  else if (snooze)
+    mb->setEscapeButton(buttonsnooze);
 
 #ifndef QT_NO_CURSOR
-  mb->setCursor( Qt::arrowCursor );
+  mb->setCursor(QCursor(Qt::ArrowCursor));
 #endif
   int result = -1;
   do {
     QApplication::beep();
     result = mb->exec();
-  } while(result == 3);
+  } while (snooze && mb->clickedButton() == buttonsnooze);
 
   delete mb;
 

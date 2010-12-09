@@ -28,7 +28,6 @@ public:
 public slots:
     virtual SetResponse set(const ParameterList & pParams );
     virtual void sCopy();
-    virtual void sPoList();
     virtual void sPopulatePoInfo( int pSoid );
 
 protected slots:

@@ -14,6 +14,7 @@
 #include <QVariant>
 
 #include "distributeInventory.h"
+#include "storedProcErrorLookup.h"
 
 postMiscProduction::postMiscProduction(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -203,11 +204,8 @@ bool postMiscProduction::post()
   {
     if (q.value("result").toInt() < 0)
     {
-      systemError(this, tr("A System Error occurred at %1::%2, Item Number %3, Error %4.")
-                        .arg(__FILE__)
-                        .arg(__LINE__)
-                        .arg(_item->itemNumber())
-                        .arg(q.value("result").toInt()) );
+      systemError(this, storedProcErrorLookup("postProduction", q.value("result").toInt()),
+                  __FILE__, __LINE__);
       return false;
     }
     else

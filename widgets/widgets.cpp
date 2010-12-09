@@ -25,7 +25,6 @@
 #include "plugins/currclusterplugin.h"
 #include "plugins/currdisplayplugin.h"
 #include "plugins/custclusterplugin.h"
-#include "plugins/custinfoplugin.h"
 #include "plugins/customerselectorplugin.h"
 #include "plugins/dateclusterplugin.h"
 #include "plugins/deptclusterplugin.h"
@@ -35,6 +34,7 @@
 #include "plugins/expenseclusterplugin.h"
 #include "plugins/expenselineeditplugin.h"
 #include "plugins/fileclusterplugin.h"
+#include "plugins/filemoveselectorplugin.h"
 #include "plugins/glclusterplugin.h"
 #include "plugins/imageclusterplugin.h"
 #include "plugins/invoiceclusterplugin.h"
@@ -44,6 +44,7 @@
 #include "plugins/itemlineeditplugin.h"
 #include "plugins/lotserialclusterplugin.h"
 #include "plugins/lotserialseqclusterplugin.h"
+#include "plugins/numbergencomboboxplugin.h"
 #include "plugins/orderclusterplugin.h"
 #include "plugins/menubuttonplugin.h"
 #include "plugins/opportunityclusterplugin.h"
@@ -52,8 +53,6 @@
 #include "plugins/periodslistviewplugin.h"
 #include "plugins/planordclusterplugin.h"
 #include "plugins/planordlineeditplugin.h"
-#include "plugins/poclusterplugin.h"
-#include "plugins/polineeditplugin.h"
 #include "plugins/projectclusterplugin.h"
 #include "plugins/projectlineeditplugin.h"
 #include "plugins/querysetplugin.h"
@@ -66,14 +65,10 @@
 #include "plugins/shipmentclusterplugin.h"
 #include "plugins/shiptoclusterplugin.h"
 #include "plugins/shiptoeditplugin.h"
-#include "plugins/soclusterplugin.h"
-#include "plugins/solineeditplugin.h"
-#include "plugins/toclusterplugin.h"
 #include "plugins/usernameclusterplugin.h"
 #include "plugins/usernamelineeditplugin.h"
 #include "plugins/vendorclusterplugin.h"
 #include "plugins/vendorgroupplugin.h"
-#include "plugins/vendorinfoplugin.h"
 #include "plugins/vendorlineeditplugin.h"
 #include "plugins/warehousegroupplugin.h"
 #include "plugins/wcomboboxplugin.h"
@@ -109,7 +104,6 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new CurrDisplayPlugin(this));
   m_plugins.append(new CustClusterPlugin(this));
   m_plugins.append(new CustomerSelectorPlugin(this));
-  m_plugins.append(new CustInfoPlugin(this));
   m_plugins.append(new DateClusterPlugin(this));
   m_plugins.append(new DeptClusterPlugin(this));
   m_plugins.append(new DLineEditPlugin(this));
@@ -118,6 +112,7 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new ExpenseClusterPlugin(this));
   m_plugins.append(new ExpenseLineEditPlugin(this));
   m_plugins.append(new FileClusterPlugin(this));
+  m_plugins.append(new FileMoveSelectorPlugin(this));
   m_plugins.append(new GLClusterPlugin(this));
   m_plugins.append(new ImageClusterPlugin(this));
   m_plugins.append(new InvoiceClusterPlugin(this));
@@ -128,6 +123,7 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new LotserialClusterPlugin(this));
   m_plugins.append(new LotserialseqClusterPlugin(this));
   m_plugins.append(new MenuButtonPlugin(this));
+  m_plugins.append(new NumberGenComboBoxPlugin(this));
   m_plugins.append(new OrderClusterPlugin(this));
   m_plugins.append(new OpportunityClusterPlugin(this));
   m_plugins.append(new ParameterGroupPlugin(this));
@@ -135,8 +131,6 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new PeriodsListViewPlugin(this));
   m_plugins.append(new PlanOrdClusterPlugin(this));
   m_plugins.append(new PlanOrdLineEditPlugin(this));
-  m_plugins.append(new PoClusterPlugin(this));
-  m_plugins.append(new PoLineEditPlugin(this));
   m_plugins.append(new ProjectClusterPlugin(this));
   m_plugins.append(new ProjectLineEditPlugin(this));
   m_plugins.append(new QuerySetPlugin(this));
@@ -149,14 +143,10 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new ShipmentClusterPlugin(this));
   m_plugins.append(new ShiptoClusterPlugin(this));
   m_plugins.append(new ShiptoEditPlugin(this));
-  m_plugins.append(new SoClusterPlugin(this));
-  m_plugins.append(new SoLineEditPlugin(this));
-  m_plugins.append(new ToClusterPlugin(this));
   m_plugins.append(new UsernameClusterPlugin(this));
   m_plugins.append(new UsernameLineEditPlugin(this));
   m_plugins.append(new VendorClusterPlugin(this));
   m_plugins.append(new VendorGroupPlugin(this));
-  m_plugins.append(new VendorInfoPlugin(this));
   m_plugins.append(new VendorLineEditPlugin(this));
   m_plugins.append(new WarehouseGroupPlugin(this));
   m_plugins.append(new WComboBoxPlugin(this));

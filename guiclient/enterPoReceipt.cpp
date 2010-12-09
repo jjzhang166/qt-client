@@ -47,7 +47,8 @@ enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   _order->setAllowedTypes(OrderLineEdit::Purchase |
 			  OrderLineEdit::Return |
 			  OrderLineEdit::Transfer);
-  _order->setToSitePrivsEnforced(TRUE);
+  _order->setToSitePrivsEnforced(true);
+  _order->setLockSelected(true);
 
   omfgThis->inputManager()->notify(cBCItem, this, this, SLOT(sCatchItemid(int)));
   omfgThis->inputManager()->notify(cBCItemSite, this, this, SLOT(sCatchItemsiteid(int)));
@@ -558,10 +559,10 @@ void enterPoReceipt::sReceiveAll()
 
 void enterPoReceipt::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem * /*selected*/)
 {
-  int     menuItem;
+  QAction *menuItem;
   if (_orderitem->altId() != -1)
-    menuItem = pMenu->insertItem(tr("Print Label..."), this, SLOT(sPrintItemLabel()), 0);
-  menuItem = pMenu->insertItem(tr("Enter Receipt..."), this, SLOT(sEnter()), 0);
+    menuItem = pMenu->addAction(tr("Print Label..."), this, SLOT(sPrintItemLabel()));
+  menuItem = pMenu->addAction(tr("Enter Receipt..."), this, SLOT(sEnter()));
 }
 
 void enterPoReceipt::sBcFind()

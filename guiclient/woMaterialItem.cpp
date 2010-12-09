@@ -230,8 +230,8 @@ void woMaterialItem::sSave()
     q.bindValue(":uom_id", _uom->id());
     q.bindValue(":scrap", (_scrap->toDouble() / 100));
     q.bindValue(":bomitem_id", _bomitemid);
-    q.bindValue(":notes", _notes->text());
-    q.bindValue(":ref", _ref->text());
+    q.bindValue(":notes", _notes->toPlainText());
+    q.bindValue(":ref",   _ref->toPlainText());
     q.bindValue(":wooper_id", _wooperid);
     q.exec();
     if (q.first())
@@ -263,8 +263,8 @@ void woMaterialItem::sSave()
     q.bindValue(":qtyReq", _qtyRequired->toDouble());
     q.bindValue(":uom_id", _uom->id());
     q.bindValue(":scrap", (_scrap->toDouble() / 100));
-    q.bindValue(":notes", _notes->text());
-    q.bindValue(":ref", _ref->text());
+    q.bindValue(":notes", _notes->toPlainText());
+    q.bindValue(":ref",   _ref->toPlainText());
     q.exec();
   }
 
@@ -288,7 +288,7 @@ void woMaterialItem::sSave()
 void woMaterialItem::sUpdateQtyRequired()
 {
   XSqlQuery qtyreq;
-  qtyreq.prepare("SELECT roundQty(itemuomfractionalbyuom(:itemid, :uomid),"
+  qtyreq.prepare("SELECT roundQty(itemuomfractionalbyuom(:item_id, :uom_id),"
                   "              (:qtyfxd + :qtyper * :qtyord) * (1 + :scrap)) AS qtyreq;");
   qtyreq.bindValue(":item_id", _item->id());
   qtyreq.bindValue(":uom_id", _uom->id());

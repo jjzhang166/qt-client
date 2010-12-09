@@ -11,11 +11,11 @@
 #ifndef CONFIGUREPD_H
 #define CONFIGUREPD_H
 
-#include "xdialog.h"
+#include "xabstractconfigure.h"
 
 #include "ui_configurePD.h"
 
-class configurePD : public XDialog, public Ui::configurePD
+class configurePD : public XAbstractConfigure, public Ui::configurePD
 {
     Q_OBJECT
 
@@ -24,11 +24,13 @@ public:
     ~configurePD();
 
 public slots:
-    virtual void sSave();
+    virtual bool sSave();
 
 protected slots:
     virtual void languageChange();
 
+signals:
+    void saving();
 };
 
 #endif // CONFIGUREPD_H

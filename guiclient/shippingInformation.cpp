@@ -28,7 +28,7 @@ shippingInformation::shippingInformation(QWidget* parent, const char* name, bool
   connect(_item,	SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)),
 					  this, SLOT(sPopulateMenu(QMenu*)));
   connect(_order, SIGNAL(newId(int, QString)), this, SLOT(sFillList()));
-  connect(_save,	SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_buttonBox,	SIGNAL(accepted()), this, SLOT(sSave()));
 
   _captive = FALSE;
 
@@ -85,8 +85,6 @@ enum SetResponse shippingInformation::set(const ParameterList &pParams)
 
       _order->setId(q.value("shiphead_order_id").toInt(),
                     q.value("shiphead_order_type").toString());
-
-      _close->setText("&Cancel");
 
       _shipDate->setFocus();
     }
@@ -159,9 +157,9 @@ void shippingInformation::sSave()
 
 void shippingInformation::sPopulateMenu(QMenu *menuThis)
 {
-  menuThis->insertItem(tr("Issue Additional Stock for this Order Line to Shipping..."), this, SLOT(sIssueStock()), 0);
-  menuThis->insertItem(tr("Return ALL Stock Issued for this Order Line to the Site..."), this, SLOT(sReturnAllLineStock()), 0);
-  menuThis->insertItem(tr("View Order Line..."), this, SLOT(sViewLine()), 0);
+  menuThis->addAction(tr("Issue Additional Stock for this Order Line to Shipping..."), this, SLOT(sIssueStock()));
+  menuThis->addAction(tr("Return ALL Stock Issued for this Order Line to the Site..."), this, SLOT(sReturnAllLineStock()));
+  menuThis->addAction(tr("View Order Line..."), this, SLOT(sViewLine()));
 }
 
 void shippingInformation::sIssueStock()
@@ -286,12 +284,13 @@ void shippingInformation::sFillList()
   {
     q.prepare( "SELECT cohead_orderdate AS orderdate,"
 	       "       cohead_holdtype AS holdtype,"
-	       "       cohead_custponumber AS ponumber,"
+               "       cohead_custponumber AS ponumber,"
                "       cust_name AS name, cust_phone AS phone,"
                "       cohead_shipcomments AS shipcomments,"
 	       "       cohead_shipvia AS shipvia,"
                "       cohead_shipchrg_id AS shipchrg_id,"
-	       "       cohead_shipform_id AS shipform_id "
+               "       cohead_shipform_id AS shipform_id, "
+               "       cohead_shiptoname AS shiptoname "
                "FROM cohead, cust "
                "WHERE ((cohead_cust_id=cust_id)"
                " AND (cohead_id=:cohead_id));" );
@@ -306,7 +305,8 @@ void shippingInformation::sFillList()
 	       "       tohead_shipcomments AS shipcomments,"
 	       "       tohead_shipvia AS shipvia,"
 	       "       tohead_shipchrg_id AS shipchrg_id,"
-	       "       tohead_shipform_id AS shipform_id "
+               "       tohead_shipform_id AS shipform_id, "
+               "       tohead_destname AS shiptoname "
 	       "FROM tohead "
 	       "WHERE (tohead_id=:tohead_id);" );
     q.bindValue(":tohead_id", _order->id());
@@ -315,9 +315,10 @@ void shippingInformation::sFillList()
   if (q.first())
   {
     _orderDate->setDate(q.value("orderdate").toDate());
-    _poNumber->setText(q.value("custponumber").toString());
+    _poNumber->setText(q.value("ponumber").toString());
     _custName->setText(q.value("name").toString());
     _custPhone->setText(q.value("phone").toString());
+    _shipToName->setText(q.value("shiptoname").toString());
 
     QString msg;
     if (q.value("head_holdtype").toString() == "C")

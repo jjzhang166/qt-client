@@ -65,7 +65,7 @@ void createInvoices::sPost()
     omfgThis->sBillingSelectionUpdated(-1, TRUE);
     omfgThis->sSalesOrdersUpdated(-1);
   }
-  else if (q.lastError().type() != QSqlError::None)
+  else if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;

@@ -3,11 +3,11 @@
  <title>Financial Report Year</title>
  <name>FinancialReportYear</name>
  <description></description>
- <parameter default="" active="false" listtype="dynamic" type="integer" name="flcol_id" >
+ <parameter default="" active="false" listtype="dynamic" type="integer" name="flcol_id">
   <description>Financial Report Column Layout</description>
   <query>SELECT flcol_id, flhead_name || ' - ' || flcol_name FROM flcol, flhead WHERE ((flcol_flhead_id=flhead_id) AND (flhead_active))</query>
  </parameter>
- <parameter default="" active="false" listtype="dynamic" type="integer" name="period_id" >
+ <parameter default="" active="false" listtype="dynamic" type="integer" name="period_id">
   <description>Accounting Period Reference</description>
   <query>SELECT period_id, 
   CASE
@@ -26,6 +26,8 @@ ORDER BY period_end DESC</query>
  <querysource>
   <name>head</name>
   <sql>SELECT 
+    &lt;? value("project") ?> AS project,
+    (SELECT prj_name FROM prj WHERE prj_id=&lt;? value("prj_id") ?>) AS prj_name,
     flstmthead_username,
     flstmthead_flhead_name || ' - ' || flstmthead_flcol_name AS f_name,
     flstmthead_typedescrip1,
@@ -94,7 +96,7 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
 &lt;? else ?>
   false
 &lt;? endif ?>
-,True)
+,True,&lt;? value("prj_id") ?>)
 &lt;? if not exists("showzeros") ?>
   WHERE ((flstmtitem_year &lt;> 0) OR  (flstmtitem_type &lt;> 'I'))
 &lt;? endif ?>
@@ -107,7 +109,7 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
     <x>665</x>
     <y>145</y>
     <width>80</width>
-    <height>16</height>
+    <height>15</height>
    </rect>
    <font>
     <face>Arial</face>
@@ -115,7 +117,7 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
     <weight>normal</weight>
    </font>
    <hcenter/>
-   <top/>
+   <vcenter/>
    <string>% of Group</string>
   </label>
   <label>
@@ -170,9 +172,9 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
    <string>Name</string>
   </label>
   <line>
-   <xstart>10</xstart>
+   <xstart>1</xstart>
    <ystart>160</ystart>
-   <xend>1000</xend>
+   <xend>749</xend>
    <yend>160</yend>
    <weight>2</weight>
   </line>
@@ -284,6 +286,44 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
     <column>flstmthead_typedescrip1</column>
    </data>
   </field>
+  <field>
+   <rect>
+    <x>99</x>
+    <y>59.6</y>
+    <width>459</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>bold</weight>
+   </font>
+   <left/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>prj_name</column>
+   </data>
+  </field>
+  <field>
+   <rect>
+    <x>15</x>
+    <y>59.5</y>
+    <width>80</width>
+    <height>20</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>10</size>
+    <weight>normal</weight>
+   </font>
+   <right/>
+   <vcenter/>
+   <data>
+    <query>head</query>
+    <column>project</column>
+   </data>
+  </field>
  </rpthead>
  <pghead>
   <firstpage/>
@@ -313,41 +353,6 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
   <field>
    <rect>
     <x>660</x>
-    <y>15</y>
-    <width>85</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <data>
-    <query>head</query>
-    <column>f_typedescrip_prcnt</column>
-   </data>
-  </field>
-  <label>
-   <rect>
-    <x>10</x>
-    <y>0</y>
-    <width>55</width>
-    <height>15</height>
-   </rect>
-   <font>
-    <face>Arial</face>
-    <size>8</size>
-    <weight>normal</weight>
-   </font>
-   <hcenter/>
-   <vcenter/>
-   <string>Name</string>
-  </label>
-  <field>
-   <rect>
-    <x>660</x>
     <y>0</y>
     <width>85</width>
     <height>15</height>
@@ -365,10 +370,10 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
    </data>
   </field>
   <line>
-   <xstart>5</xstart>
-   <ystart>30</ystart>
-   <xend>994</xend>
-   <yend>30</yend>
+   <xstart>0</xstart>
+   <ystart>31</ystart>
+   <xend>751</xend>
+   <yend>31</yend>
    <weight>2</weight>
   </line>
   <field>
@@ -390,6 +395,38 @@ FROM financialreport(&lt;? value("flcol_id") ?>,&lt;? value("period_id") ?>,
     <column>flstmthead_typedescrip2</column>
    </data>
   </field>
+  <label>
+   <rect>
+    <x>660.457</x>
+    <y>14.5678</y>
+    <width>80</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>% of Group</string>
+  </label>
+  <label>
+   <rect>
+    <x>1</x>
+    <y>0.717997</y>
+    <width>55</width>
+    <height>15</height>
+   </rect>
+   <font>
+    <face>Arial</face>
+    <size>8</size>
+    <weight>normal</weight>
+   </font>
+   <hcenter/>
+   <vcenter/>
+   <string>Name</string>
+  </label>
  </pghead>
  <section>
   <name>detail</name>

@@ -22,7 +22,6 @@
 
 #include "item.h"
 #include "items.h"
-#include "searchForItem.h"
 #include "copyItem.h"
 #include "itemGroups.h"
 #include "itemImages.h"
@@ -63,20 +62,17 @@
 
 #include "itemAvailabilityWorkbench.h"
 
-#include "uoms.h"
-#include "classCodes.h"
-#include "productCategories.h"
-#include "freightClasses.h"
-#include "characteristics.h"
-#include "lotSerialSequences.h"
-
 #include "dspUndefinedManufacturedItems.h"
 #include "dspUnusedPurchasedItems.h"
 #include "dspInvalidBillsOfMaterials.h"
 #include "reassignClassCodeByClassCode.h"
 #include "reassignProductCategoryByProductCategory.h"
 
+#include "setup.h"
+
 #include "menuProducts.h"
+
+#include "userPreferences.h"
 
 menuProducts::menuProducts(GUIClient *Pparent) :
  QObject(Pparent)
@@ -105,7 +101,6 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   reportsBomsMenu = new QMenu(parent);
   reportsWhereUsdMenu = new QMenu(parent);
   reportsCapUomMenu = new QMenu(parent);
-  masterInfoMenu = new QMenu(parent);
   utilitiesMenu = new QMenu(parent);
 
   mainMenu->setObjectName("menu.prod");
@@ -123,11 +118,14 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   reportsBomsMenu->setObjectName("menu.prod.reportsboms");
   reportsWhereUsdMenu->setObjectName("menu.prod.reportswhereusd");
   reportsCapUomMenu->setObjectName("menu.prod.reportscapuom");
-  masterInfoMenu->setObjectName("menu.prod.masterinfo");
   utilitiesMenu->setObjectName("menu.prod.utilities");
 
   actionProperties acts[] = {
   
+#ifdef Q_WS_MACX
+  { "sys.preferences",              tr("P&references..."),                SLOT(sPreferences()),              mainMenu, "MaintainPreferencesSelf MaintainPreferencesOthers",  NULL,   NULL,   true, NULL },
+#endif
+
   // Product | Reports
   { "menu",	tr("&Reports"), (char*)reportsMenu,	mainMenu, "true", NULL, NULL, true , NULL },
   
@@ -163,7 +161,6 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   { "menu",	tr("&Item"), (char*)itemsMenu,	mainMenu, "true", NULL, NULL, true , NULL },
   { "pd.enterNewItem", tr("&New..."), SLOT(sNewItem()), itemsMenu, "MaintainItemMasters", NULL, NULL, true , NULL },
   { "pd.listItems", tr("&List..."), SLOT(sItems()), itemsMenu, "MaintainItemMasters ViewItemMasters", QPixmap(":/images/items.png"), toolBar, true , tr("List Items") },
-  { "pd.searchForItems", tr("&Search..."),SLOT(sSearchForItems()), itemsMenu, "MaintainItemMasters ViewItemMasters", NULL, NULL, true , NULL },
   { "pd.copyItem", tr("&Copy..."), SLOT(sCopyItem()), itemsMenu, "MaintainItemMasters" , NULL, NULL, true, NULL },
   { "separator", NULL, NULL, itemsMenu,	"true", NULL, NULL, true , NULL },
   { "pd.itemAvailabilityWorkbench", tr("&Workbench..."), SLOT(sDspItemAvailabilityWorkbench()), itemsMenu, "ViewItemAvailabilityWorkbench", NULL, NULL, true , NULL },
@@ -226,16 +223,6 @@ menuProducts::menuProducts(GUIClient *Pparent) :
 
   { "separator", NULL, NULL, mainMenu,	"true", NULL, NULL, true , NULL },
 
-  //  Produt | Master Information
-  { "menu",	tr("&Master Information"), (char*)masterInfoMenu, mainMenu, "true", NULL, NULL, true , NULL },
-  { "pd.unitsOfMeasure", tr("&Units of Measure..."), SLOT(sUnitsOfMeasure()), masterInfoMenu, "MaintainUOMs ViewUOMs", NULL, NULL, true , NULL },
-  { "pd.classCodes", tr("&Class Codes..."), SLOT(sClassCodes()), masterInfoMenu, "MaintainClassCodes ViewClassCodes", NULL, NULL, true , NULL },
-  { "pd.productCategories", tr("&Product Categories..."), SLOT(sProductCategories()), masterInfoMenu, "MaintainProductCategories ViewProductCategories", NULL, NULL, true , NULL },
-  { "pd.freightClasses", tr("&Freight Classes..."), SLOT(sFreightClasses()), masterInfoMenu, "MaintainFreightClasses ViewFreightClasses", NULL, NULL, true , NULL },
-  { "pd.characteristics", tr("C&haracteristics..."), SLOT(sCharacteristics()), masterInfoMenu, "MaintainCharacteristics ViewCharacteristics", NULL, NULL, true , NULL },
-  { "separator", NULL, NULL, masterInfoMenu,	"true", NULL, NULL, _metrics->boolean("LotSerialControl") , NULL },
-  { "pd.lotserialsequences", tr("&Lot/Serial Sequences..."), SLOT(sLotSerialSequences()), masterInfoMenu, "MaintainLotSerialSequences ViewLotSerialSequences", NULL, NULL, _metrics->boolean("LotSerialControl") , NULL },
-
   //  Produt | Utilies
   { "menu",	tr("&Utilities"), (char*)utilitiesMenu, mainMenu, "true", NULL, NULL, true , NULL },
   { "pd.dspUnusedPurchasedItems", tr("Unused &Purchased Items..."), SLOT(sDspUnusedPurchasedItems()), utilitiesMenu, "ViewBOMs", NULL, NULL, true , NULL },
@@ -244,6 +231,10 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   { "separator", NULL, NULL, utilitiesMenu,	"true", NULL, NULL, true , NULL },
   { "pd.reassignClassCodeByClassCode", tr("Reassign &Class Codes..."), SLOT(sReassignClassCodeByClassCode()), utilitiesMenu, "MaintainItemMasters", NULL, NULL, true , NULL },
   { "pd.reassignProductCategoryByProductCategory", tr("&Reassign Product Categories..."), SLOT(sReassignProductCategoryByProductCategory()), utilitiesMenu, "MaintainItemMasters", NULL, NULL, true , NULL },
+
+  // Setup
+  { "pd.setup",	    tr("&Setup..."),	  SLOT(sSetup()),     mainMenu,	"true",	NULL, NULL,  true, NULL}
+
   };
 
   addActionsToMenu(acts, sizeof(acts) / sizeof(acts[0]));
@@ -320,11 +311,6 @@ void menuProducts::sNewItem()
 void menuProducts::sItems()
 {
   omfgThis->handleNewWindow(new items());
-}
-
-void menuProducts::sSearchForItems()
-{
-  omfgThis->handleNewWindow(new searchForItem());
 }
 
 void menuProducts::sCopyItem()
@@ -530,32 +516,6 @@ void menuProducts::sDspItemAvailabilityWorkbench()
   omfgThis->handleNewWindow(new itemAvailabilityWorkbench());
 }
 
-//  Master Information
-void menuProducts::sUnitsOfMeasure()
-{
-  omfgThis->handleNewWindow(new uoms());
-}
-
-void menuProducts::sClassCodes()
-{
-  omfgThis->handleNewWindow(new classCodes());
-}
-
-void menuProducts::sProductCategories()
-{
-  omfgThis->handleNewWindow(new productCategories());
-}
-
-void menuProducts::sFreightClasses()
-{
-  omfgThis->handleNewWindow(new freightClasses());
-}
-
-void menuProducts::sCharacteristics()
-{
-  omfgThis->handleNewWindow(new characteristics());
-}
-
 //  Utilities
 void menuProducts::sDspUnusedPurchasedItems()
 {
@@ -582,7 +542,18 @@ void menuProducts::sReassignProductCategoryByProductCategory()
   reassignProductCategoryByProductCategory(parent, "", TRUE).exec();
 }
 
-void menuProducts::sLotSerialSequences()
+void menuProducts::sSetup()
 {
-  omfgThis->handleNewWindow(new lotSerialSequences());
+  ParameterList params;
+  params.append("module", Xt::ProductsModule);
+
+  setup newdlg(parent);
+  newdlg.set(params);
+  newdlg.exec();
 }
+
+void menuProducts::sPreferences()
+{
+  userPreferences(parent, "", true).exec();
+}
+

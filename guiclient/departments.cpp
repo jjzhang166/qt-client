@@ -10,6 +10,7 @@
 
 #include "departments.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
@@ -132,15 +133,15 @@ void departments::sFillList()
 
 void departments::sPopulateMenu(QMenu *pMenu )
 {
-    int menuItem;
+  QAction *menuItem;
 
-    menuItem = pMenu->insertItem(tr("Edit"), this, SLOT(sEdit()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainDepartments"));
+  menuItem = pMenu->addAction(tr("Edit"), this, SLOT(sEdit()));
+  menuItem->setEnabled(_privileges->check("MaintainDepartments"));
 
-    menuItem = pMenu->insertItem(tr("View"), this, SLOT(sView()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("ViewDepartments") ||
-				    _privileges->check("MaintainDepartments"));
+  menuItem = pMenu->addAction(tr("View"), this, SLOT(sView()));
+  menuItem->setEnabled(_privileges->check("ViewDepartments") ||
+                       _privileges->check("MaintainDepartments"));
 
-    menuItem = pMenu->insertItem(tr("Delete"), this, SLOT(sDelete()), 0);
-    pMenu->setItemEnabled(menuItem, _privileges->check("MaintainDepartments"));
+  menuItem = pMenu->addAction(tr("Delete"), this, SLOT(sDelete()));
+  menuItem->setEnabled(_privileges->check("MaintainDepartments"));
 }

@@ -69,6 +69,9 @@ protected:
     contacts *_contacts;
     opportunityList *_oplist;
 
+signals:
+    void saved(int);
+
 private:
     bool	_modal;
     int		_mode;

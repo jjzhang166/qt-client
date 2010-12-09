@@ -65,7 +65,7 @@ void maintainShipping::languageChange()
 
 void maintainShipping::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *selected)
 {
-  int menuItem;
+  QAction *menuItem;
 
   if (selected->text(0) != "")
     _itemtype = 1;
@@ -77,50 +77,41 @@ void maintainShipping::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *selected)
   switch (_itemtype)
   {
     case 1:
-      menuItem = pMenu->insertItem("Shipping Information...", this, SLOT(sShippingInformation()), 0);
-      if (!_privileges->check("EnterShippingInformation"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Shipping Information...", this, SLOT(sShippingInformation()));
+      menuItem->setEnabled(_privileges->check("EnterShippingInformation"));
 
-      menuItem = pMenu->insertItem("Return ALL Stock Issued to Order...", this, SLOT(sReturnAllOrderStock()), 0);
-      if (!_privileges->check("ReturnStockFromShipping"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Return ALL Stock Issued to Order...", this, SLOT(sReturnAllOrderStock()));
+      menuItem->setEnabled(_privileges->check("ReturnStockFromShipping"));
 
-      menuItem = pMenu->insertItem("View Order...", this, SLOT(sViewOrder()), 0);
-      if (!_privileges->check("ViewSalesOrders"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("View Order...", this, SLOT(sViewOrder()));
+      menuItem->setEnabled(_privileges->check("ViewSalesOrders"));
 
-      menuItem = pMenu->insertItem("Print Shipping Form...", this, SLOT(sPrintShippingForm()), 0);
-      if (!_privileges->check("PrintBillsOfLading"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Print Shipping Form...", this, SLOT(sPrintShippingForm()));
+      menuItem->setEnabled(_privileges->check("PrintBillsOfLading"));
 
       if (selected->text(6) != "S")
       {
-        menuItem = pMenu->insertItem("Ship Order...", this, SLOT(sShipOrder()), 0);
-        if (!_privileges->check("ShipOrders"))
-          pMenu->setItemEnabled(menuItem, FALSE);
+        menuItem = pMenu->addAction("Ship Order...", this, SLOT(sShipOrder()));
+        menuItem->setEnabled(_privileges->check("ShipOrders"));
       }
 
       break;
 
     case 2:
-      menuItem = pMenu->insertItem("Issue Additional Stock to Order Line...", this, SLOT(sIssueStock()), 0);
-      if (!_privileges->check("IssueStockToShipping"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Issue Additional Stock to Order Line...", this, SLOT(sIssueStock()));
+      menuItem->setEnabled(_privileges->check("IssueStockToShipping"));
 
-      menuItem = pMenu->insertItem("Return ALL Stock Issued to Order Line...", this, SLOT(sReturnAllLineStock()), 0);
-      if (!_privileges->check("ReturnStockFromShipping"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Return ALL Stock Issued to Order Line...", this, SLOT(sReturnAllLineStock()));
+      menuItem->setEnabled(_privileges->check("ReturnStockFromShipping"));
 
-      menuItem = pMenu->insertItem("View Order Line...", this, SLOT(sViewLine()), 0);
-      if (!_privileges->check("ViewSalesOrders"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("View Order Line...", this, SLOT(sViewLine()));
+      menuItem->setEnabled(_privileges->check("ViewSalesOrders"));
 
       break;
 
     case 3:
-      menuItem = pMenu->insertItem("Return ALL of this Stock Issued in this Transaction...", this, SLOT(sReturnAllStock()), 0);
-      if (!_privileges->check("ReturnStockFromShipping"))
-        pMenu->setItemEnabled(menuItem, FALSE);
+      menuItem = pMenu->addAction("Return ALL of this Stock Issued in this Transaction...", this, SLOT(sReturnAllStock()));
+      menuItem->setEnabled(_privileges->check("ReturnStockFromShipping"));
 
       break;
   }

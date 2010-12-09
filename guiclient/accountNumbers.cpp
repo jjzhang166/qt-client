@@ -143,7 +143,7 @@ void accountNumbers::sFillList()
                 "            WHEN(accnt_type='R') THEN <? value(\"revenue\") ?>"
                 "            ELSE accnt_type"
                 "       END AS accnt_type_qtdisplayrole "
-                "FROM (accnt LEFT OUTER JOIN"
+                "FROM (ONLY accnt LEFT OUTER JOIN"
                 "     company ON (accnt_company=company_number)) "
                 "     LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type AND accnt_subaccnttype_code=subaccnttype_code) "
                 "<? if not exists(\"showExternal\") ?>"

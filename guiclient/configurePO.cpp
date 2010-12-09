@@ -10,27 +10,20 @@
 
 #include "configurePO.h"
 
-#include <QVariant>
 #include <QValidator>
+#include <QVariant>
 
-/*
- *  Constructs a configurePO as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
-configurePO::configurePO(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+configurePO::configurePO(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+    : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
 
+  if (name)
+    setObjectName(name);
 
-  // signals and slots connections
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_close, SIGNAL(released()), this, SLOT(reject()));
   connect(_internalCopy, SIGNAL(toggled(bool)), _numOfCopies, SLOT(setEnabled(bool)));
 
+  XSqlQuery configq;
   if (_metrics->value("Application") == "PostBooks")
   {  
     _enableDropShip->hide();
@@ -38,11 +31,11 @@ configurePO::configurePO(QWidget* parent, const char* name, bool modal, Qt::WFla
   }
   else
   {
-    q.prepare("SELECT pohead_id FROM pohead "
+    configq.prepare("SELECT pohead_id FROM pohead "
 	          "WHERE ( (pohead_dropship = 'TRUE') "
               "  AND (pohead_status = 'O') )");
-    q.exec();
-    if (q.first())
+    configq.exec();
+    if (configq.first())
     {
       _enableDropShip->setChecked(TRUE);
 	  _enableDropShip->setEnabled(FALSE);
@@ -85,7 +78,7 @@ configurePO::configurePO(QWidget* parent, const char* name, bool modal, Qt::WFla
   _nextVcNumber->setValidator(omfgThis->orderVal());
   _nextPrNumber->setValidator(omfgThis->orderVal());
 
-  q.exec( "SELECT ponumber.orderseq_number AS ponumber,"
+  configq.exec( "SELECT ponumber.orderseq_number AS ponumber,"
           "       vcnumber.orderseq_number AS vcnumber,"
           "       prnumber.orderseq_number AS prnumber "
           "FROM orderseq AS ponumber,"
@@ -94,11 +87,11 @@ configurePO::configurePO(QWidget* parent, const char* name, bool modal, Qt::WFla
           "WHERE ( (ponumber.orderseq_name='PoNumber')"
           " AND (vcnumber.orderseq_name='VcNumber')"
           " AND (prnumber.orderseq_name='PrNumber') );" );
-  if (q.first())
+  if (configq.first())
   {
-    _nextPoNumber->setText(q.value("ponumber").toString());
-    _nextVcNumber->setText(q.value("vcnumber").toString());
-    _nextPrNumber->setText(q.value("prnumber").toString());
+    _nextPoNumber->setText(configq.value("ponumber").toString());
+    _nextVcNumber->setText(configq.value("vcnumber").toString());
+    _nextPrNumber->setText(configq.value("prnumber").toString());
   }
 
   _poChangeLog->setChecked(_metrics->boolean("POChangeLog"));
@@ -125,25 +118,20 @@ configurePO::configurePO(QWidget* parent, const char* name, bool modal, Qt::WFla
   this->setWindowTitle("Purchase Configuration");
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 configurePO::~configurePO()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void configurePO::languageChange()
 {
   retranslateUi(this);
 }
 
-void configurePO::sSave()
+bool configurePO::sSave()
 {
+  emit saving();
+
   if (_orderNumGeneration->currentIndex() == 0)
     _metrics->set("PONumberGeneration", QString("M"));
   else if (_orderNumGeneration->currentIndex() == 1)
@@ -173,14 +161,13 @@ void configurePO::sSave()
   _metrics->set("POInternal", ((_internalCopy->isChecked()) ? _numOfCopies->value() : 0) );
   _metrics->set("DefaultPOShipVia", _defaultShipVia->text().trimmed());
 
-  q.prepare("SELECT setNextPoNumber(:poNumber), setNextVcNumber(:vcNumber), setNextPrNumber(:prNumber);");
-  q.bindValue(":poNumber", _nextPoNumber->text().toInt());
-  q.bindValue(":vcNumber", _nextVcNumber->text().toInt());
-  q.bindValue(":prNumber", _nextPrNumber->text().toInt());
-  q.exec();
+  XSqlQuery configq;
+  configq.prepare("SELECT setNextPoNumber(:poNumber), setNextVcNumber(:vcNumber), setNextPrNumber(:prNumber);");
+  configq.bindValue(":poNumber", _nextPoNumber->text().toInt());
+  configq.bindValue(":vcNumber", _nextVcNumber->text().toInt());
+  configq.bindValue(":prNumber", _nextPrNumber->text().toInt());
+  configq.exec();
 
-  _metrics->load();
-
-  accept();
+  return true;
 }
 
