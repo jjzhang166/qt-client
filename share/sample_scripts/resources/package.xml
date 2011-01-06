@@ -51,6 +51,7 @@
   <loadappscript file="client/scripts/scriptCC.script"		name="scriptCC">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/soitemJumpWomatl.js"	name="soitemJumpWomatl">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/taxCodes_Copy.js"		name="taxCodes">sample_scripts package</loadappscript>
+  <loadappscript file="client/scripts/testprocess.js"		name="testprocess">demonstrate script exposure of QProcess and QProcessEnvironment classes</loadappscript>
   <loadappscript file="client/scripts/weatherForAddress.js"	name="weatherForAddress">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/windowSetTitle.js"	name="windowSetTitle">sample_scripts package</loadappscript>
   <loadappscript file="client/scripts/xtreewidgetdemo.js"	name="xtreewidgetdemo">sample_scripts package</loadappscript>
@@ -64,6 +65,7 @@
   <loadappui file="client/uiforms/FileDemo.ui"		>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/itemSiteViewItem.ui"	>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/scriptCC.ui"		>sample_scripts package</loadappui>
+  <loadappui file="client/uiforms/testprocess.ui"	>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/weatherForAddress.ui"	>sample_scripts package</loadappui>
   <loadappui file="client/uiforms/xtreewidgetdemo.ui"	>sample_scripts package</loadappui>
 

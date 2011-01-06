@@ -19,6 +19,7 @@ UI_DIR = tmp
 
 HEADERS += setupscriptapi.h \
     include.h \
+    scriptapi_internal.h \
     metasqlhighlighterproto.h \
     orreportproto.h \
     parameterlistsetup.h \
@@ -27,6 +28,7 @@ HEADERS += setupscriptapi.h \
     qbytearrayproto.h \
     qdialogbuttonboxproto.h \
     qdialogsetup.h \
+    qdirproto.h \
     qdockwidgetproto.h \
     qdomattrproto.h \
     qdomcdatasectionproto.h \
@@ -47,10 +49,13 @@ HEADERS += setupscriptapi.h \
     qdomtextproto.h \
     qdoublevalidatorproto.h \
     qeventproto.h \
+    qfileproto.h \
+    qfileinfoproto.h \
     qfontproto.h \
     qformlayoutproto.h \
     qgridlayoutproto.h \
     qiconproto.h \
+    qiodeviceproto.h \
     qitemdelegateproto.h \
     qlayoutproto.h \
     qlayoutitemproto.h \
@@ -60,6 +65,8 @@ HEADERS += setupscriptapi.h \
     qnetworkreplyproto.h \
     qnetworkrequestproto.h \
     qprinterproto.h \
+    qprocessproto.h     \
+    qprocessenvironmentproto.h     \
     qpushbuttonproto.h \
     qsizepolicyproto.h \
     qspaceritemproto.h \
@@ -119,6 +126,7 @@ SOURCES += setupscriptapi.cpp \
     qbytearrayproto.cpp \
     qdialogbuttonboxproto.cpp \
     qdialogsetup.cpp \
+    qdirproto.cpp \
     qdockwidgetproto.cpp \
     qdomattrproto.cpp \
     qdomcdatasectionproto.cpp \
@@ -139,10 +147,13 @@ SOURCES += setupscriptapi.cpp \
     qdomtextproto.cpp \
     qdoublevalidatorproto.cpp \
     qeventproto.cpp \
+    qfileproto.cpp \
+    qfileinfoproto.cpp \
     qfontproto.cpp \
     qformlayoutproto.cpp \
     qgridlayoutproto.cpp \
     qiconproto.cpp \
+    qiodeviceproto.cpp \
     qitemdelegateproto.cpp \
     qlayoutitemproto.cpp \
     qlayoutproto.cpp \
@@ -152,6 +163,8 @@ SOURCES += setupscriptapi.cpp \
     qnetworkreplyproto.cpp \
     qnetworkrequestproto.cpp \
     qprinterproto.cpp \
+    qprocessproto.cpp \
+    qprocessenvironmentproto.cpp \
     qpushbuttonproto.cpp \
     qsizepolicyproto.cpp \
     qspaceritemproto.cpp \

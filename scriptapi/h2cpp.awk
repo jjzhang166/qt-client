@@ -26,8 +26,8 @@
   print "QScriptValue " baseclass "toScriptValue(QScriptEngine *engine, " baseclass "* const &item)";
   print "{ return engine->newQObject(item); }";
   print "";
-  print "QScriptValue " baseclass "fromScriptValue(QScriptEngine *engine, " baseclass "* const &item)";
-  print "{ item = qobject_cast<" baseclass "*>(obj.toQObject());";
+  print "void " baseclass "fromScriptValue(const QScriptValue &obj, " baseclass "* &item)";
+  print "{\n  item = qobject_cast<" baseclass "*>(obj.toQObject());\n}";
   print "";
   sub(/;/, "");
   print;
@@ -50,8 +50,12 @@
   print "                                    QScriptEngine  *engine)";
   print "{";
   print "  " baseclass " *obj = 0;";
-  print "  // if (context->argumentCount() > 0)";
-  print "  // else";
+  print "  /* if (context->argumentCount() ...)";
+  print "  else if (something bad)";
+  print "    context->throwError(QScriptContext::UnknownError,";
+  print "                        \"Could not find an appropriate " baseclass "constructor\");";
+  print "  else";
+  print "  */";
   print "    obj = new " baseclass "();";
   print "  return engine->toScriptValue(obj);";
   print "}";

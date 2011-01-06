@@ -91,9 +91,6 @@
     \see XDialog
     \see XMainWindow
     \see XWidget
-
-    \todo expose QFile and QDir to scripting, including static methods,
-          then deprecate the methods here that wrap them.
     \todo figure out how to link this class with the scriptapi group
  */
 
@@ -1051,34 +1048,32 @@ void ScriptToolbox::openUrl(const QString & fileUrl)
     QDesktopServices::openUrl(url);
 }
 
+/** \deprecated Use QFile.copyFile(oldName, newName) instead */
 bool ScriptToolbox::copyFile(const QString & oldName, const QString & newName)
 {
    return QFile::copy(oldName, newName);
 }
 
-/** \brief This is a wrapper around QFileInfo.fileName.
-  
-    Get the name of the file, excluding the path if given.
-
-    \param path The path of the file, possibly absolute, relative, or simple
-    \return The file component of the given path
- */
+/** \deprecated Use var file = new QFileInfo(path).fileName() instead */
 QString ScriptToolbox::getFileName(const QString & path)
 {
     QFileInfo fi(path);
     return fi.fileName();
 }
 
+/** \deprecated Use QFile.rename(oldName, newName) instead */
 bool ScriptToolbox::renameFile(const QString & oldName, const QString & newName)
 {
    return QFile::rename(oldName, newName);
 }
 
+/** \deprecated Use QFile.removeFile(oldName, newName) instead */
 bool ScriptToolbox::removeFile(const QString & name)
 {
    return QFile::remove(name);
 }
 
+/** \deprecated Use QFile.exists(name) instead */
 bool ScriptToolbox::fileExists(const QString & name)
 {
    return QFile::exists(name);
@@ -1136,44 +1131,38 @@ bool ScriptToolbox::textStreamWrite(const QString & pName, const QString & Write
    return true;
 }
 
-/** \brief A wrapper arounc QFile::exists. */
+/** \deprecated use QFile.exists(name) instead */
 bool fileExists(const QString & name)
 {
    QFile file(name);
    return file.exists();
 }
 
-/** \brief A wrapper around QDir::homePath. */
+/** \deprecated Use QDir.homePath() instead */
 QString ScriptToolbox::getHomeDir()
 {
    return QDir::homePath();
 }
 
-/** \brief A wrapper around QDir::currentPath. */
+/** \deprecated Use QDir.currentPath() instead */
 QString ScriptToolbox::getCurrentDir()
 {
    return QDir::currentPath();
 }
 
-/** \brief A wrapper around QDir::tmpPath. */
+/** \deprecated Use QDir.tempPath() instead */
 QString ScriptToolbox::getTempDir()
 {
    return QDir::tempPath();
 }
 
-/** \brief A wrapper around QDir::rootPath. */
+/** \deprecated Use QDir.rootPath() instead */
 QString ScriptToolbox::rootPath()
 {
    return QDir::rootPath();
 }
 
-/** \brief A wrapper around QDir::mkpath.
-
-    Create a new directory.
- 
-    \param mkPath   The directory to create
-    \param rootPath The parent directory of the newly-created directory
- */
+/** \deprecated Use var dir = new QDir(rootPath) followed by dir.mkpath(mkPath) instead */
 bool ScriptToolbox::makePath(const QString & mkPath, const QString & rootPath)
 {
    QDir dir(rootPath);
@@ -1181,13 +1170,7 @@ bool ScriptToolbox::makePath(const QString & mkPath, const QString & rootPath)
    return dir.mkpath(mkPath);
 }
 
-/** \brief A wrapper around QDir.rmpath.
-
-    Remove a directory.
-
-    \param rmPath   The directory to remove
-    \param rootPath The parent directory of the directory to remove
- */
+/** \deprecated Use var dir = new QDir(rootPath) followed by dir.rmpath(rmPath) instead */
 bool ScriptToolbox::removePath(const QString & rmPath, const QString & rootPath)
 {
    QDir dir(rootPath);
@@ -1468,6 +1451,18 @@ QScriptValue QtWindowModalitytoScriptValue(QScriptEngine *engine, const enum Qt:
 void QtWindowModalityfromScriptValue(const QScriptValue &obj, enum Qt::WindowModality &en)
 {
   en = (enum Qt::WindowModality)obj.toInt32();
+}
+
+/** \internal */
+QScriptValue WindowSystemtoScriptValue(QScriptEngine *engine, const enum GUIClient::WindowSystem &en)
+{
+  return QScriptValue(engine, (int)en);
+}
+
+/** \internal */
+void WindowSystemfromScriptValue(const QScriptValue &obj, enum GUIClient::WindowSystem &en)
+{
+  en = (enum GUIClient::WindowSystem)obj.toInt32();
 }
 
 /** \internal */

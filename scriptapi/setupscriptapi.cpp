@@ -35,6 +35,7 @@
 #include "qbytearrayproto.h"
 #include "qdialogsetup.h"
 #include "qdialogbuttonboxproto.h"
+#include "qdirproto.h"
 #include "qdockwidgetproto.h"
 #include "qdomattrproto.h"
 #include "qdomcdatasectionproto.h"
@@ -55,10 +56,13 @@
 #include "qdomtextproto.h"
 #include "qdoublevalidatorproto.h"
 #include "qeventproto.h"
+#include "qfileproto.h"
+#include "qfileinfoproto.h"
 #include "qfontproto.h"
 #include "qformlayoutproto.h"
 #include "qgridlayoutproto.h"
 #include "qiconproto.h"
+#include "qiodeviceproto.h"
 #include "qitemdelegateproto.h"
 #include "qlayoutitemproto.h"
 #include "qlayoutproto.h"
@@ -68,6 +72,8 @@
 #include "qnetworkreplyproto.h"
 #include "qnetworkrequestproto.h"
 #include "qprinterproto.h"
+#include "qprocessproto.h"
+#include "qprocessenvironmentproto.h"
 #include "qpushbuttonproto.h"
 #include "qsizepolicyproto.h"
 #include "qspaceritemproto.h"
@@ -146,6 +152,7 @@ void setupScriptApi(QScriptEngine *engine)
   setupQByteArrayProto(engine);
   setupQDialog(engine);
   setupQDialogButtonBoxProto(engine);
+  setupQDirProto(engine);
   setupQDockWidgetProto(engine);
   setupQDomAttrProto(engine);
   setupQDomCDATASectionProto(engine);
@@ -166,10 +173,13 @@ void setupScriptApi(QScriptEngine *engine)
   setupQDomTextProto(engine);
   setupQDoubleValidatorProto(engine);
   setupQEventProto(engine);
+  setupQFileProto(engine);
+  setupQFileInfoProto(engine);
   setupQFontProto(engine);
   setupQFormLayoutProto(engine);
   setupQGridLayoutProto(engine);
   setupQIconProto(engine);
+  setupQIODeviceProto(engine);
   setupQItemDelegateProto(engine);
   setupQLayoutItemProto(engine);
   setupQLayoutProto(engine);
@@ -180,6 +190,8 @@ void setupScriptApi(QScriptEngine *engine)
   setupQNetworkReplyProto(engine);
   setupQNetworkRequestProto(engine);
   setupQPrinterProto(engine);
+  setupQProcessProto(engine);
+  setupQProcessEnvironmentProto(engine);
   setupQPushButtonProto(engine);
   setupQSizePolicy(engine);
   setupQSpacerItem(engine);

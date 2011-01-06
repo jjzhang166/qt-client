@@ -587,6 +587,25 @@ GUIClient::~GUIClient()
   QSqlDatabase::database().close();  
 }
 
+GUIClient::WindowSystem GUIClient::getWindowSystem()
+{
+#ifdef Q_WS_X11
+  return X11;
+#elif defined Q_WS_WIN
+  return WIN;
+#elif defined Q_WS_MAC
+  return MAC;
+#elif defined Q_WS_QWS
+  return QWS;
+#elif defined Q_WS_WINCE
+  return WINCE;
+#elif defined Q_WS_S60
+  return S60;
+#else
+  return Unknown;
+#endif
+}
+
 bool GUIClient::singleCurrency()
 {
   bool retValue = true;
@@ -1884,6 +1903,7 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
   qScriptRegisterMetaType(engine, ParameterGroupStatestoScriptValue, ParameterGroupStatesfromScriptValue);
   qScriptRegisterMetaType(engine, QtWindowModalitytoScriptValue, QtWindowModalityfromScriptValue);
   qScriptRegisterMetaType(engine, SaveFlagstoScriptValue, SaveFlagsfromScriptValue);
+  qScriptRegisterMetaType(engine, WindowSystemtoScriptValue, WindowSystemfromScriptValue);
 
   ScriptToolbox * tb = new ScriptToolbox(engine);
   QScriptValue toolbox = engine->newQObject(tb);
@@ -1904,6 +1924,21 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
   mainwindowval.setProperty("Error_NoSetup",  QScriptValue(engine, Error_NoSetup),
                             QScriptValue::ReadOnly | QScriptValue::Undeletable);
   mainwindowval.setProperty("UndefinedError",  QScriptValue(engine, UndefinedError),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+
+  mainwindowval.setProperty("X11",  QScriptValue(engine, X11),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("WIN",  QScriptValue(engine, WIN),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("MAC",  QScriptValue(engine, MAC),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("QWS",  QScriptValue(engine, QWS),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("WINCE",  QScriptValue(engine, WINCE),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("S60",  QScriptValue(engine, S60),
+                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("Unknown",  QScriptValue(engine, Unknown),
                             QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
 

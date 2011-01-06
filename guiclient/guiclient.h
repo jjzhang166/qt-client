@@ -171,6 +171,10 @@ class GUIClient : public QMainWindow
   Q_PROPERTY(QString key READ key)
   
   public:
+    enum WindowSystem {
+      Unknown, X11, WIN, MAC, QWS, WINCE, S60
+    };
+
     GUIClient(const QString &, const QString &);
     virtual ~GUIClient();
 
@@ -205,6 +209,7 @@ class GUIClient : public QMainWindow
 
     Q_INVOKABLE inline QFont systemFont()              { return *_systemFont;  }
     Q_INVOKABLE inline QFont fixedFont()               { return *_fixedFont;   }
+    Q_INVOKABLE GUIClient::WindowSystem getWindowSystem();
 
     Q_INVOKABLE bool singleCurrency();
     Q_INVOKABLE bool showTopLevel() const { return _showTopLevel; }

@@ -42,6 +42,7 @@ Q_DECLARE_METATYPE(enum SetResponse)
 Q_DECLARE_METATYPE(enum ParameterGroup::ParameterGroupStates);
 Q_DECLARE_METATYPE(enum ParameterGroup::ParameterGroupTypes);
 Q_DECLARE_METATYPE(enum Qt::WindowModality);
+Q_DECLARE_METATYPE(enum GUIClient::WindowSystem);
 Q_DECLARE_METATYPE(enum SaveFlags);
 
 
@@ -56,6 +57,9 @@ void ParameterGroupTypesfromScriptValue(const QScriptValue &obj, enum ParameterG
 
 QScriptValue QtWindowModalitytoScriptValue(QScriptEngine *engine, const enum Qt::WindowModality &en);
 void QtWindowModalityfromScriptValue(const QScriptValue &obj, enum Qt::WindowModality &en);
+
+QScriptValue WindowSystemtoScriptValue(QScriptEngine *engine, const enum GUIClient::WindowSystem &en);
+void WindowSystemfromScriptValue(const QScriptValue &obj, enum GUIClient::WindowSystem &en);
 
 QScriptValue SaveFlagstoScriptValue(QScriptEngine *engine, const enum SaveFlags &en);
 void SaveFlagsfromScriptValue(const QScriptValue &obj, enum SaveFlags &en);
