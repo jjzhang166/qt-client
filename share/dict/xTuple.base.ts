@@ -5430,7 +5430,7 @@ Report this to your Systems Administrator.</source>
 <context>
     <name>UsernameList</name>
     <message>
-        <location filename="../../widgets/usernameCluster.cpp" line="202"/>
+        <location filename="../../widgets/usernameCluster.cpp" line="203"/>
         <source>User Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5438,7 +5438,7 @@ Report this to your Systems Administrator.</source>
 <context>
     <name>UsernameSearch</name>
     <message>
-        <location filename="../../widgets/usernameCluster.cpp" line="214"/>
+        <location filename="../../widgets/usernameCluster.cpp" line="215"/>
         <source>User Name</source>
         <translation type="unfinished"></translation>
     </message>
