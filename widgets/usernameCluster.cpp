@@ -88,6 +88,7 @@ void UsernameLineEdit::setType(enum Type pType)
 void UsernameLineEdit::clear()
 {
   setId(-1);
+  _username = "";
   setText(QString());
 }
 
