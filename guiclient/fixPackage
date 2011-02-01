@@ -51,10 +51,32 @@ collectAndRenameLibs() {
   [ -d $FRAMEWORKSDIR ] || mkdir $FRAMEWORKSDIR                     || return 1
   cd $FRAMEWORKSDIR                                                 || return 1
 
-  LIBSTORENAME=`otool -L $FILE | egrep "($QTDIR|$PGDIR)" |  awk '{print $1}'`
+  LIBSTORENAME=`otool -L $FILE | tail -n +2 |\
+                egrep "($QTDIR|$PGDIR|boost)" |\
+                grep -v @executable |\
+                awk '{print $1}'`
   for TORENAME in $LIBSTORENAME ; do
+    FOUNDTORENAME=false
     BASETORENAME=`basename $TORENAME`
-    [ -e "$BASETORENAME" ] || cp "$TORENAME" .                      || return 1
+# if TORENAME is a relative path, try various searchpaths until we find it
+    if [ -e "$TORENAME" -a `echo $TORENAME | cut -c1 ` = / ] ; then
+      cp "$TORENAME" .                                              || return 1
+      FOUNDTORENAME=true
+    else
+      for LIBDIR in `echo "$DYLD_LIBRARY_PATH:$LD_LIBRARY_PATH:$LIBRARY_PATH:/usr/local/lib" |\
+                     tr : " "` ; do
+        if [ -e "$LIBDIR/$BASETORENAME" ] ; then
+          cp "$LIBDIR/$BASETORENAME" .                              || return 1
+          FOUNDTORENAME=true
+          break
+        fi
+      done
+    fi
+    if ! $FOUNDTORENAME ; then
+      echo "Could not find $TORENAME to copy"
+      return 1
+    fi
+
     install_name_tool -id $NEWLOC/$BASETORENAME $BASETORENAME       || return 1
     install_name_tool -change $TORENAME $NEWLOC/$BASETORENAME $FILE || return 1
   done
