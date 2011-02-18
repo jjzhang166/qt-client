@@ -158,7 +158,7 @@ void characteristic::sSave()
                "  :char_options, :char_opportunity,"
                "  :char_attributes, :char_lotserial, :char_employees,"
                "  :char_incidents, "
-               "  :char_notes, :char_mask, :char_validator, :char_type "
+               "  :char_notes, :char_mask, :char_validator, :char_type, "
                "  :char_order );" );
 
     q.bindValue(":char_type", _type->currentIndex());
