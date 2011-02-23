@@ -84,63 +84,40 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
 
 void firmPlannedOrder::sFirm()
 {
-  q.prepare( "SELECT deletePlannedOrder( :planord_id, true) AS result;" );
+  q.prepare( "UPDATE planord "
+             "SET planord_firm=TRUE, "
+             "    planord_comments=:planord_comments, "
+             "    planord_qty=:planord_qty, "
+             "    planord_duedate=:planord_dueDate, "
+             "    planord_startdate=(DATE(:planord_dueDate) - :planord_leadTime) "
+             "WHERE (planord_id=:planord_id);" );
+  q.bindValue(":planord_qty", _quantity->toDouble());
+  q.bindValue(":planord_dueDate", _dueDate->date());
+  q.bindValue(":planord_leadTime", _leadTime);
+  q.bindValue(":planord_comments", _comments->toPlainText());
   q.bindValue(":planord_id", _planordid);
   q.exec();
-  if (q.first())
-  {
-    bool result = q.value("result").toBool();
-    if (! result)
-    {
-      systemError(this, tr("DeletePlannedOrder returned FALSE, indicating an "
-                           "error occurred."),
-                  __FILE__, __LINE__);
-      return;
-    }
-  }
-  else if (q.lastError().type() != QSqlError::NoError)
+  if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
-  q.prepare( "SELECT createPlannedOrder( -1, :orderNumber, :itemsite_id, :qty,"
-             "                           (DATE(:dueDate) - :leadTime), :dueDate,"
-             "                           TRUE, FALSE, NULL, :itemType) AS result;" );
-  q.bindValue(":orderNumber", _number);
-  q.bindValue(":itemsite_id", _itemsiteid);
-  q.bindValue(":qty", _quantity->toDouble());
-  q.bindValue(":dueDate", _dueDate->date());
-  q.bindValue(":leadTime", _leadTime);
-  if (_type == "P")
-    q.bindValue(":itemType", "P");
-  else
-    q.bindValue(":itemType", "M");
+  q.prepare( "SELECT explodePlannedOrder( :planord_id, true) AS result;" );
+  q.bindValue(":planord_id", _planordid);
   q.exec();
   if (q.first())
   {
     double result = q.value("result").toDouble();
     if (result < 0.0)
     {
-      systemError(this, tr("CreatePlannedOrder returned %, indicating an "
+      systemError(this, tr("ExplodePlannedOrder returned %, indicating an "
                            "error occurred.").arg(result),
                   __FILE__, __LINE__);
       return;
     }
   }
   else if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-
-  q.prepare( "UPDATE planord "
-             "SET planord_comments=:planord_comments, planord_firm=TRUE "
-             "WHERE (planord_number=:orderNumber);" );
-  q.bindValue(":planord_comments", _comments->toPlainText());
-  q.bindValue(":orderNumber", _number);
-  q.exec();
-  if (q.lastError().type() != QSqlError::NoError)
   {
     systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
     return;

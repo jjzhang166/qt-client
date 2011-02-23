@@ -213,62 +213,114 @@ void plannedOrder::sCreate()
     }
   }
 
+  int foid = 0;
 
   if(cEdit == _mode)
   {
-    q.prepare( "SELECT deletePlannedOrder(:planord_id, :deleteChildren);" );
+    q.prepare( "UPDATE planord "
+               "SET planord_firm=TRUE, "
+               "    planord_number=:planord_number, "
+               "    planord_type=:planord_type, "
+               "    planord_itemsite_id=:planord_itemsite_id, "
+               "    planord_supply_itemsite_id=:planord_supply_itemsite_id, "
+               "    planord_comments=:planord_comments, "
+               "    planord_qty=:planord_qty, "
+               "    planord_duedate=:planord_dueDate, "
+               "    planord_startdate=(DATE(:planord_dueDate) - :planord_leadTime) "
+               "WHERE (planord_id=:planord_id);" );
+    q.bindValue(":planord_number", _number->text().toInt());
+    q.bindValue(":planord_itemsite_id", itemsiteid);
+    if (_poButton->isChecked())
+      q.bindValue(":planord_type", "P");
+    else if (_woButton->isChecked())
+      q.bindValue(":planord_type", "W");
+    else if (_toButton->isChecked())
+    {
+      q.bindValue(":planord_type", "T");
+      q.bindValue(":planord_supply_itemsite_id", _supplyItemsiteId);
+    }
+    q.bindValue(":planord_qty", _qty->toDouble());
+    q.bindValue(":planord_dueDate", _dueDate->date());
+    q.bindValue(":planord_leadTime", _leadTime->value());
+    q.bindValue(":planord_comments", _notes->toPlainText());
     q.bindValue(":planord_id", _planordid);
-    q.bindValue(":deleteChildren", TRUE);
     q.exec();
-  }
-  
-  q.prepare( "SELECT createPlannedOrder( :orderNumber, :itemsite_id, :qty, "
-             "                           (DATE(:dueDate) - :leadTime), :dueDate, "
-             "                           :type, :supply_itemsite_id, :notes) AS result;" );
-  q.bindValue(":orderNumber", _number->text().toInt());
-  q.bindValue(":itemsite_id", itemsiteid);
-  q.bindValue(":qty", _qty->toDouble());
-  q.bindValue(":dueDate", _dueDate->date());
-  q.bindValue(":leadTime", _leadTime->value());
-  q.bindValue(":notes",    _notes->toPlainText());
-  if (_poButton->isChecked())
-    q.bindValue(":type", "P");
-  else if (_woButton->isChecked())
-    q.bindValue(":type", "W");
-  else if (_toButton->isChecked())
-  {
-    q.bindValue(":type", "T");
-    q.bindValue(":supply_itemsite_id", _supplyItemsiteId);
-  }
-  
-  q.exec();
-  if (!q.first())
-  {
-    systemError( this, tr("A System Error occurred at %1::%2.")
-                       .arg(__FILE__)
-                       .arg(__LINE__) );
-    return;
-  }
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
 
-  int foid = XDialog::Rejected;
-  switch (q.value("result").toInt())
+    q.prepare( "SELECT explodePlannedOrder( :planord_id, true) AS result;" );
+    q.bindValue(":planord_id", _planordid);
+    q.exec();
+    if (q.first())
+    {
+      double result = q.value("result").toDouble();
+      if (result < 0.0)
+      {
+        systemError(this, tr("ExplodePlannedOrder returned %, indicating an "
+                             "error occurred.").arg(result),
+                    __FILE__, __LINE__);
+        return;
+      }
+    }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
+  else
   {
-    case -1:
-      QMessageBox::critical( this, tr("Planned Order not Exploded"),
-                             tr( "The Planned Order was created but not Exploded as there is no valid Bill of Materials for the selected Item.\n"
-                                 "You must create a valid Bill of Materials before you may explode this Planned Order." ));
-      break;
+    q.prepare( "SELECT createPlannedOrder( :orderNumber, :itemsite_id, :qty, "
+               "                           (DATE(:dueDate) - :leadTime), :dueDate, "
+               "                           :type, :supply_itemsite_id, :notes) AS result;" );
+    q.bindValue(":orderNumber", _number->text().toInt());
+    q.bindValue(":itemsite_id", itemsiteid);
+    q.bindValue(":qty", _qty->toDouble());
+    q.bindValue(":dueDate", _dueDate->date());
+    q.bindValue(":leadTime", _leadTime->value());
+    q.bindValue(":notes",    _notes->toPlainText());
+    if (_poButton->isChecked())
+      q.bindValue(":type", "P");
+    else if (_woButton->isChecked())
+      q.bindValue(":type", "W");
+    else if (_toButton->isChecked())
+    {
+      q.bindValue(":type", "T");
+      q.bindValue(":supply_itemsite_id", _supplyItemsiteId);
+    }
   
-    case -2:
-      QMessageBox::critical( this, tr("Planned Order not Exploded"),
-                             tr( "The Planned Order was created but not Exploded as Component Items defined in the Bill of Materials\n"
-                                 "for the selected Planned Order Item do not exist in the selected Planned Order Site.\n"
-                                 "You must create Item Sites for these Component Items before you may explode this Planned Order." ));
-      break;
+    q.exec();
+    if (!q.first())
+    {
+      systemError( this, tr("A System Error occurred at %1::%2.")
+                         .arg(__FILE__)
+                         .arg(__LINE__) );
+      return;
+    }
 
-    default:
-      foid = q.value("result").toInt();
-      break;
+    foid = XDialog::Rejected;
+    switch (q.value("result").toInt())
+    {
+      case -1:
+        QMessageBox::critical( this, tr("Planned Order not Exploded"),
+                               tr( "The Planned Order was created but not Exploded as there is no valid Bill of Materials for the selected Item.\n"
+                                   "You must create a valid Bill of Materials before you may explode this Planned Order." ));
+        break;
+  
+      case -2:
+        QMessageBox::critical( this, tr("Planned Order not Exploded"),
+                               tr( "The Planned Order was created but not Exploded as Component Items defined in the Bill of Materials\n"
+                                   "for the selected Planned Order Item do not exist in the selected Planned Order Site.\n"
+                                   "You must create Item Sites for these Component Items before you may explode this Planned Order." ));
+        break;
+
+      default:
+        foid = q.value("result").toInt();
+        break;
+    }
   }
 
   if (_captive)
