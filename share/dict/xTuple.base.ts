@@ -48569,6 +48569,11 @@ but you may deactivate it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../guiclient/firmPlannedOrder.cpp" line="114"/>
+        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../guiclient/firmPlannedOrder.ui" line="21"/>
         <source>Firm Planned Order</source>
         <translation type="unfinished"></translation>
@@ -48601,16 +48606,6 @@ but you may deactivate it.</source>
     <message>
         <location filename="../../guiclient/firmPlannedOrder.ui" line="288"/>
         <source>Notes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/firmPlannedOrder.cpp" line="95"/>
-        <source>DeletePlannedOrder returned FALSE, indicating an error occurred.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/firmPlannedOrder.cpp" line="125"/>
-        <source>CreatePlannedOrder returned %, indicating an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -55593,28 +55588,28 @@ You must delete these assignments before you may delete the selected Pricing Sch
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1519"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1521"/>
         <source>&lt;p&gt;There is no active Item Site for this Item at %1. Shipping or receiving this Item will fail if there is no Item Site. Please have an administrator create one before trying to ship this Order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1566"/>
-        <location filename="../../guiclient/itemSite.cpp" line="1642"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1568"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1644"/>
         <source>No Active Item Site</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1622"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1624"/>
         <source>Inactive Item Site</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1623"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1625"/>
         <source>&lt;p&gt;The Item Site for this Item at %1 is inactive. Would you like to make it active?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1654"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1656"/>
         <source>&lt;p&gt;There was a problem checking or creating an Item Site for this Transfer Order Item.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -55715,12 +55710,12 @@ You must delete these assignments before you may delete the selected Pricing Sch
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1540"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1542"/>
         <source>No Site</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/itemSite.cpp" line="1541"/>
+        <location filename="../../guiclient/itemSite.cpp" line="1543"/>
         <source>&lt;p&gt;The desired Item Site cannot be created as there is no Site with the internal ID %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64086,24 +64081,29 @@ Please correct before creating this Planned Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/plannedOrder.cpp" line="247"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="262"/>
+        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/plannedOrder.cpp" line="298"/>
         <source>A System Error occurred at %1::%2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/plannedOrder.cpp" line="257"/>
-        <location filename="../../guiclient/plannedOrder.cpp" line="263"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="308"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="314"/>
         <source>Planned Order not Exploded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/plannedOrder.cpp" line="258"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="309"/>
         <source>The Planned Order was created but not Exploded as there is no valid Bill of Materials for the selected Item.
 You must create a valid Bill of Materials before you may explode this Planned Order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/plannedOrder.cpp" line="285"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="337"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64193,7 +64193,7 @@ You must create a valid Bill of Materials before you may explode this Planned Or
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/plannedOrder.cpp" line="264"/>
+        <location filename="../../guiclient/plannedOrder.cpp" line="315"/>
         <source>The Planned Order was created but not Exploded as Component Items defined in the Bill of Materials
 for the selected Planned Order Item do not exist in the selected Planned Order Site.
 You must create Item Sites for these Component Items before you may explode this Planned Order.</source>

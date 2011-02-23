@@ -38589,11 +38589,7 @@ Are you sure you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>DeletePlannedOrder returned FALSE, indicating an error occurred.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CreatePlannedOrder returned %, indicating an error occurred.</source>
+        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -50791,6 +50787,10 @@ You must create Item Sites for these Component Items before you may explode this
     </message>
     <message>
         <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
