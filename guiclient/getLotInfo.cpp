@@ -44,7 +44,7 @@ QDate getLotInfo::expiration()
   if(_expiration->isEnabled())
     return _expiration->date();
   else
-    return omfgThis->startOfTime();
+    return omfgThis->endOfTime();
 }
 
 QDate getLotInfo::warranty()

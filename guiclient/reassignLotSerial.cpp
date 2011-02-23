@@ -143,7 +143,7 @@ void reassignLotSerial::sReassign()
   if (_expirationDate->isEnabled())
     q.bindValue(":expirationDate", _expirationDate->date());
   else
-    q.bindValue(":expirationDate", omfgThis->startOfTime());
+    q.bindValue(":expirationDate", omfgThis->endOfTime());
 
   if (_warrantyDate->isEnabled())
     q.bindValue(":warrantyDate", _warrantyDate->date());

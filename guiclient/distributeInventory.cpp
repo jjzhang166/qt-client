@@ -144,7 +144,7 @@ int distributeInventory::SeriesAdjust(int pItemlocSeries, QWidget *pParent, cons
             if(itemloc.value("itemsite_perishable").toBool())
               query.bindValue(":expiration", pPresetLotexp);
             else
-              query.bindValue(":expiration", omfgThis->startOfTime());
+              query.bindValue(":expiration", omfgThis->endOfTime());
             if(itemloc.value("itemsite_warrpurc").toBool())
               query.bindValue(":warranty", pPresetLotwarr);
             query.exec();
