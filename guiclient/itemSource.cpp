@@ -39,8 +39,9 @@ itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WFlags
   connect(_vendorCurrency,    SIGNAL(newID(int)), this, SLOT(sFillPriceList()));
   connect(this,               SIGNAL(rejected()), this, SLOT(sRejected()));
 
-  connect(_vendorUOM, SIGNAL(textChanged(int)), this, SLOT(sClearVendorUOM()));
-  connect(_invVendorUOMRatio, SIGNAL(textChanged(QString)), this, SLOT(sClearVendorUOM()));
+//  TODO method doesn't exist?
+//  connect(_vendorUOM, SIGNAL(textChanged()), this, SLOT(sClearVendorUOM()));
+//  connect(_invVendorUOMRatio, SIGNAL(textChanged(QString)), this, SLOT(sClearVendorUOM()));
 
 
   _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured | ItemLineEdit::cTooling);
@@ -203,7 +204,7 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
                   "SELECT :itemsrcid, itemsrcp_qtybreak, "
                   "itemsrcp_price, current_date, itemsrcp_curr_id "
                   "FROM itemsrcp "
-                  "WHERE (itemsrcp_id=:itemsrcidold); ");
+                  "WHERE (itemsrcp_itemsrc_id=:itemsrcidold); ");
         q.bindValue(":itemsrcid", _itemsrcid);
         q.bindValue(":itemsrcidold", itemsrcidold);
         q.exec();
@@ -532,4 +533,3 @@ void itemSource::sVendorChanged( int pId )
       return;
     }
 }
-
