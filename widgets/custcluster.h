@@ -61,6 +61,7 @@ class XTUPLEWIDGETS_EXPORT CLineEdit : public VirtualClusterLineEdit
     bool   editMode();
 
   public slots:
+    virtual void clear();
     bool setEditMode(bool);
     void sNew();
     void setId(int);

@@ -1656,7 +1656,6 @@ void customer::setId(int p)
   if (_custid==p)
     return;
 
-  _number->setEditMode(p != -1);
   _charfilled = false;
   _custid=p;
   populate();
@@ -1773,8 +1772,11 @@ void customer::sPrepare()
     return;
   }
 
-  _number->setEditMode(true);
+
+  disconnect(_number, SIGNAL(editable(bool)), this, SLOT(sNumberEditable(bool)));
   _number->clear();
+  _number->setEditMode(true);
+  connect(_number, SIGNAL(editable(bool)), this, SLOT(sNumberEditable(bool)));
 
   // Handle Auto numbering
   if(((_x_metrics &&

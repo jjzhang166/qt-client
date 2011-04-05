@@ -156,6 +156,12 @@ void CLineEdit::sNew()
   sOpenWindow(uiName, params);
 }
 
+void CLineEdit::clear()
+{
+  VirtualClusterLineEdit::clear();
+  setEditMode(false);
+}
+
 void CLineEdit::setId(int pId)
 {
   VirtualClusterLineEdit::setId(pId);
@@ -303,8 +309,8 @@ bool CLineEdit::setEditMode(bool p)
  if (!_editMode)
    selectAll();
 
-  emit editable(p);
-  return p;
+  emit editable(_editMode);
+  return _editMode;
 }
 
 void CLineEdit::sParse()
