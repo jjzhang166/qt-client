@@ -415,22 +415,22 @@ void glSeries::reject()
     qDebug("glSeries::reject() entered with _mode %d, topLevelItemCount %d",
            _mode, _glseries->topLevelItemCount());
   if (cNew == _mode &&
-      _glseries->topLevelItemCount() > 0 &&
-      QMessageBox::question(this, tr("Delete G/L Series?"),
-			    tr("<p>Are you sure you want to delete this G/L "
-			       "Series Entry?"),
-			    QMessageBox::Yes | QMessageBox::No,
-			    QMessageBox::No) == QMessageBox::Yes)
+      _glseries->topLevelItemCount() > 0)
   {
-    q.prepare("SELECT deleteGLSeries(:glsequence);");
-    q.bindValue(":glsequence", _glsequence);
-    q.exec();
-    if (q.lastError().type() != QSqlError::NoError)
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-  }
-  else
-  {
-    return;
+    if (QMessageBox::question(this, tr("Delete G/L Series?"),
+                              tr("<p>Are you sure you want to delete this G/L "
+                                 "Series Entry?"),
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::No) == QMessageBox::Yes)
+    {
+      q.prepare("SELECT deleteGLSeries(:glsequence);");
+      q.bindValue(":glsequence", _glsequence);
+      q.exec();
+      if (q.lastError().type() != QSqlError::NoError)
+        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    }
+    else
+      return;
   }
 
   omfgThis->sGlSeriesUpdated();
