@@ -375,7 +375,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _orderId = -1;
       _itemsrc = -1;
       _warranty->hide();
-      _tabs->removeTab(_tabs->indexOf(supplyTab));
+      _tabs->removeTab(_tabs->indexOf(_costofsalesTab));
 
       _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
 
@@ -439,7 +439,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _subItemList->hide();
       _qtyOrdered->setFocus();
       _warranty->hide();
-      _tabs->removeTab(_tabs->indexOf(supplyTab));
+      _tabs->removeTab(_tabs->indexOf(_costofsalesTab));
 
       connect(_qtyOrdered,        SIGNAL(lostFocus()),  this, SLOT(sCalculateExtendedPrice()));
       connect(_netUnitPrice,      SIGNAL(lostFocus()),  this, SLOT(sCalculateDiscountPrcnt()));
@@ -475,7 +475,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _subItem->hide();
       _comments->setType(Comments::QuoteItem);
       _warranty->hide();
-      _tabs->removeTab(_tabs->indexOf(supplyTab));
+      _tabs->removeTab(_tabs->indexOf(_costofsalesTab));
     }
   }
 
