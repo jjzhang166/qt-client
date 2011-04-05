@@ -1210,7 +1210,7 @@ void ParameterWidget::changeFilterObject(int index)
       storeFilterValue(siteid, newWidget);
       return;
     }
-    else if (newWidget->inherits("VirtualCluster"))
+    else
       storeFilterValue(-1, newWidget);
   }
   _saveButton->setDisabled(true);
