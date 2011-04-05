@@ -323,8 +323,8 @@ void XTreeWidget::populateWorker()
       //       doesn't require initializing a Vector or new'd array values
       _colIdx = new QVector<int>(_roles.size());
 
-      _colRole = new QVector<int *>(_fieldCount, 0);
-      for (int ref = 0; ref < _fieldCount; ++ref)
+      _colRole = new QVector<int *>(_roles.size(), 0);
+      for (int ref = 0; ref < _roles.size(); ++ref)
         (*_colRole)[ref] = new int[COLROLE_COUNT];
 
       if (! _subtotals)
@@ -785,7 +785,7 @@ void XTreeWidget::cleanupAfterPopulate()
   //       as per above's todo about the QVector<int*>
   if (_colRole)
   {
-    for (int ref = 0; ref < _fieldCount; ++ref)
+    for (int ref = 0; ref < _roles.size(); ++ref)
     {
       if ((*_colRole)[ref])
         delete [] (*_colRole)[ref];
