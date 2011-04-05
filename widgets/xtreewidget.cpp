@@ -2324,7 +2324,7 @@ QString XTreeWidget::toCsv() const
     {
       if (colcount)
         line = line + ",";
-      line = line + header->text(counter).replace("\"","\"\"").replace("\r\n"," ");
+      line = line + header->text(counter).replace("\"","\"\"").replace("\r\n"," ").replace("\n"," ");
       colcount++;
     }
   }
@@ -2370,9 +2370,9 @@ QString XTreeWidget::toHtml() const
   QTextTableFormat  tableFormat;
   QTextTableCell    cell;
   QTextCharFormat   format;
-  QString color;
   QString font;
   int     colcnt = 0;
+  int     rowcnt = 0;
 
   tableFormat.setHeaderRowCount(1);
 
@@ -2381,7 +2381,20 @@ QString XTreeWidget::toHtml() const
     if (!QTreeWidget::isColumnHidden(i))
       colcnt++;
 
-  cursor->insertTable(model()->rowCount() + 1, colcnt, tableFormat);
+  XTreeWidgetItem *item = topLevelItem(0);
+  if (item)
+  {
+    QModelIndex idx = indexFromItem(item);
+    while (idx.isValid())
+    {
+      item = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+        rowcnt++;
+      idx = indexBelow(idx);
+    }
+  }
+
+  cursor->insertTable(rowcnt + 1, colcnt, tableFormat);
 
   for (int counter = 0; counter < header->columnCount(); counter++)
   {
@@ -2396,7 +2409,7 @@ QString XTreeWidget::toHtml() const
     }
   }
 
-  XTreeWidgetItem *item = topLevelItem(0);
+  item = topLevelItem(0);
   if (item)
   {
     QModelIndex idx = indexFromItem(item);
