@@ -1468,7 +1468,7 @@ void GUIClient::sCustomCommand()
       }
 
       XUiLoader loader;
-      QByteArray ba = q.value("uiform_source").toByteArray();
+      QByteArray ba = q.value("uiform_source").toString().toUtf8();
       QBuffer uiFile(&ba);
       if(!uiFile.open(QIODevice::ReadOnly))
       {
