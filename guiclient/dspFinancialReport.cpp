@@ -524,6 +524,7 @@ void dspFinancialReport::sFillListTrend()
   QString q4f = QString(" FROM");
   QString q4w = QString(" WHERE ((true)");
 
+  QStringList qbList;
   QStringList qtList;
   QStringList qzList;
 
@@ -612,6 +613,7 @@ void dspFinancialReport::sFillListTrend()
                         _bigMoneyColumn, Qt::AlignRight, true, QString("r%1%2").arg(c).arg(colname));
       q1c += QString(",CASE WHEN(flgrp_summarize AND flgrp_showbudget) THEN r%1.%2 ELSE NULL END AS r%3%4, 'curr' AS r%5%6_xtnumericrole").arg(c).arg(colname).arg(c).arg(colname).arg(c).arg(colname);
       sharedColumns += QString(",r%1.%2 AS r%3%4, 'curr' AS r%5%6_xtnumericrole").arg(c).arg(colname).arg(c).arg(colname).arg(c).arg(colname);
+      qbList << QString("r%1.%2").arg(c).arg(colname);
       qzList << QString("(r%1.%2 <> 0)").arg(c).arg(colname);
     }
     if(_showBudgetPrcnt->isChecked() && _typeCode=="A")
@@ -727,13 +729,26 @@ void dspFinancialReport::sFillListTrend()
   //Grand Total for Trend Reports
   if ((_trend->isChecked()) && ((_typeCode == "I") || (_typeCode == "C")))
   {
-    list()->addColumn( tr("Grand\nTotal"), _bigMoneyColumn, Qt::AlignRight, true, "diffsum");
-    q1c += ",CASE WHEN(flgrp_summarize AND flgrp_showdiff) THEN (" +
-            qtList.join(" + ") +
-            ") ELSE NULL END AS diffsum, 'curr' AS diffsum_xtnumericrole";
-    q2c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
-    q3c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
-    q4c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
+    if (_budgets->isChecked())
+    {
+      list()->addColumn( tr("Budget\nTotal"), _bigMoneyColumn, Qt::AlignRight, true, "budgsum");
+      q1c += ",CASE WHEN(flgrp_summarize AND flgrp_showbudget) THEN (" +
+             qbList.join(" + ") +
+             ") ELSE NULL END AS budgsum, 'curr' AS budgsum_xtnumericrole";
+      q2c += ", " + qbList.join(" + ") + " AS budgsum, 'curr' AS budgsum_xtnumericrole";
+      q3c += ", " + qbList.join(" + ") + " AS budgsum, 'curr' AS budgsum_xtnumericrole";
+      q4c += ", " + qbList.join(" + ") + " AS budgsum, 'curr' AS budgsum_xtnumericrole";
+    }
+    if (_actuals->isChecked())
+    {
+      list()->addColumn( tr("Grand\nTotal"), _bigMoneyColumn, Qt::AlignRight, true, "diffsum");
+      q1c += ",CASE WHEN(flgrp_summarize AND flgrp_showdiff) THEN (" +
+             qtList.join(" + ") +
+             ") ELSE NULL END AS diffsum, 'curr' AS diffsum_xtnumericrole";
+      q2c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
+      q3c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
+      q4c += ", " + qtList.join(" + ") + " AS diffsum, 'curr' AS diffsum_xtnumericrole";
+    }
   }
 
   if (!_showzeros->isChecked())
