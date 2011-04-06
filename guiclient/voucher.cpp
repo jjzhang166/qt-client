@@ -742,8 +742,7 @@ void voucher::sPopulateDistributed()
 {
   if (_poNumber->isValid())
   {
-    q.prepare( "SELECT (COALESCE(dist,0) + COALESCE(freight,0) + "
-               "        COALESCE(headtax,0) + COALESCE(linetax,0)) AS distrib"
+    q.prepare( "SELECT (COALESCE(dist,0) + COALESCE(freight,0) + COALESCE(tax,0)) AS distrib"
                "  FROM (SELECT SUM(COALESCE(voitem_freight,0)) AS freight"
                "          FROM voitem"
                "         WHERE (voitem_vohead_id=:vohead_id)) AS data1, "
@@ -751,13 +750,12 @@ void voucher::sPopulateDistributed()
                "          FROM vodist"
                "         WHERE ( (vodist_vohead_id=:vohead_id)"
                "           AND   (vodist_tax_id=-1) )) AS data2, "
-               "       (SELECT SUM(COALESCE(taxhist_tax,0) * -1) AS headtax "
-               "          FROM vohead JOIN voheadtax ON (taxhist_parent_id=vohead_id) "
-               "         WHERE (vohead_id=:vohead_id)) AS data3, "
-               "       (SELECT SUM(COALESCE(taxhist_tax,0) * -1) AS linetax "
-               "          FROM vohead JOIN voitem ON (voitem_vohead_id=vohead_id) "
-               "                      JOIN voitemtax ON (taxhist_parent_id=voitem_id) "
-               "         WHERE (vohead_id=:vohead_id)) AS data4;" );
+               "       (SELECT SUM(tax * -1.0) AS tax "
+               "          FROM ("
+               "            SELECT ROUND(SUM(taxdetail_tax),2) AS tax "
+               "              FROM tax "
+               "              JOIN calculateTaxDetailSummary('VO', :vohead_id, 'T') ON (taxdetail_tax_id=tax_id)"
+               "             GROUP BY tax_id) AS taxdata) AS data3;" );
     q.bindValue(":vohead_id", _voheadid);
     q.exec();
     if (q.first())
