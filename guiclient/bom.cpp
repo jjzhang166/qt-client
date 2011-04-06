@@ -111,29 +111,9 @@ enum SetResponse BOM::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
   
-  param = pParams.value("item_id", &valid);
-  if (valid)
-    _item->setId(param.toInt());
-   {
-     param = pParams.value("revision_id", &valid);
-     if (valid)
-       _revision->setId(param.toInt());
-   }
-  
   param = pParams.value("mode", &valid);
   if (valid)
   {
-    if ( (param.toString() == "new") || (param.toString() == "edit") )
-    {
-      connect(_item,    SIGNAL(valid(bool)), _new, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(valid(bool)), _moveDown, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
-      connect(_bomitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    }
-    
     if (param.toString() == "new")
     {
       _mode = cNew;
@@ -155,11 +135,6 @@ enum SetResponse BOM::set(const ParameterList &pParams)
       _revision->setEnabled(FALSE);
       _revisionDate->setEnabled(FALSE);
       _batchSize->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
-      _edit->setEnabled(FALSE);
-      _expire->setEnabled(FALSE);
-      _moveUp->setEnabled(FALSE);
-      _moveDown->setEnabled(FALSE);
       _doRequireQtyPer->setEnabled(FALSE);
       _requiredQtyPer->setEnabled(FALSE);
       _save->setEnabled(FALSE);
@@ -168,6 +143,15 @@ enum SetResponse BOM::set(const ParameterList &pParams)
       
       _close->setFocus();
     }
+
+    param = pParams.value("item_id", &valid);
+    if (valid)
+      _item->setId(param.toInt());
+     {
+       param = pParams.value("revision_id", &valid);
+       if (valid)
+         _revision->setId(param.toInt());
+     }
   }
   
   return NoError;
@@ -418,14 +402,13 @@ void BOM::sFillList(int pItemid, bool)
     q.prepare( "SELECT * "
                "FROM bomhead "
                "WHERE ( (bomhead_item_id=:item_id) "
-			   "AND (bomhead_rev_id=:revision_id) );" );
+               "AND (bomhead_rev_id=:revision_id) );" );
     q.bindValue(":item_id", _item->id());
-	q.bindValue(":revision_id", _revision->id());
+    q.bindValue(":revision_id", _revision->id());
     q.exec();
     if (q.first())
     {
       _documentNum->setText(q.value("bomhead_docnum"));
-	  _revision->setNumber(q.value("bomhead_revision").toString());
       _revisionDate->setDate(q.value("bomhead_revisiondate").toDate());
       _batchSize->setDouble(q.value("bomhead_batchsize").toDouble());
       if(q.value("bomhead_requiredqtyper").toDouble()!=0)
@@ -433,25 +416,41 @@ void BOM::sFillList(int pItemid, bool)
         _doRequireQtyPer->setChecked(true);
         _requiredQtyPer->setDouble(q.value("bomhead_requiredqtyper").toDouble());
       }
-      if (_revision->description() == "Inactive")
-	  {
-		  _save->setEnabled(FALSE);
-	      _new->setEnabled(FALSE);
-		  _documentNum->setEnabled(FALSE);
-		  _revisionDate->setEnabled(FALSE);
-		  _batchSize->setEnabled(FALSE);
-		  _bomitem->setEnabled(FALSE);
-	  }
-
-	  if ((_revision->description() == "Pending") || (_revision->description() == "Active"))
-	  {
-		  _save->setEnabled(TRUE);
-	      _new->setEnabled(TRUE);
-		  _documentNum->setEnabled(TRUE);
-		  _revisionDate->setEnabled(TRUE);
-		  _batchSize->setEnabled(TRUE);
-		  _bomitem->setEnabled(TRUE);
-	  }
+      _revision->setNumber(q.value("bomhead_revision").toString());
+      if ( (_revision->description() == "Inactive") || (_mode == cView) )
+      {
+        _save->setEnabled(FALSE);
+        _documentNum->setEnabled(FALSE);
+        _revisionDate->setEnabled(FALSE);
+        _batchSize->setEnabled(FALSE);
+        _new->setEnabled(FALSE);
+        _edit->setEnabled(FALSE);
+        _expire->setEnabled(FALSE);
+        _moveUp->setEnabled(FALSE);
+        _moveDown->setEnabled(FALSE);
+        disconnect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+        disconnect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
+        disconnect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
+        disconnect(_bomitem, SIGNAL(valid(bool)), _moveDown, SLOT(setEnabled(bool)));
+        disconnect(_bomitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
+      }
+      else
+      {
+        _save->setEnabled(TRUE);
+        _documentNum->setEnabled(TRUE);
+        _revisionDate->setEnabled(TRUE);
+        _batchSize->setEnabled(TRUE);
+        _new->setEnabled(TRUE);
+        _edit->setEnabled(FALSE);
+        _expire->setEnabled(FALSE);
+        _moveUp->setEnabled(FALSE);
+        _moveDown->setEnabled(FALSE);
+        connect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
+        connect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
+        connect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
+        connect(_bomitem, SIGNAL(valid(bool)), _moveDown, SLOT(setEnabled(bool)));
+        connect(_bomitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
+      }
     }
     else
     {
