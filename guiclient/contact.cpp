@@ -44,6 +44,7 @@ contact::contact(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_editUse,  		  SIGNAL(clicked()), this, SLOT(sEditUse()));
   connect(_newCharacteristic,     SIGNAL(clicked()), this, SLOT(sNewCharass()));
   connect(_buttonBox,	          SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(sClose()));
   connect(_uses, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*)), this, SLOT(sPopulateUsesMenu(QMenu*)));
   connect(_uses, SIGNAL(valid(bool)), this, SLOT(sHandleValidUse(bool)));
   connect(_viewUse,	          SIGNAL(clicked()), this, SLOT(sViewUse()));
