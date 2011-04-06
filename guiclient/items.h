@@ -28,6 +28,7 @@ public slots:
     virtual void sView();
     virtual void sDelete();
     virtual void sCopy();
+    virtual bool setParams(ParameterList &);
 };
 
 #endif // ITEMS_H

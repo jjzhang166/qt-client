@@ -140,6 +140,46 @@ void items::sDelete()
   }   
 }
 
+bool items::setParams(ParameterList &params)
+{
+  display::setParams(params);
+
+  bool valid;
+  QVariant param;
+
+  param = params.value("item_types", &valid);
+  if (valid)
+  {
+    int types = param.toInt();
+    if (types == 1)
+      params.append("showPurchased");
+    else if (types == 2)
+      params.append("showManufactured");
+    else if (types == 3)
+      params.append("showSold");
+  }
+
+  if (_preferences->boolean("ListNumericItemNumbersFirst"))
+    params.append("ListNumericItemNumbersFirst");
+
+  params.append("purchased", tr("Purchased"));
+  params.append("manufactured", tr("Manufactured"));
+  params.append("phantom", tr("Phantom"));
+  params.append("breeder", tr("Breeder"));
+  params.append("coProduct", tr("Co-Product"));
+  params.append("byProduct", tr("By-Product"));
+  params.append("reference", tr("Reference"));
+  params.append("costing", tr("Costing"));
+  params.append("tooling", tr("Tooling"));
+  params.append("outside", tr("Outside Process"));
+  params.append("planning", tr("Planning"));
+  params.append("assortment", tr("Assortment"));
+  params.append("kit", tr("Kit"));
+  params.append("error", tr("Error"));
+
+  return true;
+}
+
 void items::sCopy()
 {
   ParameterList params;
