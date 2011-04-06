@@ -77,10 +77,11 @@ public:
 public slots:
     virtual void sNew();
     virtual void sPrint();
-    virtual void sPrint(ParameterList);
+    virtual void sPrint(ParameterList, bool = false);
     virtual void sPreview();
-    virtual void sPreview(ParameterList);
+    virtual void sPreview(ParameterList, bool = false);
     virtual void sFillList();
+    virtual void sFillList(ParameterList, bool = false);
     virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
 
 protected:
@@ -90,6 +91,9 @@ protected:
 protected slots:
     virtual void languageChange();
     virtual void sAutoUpdateToggled();
+
+signals:
+    void fillList();
 
 private:
     displayPrivate * _data;

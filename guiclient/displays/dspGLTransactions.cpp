@@ -168,7 +168,7 @@ enum SetResponse dspGLTransactions::set(const ParameterList &pParams)
 
   if (pParams.inList("run"))
   {
-    sFillList();
+    emit fillList();
     return NoError_Run;
   }
 
@@ -328,7 +328,7 @@ void dspGLTransactions::sPrint()
   display::sPrint();
 }
 
-void dspGLTransactions::sFillList()
+void dspGLTransactions::sFillList(ParameterList pParams)
 {
   if (!_metrics->boolean("ManualForwardUpdate") && 
       _showRunningTotal->isChecked() &&
@@ -338,21 +338,19 @@ void dspGLTransactions::sFillList()
       return;
   }
 
-  ParameterList params;
-  if (! setParams(params))
+  if (! setParams(pParams))
     return;
 
   if (_showRunningTotal->isChecked() &&
       _showRunningTotal->isVisible())
   {
     list()->showColumn("running");
-    qDebug("begbal %f", params.value("beginningBalance").toDouble());
-    _beginningBalance->setDouble(params.value("beginningBalance").toDouble());
+    _beginningBalance->setDouble(pParams.value("beginningBalance").toDouble());
   }
   else
     list()->hideColumn("running");
 
-  display::sFillList();
+  display::sFillList(pParams);
 }
 
 void dspGLTransactions::sViewTrans()
@@ -606,7 +604,6 @@ bool dspGLTransactions::forwardUpdate()
 
 void dspGLTransactions::handleTotalCheckbox()
 {
-  QVariant param;
   ParameterList params;
   parameterWidget()->appendValue(params);
 

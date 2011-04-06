@@ -123,7 +123,7 @@ public:
 
   bool setParams(ParameterList &);
   void setupCharacteristics(unsigned int use);
-  void print(ParameterList, bool);
+  void print(ParameterList, bool, bool);
 
   QString reportName;
   QString metasqlName;
@@ -165,11 +165,12 @@ private:
   ::display * _parent;
 };
 
-void displayPrivate::print(ParameterList pParams, bool showPreview)
+void displayPrivate::print(ParameterList pParams, bool showPreview, bool forceSetParams)
 {
   int numCopies = 1;
   ParameterList params = pParams;
-  if (!params.count())
+
+  if (forceSetParams || !params.count())
   {
     if(!_parent->setParams(params))
       return;
@@ -418,6 +419,7 @@ display::display(QWidget* parent, const char* name, Qt::WindowFlags flags)
   connect(_data->_printAct, SIGNAL(triggered()), this, SLOT(sPrint()));
   connect(_data->_previewAct, SIGNAL(triggered()), this, SLOT(sPreview()));
   connect(_data->_searchAct, SIGNAL(triggered()), this, SLOT(sFillList()));
+  connect(this, SIGNAL(fillList()), this, SLOT(sFillList()));
   connect(_data->_list, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*,QTreeWidgetItem*,int)));
   connect(_data->_autoupdate, SIGNAL(toggled(bool)), this, SLOT(sAutoUpdateToggled()));
   connect(filterButton, SIGNAL(toggled(bool)), _data->_moreBtn, SLOT(setChecked(bool)));
@@ -684,9 +686,9 @@ void display::sPrint()
   sPrint(ParameterList());
 }
 
-void display::sPrint(ParameterList pParams)
+void display::sPrint(ParameterList pParams, bool forceSetParams)
 {
-  _data->print(pParams, false);
+  _data->print(pParams, false, forceSetParams);
 }
 
 void display::sPreview()
@@ -694,16 +696,23 @@ void display::sPreview()
   sPreview(ParameterList());
 }
 
-void display::sPreview(ParameterList pParams)
+void display::sPreview(ParameterList pParams, bool forceSetParams)
 {
-  _data->print(pParams, true);
+  _data->print(pParams, true, forceSetParams);
 }
 
 void display::sFillList()
 {
-  ParameterList params;
-  if (!setParams(params))
-    return;
+  sFillList(ParameterList());
+}
+
+void display::sFillList(ParameterList pParams, bool forceSetParams)
+{
+  if (forceSetParams || !pParams.count())
+  {
+    if (!setParams(pParams))
+      return;
+  }
   int itemid = _data->_list->id();
   bool ok = true;
   QString errorString;
@@ -713,7 +722,7 @@ void display::sFillList()
     systemError(this, errorString, __FILE__, __LINE__);
     return;
   }
-  XSqlQuery xq = mql.toQuery(params);
+  XSqlQuery xq = mql.toQuery(pParams);
   _data->_list->populate(xq, itemid, _data->_useAltId);
   if (xq.lastError().type() != QSqlError::NoError)
   {
