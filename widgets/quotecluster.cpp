@@ -130,33 +130,39 @@ void QuoteLineEdit::silentSetId(const int pId)
   emit parsed();
 }
 
+// TODO: can we get _recip_id and _recip_type using the inherited sParse()?
 void QuoteLineEdit::sParse()
 {
   if (! _parsed)
   {
     QString stripped = text().trimmed().toUpper();
     if (stripped.length() == 0)
+    {
+      _parsed = true;
       setId(-1);
+    }
     else
     {
       XSqlQuery numQ;
       numQ.prepare(_query + _numClause +
                   (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                   QString(";"));
-      numQ.bindValue(":number", stripped);
+      numQ.bindValue(":number", "^" + stripped);
       numQ.exec();
       if (numQ.first())
       {
         _valid       = true;
-        _id          = numQ.value("id").toInt();
-        _name        = numQ.value("name").toString();
-        _description = numQ.value("description").toString();
+        setId(numQ.value("id").toInt());
+        if (_hasName)
+          _name      = numQ.value("name").toString();
+        if (_hasDescription)
+          _description = numQ.value("description").toString();
         _recip_id    = numQ.value("recip_id").toInt();
         _recip_type  = numQ.value("recip_type").toString();
       }
       else
       {
-        clear();
+        setId(-1);
         if (numQ.lastError().type() != QSqlError::NoError)
             QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
                                           .arg(__FILE__)
@@ -164,11 +170,12 @@ void QuoteLineEdit::sParse()
                     numQ.lastError().databaseText());
       }
     }
+    emit valid(_valid);
+    emit parsed();
   }
 
   _parsed = true;
-  emit valid(_valid);
-  emit parsed();
+  sHandleNullStr();
 }
 
 bool QuoteLineEdit::forCustomer()
