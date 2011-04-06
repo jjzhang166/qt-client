@@ -1400,11 +1400,10 @@ int XComboBox::id(int pIndex) const
   {
     if ( (allowNull()) && (currentIndex() <= 0) )
       return -1;
-    else
+    else if(pIndex < _ids.count())
       return _ids.at(pIndex);
   }
-  else
-    return -1;
+  return -1;
 }
 
 int XComboBox::id() const
