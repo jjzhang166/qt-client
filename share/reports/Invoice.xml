@@ -1374,7 +1374,7 @@ order by cosmisc_shipdate;</sql>
      </font>
      <left/>
      <vcenter/>
-     <string>C/M #</string>
+     <string>Doc #</string>
     </label>
     <line>
      <xstart>45</xstart>
@@ -1436,7 +1436,7 @@ order by cosmisc_shipdate;</sql>
      </font>
      <left/>
      <vcenter/>
-     <string>Allocated Credit Memos</string>
+     <string>Pre-Allocated Credits</string>
     </label>
     <label>
      <rect>
@@ -1873,7 +1873,7 @@ order by cosmisc_shipdate;</sql>
    </font>
    <right/>
    <vcenter/>
-   <string>Less Allocated C/M's</string>
+   <string>Pre-Allocated Credit</string>
   </label>
   <field>
    <rect>
