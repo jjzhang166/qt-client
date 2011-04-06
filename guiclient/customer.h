@@ -37,7 +37,8 @@ public:
     customer(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
     ~customer();
 
-    Q_INVOKABLE virtual int id() const;
+    Q_INVOKABLE virtual int id()   const;
+    Q_INVOKABLE virtual int mode() const;
 
 public slots:
     virtual SetResponse set(const ParameterList & pParams );
@@ -89,6 +90,7 @@ protected slots:
 signals:
     void populated();
     void newId(int);
+    void newMode(int);
     void saved(int);
 
 protected:

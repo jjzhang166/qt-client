@@ -265,8 +265,18 @@ void CLineEdit::setCanEdit(bool p)
   if (p == _canEdit)
     return;
 
-  if (_x_metrics && _x_metrics->value("CRMAccountNumberGeneration") == "A")
+  // TODO: replace change else-if to if VCLE::hasEditPriv() but not during RC
+  if (p == false)
     _canEdit = false;
+  else if (_x_metrics && _x_metrics->value("CRMAccountNumberGeneration") == "A")
+    _canEdit = false;
+  else if (_x_privileges && _subtype == CRMAcctLineEdit::Cust)
+    _canEdit = _x_privileges->check("MaintainCustomerMasters");
+  else if (_x_privileges && _subtype == CRMAcctLineEdit::Prospect)
+    _canEdit = _x_privileges->check("MaintainProspectMasters");
+  else if (_x_privileges)
+    _canEdit = _x_privileges->check("MaintainCustomerMasters") ||
+               _x_privileges->check("MaintainProspectMasters");
   else
     _canEdit = p;
 

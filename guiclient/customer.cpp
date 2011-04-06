@@ -179,6 +179,7 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   _autoSaved = false;
   _captive = false;
   _charfilled = false;
+  _mode       = -1;
 
   _sellingWarehouse->setId(-1);
 
@@ -208,7 +209,7 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   _defaultDiscountPrcnt->setValidator(omfgThis->negPercentVal());
 
   _custchar = new QStandardItemModel(0, 2, this);
-  _custchar->setHeaderData( 0, Qt::Horizontal, tr("Characteristc"), Qt::DisplayRole);
+  _custchar->setHeaderData( 0, Qt::Horizontal, tr("Characteristic"), Qt::DisplayRole);
   _custchar->setHeaderData( 1, Qt::Horizontal, tr("Value"), Qt::DisplayRole);
   _chartempl->setModel(_custchar);
   CustCharacteristicDelegate * delegate = new CustCharacteristicDelegate(this);
@@ -296,6 +297,8 @@ enum SetResponse customer::set(const ParameterList &pParams)
       connect(_backorders, SIGNAL(toggled(bool)), _partialShipments, SLOT(setChecked(bool)));
 
       _number->setFocus();
+
+      emit newMode(_mode);
       emit newId(_custid);
     }
     else if (param.toString() == "edit")
@@ -317,12 +320,14 @@ enum SetResponse customer::set(const ParameterList &pParams)
       connect(_backorders, SIGNAL(toggled(bool)), _partialShipments, SLOT(setChecked(bool)));
 
       _number->setFocus();
+
+      emit newMode(_mode);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _number->setEditMode(FALSE);
+      _number->setCanEdit(FALSE);
       _name->setEnabled(FALSE);
       _custtype->setEnabled(FALSE);
       _active->setEnabled(FALSE);
@@ -360,6 +365,9 @@ enum SetResponse customer::set(const ParameterList &pParams)
       _editCC->setEnabled(false);
       _upCC->setEnabled(false);
       _downCC->setEnabled(false);
+      _warnLate->setEnabled(false);
+      _charass->setEnabled(false);
+      _chartempl->setEnabled(false);
 
       connect(_shipto, SIGNAL(itemSelected(int)), _viewShipto, SLOT(animateClick()));
       connect(_cc, SIGNAL(itemSelected(int)), _viewCC, SLOT(animateClick()));
@@ -374,6 +382,8 @@ enum SetResponse customer::set(const ParameterList &pParams)
       _contacts->set(params);
 
       _close->setFocus();
+
+      emit newMode(_mode);
     }
   }
   
@@ -397,6 +407,14 @@ enum SetResponse customer::set(const ParameterList &pParams)
 int customer::id() const
 {
   return _custid;
+}
+
+/** \return one of cNew, cEdit, cView, ...
+    \todo   change possible modes to an enum in guiclient.h (and add cUnknown?)
+ */
+int customer::mode() const
+{
+  return _mode;
 }
 
 void customer::setValid(bool valid)
@@ -658,6 +676,7 @@ bool customer::sSave()
   if (_mode == cNew)
   {
     _mode = cEdit;
+    emit newMode(_mode);
     emit newId(_custid); // custcluster listeners couldn't handle set()'s emit
   }
   
@@ -809,6 +828,7 @@ void customer::sCheck()
         _number->setId(q.value("cust_id").toInt());
         _mode = cEdit;
         _name->setFocus();
+        emit newMode(_mode);
       }
     }
     else if ( (_mode == cEdit) && 
@@ -1211,7 +1231,10 @@ void customer::populate()
   if (cust.first())
   {
     if (_mode == cNew)
+    {
       _mode = cEdit;
+      emit newMode(_mode);
+    }
     setValid(true);
     
     _crmacctid = cust.value("crmacct_id").toInt();
@@ -1756,7 +1779,10 @@ void customer::sNumberEditable(bool p)
 void customer::sPrepare()
 {
   if (_mode == cEdit)
+  {
     _mode = cNew;
+    emit newMode(_mode);
+  }
 
   q.exec("SELECT NEXTVAL('cust_cust_id_seq') AS cust_id");
   if (q.first())

@@ -1742,12 +1742,12 @@ to be bound by its terms.</comment>
          <item>
           <widget class="QRadioButton" name="_opportunitiesButton">
            <property name="text">
-            <string>Opportunties</string>
+            <string>Opportunities</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="crmButtonsSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -2100,7 +2100,7 @@ to be bound by its terms.</comment>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_2">
+          <spacer name="accountingButtonsSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -2150,7 +2150,7 @@ to be bound by its terms.</comment>
       <attribute name="title">
        <string>Remarks</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
+      <layout class="QGridLayout" name="remarksLayout">
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="spacing">
