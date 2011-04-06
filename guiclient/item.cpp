@@ -333,24 +333,23 @@ enum SetResponse item::set(const ParameterList &pParams)
       _itemtaxNew->setEnabled(FALSE);
       _close->setText(tr("&Close"));
       _newSrc->setEnabled(false);
-      _newItemSite->setEnabled(false);
       _newUOM->setEnabled(false);
       _upcCode->setEnabled(false);
 
-      connect(_itemSite, SIGNAL(itemSelected(int)), _viewItemSite, SLOT(animateClick()));
-
-      disconnect(_itemSite, SIGNAL(valid(bool)), _editItemSite, SLOT(setEnabled(bool)));
-      disconnect(_itemSite, SIGNAL(valid(bool)), _viewItemSite, SLOT(setEnabled(bool)));
-      disconnect(_itemSite, SIGNAL(itemSelected(int)), _editItemSite, SLOT(animateClick()));
-      disconnect(_itemSite, SIGNAL(valid(bool)), _viewItemSite, SLOT(setEnabled(bool)));
-      disconnect(_itemSite, SIGNAL(itemSelected(int)), _viewItemSite, SLOT(animateClick()));
-  
-      if (_privileges->check("ViewItemSites"))
+      if (_privileges->check("MaintainItemSites"))
+      {
+        connect(_itemSite, SIGNAL(valid(bool)), _editItemSite, SLOT(setEnabled(bool)));
+        connect(_itemSite, SIGNAL(itemSelected(int)), _editItemSite, SLOT(animateClick()));
+      }
+      else if (_privileges->check("ViewItemSites"))
       {
         connect(_itemSite, SIGNAL(valid(bool)), _viewItemSite, SLOT(setEnabled(bool)));
         connect(_itemSite, SIGNAL(itemSelected(int)), _viewItemSite, SLOT(animateClick()));
       }
-  
+
+      if (_privileges->check("DeleteItemSites"))
+        connect(_itemSite, SIGNAL(valid(bool)), _deleteItemSite, SLOT(setEnabled(bool)));
+
       disconnect(_itemsrc, SIGNAL(valid(bool)), _editSrc, SLOT(setEnabled(bool)));
       disconnect(_itemsrc, SIGNAL(valid(bool)), _viewSrc, SLOT(setEnabled(bool)));
       disconnect(_itemsrc, SIGNAL(valid(bool)), _copySrc, SLOT(setEnabled(bool)));
