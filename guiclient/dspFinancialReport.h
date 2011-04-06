@@ -33,6 +33,10 @@ public:
 
     Q_INVOKABLE QString reportName() const;
 
+    Q_INVOKABLE bool columnHasTransactions(int col);
+    Q_INVOKABLE QDate columnStart(int col);
+    Q_INVOKABLE QDate columnEnd(int col);
+
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sFillList();

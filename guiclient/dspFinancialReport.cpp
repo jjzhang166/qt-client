@@ -1255,3 +1255,18 @@ void dspFinancialReport::sNotes()
   newdlg.exec();
 }
 
+bool dspFinancialReport::columnHasTransactions(int col)
+{
+  return _columnDates.contains(col);
+}
+
+QDate dspFinancialReport::columnStart(int col)
+{
+  return _columnDates.value(col).first;
+}
+
+QDate dspFinancialReport::columnEnd(int col)
+{
+  return _columnDates.value(col).second;
+}
+
