@@ -1193,6 +1193,8 @@ const struct {
 			       "made before G/L Transactions can be posted and"
 			       "this Sales Order is allowed to be recalled."),
 								0, "" },
+  { "recallShipment",	-6, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This shipment cannot be recalled "
+                             "because the associated Transfer Order is closed."),		0, "" },
 
   { "releasePurchaseOrder",
 			-1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Cannot release this Purchase Order because it "
