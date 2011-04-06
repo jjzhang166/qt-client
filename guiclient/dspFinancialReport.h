@@ -39,6 +39,7 @@ public slots:
     virtual void sPrint();
     virtual void sPreview();
     virtual void sPopulateMenu(QMenu * pMenu);
+    virtual void sPopulateMenu(QMenu * pMenu, QTreeWidgetItem * pSelected, int pColumn);
     virtual void sFillListStatement();
     virtual void sFillListTrend();
     virtual void sFillPeriods();
@@ -48,6 +49,7 @@ public slots:
     virtual void sToggleNotes();
     virtual bool sCheck();
     virtual void sNotes();
+    virtual void sViewTransactions();
 
 protected slots:
     virtual void sCollapsed( QTreeWidgetItem * item );
@@ -60,7 +62,9 @@ protected:
     
 private:
     int _prjid;
+    int _col;
     QMap<int, QString> _columnLabels;
+    QMap<int, QPair<QDate, QDate> > _columnDates;
     QAction *_notesAct;
     QString _typeCode;
 };

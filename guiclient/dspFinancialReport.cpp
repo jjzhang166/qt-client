@@ -27,6 +27,7 @@
 #include <previewdialog.h>
 #include <orprintrender.h>
 #include "dspFinancialReport.h"
+#include "dspGLTransactions.h"
 #include "financialReportNotes.h"
 #include "storedProcErrorLookup.h"
 
@@ -51,6 +52,7 @@ dspFinancialReport::dspFinancialReport(QWidget* parent, const char*, Qt::WFlags 
   setReportName("dummy"); // This is really handled locally
 
   _prjid = -1;
+  _col = 0;
 
   QToolBar *toolbar = this->toolBar();
   QToolButton *_notesBtn = new QToolButton();
@@ -99,6 +101,32 @@ enum SetResponse dspFinancialReport::set(const ParameterList &pParams)
     _flhead->setId(param.toInt());
 
   return NoError;
+}
+
+void dspFinancialReport::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected, int pColumn)
+{
+  if (_columnDates.contains(pColumn) && list()->id() > 0)
+  {
+    _col = pColumn;
+
+    QAction* viewGlAct = pMenu->addAction(tr("View Transactions..."), this, SLOT(sViewTransactions()));
+    viewGlAct->setEnabled(_privileges->check("ViewGLTransactions"));
+  }
+  else
+    _col = 0;
+}
+
+void dspFinancialReport::sViewTransactions()
+{
+  ParameterList params;
+  params.append("accnt_id", list()->id());
+  params.append("startDate", _columnDates.value(_col).first);
+  params.append("endDate", _columnDates.value(_col).second);
+  params.append("run");
+
+  dspGLTransactions *newdlg = new dspGLTransactions();
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
 }
 
 bool dspFinancialReport::sCheck()
@@ -164,6 +192,21 @@ void dspFinancialReport::sFillListStatement()
     label.bindValue(":periodid", periodsRef.at(0));
     label.exec();
 
+    //Get column date ranges for drill down
+    _columnDates.clear();
+    XSqlQuery coldata;
+    coldata.prepare("SELECT * FROM getflcoldata(:flcolid,:periodid)");
+    coldata.bindValue(":flcolid", _flcol->id());
+    coldata.bindValue(":periodid", periodsRef.at(0));
+    coldata.exec();
+    while(coldata.next())
+    {
+      QPair<QDate, QDate> range;
+      range.first = coldata.value("flcoldata_start").toDate();
+      range.second = coldata.value("flcoldata_end").toDate();
+      _columnDates.insert(coldata.value("flcoldata_column").toInt(), range);
+    };
+
     if (label.first())
     {
       list()->clear();
@@ -171,7 +214,7 @@ void dspFinancialReport::sFillListStatement()
       list()->addColumn(tr("Group\n  Account Name"), -1, Qt::AlignLeft, true, "flstmtitem_name");
 
       //Build report query
-      qc = ("SELECT flstmtitem_type_id AS id, flstmtitem_order AS orderby,"
+      qc = ("SELECT COALESCE(flstmtitem_accnt_id,-1) AS id, flstmtitem_order AS orderby,"
             "       flstmtitem_level AS xtindentrole,"
             "       CASE WHEN flstmtitem_type = 'G' THEN 2 "
             "            WHEN flstmtitem_type = 'I' THEN 1 "
@@ -474,6 +517,7 @@ void dspFinancialReport::sFillListTrend()
 
   QTreeWidgetItem* selected;
   QString label;
+  QStringList periodList;
   for (int i = 0; i < _periods->topLevelItemCount(); i++)
   {
     if (_periods->topLevelItem(i)->isSelected())
@@ -482,24 +526,51 @@ void dspFinancialReport::sFillListTrend()
       label = selected->text(1).isEmpty() ? selected->text(0) : selected->text(1);
       periodsRef.prepend(((XTreeWidgetItem*)(selected))->id());
       periods.prepend(label);
+      periodList.prepend(QString::number(((XTreeWidgetItem*)(selected))->id()));
     }
   }
 
   if(periodsRef.count() < 1)
     return;
 
+  //Get column date ranges for drill down
+  if (_actuals->isChecked())
+  {
+    _columnDates.clear();
+    XSqlQuery coldata;
+    QString sql("SELECT * FROM getflcoldata(<? value(\"interval\") ?>,ARRAY[<? literal(\"periodids\") ?>], <? value(\"budgets\") ?>)");
+    ParameterList params;
+    if (_month->isChecked())
+      params.append("interval", "M");
+    else if (_quarter->isChecked())
+      params.append("interval", "Q");
+    else
+      params.append("interval", "Y");
+    params.append("periodids", periodList.join(","));
+    params.append("budgets", QVariant(_budgets->isChecked()));
+    MetaSQLQuery mql(sql);
+    coldata = mql.toQuery(params);
+    while(coldata.next())
+    {
+      QPair<QDate, QDate> range;
+      range.first = coldata.value("flcoldata_start").toDate();
+      range.second = coldata.value("flcoldata_end").toDate();
+      _columnDates.insert(coldata.value("flcoldata_column").toInt(), range);
+    };
+  }
+
   list()->setColumnCount(0);
   list()->addColumn( tr("Group\n  Account Name"), -1, Qt::AlignLeft, true, "name");
 
   q.prepare("SELECT financialReport(:flhead_id, :period_id, :interval, :prjid) AS result;");
 
-  QString q1c = QString("SELECT r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
+  QString q1c = QString("SELECT -1, r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
                         "       :group AS type, flgrp_id AS id,"
                         "       flgrp_name AS name");
   QString q1f = QString(" FROM flgrp");
   QString q1w = QString(" WHERE ((true)");
 
-  QString q2c = QString("SELECT r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
+  QString q2c = QString("SELECT r0.flrpt_accnt_id, r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
                         "       :item AS type, flitem_id AS id,");
   if (_shownumbers->isChecked())
     q2c += " (formatGLAccount(accnt_id) || '-' || accnt_descrip) AS name ";
@@ -509,13 +580,13 @@ void dspFinancialReport::sFillListTrend()
   QString q2f = QString(" FROM flitem, accnt ");
   QString q2w = QString(" WHERE ((true) AND accnt_id IN (SELECT accnt_id FROM flaccnt WHERE flitem_id=flitem_id) ");
 
-  QString q3c = QString("SELECT r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
+  QString q3c = QString("SELECT -1, r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
                         "       :spec AS type, flspec_id AS id,"
                         "       flspec_name AS name");
   QString q3f = QString(" FROM flspec");
   QString q3w = QString(" WHERE ((true)");
 
-  QString q4c = QString("SELECT r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
+  QString q4c = QString("SELECT -1, r0.flrpt_order AS orderby, r0.flrpt_level AS xtindentrole,"
                         "       -1 AS type, r0.flrpt_type_id AS id,"
                         "       CASE WHEN(r0.flrpt_type='T' AND r0.flrpt_level=0) THEN COALESCE(r0.flrpt_altname, 'Total')"
                         "            WHEN(r0.flrpt_type='T') THEN COALESCE(r0.flrpt_altname, 'Subtotal')"
