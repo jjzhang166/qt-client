@@ -148,6 +148,9 @@ void dspTimePhasedOpenARItems::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, in
   QAction *menuItem;
   _column = pColumn;
   
+  if ((_custom->isChecked()) && (_column == list()->column("linetotal")))
+    return;
+
   if ((_column > 1) && (list()->id() > 0))
   {
     menuItem = pMenu->addAction(tr("View Open Items..."), this, SLOT(sViewOpenItems()));
