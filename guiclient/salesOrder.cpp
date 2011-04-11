@@ -1508,13 +1508,20 @@ void salesOrder::sHandleOrderNumber()
       else
       {
         QString orderNumber = _orderNumber->text();
-        clear();
-        query.prepare( "SELECT releaseSoNumber(:orderNumber);" );
-        query.bindValue(":orderNumber", _orderNumber->text());
-        query.exec();
-        _orderNumber->setText(orderNumber);
-        _userEnteredOrderNumber = FALSE;
-        _orderNumber->setEnabled(FALSE);
+        if (_metrics->value("CONumberGeneration") == "O")
+        {
+          query.prepare( "SELECT releaseSoNumber(:orderNumber);" );
+          query.bindValue(":orderNumber", _orderNumberGen);
+          query.exec();
+          _orderNumber->setText(orderNumber);
+          _userEnteredOrderNumber = FALSE;
+          _orderNumber->setEnabled(FALSE);
+        }
+        else
+        {
+          _orderNumber->setText(orderNumber);
+          _orderNumber->setEnabled(FALSE);
+        }
       }
     }
     else if ((_mode == cNewQuote) && (_userEnteredOrderNumber))

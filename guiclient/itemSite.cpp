@@ -1425,8 +1425,6 @@ void itemSite::populate()
       _proportional->setChecked(TRUE);
     }
 
-    sCacheItemType(_item->itemType());
-
     _updates = TRUE;
   }
   else if (itemsite.lastError().type() != QSqlError::NoError)
