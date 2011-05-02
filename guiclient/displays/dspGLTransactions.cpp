@@ -328,7 +328,7 @@ void dspGLTransactions::sPrint()
   display::sPrint();
 }
 
-void dspGLTransactions::sFillList(ParameterList pParams)
+void dspGLTransactions::sFillList(ParameterList pParams, bool forceSetParams)
 {
   if (!_metrics->boolean("ManualForwardUpdate") && 
       _showRunningTotal->isChecked() &&
@@ -350,7 +350,7 @@ void dspGLTransactions::sFillList(ParameterList pParams)
   else
     list()->hideColumn("running");
 
-  display::sFillList(pParams);
+  display::sFillList(pParams, forceSetParams);
 }
 
 void dspGLTransactions::sViewTrans()
