@@ -310,8 +310,17 @@ int main(int argc, char *argv[])
     metric.exec("SELECT pkghead_name FROM pkghead WHERE pkghead_name='xtmfg'");
     if(metric.first())
     {
-      _splash->setPixmap(QPixmap(":/images/splashMfgEdition.png"));
-      _Name = _Name.arg("Manufacturing");
+      metric.exec("SELECT count(*) FROM pkghead WHERE pkghead_name IN ('xtprjaccnt','asset','assetdepn')");
+      if(metric.first() && metric.value(0).toInt() == 3)
+      {
+        _splash->setPixmap(QPixmap(":/images/splashEnterprise.png"));
+        _Name = _Name.arg("Enterprise");
+      }
+      else
+      {
+        _splash->setPixmap(QPixmap(":/images/splashMfgEdition.png"));
+        _Name = _Name.arg("Manufacturing");
+      }
     }
     else
     {
@@ -399,8 +408,17 @@ int main(int argc, char *argv[])
   }
   else
   {
-    _splash->setPixmap(QPixmap(":/images/splashPostBooks.png"));
-    _Name = _Name.arg("PostBooks");
+    metric.exec("SELECT pkghead_name FROM pkghead WHERE pkghead_name='xtprjaccnt'");
+    if(metric.first())
+    {
+      _splash->setPixmap(QPixmap(":/images/splashProject.png"));
+      _Name = _Name.arg("Project");
+    }
+    else
+    {
+      _splash->setPixmap(QPixmap(":/images/splashPostBooks.png"));
+      _Name = _Name.arg("PostBooks");
+    }
   }
 
   metric.exec("SELECT metric_value"
