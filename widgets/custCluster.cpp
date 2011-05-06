@@ -8,9 +8,15 @@
  * to be bound by its terms.
  */
 
+//#include <QApplication>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSqlError>
+#include <QVBoxLayout>
 
+#include <metasql.h>
 #include <parameter.h>
 #include <xsqlquery.h>
 
@@ -28,8 +34,6 @@ CLineEdit::CLineEdit(QWidget *pParent, const char *pName) :
   _subtype  = CRMAcctLineEdit::Cust;
   _canEdit = false;
   _editMode = false;
-  if (! pName)
-    setObjectName("CLineEdit");
 
   setTitles(tr("Customer"), tr("Customers"));
   setUiName("customer");
@@ -68,6 +72,7 @@ CLineEdit::CLineEdit(QWidget *pParent, const char *pName) :
            "  ) cust "
            "WHERE (true) ";
 
+  _modeSep = 0;
   _modeAct = new QAction(tr("Edit Number"), this);
   _modeAct->setToolTip(tr("Sets number for editing"));
   _modeAct->setCheckable(true);
@@ -156,12 +161,6 @@ void CLineEdit::sNew()
   sOpenWindow(uiName, params);
 }
 
-void CLineEdit::clear()
-{
-  VirtualClusterLineEdit::clear();
-  setEditMode(false);
-}
-
 void CLineEdit::setId(int pId)
 {
   VirtualClusterLineEdit::setId(pId);
@@ -183,6 +182,7 @@ void CLineEdit::setId(int pId)
       setNewPriv("MaintainProspectMasters");
       _idColName="prospect_id";
     }
+    sUpdateMenu();
 
     _crmacctId = model()->data(model()->index(0,CRMACCT_ID)).toInt();
 
@@ -262,26 +262,26 @@ bool CLineEdit::canEdit()
 
 void CLineEdit::setCanEdit(bool p)
 {
-  if (p == _canEdit)
+  if (p == _canEdit || !_x_metrics)
     return;
 
-  // TODO: replace change else-if to if VCLE::hasEditPriv() but not during RC
-  if (p == false)
-    _canEdit = false;
-  else if (_x_metrics && _x_metrics->value("CRMAccountNumberGeneration") == "A")
-    _canEdit = false;
-  else if (_x_privileges && _subtype == CRMAcctLineEdit::Cust)
-    _canEdit = _x_privileges->check("MaintainCustomerMasters");
-  else if (_x_privileges && _subtype == CRMAcctLineEdit::Prospect)
-    _canEdit = _x_privileges->check("MaintainProspectMasters");
-  else if (_x_privileges)
-    _canEdit = _x_privileges->check("MaintainCustomerMasters") ||
-               _x_privileges->check("MaintainProspectMasters");
+  if (p)
+  {
+    if (_x_privileges && _subtype == CRMAcctLineEdit::Cust)
+      _canEdit = _x_privileges->check("MaintainCustomerMasters");
+    else if (_x_privileges && _subtype == CRMAcctLineEdit::Prospect)
+      _canEdit = _x_privileges->check("MaintainProspectMasters");
+    else if (_x_privileges)
+      _canEdit = _x_privileges->check("MaintainCustomerMasters") ||
+                 _x_privileges->check("MaintainProspectMasters");
+  }
   else
-    _canEdit = p;
+    _canEdit=p;
 
-  if (! _canEdit) // need 'if' so we don't arbitrarily turn on edit mode
-    setEditMode(false);
+if (!_canEdit)
+  setEditMode(false);
+
+  sUpdateMenu();
 }
 
 bool CLineEdit::editMode()
@@ -300,18 +300,22 @@ bool CLineEdit::setEditMode(bool p)
   _editMode=p;
   _modeAct->setChecked(p);
 
-  if (_x_metrics)
+  if (_x_preferences)
   {
-    if (_editMode)
-      _menuLabel->setPixmap(QPixmap(":/widgets/images/edit.png"));
-    else
-      _menuLabel->setPixmap(QPixmap(":/widgets/images/magnifier.png"));
+    if (!_x_preferences->boolean("ClusterButtons"))
+    {
+      if (_editMode)
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/edit.png"));
+      else
+        _menuLabel->setPixmap(QPixmap(":/widgets/images/magnifier.png"));
+    }
 
     if (!_x_metrics->boolean("DisableAutoComplete") && _editMode)
       disconnect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
     else if (!_x_metrics->boolean("DisableAutoComplete"))
       connect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
   }
+  sUpdateMenu();
 
   setDisabled(_editMode &&
               _x_metrics->value("CRMAccountNumberGeneration") == "A");
@@ -319,8 +323,8 @@ bool CLineEdit::setEditMode(bool p)
  if (!_editMode)
    selectAll();
 
-  emit editable(_editMode);
-  return _editMode;
+  emit editable(p);
+  return p;
 }
 
 void CLineEdit::sParse()
@@ -334,36 +338,47 @@ void CLineEdit::sParse()
 void CLineEdit::sUpdateMenu()
 {
   VirtualClusterLineEdit::sUpdateMenu();
-  if (DEBUG)    // leaving in because sUpdateMenu is called an obscene # of times
-    qDebug("%s::sUpdateMenu() entered with _id %d, _infoAct %d, _canEdit %d",
-           qPrintable(objectName()), _id, _infoAct->isEnabled(), _canEdit);
+  if (_x_preferences)
+  {
+    if (_x_preferences->boolean("ClusterButtons"))
+      return;
+  }
+  else
+    return;
 
   if (_canEdit)
   {
     if (!menu()->actions().contains(_modeAct))
+    {
+      _infoAct->setVisible(false);
       menu()->addAction(_modeAct);
+    }
 
     _listAct->setDisabled(_editMode);
     _searchAct->setDisabled(_editMode);
+    _listAct->setVisible(!_editMode);
+    _searchAct->setVisible(!_editMode);
   }
   else
   {
     if (menu()->actions().contains(_modeAct))
+    {
+      _infoAct->setVisible(true);
       menu()->removeAction(_modeAct);
+    }
   }
 
   // Handle New
   bool canNew = false;
-  if (_x_privileges)
-  {
-    if (_subtype == CRMAcctLineEdit::Cust)
-      canNew = (_x_privileges->check("MaintainCustomerMasters"));
-    else if (_subtype == CRMAcctLineEdit::Prospect)
-      canNew = (_x_privileges->check("MaintainProspectMasters"));
-    else
-      canNew = (_x_privileges->check("MaintainCustomerMasters") ||
-                _x_privileges->check("MaintainProspectMasters"));
-  }
+
+  if (_subtype == CRMAcctLineEdit::Cust)
+    canNew = (_x_privileges->check("MaintainCustomerMasters"));
+  else if (_subtype == CRMAcctLineEdit::Prospect)
+    canNew = (_x_privileges->check("MaintainProspectMasters"));
+  else
+    canNew = (_x_privileges->check("MaintainCustomerMasters") ||
+              _x_privileges->check("MaintainProspectMasters"));
+
   _newAct->setEnabled(canNew && isEnabled());
 }
 
@@ -409,7 +424,3 @@ void CustCluster::sHandleEditMode(bool p)
   else
     disconnect(number, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
 }
-
-
-
-
