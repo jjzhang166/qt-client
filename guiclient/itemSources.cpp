@@ -36,7 +36,7 @@ itemSources::itemSources(QWidget* parent, const char*, Qt::WFlags fl)
 
   list()->addColumn(tr("Vendor"),             -1,          Qt::AlignLeft,   true,  "vend_name"   );
   list()->addColumn(tr("Item Number"),        _itemColumn, Qt::AlignLeft,   true,  "item_number"   );
-  list()->addColumn(tr("Description"),        -1,          Qt::AlignLeft,   true,  "itemdescrip"   );
+  list()->addColumn(tr("Description"),        -1,          Qt::AlignLeft,   true,  "item_descrip"   );
   list()->addColumn(tr("UOM"),                _uomColumn,  Qt::AlignCenter, true,  "uom_name" );
   list()->addColumn(tr("Vendor Item Number"), _itemColumn, Qt::AlignLeft,   true,  "itemsrc_vend_item_number"   );
   list()->addColumn(tr("Vendor UOM"),         _uomColumn,  Qt::AlignLeft,   true,  "itemsrc_vend_uom"   );
