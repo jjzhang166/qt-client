@@ -67,6 +67,7 @@ dspCountTagEditList::dspCountTagEditList(QWidget* parent, const char* name, Qt::
   _cnttag->addColumn(tr("Site"),        _whsColumn, Qt::AlignCenter,true, "warehous_code");
   _cnttag->addColumn(tr("Location"),     _ynColumn, Qt::AlignCenter,true, "loc_specific");
   _cnttag->addColumn(tr("QOH"),         _qtyColumn, Qt::AlignRight, true, "qoh");
+  _cnttag->addColumn(tr("NN QOH"),      _qtyColumn, Qt::AlignRight, true, "nnqoh");
   _cnttag->addColumn(tr("Count Qty."),  _qtyColumn, Qt::AlignRight, true, "qohafter");
   _cnttag->addColumn(tr("Variance"),    _qtyColumn, Qt::AlignRight, true, "variance");
   _cnttag->addColumn(tr("%"),         _prcntColumn, Qt::AlignRight, true, "varianceprcnt");
