@@ -40,7 +40,6 @@ class apWorkBench : public XWidget, public Ui::apWorkBench
 
   protected slots:
     virtual void languageChange();
-    virtual void sCalculateTotalOpen();
 
   protected:
     viewCheckRun           *_checkRun;

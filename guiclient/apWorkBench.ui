@@ -49,16 +49,6 @@ to be bound by its terms.</comment>
            </property>
           </spacer>
          </item>
-         <item>
-          <widget class="XLabel" name="_totalOpenitemsLit" >
-           <property name="text" >
-            <string>Total Open:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="CurrDisplay" name="_apopenTotal" />
-         </item>
         </layout>
        </item>
        <item>
