@@ -769,7 +769,7 @@ What would you like to do?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/bom.cpp" line="603"/>
+        <location filename="../../guiclient/bom.cpp" line="617"/>
         <source>Total Qty. Per Required</source>
         <translation type="unfinished"></translation>
     </message>
@@ -789,7 +789,7 @@ What would you like to do?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/bom.cpp" line="604"/>
+        <location filename="../../guiclient/bom.cpp" line="618"/>
         <source>&lt;p&gt;A required total Qty. Per was specified but not met. Please correct the problem before continuing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -818,48 +818,48 @@ What would you like to do?</source>
 <context>
     <name>CLineEdit</name>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="34"/>
-        <location filename="../../widgets/custCluster.cpp" line="84"/>
+        <location filename="../../widgets/custCluster.cpp" line="38"/>
+        <location filename="../../widgets/custCluster.cpp" line="89"/>
         <source>Customer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="34"/>
+        <location filename="../../widgets/custCluster.cpp" line="38"/>
         <source>Customers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="71"/>
+        <location filename="../../widgets/custCluster.cpp" line="76"/>
         <source>Edit Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="72"/>
+        <location filename="../../widgets/custCluster.cpp" line="77"/>
         <source>Sets number for editing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="83"/>
+        <location filename="../../widgets/custCluster.cpp" line="88"/>
         <source>Prospect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="86"/>
+        <location filename="../../widgets/custCluster.cpp" line="91"/>
         <source>Customer or Prospect?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="101"/>
+        <location filename="../../widgets/custCluster.cpp" line="106"/>
         <source>&lt;p&gt;Would you like to create a new Customer or convert an existing Prospect?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="104"/>
+        <location filename="../../widgets/custCluster.cpp" line="109"/>
         <source>&lt;p&gt;Would you like to create a new Customer or a new Prospect?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="137"/>
+        <location filename="../../widgets/custCluster.cpp" line="142"/>
         <source>Processing Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2435,7 +2435,7 @@ What would you like to do?</source>
 <context>
     <name>CustCluster</name>
     <message>
-        <location filename="../../widgets/custCluster.cpp" line="388"/>
+        <location filename="../../widgets/custCluster.cpp" line="403"/>
         <source>Customer #:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4509,74 +4509,74 @@ point to the browser executable.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../guiclient/main.cpp" line="516"/>
+        <location filename="../../guiclient/main.cpp" line="534"/>
         <source>Cannot Load Dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="419"/>
-        <location filename="../../guiclient/main.cpp" line="428"/>
+        <location filename="../../guiclient/main.cpp" line="437"/>
+        <location filename="../../guiclient/main.cpp" line="446"/>
         <source>Version Mismatch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="322"/>
+        <location filename="../../guiclient/main.cpp" line="331"/>
         <source>Checking License Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="351"/>
+        <location filename="../../guiclient/main.cpp" line="360"/>
         <source>Your license has expired.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="356"/>
+        <location filename="../../guiclient/main.cpp" line="365"/>
         <source>You have exceeded the number of allowed concurrent users for your license.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="362"/>
+        <location filename="../../guiclient/main.cpp" line="371"/>
         <source>&lt;p&gt;The Registration key installed for this system does not appear to be valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="367"/>
+        <location filename="../../guiclient/main.cpp" line="376"/>
         <source>Registration Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="367"/>
+        <location filename="../../guiclient/main.cpp" line="376"/>
         <source>%1
 &lt;p&gt;Would you like to continue anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="443"/>
+        <location filename="../../guiclient/main.cpp" line="461"/>
         <source>Loading Database Metrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="447"/>
+        <location filename="../../guiclient/main.cpp" line="465"/>
         <source>Loading User Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="451"/>
+        <location filename="../../guiclient/main.cpp" line="469"/>
         <source>Loading User Privileges</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="456"/>
+        <location filename="../../guiclient/main.cpp" line="474"/>
         <source>Loading Translation Dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="610"/>
+        <location filename="../../guiclient/main.cpp" line="628"/>
         <source>Loading Database Encryption Metrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="682"/>
+        <location filename="../../guiclient/main.cpp" line="700"/>
         <source>Additional Configuration Required</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4710,12 +4710,12 @@ Report this to your Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="517"/>
+        <location filename="../../guiclient/main.cpp" line="535"/>
         <source>&lt;p&gt;The Translation Dictionaries %1 cannot be loaded. Reverting to the default dictionary.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="520"/>
+        <location filename="../../guiclient/main.cpp" line="538"/>
         <source>, </source>
         <translation type="unfinished"></translation>
     </message>
@@ -4740,17 +4740,17 @@ Report this to your Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="420"/>
+        <location filename="../../guiclient/main.cpp" line="438"/>
         <source>&lt;p&gt;The version of the database you are connecting to is not the version this client was designed to work against. This client was designed to work against the database version %1. The system has been configured to disallow access in this case.&lt;p&gt;Please contact your systems administrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="429"/>
+        <location filename="../../guiclient/main.cpp" line="447"/>
         <source>&lt;p&gt;The version of the database you are connecting to is not the version this client was designed to work against. This client was designed to work against the database version %1. If you continue some or all functionality may not work properly or at all. You may also cause other problems on the database.&lt;p&gt;Do you want to continue anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/main.cpp" line="683"/>
+        <location filename="../../guiclient/main.cpp" line="701"/>
         <source>&lt;p&gt;Your system is configured to use multiple Currencies, but the Currency Gain/Loss Account and/or the G/L Series Discrepancy Account does not appear to be configured correctly. You should define these Accounts in &apos;System | Configure Modules | Configure G/L...&apos; before posting any transactions in the system.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8306,57 +8306,42 @@ Check the database server log for errors.</source>
 <context>
     <name>apWorkBench</name>
     <message>
-        <location filename="../../guiclient/apWorkBench.cpp" line="109"/>
-        <source>Voucher</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/apWorkBench.cpp" line="110"/>
-        <source>D/M</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../guiclient/apWorkBench.ui" line="21"/>
         <source>Payables Workbench</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="55"/>
-        <source>Total Open:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="87"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="77"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="100"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="90"/>
         <source>&amp;Query</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="132"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="122"/>
         <source>Open Vouchers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="138"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="128"/>
         <source>Payables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="144"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="134"/>
         <source>Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="150"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="140"/>
         <source>Selections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/apWorkBench.ui" line="156"/>
+        <location filename="../../guiclient/apWorkBench.ui" line="146"/>
         <source>Checks</source>
         <translation type="unfinished"></translation>
     </message>
@@ -26623,40 +26608,45 @@ You must contact your Systems Administrator to have this corrected before you ma
     </message>
     <message>
         <location filename="../../guiclient/dspCountTagEditList.cpp" line="70"/>
-        <source>Count Qty.</source>
+        <source>NN QOH</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../guiclient/dspCountTagEditList.cpp" line="71"/>
+        <source>Count Qty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="72"/>
         <source>Variance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../guiclient/dspCountTagEditList.ui" line="238"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="72"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="73"/>
         <source>%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="73"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="74"/>
         <source>Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="360"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="431"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="361"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="432"/>
         <source>Unfreeze Itemsite?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="123"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="124"/>
         <source>Posted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="124"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="185"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="586"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="125"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="186"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="587"/>
         <source>Unposted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -26736,29 +26726,29 @@ You must contact your Systems Administrator to have this corrected before you ma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="323"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="401"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="324"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="402"/>
         <source>Cannot Delete Count tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="324"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="325"/>
         <source>&lt;p&gt;There are Count Slips entered for this Count Tag. You must delete Count Slips for the Count Tag before you may delete this Tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="361"/>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="432"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="362"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="433"/>
         <source>&lt;p&gt;The Itemsite for the Count Tag you deleted is frozen. Would you like to unfreeze the Itemsite at this time?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="402"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="403"/>
         <source>&lt;p&gt;There are Count Slips entered for this count tag. You must delete Count Slips for the Count Tag before you may delete this Tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/dspCountTagEditList.cpp" line="122"/>
+        <location filename="../../guiclient/dspCountTagEditList.cpp" line="123"/>
         <source>All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -72987,12 +72977,12 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4198"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4196"/>
         <source>Update all prices?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4199"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4197"/>
         <source>Do you want to recalculate all prices for the order including:
 	- Line items
 	 - Taxes
@@ -73000,62 +72990,62 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4314"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4312"/>
         <source>Order Date Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4314"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4312"/>
         <source>Prices can not be recalculated without a valid Order Date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4324"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4322"/>
         <source>Schedule Date Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4324"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4322"/>
         <source>Prices can not be recalculated without a valid Schedule Date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4339"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4337"/>
         <source>Customer Cannot Buy at Quantity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4340"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4338"/>
         <source>&lt;p&gt;One or more items are marked as exclusive and no qualifying price schedule was found. </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4400"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4398"/>
         <source>Update all schedule dates?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4401"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4399"/>
         <source>Changing this date will update the Schedule Date on all editable line items. Is this what you want to do?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4439"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4437"/>
         <source>Can not reschedule all Items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4440"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4438"/>
         <source>Some exclusive items may not be rescheduled because there is no valid price schedule for the date entered.  Proceed rescheduling only qualifying items?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4452"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4450"/>
         <source>Can not reschedule Items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/salesOrder.cpp" line="4453"/>
+        <location filename="../../guiclient/salesOrder.cpp" line="4451"/>
         <source>No Items can be rescheduled because there are no valid price schedules for the date entered.</source>
         <translation type="unfinished"></translation>
     </message>
