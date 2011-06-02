@@ -136,7 +136,6 @@ void selectedPayments::sFillList()
     return;
   MetaSQLQuery mql = mqlLoad("apOpenItems", "selectedpayments");
   q = mql.toQuery(params);
-  q.exec();
   _apselect->populate(q,true);
   if (q.lastError().type() != QSqlError::NoError)
   {

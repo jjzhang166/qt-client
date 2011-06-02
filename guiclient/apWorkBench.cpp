@@ -72,6 +72,8 @@ apWorkBench::apWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_query, SIGNAL(clicked()), _credits, SLOT(sFillList()));
   connect(_query, SIGNAL(clicked()), _selectedPayments, SLOT(sFillList()));
   connect(_query, SIGNAL(clicked()), _checkRun, SLOT(sFillList()));
+
+  _payables->sFillList();
 }
 
 apWorkBench::~apWorkBench()
