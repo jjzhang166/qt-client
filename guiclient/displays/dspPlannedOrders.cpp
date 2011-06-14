@@ -65,8 +65,6 @@ dspPlannedOrders::dspPlannedOrders(QWidget* parent, const char* name, Qt::WFlags
   list()->addColumn(tr("Due Date"),    _dateColumn,  Qt::AlignCenter,true, "planord_duedate");
   list()->addColumn(tr("Qty"),         _qtyColumn,   Qt::AlignRight, true, "planord_qty");
   list()->addColumn(tr("Firm"),        _ynColumn,    Qt::AlignCenter,true, "planord_firm");
-
-  connect(omfgThis, SIGNAL(workOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 }
 
 void dspPlannedOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected, int)
@@ -171,8 +169,8 @@ void dspPlannedOrders::sReleaseOrder()
     purchaseRequest newdlg(this, "", true);
     newdlg.set(params);
 
-    if (newdlg.exec() != XDialog::Rejected)
-      sFillList();
+    if (newdlg.exec() == XDialog::Rejected)
+      return;
   }
   else if (list()->currentItem()->text(1) == "T/O")
   {
@@ -186,7 +184,9 @@ void dspPlannedOrders::sReleaseOrder()
     else
       delete newdlg;
   }
-  sFillList();
+  QTreeWidgetItem * ci = list()->currentItem();
+  if(ci)
+    delete ci;
 }
 
 void dspPlannedOrders::sDeleteOrder()
@@ -197,8 +197,11 @@ void dspPlannedOrders::sDeleteOrder()
   deletePlannedOrder newdlg(this, "", true);
   newdlg.set(params);
 
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
+  if (newdlg.exec() == XDialog::Rejected)
+    return;
+  QTreeWidgetItem * ci = list()->currentItem();
+  if(ci)
+    delete ci;
 }
 
 void dspPlannedOrders::sDspUsageStatistics()
