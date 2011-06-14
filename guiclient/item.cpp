@@ -68,7 +68,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_newTransform, SIGNAL(clicked()), this, SLOT(sNewTransformation()));
   connect(_deleteTransform, SIGNAL(clicked()), this, SLOT(sDeleteTransformation()));
   connect(_bom, SIGNAL(clicked()), this, SLOT(sEditBOM()));
-  connect(_site, SIGNAL(clicked()), this, SLOT(sNewItemSite()));
+  connect(_site, SIGNAL(clicked()), this, SLOT(sEditItemSite()));
   connect(_workbench, SIGNAL(clicked()), this, SLOT(sWorkbench()));
   connect(_deleteItemSite, SIGNAL(clicked()), this, SLOT(sDeleteItemSite()));
   connect(_viewItemSite, SIGNAL(clicked()), this, SLOT(sViewItemSite()));
