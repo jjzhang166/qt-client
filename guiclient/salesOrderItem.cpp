@@ -3321,6 +3321,7 @@ void salesOrderItem::sQtyUOMChanged()
     _priceUOM->setEnabled(true);
   _priceUOM->setId(_qtyUOM->id());
   sCalculateExtendedPrice();
+  sPopulateOrderInfo();
 
   if (_qtyOrdered->toDouble() != (double)qRound(_qtyOrdered->toDouble()) &&
       _qtyOrdered->validator()->inherits("QIntValidator"))
