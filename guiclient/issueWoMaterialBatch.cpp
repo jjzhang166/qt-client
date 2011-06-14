@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include <metasql.h>
 #include "inputManager.h"
 #include "distributeInventory.h"
 
@@ -38,6 +39,7 @@ issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bo
   _womatl->addColumn(tr("Description"),  -1,          Qt::AlignLeft,   true,  "itemdescrip"   );
   _womatl->addColumn(tr("UOM"),          _uomColumn,  Qt::AlignCenter, true,  "uom_name" );
   _womatl->addColumn(tr("Issue Method"), _itemColumn, Qt::AlignCenter, true,  "issuemethod" );
+  _womatl->addColumn(tr("Picklist"),     _itemColumn, Qt::AlignCenter, true,  "picklist" );
   _womatl->addColumn(tr("Required"),     _qtyColumn,  Qt::AlignRight,  true,  "required"  );
   _womatl->addColumn(tr("QOH"),          _qtyColumn,  Qt::AlignRight,  true,  "itemsite_qtyonhand"  );
   _womatl->addColumn(tr("Short"),        _qtyColumn,  Qt::AlignRight,  true,  "short"  );
@@ -82,24 +84,31 @@ void issueWoMaterialBatch::sIssue()
     return;
   }
   
-  XSqlQuery issue;
-  issue.prepare("SELECT itemsite_id, "
-                "       item_number, "
-                "       warehous_code, "
-                "       (COALESCE((SELECT SUM(itemloc_qty) "
-                "                    FROM itemloc "
-                "                   WHERE (itemloc_itemsite_id=itemsite_id)), 0.0) "
-                "        >= roundQty(item_fractional, noNeg(itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq - womatl_qtyiss)))) AS isqtyavail "
-                "  FROM womatl, itemsite, item, warehous "
-                " WHERE ( (womatl_itemsite_id=itemsite_id) "
-                "   AND (itemsite_item_id=item_id) "
-                "   AND (itemsite_warehous_id=warehous_id) "
-                "   AND (NOT ((item_type = 'R') OR (itemsite_controlmethod = 'N'))) "
-                "   AND ((itemsite_controlmethod IN ('L', 'S')) OR (itemsite_loccntrl)) "
-                "   AND (womatl_issuemethod IN ('S', 'M')) "
-                "   AND (womatl_wo_id=:wo_id)); ");
-  issue.bindValue(":wo_id", _wo->id());
-  issue.exec();
+  QString sqlissue =
+        ( "SELECT itemsite_id, "
+          "       item_number, "
+          "       warehous_code, "
+          "       (COALESCE((SELECT SUM(itemloc_qty) "
+          "                    FROM itemloc "
+          "                   WHERE (itemloc_itemsite_id=itemsite_id)), 0.0) "
+          "        >= roundQty(item_fractional, noNeg(itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq - womatl_qtyiss)))) AS isqtyavail "
+          "  FROM womatl, itemsite, item, warehous "
+          " WHERE ( (womatl_itemsite_id=itemsite_id) "
+          "   AND (itemsite_item_id=item_id) "
+          "   AND (itemsite_warehous_id=warehous_id) "
+          "   AND (NOT ((item_type = 'R') OR (itemsite_controlmethod = 'N'))) "
+          "   AND ((itemsite_controlmethod IN ('L', 'S')) OR (itemsite_loccntrl)) "
+          "   AND (womatl_issuemethod IN ('S', 'M')) "
+          "  <? if exists(\"pickItemsOnly\") ?>"
+          "   AND (womatl_picklist) "
+          "  <? endif ?>"
+          "   AND (womatl_wo_id=<? value(\"wo_id\") ?>)); ");
+  MetaSQLQuery mqlissue(sqlissue);
+  ParameterList params;
+  params.append("wo_id", _wo->id());
+  if (!_nonPickItems->isChecked())
+    params.append("pickItemsOnly", true);
+  XSqlQuery issue = mqlissue.toQuery(params);
   while(issue.next())
   {
     if(!(issue.value("isqtyavail").toBool()))
@@ -118,8 +127,8 @@ void issueWoMaterialBatch::sIssue()
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
-  XSqlQuery items;
-  items.prepare("SELECT womatl_id,"
+  QString sqlitems =
+               ("SELECT womatl_id,"
                 "       CASE WHEN (womatl_qtyreq >= 0) THEN"
                 "         roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(womatl_qtyreq - womatl_qtyiss))"
                 "       ELSE"
@@ -129,9 +138,12 @@ void issueWoMaterialBatch::sIssue()
                 " WHERE((womatl_itemsite_id=itemsite_id)"
                 "   AND (itemsite_item_id=item_id)"
                 "   AND (womatl_issuemethod IN ('S', 'M'))"
-                "   AND (womatl_wo_id=:wo_id) );");
-  items.bindValue(":wo_id", _wo->id());
-  items.exec();
+                "  <? if exists(\"pickItemsOnly\") ?>"
+                "   AND (womatl_picklist) "
+                "  <? endif ?>"
+                "   AND (womatl_wo_id=<? value(\"wo_id\") ?>)); ");
+  MetaSQLQuery mqlitems(sqlitems);
+  XSqlQuery items = mqlitems.toQuery(params);
   while(items.next())
   {
     issue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
@@ -177,6 +189,7 @@ void issueWoMaterialBatch::sIssue()
   else
   {
     _wo->setId(-1);
+    _womatl->clear();
     _wo->setFocus();
   }
 }
@@ -190,9 +203,9 @@ void issueWoMaterialBatch::sFillList()
   {
     QTreeWidgetItem * hitem = _womatl->headerItem();
     if (_wo->method() == "A")
-      hitem->setText(4, tr("Required"));
+      hitem->setText(5, tr("Required"));
     else
-      hitem->setText(4, tr("Returned"));
+      hitem->setText(5, tr("Returned"));
      
     XSqlQuery womatl;
     womatl.prepare( "SELECT womatl_id, item_number,"
@@ -202,6 +215,7 @@ void issueWoMaterialBatch::sFillList()
                     "      WHEN (womatl_issuemethod = 'M') THEN :mixed"
                     "      ELSE :error"
                     " END AS issuemethod,"
+                    " womatl_picklist AS picklist,"
                     " CASE "
                     "   WHEN (womatl_qtyreq >= 0) THEN "
                     "     noNeg(womatl_qtyreq - womatl_qtyiss) "
