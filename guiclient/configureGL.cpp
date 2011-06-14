@@ -138,6 +138,9 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   {
     _useCompanySegment->setChecked(FALSE);
     _externalConsolidation->setChecked(FALSE);
+    _yearend->setId(_metrics->value("YearEndEquityAccount").toInt());
+    _gainLoss->setId(_metrics->value("CurrencyGainLossAccount").toInt());
+    _discrepancy->setId(_metrics->value("GLSeriesDiscrepancyAccount").toInt());
   }
   else
   {
@@ -146,10 +149,6 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
     _externalConsolidation->setChecked(_metrics->boolean("MultiCompanyFinancialConsolidation") &&
                                        extConsolAllowed);
-
-    _yearend->setId(_metrics->value("YearEndEquityAccount").toInt());
-    _gainLoss->setId(_metrics->value("CurrencyGainLossAccount").toInt());
-    _discrepancy->setId(_metrics->value("GLSeriesDiscrepancyAccount").toInt());
   }
 
   if (_metrics->value("GLProfitSize").toInt() == 0)
@@ -362,14 +361,14 @@ bool configureGL::sSave()
   {
     _metrics->set("GLCompanySize", _companySegmentSize->value());
     _metrics->set("MultiCompanyFinancialConsolidation", _externalConsolidation->isChecked());
-    _metrics->set("YearEndEquityAccount", _yearend->id());
-    _metrics->set("CurrencyGainLossAccount", _gainLoss->id());
-    _metrics->set("GLSeriesDiscrepancyAccount", _discrepancy->id());
   }
   else
   {
     _metrics->set("GLCompanySize", 0);
     _metrics->set("MultiCompanyFinancialConsolidation", 0);
+    _metrics->set("YearEndEquityAccount", _yearend->id());
+    _metrics->set("CurrencyGainLossAccount", _gainLoss->id());
+    _metrics->set("GLSeriesDiscrepancyAccount", _discrepancy->id());
   }
   if(companyseg)
     companyseg->setEnabled(_useCompanySegment->isChecked());
