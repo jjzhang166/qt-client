@@ -694,6 +694,7 @@ void workOrder::sPopulateItemChar( int pItemid )
       _itemchar->setData(idx, q.value("char_id"), Qt::UserRole);
       idx = _itemchar->index(row, 1);
       _itemchar->setData(idx, q.value("charass_value"), Qt::DisplayRole);
+      _itemchar->setData(idx, pItemid, Xt::IdRole);
       _itemchar->setData(idx, pItemid, Qt::UserRole);
       row++;
     }

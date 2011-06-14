@@ -578,6 +578,7 @@ void purchaseOrderItem::populate()
       _itemchar->setData(idx, q.value("char_id"), Qt::UserRole);
       idx = _itemchar->index(row, 1);
       _itemchar->setData(idx, q.value("charass_value"), Qt::DisplayRole);
+      _itemchar->setData(idx, _item->id(), Xt::IdRole);
       _itemchar->setData(idx, _item->id(), Qt::UserRole);
       row++;
     }
@@ -871,6 +872,7 @@ void purchaseOrderItem::sPopulateItemInfo(int pItemid)
       _itemchar->setData(idx, item.value("char_id"), Qt::UserRole);
       idx = _itemchar->index(row, 1);
       _itemchar->setData(idx, item.value("charass_value"), Qt::DisplayRole);
+      _itemchar->setData(idx, pItemid, Xt::IdRole);
       _itemchar->setData(idx, pItemid, Qt::UserRole);
       row++;
     }
