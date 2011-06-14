@@ -41,6 +41,7 @@ class XDateEdit : public XLineEdit
 
     virtual bool      isNull();
     virtual bool      isValid();
+    virtual int       calendarSiteId()                          { return _siteId; }
     virtual Defaults  defaultDate()                             { return _default;}
     virtual QDate     currentDefault();
     virtual QDate     date();
@@ -49,6 +50,7 @@ class XDateEdit : public XLineEdit
     inline  void      setAllowNullDate(bool pAllowNull)         { _allowNull  = pAllowNull;  }
     inline  void      setNullString(const QString &pNullString) { _nullString = pNullString;}
     inline  void      setNullDate(const QDate &pNullDate)       { _nullDate   = pNullDate;    }
+    inline  void      setCalendarSiteId(int siteId)             { _siteId = siteId; }
 
   public slots:
     virtual void setDataWidgetMap(XDataWidgetMapper* m);
@@ -59,6 +61,7 @@ class XDateEdit : public XLineEdit
     void setDefaultDate(Defaults p)                             { _default = p; }
     void parseDate();
     void showCalendar();
+    void checkDate(const QDate &);
 
   signals:
     void newDate(const QDate &);
@@ -72,7 +75,7 @@ class XDateEdit : public XLineEdit
     QDate         _nullDate;
     QString       _fieldName;
     QString       _nullString;
-
+    int           _siteId;
 };
 
 class XTUPLEWIDGETS_EXPORT DLineEdit : public QWidget
@@ -89,11 +92,13 @@ class XTUPLEWIDGETS_EXPORT DLineEdit : public QWidget
     Q_INVOKABLE inline void     setAllowNullDate(bool p)       { _lineedit.setAllowNullDate(p); }
     Q_INVOKABLE inline void     setNullString(const QString &p){ _lineedit.setNullString(p); }
     Q_INVOKABLE inline void     setNullDate(const QDate &p)    { _lineedit.setNullDate(p); }
+    Q_INVOKABLE inline void     setCalendarSiteId(int siteId)  { _lineedit.setCalendarSiteId(siteId); }
 
     Q_INVOKABLE void     setDate(const QVariant &p, bool b = false);
 
     Q_INVOKABLE virtual bool    isNull()          { return _lineedit.isNull(); }
     Q_INVOKABLE virtual bool    isValid()         { return _lineedit.isValid(); }
+    Q_INVOKABLE virtual int     calendarSiteId()  { return _lineedit.calendarSiteId(); }
     virtual XDateEdit::Defaults defaultDate()     { return _lineedit.defaultDate(); }
     virtual QDate               date()            { return _lineedit.date(); }
     virtual QString             fieldName() const { return _lineedit.fieldName(); }
