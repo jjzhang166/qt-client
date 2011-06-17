@@ -473,7 +473,6 @@ void XDateEdit::setDate(const QDate &pDate, bool pAnnounce)
     if(pAnnounce)
     {
       pAnnounce = (pDate != _currentDate);
-qDebug() << "should announce and pAnnounce is " << pAnnounce;
     }
     _currentDate = pDate;
     _valid = _currentDate.isValid();
