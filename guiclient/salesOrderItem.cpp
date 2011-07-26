@@ -2026,7 +2026,7 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
               " ELSE "
               "   formatDate(charass_value::date) "
               "END AS f_charass_value, "
-              " charass_value "
+              " charass_value, charass_price "
               "FROM ("
               "SELECT "
               "  char_id, "
