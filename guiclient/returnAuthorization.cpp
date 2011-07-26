@@ -729,7 +729,6 @@ void returnAuthorization::sOrigSoChanged()
           _ffShipto = FALSE;
         _copyToShipto->setEnabled(_ffShipto);
         _shipToName->setEnabled(_ffShipto);
-        _shipTo->setEnabled(_ffShipto);
         _shipToAddr->setEnabled(_ffShipto);
         _ignoreShiptoSignals = FALSE;
 
@@ -832,7 +831,6 @@ void returnAuthorization::sPopulateCustomerInfo()
           _ffShipto = FALSE;
         _copyToShipto->setEnabled(_ffShipto);
         _shipToName->setEnabled(_ffShipto);
-        _shipTo->setEnabled(_ffShipto);
         _shipToAddr->setEnabled(_ffShipto);
         _custEmail = query.value("cust_soemaildelivery").toBool();
         populateShipto(query.value("shiptoid").toInt());
