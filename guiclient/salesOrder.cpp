@@ -2528,18 +2528,29 @@ void salesOrder::populate()
       _billToCntct->setFax(qu.value("quhead_billto_cntct_fax").toString());
       _billToCntct->setEmailAddress(qu.value("quhead_billto_cntct_email").toString());
 
-      _ignoreSignals = true;
-      _shipTo->setId(qu.value("quhead_shipto_id").toInt());
-
+      _ignoreSignals=true;
       _shipToName->setText(qu.value("quhead_shiptoname").toString());
-      _shipToAddr->setLine1(qu.value("quhead_shiptoaddress1").toString());
-      _shipToAddr->setLine2(qu.value("quhead_shiptoaddress2").toString());
-      _shipToAddr->setLine3(qu.value("quhead_shiptoaddress3").toString());
-      _shipToAddr->setCity(qu.value("quhead_shiptocity").toString());
-      _shipToAddr->setState(qu.value("quhead_shiptostate").toString());
-      _shipToAddr->setPostalCode(qu.value("quhead_shiptozipcode").toString());
-      _shipToAddr->setCountry(qu.value("quhead_shiptocountry").toString());
-      _ignoreSignals = false;
+      if (_shipToAddr->line1() !=qu.value("quhead_shiptoaddress1").toString() ||
+          _shipToAddr->line2() !=qu.value("quhead_shiptoaddress2").toString() ||
+          _shipToAddr->line3() !=qu.value("quhead_shiptoaddress3").toString() ||
+          _shipToAddr->city()  !=qu.value("quhead_shiptocity").toString() ||
+          _shipToAddr->state() !=qu.value("quhead_shiptostate").toString() ||
+          _shipToAddr->postalCode()!=qu.value("quhead_shiptozipcode").toString() ||
+          _shipToAddr->country()!=qu.value("quhead_shiptocountry").toString() )
+      {
+        _shipToAddr->setId(-1);
+
+        _shipToAddr->setLine1(qu.value("quhead_shiptoaddress1").toString());
+        _shipToAddr->setLine2(qu.value("quhead_shiptoaddress2").toString());
+        _shipToAddr->setLine3(qu.value("quhead_shiptoaddress3").toString());
+        _shipToAddr->setCity(qu.value("quhead_shiptocity").toString());
+        _shipToAddr->setState(qu.value("quhead_shiptostate").toString());
+        _shipToAddr->setPostalCode(qu.value("quhead_shiptozipcode").toString());
+        _shipToAddr->setCountry(qu.value("quhead_shiptocountry").toString());
+      }
+
+      _shipTo->setId(qu.value("quhead_shipto_id").toInt());
+      _ignoreSignals=false;
 
       if (_mode == cViewQuote)
         _shipTo->setEnabled(FALSE);
@@ -2570,6 +2581,8 @@ void salesOrder::populate()
 
       _comments->setId(_soheadid);
       _documents->setId(_soheadid);
+      // TODO - a partial save is not saving everything
+      save(false);
       sFillItemList();
     }
     else if (qu.lastError().type() != QSqlError::NoError)
@@ -3099,7 +3112,9 @@ void salesOrder::sHandleShipchrg(int pShipchrgid)
         _calcfreight   = FALSE;
         _freightCache  = 0;
         _freight->setEnabled(FALSE);
+        disconnect(_freight, SIGNAL(valueChanged()), this, SLOT(sFreightChanged()));
         _freight->clear();
+        connect(_freight, SIGNAL(valueChanged()), this, SLOT(sFreightChanged()));
         sCalculateTax();
       }
     }
