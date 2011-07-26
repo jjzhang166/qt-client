@@ -142,17 +142,20 @@ int creditCard::saveCreditCard(QWidget *parent,
 
   int cceditreturn = 0;
 
-  // editccnumber validates but does not modify db
-  q.prepare("SELECT editccnumber(text(:ccnum), text(:cctype)) AS cc_back;");
-  q.bindValue(":ccnum", ccNumber);
-  q.bindValue(":cctype", ccType);
-  q.exec();
-  if (q.first())
-    cceditreturn = q.value("cc_back").toInt();
-  else if (q.lastError().type() != QSqlError::NoError)
+  if (mode == cEdit && ! hasBeenFormatted)
   {
-    systemError(parent, q.lastError().databaseText(), __FILE__, __LINE__);
-    return -2;
+    // editccnumber validates but does not modify db
+    q.prepare("SELECT editccnumber(text(:ccnum), text(:cctype)) AS cc_back;");
+    q.bindValue(":ccnum", ccNumber);
+    q.bindValue(":cctype", ccType);
+    q.exec();
+    if (q.first())
+      cceditreturn = q.value("cc_back").toInt();
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(parent, q.lastError().databaseText(), __FILE__, __LINE__);
+      return -2;
+    }
   }
 
   if (cceditreturn == -10)
