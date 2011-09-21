@@ -34,6 +34,7 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
+  _number->setShowInactive(true);
   
   _todoList = new todoList(this, "todoList", Qt::Widget);
   _todoListPage->layout()->addWidget(_todoList);
