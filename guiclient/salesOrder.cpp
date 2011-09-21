@@ -1746,6 +1746,9 @@ void salesOrder::sPopulateCustomerInfo(int pCustid)
         _billToName->setEnabled(ffBillTo);
         _billToAddr->setEnabled(ffBillTo);
         _billToCntct->setEnabled(ffBillTo);
+
+        if (!cust.value("iscustomer").toBool())
+          _shipTo->setEnabled(false);
       }
     }
     else if (cust.lastError().type() != QSqlError::NoError)
@@ -1854,8 +1857,9 @@ void salesOrder::sNew()
   {
     if (!save(true))
       return;
-    else
-      populate();
+    // TODO - why populate?
+    //else
+    //  populate();
   }
 
   ParameterList params;
@@ -2581,9 +2585,9 @@ void salesOrder::populate()
 
       _comments->setId(_soheadid);
       _documents->setId(_soheadid);
+      sFillItemList();
       // TODO - a partial save is not saving everything
       save(false);
-      sFillItemList();
     }
     else if (qu.lastError().type() != QSqlError::NoError)
     {
