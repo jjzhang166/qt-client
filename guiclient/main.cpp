@@ -351,9 +351,7 @@ int main(int argc, char *argv[])
     bool xtweb = false;
     if(metric.first())
       xtweb = metric.value("result").toBool();
-    metric.exec("SELECT metric_value"
-                "  FROM metric"
-                " WHERE(metric_name = 'ForceLicenseLimit');");
+    metric.exec("SELECT fetchMetricBool('ForceLicenseLimit') as metric_value;");
     bool forceLimit = false;
     bool forced = false;
     if(metric.first())
