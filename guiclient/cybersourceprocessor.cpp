@@ -23,9 +23,9 @@
 
 #define DEBUG false
 
-/** \ingroup creditcards
-    \class   CyberSourceProcessor
-    \brief   The implementation of CyberSource-specific credit card handling
+/** @ingroup creditcards
+    @class   CyberSourceProcessor
+    @brief   The implementation of CyberSource-specific credit card handling
  */
 
 #define CPDATA_NS   "ns3"
@@ -82,7 +82,7 @@ static QString get_r_ref(int pccpayid)
 CyberSourceProcessor::CyberSourceProcessor() : CreditCardProcessor()
 {
   _company = "CyberSource";
-  _extraHeaders.append(qMakePair(QString("Content-Type"), QString("text/xml; charset=uft-8; action=\"runTransaction\"")));
+  _extraHeaders.append(qMakePair(QString("Content-Type"), QString("text/xml; charset=uft-8; action='runTransaction'")));
   _extraHeaders.append(qMakePair(QString("SOAPAction"),   QString("runTransaction")));
 
   _defaultLivePort   = 0;
@@ -201,8 +201,8 @@ int CyberSourceProcessor::buildCommon(const int pccardid, const int pcvv, const 
   _doc = new QDomDocument();
 
   QDomNode xmlNode = _doc->createProcessingInstruction("xml",
-                                                       "version=\"1.0\" "
-                                                       "encoding=\"UTF-8\"");
+                                                       "version='1.0' "
+                                                       "encoding='UTF-8'");
   _doc->appendChild(xmlNode);
 
   QDomElement envelope = _doc->createElement(SOAP_ENV_NS ":Envelope");
@@ -412,6 +412,22 @@ int  CyberSourceProcessor::doCharge(const int pccardid, const int pcvv, const do
   capture.setAttribute("run", "true");
   _requestMessage.appendChild(capture);
 
+  if (_metrics->value("CCAvsCheck") == "W" ||
+      _metrics->value("CCAvsCheck") == "X" ||
+      _metrics->value("CCCVVCheck") == "W" ||
+      _metrics->value("CCCVVCheck") == "X")
+  {
+    QDomElement rules = _doc->createElement(CPDATA_NS ":businessRules");
+    _requestMessage.appendChild(rules);
+    if (_metrics->value("CCAvsCheck") == "W" ||
+        _metrics->value("CCAvsCheck") == "X")
+      createChildTextNode(rules, CPDATA_NS ":ignoreAVSResult", "true");
+
+    if (_metrics->value("CCCVVCheck") == "W" ||
+        _metrics->value("CCCVVCheck") == "X")
+      createChildTextNode(rules, CPDATA_NS ":ignoreCVResult", "true");
+  }
+
   if (DEBUG) qDebug("CS::doCharge sending %s", qPrintable(_doc->toString()));
   QString response;
   returnValue = sendViaHTTP(_doc->toString(), response);
@@ -422,6 +438,8 @@ int  CyberSourceProcessor::doCharge(const int pccardid, const int pcvv, const do
   returnValue = handleResponse(response, pccardid, Charge, amount, pcurrid,
                                pneworder, preforder, pccpayid, pparams);
 
+  if (DEBUG)
+    qDebug("CS:doCharge() returning %d", returnValue);
   return returnValue;
 }
 
@@ -591,13 +609,13 @@ int CyberSourceProcessor::doVoidPrevious(const int pccardid, const int pcvv, con
   return returnValue;
 }
 
-/** \brief Return the result of extracting a given value from an XML
+/** @brief Return the result of extracting a given value from an XML
            response from CyberSource.
 
     The input query can specify a full or relative path within the XML stream.
     If it starts with a slash ('/') then it's treated as a full path.
     Otherwise it's treated as a relative path with respect to
-    \c soap:Envelope/soap:Body/c:replyMessage
+    @c soap:Envelope/soap:Body/c:replyMessage
 
     Queries with relative paths always return the text() value.
     Queries with full paths must completely specify what they want returned.
@@ -787,14 +805,6 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
         fieldVal = xqresult(&valueq, "/soap:Envelope/soap:Body/c:replyMessage/c:missingField", QVariant::StringList);
         if (valueq.isValid() && fieldVal.isValid())
           missing = fieldVal.toStringList();
-
-        fieldVal = xqresult(&valueq, "c:ccAuthReply/c:avsCode");
-        if (valueq.isValid() && fieldVal.isValid())
-          r_avs = fieldVal.toString();
-
-        fieldVal = xqresult(&valueq, "c:ccAuthReply/c:cvCode");
-        if (valueq.isValid() && fieldVal.isValid())
-          r_cvv = fieldVal.toString();
       }
 
       else if (r_approved == "ACCEPT")
@@ -815,24 +825,6 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
             fieldVal = xqresult(&valueq, "c:ccAuthReply/c:authorizationCode");
             if (valueq.isValid() && fieldVal.isValid())
               r_code = fieldVal.toString();
-            else
-            {
-              _errorMsg = errorMsg(-307).arg(msghandler.lastMessage());
-              returnValue = -307;
-            }
-
-            fieldVal = xqresult(&valueq, "c:ccAuthReply/c:avsCode");
-            if (valueq.isValid() && fieldVal.isValid())
-              r_avs = fieldVal.toString();
-            else
-            {
-              _errorMsg = errorMsg(-307).arg(msghandler.lastMessage());
-              returnValue = -307;
-            }
-
-            fieldVal = xqresult(&valueq, "c:ccAuthReply/c:cvCode");
-            if (valueq.isValid() && fieldVal.isValid())
-              r_cvv = fieldVal.toString();
             else
             {
               _errorMsg = errorMsg(-307).arg(msghandler.lastMessage());
@@ -924,9 +916,16 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
           }
           break;
         }
-      }
+      } // ACCEPT or REJECT; the reasonCode switch below handles ERROR
 
-      // let the switch below handle "else if (r_approved == "ERROR")"
+      fieldVal = xqresult(&valueq, "c:ccAuthReply/c:avsCode");
+      if (valueq.isValid() && fieldVal.isValid())
+        r_avs = fieldVal.toString();
+
+      fieldVal = xqresult(&valueq, "c:ccAuthReply/c:cvCode");
+      if (valueq.isValid() && fieldVal.isValid())
+        r_cvv = fieldVal.toString();
+
     }
   }
 
@@ -1017,7 +1016,7 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
 
   // TODO: move this up to CreditCardProcessor::fraudChecks()
   // TODO: change avs and cvv failure check configuration
-  CreditCardProcessor::FraudCheckResult *avsresult = avsCodeLookup(r_avs.at(0));
+  FraudCheckResult *avsresult = avsCodeLookup(r_avs.at(0));
   if (avsresult)
   {
     bool addrMustMatch   = _metrics->value("CCAvsAddr").contains("N");
@@ -1042,10 +1041,10 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
   }
   else
   {
-    _passedAvs = false;
+    _passedAvs = true;
   }
 
-  CreditCardProcessor::FraudCheckResult *cvvresult = cvvCodeLookup(r_cvv.at(0));
+  FraudCheckResult *cvvresult = cvvCodeLookup(r_cvv.at(0));
   if (cvvresult)
   {
     bool cvvMustMatch         = _metrics->value("CCCVVErrors").contains("N");
@@ -1068,7 +1067,7 @@ int CyberSourceProcessor::handleResponse(const QString &presponse, const int pcc
   }
   else
   {
-    _passedCvv = false;
+    _passedCvv = true;
   }
 
   if (DEBUG)

@@ -2180,7 +2180,7 @@ int CreditCardProcessor::fraudChecks()
 
   if (! _passedAvs && _metrics->value("CCAvsCheck") == "F")
   {
-    _errorMsg = errorMsg(-97) + "\n" + _errorMsg;
+    _errorMsg = errorMsg(-97);
     returnValue = -97;
   }
   else if (! _passedAvs && _metrics->value("CCAvsCheck") == "W")
@@ -2192,7 +2192,7 @@ int CreditCardProcessor::fraudChecks()
   // not "else if" - maybe this next check will be fatal
   if (! _passedCvv && _metrics->value("CCCVVCheck") == "F")
   {
-    _errorMsg = errorMsg(-96) + "\n" + _errorMsg;
+    _errorMsg = errorMsg(-96);
     returnValue = -96;
   }
   else if (! _passedCvv && _metrics->value("CCCVVCheck") == "W")
