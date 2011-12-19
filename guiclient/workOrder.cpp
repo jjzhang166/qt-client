@@ -1935,8 +1935,10 @@ void workOrder::populate()
     _oldQty = (wo.value("wo_qtyord").toDouble() * _sense);
     _qty->setText(wo.value("wo_qtyord").toDouble() * _sense);
     _qtyReceived->setText(wo.value("wo_qtyrcv").toDouble());
-    _startDate->setDate(_oldStartDate);
-    _dueDate->setDate(_oldDueDate);
+    if (_startDate->date() != _oldStartDate)
+      _startDate->setDate(_oldStartDate);
+    if (_dueDate->date() != _oldDueDate)
+      _dueDate->setDate(_oldDueDate);
     _productionNotes->setText(wo.value("wo_prodnotes").toString());
     _comments->setId(_woid);
     _documents->setId(_woid);
