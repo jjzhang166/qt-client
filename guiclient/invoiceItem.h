@@ -56,7 +56,7 @@ private:
     double _qtyinvuomratio;
     double _priceinvuomratio;
     bool _saved;
-    bool _isMisc;
+    bool _trackqoh;
 };
 
 #endif // INVOICEITEM_H

@@ -410,7 +410,7 @@ void creditMemoItem::sPopulateItemInfo()
 void creditMemoItem::sPopulateItemsiteInfo()
 {
   XSqlQuery itemsite;
-  itemsite.prepare( "SELECT itemsite_controlmethod"
+  itemsite.prepare( "SELECT itemsite_controlmethod, itemsite_costmethod"
                 "  FROM itemsite"
                 " WHERE ( (itemsite_item_id=:item_id)"
                 "   AND   (itemsite_warehous_id=:warehous_id) );" );
@@ -419,7 +419,8 @@ void creditMemoItem::sPopulateItemsiteInfo()
   itemsite.exec();
   if (itemsite.first())
   {
-    if (itemsite.value("itemsite_controlmethod").toString() == "N")
+    if (itemsite.value("itemsite_controlmethod").toString() == "N" ||
+        itemsite.value("itemsite_costmethod").toString() == "J")
     {
       _qtyReturned->setDouble(0.0);
       _qtyReturned->setEnabled(false);
@@ -447,8 +448,10 @@ void creditMemoItem::populate()
   cmitem.prepare("SELECT cmitem.*,  "
                  "       cmhead_taxzone_id, cmhead_curr_id, "
                  "      (SELECT SUM(taxhist_tax * -1) "
-				 "       FROM cmitemtax WHERE (cmitem_id=taxhist_parent_id)) AS tax "
+		 "       FROM cmitemtax WHERE (cmitem_id=taxhist_parent_id)) AS tax,"
+                 "       itemsite_costmethod "
                  "FROM cmhead, cmitem "
+                 "LEFT OUTER JOIN itemsite ON (cmitem_itemsite_id=itemsite_id)"
                  "WHERE ( (cmitem_cmhead_id=cmhead_id)"
                  "  AND   (cmitem_id=:cmitem_id) );" );
   cmitem.bindValue(":cmitem_id", _cmitemid);
@@ -463,7 +466,9 @@ void creditMemoItem::populate()
     _netUnitPrice->setLocalValue(cmitem.value("cmitem_unitprice").toDouble());
     _qtyToCredit->setDouble(cmitem.value("cmitem_qtycredit").toDouble());
     _qtyReturned->setDouble(cmitem.value("cmitem_qtyreturned").toDouble());
-    if (cmitem.value("cmitem_raitem_id").toInt() > 0)
+    // TODO: should this include itemsite_
+    if (cmitem.value("cmitem_raitem_id").toInt() > 0 ||
+        cmitem.value("itemsite_costmethod").toString() == "J")
     {
       _updateInv->setChecked(false);
       _updateInv->setEnabled(false);

@@ -21,6 +21,9 @@
 #include "priceList.h"
 #include "taxDetail.h"
 
+/* TODO: connect(_warehouse id, SIGNAL(newId(int)), ...) to set _trackqoh?
+         bug 16465 - seems too disruptive now as we're between 3.8.0RC and RC2
+ */
 invoiceItem::invoiceItem(QWidget* parent, const char * name, Qt::WindowFlags fl)
     : XDialog(parent, name, fl)
 {
@@ -56,7 +59,7 @@ invoiceItem::invoiceItem(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _qtyinvuomratio = 1.0;
   _priceinvuomratio = 1.0;
   _invuomid = -1;
-  _isMisc = true;
+  _trackqoh = true;
   
   //If not multi-warehouse hide whs control
   if (!_metrics->boolean("MultiWhs"))
@@ -317,14 +320,17 @@ void invoiceItem::populate()
                     "            ELSE item_listprice"
                     "       END AS f_listprice,"
 					"		taxzone_id,"
-                    "       invchead_curr_id AS taxcurr_id "
-                    "FROM invcitem JOIN "
+                    "       invchead_curr_id AS taxcurr_id,"
+                    "       itemsite_costmethod"
+                    " FROM invcitem JOIN "
                     "     invchead LEFT OUTER JOIN taxzone ON "
 					"       (invchead_taxzone_id = taxzone_id) "
 					"     ON (invcitem_invchead_id = invchead_id) LEFT OUTER JOIN "
                     "     item ON (invcitem_item_id = item_id) "
-					"     LEFT OUTER JOIN invcitemtax ON (invcitem_id = taxhist_parent_id) "
-					"WHERE (invcitem_id = :invcitem_id);" );
+                    " LEFT OUTER JOIN invcitemtax ON (invcitem_id = taxhist_parent_id) "
+                    " LEFT OUTER JOIN itemsite ON (itemsite_item_id=item_id "
+                    "                          AND itemsite_warehous_id=invcitem_warehous_id)"
+                    "WHERE (invcitem_id = :invcitem_id);" );
   invcitem.bindValue(":invcitem_id", _invcitemid);
   invcitem.exec();
   if (invcitem.first())
@@ -332,7 +338,10 @@ void invoiceItem::populate()
     _invcheadid = invcitem.value("invcitem_invchead_id").toInt();
     _invoiceNumber->setText(invcitem.value("invchead_invcnumber").toString());
     _lineNumber->setText(invcitem.value("invcitem_linenumber").toString());
-    _isMisc = ((invcitem.value("invcitem_coitem_id").toInt() > 0) ? false : true);
+
+    // TODO: should this check itemsite_controlmethod == N?
+    _trackqoh = (invcitem.value("invcitem_coitem_id").toInt() > 0 &&
+                 invcitem.value("itemsite_costmethod").toString() != "J");
 
     if (invcitem.value("invcitem_item_id").toInt() != -1)
     {
@@ -361,7 +370,10 @@ void invoiceItem::populate()
 
     _ordered->setDouble(invcitem.value("invcitem_ordered").toDouble());
     _billed->setDouble(invcitem.value("invcitem_billed").toDouble());
+
+    // TODO: why not setChecked then call sHandleUpdateInv
     if ( (invcitem.value("invcitem_coitem_id").toInt() > 0) ||
+         (invcitem.value("itemsite_costmethod").toString() == "J") ||
          (invcitem.value("invcitem_item_id").toInt() == -1) )
     {
       _updateInv->setChecked(false);
@@ -442,15 +454,18 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
                "       iteminvpricerat(item_id) AS invpricerat,"
                "       item_listprice, item_fractional, "
                "       stdcost(item_id) AS f_unitcost,"
-	           "       getItemTaxType(item_id, :taxzone) AS taxtype_id "
+               "       getItemTaxType(item_id, :taxzone) AS taxtype_id,"
+               "       itemsite_costmethod"
                "  FROM item"
-               " WHERE (item_id=:item_id);" );
+               "  JOIN itemsite ON (item_id=itemsite_item_id)"
+               " WHERE ((item_id=:item_id)"
+               "    AND (itemsite_warehous_id=:whsid));" );
     q.bindValue(":item_id", pItemid);
     q.bindValue(":taxzone", _taxzoneid);
+    q.bindValue(":whsid",   _warehouse->id());
     q.exec();
     if (q.first())
     {
-      sDeterminePrice();
       _priceRatioCache = q.value("invpricerat").toDouble();
       _listPrice->setBaseValue(q.value("item_listprice").toDouble());
 
@@ -471,6 +486,10 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
         _ordered->setValidator(new XDoubleValidator(0, 999999, 0, this));
         _billed->setValidator(new XDoubleValidator(0, 999999, 0, this));
       }
+      sDeterminePrice();
+
+      // TODO: should this check itemsite_controlmethod == N?
+      _trackqoh = (q.value("itemsite_costmethod").toString() != "J");
     }
     else if (q.lastError().type() != QSqlError::NoError)
     {
@@ -648,7 +667,7 @@ void invoiceItem::sHandleUpdateInv()
 {
   if( (_item->isValid()) &&
       (_warehouse->isValid()) &&
-      (_isMisc) )
+      (_trackqoh) )
   {
     _updateInv->setEnabled(true);
   }
