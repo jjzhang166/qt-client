@@ -326,7 +326,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _orderId = -1;
       _itemsrc = -1;
 
-      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
+      _item->addExtraClause( QString("(item_id IN (SELECT custitem FROM custitem(%1, %2, '%3') ) )").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
 
       prepare();
 
@@ -380,7 +380,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _warranty->hide();
       _tabs->removeTab(_tabs->indexOf(_costofsalesTab));
 
-      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
+      _item->addExtraClause( QString("(item_id IN (SELECT custitem FROM custitem(%1, %2, '%3') ) )").arg(_custid).arg(_shiptoid).arg(asOf.toString(Qt::ISODate)) );
 
       prepare();
 
@@ -3452,7 +3452,7 @@ void salesOrderItem::setItemExtraClause()
   _item->clearExtraClauseList();
   _item->addExtraClause("(itemsite_active)" );
   _item->addExtraClause("(itemsite_sold)");
-  _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2, '%3'))").arg(_custid).arg(_shiptoid).arg(_scheduledDate->date().toString(Qt::ISODate)) );
+  _item->addExtraClause( QString("(item_id IN (SELECT custitem FROM custitem(%1, %2, '%3') ) )").arg(_custid).arg(_shiptoid).arg(_scheduledDate->date().toString(Qt::ISODate)) );
 }
 
 void salesOrderItem::sHandleScheduleDate()

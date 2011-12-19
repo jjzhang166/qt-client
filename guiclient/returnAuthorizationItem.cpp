@@ -1435,7 +1435,7 @@ void returnAuthorizationItem::sDispositionChanged()
   }
 
   if (_mode == cNew)
-      _item->addExtraClause( QString("(NOT item_exclusive OR customerCanPurchase(item_id, %1, %2))").arg(_custid).arg(_shiptoid) );
+      _item->addExtraClause( QString("(item_id IN (SELECT custitem FROM custitem(%1, %2) ) )").arg(_custid).arg(_shiptoid) );
 
   if (_disposition->currentIndex() > 2) // service or ship
   {

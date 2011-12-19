@@ -215,7 +215,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
                               " AND (item_inv_uom_id=uom_id)"
                               " AND (itemsite_active)"
                               " AND (item_active)"
-                              " AND (customerCanPurchase(item_id, %1, %2)) ) "
+                              " AND (item_id IN (SELECT custitem FROM custitem(%1, %2) ) ) ) "
                               "ORDER BY item_number" )
                      .arg(_custid).arg(_shiptoid) );
 
