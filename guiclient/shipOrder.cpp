@@ -670,10 +670,12 @@ void shipOrder::sFillList()
 {
   if (_shipment->isValid())
   {
+    calcFreight();
+
     QString ordertype;
     XSqlQuery shipq;
     shipq.prepare("SELECT shiphead_order_id, shiphead_shipvia, shiphead_order_type,"
-		  "       shiphead_freight, shiphead_freight_curr_id,"
+                  "       shiphead_tracknum, shiphead_freight, shiphead_freight_curr_id,"
 		  "       COALESCE(shipchrg_custfreight, TRUE) AS custfreight,"
 		  "       COALESCE(shiphead_shipdate,CURRENT_DATE) AS effective "
 		  "FROM shiphead LEFT OUTER JOIN "
@@ -687,6 +689,7 @@ void shipOrder::sFillList()
       _order->setId(shipq.value("shiphead_order_id").toInt(),shipq.value("shiphead_order_type").toString());
       _shipVia->setText(shipq.value("shiphead_shipvia").toString());
       ordertype = shipq.value("shiphead_order_type").toString();
+      _tracknum->addItem(shipq.value("shiphead_tracknum").toString(), shipq.value("shiphead_tracknum").toString());
 
       if (shipq.value("custfreight").toBool())
       {
@@ -807,7 +810,6 @@ void shipOrder::sFillList()
     _shipment->clear();
     _shipment->setEnabled(false);
   }
-  calcFreight();
 }
 
 void shipOrder::sSelectToggled( bool yes )
@@ -871,7 +873,7 @@ void shipOrder::sFillTracknum()
   if (_order->isSO())
   {
     XSqlQuery shipdataQ;
-    _tracknum->clear();
+//    _tracknum->clear();
     shipdataQ.prepare( "SELECT -2, shipdatasum_cosmisc_tracknum "
 		       "FROM shipdatasum, cohead  "
 		       "WHERE ( (shipdatasum_cohead_number=cohead_number)"
@@ -884,8 +886,9 @@ void shipOrder::sFillTracknum()
     if (! _shipment->number().isEmpty())
       shipdataQ.bindValue(":shiphead_number", _shipment->number());
     shipdataQ.exec();
-    _tracknum->populate(shipdataQ);
-    if (shipdataQ.lastError().type() != QSqlError::NoError)
+    if (shipdataQ.first())
+      _tracknum->populate(shipdataQ);
+    else if (shipdataQ.lastError().type() != QSqlError::NoError)
     {
       systemError(this, shipdataQ.lastError().databaseText(), __FILE__, __LINE__);
       return;
@@ -904,6 +907,11 @@ void shipOrder::calcFreight()
     if(data.first())
     {
       _freight->setLocalValue(data.value("freight").toDouble());
+    }
+    else if (data.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, data.lastError().databaseText(), __FILE__, __LINE__);
+      return;
     }
   }
 }
