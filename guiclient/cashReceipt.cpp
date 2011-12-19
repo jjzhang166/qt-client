@@ -198,8 +198,8 @@ enum SetResponse cashReceipt::set(const ParameterList &pParams)
         return UndefinedError;
       }
 
-      _distDate->setDate(omfgThis->dbDate(), true);
       _applDate->setDate(omfgThis->dbDate(), true);
+      _distDate->setDate(omfgThis->dbDate(), true);
       _cust->setFocus();
     }
     else if (param.toString() == "edit")
