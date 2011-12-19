@@ -274,8 +274,8 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
           _disassembly->setChecked(true);
         _qty->setText(wo.value("wo_qtyord").toDouble() * _sense);
         _qtyReceived->setText(wo.value("wo_qtyrcv").toDouble());
-        _startDate->setDate(wo.value("wo_startdate").toDate());
         _dueDate->setDate(wo.value("wo_duedate").toDate());
+        _startDate->setDate(wo.value("wo_startdate").toDate());
         _productionNotes->setText(wo.value("wo_prodnotes").toString());
         _comments->setId(_woid);
         _documents->setId(_woid);
