@@ -149,7 +149,7 @@ void imageAssignment::sSave()
     if (_imageassid == -1)
     {
       XSqlQuery imageassid;
-      imageassid.prepare("SELECT NEXTVAL('imageass_imageass_id_seq') AS _imageass_id;");
+      imageassid.prepare("SELECT NEXTVAL('docass_docass_id_seq') AS _imageass_id;");
       imageassid.exec();
       if (imageassid.first())
         _imageassid = imageassid.value("_imageass_id").toInt();
