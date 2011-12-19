@@ -237,6 +237,8 @@ bool user::save()
   QList<GuiErrorCheck> errors;
   errors << GuiErrorCheck(! username.contains(QRegExp("[A-Za-z]")), _username,
                           tr("You must enter a valid Username before you can save this User."))
+         << GuiErrorCheck(_username->text().contains(QRegExp("\\s")), _username,
+                          tr("The Username cannot include any spaces."))
          << GuiErrorCheck(_passwd->text().isEmpty(), _passwd,
                           tr("You must enter a valid Password before you can save this User."))
          << GuiErrorCheck(_passwd->text() != _verify->text(), _passwd,
@@ -599,6 +601,21 @@ bool user::sPopulate()
       _username->setText(usrq.value("usr_username").toString().left(usrq.value("usr_username").toString().length() - (omfgThis->company().length()+1)));
     else
       _username->setText(usrq.value("usr_username"));
+
+    if (_crmacctid > 0)
+    {
+      if (_username->text().contains(QRegExp("\\s")))
+      {
+        QMessageBox::warning(this, tr("No Spaces Allowed"),
+                             tr("<p>Usernames cannot include space characters "
+                                "but must also match the associated CRM Account "
+                                "numbers. Please Cancel the User window and "
+                                "remove the spaces from the CRM Account number "
+                                "before trying to create this User."));
+        return false;
+      }
+      _username->setEnabled(false);
+    }
     _active->setChecked(usrq.value("usr_active").toBool());
     _properName->setText(usrq.value("usr_propername"));
     _initials->setText(usrq.value("usr_initials"));

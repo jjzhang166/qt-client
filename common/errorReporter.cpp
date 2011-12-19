@@ -1166,6 +1166,9 @@ QString ErrorReporterPrivate::text(QSqlError err, StatementType type)
 // TODO: find a better way to handle the lookups - binary search or hash table
 QString ErrorReporterPrivate::text(QString msg, StatementType type)
 {
+  if (msg.isEmpty())
+    return msg;
+
   if (_xtupleError.indexIn(msg) >= 0)
   {
     if (_xtupleError.cap(3).length() > 0)
@@ -1228,8 +1231,8 @@ bool ErrorReporter::error(QtMsgType type,       QWidget *parent,
   if (err.type() == QSqlError::NoError)
     return false;
 
-  return error(type, parent, title, reporter()->_private->text(err, Unknown),
-               QString(), file, line);
+  return error(type, parent, title, QString(),
+               reporter()->_private->text(err, Unknown), file, line);
 }
 
 bool ErrorReporter::error(QtMsgType type,       QWidget *parent,

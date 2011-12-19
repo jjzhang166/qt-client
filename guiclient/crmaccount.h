@@ -96,7 +96,7 @@ private:
     int         _NumberGen;
     bool        _canCreateUsers;
 
-    QSqlError   saveNoErrorCheck();
+    QSqlError   saveNoErrorCheck(bool pInTxn = false);
 
 };
 

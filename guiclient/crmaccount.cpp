@@ -488,7 +488,7 @@ void crmaccount::sSave()
     *(toDelete[i].idvar) = -1;
   } // for each thing to delete
 
-  QSqlError err = saveNoErrorCheck();
+  QSqlError err = saveNoErrorCheck(true);
   if (err.type() != QSqlError::NoError)
   {
     rollback.exec();
@@ -506,6 +506,7 @@ void crmaccount::sSave()
     return;
   }
 
+  omfgThis->sCrmAccountsUpdated(_crmacctId);
   omfgThis->sCustomersUpdated(-1, TRUE);
   omfgThis->sEmployeeUpdated(-1);
   omfgThis->sProspectsUpdated();
@@ -518,7 +519,7 @@ void crmaccount::sSave()
   close();
 }
 
-QSqlError crmaccount::saveNoErrorCheck()
+QSqlError crmaccount::saveNoErrorCheck(bool pInTxn)
 {
   XSqlQuery updateq;
   updateq.prepare("UPDATE crmacct "
@@ -580,7 +581,8 @@ QSqlError crmaccount::saveNoErrorCheck()
   updateq.exec();
   // no error check here. this method is specifically "saveNoErrorCheck()"
 
-  omfgThis->sCrmAccountsUpdated(_crmacctId);
+  if (! pInTxn)
+    omfgThis->sCrmAccountsUpdated(_crmacctId);
 
   return updateq.lastError();
 }
