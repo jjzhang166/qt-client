@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QCursor>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QSqlError>
 #include <QVariant>
 
@@ -40,10 +41,6 @@ reconcileBankaccount::reconcileBankaccount(QWidget* parent, const char* name, Qt
     connect(_update,	SIGNAL(clicked()),      this, SLOT(populate()));
     connect(_startDate, SIGNAL(newDate(QDate)), this, SLOT(sDateChanged()));
     connect(_endDate,   SIGNAL(newDate(QDate)), this, SLOT(sDateChanged()));
-    connect(_checks,    SIGNAL(currentItemChanged(XTreeWidgetItem*, XTreeWidgetItem*)), this, SLOT(sChecksCloseEdit(XTreeWidgetItem*,XTreeWidgetItem*)));
-    connect(_checks,    SIGNAL(itemClicked(XTreeWidgetItem*, int)), this, SLOT(sChecksOpenEdit(XTreeWidgetItem*, int)));
-    connect(_receipts,  SIGNAL(currentItemChanged(XTreeWidgetItem*, XTreeWidgetItem*)), this, SLOT(sReceiptsCloseEdit(XTreeWidgetItem*,XTreeWidgetItem*)));
-    connect(_receipts,  SIGNAL(itemClicked(XTreeWidgetItem*, int)), this, SLOT(sReceiptsOpenEdit(XTreeWidgetItem*, int)));
 
     _receipts->addColumn(tr("Cleared"),       _ynColumn * 2, Qt::AlignCenter );
     _receipts->addColumn(tr("Date"),            _dateColumn, Qt::AlignCenter );
@@ -393,9 +390,6 @@ void reconcileBankaccount::populate()
     parent->setText(8, amountNull ? tr("?????") : formatMoney(amount));
   }
 
-  disconnect(_receipts, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sReceiptsItemChanged(XTreeWidgetItem*, int)));
-  connect(_receipts, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sReceiptsItemChanged(XTreeWidgetItem*, int)));
-
   if(currid != -1)
     _receipts->setCurrentItem(_receipts->topLevelItem(currid));
   if(_receipts->currentItem())
@@ -412,9 +406,6 @@ void reconcileBankaccount::populate()
     return;
   }
   _checks->populate(chk, TRUE);
-
-  disconnect(_checks, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sChecksItemChanged(XTreeWidgetItem*, int)));
-  connect(_checks, SIGNAL(itemChanged(XTreeWidgetItem*, int)), this, SLOT(sChecksItemChanged(XTreeWidgetItem*, int)));
 
   if(currid != -1)
     _checks->setCurrentItem(_checks->topLevelItem(currid));
@@ -502,6 +493,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
     return;
 
   _receipts->scrollToItem(item);
+
   if(item->altId() == 9)
   {
     setto = item->text(0) == tr("No");
@@ -510,6 +502,21 @@ void reconcileBankaccount::sReceiptsToggleCleared()
       child = item->child(i);
       if(child->text(0) != (setto ? tr("Yes") : tr("No")))
       {
+        double rate = QLocale().toDouble(child->text(6));
+        double baseamount = QLocale().toDouble(child->text(7));
+        double amount = QLocale().toDouble(child->text(8));
+
+        if (_rateEdit->isChecked() && child->text(0) != tr("Yes"))
+        {
+          bool ok;
+          rate = QInputDialog::getDouble(this, tr("Currency Exchange Rate"),
+                                       tr("New Rate:"),
+                                       rate, 0, 100, 5, &ok);
+          if ( !ok )
+            return;
+          amount = rate * baseamount;
+        }
+
         q.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
         q.bindValue(":bankrecid", _bankrecid);
         q.bindValue(":sourceid", child->id());
@@ -519,8 +526,8 @@ void reconcileBankaccount::sReceiptsToggleCleared()
           q.bindValue(":source", "SL");
         else if(child->altId()==3)
           q.bindValue(":source", "AD");
-        q.bindValue(":currrate", child->text(6).toDouble());
-        q.bindValue(":amount", child->text(8).toDouble());
+        q.bindValue(":currrate", rate);
+        q.bindValue(":amount", amount);
         q.exec();
         if(q.first())
           child->setText(0, (q.value("cleared").toBool() ? tr("Yes") : tr("No") ));
@@ -535,6 +542,21 @@ void reconcileBankaccount::sReceiptsToggleCleared()
   }
   else
   {
+    double rate = QLocale().toDouble(item->text(6));
+    double baseamount = QLocale().toDouble(item->text(7));
+    double amount = QLocale().toDouble(item->text(8));
+
+    if (_rateEdit->isChecked() && item->text(0) != tr("Yes"))
+    {
+      bool ok;
+      rate = QInputDialog::getDouble(this, tr("Currency Exchange Rate"),
+                                   tr("New Rate:"),
+                                   rate, 0, 100, 5, &ok);
+      if ( !ok )
+        return;
+      amount = rate * baseamount;
+    }
+
     q.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
     q.bindValue(":bankrecid", _bankrecid);
     q.bindValue(":sourceid", item->id());
@@ -544,8 +566,8 @@ void reconcileBankaccount::sReceiptsToggleCleared()
       q.bindValue(":source", "SL");
     else if(item->altId()==3)
       q.bindValue(":source", "AD");
-    q.bindValue(":currrate", item->text(6).toDouble());
-    q.bindValue(":amount", item->text(8).toDouble());
+    q.bindValue(":currrate", rate);
+    q.bindValue(":amount", amount);
     q.exec();
     if(q.first())
     {
@@ -583,6 +605,21 @@ void reconcileBankaccount::sChecksToggleCleared()
 
   _checks->scrollToItem(item);
 
+  double rate = item->rawValue("doc_exchrate").toDouble();
+  double baseamount = item->rawValue("base_amount").toDouble();
+  double amount = item->rawValue("amount").toDouble();
+
+  if (_rateEdit->isChecked() && item->text(0) != tr("Yes"))
+  {
+    bool ok;
+    rate = QInputDialog::getDouble(this, tr("Currency Exchange Rate"),
+                                 tr("New Rate:"),
+                                 rate, 0, 100, 5, &ok);
+    if ( !ok )
+      return;
+    amount = rate * baseamount;
+  }
+
   q.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
   q.bindValue(":bankrecid", _bankrecid);
   q.bindValue(":sourceid", item->id());
@@ -592,8 +629,8 @@ void reconcileBankaccount::sChecksToggleCleared()
     q.bindValue(":source", "SL");
   else if(item->altId()==3)
     q.bindValue(":source", "AD");
-  q.bindValue(":currrate", item->text(6).toDouble());
-  q.bindValue(":amount", item->text(8).toDouble());
+  q.bindValue(":currrate", rate);
+  q.bindValue(":amount", amount);
   q.exec();
   if(q.first())
     item->setText(0, (q.value("cleared").toBool() ? tr("Yes") : tr("No") ));
@@ -757,62 +794,3 @@ void reconcileBankaccount::sDateChanged()
 	_datesAreOK = true;
   }
 }
-
-void reconcileBankaccount::sChecksOpenEdit(XTreeWidgetItem *item, const int col)
-{
-  if (col==6)
-  {
-    _checks->openPersistentEditor(item,col);
-    _checks->editItem(item,col);
-  }
-}
-
-void reconcileBankaccount::sChecksCloseEdit(XTreeWidgetItem * /*current*/, XTreeWidgetItem *previous)
-{
-  _checks->closePersistentEditor(previous,6);
-}
-
-void reconcileBankaccount::sChecksItemChanged(XTreeWidgetItem *item, const int col)
-{
-  // Only positive numbers allowed
-  if (col==6)
-  {
-    if (item->data(col,Qt::EditRole).toDouble() < 0)
-      item->setData(col,Qt::EditRole,0);
-    else
-    {
-      item->setData(col,Qt::EditRole,formatUOMRatio(item->data(col,Qt::EditRole).toDouble()));
-      item->setText(8,formatMoney(item->text(col).toDouble() * item->rawValue("base_amount").toDouble()));
-    }
-  }
-}
-
-void reconcileBankaccount::sReceiptsOpenEdit(XTreeWidgetItem *item, const int col)
-{
-  if (col==6)
-  {
-    _receipts->openPersistentEditor(item,col);
-    _receipts->editItem(item,col);
-  }
-}
-
-void reconcileBankaccount::sReceiptsCloseEdit(XTreeWidgetItem * /*current*/, XTreeWidgetItem *previous)
-{
-  _receipts->closePersistentEditor(previous,6);
-}
-
-void reconcileBankaccount::sReceiptsItemChanged(XTreeWidgetItem *item, const int col)
-{
-  // Only positive numbers allowed
-  if (col==6)
-  {
-    if (item->data(col,Qt::EditRole).toDouble() < 0)
-      item->setData(col,Qt::EditRole,0);
-    else
-    {
-      item->setData(col,Qt::EditRole,formatUOMRatio(item->data(col,Qt::EditRole).toDouble()));
-      item->setData(8,Qt::EditRole,formatMoney(item->data(col,Qt::EditRole).toDouble() * item->data(7,Qt::EditRole).toDouble()));
-    }
-  }
-}
-
