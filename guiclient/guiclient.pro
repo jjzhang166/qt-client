@@ -436,6 +436,7 @@ FORMS =   absoluteCalendarItem.ui               \
           reconcileBankaccount.ui               \
           registration.ui                       \
           registrationKey.ui                    \
+          registrationKeyDialog.ui              \
           rejectCode.ui                         \
           rejectCodes.ui                        \
           relativeCalendarItem.ui               \
@@ -732,7 +733,7 @@ HEADERS = ../common/format.h                    \
           crmaccountMergeResultPage.h           \
           crmaccounts.h                         \
           currencies.h                          \
-		  currenciesDialog.h					\
+          currenciesDialog.h                    \
           currency.h                            \
           currencyConversion.h                  \
           currencyConversions.h                 \
@@ -1011,6 +1012,7 @@ HEADERS = ../common/format.h                    \
           reconcileBankaccount.h                \
           registration.h                        \
           registrationKey.h                     \
+          registrationKeyDialog.h               \
           rejectCode.h                          \
           rejectCodes.h                         \
           relativeCalendarItem.h                \
@@ -1329,7 +1331,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           crmaccountMergeResultPage.cpp         \
           crmaccounts.cpp                       \
           currencies.cpp                        \
-		  currenciesDialog.cpp					\
+          currenciesDialog.cpp                  \
           currency.cpp                          \
           currencyConversion.cpp                \
           currencyConversions.cpp               \
@@ -1607,6 +1609,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           reconcileBankaccount.cpp              \
           registration.cpp                      \
           registrationKey.cpp                   \
+          registrationKeyDialog.cpp             \
           rejectCode.cpp                        \
           rejectCodes.cpp                       \
           relativeCalendarItem.cpp              \

@@ -108,6 +108,7 @@
 
 #include "login2.h"
 #include "currenciesDialog.h"
+#include "registrationKeyDialog.h"
 #include "guiclient.h"
 #include "version.h"
 #include "metrics.h"
@@ -361,6 +362,7 @@ int main(int argc, char *argv[])
                 " WHERE(metric_name = 'RegistrationKey');");
     bool checkPass = true;
     bool checkLock = false;
+    bool expired   = false;
     QString checkPassReason;
     QString rkey = "";
     if(metric.first())
@@ -378,11 +380,14 @@ int main(int argc, char *argv[])
           if(daysTo > 30)
           {
             checkLock = true;
+            expired = true;
             checkPassReason = QObject::tr("<p>Your xTuple license expired over 30 days ago, and this software will no longer function. Please contact xTuple immediately to reinstate your software.");
           }
           else
             checkPassReason = QObject::tr("<p>Attention:  Your xTuple license has expired, and in %1 days this software will cease to function.  Please make arrangements for immediate payment").arg(30 - daysTo);
         }
+        else
+          expired = true;
       }
       else if(pkey.users() != 0 && (pkey.users() < cnt || (!xtweb && (pkey.users() * 2 < tot))))
       {
@@ -408,7 +413,16 @@ int main(int argc, char *argv[])
     if(!checkPass)
     {
       _splash->hide();
-      if(checkLock)
+      if (expired)
+      {
+        registrationKeyDialog newdlg(0, "", TRUE);
+        if(newdlg.exec() == -1)
+        {
+          QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
+          return 0;
+        }
+      }
+      else if(checkLock)
       {
         QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
         if(!forced)
