@@ -717,7 +717,7 @@ void salesOrderItem::clear()
   _priceUOM->clear();
   _netUnitPrice->clear();
   _extendedPrice->clear();
-  _scheduledDate->clear();
+//  _scheduledDate->clear();
   _promisedDate->clear();
   _unitCost->clear();
   _listPrice->clear();
