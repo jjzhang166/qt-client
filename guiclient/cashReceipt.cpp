@@ -595,14 +595,15 @@ bool cashReceipt::save(bool partial)
 
       _save->setEnabled(false);
       int ccpayid = -1;
-      QString ordernum = _docNumber->text().isEmpty() ?
+      QString neworder = _docNumber->text().isEmpty() ?
 	  	      QString::number(_cashrcptid) : _docNumber->text();
+      QString reforder = neworder; // 2 sep variables because they're passed by ref
       int returnVal = cardproc->charge(_cc->id(),
 				     _CCCVV->text().isEmpty() ? -1 : _CCCVV->text().toInt(),
 				     _received->localValue(),
 				     0, false, 0, 0,
 				     _received->id(),
-				     ordernum, ordernum, ccpayid,
+				     neworder, reforder, ccpayid,
 				     QString("cashrcpt"), _cashrcptid);
       if (returnVal < 0)
         QMessageBox::critical(this, tr("Credit Card Processing Error"),
