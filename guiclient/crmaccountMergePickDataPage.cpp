@@ -29,7 +29,7 @@ static struct {
   QString  mergecol;   // column in the merge-selection table (e.g. crmacctsel_mrg_crmacct_active)
   bool     multiple;   // merge can combine data from multiple records for this column
 } mergeUiDesc[] = {
-  { QT_TRANSLATE_NOOP("CrmaccountMergePickDataPage", "Number"),  _orderColumn, Qt::AlignLeft,   "crmacct_number", "",                                      false },
+  { QT_TRANSLATE_NOOP("CrmaccountMergePickDataPage", "Number"),  _orderColumn, Qt::AlignLeft,   "crmacct_number", "crmacctsel_mrg_crmacct_number",         false },
   { QT_TRANSLATE_NOOP("CrmaccountMergePickDataPage", "Name"),              -1, Qt::AlignLeft,   "crmacct_name",   "crmacctsel_mrg_crmacct_name",           false },
   { QT_TRANSLATE_NOOP("CrmaccountMergePickDataPage", "Active"),     _ynColumn, Qt::AlignCenter, "crmacct_active", "crmacctsel_mrg_crmacct_active",         false },
   { QT_TRANSLATE_NOOP("CrmaccountMergePickDataPage", "Type"),              -1, Qt::AlignLeft,   "crmacct_type",   "crmacctsel_mrg_crmacct_type",           false },
