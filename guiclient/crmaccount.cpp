@@ -720,6 +720,28 @@ void crmaccount::sPopulate()
                                 tr("Error reading the CRM Account"),
                                 getq, __FILE__, __LINE__))
     return;
+  else
+  {
+    _number->clear();
+    _name->clear();
+
+    _NumberGen    = -1;
+    _crmacctId    = -1;
+    _competitorId = -1;
+    _custId       = -1;
+    _empId        = -1;
+    _partnerId    = -1;
+    _prospectId   = -1;
+    _salesrepId   = -1;
+    _taxauthId    = -1;
+    _username     = "";
+    _vendId       = -1;
+    _comments->setId(-1);
+    _documents->setId(-1);
+    _canCreateUsers = false;
+
+    sHandleChildButtons();
+  }
 
   sGetCharacteristics();
   sPopulateRegistrations();

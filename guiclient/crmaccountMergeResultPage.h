@@ -28,6 +28,9 @@ class CrmaccountMergeResultPage : public QWizardPage, public Ui::crmaccountMerge
     virtual int  nextId() const;
     virtual bool validatePage();
 
+  public slots:
+    virtual void clearIfPurged();
+
   protected:
     CrmaccountMergeResultPagePrivate *_data;
 };

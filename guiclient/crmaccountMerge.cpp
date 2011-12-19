@@ -53,15 +53,24 @@ crmaccountMerge::crmaccountMerge(QWidget* parent, const char* name, Qt::WFlags f
 #endif
   }
 
-  setPage(Page_PickTask,        new CrmaccountMergePickTaskPage);
-  setPage(Page_PickAccounts,    new CrmaccountMergePickAccountsPage);
-  setPage(Page_PickData,        new CrmaccountMergePickDataPage);
-  setPage(Page_Result,          new CrmaccountMergeResultPage);
-  setPage(Page_Purge,           new CrmaccountMergePurgePage);
+  QWizardPage *picktaskpage = new CrmaccountMergePickTaskPage(this);
+  QWizardPage *pickacctpage = new CrmaccountMergePickAccountsPage(this);
+  QWizardPage *pickdatapage = new CrmaccountMergePickDataPage(this);
+  QWizardPage *mergerespage = new CrmaccountMergeResultPage(this);
+  QWizardPage *mergeprgpage = new CrmaccountMergePurgePage(this);
+
+  setPage(Page_PickTask,        picktaskpage);
+  setPage(Page_PickAccounts,    pickacctpage);
+  setPage(Page_PickData,        pickdatapage);
+  setPage(Page_Result,          mergerespage);
+  setPage(Page_Purge,           mergeprgpage);
 
   setButtonText(CancelButton, tr("Close"));
 
   setDefaultProperty("XComboBox", "text", SIGNAL(currentIndexChanged(QString)));
+
+  connect(mergeprgpage, SIGNAL(mergeSetChanged()), picktaskpage, SLOT(sUpdateComboBoxes()));
+  connect(mergeprgpage, SIGNAL(mergeSetChanged()), mergerespage, SLOT(clearIfPurged()));
 }
 
 crmaccountMerge::~crmaccountMerge()

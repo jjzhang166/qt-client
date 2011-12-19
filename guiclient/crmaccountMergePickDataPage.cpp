@@ -93,9 +93,11 @@ CrmaccountMergePickDataPage::CrmaccountMergePickDataPage(QWidget *parent)
 
   connect(_deselect,             SIGNAL(clicked()), this, SLOT(sDeselect()));
   connect(_select,               SIGNAL(clicked()), this, SLOT(sSelect()));
+  connect(_sources, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+                          this, SLOT(sSelect(QTreeWidgetItem*, int)));
   connect(_sources, SIGNAL(itemSelectionChanged()), this, SLOT(sHandleButtons()));
   connect(_sources, SIGNAL(populateMenu(QMenu *, XTreeWidgetItem *)),
-                          this, SLOT(sPopulateMenu(QMenu *, XTreeWidgetItem *)));
+               this, SLOT(sPopulateMenu(QMenu *, XTreeWidgetItem *)));
 
   _selectedColorIndicator->setStyleSheet(QString("* { color: %1; }")
                                          .arg(namedColor("emphasis").name()));
@@ -177,7 +179,6 @@ bool CrmaccountMergePickDataPage::validatePage()
 
 void CrmaccountMergePickDataPage::sDeselect()
 {
-  QColor invalidColor;
   MetaSQLQuery srcm("UPDATE crmacctsel"
                     "   SET <? literal('colname') ?>=<? value('value') ?>"
                     " WHERE (crmacctsel_src_crmacct_id=<? value('srcid') ?>);");
@@ -289,9 +290,12 @@ void CrmaccountMergePickDataPage::sPopulateMenu(QMenu *pMenu, XTreeWidgetItem *p
                        _privileges->check("MaintainAllCRMAccounts"));
 }
 
-void CrmaccountMergePickDataPage::sSelect()
+bool CrmaccountMergePickDataPage::sSelect(QTreeWidgetItem *pitem, int col, bool clearSelection)
 {
-  QColor invalidColor;
+  XTreeWidgetItem *item = dynamic_cast<XTreeWidgetItem*>(pitem);
+  if (! item)
+    return false;
+
   MetaSQLQuery srcm("UPDATE crmacctsel"
                     "   SET <? literal('colname') ?>=<? value('srcval') ?>"
                     " WHERE (crmacctsel_src_crmacct_id=<? value('srcid') ?>);");
@@ -299,30 +303,44 @@ void CrmaccountMergePickDataPage::sSelect()
                      "   SET <? literal('colname') ?>=<? value('destval') ?>"
                      " WHERE ((crmacctsel_dest_crmacct_id=<? value('destid') ?>)"
                      "    AND (crmacctsel_src_crmacct_id!=<? value('srcid') ?>));");
+  ParameterList params;
+  params.append("colname", mergeUiDesc[col].mergecol);
+  params.append("srcval",  QVariant(true));
+  params.append("srcid",   item->id());
+  params.append("destval", QVariant(false));
+  params.append("destid",  item->altId());
 
+  XSqlQuery srcq = srcm.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Updating Merge Sources"),
+                           srcq, __FILE__, __LINE__))
+    return false;
+
+  if (! mergeUiDesc[col].multiple)
+  {
+    XSqlQuery destq = destm.toQuery(params);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Updating Merge Destination"),
+                             destq, __FILE__, __LINE__))
+      return false;
+  }
+
+  if (clearSelection)
+  {
+    _sources->selectionModel()->clear();
+    sFillList();
+  }
+
+  return true;
+}
+
+void CrmaccountMergePickDataPage::sSelect()
+{
   foreach(QModelIndex cell, _sources->selectionModel()->selectedIndexes())
   {
     if (mergeUiDesc[cell.column()].mergecol.isEmpty())
       continue;
-
-    ParameterList params;
-    params.append("colname", mergeUiDesc[cell.column()].mergecol);
-    params.append("srcval",  QVariant(true));
-    params.append("srcid",   _sources->topLevelItem(cell.row())->id());
-    params.append("destval", QVariant(false));
-    params.append("destid",  _sources->topLevelItem(cell.row())->altId());
-
-    XSqlQuery srcq = srcm.toQuery(params);
-    ErrorReporter::error(QtCriticalMsg, this, tr("Updating Merge Sources"),
-                         srcq, __FILE__, __LINE__);
-
-    if (! mergeUiDesc[cell.column()].multiple)
-    {
-      XSqlQuery destq = destm.toQuery(params);
-      ErrorReporter::error(QtCriticalMsg, this, tr("Updating Merge Destination"),
-                           destq, __FILE__, __LINE__);
-    }
+    sSelect(_sources->topLevelItem(cell.row()), cell.column(), false);
   }
+
   _sources->selectionModel()->clear();
 
   sFillList();

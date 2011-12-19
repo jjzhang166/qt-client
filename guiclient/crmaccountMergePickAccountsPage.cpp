@@ -36,14 +36,14 @@ class CrmaccountMergePickAccountsPagePrivate
                              errmsg, __FILE__, __LINE__);
     }
 
-    QList<int>  _ids_cache;
     QWidget    *_parent;
     QString     _mqlstr;
     int         _targetid_cache;
 };
 
 CrmaccountMergePickAccountsPage::CrmaccountMergePickAccountsPage(QWidget *parent)
-  : QWizardPage(parent)
+  : QWizardPage(parent),
+    _data(0)
 {
   setupUi(this);
 
@@ -87,8 +87,6 @@ CrmaccountMergePickAccountsPage::CrmaccountMergePickAccountsPage(QWidget *parent
   _filter->append(tr("Postal Code Pattern"),    "addr_postalcode_pattern",ParameterWidget::Text);
   _filter->append(tr("Country Pattern"),        "addr_country_pattern",   ParameterWidget::Text);
   _filter->applyDefaultFilterSet();
-
-  registerField("_target", _target, "text", "currentIndexChanged(QString)");
 }
 
 CrmaccountMergePickAccountsPage::~CrmaccountMergePickAccountsPage()
@@ -100,17 +98,11 @@ CrmaccountMergePickAccountsPage::~CrmaccountMergePickAccountsPage()
 void CrmaccountMergePickAccountsPage::cleanupPage()
 {
   _data->_targetid_cache = _target->id();
-  _data->_ids_cache.clear();
-  for (int i = 0; i < _target->count(); i++)
-    _data->_ids_cache.append(_target->id(i));
 }
 
 void CrmaccountMergePickAccountsPage::initializePage()
 {
   _data->_targetid_cache = _target->id();
-  for (int i = 0; i < _data->_ids_cache.size(); i++)
-    _target->append(_data->_ids_cache[i],       // sFillList will set real codes
-                    QString::number(_data->_ids_cache[i]));
   sFillList();
 }
 
@@ -126,31 +118,38 @@ bool CrmaccountMergePickAccountsPage::validatePage()
 
   rollback.prepare("ROLLBACK;");
 
-  XSqlQuery delq;
-  delq.prepare("DELETE FROM crmacctsel"
-               " WHERE crmacctsel_dest_crmacct_id=:destid"
-               "   AND crmacctsel_src_crmacct_id=:srcid;");
-  for (int n = 0; n < _data->_ids_cache.size(); n++)
+  MetaSQLQuery delm("DELETE FROM crmacctsel"
+                    " WHERE (crmacctsel_dest_crmacct_id=<? value('destid') ?>)"
+                    " <? if exists('idlist') ?>"
+                    "    AND crmacctsel_src_crmacct_id NOT IN (-1"
+                    "       <? foreach('idlist') ?>"
+                    "       , <? value('idlist') ?>"
+                    "       <? endforeach ?>"
+                    ")"
+                    " <? endif ?>"
+                    ";");
+  ParameterList delp;
+  delp.append("destid", _data->_targetid_cache);
+  QStringList idlist;
+  foreach (XTreeWidgetItem *item, _sources->selectedItems())
+    idlist << QString::number(item->id());
+  if (idlist.size())
+    delp.append("idlist", idlist.join(", "));
+
+  XSqlQuery delq = delm.toQuery(delp);
+  if (delq.lastError().type() != QSqlError::NoError)
   {
-    if (_target->id(_data->_ids_cache[n]) == -1) // source id
-    {
-      delq.bindValue(":destid", _data->_targetid_cache);
-      delq.bindValue(":srcid", _data->_ids_cache[n]);
-      delq.exec();
-      if (delq.lastError().type() != QSqlError::NoError)
-      {
-        rollback.exec();
-        ErrorReporter::error(QtCriticalMsg, this, tr("Clearing Old Selections"),
-                             delq, __FILE__, __LINE__);
-        return false;
-      }
-    }
+    rollback.exec();
+    ErrorReporter::error(QtCriticalMsg, this, tr("Clearing Old Selections"),
+                         delq, __FILE__, __LINE__);
+    return false;
   }
 
   if (_target->id() != _data->_targetid_cache)
   {
     XSqlQuery updq;
     updq.prepare("UPDATE crmacctsel SET crmacctsel_dest_crmacct_id=:new,"
+                 " crmacctsel_mrg_crmacct_number         = (crmacctsel_src_crmacct_id=:new),"
                  " crmacctsel_mrg_crmacct_active         = (crmacctsel_src_crmacct_id=:new),"
                  " crmacctsel_mrg_crmacct_cntct_id_1     = (crmacctsel_src_crmacct_id=:new),"
                  " crmacctsel_mrg_crmacct_cntct_id_2     = (crmacctsel_src_crmacct_id=:new),"
@@ -181,62 +180,70 @@ bool CrmaccountMergePickAccountsPage::validatePage()
     }
   }
 
-  QStringList addme;
-  for (int n = 0; n < _target->count(); n++)
-    if (! _data->_ids_cache.contains(_target->id(n)))
-      addme << QString::number(_target->id(n));
-  if (addme.size() > 0)
+  MetaSQLQuery insm("INSERT INTO crmacctsel ("
+                    "  crmacctsel_src_crmacct_id, crmacctsel_dest_crmacct_id,"
+                    "  crmacctsel_mrg_crmacct_number,"
+                    "  crmacctsel_mrg_crmacct_active,"
+                    "  crmacctsel_mrg_crmacct_cntct_id_1,"
+                    "  crmacctsel_mrg_crmacct_cntct_id_2,"
+                    "  crmacctsel_mrg_crmacct_competitor_id,"
+                    "  crmacctsel_mrg_crmacct_cust_id,"
+                    "  crmacctsel_mrg_crmacct_emp_id,"
+                    "  crmacctsel_mrg_crmacct_name,"
+                    "  crmacctsel_mrg_crmacct_notes,"
+                    "  crmacctsel_mrg_crmacct_owner_username,"
+                    "  crmacctsel_mrg_crmacct_parent_id,"
+                    "  crmacctsel_mrg_crmacct_partner_id,"
+                    "  crmacctsel_mrg_crmacct_prospect_id,"
+                    "  crmacctsel_mrg_crmacct_salesrep_id,"
+                    "  crmacctsel_mrg_crmacct_taxauth_id,"
+                    "  crmacctsel_mrg_crmacct_type,"
+                    "  crmacctsel_mrg_crmacct_usr_username,"
+                    "  crmacctsel_mrg_crmacct_vend_id"
+                    ") SELECT <? value('srcid') ?>, <? value('destid') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>,"
+                    "         <? value('istarget') ?>"
+                    "   WHERE <? value('srcid') ?> NOT IN"
+                    "         (SELECT crmacctsel_src_crmacct_id"
+                    "            FROM crmacctsel);");
+  foreach (XTreeWidgetItem *item, _sources->selectedItems())
   {
-    MetaSQLQuery mql("INSERT INTO crmacctsel VALUES ("
-                     " <? value('srcid') ?>,"
-                     " <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>,"
-                     " <? value('srcid') ?> = <? value('destid') ?>"
-                     ");");
-    ParameterList params;
-    params.append("destid", _target->id());
-
-    QString srcidstr("srcid");
-
-    for (int i = 0; i < addme.size(); i++)
+    ParameterList insp;
+    insp.append("destid", _target->id());
+    insp.append("srcid",  item->id());
+    insp.append("istarget", QVariant(_target->id() == item->id()));
+    XSqlQuery insq = insm.toQuery(insp);
+    if (insq.lastError().type() != QSqlError::NoError)
     {
-      params.remove(srcidstr);
-      params.append(srcidstr, addme[i]);
-      XSqlQuery insq = mql.toQuery(params);
-      if (insq.lastError().type() != QSqlError::NoError)
-      {
-        rollback.exec();
-        ErrorReporter::error(QtCriticalMsg, this, tr("Inserting New Selections"),
-                             insq, __FILE__, __LINE__);
-        return false;
-      }
+      rollback.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Inserting New Selections"),
+                           insq, __FILE__, __LINE__);
+      return false;
     }
   }
 
   XSqlQuery commit("COMMIT;");
 
   _data->_targetid_cache = _target->id();
-  _data->_ids_cache.clear();
-  for (int i = 0; i < _target->count(); i++)
-    _data->_ids_cache.append(_target->id(i));
 
   wizard()->page(crmaccountMerge::Page_PickTask)->initializePage();
-  setField("_existingMerge", field("_target"));
+  setField("_existingMerge", _target->currentText());
 
   return true;
 }

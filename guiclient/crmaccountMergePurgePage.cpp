@@ -91,10 +91,10 @@ void CrmaccountMergePurgePage::sDelete()
     delq.prepare("SELECT purgecrmacctmerge(:destcrmacctid) AS RESULT;");
     delq.bindValue(":destcrmacctid", item->id());
     delq.exec();
-    if (ErrorReporter::error(QtCriticalMsg, this, tr("Purge Error"),
-                             delq, __FILE__, __LINE__))
-      return;
+    ErrorReporter::error(QtCriticalMsg, this, tr("Purge Error"),
+                         delq, __FILE__, __LINE__);
   }
+  emit mergeSetChanged();
   sFillList();
 }
 
@@ -116,21 +116,21 @@ void CrmaccountMergePurgePage::sDeleteAll()
     delq.prepare("SELECT purgecrmacctmerge(:destcrmacctid) AS RESULT;");
     delq.bindValue(":destcrmacctid", item->id());
     delq.exec();
-    if (ErrorReporter::error(QtCriticalMsg, this, tr("Purge Error"),
-                             delq, __FILE__, __LINE__))
-      return;
+    ErrorReporter::error(QtCriticalMsg, this, tr("Purge Error"),
+                         delq, __FILE__, __LINE__);
   }
+  emit mergeSetChanged();
   sFillList();
 }
 
 void CrmaccountMergePurgePage::sFillList()
 {
-  qDebug("CrmaccountMergePurgePage::sFillList() entered");
   ParameterList params;
-  params.append("merged",      tr("Merge complete"));
-  params.append("mergedKey",   _data->_mergedKey);
-  params.append("selected",    tr("Data selection in progress"));
-  params.append("selectedKey", _data->_selectedKey);
+  params.append("merged",       tr("Obsolete - will be deleted by purge"));
+  params.append("mergedParent", tr("Merge complete"));
+  params.append("mergedKey",    _data->_mergedKey);
+  params.append("selected",     tr("Data selection in progress"));
+  params.append("selectedKey",  _data->_selectedKey);
 
   MetaSQLQuery mql(_data->_mqlstr);
   XSqlQuery getq = mql.toQuery(params);

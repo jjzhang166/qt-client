@@ -17,7 +17,7 @@
    <string>Purge Completed Merges</string>
   </property>
   <property name="subTitle">
-   <string>The following CRM Accounts have been merged. The Delete Selected and Delete All buttons will remove the obsolete CRM Accounts and the data required to undo the merge. You should do this as soon as you have confirmed that the merge was successful.</string>
+   <string>The following CRM Accounts have been merged. Pick a parent account and click Purge Selected to remove the obsolete CRM Accounts and merge data. You should do this as soon as you have confirmed that the merge was successful.</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -36,7 +36,7 @@
       <bool>false</bool>
      </property>
      <property name="text">
-      <string>Delete Selected</string>
+      <string>Purge</string>
      </property>
     </widget>
    </item>
@@ -46,7 +46,7 @@
       <bool>false</bool>
      </property>
      <property name="text">
-      <string>Delete All</string>
+      <string>Purge All</string>
      </property>
     </widget>
    </item>

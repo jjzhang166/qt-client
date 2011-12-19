@@ -110,6 +110,9 @@ void CrmaccountMergeResultPage::initializePage()
                            tr("Error Getting Obsolete CRM Accounts"),
                            srcq, __FILE__, __LINE__))
     return;
+
+  _keep->setChecked(true);
+  _undo->setEnabled(_data->_crmaccount->id() > 0);
 }
 
 int CrmaccountMergeResultPage::nextId() const
@@ -118,8 +121,7 @@ int CrmaccountMergeResultPage::nextId() const
 
   if (_keep->isChecked())
     nextpage = crmaccountMerge::Page_Purge;
-  else if (_undo->isChecked())
-    nextpage = crmaccountMerge::Page_PickAccounts;
+  // else if (_undo->isChecked()) then handled in validatepage() below
   else
     qWarning("BUG: CrmaccountMergeResultPage couldn't figure out what the "
              "next wizard page should be.");
@@ -152,9 +154,32 @@ bool CrmaccountMergeResultPage::validatePage()
                                   undoq, __FILE__, __LINE__))
       return false;
     omfgThis->sCrmAccountsUpdated(_data->_crmaccount->id());
-    _keep->setChecked(true);
-    _undo->setEnabled(false);
+    wizard()->restart();
   }
 
   return true;
+}
+
+void CrmaccountMergeResultPage::clearIfPurged()
+{
+  XSqlQuery getq;
+  getq.prepare("SELECT EXISTS("
+               "  SELECT 1 FROM mrgundo"
+               "   WHERE ((mrgundo_base_table='crmacct')"
+               "      AND (mrgundo_base_id=:crmacctid))) AS stillthere;");
+  getq.bindValue(":crmacctid", _data->_crmaccount->id());
+  getq.exec();
+  if (getq.first())
+  {
+    if (! getq.value("stillthere").toBool())
+    {
+      _data->_crmaccount->setId(-1);
+      _source->clear();
+      _keep->setChecked(true);
+      _undo->setEnabled(false);
+    }
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Undo Status"),
+                                getq, __FILE__, __LINE__))
+    return;
 }

@@ -8,6 +8,8 @@
  * to be bound by its terms.
  */
 
+#include <QMessageBox>
+
 #include <metasql.h>
 #include <mqlutil.h>
 
@@ -23,7 +25,7 @@ CrmaccountMergePickTaskPage::CrmaccountMergePickTaskPage(QWidget *parent)
   connect(_continue,         SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_existingMerge,      SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
   connect(_revert,           SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
-  connect(_startPurge,       SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
+  connect(_purge,            SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(omfgThis,SIGNAL(crmAccountsUpdated(int)), this, SLOT(sUpdateComboBoxes()));
 
   registerField("_completedMerge", _completedMerge, "text", "currentIndexChanged(QString)");
@@ -45,21 +47,40 @@ bool CrmaccountMergePickTaskPage::isComplete() const
 
 int CrmaccountMergePickTaskPage::nextId() const
 {
-  if (_continue->isChecked())    return crmaccountMerge::Page_PickData;
-  else if (_revert->isChecked()) return crmaccountMerge::Page_Result;
-  else if (_startPurge->isChecked())     return crmaccountMerge::Page_Purge;
+  int result = -1;
 
-  return crmaccountMerge::Page_PickAccounts;
+  if (_start->isChecked())
+    result = crmaccountMerge::Page_PickAccounts;
+  else if (_continue->isChecked())
+    result = crmaccountMerge::Page_PickData;
+  else if (_revert->isChecked())
+    result = crmaccountMerge::Page_Result;
+  else if (_purge->isChecked())
+    result = crmaccountMerge::Page_Purge;
+
+  if (result == -1)
+  {
+    QMessageBox::warning(0, tr("Where next?"),
+                         tr("Try selecting one of the tasks before going on."));
+    result = crmaccountMerge::Page_PickTask;
+  }
+
+  return result;
 }
 
 void CrmaccountMergePickTaskPage::sHandleButtons()
 {
   _continue->setEnabled(_existingMerge->count());
   _revert->setEnabled(_completedMerge->count());
-  _startPurge->setEnabled(_completedMerge->count());
+  _purge->setEnabled(_existingMerge->count() || _completedMerge->count());
 
   _completedMerge->setEnabled(_revert->isEnabled());
   _existingMerge->setEnabled(_continue->isEnabled());
+
+  if ((!_continue->isEnabled() && _continue->isChecked()) ||
+      (!_revert->isEnabled()   && _revert->isChecked())   ||
+      (!_purge->isEnabled()    && _purge->isChecked()))
+    _start->setChecked(true);
 
   emit completeChanged();
 }

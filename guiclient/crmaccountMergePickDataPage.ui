@@ -17,7 +17,7 @@
    <string>Pick the Details to Add to the Target</string>
   </property>
   <property name="subTitle">
-   <string>Click in the table below to indicate what you want in the final merged CRM Account. Then click Select or Deselect to record your choices. Selected values will have a different color. Continue when there is one value highlighted in each column. You can select more than one Notes. You may choose either one Customer or one Prospect, but not one of each.</string>
+   <string>Double-click in the table below to indicate what you want in the final merged CRM Account. Alternatively, click once on values in the table then click Select or Deselect to record your choices. Continue when there is one value highlighted in each column. You can select more than one Notes. You may choose either one Customer or one Prospect, but not one of each.</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">

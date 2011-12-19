@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QRadioButton" name="_startNew">
+    <widget class="QRadioButton" name="_start">
      <property name="text">
       <string>Start a new merge</string>
      </property>
@@ -51,7 +51,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QRadioButton" name="_startPurge">
+    <widget class="QRadioButton" name="_purge">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -110,12 +110,12 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>_startNew</tabstop>
+  <tabstop>_start</tabstop>
   <tabstop>_continue</tabstop>
   <tabstop>_existingMerge</tabstop>
   <tabstop>_revert</tabstop>
   <tabstop>_completedMerge</tabstop>
-  <tabstop>_startPurge</tabstop>
+  <tabstop>_purge</tabstop>
  </tabstops>
  <resources/>
  <connections/>

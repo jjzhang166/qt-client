@@ -36,6 +36,7 @@ class CrmaccountMergePickDataPage : public QWizardPage, public Ui::crmaccountMer
     virtual void sHandleButtons();
     virtual void sPopulateMenu(QMenu *pMenu, XTreeWidgetItem *);
     virtual void sSelect();
+    virtual bool sSelect(QTreeWidgetItem *pitem, int col, bool clearSelection = true);
     virtual void sView();
 
   protected:
