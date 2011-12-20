@@ -273,8 +273,9 @@ void glSeries::sDelete()
 
 bool glSeries::update()
 {
-  if (_mode != cPostStandardJournal)
-  {
+// Save changes even when posting std journal
+//  if (_mode != cPostStandardJournal)
+//  {
     if(!_date->isValid())
     {
       QMessageBox::information( this, tr("Cannot Post G/L Series"),
@@ -310,7 +311,7 @@ bool glSeries::update()
       systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
-  }
+//  }
 
   q.prepare("SELECT SUM(glseries_amount) AS result "
             "  FROM glseries "
