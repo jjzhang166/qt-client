@@ -35,6 +35,9 @@
 
 #include "splashconst.h"
 
+/* TODO: rename _nonxTupleDB to _isxTupleDB internally and
+         set it based on db contents, not command line parameter input
+ */
 login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
@@ -336,7 +339,7 @@ void login2::sLogin()
   if(!_nonxTupleDB)
   {
     XSqlQuery login( "SELECT login() AS result,"
-                     "       getEffectiveXtUser() AS user;" );
+                     "       CURRENT_USER AS user;" );
     setCursor(QCursor(Qt::ArrowCursor));
     if (login.first())
     {
@@ -352,6 +355,13 @@ void login2::sLogin()
       _user = login.value("user").toString();
       _databaseURL = databaseURL;
       updateRecentOptions();
+
+      if (login.exec("SELECT getEffectiveXtUser() AS user;") &&
+          login.first() &&
+          ! login.value("user").toString().isEmpty())
+        _user = login.value("user").toString();
+      // no error check - older databases don't have getEffectiveXtUser
+
       accept();
     }
     else if (login.lastError().type() != QSqlError::NoError)
