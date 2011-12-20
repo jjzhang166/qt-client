@@ -2690,6 +2690,7 @@ void salesOrder::sFillItemList()
                 "       quitem_price AS coitem_price,"
                 "       ROUND((quitem_qtyord * quitem_qty_invuomratio) *"
                 "             (quitem_price / quitem_price_invuomratio),2) AS extprice,"
+                "       quitem_custprice AS coitem_custprice,"
                 "       'qty' AS coitem_qtyord_xtnumericrole,"
                 "       'qty' AS qtyshipped_xtnumericrole,"
                 "       'qty' AS balance_xtnumericrole,"
