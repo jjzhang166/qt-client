@@ -10,6 +10,7 @@
 
 
 #include "metrics.h"
+#include <QSqlError>
 #include <QVariant>
 #include "xsqlquery.h"
 
@@ -159,16 +160,23 @@ void Preferences::remove(const QString &pPrefName)
 
 Privileges::Privileges()
 {
-  _readSql = "SELECT priv_name AS key, TEXT('t') AS value "
+  QString user;
+  XSqlQuery userq("SELECT getEffectiveXtUser() AS user;");
+  if (userq.lastError().type() != QSqlError::NoError)
+    userq.exec("SELECT CURRENT_USER AS user;");
+  if (userq.first())
+    user = userq.value("user").toString();
+
+  _readSql = QString("SELECT priv_name AS key, TEXT('t') AS value "
              "  FROM usrpriv, priv "
              " WHERE((usrpriv_priv_id=priv_id)"
-             "   AND (usrpriv_username=getEffectiveXtUser())) "
+             "   AND (usrpriv_username='%1')) "
              " UNION "
              "SELECT priv_name AS key, TEXT('t') AS value "
              "  FROM priv, grppriv, usrgrp"
              " WHERE((usrgrp_grp_id=grppriv_grp_id)"
              "   AND (grppriv_priv_id=priv_id)"
-             "   AND (usrgrp_username=getEffectiveXtUser()));";
+             "   AND (usrgrp_username='%1'));").arg(user);
 
   load();
 }
