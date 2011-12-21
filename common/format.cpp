@@ -53,12 +53,30 @@ static bool   loadLocale()
 {
   if (!loadedLocales)
   {
-    XSqlQuery localeq("SELECT * "
+    QString user;
+    XSqlQuery userq("SELECT getEffectiveXtUser() AS user;");
+    if (userq.lastError().type() != QSqlError::NoError)
+      userq.exec("SELECT CURRENT_USER AS user;");
+    if (userq.first())
+      user = userq.value("user").toString();
+    else if (userq.lastError().type() != QSqlError::NoError)
+    {
+      QMessageBox::critical(0,
+                            QObject::tr("A System Error Occurred at %1::%2.")
+                            .arg(__FILE__).arg(__LINE__),
+                            userq.lastError().databaseText());
+      return false;
+    }
+
+    XSqlQuery localeq;
+    localeq.prepare("SELECT * "
                       "FROM usr, locale LEFT OUTER JOIN"
                       "     lang ON (locale_lang_id=lang_id) LEFT OUTER JOIN"
                       "     country ON (locale_country_id=country_id) "
-                      "WHERE ( (usr_username=getEffectiveXtUser())"
+                      "WHERE ( (usr_username=:user)"
                       " AND (usr_locale_id=locale_id) );" );
+    localeq.bindValue(":user", user);
+    localeq.exec();
     if (localeq.first())
     {
       if (!localeq.value("locale_error_color").toString().isEmpty())
