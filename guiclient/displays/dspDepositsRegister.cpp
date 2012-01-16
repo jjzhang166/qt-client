@@ -24,10 +24,10 @@ dspDepositsRegister::dspDepositsRegister(QWidget* parent, const char*, Qt::WFlag
   setReportName("DepositsRegister");
   setMetaSQLOptions("depositesRegister", "detail");
 
-  list()->addColumn(tr("Date"),             _dateColumn,    Qt::AlignCenter, true,  "gltrans_date" );
-  list()->addColumn(tr("Source"),           _orderColumn,   Qt::AlignCenter, true,  "gltrans_source" );
+  list()->addColumn(tr("Date"),             _dateColumn,    Qt::AlignCenter, true,  "trans_date" );
+  list()->addColumn(tr("Source"),           _orderColumn,   Qt::AlignCenter, true,  "trans_source" );
   list()->addColumn(tr("Doc Type"),         _orderColumn,   Qt::AlignLeft,   true,  "doctype"   );
-  list()->addColumn(tr("Doc. #"),           _orderColumn,   Qt::AlignCenter, true,  "gltrans_docnumber" );
+  list()->addColumn(tr("Doc. #"),           _orderColumn,   Qt::AlignCenter, true,  "trans_docnumber" );
   list()->addColumn(tr("Reference"),        -1,             Qt::AlignLeft,   true,  "f_notes"   );
   list()->addColumn(tr("Account"),          _itemColumn,    Qt::AlignLeft,   true,  "f_accnt"   );
   list()->addColumn(tr("Amount Rcv'd"),     _moneyColumn,   Qt::AlignRight,  true,  "debit"  );
