@@ -83,75 +83,82 @@ void changeWoQty::sChangeQty()
     return;
   }
 
-  double    newQty = _newQtyOrdered->toDouble();
+  double newQty = 0.0;
+  if (_wo->method() == "D")
+    newQty = _newQtyOrdered->toDouble() * -1.0;
+  else
+    newQty = _newQtyOrdered->toDouble();
 
   if(newQty == 0 && QMessageBox::question(this, tr("Zero Qty. Value"), tr("The current value specified is 0. Are you sure you want to continue?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
     return;
 
-  q.prepare( "SELECT validateOrderQty(wo_itemsite_id, :qty, TRUE) AS qty "
-             "FROM wo "
-             "WHERE (wo_id=:wo_id);" );
-  q.bindValue(":wo_id", _wo->id());
-  q.bindValue(":qty", _newQtyOrdered->toDouble());
-  q.exec();
-  if (q.first())
+  if (newQty > 0.0)
   {
-    if (q.value("qty").toDouble() != newQty)
-    {
-      if ( QMessageBox::warning( this, tr("Invalid Order Qty"),
-                                 tr("<p>The new Order Quantity that you have "
-				 "entered does not meet the Order Parameters "
-				 "set for the parent Item Site for this Work "
-				 "Order.  In order to meet the Item Site "
-				 "Order Parameters the new Order Quantity "
-				 "must be increased to %1. Do you want to "
-				 "change the Order Quantity for this Work "
-				 "Order to %2?" )
-                                 .arg(formatQty(q.value("qty").toDouble()))
-                                 .arg(formatQty(q.value("qty").toDouble())),
-                                 tr("&Yes"), tr("&No"), QString::null, 0, 1 ) == 1 )
-        return;
-      else
-        newQty = q.value("qty").toDouble();
-    }
-
-    q.prepare("SELECT changeWoQty(:wo_id, :qty, TRUE);");
+    q.prepare( "SELECT validateOrderQty(wo_itemsite_id, :qty, TRUE) AS qty "
+               "FROM wo "
+               "WHERE (wo_id=:wo_id);" );
     q.bindValue(":wo_id", _wo->id());
-    q.bindValue(":qty", newQty);
+    q.bindValue(":qty", _newQtyOrdered->toDouble());
     q.exec();
-
-    if (_postComment->isChecked())
+    if (q.first())
     {
-      q.prepare("SELECT postComment(:cmnttype_id, 'W', :wo_id, :comment) AS result");
-      q.bindValue(":cmnttype_id", _cmnttype->id());
-      q.bindValue(":wo_id", _wo->id());
-      q.bindValue(":comment", _comment->toPlainText());
-      q.exec();
-      if (q.first())
+      if (q.value("qty").toDouble() != newQty)
       {
-        int result = q.value("result").toInt();
-        if (result < 0)
-        {
-          systemError(this, storedProcErrorLookup("postComment", result),
-                      __FILE__, __LINE__);
+        if ( QMessageBox::warning( this, tr("Invalid Order Qty"),
+                                   tr("<p>The new Order Quantity that you have "
+                                   "entered does not meet the Order Parameters "
+                                   "set for the parent Item Site for this Work "
+                                   "Order.  In order to meet the Item Site "
+                                   "Order Parameters the new Order Quantity "
+                                   "must be increased to %1. Do you want to "
+                                   "change the Order Quantity for this Work "
+                                   "Order to %2?" )
+                                   .arg(formatQty(q.value("qty").toDouble()))
+                                   .arg(formatQty(q.value("qty").toDouble())),
+                                   tr("&Yes"), tr("&No"), QString::null, 0, 1 ) == 1 )
           return;
-        }
+        else
+          newQty = q.value("qty").toDouble();
       }
-      else if (q.lastError().type() != QSqlError::NoError)
+    }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
+
+  q.prepare("SELECT changeWoQty(:wo_id, :qty, TRUE);");
+  q.bindValue(":wo_id", _wo->id());
+  q.bindValue(":qty", newQty);
+  q.exec();
+
+  if (_postComment->isChecked())
+  {
+    q.prepare("SELECT postComment(:cmnttype_id, 'W', :wo_id, :comment) AS result");
+    q.bindValue(":cmnttype_id", _cmnttype->id());
+    q.bindValue(":wo_id", _wo->id());
+    q.bindValue(":comment", _comment->toPlainText());
+    q.exec();
+    if (q.first())
+    {
+      int result = q.value("result").toInt();
+      if (result < 0)
       {
-        systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+        systemError(this, storedProcErrorLookup("postComment", result),
+                    __FILE__, __LINE__);
         return;
       }
     }
+    else if (q.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
-  }
-  else if (q.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  
+  omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+
   accept();
 }
 
