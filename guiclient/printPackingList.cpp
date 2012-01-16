@@ -149,7 +149,7 @@ void printPackingList::sPrint()
       return;
     }
 
-    if (_shipformid == -1)
+    if (_shipformid == -1 || _printPick->isChecked())
     {
       q.prepare( "SELECT findCustomerForm(cohead_cust_id, :form) AS reportname "
                  "FROM cohead "
@@ -174,7 +174,7 @@ void printPackingList::sPrint()
       return;
     }
 
-    if (_shipformid == -1)
+    if (_shipformid == -1 || _printPick->isChecked())
     {
       q.prepare( "SELECT findTOForm(:head_id, :form) AS reportname;" );
       q.bindValue(":head_id", _order->id());
