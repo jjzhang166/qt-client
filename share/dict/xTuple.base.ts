@@ -5312,7 +5312,8 @@ point to the browser executable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/format.cpp" line="102"/>
+        <location filename="../../common/format.cpp" line="65"/>
+        <location filename="../../common/format.cpp" line="120"/>
         <source>A System Error Occurred at %1::%2.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12614,17 +12615,17 @@ Are you sure that you want to save this change?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="101"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="107"/>
         <source>Invalid Order Qty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="112"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="118"/>
         <source>&amp;Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="112"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="118"/>
         <source>&amp;No</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12674,17 +12675,17 @@ Are you sure that you want to save this change?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="102"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="108"/>
         <source>&lt;p&gt;The new Order Quantity that you have entered does not meet the Order Parameters set for the parent Item Site for this Work Order.  In order to meet the Item Site Order Parameters the new Order Quantity must be increased to %1. Do you want to change the Order Quantity for this Work Order to %2?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="88"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="92"/>
         <source>Zero Qty. Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/changeWoQty.cpp" line="88"/>
+        <location filename="../../guiclient/changeWoQty.cpp" line="92"/>
         <source>The current value specified is 0. Are you sure you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42392,93 +42393,92 @@ These line items must be fixed before you may convert this quote.</source>
 <context>
     <name>dspWoSchedule</name>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="40"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="41"/>
         <source>Work Order Schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="52"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="53"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="53"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="54"/>
         <source>Exploded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="54"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="55"/>
         <source>Released</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="55"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="56"/>
         <source>In-Process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="57"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="58"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="88"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="129"/>
         <source>Start Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="58"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="59"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="133"/>
         <source>End Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="59"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="60"/>
         <source>Class Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="60"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="61"/>
         <source>Class Code Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="61"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="62"/>
         <source>Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="62"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="63"/>
         <source>Item Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="63"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="64"/>
         <source>Item Group Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="64"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="65"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="113"/>
         <source>Planner Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="65"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="66"/>
         <source>Planner Code Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="66"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="67"/>
         <source>Show Only Top Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="67"/>
+        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="68"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="80"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="140"/>
         <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="70"/>
         <location filename="../../guiclient/displays/dspWoSchedule.cpp" line="125"/>
         <source>Work Order</source>
         <translation type="unfinished"></translation>

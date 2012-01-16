@@ -13,13 +13,13 @@
 QString _Name = "xTuple ERP: %1 Edition";
 
 #ifndef __USEALTVERSION__
-QString _Version   = "3.8.0RC2";
-QString _dbVersion = "3.8.0RC2";
+QString _Version   = "3.8.0";
+QString _dbVersion = "3.8.0";
 
 #else
 #include "../altVersion.cpp"
 #endif
-QString _Copyright = "Copyright (c) 1999-2011, OpenMFG, LLC.";
+QString _Copyright = "Copyright (c) 1999-2012, OpenMFG, LLC.";
 
 /*: Please translate this Version string to the base version of the application
     you are translating. This is a hack to embed the application version number
