@@ -37,6 +37,7 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WFlags fl)
   : display(parent, "dspWoSchedule", fl)
 {
   setNewVisible(true);
+  setSearchVisible(true);
   setWindowTitle(tr("Work Order Schedule"));
   setReportName("WOSchedule");
   setMetaSQLOptions("workOrderSchedule", "detail");
@@ -67,7 +68,6 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Status"), "status_list",
                            ParameterWidget::Multiselect, QVariant(), false,
                            qryStatus);
-  parameterWidget()->append(tr("Work Order"), "wo_id", ParameterWidget::WorkOrder);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
   parameterWidget()->append(tr("Has Parent Sales Order"), "woSoStatus", ParameterWidget::Exists);
