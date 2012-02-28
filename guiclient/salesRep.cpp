@@ -72,6 +72,15 @@ enum SetResponse salesRep::set(const ParameterList &pParams)
     {
       _mode = cNew;
       
+      q.exec("SELECT NEXTVAL('salesrep_salesrep_id_seq') AS salesrep_id;");
+      if (q.first())
+        _salesrepid = q.value("salesrep_id").toInt();
+      else if (q.lastError().type() == QSqlError::NoError)
+      {
+        systemError(this, q.lastError().text(), __FILE__, __LINE__);
+        return UndefinedError;
+      }
+
       if(((_metrics->value("CRMAccountNumberGeneration") == "A") ||
           (_metrics->value("CRMAccountNumberGeneration") == "O"))
        && _number->text().isEmpty() )
@@ -109,6 +118,19 @@ enum SetResponse salesRep::set(const ParameterList &pParams)
   _commPrcnt->setEnabled(canEdit);
 
   return NoError;
+}
+
+int salesRep::id() const
+{
+  return _salesrepid;
+}
+
+/** \return one of cNew, cEdit, cView, ...
+    \todo   change possible modes to an enum in guiclient.h (and add cUnknown?)
+ */
+int salesRep::mode() const
+{
+  return _mode;
 }
 
 void salesRep::sCheck()
@@ -160,13 +182,12 @@ bool salesRep::save()
 
   XSqlQuery saveq;
   if (_mode == cNew)
-    saveq.prepare( "INSERT INTO salesrep ("
+    saveq.prepare( "INSERT INTO salesrep ( salesrep_id,"
                    "  salesrep_number,  salesrep_active,"
                    "  salesrep_name,    salesrep_commission"
-                   ") VALUES ("
+                   ") VALUES ( :salesrep_id,"
                    "  :salesrep_number, :salesrep_active,"
-                   "  :salesrep_name,   :salesrep_commission"
-                   ") RETURNING salesrep_id;" );
+                   "  :salesrep_name,   :salesrep_commission );" );
   else if (_mode == cEdit)
   {
     saveq.prepare( "UPDATE salesrep "
@@ -174,21 +195,18 @@ bool salesRep::save()
                    "    salesrep_number=:salesrep_number,"
                    "    salesrep_name=:salesrep_name, "
                    "    salesrep_commission=:salesrep_commission "
-                   "WHERE (salesrep_id=:salesrep_id) "
-                   "RETURNING salesrep_id;" );
-    saveq.bindValue(":salesrep_id", _salesrepid);
+                   "WHERE (salesrep_id=:salesrep_id);" );
   }
 
+  saveq.bindValue(":salesrep_id", _salesrepid);
   saveq.bindValue(":salesrep_number",     _number->text());
   saveq.bindValue(":salesrep_name",       _name->text());
   saveq.bindValue(":salesrep_commission", (_commPrcnt->toDouble() / 100));
   saveq.bindValue(":salesrep_active",     QVariant(_active->isChecked()));
   saveq.exec();
-  if (saveq.first())
-    _salesrepid = saveq.value("salesrep_id").toInt();
-  else if (ErrorReporter::error(QtCriticalMsg, this,
-                                tr("Error saving Sales Rep"),
-                                saveq, __FILE__, __LINE__))
+  if (ErrorReporter::error(QtCriticalMsg, this,
+                           tr("Error saving Sales Rep"),
+                           saveq, __FILE__, __LINE__))
     return false;
 
   XSqlQuery crmq;
@@ -212,6 +230,7 @@ bool salesRep::save()
     return false;
 
   omfgThis->sSalesRepUpdated(_salesrepid);
+  emit saved(_salesrepid);
   return true;
 }
 
