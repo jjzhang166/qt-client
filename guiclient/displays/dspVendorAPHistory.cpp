@@ -92,7 +92,7 @@ void dspVendorAPHistory::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected,
   if (item->id() != -1)
   {
     menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
-    menuItem->setEnabled(_privileges->check("EditSalesHistory"));
+    menuItem->setEnabled(_privileges->check("EditAPOpenItem"));
 
     pMenu->addAction(tr("View A/P Open..."), this, SLOT(sView()));
 
