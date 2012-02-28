@@ -18,6 +18,7 @@
 
 #include <openreports.h>
 
+#include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 #include "todoItem.h"
 #include "salesOrder.h"
@@ -978,31 +979,7 @@ void opportunity::sViewSalesOrder()
 
 void opportunity::sDeleteSalesOrder()
 {
-  if ( QMessageBox::warning( this, tr("Delete Selected Sales Order"),
-                             tr("Are you sure that you want to delete the selected Sales Order?" ),
-                             tr("&Yes"), tr("&No"), QString::null, 0, 1 ) == 0)
-  {
-    q.prepare("SELECT deleteSo(:cohead_id) AS result;");
-    q.bindValue(":cohead_id", _salesList->id());
-    q.exec();
-    if (q.first())
-    {
-      int result = q.value("result").toInt();
-      if (result < 0)
-      {
-        systemError(this, storedProcErrorLookup("deleteSo", result),
-                    __FILE__, __LINE__);
-        return;
-      }
-      else
-        sFillSalesList();
-    }
-    else if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-  }
+  (void)salesOrder::deleteSalesOrder(_salesList->id());
 }
 
 void opportunity::sFillSalesList()

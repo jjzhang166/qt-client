@@ -25,6 +25,7 @@ class salesOrder : public XWidget, public Ui::salesOrder
 
     Q_INVOKABLE virtual bool  save( bool partial );
     Q_INVOKABLE virtual void  setViewMode();
+    Q_INVOKABLE static bool   deleteSalesOrder(int pId, QWidget *parent = 0 );
     Q_INVOKABLE static void   newSalesOrder( int pCustid, QWidget *parent = 0 );
     Q_INVOKABLE static void   editSalesOrder( int pId, bool enableSaveAndAdd, QWidget *parent = 0 );
     Q_INVOKABLE static void   viewSalesOrder( int pId, QWidget *parent = 0 );

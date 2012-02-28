@@ -21,10 +21,12 @@
 #include <QVariant>
 
 #include <metasql.h>
+
 #include "creditCard.h"
 #include "creditcardprocessor.h"
 #include "crmacctcluster.h"
 #include "customer.h"
+#include "errorReporter.h"
 #include "distributeInventory.h"
 #include "issueLineToShipping.h"
 #include "mqlutil.h"
@@ -3278,6 +3280,204 @@ void salesOrder::setViewMode()
     _saveAndAdd->hide();
   _action->hide();
   _delete->hide();
+}
+
+/** @brief Delete a Sales Order by internal id.
+
+    deleteSalesOrder method deletes a single sales order given its id.
+    This enforces the common rules of the user interface, such as asking
+    whether the user really wants to delete the order and providing
+    alternatives if the order cannot be deleted for business reasons.
+
+    @param pId    The internal id of the sales order to delete
+    @param parent The parent window, if any, requesting the delete
+
+    @return true if the sales order was deleted or closed, otherwise false
+ */
+bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
+{
+  // TODO: move to the delete trigger?
+  if (_preferences->boolean("selectedSites"))
+  {
+    XSqlQuery check;
+    check.prepare("SELECT checkSOSitePrivs(:coheadid) AS result;");
+    check.bindValue(":coheadid", pId);
+    check.exec();
+    if (check.first() && ! check.value("result").toBool())
+    {
+      QMessageBox::critical(parent, tr("Access Denied"),
+                            tr("You may not delete this Sales Order as it "
+                               "refers to a Site for which you have not been "
+                               "granted privileges.")) ;
+      return false;
+    }
+  }
+
+  QString question = tr("<p>Are you sure that you want to completely "
+			 "delete the selected Sales Order?");
+  XSqlQuery woq;
+  woq.prepare("SELECT BOOL_OR(woStarted(coitem_order_id)) AS workstarted"
+              "    FROM coitem"
+              "   WHERE ((coitem_order_type='W')"
+              "      AND (coitem_cohead_id=:coheadid));");
+  woq.bindValue(":coheadid", pId);
+  woq.exec();
+  if (woq.first() && woq.value("workstarted").toBool())
+    question = tr("<p>A work order for one of the line items on the selected "
+                  "Sales Order is already in progress. Are you sure that you "
+                  "want to completely delete the Sales Order?");
+  else if (ErrorReporter::error(QtCriticalMsg, parent,
+                                tr("Getting Work Order Information"),
+                                woq, __FILE__, __LINE__))
+    return false;
+
+  if (QMessageBox::question(parent, tr("Delete Sales Order?"), question,
+			    QMessageBox::Yes,
+			    QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+  {
+    XSqlQuery delq;
+    delq.prepare("SELECT deleteSo(:sohead_id) AS result;");
+    delq.bindValue(":sohead_id", pId);
+    delq.exec();
+    if (delq.first())
+    {
+      bool closeInstead = false;
+      int result = delq.value("result").toInt();
+      if (result == -1 && _privileges->check("ProcessCreditCards"))
+      {
+        if (QMessageBox::question(parent, tr("Cannot Delete Sales Order"),
+                                   storedProcErrorLookup("deleteSo", result) + 
+                                   "<br>Would you like to refund the amount "
+                                   "charged and close the Sales Order instead?",
+                                   QMessageBox::Yes | QMessageBox::Default,
+                                   QMessageBox::No) == QMessageBox::Yes)
+        {
+          CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
+          if (! cardproc)
+            QMessageBox::critical(parent, tr("Credit Card Processing Error"),
+                                  CreditCardProcessor::errorMsg());
+          else
+          {
+            XSqlQuery ccq;
+            ccq.prepare("SELECT ccpay_id, ccpay_ccard_id, ccpay_curr_id,"
+                        "       SUM(ccpay_amount     * sense) AS amount,"
+                        "       SUM(ccpay_r_tax      * sense) AS tax,"
+                        "       SUM(ccpay_r_shipping * sense) AS freight,"
+                        "       (SELECT cohead_number"
+                        "          FROM cohead"
+                        "         WHERE cohead_id=:coheadid) AS docnum"
+                        "  FROM (SELECT ccpay_id, ccpay_ccard_id, ccpay_curr_id,"
+                        "             CASE WHEN ccpay_status = 'C' THEN  1"
+                        "                  WHEN ccpay_status = 'R' THEN -1"
+                        "             END AS sense,"
+                        "             ccpay_amount,"
+                        "             COALESCE(ccpay_r_tax::NUMERIC, 0) AS ccpay_r_tax,"
+                        "             COALESCE(ccpay_r_shipping::NUMERIC, 0) AS ccpay_r_shipping "
+                        "      FROM ccpay, payco "
+                        "      WHERE ((ccpay_id=payco_ccpay_id)"
+                        "        AND  (ccpay_status IN ('C', 'R'))"
+                        "        AND  (payco_cohead_id=:coheadid)) "
+                        "      ) AS dummy "
+                        "GROUP BY ccpay_id, ccpay_ccard_id, ccpay_curr_id;");
+            ccq.bindValue(":coheadid", pId);
+            ccq.exec();
+            if (ccq.first())
+            do
+            {
+              QString docnum = ccq.value("docnum").toString();
+              QString refnum = docnum;
+              int ccpayid    = ccq.value("ccpay_id").toInt();
+              int coheadid   = pId;
+              int returnVal = cardproc->credit(ccq.value("ccpay_ccard_id").toInt(),
+                                               -2,
+                                               ccq.value("amount").toDouble(),
+                                               ccq.value("tax").toDouble(),
+                                               true,
+                                               ccq.value("freight").toDouble(),
+                                               0,
+                                               ccq.value("ccpay_curr_id").toInt(),
+                                               docnum, refnum, ccpayid,
+                                               "cohead", coheadid);
+              if (returnVal < 0)
+              {
+                QMessageBox::critical(parent, tr("Credit Card Processing Error"),
+                                      cardproc->errorMsg());
+                return false;
+              }
+              else if (returnVal > 0)
+              {
+                QMessageBox::warning(parent, tr("Credit Card Processing Warning"),
+                                     cardproc->errorMsg());
+                closeInstead = true;
+              }
+              else if (! cardproc->errorMsg().isEmpty())
+              {
+                QMessageBox::information(parent, tr("Credit Card Processing Note"),
+                                     cardproc->errorMsg());
+                closeInstead = true;
+              }
+              else
+                closeInstead = true;
+            } while (ccq.next());
+            else if (ErrorReporter::error(QtCriticalMsg, parent,
+                                          tr("Credit Card Processing Error"),
+                                          ccq, __FILE__, __LINE__))
+              return false;
+            else
+            {
+              ErrorReporter::error(QtCriticalMsg, parent,
+                                   tr("Credit Card Processing Error"),
+                                   tr("Could not find the ccpay records!"),
+                                   __FILE__, __LINE__);
+              return false;
+            }
+
+          }
+        }
+      }
+      else if (result == -2 || result == -5)
+      {
+        if ( QMessageBox::question(parent, tr("Cannot Delete Sales Order"),
+                                   storedProcErrorLookup("deleteSo", result) + 
+                                   "<br>Would you like to Close the selected "
+                                   "Sales Order instead?",
+                                   QMessageBox::Yes | QMessageBox::Default,
+                                   QMessageBox::No) == QMessageBox::Yes)
+          closeInstead = true;
+      }
+      else if (result < 0)
+      {
+        systemError(parent, storedProcErrorLookup("deleteSo", result),
+                    __FILE__, __LINE__);
+        return false;
+      }
+
+      if (closeInstead)
+      {
+        XSqlQuery closeq;
+        closeq.prepare( "UPDATE coitem "
+                   "SET coitem_status='C' "
+                   "WHERE ((coitem_status <> 'X')"
+                   "  AND  (coitem_cohead_id=:sohead_id));" );
+        closeq.bindValue(":sohead_id", pId);
+        closeq.exec();
+        if (ErrorReporter::error(QtCriticalMsg, parent, tr("Error Closing"),
+                                 closeq, __FILE__, __LINE__))
+          return false;
+      }
+
+      omfgThis->sSalesOrdersUpdated(-1);
+      omfgThis->sProjectsUpdated(-1);
+
+      return true;
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, parent,
+                                  tr("Deleting Sales Order"),
+                                  delq, __FILE__, __LINE__))
+      return false;
+  }
+
+  return false;
 }
 
 void salesOrder::newSalesOrder(int pCustid, QWidget *parent)
