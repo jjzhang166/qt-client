@@ -187,7 +187,7 @@ void unpostedInvoices::sPrint()
 void unpostedInvoices::sPost()
 {
   bool changeDate = false;
-  QDate newDate = QDate::currentDate();
+  QDate newDate = QDate();
 
   if (_privileges->check("ChangeARInvcDistDate"))
   {
