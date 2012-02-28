@@ -287,14 +287,32 @@ void invoice::sClose()
 {
   if (_mode == cNew)
   {
-    q.prepare( "DELETE FROM invcitem "
-               "WHERE (invcitem_invchead_id=:invchead_id);"
-               "DELETE FROM invchead "
-               "WHERE (invchead_id=:invchead_id);" );
-    q.bindValue(":invchead_id", _invcheadid);
-    q.exec();
-    if (q.lastError().type() != QSqlError::NoError)
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    int answer = QMessageBox::question(this,
+                   tr("Delete Invoice?"),
+                   tr("<p>This Invoice has not been saved.  "
+                      "Do you wish to delete this Invoice?"),
+                 QMessageBox::No | QMessageBox::Default, QMessageBox::Yes);
+    if (QMessageBox::No == answer)
+      return;
+    else
+    {
+      q.prepare( "SELECT deleteInvoice(:invchead_id) AS result;" );
+      q.bindValue(":invchead_id", _invcheadid);
+      q.exec();
+      if (q.first())
+      {
+        int result = q.value("result").toInt();
+        if (result < 0)
+        {
+          systemError(this, storedProcErrorLookup("deleteInvoice", result),
+                      __FILE__, __LINE__);
+        }
+      }
+      else if (q.lastError().type() != QSqlError::NoError)
+        systemError(this,
+                    tr("Error deleting Invoice %1\n").arg(_invcheadid) +
+                       q.lastError().databaseText(), __FILE__, __LINE__);
+    }
   }
 
   close();
