@@ -44,6 +44,7 @@ enterPoReturn::enterPoReturn(QWidget* parent, const char* name, Qt::WFlags fl)
   _poitem->addColumn(tr("Returned"),     _qtyColumn,  Qt::AlignRight  , true, "poitem_qty_returned");
   _poitem->addColumn(tr("To Return"),    _qtyColumn,  Qt::AlignRight  , true, "poitem_qty_toreturn");
 
+  _captive = false;
   _dropshipWarn = new XErrorMessage(this);
   _returnAddr->setEnabled(_printReport->isChecked());
   _po->setAllowedStatuses(OrderLineEdit::Open | OrderLineEdit::Closed);
