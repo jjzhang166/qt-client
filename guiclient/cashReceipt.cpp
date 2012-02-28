@@ -21,10 +21,9 @@
 #include "cashReceiptMiscDistrib.h"
 #include "creditCard.h"
 #include "creditcardprocessor.h"
+#include "errorReporter.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
-
-#define TR(a)	cashReceipt::tr(a)
 
 const struct {
   const char * full;
@@ -362,42 +361,70 @@ void cashReceipt::sApplyLineBalance()
   applyToBal.bindValue(":docdate", _docDate->date());
   applyToBal.exec();
 	  
-  QList<XTreeWidgetItem*> list = _aropen->selectedItems();
-  XTreeWidgetItem *cursor = 0;
-  for(int i = 0; i < list.size(); i++)
+  XSqlQuery applyq;
+  applyq.prepare("SELECT applycashreceiptlinebalance(:cashrcpt_id,"
+                 "       :cashrcptitem_aropen_id,:amount,:curr_id) AS result;");
+  applyq.bindValue(":cashrcpt_id", _cashrcptid);
+  applyq.bindValue(":curr_id",     _received->id());
+
+  // loop twice - first collect the credits, then apply them to debits
+  // stop when we hit a hard error, then refresh the list to show what happened
+  bool crediterr = false;
+  foreach (XTreeWidgetItem *cursor, _aropen->selectedItems())
   {
-    cursor = (XTreeWidgetItem*)list.at(i);
-    q.prepare( "SELECT applycashreceiptlinebalance(:cashrcpt_id,"
-	       "            :cashrcptitem_aropen_id,:amount,:curr_id) AS result;" );
-    q.bindValue(":cashrcpt_id", _cashrcptid);
-    q.bindValue(":cashrcptitem_aropen_id", cursor->id());
-    if (_aropen->rawValue("doctype").toString() == "I" ||
-        _aropen->rawValue("doctype").toString() == "D")
-      q.bindValue(":amount", _received->localValue());
-    else
+    if (cursor->rawValue("doctype").toString() == "C" ||
+        cursor->rawValue("doctype").toString() == "R")
     {
-      // Total credit available is unapplied credit in receipt currency
-      double credit = _received->convert(_aropen->rawValue("balance_curr").toInt(),
+      double credit = _received->convert(cursor->rawValue("balance_curr").toInt(),
                                          _received->id(),
-                                         _aropen->rawValue("balance").toDouble(),
+                                         cursor->rawValue("balance").toDouble(),
                                          _distDate->date());
-      q.bindValue(":amount", credit);
-    }
-    q.bindValue(":curr_id", _received->id());
-    q.exec();
-    if (q.first())
-    {
-      int result = q.value("result").toInt();
-      if (result < 0)
+      applyq.bindValue(":amount",                 credit);
+      applyq.bindValue(":cashrcptitem_aropen_id", cursor->id());
+      applyq.exec();
+      if (applyq.first())
       {
-	    systemError(this, storedProcErrorLookup("applyCashReceiptLineBalance", result), __FILE__, __LINE__);
-	    return;
+        double result = applyq.value("result").toDouble();
+        if (result < 0)
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying Credits"),
+                               tr("Could not apply %1 %2 to Cash Receipt (%3)")
+                               .arg(cursor->text("doctype"),
+                                    cursor->text("aropen_docnumber")).arg(result),
+                               __FILE__, __LINE__);
+      }
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying Credits"),
+                                    applyq, __FILE__, __LINE__))
+      {
+        crediterr = true;
+        break;
       }
     }
-    else if (q.lastError().type() != QSqlError::NoError)
+  }
+
+  if (! crediterr)
+  {
+    foreach (XTreeWidgetItem *cursor, _aropen->selectedItems())
     {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+      if (cursor->rawValue("doctype").toString() == "I" ||
+          cursor->rawValue("doctype").toString() == "D")
+      {
+        applyq.bindValue(":amount",                 _received->localValue());
+        applyq.bindValue(":cashrcptitem_aropen_id", cursor->id());
+        applyq.exec();
+        if (applyq.first())
+        {
+          double result = applyq.value("result").toDouble();
+          if (result < 0)
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying Debits"),
+                                 tr("Could not apply %1 %2 to Cash Receipt (%3)")
+                                 .arg(cursor->text("doctype"),
+                                      cursor->text("aropen_docnumber")).arg(result),
+                                 __FILE__, __LINE__);
+        }
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying Debits"),
+                                      applyq, __FILE__, __LINE__))
+          break;
+      }
     }
   }
 
