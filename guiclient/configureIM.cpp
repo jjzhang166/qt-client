@@ -16,6 +16,7 @@
 
 #include "guiclient.h"
 #include "editICMWatermark.h"
+#include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
 configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
@@ -324,6 +325,10 @@ bool configureIM::sSave()
       XSqlQuery qq;
       qq.exec("SELECT buildInvbal(itemsite_id)"
               "  FROM itemsite;");
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Enabing As-Of Reporting"),
+                               qq, __FILE__, __LINE__))
+        return false;
+
     }
     else
       return false;
