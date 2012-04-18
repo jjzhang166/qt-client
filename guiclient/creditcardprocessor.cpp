@@ -669,17 +669,7 @@ int CreditCardProcessor::charge(const int pccardid, const int pcvv, const double
     cashq.bindValue(":doctype",   preftype);
     cashq.bindValue(":docid",     prefid);
     cashq.exec();
-    if (cashq.first())
-    {
-      int cm_id = cashq.value("cm_id").toInt();
-      if (cm_id < 0)
-      {
-        _errorMsg = "<p>" + errorMsg(4)
-                      .arg(storedProcErrorLookup("postCCcashReceipt", cm_id));
-        returnVal = 3;
-      }
-    }
-    else if (cashq.lastError().type() != QSqlError::NoError)
+    if (cashq.lastError().type() != QSqlError::NoError)
     {
       _errorMsg = errorMsg(4).arg(cashq.lastError().databaseText());
       // TODO: log an event?
@@ -790,7 +780,6 @@ int CreditCardProcessor::chargePreauthorized(const int pcvv, const double pamoun
 		  .arg(pamount);
       return -33;
     }
-
   }
   else if (ccq.lastError().type() != QSqlError::NoError)
   {
@@ -806,27 +795,27 @@ int CreditCardProcessor::chargePreauthorized(const int pcvv, const double pamoun
   int ccardid = ccq.value("ccpay_ccard_id").toInt();
   preforder = ccq.value("ccpay_r_ordernum").toString();
 
-  ccq.prepare("SELECT * FROM payco WHERE (payco_ccpay_id=:ccpayid)");
+  QString doctype  = "cashrcpt";
+  int     coheadid = -1;
+  ccq.prepare("SELECT payco_cohead_id,"
+              "       EXISTS(SELECT 1"
+              "                FROM coitem "
+              "               WHERE ((coitem_status IN ('O', 'C'))"
+              "                 AND  (coitem_cohead_id=payco_cohead_id))) AS ok"
+              "  FROM payco WHERE (payco_ccpay_id=:ccpayid)");
   ccq.bindValue(":ccpayid", pccpayid);
   ccq.exec();
   if (ccq.first())
   {
-    int coheadid = ccq.value("payco_cohead_id").toInt();
-    ccq.prepare("SELECT COUNT(*) AS linecount "
-	      "FROM coitem "
-	      "WHERE ((coitem_status IN ('O', 'C'))"
-	      "  AND  (coitem_cohead_id=:coheadid));");
-    ccq.bindValue(":coheadid", coheadid);
-    ccq.exec();
-    if (ccq.first() && ccq.value("linecount").toInt() <= 0)
+    if (ccq.value("ok").toBool())
+    {
+      doctype = "cohead";
+      coheadid = ccq.value("payco_cohead_id").toInt();
+    }
+    else // found payco but no coitems for it
     {
       _errorMsg = errorMsg(-35);
       return -35;
-    }
-    else if (ccq.lastError().type() != QSqlError::NoError)
-    {
-      _errorMsg = ccq.lastError().databaseText();
-      return -1;
     }
   }
   else if (ccq.lastError().type() != QSqlError::NoError)
@@ -875,22 +864,14 @@ int CreditCardProcessor::chargePreauthorized(const int pcvv, const double pamoun
       return (voidReturnVal < 0) ? voidReturnVal : returnVal;
     }
 
-    ccq.prepare("INSERT INTO cashrcpt ("
-	      "  cashrcpt_cust_id, cashrcpt_amount, cashrcpt_curr_id,"
-	      "  cashrcpt_fundstype, cashrcpt_docnumber,"
-	      "  cashrcpt_bankaccnt_id, cashrcpt_notes, cashrcpt_distdate, cashrcpt_usecustdeposit) "
-	      "SELECT ccpay_cust_id, :amount, :curr_id,"
-	      "       ccard_type, ccpay_r_ordernum,"
-	      "       ccbank_bankaccnt_id, :notes, current_date,"
-              "       :custdeposit"
-	      "  FROM ccpay, ccard LEFT OUTER JOIN ccbank ON (ccard_type=ccbank_ccard_type) "
-	      "WHERE ((ccpay_ccard_id=ccard_id)"
-	      "  AND  (ccpay_id=:pccpayid));");
-    ccq.bindValue(":pccpayid",     pccpayid);
-    ccq.bindValue(":amount",       pamount);
-    ccq.bindValue(":curr_id",      pcurrid);
-    ccq.bindValue(":notes",        "Converted Pre-auth");
-    ccq.bindValue(":custdeposit",  _metrics->boolean("EnableCustomerDeposits"));
+    ccq.prepare("SELECT postCCcashReceipt(:pccpayid, :docid,"
+                "                         :doctype, :amount) AS id;");
+    ccq.bindValue(":pccpayid", pccpayid);
+    ccq.bindValue(":doctype",  doctype);
+    ccq.bindValue(":amount",   pamount);
+    if (doctype == "cohead")
+      ccq.bindValue(":docid",  coheadid);
+
     ccq.exec();
     if (ccq.lastError().type() != QSqlError::NoError)
     {

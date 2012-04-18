@@ -196,11 +196,12 @@ void dspCreditCardTransactions::sPostPreauth()
   _postPreauth->setEnabled(false);
   _voidPreauth->setEnabled(false);
   int ccpayid   = _preauth->id();
-  QString ordernum;
+  QString neworder = _preauth->currentItem()->text("docnumber");
+  QString reforder = neworder;
   int returnVal = cardproc->chargePreauthorized(-2,
 						_CCAmount->localValue(),
 						_CCAmount->id(),
-						ordernum, ordernum, ccpayid);
+						neworder, reforder, ccpayid);
   if (returnVal < 0)
     QMessageBox::critical(this, tr("Credit Card Processing Error"),
 			  cardproc->errorMsg());
