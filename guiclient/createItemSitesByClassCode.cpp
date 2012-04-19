@@ -92,7 +92,7 @@ createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const ch
   _leadTime->setValue(0);
 
   _eventFence->setValue(_metrics->value("DefaultEventFence").toInt());
-  _costcat->setEnabled(_metrics->boolean("InterfaceToGL"));
+//  _costcat->setEnabled(_metrics->boolean("InterfaceToGL"));
   
   if (!_metrics->boolean("MultiWhs"))
   {
@@ -148,7 +148,8 @@ void createItemSitesByClassCode::sSave()
     return;
   }
 
-  if ( (_metrics->boolean("InterfaceToGL")) && (_costcat->id() == -1) )
+//  if ( (_metrics->boolean("InterfaceToGL")) && (_costcat->id() == -1) )
+  if (_costcat->id() == -1)
   {
     QMessageBox::critical( this, tr("Cannot Create Item Sites"),
                            tr("<p>You must select a Cost Category for these "
