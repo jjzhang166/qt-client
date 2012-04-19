@@ -180,6 +180,8 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
   _overridePoPrice->hide();
   _overridePoPriceLit->hide();
 
+  _orderId = -1;
+  _itemsrc = -1;
   _taxzoneid   = -1;
   _initialMode = -1;
 
@@ -760,7 +762,8 @@ void salesOrderItem::sSave()
   _save->setFocus();
 
   int   itemsrcid  = _itemsrc;
-  if ((_mode == cNew) && _createPO && _createOrder->isChecked() && (_item->itemType() == "P"))
+  if (_createPO && _createOrder->isChecked() && (_item->itemType() == "P") &&
+    ((_mode == cNew) || ((_mode == cEdit) && (_orderId == -1))))
   {
     if ( _dropShip->isChecked() && _shiptoid < 1)
     {
