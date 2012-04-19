@@ -775,6 +775,7 @@ bool salesOrder::save(bool partial)
                           tr( "<p>You must enter a valid Number for this "
                                 "order before you may save it." ) );
     _orderNumber->setFocus();
+    return FALSE;
   }
 
   //  We can't post a Misc. Charge without a Sales Account
