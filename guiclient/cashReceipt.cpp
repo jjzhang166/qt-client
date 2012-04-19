@@ -92,6 +92,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _CCCVV->setValidator(new QIntValidator(100, 9999, this));
 
+  _cust->setType(CLineEdit::ActiveCustomers);
   _bankaccnt->setType(XComboBox::ARBankAccounts);
   _salescat->setType(XComboBox::SalesCategoriesActive);
 

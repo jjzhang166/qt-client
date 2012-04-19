@@ -32,6 +32,7 @@ printStatementByCustomer::printStatementByCustomer(QWidget* parent, const char* 
 
   _captive = FALSE;
 
+  _cust->setType(CLineEdit::ActiveCustomers);
   _cust->setFocus();
 }
 

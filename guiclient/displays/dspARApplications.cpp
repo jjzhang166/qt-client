@@ -30,6 +30,7 @@ dspARApplications::dspARApplications(QWidget* parent, const char*, Qt::WFlags fl
   setReportName("ARApplications");
   setMetaSQLOptions("arApplications", "detail");
 
+  _cust->setType(CLineEdit::ActiveCustomers);
   _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
     

@@ -23,6 +23,7 @@ CustomerSelector::CustomerSelector(QWidget *pParent, const char *pName) : QWidge
   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
 
   _select->setCurrentIndex(All);
+  _cust->setType(CLineEdit::AllCustomers);
   _cust->setId(-1);
   _customerTypes->setId(-1);
   _customerGroup->setId(-1);

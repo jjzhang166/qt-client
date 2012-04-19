@@ -38,7 +38,7 @@ dspCustomerARHistory::dspCustomerARHistory(QWidget* parent, const char* name, Qt
   list()->addColumn(tr("Currency"),      _currencyColumn, Qt::AlignCenter, true,  "currAbbr"  );
   list()->addColumn(tr("Base Balance"),  _bigMoneyColumn, Qt::AlignRight,  true,  "base_balance"  );
 
-  _cust->setFocus();
+  _cust->setType(CLineEdit::ActiveCustomers);
 }
 
 void dspCustomerARHistory::languageChange()

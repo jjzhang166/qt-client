@@ -56,6 +56,7 @@ arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
   if (omfgThis->singleCurrency())
       _arapply->hideColumn("currabbr");
 
+  _cust->setType(CLineEdit::ActiveCustomers);
   _terms->setType(XComboBox::ARTerms);
   _salesrep->setType(XComboBox::SalesReps);
 
