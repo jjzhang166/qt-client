@@ -78,8 +78,9 @@ void ContactClusterLineEdit::sNew()
 {
   if (canOpen())
   {
-    if (!_x_privileges->check(_editPriv))
-      return;
+    // virtualCluster performs priv checking??
+    //if (!_x_privileges->check(_editPriv))
+    //  return;
 
     ParameterList params;
     params.append("mode", "new");
