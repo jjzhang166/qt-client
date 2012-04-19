@@ -273,45 +273,50 @@ void glSeries::sDelete()
 
 bool glSeries::update()
 {
-// Save changes even when posting std journal
-//  if (_mode != cPostStandardJournal)
-//  {
-    if(!_date->isValid())
-    {
-      QMessageBox::information( this, tr("Cannot Post G/L Series"),
-				tr("<p>You must enter a Distribution Date for this Series.") );
-      _date->setFocus();
-      return false;
-    }
+  if(!_date->isValid())
+  {
+    QMessageBox::information( this, tr("Cannot Post G/L Series"),
+                              tr("<p>You must enter a Distribution Date for this Series.") );
+    _date->setFocus();
+    return false;
+  }
 
-    if(_metrics->boolean("MandatoryGLEntryNotes") && _notes->toPlainText().trimmed().isEmpty())
-    {
-      QMessageBox::information( this, tr("Cannot Post G/L Series"),
-				tr("<p>You must enter some Notes to describe this transaction.") );
-      _notes->setFocus();
-      return false;
-    }
+  if(_metrics->boolean("MandatoryGLEntryNotes") && _notes->toPlainText().trimmed().isEmpty())
+  {
+    QMessageBox::information( this, tr("Cannot Post G/L Series"),
+                              tr("<p>You must enter some Notes to describe this transaction.") );
+    _notes->setFocus();
+    return false;
+  }
 
+// Do not save notes when posting std journal
+  if (_mode == cPostStandardJournal)
+    q.prepare( "UPDATE glseries "
+               "SET glseries_source=:source,"
+               "    glseries_doctype=:doctype,"
+               "    glseries_docnumber=:docnumber,"
+               "    glseries_distdate=:glseries_distdate "
+               "WHERE (glseries_sequence=:glseries_sequence);" );
+  else
     q.prepare( "UPDATE glseries "
                "SET glseries_notes=:glseries_notes, "
                "    glseries_source=:source,"
-	       "    glseries_doctype=:doctype,"
-	       "    glseries_docnumber=:docnumber,"
+               "    glseries_doctype=:doctype,"
+               "    glseries_docnumber=:docnumber,"
                "    glseries_distdate=:glseries_distdate "
                "WHERE (glseries_sequence=:glseries_sequence);" );
-    q.bindValue(":glseries_notes", _notes->toPlainText());
-    q.bindValue(":source",	_source->text());
-    q.bindValue(":doctype",	_doctype->currentText());
-    q.bindValue(":docnumber",	_docnumber->text());
-    q.bindValue(":glseries_sequence", _glsequence);
-    q.bindValue(":glseries_distdate", _date->date());
-    q.exec();
-    if (q.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
-      return false;
-    }
-//  }
+  q.bindValue(":glseries_notes", _notes->toPlainText());
+  q.bindValue(":source",	_source->text());
+  q.bindValue(":doctype",	_doctype->currentText());
+  q.bindValue(":docnumber",	_docnumber->text());
+  q.bindValue(":glseries_sequence", _glsequence);
+  q.bindValue(":glseries_distdate", _date->date());
+  q.exec();
+  if (q.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, q.lastError().databaseText(), __FILE__, __LINE__);
+    return false;
+  }
 
   q.prepare("SELECT SUM(glseries_amount) AS result "
             "  FROM glseries "
