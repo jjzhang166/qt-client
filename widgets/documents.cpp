@@ -25,6 +25,7 @@
 #include "mqlutil.h"
 
 #include "documents.h"
+#include "errorReporter.h"
 #include "imageview.h"
 #include "imageAssignment.h"
 #include "docAttach.h"
@@ -41,32 +42,33 @@ const Documents::DocumentMap Documents::_documentMap[] =
   DocumentMap( BOMItem,           "BMI" ),
   DocumentMap( BOOHead,           "BOH" ),
   DocumentMap( BOOItem,           "BOI" ),
-  DocumentMap( CRMAccount,        "CRMA"),
-  DocumentMap( Contact,           "T"   ),
-  DocumentMap( Customer,          "C"   ),
-  DocumentMap( Employee,          "EMP" ),
-  DocumentMap( Incident,          "INCDT"),
-  DocumentMap( Item,              "I"   ),
+  DocumentMap( CRMAccount,        "CRMA",  "crmacct_id", "crmaccount"    ),
+  DocumentMap( Contact,           "T",     "cntct_id",   "contact"       ),
+  DocumentMap( Customer,          "C",     "cust_id",    "customer"      ),
+  DocumentMap( Employee,          "EMP",   "emp_id",     "employee"      ),
+  DocumentMap( Incident,          "INCDT", "incdt_id",   "incident"      ),
+  DocumentMap( Item,              "I",     "item_id",    "item"          ),
   DocumentMap( ItemSite,          "IS"  ),
   DocumentMap( ItemSource,        "IR"  ),
   DocumentMap( Location,          "L"   ),
   DocumentMap( LotSerial,         "LS"   ),
-  DocumentMap( Opportunity,       "OPP" ),
-  DocumentMap( Project,           "J"   ),
-  DocumentMap( PurchaseOrder,     "P"   ),
+  DocumentMap( Opportunity,       "OPP",   "ophead_id",  "opportunity"   ),
+  DocumentMap( Project,           "J",     "prj_id",     "project"       ),
+  DocumentMap( PurchaseOrder,     "P",     "pohead_id",  "purchaseOrder" ),
   DocumentMap( PurchaseOrderItem, "PI"  ),
   DocumentMap( ReturnAuth,        "RA"  ),
   DocumentMap( ReturnAuthItem,    "RI"  ),
-  DocumentMap( Quote,             "Q"   ),
+  DocumentMap( Quote,             "Q"     "quhead_id",   "salesOrder"    ),
   DocumentMap( QuoteItem,         "QI"  ),
-  DocumentMap( SalesOrder,        "S"   ),
+  DocumentMap( SalesOrder,        "S",    "sohead_id",   "salesOrder"    ),
   DocumentMap( SalesOrderItem,    "SI"  ),
-  DocumentMap( Todo,              "TODO"),
+  DocumentMap( TimeExpense,       "TE"  ),
+  DocumentMap( Todo,              "TODO", "todoitem_id", "todoItem"      ),
   DocumentMap( TransferOrder,     "TO"  ),
   DocumentMap( TransferOrderItem, "TI"  ),
-  DocumentMap( Vendor,            "V"   ),
+  DocumentMap( Vendor,            "V",    "vend_id",     "vendor"        ),
   DocumentMap( Warehouse,         "WH"  ),
-  DocumentMap( WorkOrder,         "W"   ),
+  DocumentMap( WorkOrder,         "W",    "wo_id",       "workOrder"     ),
 };
 
 GuiClientInterface* Documents::_guiClientInterface = 0;
@@ -85,6 +87,8 @@ Documents::Documents(QWidget *pParent) :
   _doc->addColumn(tr("Name"), -1,  Qt::AlignLeft, true, "name" );
   _doc->addColumn(tr("Description"),  -1, Qt::AlignLeft, true, "description");
   _doc->addColumn(tr("Relationship"),  _itemColumn, Qt::AlignLeft,true, "purpose");
+  _doc->addColumn(tr("Can View"), _ynColumn, Qt::AlignCenter, false, "canview");
+  _doc->addColumn(tr("Can Edit"), _ynColumn, Qt::AlignCenter, false, "canedit");
   
   connect(_attachDoc, SIGNAL(clicked()), this, SLOT(sAttachDoc()));
   connect(_editDoc, SIGNAL(clicked()), this, SLOT(sEditDoc()));
@@ -209,6 +213,8 @@ void Documents::sInsertDocass(QString target_type, int target_id)
   ins.bindValue(":targetid", target_id);
   ins.bindValue(":targettype", target_type);
   ins.exec();
+  ErrorReporter::error(QtCriticalMsg, this, tr("Attachment Error"),
+                       ins, __FILE__, __LINE__);
 }
 
 void Documents::sEditDoc()
@@ -229,7 +235,7 @@ void Documents::sOpenDoc(QString mode)
   else
     params.append("mode", mode);
 
-  //image -- In the future this needs to be changed to use docass instead of imageass
+  // TODO: image -- change to use docass instead of imageass
   if (docType == "IMG")
   {
     XSqlQuery img;
@@ -239,6 +245,10 @@ void Documents::sOpenDoc(QString mode)
     img.bindValue(":imageass_id", _doc->id());
     img.exec();
     img.first();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Image Info"),
+                             img, __FILE__, __LINE__))
+      return;
+
     params.append("image_id", img.value("imageass_image_id").toInt());
     imageview newdlg(this, "", TRUE);
     newdlg.set(params);
@@ -247,7 +257,8 @@ void Documents::sOpenDoc(QString mode)
       refresh();
     return;
   }
-  //url -- In the future this needs to be changed to use docass instead of url
+  // TODO: url -- change to use docass instead of url
+  // TODO: separate URL from FILE handling and replace use of url view
   else if (docType == "URL" || docType == "FILE")
   {
     if (mode == "edit")
@@ -277,14 +288,14 @@ void Documents::sOpenDoc(QString mode)
       QFileInfo fi( qfile.value("url_url").toString() );
       QDir tdir;
       QString fileName = fi.fileName();
-      QString filePath = tdir.tempPath() + "/xtTempDoc/" + qfile.value("url_id").toString() + "/";
+      QString filePath = tdir.tempPath() + "/xtTempDoc/" + qfile.value("docass_id").toString() + "/";
       QFile tfile(filePath + fileName);
 
       // Remove any previous watches
       if (_guiClientInterface)
         _guiClientInterface->removeDocumentWatch(tfile.fileName());
 
-      if (!tdir.exists(filePath))
+      if (! tdir.exists(filePath))
         tdir.mkpath(filePath);
 
       if (!tfile.open(QIODevice::WriteOnly))
@@ -307,9 +318,12 @@ void Documents::sOpenDoc(QString mode)
         _guiClientInterface->addDocumentWatch(tfile.fileName(),qfile.value("url_id").toInt());
       return;
     }
+    else if (ErrorReporter::error(QtCriticalMsg, this,
+                                  tr("Error Getting Assignment"),
+                                  qfile, __FILE__, __LINE__))
+      return;
     else
     {
-     //If url scheme is missing, we'll assume it is "file" for now.
       QUrl url(_doc->currentItem()->rawValue("description").toString());
       if (url.scheme().isEmpty())
         url.setScheme("file");
@@ -317,93 +331,37 @@ void Documents::sOpenDoc(QString mode)
       return;
     }
   }
-  else if (docType == "INCDT")
-  {
-    params.append("incdt_id", targetid);
-    ui = "incident";
-  }
-  else if (docType == "TODO")
-  {
-    params.append("todoitem_id", targetid);
-    ui = "todoItem";
-  }
-  else if (docType == "OPP")
-  {
-    params.append("ophead_id", targetid);
-    ui = "opportunity";
-  }
-  else if (docType == "J")
-  {
-    params.append("prj_id", targetid);
-    ui = "project";
-  }
-  else if (docType == "CRMA")
-  {
-    params.append("crmacct_id", targetid);
-    ui = "crmaccount";
-  }
-  else if (docType == "T")
-  {
-    params.append("cntct_id", targetid);
-    ui = "contact";
-  }
-  else if (docType == "V")
-  {
-    params.append("vend_id", targetid);
-    ui = "vendor";
-  }
-  else if (docType == "I")
-  {
-    params.append("item_id", targetid);
-    ui = "item";
-  }
-  else if (docType == "Q")
-  {
-    params.append("quhead_id", targetid);
-    ui = "salesOrder";
-  }
-  else if (docType == "S")
-  {
-    params.append("sohead_id", targetid);
-    ui = "salesOrder";
-  }
-  else if (docType == "P")
-  {
-    params.append("pohead_id", targetid);
-    ui = "purchaseOrder";
-  }
-  else if (docType == "W")
-  {
-    params.append("wo_id", targetid);
-    ui = "workOrder";
-  }
-  else if (docType == "EMP")
-  {
-    params.append("emp_id", targetid);
-    ui = "employee";
-  }
-  else if (docType == "C")
-  {
-    params.append("cust_id", targetid);
-    ui = "customer";
-  }
   else
   {
-    QMessageBox::critical(this, tr("Error"),
-                          tr("Unknown File Type."));
-    return;
+    unsigned int i = 0;
+    // TODO: find a better data structure than array of structs for _documentMap
+    for (  ; i < sizeof(_documentMap) / sizeof(_documentMap[0]); i++)
+      if (_documentMap[i].ident == docType)
+      {
+        params.append(_documentMap[i].keyparam, targetid);
+        ui = _documentMap[i].uiname;
+        break;
+      }
+    if (i >= sizeof(_documentMap) / sizeof(_documentMap[0]))
+    {
+      QMessageBox::critical(this, tr("Error"),
+                            tr("Unknown document type %1").arg(docType));
+      return;
+    }
   }
 
   QWidget* w = 0;
   if (parentWidget()->window())
   {
     if (parentWidget()->window()->isModal())
-      w = _guiClientInterface->openWindow(ui, params, parentWidget()->window() , Qt::WindowModal, Qt::Dialog);
+      w = _guiClientInterface->openWindow(ui, params, parentWidget()->window(),
+                                          Qt::WindowModal, Qt::Dialog);
     else
-      w = _guiClientInterface->openWindow(ui, params, parentWidget()->window() , Qt::NonModal, Qt::Window);
+      w = _guiClientInterface->openWindow(ui, params, parentWidget()->window(),
+                                          Qt::NonModal, Qt::Window);
   }
 
-  if (w->inherits("QDialog"))
+  if (w && w->inherits("QDialog"))
   {
     QDialog* newdlg = qobject_cast<QDialog*>(w);
     newdlg->exec();
@@ -460,6 +418,8 @@ void Documents::sDetachDoc()
   }
   detach.bindValue(":docid", _doc->id());
   detach.exec();
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Detaching"),
+                       detach, __FILE__, __LINE__);
   refresh();
 }
 
@@ -477,6 +437,8 @@ void Documents::refresh()
   QString sql("SELECT id, target_number, target_type, "
               " target_id AS target_number_xtidrole, source_type, source_id, purpose, "
               " name, description, "
+              " hasPrivOnObject('view', target_type, target_id) AS canview,"
+              " hasPrivOnObject('edit', target_type, target_id) AS canedit,"
               " CASE WHEN (purpose='I') THEN :inventory"
               " WHEN (purpose='P') THEN :product"
               " WHEN (purpose='E') THEN :engineering"
@@ -503,6 +465,7 @@ void Documents::refresh()
               " WHEN (target_type='Q') THEN :quote "
               " WHEN (target_type='V') THEN :vendor "
               " WHEN (target_type='W') THEN :wo "
+              " WHEN (target_type='TE') THEN :timeexpense "
               " WHEN (target_type='TODO') THEN :todo "
               " ELSE :error "
               " END AS target_type_qtdisplayrole "
@@ -528,6 +491,7 @@ void Documents::refresh()
   query.bindValue(":wo", tr("Work Order"));
   query.bindValue(":image", tr("Image"));
   query.bindValue(":incident", tr("Incident"));
+  query.bindValue(":timeexpense", tr("Time Expense"));
   query.bindValue(":todo", tr("To-Do"));
   query.bindValue(":task", tr("Task"));
   query.bindValue(":project", tr("Project"));
@@ -545,6 +509,8 @@ void Documents::refresh()
   query.bindValue(":sourceid", _sourceid);
   query.exec();
   _doc->populate(query,TRUE);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Documents"),
+                       query, __FILE__, __LINE__);
 }
 
 void Documents::handleSelection(bool /*pReadOnly*/)
@@ -561,8 +527,8 @@ void Documents::handleSelection(bool /*pReadOnly*/)
   }
 
   bool valid = (_doc->selectedItems().count() > 0);
-  _editDoc->setEnabled(valid && !_readOnly);
-  _viewDoc->setEnabled(valid);
+  _editDoc->setEnabled(valid && !_readOnly && _doc->currentItem()->rawValue("canedit").toBool());
+  _viewDoc->setEnabled(valid && _doc->currentItem()->rawValue("canview").toBool());
 }
 
 void Documents::handleItemSelected()

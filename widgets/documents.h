@@ -51,8 +51,9 @@ class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
       Project,		PurchaseOrder,      PurchaseOrderItem,
       ReturnAuth,       ReturnAuthItem,     Quote, 
       QuoteItem,        SalesOrder,         SalesOrderItem,
-      Todo,             TransferOrder,      TransferOrderItem,
-      Vendor,           Warehouse,          WorkOrder
+      TimeExpense,      Todo,               TransferOrder,
+      TransferOrderItem,Vendor,             Warehouse,
+      WorkOrder
     };
 
     static GuiClientInterface *_guiClientInterface;
@@ -63,12 +64,19 @@ class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
     struct DocumentMap
     {
       enum DocumentSources source;
-      const char *        ident;
+      const char          *ident;
+      const char          *keyparam;
+      const char          *uiname;
 
-      DocumentMap(enum DocumentSources s, const char * i)
+      DocumentMap(enum DocumentSources s,
+                  const char *i,
+                  const char *k = 0,
+                  const char *u = 0)
       {
-        source = s;
-        ident = i;
+        source   = s;
+        ident    = i;
+        keyparam = k;
+        uiname   = u;
       }
     };
     static const struct DocumentMap _documentMap[]; // see Documents.cpp for init
