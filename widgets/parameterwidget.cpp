@@ -12,11 +12,11 @@
 #include <xsqlquery.h>
 
 #include <QCheckBox>
-#include <QtScript>
+#include <QDebug>
 #include <QMessageBox>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QDebug>
+#include <QtScript>
 
 #ifdef Q_WS_MAC
 #include <QFont>
@@ -57,11 +57,11 @@
            qtablewidget violates the one-unit-high rule
  */
 
-/** \ingroup widgets
+/** @ingroup widgets
 
-    \class ParameterWidget
+    @class ParameterWidget
 
-    \brief The ParameterWidget provides a consistent user and
+    @brief The ParameterWidget provides a consistent user and
            programming interface for managing query criteria.
 
     The ParameterWidget can be used to set filtering criteria to
@@ -86,9 +86,9 @@
 
  */
 
-/** \brief Create a new Parameter Widget.
-    \param pParent The parent of this widget
-    \param pName   The object name to assign to this widget
+/** @brief Create a new Parameter Widget.
+    @param pParent The parent of this widget
+    @param pName   The object name to assign to this widget
   */
 ParameterWidget::ParameterWidget(QWidget *pParent, const char *pName)  :
     QWidget(pParent)
@@ -107,14 +107,14 @@ ParameterWidget::ParameterWidget(QWidget *pParent, const char *pName)  :
   _filterGroup->setVisible(false);
   _filterButton->setChecked(false);
 
-  connect(_addFilterRow, SIGNAL(clicked()), this, SLOT( addParam() ) );
-  connect(_filterSignalMapper, SIGNAL(mapped(int)), this, SLOT( removeParam(int) ));
-  connect(_saveButton, SIGNAL(clicked()), this, SLOT( save() ) );
-  connect(_manageButton, SIGNAL(clicked()), this, SLOT( sManageFilters() ) );
-  connect(_filterList, SIGNAL(currentIndexChanged(int)), this, SLOT( applySaved(int) ) );
-  connect(_filterList, SIGNAL(currentIndexChanged(int)), this, SLOT( setFiltersDefault() ) );
-  connect(this, SIGNAL(updated()), this, SLOT( toggleSave() ) );
-  connect(_filterButton, SIGNAL(toggled(bool)), this, SLOT(setFiltersVisible(bool)));
+  connect(_addFilterRow,              SIGNAL(clicked()), this, SLOT(addParam()));
+  connect(_filterButton,          SIGNAL(toggled(bool)), this, SLOT(setFiltersVisible(bool)));
+  connect(_filterList, SIGNAL(currentIndexChanged(int)), this, SLOT(applySaved(int)));
+  connect(_filterList, SIGNAL(currentIndexChanged(int)), this, SLOT(setFiltersDefault()));
+  connect(_filterSignalMapper,      SIGNAL(mapped(int)), this, SLOT(removeParam(int)));
+  connect(_manageButton,              SIGNAL(clicked()), this, SLOT(sManageFilters()));
+  connect(_saveButton,                SIGNAL(clicked()), this, SLOT(save()));
+  connect(this,                       SIGNAL(updated()), this, SLOT(toggleSave()));
 
   _saveButton->setShortcut(QKeySequence::Save);
   _saveButton->setToolTip(_saveButton->text()
@@ -128,19 +128,17 @@ void ParameterWidget::showEvent(QShowEvent * event)
 
   if(!_initialized)
   {
-    QString pname;
     if(window())
-      pname = window()->objectName() + "/";
-    _settingsName = pname + objectName();
+      _name = window()->objectName() + "/";
+    _settingsName = _name + objectName();
     if(_x_preferences)
       setFiltersVisible(_x_preferences->boolean(_settingsName + "/checked"));
     _initialized = true;
   }
   QWidget::showEvent(event);
-
 }
 
-/** \brief Add name/value pairs to the input ParameterList
+/** @brief Add name/value pairs to the input ParameterList
 	   to reflect the current user selections.
 
     The ParameterList passed in to this method is modified to reflect
@@ -151,7 +149,7 @@ void ParameterWidget::showEvent(QShowEvent * event)
     This should be used carefully, as cached ParameterLists may have
     name/value pairs that the caller does not expect.
 
-    \param[in,out] pParams The ParameterList to modify
+    @param[in,out] pParams The ParameterList to modify
 
 */
 void ParameterWidget::appendValue(ParameterList &pParams)
@@ -162,15 +160,13 @@ void ParameterWidget::appendValue(ParameterList &pParams)
     i.next();
     QPair<QString, QVariant> tempPair = i.value();
     if (pParams.inList(tempPair.first))
-    {
       pParams.remove(tempPair.first);
-    }
 
     pParams.append(tempPair.first, tempPair.second);
   }
 }
 
-/** \brief Find the default filter set for the ParameterWidget with
+/** @brief Find the default filter set for the ParameterWidget with
            the current parent and apply it.
 
     This method searches for the default filter set based on the
@@ -183,9 +179,9 @@ void ParameterWidget::appendValue(ParameterList &pParams)
 void ParameterWidget::applyDefaultFilterSet()
 {
   XSqlQuery qry;
-  QString filter_name;
-  int filter_id = -1;
-  QString pname;
+  QString   filter_name;
+  int       filter_id = -1;
+  QString   pname;
 
   if(window())
     pname = window()->objectName() + "/";
@@ -227,16 +223,16 @@ void ParameterWidget::applyDefaultFilterSet()
 
 void ParameterWidget::addParam()
 {
-  XComboBox *xcomboBox = new XComboBox(_filterGroup);
-  QToolButton *toolButton = new QToolButton(_filterGroup);
-  QLineEdit *lineEdit = new QLineEdit(_filterGroup);
-  QGridLayout *gridLayout = new QGridLayout();
-  QVBoxLayout *xcomboLayout = new QVBoxLayout();
+  XComboBox   *xcomboBox     = new XComboBox(_filterGroup);
+  QToolButton *toolButton    = new QToolButton(_filterGroup);
+  QLineEdit   *lineEdit      = new QLineEdit(_filterGroup);
+  QGridLayout *gridLayout    = new QGridLayout();
+  QVBoxLayout *xcomboLayout  = new QVBoxLayout();
   QHBoxLayout *widgetLayout1 = new QHBoxLayout();
   QVBoxLayout *widgetLayout2 = new QVBoxLayout();
-  QVBoxLayout *buttonLayout = new QVBoxLayout();
+  QVBoxLayout *buttonLayout  = new QVBoxLayout();
 
-  int nextRow = _filtersLayout->rowCount();
+  int     nextRow = _filtersLayout->rowCount();
   QString currRow = QString().setNum(nextRow);
 
   // Set up objects
@@ -317,15 +313,15 @@ void ParameterWidget::addParam()
 
 }
 
-/** \brief Add a new filter to the set of available filters.
+/** @brief Add a new filter to the set of available filters.
 
-  \param pName      The user-visible name for this filter to distinguish
+  @param pName      The user-visible name for this filter to distinguish
                     it from other filters in the same set
-  \param pParam     The name to use for the parameter in the ParameterList
-  \param pType      The type of widget for the user to enter a criterion in
-  \param pDefault   The default value to use for this parameter
-  \param pRequired  Required parameters cannot be removed from the filter set
-  \param pExtraInfo A query string to use if pType indicates a combo box or multiselect
+  @param pParam     The name to use for the parameter in the ParameterList
+  @param pType      The type of widget for the user to enter a criterion in
+  @param pDefault   The default value to use for this parameter
+  @param pRequired  Required parameters cannot be removed from the filter set
+  @param pExtraInfo A query string to use if pType indicates a combo box or multiselect
 */
 void ParameterWidget::append(QString pName, QString pParam, ParameterWidgetTypes pType, QVariant pDefault, bool pRequired, QString pExtraInfo)
 {
@@ -365,15 +361,15 @@ void ParameterWidget::append(QString pName, QString pParam, ParameterWidgetTypes
   resetEmptyParameter();
 }
 
-/** \brief Add a new XComboBox-based filter to the set of available filters.
+/** @brief Add a new XComboBox-based filter to the set of available filters.
 
-  \param pName      The user-visible name for this filter to distinguish
+  @param pName      The user-visible name for this filter to distinguish
                     it from other filters in the same set
-  \param pParam     The name to use for the parameter in the ParameterList
-  \param pType      Set the XComboBox to use the corresponding
+  @param pParam     The name to use for the parameter in the ParameterList
+  @param pType      Set the XComboBox to use the corresponding
                     XComboBox::XComboBoxTypes value
-  \param pDefault   The default internal id to select for this XComboBox
-  \param pRequired  Required parameters cannot be removed from the filter set
+  @param pDefault   The default internal id to select for this XComboBox
+  @param pRequired  Required parameters cannot be removed from the filter set
 */
 void ParameterWidget::appendComboBox(QString pName, QString pParam, int pType, QVariant pDefault, bool pRequired)
 {
@@ -395,14 +391,14 @@ void ParameterWidget::appendComboBox(QString pName, QString pParam, int pType, Q
   resetEmptyParameter();
 }
 
-/** \brief Add a new XComboBox-based filter to the set of available filters.
+/** @brief Add a new XComboBox-based filter to the set of available filters.
 
-  \param pName      The user-visible name for this filter to distinguish
+  @param pName      The user-visible name for this filter to distinguish
                     it from other filters in the same set
-  \param pParam     The name to use for the parameter in the ParameterList
-  \param pQuery     Set the XComboBox to populate itself with this query
-  \param pDefault   The default internal id to select for this XComboBox
-  \param pRequired  Required parameters cannot be removed from the filter set
+  @param pParam     The name to use for the parameter in the ParameterList
+  @param pQuery     Set the XComboBox to populate itself with this query
+  @param pDefault   The default internal id to select for this XComboBox
+  @param pRequired  Required parameters cannot be removed from the filter set
 */
 void ParameterWidget::appendComboBox(QString pName, QString pParam, QString pQuery, QVariant pDefault, bool pRequired)
 {
@@ -544,118 +540,131 @@ void ParameterWidget::applySaved(int pId, int filter_id)
         addParam();
 
         QLayoutItem *test = _filtersLayout->itemAtPosition(windowIdx, 0)->layout()->itemAt(0);
-        XComboBox *mybox = (XComboBox*)test->widget();
-
-        int idx = mybox->findText(key);
-
-        mybox->setCurrentIndex(idx);
+        XComboBox *mybox = qobject_cast<XComboBox*>(test->widget());
+        if (mybox)
+          mybox->setCurrentIndex(mybox->findText(key));
 	
         found = getFilterWidget(windowIdx);
 
         int widgetType = tempFilterList[2].toInt();
 
-        //grab pointer to newly created filter object
         switch (widgetType)
         {
         case Date:
-          DLineEdit *dLineEdit;
-          dLineEdit = qobject_cast<DLineEdit*>(found);
+          {
+          DLineEdit *dLineEdit = qobject_cast<DLineEdit*>(found);
           if (dLineEdit != 0)
             dLineEdit->setDate(today.addDays(tempFilterList[1].toInt()), true);
+          }
           break;
         case User:
-          UsernameCluster *usernameCluster;
-          usernameCluster = qobject_cast<UsernameCluster*>(found);
+          {
+          UsernameCluster *usernameCluster = qobject_cast<UsernameCluster*>(found);
           if (usernameCluster != 0)
             usernameCluster->setUsername(tempFilterList[1]);
+          }
           break;
         case Crmacct:
-          CRMAcctCluster *crmacctCluster;
-          crmacctCluster = qobject_cast<CRMAcctCluster*>(found);
+          {
+          CRMAcctCluster *crmacctCluster = qobject_cast<CRMAcctCluster*>(found);
           if (crmacctCluster != 0)
             crmacctCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Customer:
-          CustCluster *custCluster;
-          custCluster = qobject_cast<CustCluster*>(found);
+          {
+          CustCluster *custCluster = qobject_cast<CustCluster*>(found);
           if (custCluster != 0)
             custCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Shipto:
-          ShiptoCluster *shiptoCluster;
-          shiptoCluster = qobject_cast<ShiptoCluster*>(found);
+          {
+          ShiptoCluster *shiptoCluster = qobject_cast<ShiptoCluster*>(found);
           if (shiptoCluster != 0)
             shiptoCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Vendor:
-          VendorCluster *vendCluster;
-          vendCluster = qobject_cast<VendorCluster*>(found);
+          {
+          VendorCluster *vendCluster = qobject_cast<VendorCluster*>(found);
           if (vendCluster != 0)
             vendCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Contact:
-          ContactCluster *contactCluster;
-          contactCluster = qobject_cast<ContactCluster*>(found);
+          {
+          ContactCluster *contactCluster = qobject_cast<ContactCluster*>(found);
           if (contactCluster != 0)
             contactCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case GLAccount:
-          GLCluster *glCluster;
-          glCluster = qobject_cast<GLCluster*>(found);
+          {
+          GLCluster *glCluster = qobject_cast<GLCluster*>(found);
           if (glCluster != 0)
             glCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Project:
-          ProjectCluster *projectCluster;
-          projectCluster = qobject_cast<ProjectCluster*>(found);
+          {
+          ProjectCluster *projectCluster = qobject_cast<ProjectCluster*>(found);
           if (projectCluster != 0)
             projectCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Item:
-          ItemCluster *itemCluster;
-          itemCluster = qobject_cast<ItemCluster*>(found);
+          {
+          ItemCluster *itemCluster = qobject_cast<ItemCluster*>(found);
           if (itemCluster != 0)
             itemCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Employee:
-          EmpCluster *employeeCluster;
-          employeeCluster = qobject_cast<EmpCluster*>(found);
+          {
+          EmpCluster *employeeCluster = qobject_cast<EmpCluster*>(found);
           if (employeeCluster != 0)
             employeeCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case SalesOrder:
-          OrderCluster *soCluster;
-          soCluster = qobject_cast<OrderCluster*>(found);
+          {
+          OrderCluster *soCluster = qobject_cast<OrderCluster*>(found);
           if (soCluster != 0)
             soCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case PurchaseOrder:
-          OrderCluster *poCluster;
-          poCluster = qobject_cast<OrderCluster*>(found);
+          {
+          OrderCluster *poCluster = qobject_cast<OrderCluster*>(found);
           if (poCluster != 0)
             poCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case TransferOrder:
-          OrderCluster *toCluster;
-          toCluster = qobject_cast<OrderCluster*>(found);
+          {
+          OrderCluster *toCluster = qobject_cast<OrderCluster*>(found);
           if (toCluster != 0)
             toCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case WorkOrder:
-          WoCluster *woCluster;
-          woCluster = qobject_cast<WoCluster*>(found);
+          {
+          WoCluster *woCluster = qobject_cast<WoCluster*>(found);
           if (woCluster != 0)
             woCluster->setId(tempFilterList[1].toInt());
+          }
           break;
         case Site:
-          WComboBox *wBox;
-          wBox = qobject_cast<WComboBox*>(found);
+          {
+          WComboBox *wBox = qobject_cast<WComboBox*>(found);
           if (wBox != 0)
             wBox->setId(tempFilterList[1].toInt());
+          }
           break;
         case XComBox:
-          XComboBox *xBox;
-          xBox = qobject_cast<XComboBox*>(found);
+          {
+          XComboBox *xBox = qobject_cast<XComboBox*>(found);
           if (xBox != 0)
           {
             //fix for setid not emitting id signal if id found for filter is first in list
@@ -665,11 +674,11 @@ void ParameterWidget::applySaved(int pId, int filter_id)
             xid = tempFilterList[1].toInt();
             xBox->setId(xid);
           }
+          }
           break;
          case Multiselect:
           {
-            QTableWidget *tab;
-            tab = qobject_cast<QTableWidget*>(found);
+            QTableWidget *tab = qobject_cast<QTableWidget*>(found);
             if (tab != 0)
             {
               QStringList   savedval = tempFilterList[1].split(",");
@@ -697,15 +706,15 @@ void ParameterWidget::applySaved(int pId, int filter_id)
           }
           break;
         case CheckBox:
-          QCheckBox *checkBox;
-          checkBox = qobject_cast<QCheckBox*>(found);
+          {
+          QCheckBox *checkBox = qobject_cast<QCheckBox*>(found);
           if (checkBox != 0)
             checkBox->setChecked(QVariant(tempFilterList[1]).toBool());
+          }
           break;
         default:
           {
-            QLineEdit *lineEdit;
-            lineEdit = qobject_cast<QLineEdit*>(found);
+            QLineEdit *lineEdit = qobject_cast<QLineEdit*>(found);
             if (lineEdit != 0)
             {
               lineEdit->setText(tempFilterList[1]);
@@ -739,115 +748,129 @@ void ParameterWidget::applySaved(int pId, int filter_id)
       addParam();
 
       QLayoutItem *test = _filtersLayout->itemAtPosition(windowIdx, 0)->layout()->itemAt(0);
-      XComboBox *mybox = (XComboBox*)test->widget();
-
-      int idx = mybox->findText(pp->name);
-
-      mybox->setCurrentIndex(idx);
+      XComboBox *mybox = qobject_cast<XComboBox*>(test->widget());
+      if (mybox)
+        mybox->setCurrentIndex(mybox->findText(pp->name));
 
       found = getFilterWidget(windowIdx);
 
       switch (pp->paramType)
       {
       case Date:
-        DLineEdit *dLineEdit;
-        dLineEdit = qobject_cast<DLineEdit*>(found);
+        {
+        DLineEdit *dLineEdit = qobject_cast<DLineEdit*>(found);
         if (dLineEdit != 0)
           dLineEdit->setDate(pp->defaultValue.toDate(), true);
+        }
         break;
       case User:
-        UsernameCluster *usernameCluster;
-        usernameCluster = qobject_cast<UsernameCluster*>(found);
+        {
+        UsernameCluster *usernameCluster = qobject_cast<UsernameCluster*>(found);
         if (usernameCluster != 0)
           usernameCluster->setUsername(pp->defaultValue.toString());
+        }
         break;
       case Crmacct:
-        CRMAcctCluster *crmacctCluster;
-        crmacctCluster = qobject_cast<CRMAcctCluster*>(found);
+        {
+        CRMAcctCluster *crmacctCluster = qobject_cast<CRMAcctCluster*>(found);
         if (crmacctCluster != 0)
           crmacctCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Customer:
-        CustCluster *custCluster;
-        custCluster = qobject_cast<CustCluster*>(found);
+        {
+        CustCluster *custCluster = qobject_cast<CustCluster*>(found);
         if (custCluster != 0)
           custCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Shipto:
-        ShiptoCluster *shiptoCluster;
-        shiptoCluster = qobject_cast<ShiptoCluster*>(found);
+        {
+        ShiptoCluster *shiptoCluster = qobject_cast<ShiptoCluster*>(found);
         if (shiptoCluster != 0)
           shiptoCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Vendor:
-        VendorCluster *vendCluster;
-        vendCluster = qobject_cast<VendorCluster*>(found);
+        {
+        VendorCluster *vendCluster = qobject_cast<VendorCluster*>(found);
         if (vendCluster != 0)
           vendCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Contact:
-        ContactCluster *contactCluster;
-        contactCluster = qobject_cast<ContactCluster*>(found);
+        {
+        ContactCluster *contactCluster = qobject_cast<ContactCluster*>(found);
         if (contactCluster != 0)
           contactCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case GLAccount:
-        GLCluster *glCluster;
-        glCluster = qobject_cast<GLCluster*>(found);
+        {
+        GLCluster *glCluster = qobject_cast<GLCluster*>(found);
         if (glCluster != 0)
           glCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Project:
-        ProjectCluster *projectCluster;
-        projectCluster = qobject_cast<ProjectCluster*>(found);
+        {
+        ProjectCluster *projectCluster = qobject_cast<ProjectCluster*>(found);
         if (projectCluster != 0)
           projectCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Item:
-        ItemCluster *itemCluster;
-        itemCluster = qobject_cast<ItemCluster*>(found);
+        {
+        ItemCluster *itemCluster = qobject_cast<ItemCluster*>(found);
         if (itemCluster != 0)
           itemCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Employee:
-        EmpCluster *employeeCluster;
-        employeeCluster = qobject_cast<EmpCluster*>(found);
+        {
+        EmpCluster *employeeCluster = qobject_cast<EmpCluster*>(found);
         if (employeeCluster != 0)
           employeeCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case SalesOrder:
-        OrderCluster *soCluster;
-        soCluster = qobject_cast<OrderCluster*>(found);
+        {
+        OrderCluster *soCluster = qobject_cast<OrderCluster*>(found);
         if (soCluster != 0)
           soCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case TransferOrder:
-        OrderCluster *toCluster;
-        toCluster = qobject_cast<OrderCluster*>(found);
+        {
+        OrderCluster *toCluster = qobject_cast<OrderCluster*>(found);
         if (toCluster != 0)
           toCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case PurchaseOrder:
-        OrderCluster *poCluster;
-        poCluster = qobject_cast<OrderCluster*>(found);
+        {
+        OrderCluster *poCluster = qobject_cast<OrderCluster*>(found);
         if (poCluster != 0)
           poCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case WorkOrder:
-        WoCluster *woCluster;
-        woCluster = qobject_cast<WoCluster*>(found);
+        {
+        WoCluster *woCluster = qobject_cast<WoCluster*>(found);
         if (woCluster != 0)
           woCluster->setId(pp->defaultValue.toInt());
+        }
         break;
       case Site:
-        WComboBox *wBox;
-        wBox = qobject_cast<WComboBox*>(found);
+        {
+        WComboBox *wBox = qobject_cast<WComboBox*>(found);
         if (wBox != 0)
           wBox->setId(pp->defaultValue.toInt());
+        }
         break;
       case XComBox:
-        XComboBox *xBox;
-        xBox = qobject_cast<XComboBox*>(found);
+        {
+        XComboBox *xBox = qobject_cast<XComboBox*>(found);
         if (xBox != 0)
         {
           //fix for setid not emitting id signal if id found for filter is first in list
@@ -857,11 +880,11 @@ void ParameterWidget::applySaved(int pId, int filter_id)
           xid = pp->defaultValue.toInt();
           xBox->setId(xid);
         }
+        }
         break;
        case Multiselect:
         {
-          QTableWidget *tab;
-          tab = qobject_cast<QTableWidget *>(found);
+          QTableWidget *tab = qobject_cast<QTableWidget *>(found);
           if (tab != 0)
           {
             QVariantList vlist = pp->defaultValue.toList();
@@ -883,18 +906,20 @@ void ParameterWidget::applySaved(int pId, int filter_id)
         }
         break;
       case CheckBox:
-          QCheckBox *checkBox;
-          checkBox = qobject_cast<QCheckBox*>(found);
+        {
+          QCheckBox *checkBox = qobject_cast<QCheckBox*>(found);
           if (checkBox != 0)
             checkBox->setChecked(pp->defaultValue.toBool());
+        }
           break;
       default:
-        QLineEdit *lineEdit;
-        lineEdit = qobject_cast<QLineEdit*>(found);
+        {
+        QLineEdit *lineEdit = qobject_cast<QLineEdit*>(found);
         if (lineEdit != 0)
         {
           lineEdit->setText(pp->defaultValue.toString());
           storeFilterValue(-1, lineEdit);
+        }
         }
         break;
       }
@@ -927,36 +952,49 @@ void ParameterWidget::resetMultiselect(QTableWidgetItem *item)
 
 void ParameterWidget::changeFilterObject(int index)
 {
-  XComboBox *mybox = (XComboBox *)sender();
+  XComboBox *mybox = qobject_cast<XComboBox *>(sender());
+  if (! mybox)
+    return;
+
   QStringList split = mybox->itemData(index).toString().split(":");
-  QString row = split.at(0);
-  int type = split.at(1).toInt();
+  QString     row   = split.at(0);
+  int         type  = split.at(1).toInt();
   XSqlQuery qry;
   int siteid = -1;
 
-  QWidget *widget = _filterGroup->findChild<QWidget *>("widget" + row);
-  QWidget *widget2 = _filterGroup->findChild<QWidget *>("widget2" + row);
-  QWidget *button = _filterGroup->findChild<QToolButton *>("button" + row);
-  QHBoxLayout *layout = _filterGroup->findChild<QHBoxLayout *>("widgetLayout1" + row);
+  QWidget     *widget  = _filterGroup->findChild<QWidget *>("widget" + row);
+  QWidget     *widget2 = _filterGroup->findChild<QWidget *>("widget2" + row);
+  QWidget     *button  = _filterGroup->findChild<QToolButton *>("button" + row);
+  QHBoxLayout *layout  = _filterGroup->findChild<QHBoxLayout *>("widgetLayout1" + row);
 
   if (widget && layout && button)
   {
     delete widget;
+    widget = 0;
     if (widget2)
+    {
       delete widget2;
+      widget2 = 0;
+    }
   }
   else
     return;
 
-  mybox->setDisabled(_params[paramIndex(mybox->currentText())]->required);
-  button->setDisabled(_params[paramIndex(mybox->currentText())]->required);
+  int pidx = paramIndex(mybox->currentText());
+  if (DEBUG)
+    qDebug() << __FUNCTION__ << index << mybox << mybox->currentText() << pidx;
+  if (pidx >= 0)
+  {
+    mybox->setDisabled(_params[pidx]->required);
+    button->setDisabled(_params[pidx]->required);
+  }
 
   QWidget *newWidget = 0;
   switch (type)
   {
   case Date:
     {
-      DLineEdit *dLineEdit= new DLineEdit(_filterGroup);
+      DLineEdit *dLineEdit = new DLineEdit(_filterGroup);
       newWidget = dLineEdit;
       connect(dLineEdit, SIGNAL(newDate(QDate)), this, SLOT( storeFilterValue() ) );
     }
@@ -1436,11 +1474,11 @@ void ParameterWidget::save()
 }
 
 /*!
-  Set the default value on an existing parameter \a pName to \a pDefault.  If
-  \a pDefault is not passed or 0 then the previous default, if any, will be removed.
-  if \a pAutoApply is true, then the default filter set will be automatically applied.
+  Set the default value on an existing parameter @a pName to @a pDefault.  If
+  @a pDefault is not passed or 0 then the previous default, if any, will be removed.
+  if @a pAutoApply is true, then the default filter set will be automatically applied.
 
-  \sa applyDefaultFilterSet();
+  @sa applyDefaultFilterSet();
 */
 void ParameterWidget::setDefault(QString pName, QVariant pDefault, bool pAutoApply)
 {
@@ -1458,7 +1496,7 @@ void ParameterWidget::setDefault(QString pName, QVariant pDefault, bool pAutoApp
 }
 
 /*!
-  Enable or disable an existing parameter \a pName to \a pEnabled.  Useful if
+  Enable or disable an existing parameter @a pName to @a pEnabled.  Useful if
   you want a specific value to be forced based on privilege control or some
   other specific criteria that would limit the user's selection ability. Is
   effective the next time a user instantiates the parameter.
@@ -1491,10 +1529,7 @@ void ParameterWidget::setFiltersVisible(bool visible)
 
 void ParameterWidget::setFiltersVisabiltyPreference()
 {
-  QString pname;
-  if(window())
-    pname = window()->objectName() + "/";
-  _settingsName = pname + this->objectName();
+  _settingsName = _name + objectName();
   if (!_settingsName.isEmpty() && _x_preferences)
   {
     _x_preferences->set(_settingsName + "/checked", _filterGroup->isVisible());
@@ -1521,10 +1556,10 @@ void ParameterWidget::setFiltersDefault()
 }
 
 /*!
-  Sets a saved filter set with Id \a defaultId to the currently selected filter.
-  If no \a pDefaultId is provided the default filter will be used.
+  Sets a saved filter set with Id @a defaultId to the currently selected filter.
+  If no @a pDefaultId is provided the default filter will be used.
 
-  \sa setSavedFiltersIndex(QString);
+  @sa setSavedFiltersIndex(QString);
   */
 void ParameterWidget::setSavedFilters(int defaultId)
 {
@@ -1659,21 +1694,22 @@ QWidget *ParameterWidget::getFilterWidget(const int index)
 // stores the value of a filter object into the filtervalues map
 void ParameterWidget::storeFilterValue(int pId, QObject* filter)
 {
-  if (!filter)
-    filter = (QObject *)sender();
-
   if (DEBUG)
     qDebug("%s::storeFilterValue(%d, %p)",
            qPrintable(objectName()), pId, filter);
 
-  if (! filter)
+  QWidget *wfilter = qobject_cast<QWidget *>(filter);
+  if (! wfilter)
+    wfilter = qobject_cast<QWidget *>(sender());
+
+  if (! wfilter)
   {
     qWarning("%s::storeFilterValue(%d, %p) could not find filter",
              qPrintable(objectName()), pId, filter);
     return;
   }
 
-  int foundRow = getFilterIndex(qobject_cast<QWidget*>(filter));
+  int foundRow = getFilterIndex(wfilter);
   if (foundRow < 0)
   {
     qWarning("%s::storeFilterValue(%d, %p) could not find filter index",
@@ -1682,59 +1718,62 @@ void ParameterWidget::storeFilterValue(int pId, QObject* filter)
   }
 
   QLayoutItem *selectorLI = _filtersLayout->itemAtPosition(foundRow, 0)->layout()->itemAt(0);
-  XComboBox *selector = qobject_cast<XComboBox*>(selectorLI->widget());
-  QString currText = selector->currentText();
-  ParamProps* pp = _params[paramIndex(currText)];
+  XComboBox   *selector = qobject_cast<XComboBox*>(selectorLI->widget());
+  QString      currText = selector->currentText();
+  ParamProps  *pp = (paramIndex(currText) >= 0) ? _params[paramIndex(currText)] : 0;
+  if (! pp)
+    return;
 
-  QString classname(filter->metaObject()->className());
+  QVariant     newvalue;
+
+  QString classname(wfilter->metaObject()->className());
 
   // check usernamecluster before pid because we key off text value for users
   if (classname == "UsernameCluster")
   {
-    UsernameCluster *usernameCluster = (UsernameCluster *)filter;
-    QString username = usernameCluster->username();
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(username));
-    emit updated();
+    UsernameCluster *usernameCluster = (UsernameCluster *)wfilter;
+    newvalue.setValue(usernameCluster->username());
   }
   else if (classname == "QCheckBox")
   {
-    QCheckBox *checkBox = (QCheckBox *)filter;
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(checkBox->isChecked()));
-    emit updated();
+    QCheckBox *checkBox = (QCheckBox *)wfilter;
+    newvalue.setValue(checkBox->isChecked());
   }
   else if (pId != -1)
   {
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(pId));
-    emit updated();
+    newvalue.setValue(pId);
   }
   else if (classname == "QLineEdit")
   {
-    QLineEdit *lineEdit = (QLineEdit *)filter;
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(lineEdit->text()));
-    emit updated();
+    QLineEdit *lineEdit = (QLineEdit *)wfilter;
+    newvalue.setValue(lineEdit->text());
   }
   else if (classname == "DLineEdit")
   {
-    DLineEdit *dateedit = qobject_cast<DLineEdit *>(filter);
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(dateedit->date()));
-    emit updated();
+    DLineEdit *dateedit = qobject_cast<DLineEdit *>(wfilter);
+    newvalue.setValue(dateedit->date());
   }
   else if (classname == "QTableWidget")
   {
-    QList<QTableWidgetItem*> selected = (qobject_cast<QTableWidget*>(filter))->selectedItems();
+    QList<QTableWidgetItem*> selected = (qobject_cast<QTableWidget*>(wfilter))->selectedItems();
     QVariantList value;
     for (int i = 0; i < selected.size(); i++)
       value.append(selected.at(i)->data(Qt::UserRole));
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(value));
-    emit updated();
+    newvalue.setValue(value);
   }
   else if (classname == "ProjectCluster")
   {
-    ProjectCluster *projectCluster = (ProjectCluster *)filter;
-    _filterValues[foundRow] = qMakePair(pp->param, QVariant(projectCluster->id()));
+    ProjectCluster *projectCluster = (ProjectCluster *)wfilter;
+    newvalue.setValue(projectCluster->id());
+  }
+
+  _filterWidgets[foundRow] = wfilter;
+
+  if (pp && ! newvalue.isNull())
+  {
+    _filterValues[foundRow] = qMakePair(pp->param, newvalue);
     emit updated();
   }
-  _filterWidgets[foundRow] = (QWidget *)filter;
 
   if (!_usedTypes.isEmpty())
     _usedTypes.remove(foundRow);
@@ -1761,7 +1800,7 @@ QString ParameterWidget::getParameterTypeKey(QString pValue)
 }
 
 /*!
-  Returns the index of an appended parameter definition of \a pName.
+  Returns the index of an appended parameter definition of @a pName.
 */
 int ParameterWidget::paramIndex(QString pName)
 {
@@ -1769,9 +1808,7 @@ int ParameterWidget::paramIndex(QString pName)
   while (i.hasNext())
   {
     i.next();
-    ParamProps* pp = i.value();
-
-    if (pName == pp->name)
+    if (pName == i.value()->name)
       return i.key();
   }
 
