@@ -17,12 +17,12 @@
 #include <QDesktopServices>
 
 #include <metasql.h>
-#include <QMessageBox>
 
 #include "xsqlquery.h"
 
-#include "contactwidget.h"
 #include "contactemail.h"
+#include "contactwidget.h"
+#include "errorReporter.h"
 
 void ContactWidget::init()
 {
@@ -979,7 +979,6 @@ void ContactWidget::sList()
   if (newdlg)
   {
     ParameterList params;
-    params.append("titalPlural", _titlePlural);
     params.append("searchAcctId", _searchAcctId);
     newdlg->set(params);
     int id = newdlg->exec();
@@ -999,7 +998,6 @@ void ContactWidget::sSearch()
     if (newdlg)
     {
         ParameterList params;
-        params.append("titlePlural", _titlePlural);
         params.append("searchAcctId", _searchAcctId);
         newdlg->set(params);
 	int id = newdlg->exec();
@@ -1081,39 +1079,31 @@ void ContactWidget::sLaunchWebaddr()
 ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WFlags) 
   : VirtualList(pParent, 0)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-    
-    _searchAcctId = -1;
-    _query = "SELECT cntct.*, crmacct_name "
-             "FROM cntct LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id) "
-             "WHERE (cntct_active) ";
+  setAttribute(Qt::WA_DeleteOnClose);
+  setWindowTitle(tr("Contacts"));
+  
+  _searchAcctId = -1;
 
-    if (!pName)
-	setObjectName("ContactList");
-    else
-        setObjectName(pName);
-    
-    _searchAcct = new QCheckBox();
-    _searchAcct->setMaximumWidth(480);
+  if (!pName)
+      setObjectName("ContactList");
+  else
+      setObjectName(pName);
+  
+  _searchAcct = new QCheckBox();
+  _dialogLyt->addWidget(_searchAcct);
+  _searchAcct->hide();
 
-    _listTab->setColumnCount(0);
+  _listTab->setColumnCount(0);
 
-    _listTab->addColumn(tr("First Name"),   80, Qt::AlignLeft, true, "cntct_first_name");
-    _listTab->addColumn(tr("Last Name"),    -1, Qt::AlignLeft, true, "cntct_last_name");
-    _listTab->addColumn(tr("CRM Account"), 100, Qt::AlignLeft, true, "crmacct_name");
-
-    resize(500, size().height());
-    setWindowTitle(tr("Contact List"));
+  _listTab->addColumn(tr("First Name"),   80, Qt::AlignLeft, true, "cntct_first_name");
+  _listTab->addColumn(tr("Last Name"),    -1, Qt::AlignLeft, true, "cntct_last_name");
+  _listTab->addColumn(tr("CRM Account"), 100, Qt::AlignLeft, true, "crmacct_name");
 }
 
 void ContactList::set(const ParameterList &pParams)
 {
   QVariant param;
   bool     valid;
-
-  param = pParams.value("titlePlural", &valid);
-  if (valid)
-    setWindowTitle(param.toString());
 
   param = pParams.value("searchAcctId", &valid);
   if (valid)
@@ -1128,55 +1118,40 @@ void ContactList::set(const ParameterList &pParams)
     if (crmacct.first())
     {
       _searchAcct->setChecked(true);
-      _dialogLyt->addWidget(_searchAcct);
       _searchAcct->setText(tr("Only contacts for %1").arg(crmacct.value("account").toString()));
-      connect(_searchAcct, SIGNAL(toggled(bool)), this, SLOT(sFillList(bool)));
+      connect(_searchAcct, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
     }
   }
-  else
-    _searchAcct->hide();
 
-  sFillList(_searchAcct->isChecked());
+  _searchAcct->setVisible(_searchAcctId > 0);
 }
 
-void ContactList::sFillList(const bool searchAcct)
+void ContactList::sFillList()
 {
-  if (searchAcct)
-    _extraClause = " AND (cntct_crmacct_id=:searchAcctId) ";
-  else
-    _extraClause = "";
+  MetaSQLQuery mql("SELECT cntct.*, crmacct_name "
+                   "  FROM cntct()"
+                   "  LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id)"
+                   " WHERE cntct_active"
+                   "<? if exists('crmacctid') ?>"
+                   " AND (cntct_crmacct_id=<? value('crmacctid') ?>)"
+                   "<? endif ?>"
+                   " ORDER BY cntct_last_name, cntct_first_name;");
+  ParameterList params;
+  if (_searchAcct->isChecked())
+    params.append("crmacctid",  _searchAcctId);
 
-  _listTab->clear();
-  XSqlQuery query;
-
-  query.prepare(_query +
-                _extraClause +
-		" ORDER BY cntct_last_name, cntct_first_name;");
-  query.bindValue(":searchAcctId", _searchAcctId);
-  query.exec();
-  query.first();
-  if (query.lastError().type() != QSqlError::NoError)
-  {
-    QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-				  .arg(__FILE__)
-				  .arg(__LINE__),
-			  query.lastError().databaseText());
+  XSqlQuery query = mql.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("List Error"),
+                           query, __FILE__, __LINE__))
     return;
-  }
-  else if (query.size() < 1)	// no rows found with limit so try without
+
+  if (query.size() < 1)	// no rows found with limit so try without
   {
-    query.prepare(_query +
-		  " ORDER BY cntct_last_name, cntct_first_name;");
-    query.exec();
-    query.first();
-    if (query.lastError().type() != QSqlError::NoError)
-    {
-      QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-				    .arg(__FILE__)
-				    .arg(__LINE__),
-			    query.lastError().databaseText());
+    ParameterList noparams;
+    mql.toQuery(noparams);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("List Error"),
+                             query, __FILE__, __LINE__))
       return;
-    }
   }
 
   _listTab->populate(query);
@@ -1212,91 +1187,82 @@ void ContactList::sSearch(const QString& pTarget)
 ContactSearch::ContactSearch(QWidget* pParent, Qt::WindowFlags pFlags)
     : VirtualSearch(pParent, pFlags)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-    
-    // remove the stuff we won't use
-    disconnect(_searchNumber,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    disconnect(_searchName,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    disconnect(_searchDescrip,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  setAttribute(Qt::WA_DeleteOnClose);
+  setWindowTitle(tr("Contacts"));
+  
+  // remove the stuff we won't use
+  disconnect(_searchNumber,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  disconnect(_searchName,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  disconnect(_searchDescrip,	SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
-    selectorsLyt->removeWidget(_searchNumber);
-    selectorsLyt->removeWidget(_searchName);
-    selectorsLyt->removeWidget(_searchNumber);
+  selectorsLyt->removeWidget(_searchNumber);
+  selectorsLyt->removeWidget(_searchName);
+  selectorsLyt->removeWidget(_searchNumber);
 
-    delete _searchNumber;
-    delete _searchName;
-    delete _searchDescrip;
-    _searchNumber = _searchName = _searchDescrip = 0;
+  delete _searchNumber;
+  delete _searchName;
+  delete _searchDescrip;
+  _searchNumber = _searchName = _searchDescrip = 0;
 
-    _listTab->setColumnCount(0);
+  _listTab->setColumnCount(0);
 
-    _searchFirst	= new XCheckBox(tr("Search First Name"),this);
-    _searchLast		= new XCheckBox(tr("Search Last Name"),this);
-    _searchCRMAcct	= new XCheckBox(tr("Search CRM Account"),this);
-    _searchTitle	= new XCheckBox(tr("Search Title"),this);
-    _searchPhones	= new XCheckBox(tr("Search Phone Numbers"),this);
-    _searchEmail	= new XCheckBox(tr("Search Email Address"),this);
-    _searchWebAddr	= new XCheckBox(tr("Search Web Address"),this);
-    _searchInactive	= new XCheckBox(tr("Show Inactive Contacts"),this);
-    
-    _searchFirst->setObjectName("_searchName");
-    _searchLast->setObjectName("_searchLast");
-    _searchCRMAcct->setObjectName("_searchCRMAcct");
-    _searchTitle->setObjectName("_searchTitle");
-    _searchPhones->setObjectName("_searchPhones");
-    _searchEmail->setObjectName("_searchEmail");
-    _searchWebAddr->setObjectName("_searchWebAddr");
-    _searchInactive->setObjectName("_searchInactive");
+  _searchFirst	= new XCheckBox(tr("Search First Name"),this);
+  _searchLast		= new XCheckBox(tr("Search Last Name"),this);
+  _searchCRMAcct	= new XCheckBox(tr("Search CRM Account"),this);
+  _searchTitle	= new XCheckBox(tr("Search Title"),this);
+  _searchPhones	= new XCheckBox(tr("Search Phone Numbers"),this);
+  _searchEmail	= new XCheckBox(tr("Search Email Address"),this);
+  _searchWebAddr	= new XCheckBox(tr("Search Web Address"),this);
+  _searchInactive	= new XCheckBox(tr("Show Inactive Contacts"),this);
+  
+  _searchFirst->setObjectName("_searchName");
+  _searchLast->setObjectName("_searchLast");
+  _searchCRMAcct->setObjectName("_searchCRMAcct");
+  _searchTitle->setObjectName("_searchTitle");
+  _searchPhones->setObjectName("_searchPhones");
+  _searchEmail->setObjectName("_searchEmail");
+  _searchWebAddr->setObjectName("_searchWebAddr");
+  _searchInactive->setObjectName("_searchInactive");
 
-    selectorsLyt->addWidget(_searchFirst,    0, 0);
-    selectorsLyt->addWidget(_searchLast,     1, 0);
-    selectorsLyt->addWidget(_searchCRMAcct,  2, 0);
-    selectorsLyt->addWidget(_searchTitle,    3, 0);
-    selectorsLyt->addWidget(_searchPhones,   0, 1);
-    selectorsLyt->addWidget(_searchEmail,    1, 1);
-    selectorsLyt->addWidget(_searchWebAddr,  2, 1);
-    selectorsLyt->addWidget(_searchInactive, 3, 1);
-    
-    _searchAcct = new QCheckBox();
-    _searchAcct->setMaximumWidth(480);
+  selectorsLyt->addWidget(_searchFirst,    0, 0);
+  selectorsLyt->addWidget(_searchLast,     1, 0);
+  selectorsLyt->addWidget(_searchCRMAcct,  2, 0);
+  selectorsLyt->addWidget(_searchTitle,    3, 0);
+  selectorsLyt->addWidget(_searchPhones,   0, 1);
+  selectorsLyt->addWidget(_searchEmail,    1, 1);
+  selectorsLyt->addWidget(_searchWebAddr,  2, 1);
+  selectorsLyt->addWidget(_searchInactive, 3, 1);
+  
+  _searchAcct = new QCheckBox();
+  _dialogLyt->addWidget(_searchAcct);
+  _searchAcct->hide();
 
-    connect(_searchFirst,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchLast,     SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchCRMAcct,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchTitle,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchPhones,   SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchEmail,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchWebAddr,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-    connect(_searchInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchFirst,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchLast,     SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchCRMAcct,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchTitle,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchPhones,   SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchEmail,    SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchWebAddr,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_searchInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
-    _listTab->addColumn(tr("First Name"),     80, Qt::AlignLeft, true, "cntct_first_name");
-    _listTab->addColumn(tr("Last Name"),      -1, Qt::AlignLeft, true, "cntct_last_name");
-    _listTab->addColumn(tr("CRM Account"),   100, Qt::AlignLeft, true, "crmacct_name");
-    _listTab->addColumn(tr("Title"),         100, Qt::AlignLeft, true, "cntct_title");
-    _listTab->addColumn(tr("Phone"),	      75, Qt::AlignLeft, true, "cntct_phone");
-    _listTab->addColumn(tr("Alt. Phone"),     75, Qt::AlignLeft, true, "cntct_phone2");
-    _listTab->addColumn(tr("Fax"),	      75, Qt::AlignLeft, true, "cntct_fax");
-    _listTab->addColumn(tr("Email Address"), 100, Qt::AlignLeft, true, "cntct_email");
-    _listTab->addColumn(tr("Web Address"),   100, Qt::AlignLeft, true, "cntct_webaddr");
+  _listTab->addColumn(tr("First Name"),     80, Qt::AlignLeft, true, "cntct_first_name");
+  _listTab->addColumn(tr("Last Name"),      -1, Qt::AlignLeft, true, "cntct_last_name");
+  _listTab->addColumn(tr("CRM Account"),   100, Qt::AlignLeft, true, "crmacct_name");
+  _listTab->addColumn(tr("Title"),         100, Qt::AlignLeft, true, "cntct_title");
+  _listTab->addColumn(tr("Phone"),	      75, Qt::AlignLeft, true, "cntct_phone");
+  _listTab->addColumn(tr("Alt. Phone"),     75, Qt::AlignLeft, true, "cntct_phone2");
+  _listTab->addColumn(tr("Fax"),	      75, Qt::AlignLeft, true, "cntct_fax");
+  _listTab->addColumn(tr("Email Address"), 100, Qt::AlignLeft, true, "cntct_email");
+  _listTab->addColumn(tr("Web Address"),   100, Qt::AlignLeft, true, "cntct_webaddr");
 
-    resize(800, size().height());
-
-    setObjectName("contactSearch");
-    _query = "SELECT cntct.*, crmacct_name "
-             "FROM cntct LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id) ";
-  }
+  setObjectName("contactSearch");
+}
 
 void ContactSearch::set(const ParameterList &pParams)
 {
   QVariant param;
   bool     valid;
-
-  param = pParams.value("titlePlural", &valid);
-  if (valid)
-  {
-    setWindowTitle(param.toString());
-    _titleLit->setText(param.toString());
-  }
 
   param = pParams.value("searchAcctId", &valid);
   if (valid)
@@ -1313,26 +1279,16 @@ void ContactSearch::set(const ParameterList &pParams)
       if (crmacct.first())
       {
         _searchAcct->setChecked(true);
-        _dialogLyt->addWidget(_searchAcct);
         _searchAcct->setText(tr("Only contacts for %1").arg(crmacct.value("account").toString()));
         connect(_searchAcct, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
       }
     }
-    else
-      _searchAcct->hide();
   }
-
-  sFillList();
+  _searchAcct->setVisible(_searchAcctId > 0);
 }
 
 void ContactSearch::sFillList()
 {
-  if (_searchAcct->isChecked())
-    _extraClause = " WHERE (cntct_crmacct_id=:searchAcctId) ";
-  else
-    _extraClause = "";
-
-  _listTab->clear();
   if (_search->text().isEmpty() ||
       (!_searchFirst->isChecked()    && !_searchLast->isChecked() &&
        !_searchCRMAcct->isChecked()  && !_searchTitle->isChecked() &&
@@ -1340,53 +1296,51 @@ void ContactSearch::sFillList()
        !_searchEmail->isChecked()    && !_searchWebAddr->isChecked() ))
     return;
 
-  QString limits =
-      "<? if exists(\"extraClause\") ?> "
-      "  AND "
-      "<? else ?>"
-      "  WHERE "
-      "<? endif ?> "
-      "<? if exists(\"searchInactive\") ?> "
-      "   true "
-      "<? else ?>"
-      "   cntct_active "
-      "<? endif ?>"
-      "<? if reExists(\"search[FLCTPEW]\") ?> "
-      "  AND ("
-      "  <? if exists(\"searchFirst\") ?> "
-      "     COALESCE(TRIM(cntct_first_name),'') || ' ' "
-      "  <? else ?>"
-      "    '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchLast\") ?> "
-      "     || COALESCE(TRIM(cntct_last_name),'') || '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchCRMAcct\") ?> "
-      "     || COALESCE(crmacct_name,'') || '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchTitle\") ?> "
-      "     || COALESCE(cntct_title,'') || '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchPhones\") ?> "
-      "    || COALESCE(cntct_phone,'') || '\n' "
-      "    || COALESCE(cntct_phone2,'') || '\n' "
-      "    || COALESCE(cntct_fax,'') || '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchEmail\") ?> "
-      "     || COALESCE(cntct_email,'') || '\n' "
-      "  <? endif ?>"
-      "  <? if exists(\"searchWebAddr\") ?> "
-      "     || COALESCE(cntct_webaddr,'') || '\n' "
-      "  <? endif ?>"
-      "  ~* <? value(\"searchText\") ?> ) "
-      "<? endif ?>"
-      "ORDER BY cntct_last_name, cntct_first_name, crmacct_number;";
-  QString sql = _query +
-                _extraClause.replace(":searchAcctId",
-                                     QString::number(_searchAcctId)) +
-                limits;
+  MetaSQLQuery mql("SELECT cntct.*, crmacct_name"
+                   "  FROM cntct()"
+                   "  LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id)"
+                   " WHERE TRUE"
+                   "<? if exists('crmacctid') ?>"
+                   "  AND (cntct_crmacct_id=<? value('crmacctid') ?>)"
+                   "<? endif ?>"
+                   "<? if not exists('searchInactive') ?> "
+                   "  AND cntct_active "
+                   "<? endif ?>"
+                   "<? if reExists('search[FLCTPEW]') ?> "
+                   "  AND ("
+                   "  <? if exists('searchFirst') ?> "
+                   "     COALESCE(TRIM(cntct_first_name),'') || ' ' "
+                   "  <? else ?>"
+                   "    E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchLast') ?> "
+                   "     || COALESCE(TRIM(cntct_last_name),'') || E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchCRMAcct') ?> "
+                   "     || COALESCE(crmacct_name,'') || E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchTitle') ?> "
+                   "     || COALESCE(cntct_title,'') || E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchPhones') ?> "
+                   "    || COALESCE(cntct_phone,'') || E'\n' "
+                   "    || COALESCE(cntct_phone2,'') || E'\n' "
+                   "    || COALESCE(cntct_fax,'') || E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchEmail') ?> "
+                   "     || COALESCE(cntct_email,'') || E'\n' "
+                   "  <? endif ?>"
+                   "  <? if exists('searchWebAddr') ?> "
+                   "     || COALESCE(cntct_webaddr,'') || E'\n' "
+                   "  <? endif ?>"
+                   "  ~* <? value('searchText') ?> ) "
+                   "<? endif ?>"
+                   "ORDER BY cntct_last_name, cntct_first_name, crmacct_number;");
 
   ParameterList params;
+  if (_searchAcct->isChecked())
+    params.append("crmacctid", _searchAcctId);
+
   if (_searchFirst->isChecked())
     params.append("searchFirst");
   if (_searchLast->isChecked())
@@ -1403,23 +1357,13 @@ void ContactSearch::sFillList()
     params.append("searchWebAddr");
   if (_searchInactive->isChecked())
     params.append("searchInactive");
-  if (! _extraClause.isEmpty())
-    params.append("extraClause", _extraClause);
 
   params.append("searchText", _search->text());
 
-  MetaSQLQuery mql(sql);
   XSqlQuery query = mql.toQuery(params);
-  if (query.lastError().type() != QSqlError::NoError)
-  {
-    QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-                          .arg(__FILE__)
-                          .arg(__LINE__),
-                          query.lastError().databaseText());
-    return;
-  }
-
   _listTab->populate(query);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Search Error"),
+                       query, __FILE__, __LINE__);
 }
 
 void ContactWidget::setMode(Mode p)

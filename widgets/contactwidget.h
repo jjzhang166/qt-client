@@ -45,7 +45,7 @@ public:
   virtual void set(const ParameterList & pParams);
 
 public slots:
-  virtual void sFillList(const bool searchAcct);
+  virtual void sFillList();
   virtual void sSearch(const QString&);
 
 protected:
@@ -54,8 +54,6 @@ protected:
 private:
   int _id;
   int _searchAcctId;
-  QString _query;
-  QString _extraClause;
 };
 
 class XTUPLEWIDGETS_EXPORT ContactSearch : public VirtualSearch
@@ -84,7 +82,6 @@ protected:
 private:
   int _searchAcctId;
   QString _query;
-  QString _extraClause;
 };
 
 class XTUPLEWIDGETS_EXPORT ContactWidget : public VirtualCluster

@@ -19,22 +19,23 @@
 ContactClusterLineEdit::ContactClusterLineEdit(QWidget* pParent, const char* pName) :
     CrmClusterLineEdit(pParent, "cntct()", "cntct_id", "cntct_name", 0, "cntct_title", "cntct_owner_username", 0, 0, pName, "cntct_active")
 {
-    _searchAcctId = -1;
+  _objtype      = "T";
+  _searchAcctId = -1;
 
-    setTitles(tr("Contact"), tr("Contacts"));
-    setUiName("contact");
-    setEditPriv("MaintainAllContacts");
-    setNewPriv("MaintainAllContacts");
-    setViewPriv("ViewAllContacts");
-    setEditOwnPriv("MaintainPersonalContacts");
-    setViewOwnPriv("ViewPersonalContacts");
+  setTitles(tr("Contact"), tr("Contacts"));
+  setUiName("contact");
+  setEditPriv("MaintainAllContacts");
+  setNewPriv("MaintainAllContacts");
+  setViewPriv("ViewAllContacts");
+  setEditOwnPriv("MaintainPersonalContacts");
+  setViewOwnPriv("ViewPersonalContacts");
 
-    _query = "SELECT cntct_id AS id, cntct_name AS number, cntct_title AS description, "
-             " cntct_active AS active, "
-             " cntct_first_name, cntct_last_name, crmacct_name, cntct_title, cntct_phone, "
-             " cntct_phone2,cntct_fax, cntct_email, cntct_webaddr "
-             "FROM cntct LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id) "
-             "WHERE (true) ";
+  _query = "SELECT cntct_id AS id, cntct_name AS number, cntct_title AS description, "
+           " cntct_active AS active, "
+           " cntct_first_name, cntct_last_name, crmacct_name, cntct_title, cntct_phone, "
+           " cntct_phone2,cntct_fax, cntct_email, cntct_webaddr "
+           "FROM cntct LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id) "
+           "WHERE (true) ";
 }
 
 void ContactClusterLineEdit::setNewAddr(QString line1, QString line2, QString line3,
@@ -60,7 +61,6 @@ void ContactClusterLineEdit::sList()
   if (newdlg)
   {
     ParameterList params;
-    params.append("titlePlural", tr("Contacts"));
     if (_searchAcctId != -1)
       params.append("searchAcctId", _searchAcctId);
     newdlg->set(params);
@@ -112,7 +112,6 @@ void ContactClusterLineEdit::sSearch()
   if (newdlg)
   {
     ParameterList params;
-    params.append("titalPlural", tr("Contacts"));
     if (_searchAcctId != -1)
       params.append("searchAcctId", _searchAcctId);
     newdlg->set(params);
@@ -263,7 +262,7 @@ void ContactCluster::setMinimalLayout(bool isMinimal)
     _grid->addWidget(_emailLit, 3, 2, 1, 1) ;
     _grid->addWidget(_email, 3, 3, 1, 1);
     _grid->addWidget(_faxLit, 4, 0, 1, 1);
-    _grid->addWidget(_fax,	4, 1, 1, 1);
+    _grid->addWidget(_fax,      4, 1, 1, 1);
     _grid->addWidget(_webaddrLit, 4, 2, 1, 1) ;
     _grid->addWidget(_webaddr, 4, 3, 1, 1);
   }
@@ -427,9 +426,9 @@ void ContactCluster::addNumberWidget(ContactClusterLineEdit* pNumberWidget)
     _grid->addLayout(hbox, 0, 1, 1, 3);
     setFocusProxy(pNumberWidget);
 
-    connect(_number,	SIGNAL(newId(int)),	this,	SIGNAL(newId(int)));
-    connect(_number,	SIGNAL(parsed()), 	this, 	SLOT(sRefresh()));
-    connect(_number,	SIGNAL(valid(bool)),	this,	SIGNAL(valid(bool)));
+    connect(_number,    SIGNAL(newId(int)),     this,   SIGNAL(newId(int)));
+    connect(_number,    SIGNAL(parsed()),       this,   SLOT(sRefresh()));
+    connect(_number,    SIGNAL(valid(bool)),    this,   SIGNAL(valid(bool)));
 }
 
 void ContactCluster::setName(int segment, const QString name)

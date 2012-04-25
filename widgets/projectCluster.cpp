@@ -46,6 +46,8 @@ ProjectLineEdit::ProjectType ProjectCluster::type()
 ProjectLineEdit::ProjectLineEdit(QWidget* pParent, const char* pName) :
     CrmClusterLineEdit(pParent, "prj", "prj_id", "prj_number", "prj_name", 0, "prj_owner_username", "prj_username", 0, pName)
 {
+  _objtype = "J";
+
   setTitles(tr("Project"), tr("Projects"));
   setUiName("project");
   setEditPriv("MaintainAllProjects");

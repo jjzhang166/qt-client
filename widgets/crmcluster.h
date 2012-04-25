@@ -27,7 +27,9 @@ class XTUPLEWIDGETS_EXPORT CrmClusterLineEdit : public VirtualClusterLineEdit
       Q_INVOKABLE inline virtual QString viewOwnPriv() const { return _viewOwnPriv; }
 
     public slots:
+      virtual void sList();
       virtual void sOpen();
+      virtual void sSearch();
       virtual void setEditOwnPriv(const QString& priv);
       virtual void setViewOwnPriv(const QString& priv);
 
@@ -50,11 +52,12 @@ class XTUPLEWIDGETS_EXPORT CrmClusterLineEdit : public VirtualClusterLineEdit
       QString _viewOwnPriv;
       QString _owner;
       QString _assignto;
+      QString _objtype;
       QString _ownerColName;
       QString _assigntoColName;
       QString _setQuery;
-      bool _hasOwner;
-      bool _hasAssignto;
+      bool    _hasAssignto;
+      bool    _hasOwner;
 
 };
 

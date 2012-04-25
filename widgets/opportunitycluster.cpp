@@ -19,6 +19,7 @@ OpportunityCluster::OpportunityCluster(QWidget* pParent, const char* pName) :
 OpportunityClusterLineEdit::OpportunityClusterLineEdit(QWidget* pParent, const char* pName) :
     CrmClusterLineEdit(pParent, "ophead", "ophead_id", "ophead_name", 0, "ophead_notes", "ophead_owner_username", "ophead_username", 0, pName)
 {
+    _objtype = "OPP";
     setTitles(tr("Opportunity"), tr("Opportunities"));
     setUiName("opportunity");
     setEditPriv("MaintainAllOpportunities");

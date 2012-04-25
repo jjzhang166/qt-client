@@ -14,6 +14,15 @@
 
 #define DEBUG false
 
+/* TODO: rewrite VirtualClusterLineEdit and CrmClusterLineEdit classes
+         (and some of their children) to use a map of table column names
+         and output column names. that'll make it easier to add columns
+         to the output (as in contacts and addresses) and reduce the
+         need for special-case handling.
+         it's unclear if sList and sSearch correctly implement
+         privilege enforcement.
+*/
+
 CrmClusterLineEdit::CrmClusterLineEdit(QWidget* pParent,
                                        const char* pTabName,
                                        const char* pIdColumn,
@@ -25,7 +34,9 @@ CrmClusterLineEdit::CrmClusterLineEdit(QWidget* pParent,
                                        const char* pExtra,
                                        const char* pName,
                                        const char* pActiveColumn) :
-    VirtualClusterLineEdit(pParent, pTabName, pIdColumn, pNumberColumn, pNameColumn, pDescripColumn, pExtra, pName, pActiveColumn)
+    VirtualClusterLineEdit(pParent, pTabName, pIdColumn, pNumberColumn, pNameColumn, pDescripColumn, pExtra, pName, pActiveColumn),
+    _hasAssignto(false),
+    _hasOwner(false)
 {
   setTableAndColumnNames(pTabName, pIdColumn, pNumberColumn, pNameColumn, pDescripColumn, pActiveColumn, pOwnerColumn, pAssignToColumn);
 }
@@ -218,4 +229,27 @@ void CrmClusterLineEdit::buildExtraClause()
     _extraClause = QString("'%1' IN (%2)").arg(_x_username).arg(userCols.join(","));
   }
 
+}
+
+// TODO: fix 9258 then add/subtract from the list of extra clauses
+void CrmClusterLineEdit::sList()
+{
+  QString oldextra = extraClause();
+
+  setExtraClause(QString(oldextra.isEmpty() ? " " : (oldextra + " AND "))
+                + QString("hasPrivOnObject('VIEW', '%1')").arg(_objtype));
+
+  VirtualClusterLineEdit::sList();
+  setExtraClause(oldextra);
+}
+
+void CrmClusterLineEdit::sSearch()
+{
+  QString oldextra = extraClause();
+
+  setExtraClause(QString(oldextra.isEmpty() ? " " : (oldextra + " AND "))
+                + QString("hasPrivOnObject('VIEW', '%1')").arg(_objtype));
+
+  VirtualClusterLineEdit::sSearch();
+  setExtraClause(oldextra);
 }

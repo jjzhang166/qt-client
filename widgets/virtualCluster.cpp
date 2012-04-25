@@ -965,7 +965,7 @@ void VirtualList::init()
 
     _searchLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     _select->setEnabled(false);
-    _listTab->setMinimumHeight(250);
+    //_listTab->setMinimumHeight(250);
     _titleLit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
     _dialogLyt                = new QVBoxLayout(this);
@@ -1096,7 +1096,6 @@ void VirtualList::sFillList()
 
 void VirtualList::showEvent(QShowEvent* e)
 {
-
   sFillList();
   QDialog::showEvent(e);
 }
@@ -1135,7 +1134,7 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
 
     _searchLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     _select->setEnabled(false);
-    _listTab->setMinimumHeight(250);
+    //_listTab->setMinimumHeight(250);
     _titleLit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
     _dialogLyt   = new QVBoxLayout(this);
