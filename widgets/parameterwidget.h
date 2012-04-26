@@ -90,6 +90,7 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
     QMap<int, QPair<QString, QVariant > > _filterValues;
     bool _initialized;
     bool _shared;
+    QString _name;
 
     struct ParamProps {
       QString name;
