@@ -1426,13 +1426,15 @@ void XComboBox::populate(XSqlQuery pQuery, int pSelected)
   int selected = (pSelected >= 0) ? pSelected : id();
   clear();
 
-  while (pQuery.next())
-  {
-    if (pQuery.record().count() < 3)
-      append(pQuery.value(0).toInt(), pQuery.value(1).toString());
-    else
-      append(pQuery.value(0).toInt(), pQuery.value(1).toString(), pQuery.value(2).toString());
-  }
+  // strange if/loop construct allows multiple comboboxes to use the same query
+  if (pQuery.first())
+    do
+    {
+      if (pQuery.record().count() < 3)
+        append(pQuery.value(0).toInt(), pQuery.value(1).toString());
+      else
+        append(pQuery.value(0).toInt(), pQuery.value(1).toString(), pQuery.value(2).toString());
+    } while (pQuery.next());
 
   setId(selected);
 }
