@@ -237,7 +237,8 @@ void CrmClusterLineEdit::sList()
   QString oldextra = extraClause();
 
   setExtraClause(QString(oldextra.isEmpty() ? " " : (oldextra + " AND "))
-                + QString("hasPrivOnObject('VIEW', '%1')").arg(_objtype));
+                + QString("hasPrivOnObject('VIEW', '%1', %2)")
+                .arg(_objtype).arg(_idColName));
 
   VirtualClusterLineEdit::sList();
   setExtraClause(oldextra);
@@ -248,7 +249,8 @@ void CrmClusterLineEdit::sSearch()
   QString oldextra = extraClause();
 
   setExtraClause(QString(oldextra.isEmpty() ? " " : (oldextra + " AND "))
-                + QString("hasPrivOnObject('VIEW', '%1')").arg(_objtype));
+                + QString("hasPrivOnObject('VIEW', '%1', %2)")
+                .arg(_objtype).arg(_idColName));
 
   VirtualClusterLineEdit::sSearch();
   setExtraClause(oldextra);
