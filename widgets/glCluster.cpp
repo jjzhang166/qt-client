@@ -10,7 +10,42 @@
 
 #include <QHBoxLayout>
 #include <QMessageBox>
+
+#include <metasql.h>
+
 #include "glcluster.h"
+
+static QString _listAndSearchQueryString(
+  "SELECT accnt_id, *,"
+  "       CASE accnt_type WHEN 'A' THEN <? value('asset') ?>"
+  "                       WHEN 'E' THEN <? value('expense') ?>"
+  "                       WHEN 'L' THEN <? value('liability') ?>"
+  "                       WHEN 'Q' THEN <? value('equity') ?>"
+  "                       WHEN 'R' THEN <? value('revenue') ?>"
+  "                       ELSE accnt_type"
+  "       END AS accnt_type_qtdisplayrole"
+  " FROM (ONLY accnt"
+  "       LEFT OUTER JOIN company ON (accnt_company=company_number)) "
+  "       LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type"
+  "                            AND accnt_subaccnttype_code=subaccnttype_code)"
+  " WHERE accnt_active"
+  "<? if exists('typelist') ?>"
+  "   AND (accnt_type IN (<? literal('typelist') ?>))"
+  "<? endif ?>"
+  "<? if not exists('showExternal') ?>"
+  "   AND (NOT COALESCE(company_external, false)) "
+  "<? endif ?>"
+  "<? if not exists('ignoreCompany') ?>"
+  "   AND (company_yearend_accnt_id <> -1)"
+  "   AND (company_gainloss_accnt_id <> -1)"
+  "   AND (company_dscrp_accnt_id <> -1)"
+  "<? endif ?>"
+  "<? if exists('searchtext') ?>"
+  "   AND ((accnt_name    ~* <? value('searchtext') ?>)"
+  "     OR (accnt_descrip ~* <? value('searchtext') ?>)"
+  "     OR (accnt_extref  ~* <? value('searchtext') ?>))"
+  "<? endif ?>"
+  " ORDER BY accnt_number, accnt_sub, accnt_profit;");
 
 GLClusterLineEdit::GLClusterLineEdit(QWidget* pParent, const char* pName) :
     VirtualClusterLineEdit(pParent, "accnt", "accnt_id", "accnt_name", "accnt_descrip", "accnt_extref", 0, pName, "accnt_active")
@@ -421,23 +456,17 @@ void accountList::set(const ParameterList &pParams)
 
 void accountList::sFillList()
 {
-  QString sql("SELECT accnt_id, *, "
-              "       CASE WHEN(accnt_type='A') THEN '" + tr("Asset") + "'"
-              "            WHEN(accnt_type='E') THEN '" + tr("Expense") + "'"
-              "            WHEN(accnt_type='L') THEN '" + tr("Liability") + "'"
-              "            WHEN(accnt_type='Q') THEN '" + tr("Equity") + "'"
-              "            WHEN(accnt_type='R') THEN '" + tr("Revenue") + "'"
-              "            ELSE accnt_type"
-              "       END AS accnt_type_qtdisplayrole "
-              "FROM (ONLY accnt LEFT OUTER JOIN"
-              "     company ON (accnt_company=company_number)) "
-              "     LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type AND accnt_subaccnttype_code=subaccnttype_code) ");
-
-  QStringList types;
-  QStringList where;
+  ParameterList params;
+  params.append("asset",     tr("Asset"));
+  params.append("expense",   tr("Expense"));
+  params.append("liability", tr("Liability"));
+  params.append("equity",    tr("Equity"));
+  params.append("revenue",   tr("Revenue"));
 
   if(_type > 0)
   {
+    QStringList types;
+
     if(_type & GLCluster::cAsset)
       types << ("'A'");
     if(_type & GLCluster::cLiability)
@@ -448,28 +477,19 @@ void accountList::sFillList()
       types << ("'R'");
     if(_type & GLCluster::cEquity)
       types << ("'Q'");
-  }
-  if(!types.isEmpty())
-    where << ("(accnt_type IN (" + types.join(",") + ")) ");
 
-  if (! _showExternal)
-    where << "(NOT COALESCE(company_external, false)) ";
-
-  if (! _ignoreCompany)
-  {
-    where << "(company_yearend_accnt_id <> -1)";
-    where << "(company_gainloss_accnt_id <> -1)";
-    where << "(company_dscrp_accnt_id <> -1)";
+    if(!types.isEmpty())
+      params.append("typelist", types.join(", "));
   }
 
-  where << "accnt_active ";
+  if (_showExternal)
+    params.append("showExternal");
 
-  if (!where.isEmpty())
-    sql += " WHERE " + where.join(" AND ");
+  if (_ignoreCompany)
+    params.append("ignoreCompany");
 
-  sql += "ORDER BY accnt_number, accnt_sub, accnt_profit;";
-
-  _listTab->populate(sql, _accntid);
+  MetaSQLQuery mql(_listAndSearchQueryString);
+  _listTab->populate(mql.toQuery(params), _accntid);
 }
 
 ///////////////////////////
@@ -578,25 +598,16 @@ void accountSearch::set(const ParameterList &pParams)
 
 void accountSearch::sFillList()
 {
-  QString sql("SELECT accnt_id, *,"
-              "       CASE WHEN(accnt_type='A') THEN '" + tr("Asset") + "'"
-              "            WHEN(accnt_type='E') THEN '" + tr("Expense") + "'"
-              "            WHEN(accnt_type='L') THEN '" + tr("Liability") + "'"
-              "            WHEN(accnt_type='Q') THEN '" + tr("Equity") + "'"
-              "            WHEN(accnt_type='R') THEN '" + tr("Revenue") + "'"
-              "            ELSE accnt_type"
-              "       END AS accnt_type_qtdisplayrole "
-              "FROM (ONLY accnt LEFT OUTER JOIN"
-              "     company ON (accnt_company=company_number)) "
-              "     LEFT OUTER JOIN subaccnttype ON (accnt_type=subaccnttype_accnt_type AND accnt_subaccnttype_code=subaccnttype_code) ");
+  ParameterList params;
+  params.append("asset",     tr("Asset"));
+  params.append("expense",   tr("Expense"));
+  params.append("liability", tr("Liability"));
+  params.append("equity",    tr("Equity"));
+  params.append("revenue",   tr("Revenue"));
 
   QStringList types;
-  QStringList where;
-
-  if(_type->currentIndex() > 0)
-  {
-    where << "(accnt_type = '" + _type->itemData(_type->currentIndex()).toString() + "')";
-  }
+  if (_type->currentIndex() > 0)
+    types << _type->itemData(_type->currentIndex()).toString();
   else if(_typeval > 0)
   {
     if(_typeval & GLCluster::cAsset)
@@ -611,34 +622,18 @@ void accountSearch::sFillList()
       types << ("'Q'");
   }
   if(!types.isEmpty())
-    where << "(accnt_type IN (" + types.join(",") + "))";
+    params.append("typelist", types.join(", "));
+
+  if (_showExternal)
+    params.append("showExternal");
+
+  if (_ignoreCompany)
+    params.append("ignoreCompany");
 
   if (!_search->text().isEmpty())
-    where << "((accnt_name ~* :descrip) OR (accnt_descrip ~* :descrip) OR (accnt_extref ~* :descrip))";
+    params.append("searchtext", _search->text());
 
-  if (! _showExternal)
-    where << "(NOT COALESCE(company_external, false))";
-
-  if (! _ignoreCompany)
-  {
-    where << "(company_yearend_accnt_id <> -1)";
-    where << "(company_gainloss_accnt_id <> -1)";
-    where << "(company_dscrp_accnt_id <> -1)";
-  }
-
-  where << "accnt_active ";
-
-  if (!where.isEmpty())
-    sql += " WHERE " + where.join(" AND ");
-
-  sql += "ORDER BY accnt_number, accnt_sub, accnt_profit;";
-
-  XSqlQuery qry;
-  qry.prepare(sql);
-  qry.bindValue(":descrip", _search->text());
-  qry.exec();
-  _listTab->populate(qry, _accntid);
+  MetaSQLQuery mql(_listAndSearchQueryString);
+  _listTab->populate(mql.toQuery(params), _accntid);
 }
-
-
 
