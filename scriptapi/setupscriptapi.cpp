@@ -55,6 +55,7 @@
 #include "qdomprocessinginstructionproto.h"
 #include "qdomtextproto.h"
 #include "qdoublevalidatorproto.h"
+#include "qintvalidatorproto.h"
 #include "qeventproto.h"
 #include "qfileproto.h"
 #include "qfileinfoproto.h"
@@ -172,6 +173,7 @@ void setupScriptApi(QScriptEngine *engine)
   setupQDomProcessingInstructionProto(engine);
   setupQDomTextProto(engine);
   setupQDoubleValidatorProto(engine);
+  setupQIntValidatorProto(engine);
   setupQEventProto(engine);
   setupQFileProto(engine);
   setupQFileInfoProto(engine);

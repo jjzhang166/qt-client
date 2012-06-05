@@ -49,6 +49,7 @@ HEADERS += setupscriptapi.h \
     qdomprocessinginstructionproto.h \
     qdomtextproto.h \
     qdoublevalidatorproto.h \
+    qintvalidatorproto.h \
     qeventproto.h \
     qfileproto.h \
     qfileinfoproto.h \
@@ -147,6 +148,7 @@ SOURCES += setupscriptapi.cpp \
     qdomprocessinginstructionproto.cpp \
     qdomtextproto.cpp \
     qdoublevalidatorproto.cpp \
+    qintvalidatorproto.cpp \
     qeventproto.cpp \
     qfileproto.cpp \
     qfileinfoproto.cpp \
