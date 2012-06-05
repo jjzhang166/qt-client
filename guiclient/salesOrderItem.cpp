@@ -801,6 +801,14 @@ void salesOrderItem::sSave()
   }
 
   _error = true;
+  if (!_warehouse->isValid())
+  {
+    QMessageBox::warning( this, tr("Cannot Save Sales Order Item"),
+                          tr("<p>You must select a valid Site before saving this Sales Order Item.")  );
+    _warehouse->setFocus();
+    return;
+  }
+
   if (!(_qtyOrdered->toDouble() > 0))
   {
     QMessageBox::warning( this, tr("Cannot Save Sales Order Item"),
