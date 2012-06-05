@@ -36,6 +36,7 @@ adjustInvValue::adjustInvValue(QWidget* parent, const char * name, Qt::WindowFla
   _item->setType(ItemLineEdit::cActive);
   _item->addExtraClause( QString("(itemsite_active)") );  // ItemLineEdit::cActive doesn't compare against the itemsite record
   _item->addExtraClause( QString("(itemsite_costmethod='A')") );
+  _item->addExtraClause( QString("(itemsite_qtyonhand <> 0.0)") );
   _site->setType(WComboBox::AllActiveInventory);
   _newValue->setValidator(omfgThis->costVal());
 
