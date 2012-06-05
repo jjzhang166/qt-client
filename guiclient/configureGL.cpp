@@ -155,21 +155,29 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   }
 
   if (_metrics->value("GLProfitSize").toInt() == 0)
+  {
     _useProfitCenters->setChecked(FALSE);
+    _cacheuseProfitCenters = false;
+  }
   else
   {
     _useProfitCenters->setChecked(TRUE);
     _profitCenterSize->setValue(_metrics->value("GLProfitSize").toInt());
     _ffProfitCenters->setChecked(_metrics->boolean("GLFFProfitCenters"));
+    _cacheuseProfitCenters = true;
   }
 
   if (_metrics->value("GLSubaccountSize").toInt() == 0)
+  {
     _useSubaccounts->setChecked(FALSE);
+    _cacheuseSubaccounts = false;
+  }
   else
   {
     _useSubaccounts->setChecked(TRUE);
     _subaccountSize->setValue(_metrics->value("GLSubaccountSize").toInt());
     _ffSubaccounts->setChecked(_metrics->boolean("GLFFSubaccounts"));
+    _cacheuseSubaccounts = true;
   }
 
   switch(_metrics->value("CurrencyExchangeSense").toInt())
@@ -215,14 +223,14 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   if (check.first())
   {
     _useProfitCenters->setChecked(true);
-    _useProfitCenters->setEnabled(false);
+    _cacheuseProfitCenters = true;
   }
 
   check.exec("SELECT accnt_id FROM accnt WHERE LENGTH(accnt_sub) > 0 LIMIT 1;");
   if (check.first())
   {
     _useSubaccounts->setChecked(true);
-    _useSubaccounts->setEnabled(false);
+    _cacheuseSubaccounts = true;
   }
   
   adjustSize();
@@ -470,6 +478,108 @@ bool configureGL::sSave()
       }
   }
 
+  if (!_useProfitCenters->isChecked() && _cacheuseProfitCenters)
+  {
+    // Turning off Profit Centers segment, perform some checks
+    if (QMessageBox::question(this, tr("Use Profit Centers?"),
+                              tr("You are turning off the use of "
+                                 "Profit Centers.  This will clear "
+                                 "the Profit Centers from your "
+                                 "Chart of Accounts.  Are you sure "
+                                 "you want to do this?"),
+                                  QMessageBox::Yes | QMessageBox::Default,
+                                  QMessageBox::No ) == QMessageBox::Yes)
+    {
+      XSqlQuery check;
+      check.exec("SELECT flitem_id FROM flitem "
+                 "WHERE (LENGTH(flitem_profit) > 0) "
+                 "  AND (flitem_profit <> 'All') "
+                 "LIMIT 1;");
+      if (check.first())
+      {
+        QMessageBox::critical(this, tr("Cannot turn off Profit Centers"),
+                              "You must remove Profit Centers from all Financial Reports "
+                              "before you can turn off Profit Centers.");
+        return false;
+      }
+
+      check.exec("SELECT accnt_id FROM accnt o WHERE EXISTS "
+                 "( SELECT 'x' FROM accnt i "
+                 "  WHERE i.accnt_number=o.accnt_number"
+                 "    AND i.accnt_company=o.accnt_company"
+                 "    AND i.accnt_sub=o.accnt_sub"
+                 "    AND i.accnt_id <> o.accnt_id );");
+      if (check.first())
+      {
+        QMessageBox::critical(this, tr("Cannot turn off Profit Centers"),
+                              "Turning off Profit Centers would result in duplicate G/L Accounts.");
+        return false;
+      }
+    }
+    else
+      return false;
+  }
+
+  if (!_useSubaccounts->isChecked() && _cacheuseSubaccounts)
+  {
+    // Turning off Subaccounts segment, perform some checks
+    if (QMessageBox::question(this, tr("Use Subaccounts?"),
+                              tr("You are turning off the use of "
+                                 "Subaccounts.  This will clear "
+                                 "the Subaccounts from your "
+                                 "Chart of Accounts.  Are you sure "
+                                 "you want to do this?"),
+                                  QMessageBox::Yes | QMessageBox::Default,
+                                  QMessageBox::No ) == QMessageBox::Yes)
+    {
+      XSqlQuery check;
+      check.exec("SELECT flitem_id FROM flitem "
+                 "WHERE (LENGTH(flitem_sub) > 0) "
+                 "  AND (flitem_sub <> 'All') "
+                 "LIMIT 1;");
+      if (check.first())
+      {
+        QMessageBox::critical(this, tr("Cannot turn off Subaccounts"),
+                              "You must remove Subaccounts from all Financial Reports "
+                              "before you can turn off Subaccounts.");
+        return false;
+      }
+
+      check.exec("SELECT accnt_id FROM accnt o WHERE EXISTS "
+                 "( SELECT 'x' FROM accnt i "
+                 "  WHERE i.accnt_number=o.accnt_number"
+                 "    AND i.accnt_company=o.accnt_company"
+                 "    AND i.accnt_profit=o.accnt_profit"
+                 "    AND i.accnt_id <> o.accnt_id );");
+      if (check.first())
+      {
+        QMessageBox::critical(this, tr("Cannot turn off Subaccounts"),
+                              "Turning off Subaccounts would result in duplicate G/L Accounts.");
+        return false;
+      }
+    }
+    else
+      return false;
+  }
+
+  if (!_useProfitCenters->isChecked() && _cacheuseProfitCenters &&
+      !_useSubaccounts->isChecked() && _cacheuseSubaccounts)
+  {
+    // Turning off both Profit Centers and Subaccounts segments, perform some checks
+    XSqlQuery check;
+    check.exec("SELECT accnt_id FROM accnt o WHERE EXISTS "
+               "( SELECT 'x' FROM accnt i "
+               "  WHERE i.accnt_number=o.accnt_number"
+               "    AND i.accnt_company=o.accnt_company"
+               "    AND i.accnt_id <> o.accnt_id );");
+    if (check.first())
+    {
+      QMessageBox::critical(this, tr("Cannot turn off Profit Centers and Subaccounts"),
+                            "Turning off both Profit Centers and Subaccounts would result in duplicate G/L Accounts.");
+      return false;
+    }
+  }
+
   // AP
   q.prepare("SELECT setNextAPMemoNumber(:armemo_number) AS result;");
   q.bindValue(":armemo_number", _nextAPMemoNumber->text().toInt());
@@ -603,6 +713,11 @@ bool configureGL::sSave()
     _metrics->set("GLFFProfitCenters", FALSE);
     if(profitcenter)
       profitcenter->setEnabled(FALSE);
+    XSqlQuery update;
+    update.exec("UPDATE accnt SET accnt_profit=NULL,"
+                "                 accnt_sub=CASE WHEN (accnt_sub='') THEN NULL ELSE accnt_sub END;");
+    if (update.lastError().type() != QSqlError::NoError)
+        systemError(this, update.lastError().databaseText(), __FILE__, __LINE__);
   }
 
   if (_useSubaccounts->isChecked())
@@ -611,7 +726,6 @@ bool configureGL::sSave()
     _metrics->set("GLFFSubaccounts", _ffSubaccounts->isChecked());
     if(subaccounts)
       subaccounts->setEnabled(_privileges->check("MaintainChartOfAccounts"));
-
   }
   else
   {
@@ -619,6 +733,11 @@ bool configureGL::sSave()
     _metrics->set("GLFFSubaccounts", FALSE);
     if(subaccounts)
       subaccounts->setEnabled(FALSE);
+    XSqlQuery update;
+    update.exec("UPDATE accnt SET accnt_sub=NULL,"
+                "                 accnt_profit=CASE WHEN (accnt_profit='') THEN NULL ELSE accnt_profit END;");
+    if (update.lastError().type() != QSqlError::NoError)
+        systemError(this, update.lastError().databaseText(), __FILE__, __LINE__);
   }
 
   _metrics->set("UseJournals", _journal->isChecked());

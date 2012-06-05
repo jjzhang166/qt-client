@@ -31,6 +31,8 @@ protected slots:
 
 private:
     bool _cacheint2gl;
+    bool _cacheuseProfitCenters;
+    bool _cacheuseSubaccounts;
 
 signals:
     void saving();
