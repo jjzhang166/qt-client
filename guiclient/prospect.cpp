@@ -48,6 +48,7 @@ prospect::prospect(QWidget* parent, const char* name, Qt::WFlags fl)
     connect(_quotes, SIGNAL(itemSelected(int)), _viewQuote, SLOT(animateClick()));
 
   _prospectid = -1;
+  _crmacctid = -1;
 
   _taxzone->setAllowNull(true);
   _taxzone->setType(XComboBox::TaxZones);
