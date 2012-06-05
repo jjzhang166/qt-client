@@ -512,9 +512,10 @@ void invoice::sSave()
 
   // save address info in case someone wants to use 'em again later
   // but don't make any global changes to the data and ignore errors
+  _shipToAddr->blockSignals(true);
   _billToAddr->save(AddressCluster::CHANGEONE);
   _shipToAddr->save(AddressCluster::CHANGEONE);
-
+  _shipToAddr->blockSignals(false);
   // finally save the invchead
   if (!save())
     return;
