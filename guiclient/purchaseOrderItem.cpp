@@ -802,19 +802,19 @@ void purchaseOrderItem::sFindWarehouseItemsites( int id )
 void purchaseOrderItem::sPopulateItemInfo(int pItemid)
 {
   XSqlQuery item;
-  item.prepare("SELECT stdCost(item_id) AS stdcost, "
-               "       getItemTaxType(item_id, pohead_taxzone_id) AS taxtype_id, "
-               "       item_tax_recoverable, COALESCE(item_maxcost, 0.0) AS maxcost "
-               "FROM item, pohead "
-               "WHERE ( (item_id=:item_id) "
-               "  AND   (pohead_id=:pohead_id) );");
-  item.bindValue(":item_id", pItemid);
-  item.bindValue(":pohead_id", _poheadid);
-  item.exec();
-
-  if (item.first())
+  if (pItemid != -1 && _mode == cNew)
   {
-    if (_mode == cNew)
+    item.prepare("SELECT stdCost(item_id) AS stdcost, "
+                 "       getItemTaxType(item_id, pohead_taxzone_id) AS taxtype_id, "
+                 "       item_tax_recoverable, COALESCE(item_maxcost, 0.0) AS maxcost "
+                 "FROM item, pohead "
+                 "WHERE ( (item_id=:item_id) "
+                 "  AND   (pohead_id=:pohead_id) );");
+    item.bindValue(":item_id", pItemid);
+    item.bindValue(":pohead_id", _poheadid);
+    item.exec();
+
+    if (item.first())
     {
       // Reset order qty cache
       _orderQtyCache = -1;
@@ -828,69 +828,69 @@ void purchaseOrderItem::sPopulateItemInfo(int pItemid)
         _item->setId(-1);
         return;
       }
-    }
     
-    _taxtype->setId(item.value("taxtype_id").toInt());
-    _taxRecoverable->setChecked(item.value("item_tax_recoverable").toBool());
-    _maxCost = item.value("maxcost").toDouble();
+      _taxtype->setId(item.value("taxtype_id").toInt());
+      _taxRecoverable->setChecked(item.value("item_tax_recoverable").toBool());
+      _maxCost = item.value("maxcost").toDouble();
 
-    item.prepare( "SELECT DISTINCT char_id, char_name,"
-               "       COALESCE(b.charass_value, (SELECT c.charass_value FROM charass c WHERE ((c.charass_target_type='I') AND (c.charass_target_id=:item_id) AND (c.charass_default) AND (c.charass_char_id=char_id)) LIMIT 1)) AS charass_value"
-               "  FROM charass a, char "
-               "    LEFT OUTER JOIN charass b"
-               "      ON (b.charass_target_type='PI'"
-               "      AND b.charass_target_id=:poitem_id"
-               "      AND b.charass_char_id=char_id) "
-               " WHERE ( (a.charass_char_id=char_id)"
-               "   AND   (a.charass_target_type='I')"
-               "   AND   (a.charass_target_id=:item_id) ) "
-               " ORDER BY char_name;" );
-    item.bindValue(":item_id", pItemid);
-    item.bindValue(":poitem_id", _poitemid);
-    item.exec();
-    int row = 0;
-    _itemchar->removeRows(0, _itemchar->rowCount());
-    QModelIndex idx;
-    while(item.next())
-    {
-      _itemchar->insertRow(_itemchar->rowCount());
-      idx = _itemchar->index(row, 0);
-      _itemchar->setData(idx, item.value("char_name"), Qt::DisplayRole);
-      _itemchar->setData(idx, item.value("char_id"), Qt::UserRole);
-      idx = _itemchar->index(row, 1);
-      _itemchar->setData(idx, item.value("charass_value"), Qt::DisplayRole);
-      _itemchar->setData(idx, pItemid, Xt::IdRole);
-      _itemchar->setData(idx, pItemid, Qt::UserRole);
-      row++;
-    }
-    
-    item.prepare("SELECT itemsrc_id " 
-                 "FROM itemsrc, pohead "
-                 "WHERE ( (itemsrc_vend_id=pohead_vend_id)"
-                 " AND (itemsrc_item_id=:item_id)"
-                 " AND (pohead_id=:pohead_id) );" );
-    item.bindValue(":item_id", pItemid);
-    item.bindValue(":pohead_id", _poheadid);
-    item.exec();
-    if (item.size() == 1)
-    {
-      item.first();
-	 
-      if (item.value("itemsrc_id").toInt() != _itemsrcid)
-        sPopulateItemSourceInfo(item.value("itemsrc_id").toInt());
-    }
-    else if (item.size() > 1)
-    {
-      bool isCurrent = false;
-      while (item.next())
+      item.prepare( "SELECT DISTINCT char_id, char_name,"
+                 "       COALESCE(b.charass_value, (SELECT c.charass_value FROM charass c WHERE ((c.charass_target_type='I') AND (c.charass_target_id=:item_id) AND (c.charass_default) AND (c.charass_char_id=char_id)) LIMIT 1)) AS charass_value"
+                 "  FROM charass a, char "
+                 "    LEFT OUTER JOIN charass b"
+                 "      ON (b.charass_target_type='PI'"
+                 "      AND b.charass_target_id=:poitem_id"
+                 "      AND b.charass_char_id=char_id) "
+                 " WHERE ( (a.charass_char_id=char_id)"
+                 "   AND   (a.charass_target_type='I')"
+                 "   AND   (a.charass_target_id=:item_id) ) "
+                 " ORDER BY char_name;" );
+      item.bindValue(":item_id", pItemid);
+      item.bindValue(":poitem_id", _poitemid);
+      item.exec();
+      int row = 0;
+      _itemchar->removeRows(0, _itemchar->rowCount());
+      QModelIndex idx;
+      while(item.next())
       {
-        if (item.value("itemsrc_id").toInt() == _itemsrcid)
-          isCurrent = true;
+        _itemchar->insertRow(_itemchar->rowCount());
+        idx = _itemchar->index(row, 0);
+        _itemchar->setData(idx, item.value("char_name"), Qt::DisplayRole);
+        _itemchar->setData(idx, item.value("char_id"), Qt::UserRole);
+        idx = _itemchar->index(row, 1);
+        _itemchar->setData(idx, item.value("charass_value"), Qt::DisplayRole);
+        _itemchar->setData(idx, pItemid, Xt::IdRole);
+        _itemchar->setData(idx, pItemid, Qt::UserRole);
+        row++;
       }
-      if (!isCurrent)
+    
+      item.prepare("SELECT itemsrc_id " 
+                   "FROM itemsrc, pohead "
+                   "WHERE ( (itemsrc_vend_id=pohead_vend_id)"
+                   " AND (itemsrc_item_id=:item_id)"
+                   " AND (pohead_id=:pohead_id) );" );
+      item.bindValue(":item_id", pItemid);
+      item.bindValue(":pohead_id", _poheadid);
+      item.exec();
+      if (item.size() == 1)
       {
-        _vendorItemNumber->clear();
-        sVendorItemNumberList();
+        item.first();
+	 
+        if (item.value("itemsrc_id").toInt() != _itemsrcid)
+          sPopulateItemSourceInfo(item.value("itemsrc_id").toInt());
+      }
+      else if (item.size() > 1)
+      {
+        bool isCurrent = false;
+        while (item.next())
+        {
+          if (item.value("itemsrc_id").toInt() == _itemsrcid)
+            isCurrent = true;
+        }
+        if (!isCurrent)
+        {
+          _vendorItemNumber->clear();
+          sVendorItemNumberList();
+        }
       }
     }
     else
