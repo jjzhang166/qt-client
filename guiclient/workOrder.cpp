@@ -671,7 +671,10 @@ void workOrder::sUpdateStartDate()
   }
 
   XSqlQuery startDate;
-  startDate.prepare("SELECT calculateNextWorkingDate(:warehous_id, :dueDate, (:leadTime * -1)) AS startdate;");
+  if (_metrics->boolean("UseSiteCalendar"))
+      startDate.prepare("SELECT calculateNextWorkingDate(:warehous_id, :dueDate, (:leadTime * -1)) AS startdate;");
+  else
+      startDate.prepare("SELECT (DATE(:dueDate) - :leadTime) AS startdate;");
   startDate.bindValue(":dueDate", _dueDate->date());
   startDate.bindValue(":leadTime", _leadTime->value());
   startDate.bindValue(":warehous_id", _warehouse->id());
