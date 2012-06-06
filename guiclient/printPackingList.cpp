@@ -149,20 +149,20 @@ void printPackingList::sPrint()
       return;
     }
 
-    if (_shipformid == -1 || _printPick->isChecked())
-    {
+//    if (_shipformid == -1 || _printPick->isChecked())
+//    {
       q.prepare( "SELECT findCustomerForm(cohead_cust_id, :form) AS reportname "
                  "FROM cohead "
                  "WHERE (cohead_id=:head_id);" );
       q.bindValue(":head_id", _order->id());
-    }
-    else
-    {
-      q.prepare( "SELECT shipform_report_name AS reportname "
-                 "FROM shipform "
-                 "WHERE (shipform_id=:form_id);" );
-      q.bindValue(":form_id", _shipformid);
-    }
+//    }
+//    else
+//    {
+//      q.prepare( "SELECT shipform_report_name AS reportname "
+//                 "FROM shipform "
+//                 "WHERE (shipform_id=:form_id);" );
+//      q.bindValue(":form_id", _shipformid);
+//    }
   }
   else if (_headtype == "TO")
   {
@@ -174,18 +174,18 @@ void printPackingList::sPrint()
       return;
     }
 
-    if (_shipformid == -1 || _printPick->isChecked())
-    {
+//    if (_shipformid == -1 || _printPick->isChecked())
+//    {
       q.prepare( "SELECT findTOForm(:head_id, :form) AS reportname;" );
       q.bindValue(":head_id", _order->id());
-    }
-    else
-    {
-      q.prepare( "SELECT shipform_report_name AS reportname "
-                 "FROM shipform "
-                 "WHERE (shipform_id=:form_id);" );
-      q.bindValue(":form_id", _shipformid);
-    }
+//    }
+//    else
+//    {
+//      q.prepare( "SELECT shipform_report_name AS reportname "
+//                 "FROM shipform "
+//                 "WHERE (shipform_id=:form_id);" );
+//      q.bindValue(":form_id", _shipformid);
+//    }
   }
 
   if (_auto->isChecked())
