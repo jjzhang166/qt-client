@@ -880,8 +880,8 @@ void cashReceipt::populate()
     _docDate->setDate(q.value("cashrcpt_docdate").toDate(), true);
     _bankaccnt->setId(q.value("cashrcpt_bankaccnt_id").toInt());
     _received->setCurrencyDisabled(true);
-    _distDate->setDate(q.value("cashrcpt_distdate").toDate(), true);
     _applDate->setDate(q.value("applydate").toDate(), true);
+    _distDate->setDate(q.value("cashrcpt_distdate").toDate(), true);
     _notes->setText(q.value("cashrcpt_notes").toString());
     _posted = q.value("cashrcpt_posted").toBool();
     if(q.value("cashrcpt_salescat_id").toInt() != -1)
