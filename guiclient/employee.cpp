@@ -290,13 +290,13 @@ bool employee::sSave(const bool pClose)
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Employee"), errors))
     return false;
 
-  _contact->check();
+//  _contact->check();
 
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
   XSqlQuery begin("BEGIN;");
-  int cntctResult = _contact->save();
+  int cntctResult = _contact->save(AddressCluster::CHANGEALL);
   if (cntctResult < 0)
   {
     rollback.exec();
