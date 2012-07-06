@@ -30,6 +30,8 @@ class salesOrder : public XWidget, public Ui::salesOrder
     Q_INVOKABLE static void   editSalesOrder( int pId, bool enableSaveAndAdd, QWidget *parent = 0 );
     Q_INVOKABLE static void   viewSalesOrder( int pId, QWidget *parent = 0 );
     Q_INVOKABLE virtual int   id() { return _soheadid; }
+    Q_INVOKABLE virtual int   modeType() const;
+    Q_INVOKABLE virtual int   modeState() const;
 
   public slots:
     virtual SetResponse set(const ParameterList &pParams );
@@ -102,6 +104,10 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual bool  okToProcessCC();
 
   signals:
+    void populated();
+    void newId(int);
+    void newModeType(int);
+    void newModeState(int);
     void saved(int);
 
   private:
