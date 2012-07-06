@@ -1448,6 +1448,8 @@ const struct {
   { "voidPostedCheck", -13, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Cannot void this check because the G/L account "
 			       "to which the funds should be credited is not "
 			       "valid."),				0, "" },
+  { "voidPostedCheck", -14, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Cannot void this check because the check has "
+			       "has been reconciled in Bank Reconciliation."),		0, "" },
 
   { "replaceVoidedCheck", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Cannot replace a check that is not voided "
                                  "or has already been posted or replaced."),
