@@ -193,7 +193,6 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
   if (valid)
   {
     _dueDate->setDate(param.toDate());
-    sUpdateStartDate();
   }
 
   param = pParams.value("wo_id", &valid);
@@ -245,83 +244,27 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
                       "                (item_descrip1 || ' ' || item_descrip2) AS itemdescrip,"
                       "       item_active, item_config, item_type, uom_name "
                       "FROM item JOIN uom ON (item_inv_uom_id=uom_id) ");
-      XSqlQuery wo;
-      wo.prepare( "SELECT wo_itemsite_id, wo_priority,"
-                  "       formatWoNumber(wo_id) AS f_wonumber,"
-                  "       wo_qtyord,"
-                  "       wo_qtyrcv,"
-                  "       wo_startdate, wo_duedate,"
-                  "       wo_wipvalue,"
-                  "       wo_postedvalue,"
-                  "       wo_postedvalue-wo_wipvalue AS rcvdvalue,"
-                  "       wo_prodnotes, wo_prj_id, wo_bom_rev_id, "
-                  "       wo_boo_rev_id, wo_cosmethod "
-                  "FROM wo "
-                  "WHERE (wo_id=:wo_id);" );
-      wo.bindValue(":wo_id", _woid);
-      wo.exec();
-      if (wo.first())
-      {
-        _mode = cView;
-
-        _woNumber->setText(wo.value("f_wonumber").toString());
-        _item->setItemsiteid(wo.value("wo_itemsite_id").toInt());
-        _priority->setValue(wo.value("wo_priority").toInt());
-        _postedValue->setText(wo.value("wo_postedvalue").toDouble());
-        _rcvdValue->setText(wo.value("rcvdvalue").toDouble());
-        _wipValue->setText(wo.value("wo_wipvalue").toDouble());
-        if (wo.value("wo_qtyord").toDouble() < 0)
-          _disassembly->setChecked(true);
-        _qty->setText(wo.value("wo_qtyord").toDouble() * _sense);
-        _qtyReceived->setText(wo.value("wo_qtyrcv").toDouble());
-        _dueDate->setDate(wo.value("wo_duedate").toDate());
-        _startDate->setDate(wo.value("wo_startdate").toDate());
-        _productionNotes->setText(wo.value("wo_prodnotes").toString());
-        _comments->setId(_woid);
-        _documents->setId(_woid);
-        _project->setId(wo.value("wo_prj_id").toInt());
-        _bomRevision->setId(wo.value("wo_bom_rev_id").toInt());
-        _booRevision->setId(wo.value("wo_boo_rev_id").toInt());
-
-        if (wo.value("wo_cosmethod").toString() == "D")
-          _todate->setChecked(TRUE);
-        else if (wo.value("wo_cosmethod").toString() == "P")
-          _proportional->setChecked(TRUE);
-        else
-          _jobCosGroup->hide();
- 
-        _woNumber->setEnabled(FALSE);
-        _item->setReadOnly(TRUE);
-        _bomRevision->setEnabled(FALSE);
-        _booRevision->setEnabled(FALSE);
-        _warehouse->setEnabled(FALSE);
-        _priority->setEnabled(FALSE);
-        _qty->setEnabled(FALSE);
-        _startDate->setEnabled(FALSE);
-        _dueDate->setEnabled(FALSE);
-        _productionNotes->setReadOnly(TRUE);
-        _save->hide();
-        _leadTimeLit->hide();
-        _leadTime->hide();
-        _daysLit->hide();
-        _printTraveler->hide();
-        _bottomSpacer->hide();
-        _close->setText(tr("&Close"));
-        _project->setEnabled(FALSE);
-        _itemcharView->setEnabled(false);
-        _jobCosGroup->setEnabled(FALSE);
-        sFillList();
-        
-        _close->setFocus();
-      }
-      else
-      {
-        systemError(this, tr("A System Error occurred at %1::%2, W/O ID %3.")
-                          .arg(__FILE__)
-                          .arg(__LINE__)
-                          .arg(_woid) );
-        close();
-      }
+      populate();
+      _woNumber->setEnabled(FALSE);
+      _item->setReadOnly(TRUE);
+      _bomRevision->setEnabled(FALSE);
+      _booRevision->setEnabled(FALSE);
+      _warehouse->setEnabled(FALSE);
+      _priority->setEnabled(FALSE);
+      _qty->setEnabled(FALSE);
+      _startDate->setEnabled(FALSE);
+      _dueDate->setEnabled(FALSE);
+      _productionNotes->setReadOnly(TRUE);
+      _save->hide();
+      _leadTimeLit->hide();
+      _leadTime->hide();
+      _daysLit->hide();
+      _printTraveler->hide();
+      _bottomSpacer->hide();
+      _close->setText(tr("&Close"));
+      _project->setEnabled(FALSE);
+      _itemcharView->setEnabled(false);
+      _jobCosGroup->setEnabled(FALSE);
     }
     else if (param.toString() == "release")
     {
@@ -348,7 +291,9 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
         _planordtype=q.value("sourcetype").toString();
         _sourceid=q.value("sourceid").toInt();
         _qty->setText(q.value("qty").toString());
+        _dueDate->blockSignals(true);
         _dueDate->setDate(q.value("planord_duedate").toDate());
+        _dueDate->blockSignals(false);
         _item->setItemsiteid(q.value("planord_itemsite_id").toInt());
 
         sUpdateStartDate();
@@ -1936,12 +1881,14 @@ void workOrder::populate()
     if (wo.value("wo_qtyord").toDouble() < 0)
       _disassembly->setChecked(true);
     _oldQty = (wo.value("wo_qtyord").toDouble() * _sense);
-    _qty->setText(wo.value("wo_qtyord").toDouble() * _sense);
-    _qtyReceived->setText(wo.value("wo_qtyrcv").toDouble());
-    if (_startDate->date() != _oldStartDate)
-      _startDate->setDate(_oldStartDate);
-    if (_dueDate->date() != _oldDueDate)
-      _dueDate->setDate(_oldDueDate);
+    _qty->setDouble(wo.value("wo_qtyord").toDouble() * _sense);
+    _qtyReceived->setDouble(wo.value("wo_qtyrcv").toDouble());
+    _startDate->blockSignals(true);
+    _dueDate->blockSignals(true);
+    _startDate->setDate(wo.value("wo_startdate").toDate());
+    _dueDate->setDate(wo.value("wo_duedate").toDate());
+    _startDate->blockSignals(false);
+    _dueDate->blockSignals(false);
     _productionNotes->setText(wo.value("wo_prodnotes").toString());
     _comments->setId(_woid);
     _documents->setId(_woid);
