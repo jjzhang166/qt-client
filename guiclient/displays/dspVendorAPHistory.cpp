@@ -119,7 +119,10 @@ void dspVendorAPHistory::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("apopen_id", list()->id());
+  if (list()->altId() == -1)
+    params.append("apopen_id", list()->id());
+  else
+    params.append("apopen_id", list()->altId());
 
   apOpenItem newdlg(this, "", true);
   newdlg.set(params);
@@ -132,7 +135,10 @@ void dspVendorAPHistory::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("apopen_id", list()->id());
+  if (list()->altId() == -1)
+    params.append("apopen_id", list()->id());
+  else
+    params.append("apopen_id", list()->altId());
 
   apOpenItem newdlg(this, "", true);
   newdlg.set(params);
