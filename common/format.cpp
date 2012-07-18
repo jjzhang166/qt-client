@@ -8,8 +8,11 @@
  * to be bound by its terms.
  */
 
+// cint() and round() regarding Issue #8897
+#include <cmath>
 #include <string.h>
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
@@ -36,9 +39,14 @@ static QColor altemphasis("green");
 static QColor expired("red");
 static QColor future("blue");
 
+/* values representing money, cost, purchase price, salesprice
+   are returned by the db server as (xx.yyyy,CUR), (xx.yyy,""), or (xx.yyy,)
+   amountRegExp helps extract the components
+ */
+static QRegExp amountRegExp("\\(([^,)\"]*),([^,)]*)\\)");
+
 static int    costscale        = MONEYSCALE + COSTEXTRASCALE;
 static int    currvalscale     = MONEYSCALE;
-static int    extpricescale    = MONEYSCALE;
 static int    percentscale     = PERCENTSCALE;
 static int    purchpricescale  = MONEYSCALE + PURCHPRICEEXTRASCALE;
 static int    qtyscale         = QTYSCALE;
@@ -48,6 +56,24 @@ static int    uomratioscale    = UOMRATIOSCALE;
 static int    weightscale      = WEIGHTSCALE;
 
 static bool   loadedLocales    = false;
+
+// cint() and round() regarding Issue #8897
+static double cint(double x)
+{
+  double intpart, fractpart;
+  fractpart = modf(x, &intpart);
+
+  if (fabs(fractpart) >= 0.5)
+    return x>=0 ? ceil(x) : floor(x);
+  else
+    return x<0 ? ceil(x) : floor(x);
+}
+
+double xtround(double r, int places)
+{
+  double off=pow(10.0,places);
+  return cint(r*off)/off;
+}
 
 static bool   loadLocale()
 {
@@ -69,12 +95,19 @@ static bool   loadLocale()
     }
 
     XSqlQuery localeq;
-    localeq.prepare("SELECT * "
-                      "FROM usr, locale LEFT OUTER JOIN"
-                      "     lang ON (locale_lang_id=lang_id) LEFT OUTER JOIN"
-                      "     country ON (locale_country_id=country_id) "
-                      "WHERE ( (usr_username=:user)"
-                      " AND (usr_locale_id=locale_id) );" );
+    localeq.prepare("SELECT locale.*,"
+                    "       getnumscale('COST')     AS locale_cost_scale,"
+                    "       getnumscale('MONEY')    AS locale_curr_scale,"
+                    "       getnumscale('PERCENT')  AS locale_percent_scale,"
+                    "       getnumscale('PURCHP')   AS locale_purchprice_scale,"
+                    "       getnumscale('QTY')      AS locale_qty_scale,"
+                    "       getnumscale('QTYPER')   AS locale_qtyper_scale,"
+                    "       getnumscale('SALEP')    AS locale_salesprice_scale,"
+                    "       getnumscale('UOMRATIO') AS locale_uomratio_scale,"
+                    "       getnumscale('WEIGHT')   AS locale_weight_scale"
+                    "  FROM usr"
+                    "  JOIN locale ON (usr_locale_id=locale_id)"
+                    "  WHERE (usr_username=:user);");
     localeq.bindValue(":user", user);
     localeq.exec();
     if (localeq.first())
@@ -96,8 +129,6 @@ static bool   loadLocale()
         costscale = localeq.value("locale_cost_scale").toInt();
       if (!localeq.value("locale_curr_scale").toString().isEmpty())
         currvalscale = localeq.value("locale_curr_scale").toInt();
-      if (!localeq.value("locale_extprice_scale").toString().isEmpty())
-        extpricescale = localeq.value("locale_extprice_scale").toInt();
       if (!localeq.value("locale_percent_scale").toString().isEmpty())
         percentscale = localeq.value("locale_percent_scale").toInt();
       if (!localeq.value("locale_purchprice_scale").toString().isEmpty())
@@ -112,8 +143,6 @@ static bool   loadLocale()
         uomratioscale = localeq.value("locale_uomratio_scale").toInt();
       if (!localeq.value("locale_weight_scale").toString().isEmpty())
         weightscale = localeq.value("locale_weight_scale").toInt();
-
-      // TODO: add locale_percent_scale
     }
     else if (localeq.lastError().type() != QSqlError::NoError)
     {
@@ -156,7 +185,7 @@ int decimalPlaces(QString pName)
   else if (strcmp(ptr, "uomratio") == 0)
     returnVal = uomratioscale;
   else if (strcmp(ptr, "extprice") == 0)
-    returnVal = extpricescale;
+    returnVal = currvalscale;
   else if (strcmp(ptr, "weight") == 0)
     returnVal = weightscale;
   else
@@ -168,6 +197,17 @@ int decimalPlaces(QString pName)
   }
 
   return returnVal;
+}
+
+double getAmount(QVariant pvariant)
+{
+  if (DEBUG)
+    qDebug() << pvariant << "----->"
+             << pvariant.toString().replace(amountRegExp, "\\1") << "----->"
+             << pvariant.toString().replace(amountRegExp, "\\1").toDouble();
+  return (pvariant.type() == QVariant::String)
+                ? pvariant.toString().replace(amountRegExp, "\\1").toDouble()
+                : pvariant.toDouble();
 }
 
 QColor namedColor(QString pName)
@@ -215,7 +255,7 @@ QString formatCost(double value, int /* curr_id */)
 
 QString formatExtPrice(double value, int /* curr_id */)
 {
-  return formatNumber(value, extpricescale);
+  return formatNumber(value, currvalscale);
 }
 
 QString formatWeight(double value)

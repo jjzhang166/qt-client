@@ -449,10 +449,10 @@ void glSeries::sFillList()
   XSqlQuery glFillList;
   glFillList.prepare( "SELECT glseries_id, (formatGLAccount(accnt_id) || '-' || accnt_descrip) AS account,"
              "       CASE WHEN (glseries_amount < 0) THEN (glseries_amount * -1)"
-             "            ELSE 0"
+             "            ELSE xmoney(0)"
              "       END AS debit,"
              "       CASE WHEN (glseries_amount > 0) THEN glseries_amount"
-             "            ELSE 0"
+             "            ELSE xmoney(0)"
              "       END AS credit,"
              "       'curr' AS debit_xtnumericrole,"
              "       'curr' AS credit_xtnumericrole "
@@ -474,10 +474,10 @@ void glSeries::sFillList()
   }
 
   glFillList.prepare("SELECT SUM(CASE WHEN (glseries_amount < 0) THEN (glseries_amount * -1)"
-            "                              ELSE 0"
+            "                              ELSE xmoney(0)"
             "                         END) AS debit,"
             "       SUM(CASE WHEN (glseries_amount > 0) THEN glseries_amount"
-            "                              ELSE 0"
+            "                              ELSE xmoney(0)"
             "                         END ) AS credit,"
             "       SUM(glseries_amount) AS diff,"
             "       (SUM(glseries_amount) <> 0) AS oob "

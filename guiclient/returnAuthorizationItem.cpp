@@ -793,8 +793,9 @@ void returnAuthorizationItem::sPopulateItemsiteInfo()
         else if (_origsoid != -1)
         {
           XSqlQuery uc;
+          // TODO: isn't this just sum(cohist_unitcost)?
           uc.prepare("SELECT COALESCE(SUM(cohist_unitcost * cohist_qtyshipped) / "
-                     "  SUM(cohist_qtyshipped),0) AS unitcost "
+                     "  SUM(cohist_qtyshipped),xcost(0)) AS unitcost "
                      "FROM cohist "
                      " JOIN cohead ON ((cohist_doctype='I') "
                      "             AND (cohist_ordernumber=cohead_number)) "
@@ -1090,6 +1091,7 @@ void returnAuthorizationItem::sCalculateSaleFromDiscount()
 void returnAuthorizationItem::sListPrices()
 {
   XSqlQuery returnListPrices;
+  // TODO: isn't this a duplicate of a query used in one of the sales calculation functions?
   returnListPrices.prepare( "SELECT formatSalesPrice(currToCurr(ipshead_curr_id, :curr_id, ipsprice_price, :effective)) AS price"
              "       FROM ipsass, ipshead, ipsprice "
              "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
@@ -1186,6 +1188,7 @@ void returnAuthorizationItem::sListPrices()
 void returnAuthorizationItem::sSaleListPrices()
 {
   XSqlQuery returnSaleListPrices;
+  // TODO: isn't this a duplicate of a query used in one of the sales calculation functions?
   returnSaleListPrices.prepare( "SELECT formatSalesPrice(currToCurr(ipshead_curr_id, :curr_id, ipsprice_price, :effective)) AS price"
              "       FROM ipsass, ipshead, ipsprice "
              "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
@@ -1670,7 +1673,7 @@ void returnAuthorizationItem::sCalcWoUnitCost()
   XSqlQuery returnCalcWoUnitCost;
   if (_costmethod == "J" && _orderId > -1 && _qtyAuth->toDouble() != 0)
   {
-    returnCalcWoUnitCost.prepare("SELECT COALESCE(SUM(wo_postedvalue),0) AS wo_value "
+    returnCalcWoUnitCost.prepare("SELECT COALESCE(SUM(wo_postedvalue),xmoney(0)) AS wo_value "
               "FROM wo,raitem "
               "WHERE ((wo_ordtype='S') "
               "  AND  (wo_ordid=raitem_new_coitem_id) "

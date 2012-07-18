@@ -143,6 +143,7 @@ FORMS =   absoluteCalendarItem.ui               \
           configureMS.ui                        \
           configurePD.ui                        \
           configurePO.ui                        \
+          configurescales.ui                    \
           configureSearchPath.ui                \
           configureSO.ui                        \
           configureWO.ui                        \
@@ -190,7 +191,6 @@ FORMS =   absoluteCalendarItem.ui               \
           currency.ui                           \
           currencyConversion.ui                 \
           currencyConversions.ui                \
-          currencySelect.ui                     \
           customCommand.ui                      \
           customCommandArgument.ui              \
           customCommands.ui                     \
@@ -689,6 +689,7 @@ HEADERS = ../common/format.h                    \
           configureMS.h                 \
           configurePD.h                 \
           configurePO.h                 \
+          configurescales.h             \
           configureSearchPath.h         \
           configureSO.h                 \
           configureWO.h                 \
@@ -739,7 +740,6 @@ HEADERS = ../common/format.h                    \
           currency.h                            \
           currencyConversion.h                  \
           currencyConversions.h                 \
-          currencySelect.h                      \
           custCharacteristicDelegate.h          \
           customCommand.h                       \
           customCommandArgument.h               \
@@ -1289,6 +1289,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           configureMS.cpp                       \
           configurePD.cpp                       \
           configurePO.cpp                       \
+          configurescales.cpp                   \
           configureSearchPath.cpp               \
           configureSO.cpp                       \
           configureWO.cpp                       \
@@ -1339,7 +1340,6 @@ SOURCES = absoluteCalendarItem.cpp              \
           currency.cpp                          \
           currencyConversion.cpp                \
           currencyConversions.cpp               \
-          currencySelect.cpp                    \
           custCharacteristicDelegate.cpp        \
           customCommand.cpp                     \
           customCommandArgument.cpp             \

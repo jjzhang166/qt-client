@@ -458,7 +458,7 @@ void miscVoucher::sFillMiscList()
 void miscVoucher::sPopulateDistributed()
 {
   XSqlQuery sumq;
-  sumq.prepare( "SELECT COALESCE(SUM(vodist_amount), 0) AS distrib "
+  sumq.prepare( "SELECT COALESCE(SUM(vodist_amount), xmoney(0)) AS distrib "
              "FROM vodist "
              "WHERE (vodist_vohead_id=:vohead_id);" );
   sumq.bindValue(":vohead_id", _voheadid);

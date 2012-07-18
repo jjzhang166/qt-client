@@ -29,6 +29,7 @@
 #include <parameter.h>
 #include <previewdialog.h>
 
+#include "errorReporter.h"
 #include "../scriptapi/parameterlistsetup.h"
 
 class displayPrivate : public Ui::display
@@ -307,6 +308,11 @@ void displayPrivate::setupCharacteristics(unsigned int use)
       _parameterWidget->append(name + " " + end, column + "endDate", ParameterWidget::Date);
     }
   }
+  ErrorReporter::error(QtCriticalMsg, _parent,
+                       QApplication::translate("display",
+                                               "Error Getting Characteristics",
+                                               0, QApplication::UnicodeUTF8),
+                       chars, __FILE__, __LINE__);
 }
 
 bool displayPrivate::setParams(ParameterList &params)
@@ -739,11 +745,10 @@ void display::sFillList(ParameterList pParams, bool forceSetParams)
   }
   XSqlQuery xq = mql.toQuery(pParams);
   _data->_list->populate(xq, itemid, _data->_useAltId);
-  if (xq.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, xq.lastError().databaseText(), __FILE__, __LINE__);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
+                           xq, __FILE__, __LINE__))
     return;
-  }
+
   emit fillListAfter();
 }
 

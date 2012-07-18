@@ -46,9 +46,9 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
   connect(_listPrices,        SIGNAL(clicked()),                    this, SLOT(sListPrices()));
   connect(_netUnitPrice,      SIGNAL(idChanged(int)),               this, SLOT(sPriceGroup()));
   connect(_netUnitPrice,      SIGNAL(valueChanged()),               this, SLOT(sCalculateExtendedPrice()));
-  connect(_qtyOrdered,        SIGNAL(editingFinished()),                  this, SLOT(sPopulateOrderInfo()));
-  connect(_qtyOrdered,        SIGNAL(editingFinished()),                  this, SLOT(sDetermineAvailability()));
-  connect(_qtyOrdered,        SIGNAL(editingFinished()),                  this, SLOT(sDeterminePrice()));
+  connect(_qtyOrdered,        SIGNAL(editingFinished()),            this, SLOT(sPopulateOrderInfo()));
+  connect(_qtyOrdered,        SIGNAL(editingFinished()),            this, SLOT(sDetermineAvailability()));
+  connect(_qtyOrdered,        SIGNAL(editingFinished()),            this, SLOT(sDeterminePrice()));
   connect(_qtyOrdered,        SIGNAL(textChanged(const QString &)), this, SLOT(sCalcWoUnitCost()));
   connect(_save,              SIGNAL(clicked()),                    this, SLOT(sSave()));
   connect(_scheduledDate,     SIGNAL(newDate(const QDate &)),       this, SLOT(sHandleScheduleDate()));
@@ -1772,7 +1772,7 @@ void salesOrderItem::sDeterminePrice(bool force)
     _charVars.replace(QTY, _qtyOrdered->toDouble() * _qtyinvuomratio);
 
     QModelIndex idx1, idx2, idx3;
-    salesDeterminePrice.prepare("SELECT itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective,:asof)::numeric(16,4) AS price;");
+    salesDeterminePrice.prepare("SELECT itemcharprice(:item_id,:char_id,:value,:cust_id,:shipto_id,:qty,:curr_id,:effective,:asof) AS price;");
 
     for (int i = 0; i < _itemchar->rowCount(); i++)
     {
@@ -1953,9 +1953,9 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
         {
           XSqlQuery povalues;
           povalues.prepare("SELECT pohead_number, poitem_linenumber, poitem_status, "
-                           "ROUND(poitem_qty_ordered, 2) AS poitem_qty_ordered, "
-                           "poitem_duedate, ROUND(poitem_unitprice, 2) AS "
-                           "poitem_unitprice, pohead_dropship "
+                           "poitem_qty_ordered AS poitem_qty_ordered, "
+                           "poitem_duedate, poitem_unitprice,"
+                           "pohead_dropship "
                            "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                            "            JOIN coitem ON (coitem_order_id = poitem_id) "
                            "WHERE ((coitem_id = :soitem_id) "
@@ -2135,7 +2135,10 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
               "  char_name,"
               "  char_order, "
               "  COALESCE(si.charass_value,i2.charass_value) AS charass_value,"
-              "  COALESCE(si.charass_price,itemcharprice(:item_id,char_id,COALESCE(si.charass_value,i2.charass_value),:cust_id,:shipto_id,:qty,:curr_id,:effective),0)::numeric(16,4) AS charass_price "
+              "  COALESCE(si.charass_price,"
+              "           itemcharprice(:item_id,char_id,"
+              "                         COALESCE(si.charass_value,i2.charass_value),"
+              "                         :cust_id,:shipto_id,:qty,:curr_id,:effective),0) AS charass_price "
               "FROM "
               "  (SELECT DISTINCT "
               "    char_id,"
@@ -2764,17 +2767,16 @@ void salesOrderItem::populate()
           "       qtyAtShipping(coitem_id) AS qtyatshipping,"
           "       coitem_taxtype_id,"
           "       coitem_cos_accnt_id, coitem_rev_accnt_id, "
-          "       coitem_warranty, coitem_qtyreserved, locale_qty_scale, "
+          "       coitem_warranty, coitem_qtyreserved, "
           "       cohead_number AS ordnumber "
-          "FROM coitem, whsinfo, itemsite, item, uom, cohead, locale "
+          "FROM coitem, whsinfo, itemsite, item, uom, cohead "
           "LEFT OUTER JOIN usr ON (usr_username = getEffectiveXtUser()) "
           "WHERE ( (coitem_itemsite_id=itemsite_id)"
           " AND (itemsite_warehous_id=warehous_id)"
           " AND (itemsite_item_id=item_id)"
           " AND (item_inv_uom_id=uom_id)"
           " AND (cohead_id=coitem_cohead_id)"
-          " AND (coitem_id=<? value('id') ?>) "
-          " AND (locale_id = usr_locale_id));"
+          " AND (coitem_id=<? value('id') ?>) );"
           "<? else ?>"
             "SELECT itemsite_leadtime, COALESCE(warehous_id, -1) AS warehous_id, "
             "       warehous_code,"
@@ -2799,9 +2801,9 @@ void salesOrderItem::populate()
             "       quitem_promdate AS promdate,"
             "       -1 AS coitem_substitute_item_id, quitem_prcost AS coitem_prcost,"
             "       0.0 AS qtyatshipping,"
-            "       quitem_taxtype_id AS coitem_taxtype_id, quitem_dropship, quitem_itemsrc_id"
-            "       locale_qty_scale, quhead_number AS ordnumber "
-            "  FROM item, uom, quhead, locale "
+            "       quitem_taxtype_id AS coitem_taxtype_id, quitem_dropship, quitem_itemsrc_id,"
+            "       quhead_number AS ordnumber "
+            "  FROM item, uom, quhead "
             "    LEFT OUTER JOIN usr ON (usr_username = getEffectiveXtUser()), quitem "
             "    LEFT OUTER JOIN (itemsite "
             "               JOIN whsinfo ON (itemsite_warehous_id=warehous_id)) "
@@ -2809,8 +2811,7 @@ void salesOrderItem::populate()
             " WHERE ( (quitem_item_id=item_id)"
             "   AND   (item_inv_uom_id=uom_id)"
             "   AND   (quhead_id=quitem_quhead_id)"
-            "   AND   (quitem_id=<? value('id') ?>) "
-            "   AND   (locale_id = usr_locale_id));"
+            "   AND   (quitem_id=<? value('id') ?>) );"
             "<? endif ?>";
 
   ParameterList qparams;
@@ -2840,7 +2841,7 @@ void salesOrderItem::populate()
     _orderId       = item.value("coitem_order_id").toInt();
     _orderNumber->setText(item.value("ordnumber").toString());
     _orderQtyCache = item.value("qtyord").toDouble();
-    _qtyOrdered->setDouble(_orderQtyCache, item.value("locale_qty_scale").toInt());
+    _qtyOrdered->setDouble(_orderQtyCache);
     _dateCache     = item.value("coitem_scheddate").toDate();
     _scheduledDate->setDate(_dateCache);
     _notes->setText(item.value("coitem_memo").toString());
@@ -2951,8 +2952,7 @@ void salesOrderItem::populate()
 
       XSqlQuery qry;
       qry.prepare("SELECT pohead_number, poitem_linenumber, poitem_status, "
-                  "ROUND(poitem_qty_ordered, 2) AS poitem_qty_ordered, "
-                  "poitem_duedate, ROUND(poitem_unitprice, 2) AS "
+                  "poitem_qty_ordered, poitem_duedate, "
                   "poitem_unitprice, poitem_itemsrc_id, pohead_dropship "
                   "FROM pohead JOIN poitem ON (pohead_id = poitem_pohead_id) "
                   "WHERE (poitem_id = :poitem_id);");
@@ -3511,7 +3511,7 @@ void salesOrderItem::sCalcWoUnitCost()
   XSqlQuery salesCalcWoUnitCost;
   if (_costmethod == "J" && _orderId > -1 && _qtyOrdered->toDouble() != 0)
   {
-    salesCalcWoUnitCost.prepare("SELECT COALESCE(SUM(wo_postedvalue),0) AS wo_value "
+    salesCalcWoUnitCost.prepare("SELECT COALESCE(SUM(wo_postedvalue),xmoney(0)) AS wo_value "
               "FROM wo "
               "WHERE ((wo_ordtype='S') "
               "AND (wo_ordid=:soitem_id));");

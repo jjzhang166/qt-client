@@ -156,7 +156,7 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
   {
     _poheadid = param.toInt();
 
-    purchaseet.prepare( "SELECT pohead_taxzone_id, pohead_number, pohead_orderdate, pohead_status, " // pohead_taxzone_id added
+    purchaseet.prepare( "SELECT pohead_taxzone_id, pohead_number, pohead_orderdate, pohead_status, "
                "       vend_id, vend_restrictpurch, pohead_curr_id "
                "FROM pohead, vendinfo "
                "WHERE ( (pohead_vend_id=vend_id)"
@@ -169,7 +169,7 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
       _poStatus = purchaseet.value("pohead_status").toString();
       _unitPrice->setEffective(purchaseet.value("pohead_orderdate").toDate());
       _unitPrice->setId(purchaseet.value("pohead_curr_id").toInt());
-	  _taxzoneid=purchaseet.value("pohead_taxzone_id").toInt();   // added  to pick up tax zone id.
+	  _taxzoneid=purchaseet.value("pohead_taxzone_id").toInt();
 	  _tax->setEffective(purchaseet.value("pohead_orderdate").toDate());
       _tax->setId(purchaseet.value("pohead_curr_id").toInt());
 
@@ -793,7 +793,7 @@ void purchaseOrderItem::sPopulateItemInfo(int pItemid)
   {
       item.prepare("SELECT stdCost(item_id) AS stdcost, "
                    "       getItemTaxType(item_id, pohead_taxzone_id) AS taxtype_id, "
-                   "       item_tax_recoverable, COALESCE(item_maxcost, 0.0) AS maxcost "
+                   "       item_tax_recoverable, COALESCE(item_maxcost, xcost(0)) AS maxcost "
                    "FROM item, pohead "
                    "WHERE ( (item_id=:item_id) "
                    "  AND   (pohead_id=:pohead_id) );");

@@ -79,26 +79,6 @@ GuiClientInterface *XTreeWidget::_guiClientInterface = 0;
 
 static QTreeWidgetItem *searchChildren(XTreeWidgetItem *item, int pId);
 
-// cint() and round() regarding Issue #8897
-#include <cmath>
-
-static double cint(double x)
-{
-  double intpart, fractpart;
-  fractpart = modf(x, &intpart);
-
-  if (fabs(fractpart) >= 0.5)
-    return x>=0 ? ceil(x) : floor(x);
-  else
-    return x<0 ? ceil(x) : floor(x);
-}
-
-static double round(double r, int places)
-{
-  double off=pow(10.0,places);
-  return cint(r*off)/off;
-}
-
 XTreeWidget::XTreeWidget(QWidget *pParent) :
   QTreeWidget(pParent)
 {
@@ -449,7 +429,7 @@ void XTreeWidget::populateWorker()
       ++cnt;
       if (!_linear && cnt % WORKERROWS == 0)
       {
-        this->addTopLevelItems(topLevelItems); //#13439 
+        this->addTopLevelItems(topLevelItems); //#13439
         _progress->setValue(pQuery.at());
         return;
       }
@@ -512,7 +492,7 @@ void XTreeWidget::populateWorker()
 
       bool allNull = (indent > 0);
       for (int col = 0; col < _roles.size(); col++)
-      {            
+      {
         QVariantMap *role = _roles.value(col);
         if (!role)
         {
@@ -531,6 +511,9 @@ void XTreeWidget::populateWorker()
         QString numericrole  = "";
         if ((*_colRole)[col][COLROLE_NUMERIC])
         {
+          // make sure we sort numerics properly
+          _last->setData(col, Xt::RawRole, getAmount(rawValue));
+
           // Negative NUMERIC ROLE => default for column instead of column index
           // see above
           if ((*_colRole)[col][COLROLE_NUMERIC] < 0)
@@ -587,10 +570,10 @@ void XTreeWidget::populateWorker()
         }
         else if ((*_colRole)[col][COLROLE_NUMERIC] || rawValue.type() == QVariant::Double)
         {
-          // Issue #8897
+          // Issue #8897 - qt bug 20233? 4280 (which was closed as NOT)?
           _last->setData(col, Qt::DisplayRole,
-                          QLocale().toString(round(rawValue.toDouble(), scale),
-                                           'f', scale));
+                         QLocale().toString(xtround(getAmount(rawValue), scale),
+                                            'f', scale));
         }
         else if (rawValue.type() == QVariant::Bool)
         {
@@ -743,7 +726,7 @@ void XTreeWidget::populateWorker()
 
     } while (pQuery.next());
 
-  this->addTopLevelItems(topLevelItems); //#13439 
+  this->addTopLevelItems(topLevelItems); //#13439
 
   setId(pIndex);
   emit valid(currentItem() != 0);

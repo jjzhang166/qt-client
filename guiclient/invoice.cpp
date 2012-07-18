@@ -879,9 +879,9 @@ void invoice::sFillItemList()
              "       invcitem_ordered, invcitem_billed,"
              "       puom.uom_name AS priceuom,"
              "       invcitem_price,"
-             "       round((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price / "
-	           "            (CASE WHEN(item_id IS NULL) THEN 1 "
-	           "			            ELSE invcitem_price_invuomratio END)), 2) AS extprice,"
+             "       xmoney(invcitem_billed * invcitem_qty_invuomratio * (invcitem_price / "
+             "            (CASE WHEN(item_id IS NULL) THEN 1 "
+             "			ELSE invcitem_price_invuomratio END))) AS extprice,"
              "       'qty' AS invcitem_ordered_xtnumericrole,"
              "       'qty' AS invcitem_billed_xtnumericrole,"
              "       'salesprice' AS invcitem_price_xtnumericrole,"
@@ -898,14 +898,13 @@ void invoice::sFillItemList()
   if (invoiceFillItemList.lastError().type() != QSqlError::NoError)
       systemError(this, invoiceFillItemList.lastError().databaseText(), __FILE__, __LINE__);
 
-  _invcitem->clear();
   _invcitem->populate(invoiceFillItemList);
 
   //  Determine the subtotal
-  invoiceFillItemList.prepare( "SELECT SUM( round(((invcitem_billed * invcitem_qty_invuomratio) * (invcitem_price /"
+  invoiceFillItemList.prepare( "SELECT xmoney(SUM(invcitem_billed * invcitem_qty_invuomratio * (invcitem_price /"
              "            CASE WHEN (item_id IS NULL) THEN 1"
              "                 ELSE invcitem_price_invuomratio"
-             "            END)),2) ) AS subtotal "
+             "            END))) AS subtotal "
              "FROM invcitem LEFT OUTER JOIN item ON (invcitem_item_id=item_id) "
              "WHERE (invcitem_invchead_id=:invchead_id);" );
   invoiceFillItemList.bindValue(":invchead_id", _invcheadid);
@@ -1167,7 +1166,7 @@ void invoice::populateCMInfo()
 
   // Allocated C/M's
   cm.prepare("SELECT COALESCE(SUM(currToCurr(aropenalloc_curr_id, :curr_id,"
-            "                               aropenalloc_amount, :effective)),0) AS amount"
+            "                               aropenalloc_amount, :effective)),xmoney(0)) AS amount"
             "  FROM ( "
             "  SELECT aropenalloc_curr_id, aropenalloc_amount"
             "    FROM cohead JOIN aropenalloc ON (aropenalloc_doctype='S' AND aropenalloc_doc_id=cohead_id)"
@@ -1196,7 +1195,7 @@ void invoice::populateCMInfo()
   cm.prepare("SELECT SUM(amount) AS amount"
             "  FROM ( SELECT aropen_id, "
 	    "                currToCurr(aropen_curr_id, :curr_id,"
-            "                           noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))),"
+            "                           noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,xmoney(0)))),"
 	    "                           :effective) AS amount"
             "           FROM aropen LEFT OUTER JOIN aropenalloc ON (aropenalloc_aropen_id=aropen_id)"
             "          WHERE ( (aropen_cust_id=:cust_id)"

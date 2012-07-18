@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "applyDiscount.h"
+#include "errorReporter.h"
 
 selectPayment::selectPayment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -208,7 +209,7 @@ void selectPayment::populate()
              "                         AND (checkitem_apopen_id=apopen_id) "
              "                         AND (NOT checkhead_void) "
              "                         AND (NOT checkhead_posted)) "
-             "                     ),0)) AS f_amount,"
+             "                     ),xmoney(0))) AS f_amount,"
              "       COALESCE(apselect_amount, (apopen_amount - apopen_paid"
              "          - COALESCE((SELECT SUM(checkitem_amount + checkitem_discount) "
              "                        FROM checkitem, checkhead "
@@ -216,8 +217,8 @@ void selectPayment::populate()
              "                         AND (checkitem_apopen_id=apopen_id) "
              "                         AND (NOT checkhead_void) "
              "                         AND (NOT checkhead_posted)) "
-             "                     ),0))) AS f_selected,"
-             "       COALESCE(apselect_discount, 0.0) AS discount,"
+             "                     ),xmoney(0)))) AS f_selected,"
+             "       COALESCE(apselect_discount, xmoney(0)) AS discount,"
              "       COALESCE(apselect_bankaccnt_id, -1) AS bankaccnt_id,"
              "       (terms_code || '-' || terms_descrip) AS f_terms "
              "FROM terms RIGHT OUTER JOIN apopen ON (apopen_terms_id=terms_id) "
@@ -241,11 +242,9 @@ void selectPayment::populate()
     if(selectpopulate.value("bankaccnt_id").toInt() != -1)
       _bankaccnt->setId(selectpopulate.value("bankaccnt_id").toInt());
   }
-  else if (selectpopulate.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, selectpopulate.lastError().databaseText(), __FILE__, __LINE__);
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Selections"),
+                                selectpopulate, __FILE__, __LINE__))
     return;
-  }
 }
 
 void selectPayment::sDiscount()

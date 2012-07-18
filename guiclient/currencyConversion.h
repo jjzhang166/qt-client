@@ -28,18 +28,18 @@ public:
     virtual SetResponse set(const ParameterList & pParams);
 
 public slots:
-    virtual void _sClose();
-    virtual void _sSave();
-    virtual void populate();
-    virtual void sFixRate();
+    virtual void sClose();
+    virtual void sHandleInactive();
+    virtual void sSave();
+    virtual void sPopulate();
 
 protected slots:
     virtual void languageChange();
 
 private:
+    int _curr_id;
     int _curr_rate_id;
     int _mode;
-    int _curr_id;
 
 };
 

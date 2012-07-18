@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>442</height>
+    <width>640</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -246,29 +246,6 @@ to be bound by its terms.</comment>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>74</width>
-                <height>13</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="_newCurrency">
-              <property name="text">
-               <string>New Currency</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <spacer name="spacer46">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -325,7 +302,6 @@ to be bound by its terms.</comment>
   <tabstop>_edit</tabstop>
   <tabstop>_view</tabstop>
   <tabstop>_delete</tabstop>
-  <tabstop>_newCurrency</tabstop>
  </tabstops>
  <includes>
   <include location="local">parameter.h</include>

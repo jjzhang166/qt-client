@@ -2721,9 +2721,8 @@ void salesOrder::sFillItemList()
 
     _cust->setReadOnly(fl.size() || !ISNEW(_mode));
     _amountAtShipping->setLocalValue(0.0);
-    QString sql = "SELECT ROUND(((COALESCE(SUM(shipitem_qty),0)-coitem_qtyshipped) *"
-          "                  coitem_qty_invuomratio) *"
-          "           (coitem_price / coitem_price_invuomratio),2) AS shippingAmount "
+    QString sql = "SELECT (COALESCE(SUM(shipitem_qty),0)-coitem_qtyshipped) *"
+          "                  coitem_qty_invuomratio * coitem_price / coitem_price_invuomratio AS shippingAmount "
           "  FROM coitem LEFT OUTER JOIN "
           "       (shipitem JOIN shiphead ON (shipitem_shiphead_id=shiphead_id"
           "                               AND shiphead_order_id=:cohead_id"
@@ -2762,8 +2761,8 @@ void salesOrder::sFillItemList()
                 "       0 AS qtyshipped, 0 AS qtyatshipping, 0 AS balance,"
                 "       puom.uom_name AS price_uom,"
                 "       quitem_price AS coitem_price,"
-                "       ROUND((quitem_qtyord * quitem_qty_invuomratio) *"
-                "             (quitem_price / quitem_price_invuomratio),2) AS extprice,"
+                "       (quitem_qtyord * quitem_qty_invuomratio) *"
+                "             (quitem_price / quitem_price_invuomratio) AS extprice,"
                 "       quitem_custprice AS coitem_custprice,"
                 "       'qty' AS coitem_qtyord_xtnumericrole,"
                 "       'qty' AS qtyshipped_xtnumericrole,"
@@ -2791,8 +2790,8 @@ void salesOrder::sFillItemList()
 
   //  Determine the subtotal
   if (ISORDER(_mode))
-    fillSales.prepare( "SELECT SUM(round((coitem_qtyord * coitem_qty_invuomratio) * (coitem_price / coitem_price_invuomratio),2)) AS subtotal,"
-               "       SUM(round((coitem_qtyord * coitem_qty_invuomratio) * currToCurr(baseCurrId(), cohead_curr_id, stdCost(item_id), cohead_orderdate),2)) AS totalcost "
+    fillSales.prepare( "SELECT SUM(coitem_qtyord * coitem_qty_invuomratio * coitem_price / coitem_price_invuomratio) AS subtotal,"
+               "       SUM(coitem_qtyord * coitem_qty_invuomratio * currToCurr(baseCurrId(), cohead_curr_id, stdCost(item_id), cohead_orderdate)) AS totalcost "
                "FROM coitem, cohead, itemsite, item "
                "WHERE ( (coitem_cohead_id=:head_id)"
                " AND (coitem_cohead_id=cohead_id)"
@@ -2800,8 +2799,8 @@ void salesOrder::sFillItemList()
                " AND (coitem_status <> 'X')"
                " AND (itemsite_item_id=item_id) );" );
   else
-    fillSales.prepare( "SELECT SUM(round((quitem_qtyord * quitem_qty_invuomratio) * (quitem_price / quitem_price_invuomratio),2)) AS subtotal,"
-               "       SUM(round((quitem_qtyord * quitem_qty_invuomratio) * currToCurr(baseCurrId(), quhead_curr_id, stdCost(item_id), quhead_quotedate),2)) AS totalcost "
+    fillSales.prepare( "SELECT SUM(quitem_qtyord * quitem_qty_invuomratio * (quitem_price / quitem_price_invuomratio)) AS subtotal,"
+               "       SUM(quitem_qtyord * quitem_qty_invuomratio * currToCurr(baseCurrId(), quhead_curr_id, stdCost(item_id), quhead_quotedate)) AS totalcost "
                "  FROM quitem, quhead, item "
                " WHERE ( (quitem_quhead_id=:head_id)"
                "   AND   (quitem_quhead_id=quhead_id)"
@@ -3668,7 +3667,7 @@ void salesOrder::populateCMInfo()
 
   // Allocated C/M's
   populateSales.prepare("SELECT COALESCE(SUM(currToCurr(aropenalloc_curr_id, :curr_id,"
-            "                               aropenalloc_amount, :effective)),0) AS amount"
+            "                               aropenalloc_amount, :effective)),xmoney(0)) AS amount"
             "  FROM aropenalloc, aropen"
             " WHERE ( (aropenalloc_doctype='S')"
             "  AND    (aropenalloc_doc_id=:doc_id)"
@@ -3686,7 +3685,7 @@ void salesOrder::populateCMInfo()
   populateSales.prepare("SELECT SUM(amount) AS f_amount"
             " FROM (SELECT aropen_id,"
             "        currToCurr(aropen_curr_id, :curr_id,"
-            "               noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))),"
+            "               noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,xmoney(0)))),"
             "               :effective) AS amount "
             "       FROM cohead, aropen LEFT OUTER JOIN aropenalloc ON (aropenalloc_aropen_id=aropen_id)"
             "       WHERE ( (aropen_cust_id=cohead_cust_id)"
@@ -3715,7 +3714,7 @@ void salesOrder::populateCCInfo()
     ccValidDays = 7;
 
   populateSales.prepare("SELECT COALESCE(SUM(currToCurr(payco_curr_id, :curr_id,"
-            "                               payco_amount, :effective)),0) AS amount"
+            "                               payco_amount, :effective)),xmoney(0)) AS amount"
             "  FROM ccpay, payco"
             " WHERE ( (ccpay_status = 'A')"
             "   AND   (date_part('day', CURRENT_TIMESTAMP - ccpay_transaction_datetime) < :ccValidDays)"
@@ -4413,16 +4412,16 @@ void salesOrder::sAllocateCreditMemos()
   {
     // Get the list of Unallocated CM's with amount
     allocateSales.prepare("SELECT aropen_id,"
-              "       noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))) AS amount,"
+              "       noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,xmoney(0)))) AS amount,"
               "       currToCurr(aropen_curr_id, :curr_id,"
-              "                  noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))), :effective) AS amount_cocurr"
+              "                  noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,xmoney(0)))), :effective) AS amount_cocurr"
               "  FROM cohead, aropen LEFT OUTER JOIN aropenalloc ON (aropenalloc_aropen_id=aropen_id)"
               " WHERE ( (aropen_cust_id=cohead_cust_id)"
               "   AND   (aropen_doctype IN ('C', 'R'))"
               "   AND   (aropen_open)"
               "   AND   (cohead_id=:cohead_id) )"
               " GROUP BY aropen_id, aropen_duedate, aropen_amount, aropen_paid, aropen_curr_id "
-              "HAVING (noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))) > 0)"
+              "HAVING (noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,xmoney(0)))) > 0)"
               " ORDER BY aropen_duedate; ");
     allocateSales.bindValue(":cohead_id", _soheadid);
     allocateSales.bindValue(":curr_id",   _balance->id());

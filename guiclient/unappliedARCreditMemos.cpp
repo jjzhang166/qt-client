@@ -117,8 +117,8 @@ void unappliedARCreditMemos::sFillList()
   aq.prepare("SELECT aropen_id, aropen_docnumber,"
              "       cust_number, cust_name,"
              "       aropen_amount,"
-             "       (aropen_paid + COALESCE(prepared,0.0) + COALESCE(cashapplied,0.0)) AS applied,"
-             "       (aropen_amount - aropen_paid - COALESCE(prepared,0.0) - COALESCE(cashapplied,0.0)) AS balance, "
+             "       (aropen_paid + COALESCE(prepared,0.0) + COALESCE(cashapplied,xmoney(0))) AS applied,"
+             "       (aropen_amount - aropen_paid - COALESCE(prepared,xmoney(0)) - COALESCE(cashapplied,xmoney(0))) AS balance, "
              "       currConcat(aropen_curr_id) AS currAbbr,"
              "       'curr' AS aropen_amount_xtnumericrole,"
              "       'curr' AS applied_xtnumericrole,"
@@ -142,7 +142,7 @@ void unappliedARCreditMemos::sFillList()
              "  JOIN custinfo ON (aropen_cust_id=cust_id)"
              "WHERE ( (aropen_doctype IN ('C', 'R'))"
              " AND (aropen_open)"
-             " AND ((aropen_amount - aropen_paid - COALESCE(prepared,0.0) - COALESCE(cashapplied,0.0)) > 0.0)"
+             " AND ((aropen_amount - aropen_paid - COALESCE(prepared,xmoney(0)) - COALESCE(cashapplied,xmoney(0))) > 0.0)"
              " ) "
              "ORDER BY aropen_docnumber;" );
   aq.exec();

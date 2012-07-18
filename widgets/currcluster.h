@@ -86,6 +86,7 @@ class XTUPLEWIDGETS_EXPORT CurrDisplay : public QWidget
 	inline void setEnabled(bool B) { _valueLocalWidget->setEnabled(B); };
 	void setPaletteForegroundColor ( const QColor & );
 	void set(const double, const int, const QDate&, const bool = true);
+        void set(QVariant);
 	void setNA(const bool = true);
         virtual void setFieldNameValue(QString p) { _fieldNameValue = p; };
 

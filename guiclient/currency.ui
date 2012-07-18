@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
-    <height>140</height>
+    <width>465</width>
+    <height>227</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -28,143 +28,85 @@ to be bound by its terms.</comment>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout">
-     <property name="spacing">
-      <number>5</number>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::FieldsStayAtSizeHint</enum>
      </property>
-     <item>
-      <layout class="QGridLayout">
-       <property name="spacing">
-        <number>5</number>
+     <item row="0" column="0">
+      <widget class="QLabel" name="_currNameLiteral">
+       <property name="text">
+        <string>Name:</string>
        </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="_currNameLiteral">
-         <property name="text">
-          <string>Name:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="_currName">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="_currAbbr">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>61</width>
-             <height>21</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="1">
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="_currSymbol">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>41</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="_currSymbolLiteral">
-         <property name="text">
-          <string>Symbol:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="_currAbbrLiteral">
-         <property name="text">
-          <string>Abbreviation:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      </widget>
      </item>
-     <item>
-      <layout class="QHBoxLayout">
-       <property name="spacing">
-        <number>5</number>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="_currName">
+       <property name="text">
+        <string/>
        </property>
-       <item>
-        <widget class="QCheckBox" name="_currBase">
-         <property name="text">
-          <string>Base Currency</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>71</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="_currSymbolLiteral">
+       <property name="text">
+        <string>Symbol:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="_currSymbol">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="_currAbbrLiteral">
+       <property name="text">
+        <string>Abbreviation:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="_currAbbr">
+       <property name="inputMask">
+        <string>AAA; </string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="_numberLit">
+       <property name="text">
+        <string>ISO Number:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="_number">
+       <property name="inputMask">
+        <string>999; </string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="_minorUnitLit">
+       <property name="text">
+        <string>Number of Decimal Places:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="_minorUnit"/>
+     </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="_currBase">
+       <property name="text">
+        <string>Base Currency</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -185,7 +127,6 @@ to be bound by its terms.</comment>
   <tabstop>_currName</tabstop>
   <tabstop>_currSymbol</tabstop>
   <tabstop>_currAbbr</tabstop>
-  <tabstop>_currBase</tabstop>
  </tabstops>
  <resources/>
  <connections/>

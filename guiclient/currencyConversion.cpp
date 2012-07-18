@@ -15,51 +15,24 @@
 #include <QValidator>
 #include <QVariant>
 
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 #include "xcombobox.h"
 
-// perhaps this should be a generalized XDoubleValidator, but for now
-// it should match the definition of the curr_rate column in curr_rate table
-// with one difference - the number of decimal places should be one less than
-// the scale of curr_rate.curr_rate (see Mantis bug 3901).
-
-class RateValidator : public QDoubleValidator {
-  public:
-      RateValidator(QObject*, const char* = 0);
-      void fixup(QString& ) const;
-};
-
-RateValidator::RateValidator(QObject* parent, const char* name) :
-  QDoubleValidator(0.00001, 99999.99999, 5, parent)
-{
-  if (name)
-    setObjectName(name);
-}
-
-void RateValidator::fixup ( QString & input ) const
-{
-  if (input.isEmpty())
-      return;
-
-  double rateDouble = input.toDouble();
-  if (rateDouble < bottom())
-      rateDouble = bottom();
-  else if (rateDouble > top())
-      rateDouble = top();
-
-  input.setNum(rateDouble, 'f', decimals());
-}
+#define DEBUG true
 
 currencyConversion::currencyConversion(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+    : XDialog(parent, name, modal, fl),
+    _curr_id(0),
+    _curr_rate_id(0)
 {
   setupUi(this);
 
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(_sClose()));
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(_sSave()));
-  connect(_rate, SIGNAL(editingFinished()), this, SLOT(sFixRate()));
+  connect(_buttonBox,    SIGNAL(rejected()),    this, SLOT(sClose()));
+  connect(_buttonBox,    SIGNAL(accepted()),    this, SLOT(sSave()));
+  connect(_showInactive, SIGNAL(toggled(bool)), this, SLOT(sHandleInactive()));
 
-  _currency->setType(XComboBox::CurrenciesNotBase);
-  _rate->setValidator(new RateValidator (_rate) );
+  _rate->setValidator(omfgThis->ratioVal());
 }
 
 currencyConversion::~currencyConversion()
@@ -81,22 +54,16 @@ enum SetResponse currencyConversion::set(const ParameterList &pParams)
   param = pParams.value("curr_rate_id", &valid);
   if (valid)
   {
-      _curr_rate_id = param.toInt();
+    _curr_rate_id = param.toInt();
   }
-  else
-      _curr_rate_id = 0;
 
   param = pParams.value("curr_id", &valid);
   if (valid)
   {
-      _curr_id = param.toInt();
-  }
-  else
-  {
-      _curr_id = 0;
+    _curr_id = param.toInt();
   }
 
-  populate();
+  sPopulate();
 
   param = pParams.value("mode", &valid);
   if (valid)
@@ -125,80 +92,66 @@ enum SetResponse currencyConversion::set(const ParameterList &pParams)
   return NoError;
 }
 
-void currencyConversion::_sClose()
+void currencyConversion::sClose()
 {
   done(_curr_rate_id);
 }
 
-void currencyConversion::_sSave()
+void currencyConversion::sHandleInactive()
 {
-  XSqlQuery currency_sSave;
-  if (! _currency->isValid())
+  if (_showInactive->isChecked())
   {
-      QMessageBox::warning(this, tr("Missing Currency"),
-                           tr("Please specify a currency for this exchange rate."));
-      _currency->setFocus();
-      return;
+    _currency->setType(XComboBox::Adhoc);
+    _currency->populate("SELECT curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr "
+                        "  FROM curr_symbol"
+                        " WHERE NOT curr_base"
+                        " ORDER BY curr_abbr;");
+  }
+  else
+    _currency->setType(XComboBox::CurrenciesNotBase);
+}
+
+void currencyConversion::sSave()
+{
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(! _currency->isValid(), _currency,
+                          tr("Please specify a currency for this exchange rate."))
+         << GuiErrorCheck(_rate->toDouble() == 0, _rate,
+                          tr("You must specify a Rate that is not zero."))
+         << GuiErrorCheck(! _dateCluster->startDate().isValid(), _dateCluster,
+                          tr("Please specify a Start Date for this exchange rate."))
+         << GuiErrorCheck(! _dateCluster->endDate().isValid(), _dateCluster,
+                          tr("Please specify an End Date for this exchange rate."))
+         << GuiErrorCheck(_dateCluster->startDate() > _dateCluster->endDate(), _dateCluster,
+                          tr("<p>The Start Date for this exchange rate is "
+                              "later than the End Date. "
+                              "Please check the values of these dates."));
+  ;
+
+  XSqlQuery saveq;
+  saveq.prepare("SELECT EXISTS(SELECT 1"
+                "         FROM curr_rate "
+                "         WHERE curr_id = :curr_id"
+                "           AND curr_rate_id != :curr_rate_id"
+                "           AND ((curr_effective BETWEEN :curr_effective AND :curr_expires OR"
+                "                 curr_expires BETWEEN :curr_effective AND :curr_expires)"
+                "            OR  (curr_effective <= :curr_effective AND"
+                "                 curr_expires   >= :curr_expires))) AS overlap;" );
+  saveq.bindValue(":curr_rate_id",   _curr_rate_id);
+  saveq.bindValue(":curr_id",        _currency->id());
+  saveq.bindValue(":curr_effective", _dateCluster->startDate());
+  saveq.bindValue(":curr_expires",   _dateCluster->endDate());
+  saveq.exec();
+  if (saveq.first())
+  {
+    errors << GuiErrorCheck(saveq.value("overlap").toBool(), _dateCluster,
+                            tr("<p>The date range overlaps with another date "
+                               "range for this currency. "
+                               "Please check the values of these dates."));
   }
 
-  if (_rate->toDouble() == 0)
-  {
-    QMessageBox::warning(this, tr("No Rate Specified"),
-      tr("You must specify a Rate that is not zero.") );
-    return;
-  }
-  
-  if (!_dateCluster->startDate().isValid())
-  {
-      QMessageBox::warning( this, tr("Missing Start Date"),
-                            tr("Please specify a Start Date for this exchange rate."));
-      _dateCluster->setFocus();
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Exchange Rate"), errors))
       return;
-  }
-
-  if (!_dateCluster->endDate().isValid())
-  {
-      QMessageBox::warning( this, tr("Missing End Date"),
-                            tr("Please specify an End Date for this exchange rate. "));
-      _dateCluster->setFocus();
-      return;
-  }
-
-  if (_dateCluster->startDate() > _dateCluster->endDate())
-  {
-      QMessageBox::warning(this, tr("Invalid Date Order"),
-                          tr("The Start Date for this exchange rate is "
-                             "later than the End Date.\n"
-                             "Please check the values of these dates."));
-      _dateCluster->setFocus();
-      return;
-  }
-  
-  currency_sSave.prepare( "SELECT count(*) AS numberOfOverlaps "
-             "FROM curr_rate "
-             "WHERE curr_id = :curr_id"
-             "  AND curr_rate_id != :curr_rate_id"
-             "  AND ( (curr_effective BETWEEN :curr_effective AND :curr_expires OR"
-             "         curr_expires BETWEEN :curr_effective AND :curr_expires)"
-             "   OR   (curr_effective <= :curr_effective AND"
-             "         curr_expires   >= :curr_expires) );" );
-  currency_sSave.bindValue(":curr_rate_id", _curr_rate_id);
-  currency_sSave.bindValue(":curr_id", _currency->id());
-  currency_sSave.bindValue(":curr_effective", _dateCluster->startDate());
-  currency_sSave.bindValue(":curr_expires", _dateCluster->endDate());
-  currency_sSave.exec();
-  if (currency_sSave.first())
-  {
-    if (currency_sSave.value("numberOfOverlaps").toInt() > 0)
-    {
-      QMessageBox::warning(this, tr("Invalid Date Range"),
-                          tr("The date range overlaps with  "
-                             "another date range.\n"
-                             "Please check the values of these dates."));
-      _dateCluster->setFocus();
-      return;
-    }
-  }
 
   QString inverter("");
   if (_metrics->value("CurrencyExchangeSense").toInt() == 1)
@@ -222,70 +175,52 @@ void currencyConversion::_sSave()
                     .arg(inverter);
 
 
-  currency_sSave.prepare(sql);
-  currency_sSave.bindValue(":curr_rate_id", _curr_rate_id);
-  currency_sSave.bindValue(":curr_id", _currency->id());
-  currency_sSave.bindValue(":curr_rate", _rate->toDouble());
-  currency_sSave.bindValue(":curr_effective", _dateCluster->startDate());
-  currency_sSave.bindValue(":curr_expires", _dateCluster->endDate());
+  saveq.prepare(sql);
+  saveq.bindValue(":curr_rate_id", _curr_rate_id);
+  saveq.bindValue(":curr_id", _currency->id());
+  saveq.bindValue(":curr_rate", _rate->toDouble());
+  saveq.bindValue(":curr_effective", _dateCluster->startDate());
+  saveq.bindValue(":curr_expires", _dateCluster->endDate());
   
-  currency_sSave.exec();
+  saveq.exec();
 
-  if (currency_sSave.lastError().type() != QSqlError::NoError)
-  {
-      QMessageBox::critical(this, tr("A System Error occurred at %1::%2.")
-                            .arg(__FILE__)
-                            .arg(__LINE__),
-                            currency_sSave.lastError().databaseText());
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving Exchange Rate"),
+                           saveq, __FILE__, __LINE__))
       return;
-  }
 
   done(_curr_rate_id);
 }
 
-void currencyConversion::populate()
+void currencyConversion::sPopulate()
 {
   XSqlQuery currencypopulate;
-  QString rateString;
 
   if (_curr_rate_id)
   {
-      QString inverter("");
-      if (_metrics->value("CurrencyExchangeSense").toInt() == 1)
-          inverter = "1 / ";
-      QString sql = QString("SELECT curr_id, %1 curr_rate AS curr_rate, "
-                            "curr_effective, curr_expires "
-                            "FROM curr_rate "
-                            "WHERE curr_rate_id = :curr_rate_id;")
-                            .arg(inverter);
-      currencypopulate.prepare(sql);
-      currencypopulate.bindValue(":curr_rate_id", _curr_rate_id);
-      currencypopulate.exec();
-      {
-          if (currencypopulate.first())
-          {
-              _currency->setId(currencypopulate.value("curr_id").toInt());
-              _dateCluster->setStartDate(currencypopulate.value("curr_effective").toDate());
-              _dateCluster->setEndDate(currencypopulate.value("curr_expires").toDate());
-              _rate->setText(rateString.setNum(currencypopulate.value("curr_rate").toDouble(), 'f', 5));
-          }
-      }
+    QString inverter("");
+    if (_metrics->value("CurrencyExchangeSense").toInt() == 1)
+        inverter = "1 / ";
+    QString sql = QString("SELECT curr_id, %1 curr_rate AS curr_rate, "
+                          "curr_effective, curr_expires "
+                          "FROM curr_rate "
+                          "WHERE curr_rate_id = :curr_rate_id;")
+                          .arg(inverter);
+    currencypopulate.prepare(sql);
+    currencypopulate.bindValue(":curr_rate_id", _curr_rate_id);
+    currencypopulate.exec();
+    if (currencypopulate.first())
+    {
+      _currency->setId(currencypopulate.value("curr_id").toInt());
+      _dateCluster->setStartDate(currencypopulate.value("curr_effective").toDate());
+      _dateCluster->setEndDate(currencypopulate.value("curr_expires").toDate());
+      _rate->setDouble(currencypopulate.value("curr_rate").toDouble());
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Exchange Rate"),
+                                  currencypopulate, __FILE__, __LINE__))
+      return;
   }
   if (_curr_id)
   {
-      _currency->setId(_curr_id);
-  }
-}
-
-void currencyConversion::sFixRate()
-{
-  QString rateStr = _rate->text();
-  RateValidator* rateValidator = new RateValidator(_rate);
-  int dummy = 0;
-
-  if (rateValidator->validate(rateStr, dummy) == QValidator::Intermediate)
-  {
-      rateValidator->fixup(rateStr);
-      _rate->setText(rateStr);
+    _currency->setId(_curr_id);
   }
 }

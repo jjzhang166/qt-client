@@ -31,6 +31,7 @@ SOURCES = calendarcontrol.cpp \
           storedProcErrorLookup.cpp \
           tarfile.cpp \
           xbase32.cpp \
+          xmoney.cpp           \
           xtupleproductkey.cpp \
           xtsettings.cpp
 HEADERS = calendarcontrol.h \
@@ -51,6 +52,7 @@ HEADERS = calendarcontrol.h \
           storedProcErrorLookup.h \
           tarfile.h \
           xbase32.h \
+          xmoney.h           \
           xtupleproductkey.h \
           xtsettings.h
 FORMS = login2.ui login2Options.ui

@@ -631,16 +631,18 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case Currencies:
-      query.exec( "SELECT curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr"
-                  " FROM curr_symbol "
-                  "ORDER BY curr_base DESC, curr_abbr;" );
+      // join curr_rate to get just the active currencies
+      query.exec( "SELECT s.curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr"
+                  "  FROM curr_symbol s JOIN curr_rate r ON (s.curr_id=r.curr_id)"
+                  " ORDER BY curr_base DESC, curr_abbr;" );
       break;
 
     case CurrenciesNotBase:
-      query.exec( "SELECT curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr"
-                  " FROM curr_symbol "
-                  " WHERE curr_base = FALSE "
-                  "ORDER BY curr_abbr;" );
+      // join curr_rate to get just the active currencies
+      query.exec( "SELECT s.curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr"
+                  "  FROM curr_symbol s JOIN curr_rate r ON (s.curr_id=r.curr_id)"
+                  " WHERE NOT curr_base"
+                  " ORDER BY curr_abbr;" );
       break;
 
     case Companies:

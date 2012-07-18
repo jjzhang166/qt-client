@@ -22,6 +22,7 @@
 
 #include "currencyConversion.h"
 #include "currency.h"
+#include "errorReporter.h"
 #include "datecluster.h"
 #include "xcombobox.h"
 
@@ -35,7 +36,6 @@ currencyConversions::currencyConversions(QWidget* parent, const char* name, Qt::
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_newCurrency, SIGNAL(clicked()), this, SLOT(sNewCurrency()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
   connect(_query, SIGNAL(clicked()), this, SLOT(sFillList()));
@@ -45,8 +45,6 @@ currencyConversions::currencyConversions(QWidget* parent, const char* name, Qt::
   _conversionRates->addColumn(tr("Exchange Rate"),        -1, Qt::AlignRight,true, "rate");
   _conversionRates->addColumn(tr("Effective"),   _dateColumn, Qt::AlignCenter,true, "curr_effective");
   _conversionRates->addColumn(tr("Expires"),     _dateColumn, Qt::AlignCenter,true, "curr_expires");
-  
-  _newCurrency->setEnabled(_privileges->check("CreateNewCurrency"));
   
   bool maintainPriv = _privileges->check("MaintainCurrencyRates");
   _new->setEnabled(maintainPriv);
@@ -167,29 +165,22 @@ void currencyConversions::sClose()
 
 void currencyConversions::sDelete()
 {
-  XSqlQuery currencyDelete;
-    currencyDelete.prepare("DELETE FROM curr_rate "
-	      "WHERE curr_rate_id = :curr_rate_id");
-    currencyDelete.bindValue(":curr_rate_id", _conversionRates->id());
-    currencyDelete.exec();
-    if (currencyDelete.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, currencyDelete.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-    sFillList();
-}
+  if (QMessageBox::question(this, tr("Delete?"),
+                            tr("<p>Are you sure you want to delete this exchange "
+                               "rate?"),
+                            QMessageBox::No | QMessageBox::Default,
+                            QMessageBox::Yes) == QMessageBox::No)
+    return;
 
-void currencyConversions::sNewCurrency()
-{
-    ParameterList params;
-    params.append("mode", "new");
-    
-    currency newdlg(this, "", TRUE);
-    newdlg.set(params);
-    newdlg.exec();
-    setBaseCurrency();
-    _queryParameters->repopulateSelected();
+  XSqlQuery delq;
+  delq.prepare("DELETE FROM curr_rate WHERE curr_rate_id = :curr_rate_id");
+  delq.bindValue(":curr_rate_id", _conversionRates->id());
+  delq.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Delete Error"),
+                           delq, __FILE__, __LINE__))
+    return;
+
+  sFillList();
 }
 
 bool currencyConversions::setParams(ParameterList &params)
@@ -222,10 +213,10 @@ void currencyConversions::sPopulateMenu( QMenu* pMenu)
 {
   QAction *menuItem;
   
-  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  menuItem = pMenu->addAction(tr("Edit"), this, SLOT(sEdit()));
   menuItem->setEnabled(_privileges->check("MaintainCurrencyRates"));
 
-  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  menuItem = pMenu->addAction(tr("View"), this, SLOT(sView()));
 
   menuItem = pMenu->addAction(tr("Delete..."), this, SLOT(sDelete()));
   menuItem->setEnabled(_privileges->check("MaintainCurrencyRates"));
@@ -233,20 +224,16 @@ void currencyConversions::sPopulateMenu( QMenu* pMenu)
 
 void currencyConversions::setBaseCurrency()
 {
-  XSqlQuery currencyetBaseCurrency;
-    currencyetBaseCurrency.prepare("SELECT currConcat(curr_abbr, curr_symbol) AS baseCurrency "
-	      "FROM curr_symbol "
-	      "WHERE curr_base = TRUE");
-    currencyetBaseCurrency.exec();
-    if (currencyetBaseCurrency.first())
-    {
-	_baseCurrency->setText(currencyetBaseCurrency.value("baseCurrency").toString());
-    }
-    else if (currencyetBaseCurrency.lastError().type() != QSqlError::NoError)
-    {
-	QMessageBox::critical(this, tr("A System Error occurred at %1::%2.")
-			      .arg(__FILE__)
-			      .arg(__LINE__),
-			      currencyetBaseCurrency.lastError().databaseText());
-    }
+  XSqlQuery baseq;
+  baseq.prepare("SELECT currConcat(curr_abbr, curr_symbol) AS baseCurrency "
+                "FROM curr_symbol "
+                "WHERE curr_base = TRUE");
+  baseq.exec();
+  if (baseq.first())
+  {
+    _baseCurrency->setText(baseq.value("baseCurrency").toString());
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Base Currency"),
+                                baseq, __FILE__, __LINE__))
+    return;
 }

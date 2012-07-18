@@ -78,14 +78,7 @@ bool dspItemCostsByClassCode::setParams(ParameterList &params)
   if(_onlyShowDiff->isChecked())
     params.append("onlyShowDiffCosts");
 
-  XSqlQuery qq;
-  qq.exec("SELECT locale_cost_scale "
-         "FROM locale, usr "
-         "WHERE ((usr_locale_id=locale_id) AND (usr_username=getEffectiveXtUser()));");
-  if (qq.first())
-    params.append("costscale", qq.value("locale_cost_scale").toInt());
-  else
-    params.append("costscale", decimalPlaces("cost"));
+  params.append("costscale", decimalPlaces("cost"));
 
   return true;
 }

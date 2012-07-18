@@ -1091,12 +1091,12 @@ void returnAuthorization::sFillList()
              "       qtyToReceive('RA', raitem_id) AS raitem_qtytoreceive,"
              "       COALESCE(nc.coitem_qtyshipped,0) AS newcoitem_qtyshipped,"
              "       raitem_unitprice,"
-             "       round((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_unitprice / raitem_price_invuomratio),2) AS raitem_extprice,"
+             "       xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * raitem_unitprice / raitem_price_invuomratio) AS raitem_extprice,"
              "       raitem_amtcredited,"
              "       raitem_saleprice,"
-             "       round((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_saleprice / raitem_price_invuomratio),2) AS raitem_extsaleprice,"
-             "       round((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_unitprice / raitem_price_invuomratio),2) - "
-             "       round((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_saleprice / raitem_price_invuomratio),2) AS raitem_netdue,"
+             "       xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * raitem_saleprice / raitem_price_invuomratio) AS raitem_extsaleprice,"
+             "       xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * raitem_unitprice / raitem_price_invuomratio) - "
+             "       xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * raitem_saleprice / raitem_price_invuomratio) AS raitem_netdue,"
              "       och.cohead_number::text || '-' || oc.coitem_linenumber::text AS oldcohead_number, "
              "       COALESCE(och.cohead_id,-1) AS oldcohead_number_xtidrole, "
              "       nch.cohead_number::text || '-' || nc.coitem_linenumber::text AS newcohead_number, "
@@ -1230,8 +1230,8 @@ void returnAuthorization::sCalculateSubtotal()
 {
 //  Determine the subtotal and line item tax
   XSqlQuery query;
-  query.prepare( "SELECT SUM(round((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_unitprice / raitem_price_invuomratio),2)) AS subtotal,"
-               "       SUM(round((raitem_qtyauthorized * raitem_qty_invuomratio) * stdCost(item_id),2)) AS totalcost "
+  query.prepare( "SELECT SUM(xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * raitem_unitprice / raitem_price_invuomratio)) AS subtotal,"
+               "         SUM(xmoney(raitem_qtyauthorized * raitem_qty_invuomratio * stdCost(item_id))) AS totalcost "
                "FROM raitem, itemsite, item "
                "WHERE ( (raitem_rahead_id=:rahead_id)"
                " AND (raitem_itemsite_id=itemsite_id)"
@@ -1245,8 +1245,8 @@ void returnAuthorization::sCalculateSubtotal()
 void returnAuthorization::sCalculateNetDue()
 {
   XSqlQuery query;
-  query.prepare( "SELECT SUM(round( ((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_unitprice / raitem_price_invuomratio)) - "
-               "                    ((raitem_qtyauthorized * raitem_qty_invuomratio) * (raitem_saleprice / raitem_price_invuomratio)),2)) AS netdue "
+  query.prepare( "SELECT xmoney(SUM((raitem_qtyauthorized * raitem_qty_invuomratio * raitem_unitprice / raitem_price_invuomratio) - "
+               "                    (raitem_qtyauthorized * raitem_qty_invuomratio * raitem_saleprice / raitem_price_invuomratio))) AS netdue "
                "FROM raitem, itemsite, item "
                "WHERE ( (raitem_rahead_id=:rahead_id)"
                " AND (raitem_itemsite_id=itemsite_id)"

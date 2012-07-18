@@ -30,7 +30,6 @@ public:
 
 public slots:
     virtual void sSave();
-    virtual void sSelect();
     virtual void populate();
 
 protected slots:
@@ -40,7 +39,6 @@ private:
     int _mode;
     int _currid;
     bool baseOrig;
-    QPushButton* _select;
 
 private slots:
     virtual void sConfirmBaseFlag();

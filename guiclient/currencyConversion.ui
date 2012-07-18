@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
+    <width>482</width>
     <height>149</height>
    </rect>
   </property>
@@ -60,6 +60,13 @@ to be bound by its terms.</comment>
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="XCheckBox" name="_showInactive">
+         <property name="text">
+          <string>Show Inactive</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -87,6 +94,11 @@ to be bound by its terms.</comment>
    <header>datecluster.h</header>
   </customwidget>
   <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
@@ -100,8 +112,9 @@ to be bound by its terms.</comment>
  </customwidgets>
  <tabstops>
   <tabstop>_currency</tabstop>
+  <tabstop>_showInactive</tabstop>
   <tabstop>_rate</tabstop>
-  <tabstop>_dateCluster</tabstop>
+  <tabstop>_buttonBox</tabstop>
  </tabstops>
  <includes>
   <include location="local">parameter.h</include>

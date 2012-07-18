@@ -301,9 +301,11 @@ void itemCost::sSave()
 
     if (itemSave.exec() && _postCost->isChecked())
     {
-      itemSave.prepare("UPDATE bomitemcost SET bomitemcost_stdcost=round(currToBase(bomitemcost_curr_id, bomitemcost_actcost, CURRENT_DATE),6), "
-                "                       bomitemcost_posted=CURRENT_DATE "
-                "WHERE bomitemcost_id=:bomitemcost_id;");
+      itemSave.prepare("UPDATE bomitemcost"
+                       "   SET bomitemcost_stdcost=currToBase(bomitemcost_curr_id,"
+                       "                                      bomitemcost_actcost, CURRENT_DATE), "
+                       "       bomitemcost_posted=CURRENT_DATE "
+                       "WHERE bomitemcost_id=:bomitemcost_id;");
       itemSave.bindValue(":bomitemcost_id", _itemcostid);
       itemSave.exec();
     }

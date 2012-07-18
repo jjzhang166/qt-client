@@ -27,11 +27,14 @@ QString         formatSalesPrice(double, int = -1);
 QString         formatPurchPrice(double, int = -1);
 QString         formatUOMRatio(double);
 QString         formatPercent(double);
+double          getAmount(QVariant);
 QColor          namedColor(QString);
 
 inline QString  formatDate(const QDate &pDate)
 {
   return QLocale().toString(pDate, QLocale::ShortFormat);
 }
+
+double xtround(double r, int places);
 
 #endif

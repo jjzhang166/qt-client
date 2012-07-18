@@ -116,18 +116,11 @@ void XLineEdit::setDataWidgetMap(XDataWidgetMapper* m)
 
 void XLineEdit::setText(const QVariant &pVariant)
 {
-  if (pVariant.type() == QVariant::Double)
-  {
-    const QValidator *v = validator();
-    int prec = 0;
+  const QValidator *v = validator();
 
-    if (v && v->inherits("QDoubleValidator"))
-      prec = ((QDoubleValidator*)v)->decimals();
-    else if (v && v->inherits("QIntValidator"))
-      prec = 0;
-
-    QLineEdit::setText(formatNumber(pVariant.toDouble(), prec));
-  }
+  if (v && v->inherits("QDoubleValidator"))
+    QLineEdit::setText(formatNumber(getAmount(pVariant),     // from format.cpp
+                                    ((QDoubleValidator*)v)->decimals()));
   else
     QLineEdit::setText(pVariant.toString());
   sHandleNullStr();

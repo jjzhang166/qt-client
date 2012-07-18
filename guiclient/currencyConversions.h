@@ -32,7 +32,6 @@ public slots:
     virtual void sPrint();
     virtual void sClose();
     virtual void sDelete();
-    virtual void sNewCurrency();
     virtual void sFillList();
     virtual void sPopulateMenu( QMenu * pMenu );
     virtual void setBaseCurrency();

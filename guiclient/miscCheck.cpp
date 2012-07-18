@@ -14,6 +14,8 @@
 #include <QSqlError>
 #include <QVariant>
 
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
 
 miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WFlags fl)
@@ -95,49 +97,29 @@ void miscCheck::sSave()
   double _amt;
   _amt=_amount->localValue();
   XSqlQuery check;
-  if (!_date->isValid())
-  {
-    QMessageBox::warning( this, tr("Cannot Create Miscellaneous Check"),
-                          tr("<p>You must enter a date for this check.") );
-    _date->setFocus();
-    return;
-  }
-  
-  if (_amount->isZero())
-  {
-    QMessageBox::warning( this, tr("Cannot Create Miscellaneous Check"),
-                          tr("<p>You must enter an amount for this check.") );
-    _date->setFocus();
-    return;
-  }
 
-  if ( (_applytocm->isChecked()) && (_cmCluster->id() == -1) )
-  {
-    QMessageBox::warning( this, tr("Cannot Create Miscellaneous Check"),
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(! _date->isValid(), _date,
+                          tr("<p>You must enter a date for this check."))
+         << GuiErrorCheck(_amount->isZero(), _amount,
+                          tr("<p>You must enter an amount for this check."))
+         << GuiErrorCheck(_applytocm->isChecked() && (_cmCluster->id() == -1),
+                          _expcat,
                           tr("<p>You must select a Credit Memo for this "
-			     "expensed check.") );
-    _expcat->setFocus();
-    return;
-  }
- 
-  if (_applytocm->isChecked() && _cmCluster->isValid() && (_amt > _aropenamt))
-  {
-    QMessageBox::warning( this, tr("Invalid Amount"),
-                            tr("<p>You must enter an amount less than or equal to the  "
-	   		                   "credit memo selected.") );
-    _amount->setLocalValue(_aropenamt);
-	_amount->setFocus();
-	return;
-  }
- 
-  if ( (_expense->isChecked()) && (_expcat->id() == -1) )
-  {
-    QMessageBox::warning( this, tr("Cannot Create Miscellaneous Check"),
+			     "expensed check."))
+         << GuiErrorCheck(_applytocm->isChecked() && _cmCluster->isValid() &&
+                          (_amt > _aropenamt),
+                          _amount,
+                          tr("<p>You must enter an amount less than or equal "
+	   		     "to the credit memo selected."))
+         << GuiErrorCheck(_expense->isChecked() && (_expcat->id() == -1),
+                          _expcat,
                           tr("<p>You must select an Expense Category for this "
-			     "expensed check.") );
-    _expcat->setFocus();
+			     "expensed check."))
+  ;
+
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Create Miscellaneous Check"), errors))
     return;
-  }
  
   if (_mode == cNew)
   {
@@ -353,41 +335,40 @@ void miscCheck::sCustomerSelected()
 
 void miscCheck::sCreditMemoSelected()
 {
-  XSqlQuery miscCreditMemoSelected;
+  XSqlQuery cmq;
   if (_cmCluster->id() != -1) 
   {  
-	if(!_date->isValid())
-	  _date->setDate(QDate::currentDate());
-	miscCreditMemoSelected.prepare("SELECT aropen_curr_id, "
-			  "       round((aropen_amount-aropen_paid- "
-			  //Subtract amount for existing checks
-			  "(SELECT COALESCE(SUM(checkhead_amount),0) "
-			  " FROM checkhead,checkitem "
-			  " WHERE ((checkhead_id=checkitem_checkhead_id) "
-			  " AND (NOT checkhead_posted) "
-			  " AND (NOT checkhead_void) "
-                          " AND (checkhead_id <> :check_id) "
-			  " AND (checkitem_aropen_id=aropen_id))) "
+    if(!_date->isValid())
+      _date->setDate(QDate::currentDate());
+    cmq.prepare("SELECT aropen_curr_id, "
+                "       (aropen_amount-aropen_paid- "
+                //Subtract amount for existing checks
+                  "(SELECT COALESCE(SUM(checkhead_amount),xmoney(0)) "
+                  "  FROM checkhead"
+                  "  JOIN checkitem ON (checkhead_id=checkitem_checkhead_id)"
+                  " WHERE ( "
+                  " AND (NOT checkhead_posted) "
+                  " AND (NOT checkhead_void) "
+                  " AND (checkhead_id <> :check_id) "
+                  " AND (checkitem_aropen_id=aropen_id))) "
 
-			  ") * aropen_curr_rate / currRate(:curr_id,aropen_docdate),2) AS amount "
-              "  FROM aropen "
-              " WHERE (aropen_id=:aropen_id); ");
-    miscCreditMemoSelected.bindValue(":aropen_id", _cmCluster->id());
-    miscCreditMemoSelected.bindValue(":curr_id", _amount->id());
-    miscCreditMemoSelected.bindValue(":date", _date->date());
-    miscCreditMemoSelected.bindValue(":check_id", _checkid);
-    miscCreditMemoSelected.exec();
-    if (miscCreditMemoSelected.first())
+                ") * aropen_curr_rate / currRate(:curr_id,aropen_docdate) AS amount "
+                "  FROM aropen "
+                " WHERE (aropen_id=:aropen_id); ");
+    cmq.bindValue(":aropen_id", _cmCluster->id());
+    cmq.bindValue(":curr_id", _amount->id());
+    cmq.bindValue(":date", _date->date());
+    cmq.bindValue(":check_id", _checkid);
+    cmq.exec();
+    if (cmq.first())
     {
-      _aropenamt=miscCreditMemoSelected.value("amount").toDouble();
+      _aropenamt=cmq.value("amount").toDouble();
       if (_mode == cNew)
-        _amount->setLocalValue(miscCreditMemoSelected.value("amount").toDouble());
+        _amount->setLocalValue(cmq.value("amount").toDouble());
     }
-    else if (miscCreditMemoSelected.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, miscCreditMemoSelected.lastError().databaseText(), __FILE__, __LINE__);
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Credit Memo"),
+                                  cmq, __FILE__, __LINE__))
       return;
-    } 
   }
   else
   {

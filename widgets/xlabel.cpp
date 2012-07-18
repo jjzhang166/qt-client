@@ -88,8 +88,9 @@ void XLabel::setText(const QVariant &pVariant)
     qDebug("XLabel::setText(const QVariant & = %s)",
            qPrintable(pVariant.toString()));
   if (pVariant.type() == QVariant::Double ||
-      pVariant.type() == QVariant::Int)
-    QLabel::setText(formatNumber(pVariant.toDouble(), _precision));
+      pVariant.type() == QVariant::Int ||
+      _precision)
+    QLabel::setText(formatNumber(getAmount(pVariant), _precision));
   else
     QLabel::setText(pVariant.toString());
 }

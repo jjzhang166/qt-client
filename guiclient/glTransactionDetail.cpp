@@ -21,8 +21,6 @@ glTransactionDetail::glTransactionDetail(QWidget* parent, const char* name, bool
 {
   setupUi(this);
 
-  _amount->setPrecision(omfgThis->moneyVal());
-
   _gltransid = -1;
   _table = "gltrans";
 }
@@ -90,7 +88,7 @@ void glTransactionDetail::populate()
     _document->setText(glpopulate.value("f_document").toString());
     _journalnumber->setText(glpopulate.value("journalnumber").toString());
     _accnt->setText(glpopulate.value("f_accnt").toString());
-    _amount->setDouble(glpopulate.value("amount").toDouble());
+    _amount->set(glpopulate.value("amount"));
     _username->setText(glpopulate.value("username").toString());
     _created->setDate(glpopulate.value("created").toDate());
     _posted->setText(glpopulate.value("posted").toBool() ? tr("Yes") : tr("No"));

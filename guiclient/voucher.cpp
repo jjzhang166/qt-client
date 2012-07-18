@@ -587,11 +587,11 @@ void voucher::sFillList()
                "         FROM vodist"
                "         WHERE vodist_poitem_id=poitem_id"
                "           AND vodist_vohead_id=:vohead_id ) AS invoiceqty, "
-               "       ( SELECT COALESCE(SUM(vodist_amount), 0)"
+               "       ( SELECT COALESCE(SUM(vodist_amount), xmoney(0))"
                "         FROM vodist"
                "         WHERE vodist_poitem_id=poitem_id"
                "           AND vodist_vohead_id=:vohead_id ) "
-               "     + ( SELECT COALESCE(SUM(COALESCE(voitem_freight,0)), 0)"
+               "     + ( SELECT COALESCE(SUM(COALESCE(voitem_freight,xmoney(0))), xmoney(0))"
                "         FROM voitem"
                "         WHERE voitem_poitem_id=poitem_id"
                "           AND   voitem_vohead_id=:vohead_id ) AS invoiceamount,"
@@ -709,11 +709,11 @@ void voucher::sPopulateDistributed()
   if (_poNumber->isValid())
   {
     XSqlQuery getq;
-    getq.prepare( "SELECT (COALESCE(dist,0) + COALESCE(freight,0) + COALESCE(tax,0)) AS distrib"
-               "  FROM (SELECT SUM(COALESCE(voitem_freight,0)) AS freight"
+    getq.prepare( "SELECT (COALESCE(dist,xmoney(0)) + COALESCE(freight,xmoney(0)) + COALESCE(tax,0)) AS distrib"
+               "  FROM (SELECT SUM(COALESCE(voitem_freight,xmoney(0))) AS freight"
                "          FROM voitem"
                "         WHERE (voitem_vohead_id=:vohead_id)) AS data1, "
-               "       (SELECT SUM(COALESCE(vodist_amount, 0)) AS dist"
+               "       (SELECT SUM(COALESCE(vodist_amount, xmoney(0))) AS dist"
                "          FROM vodist"
                "         WHERE ( (vodist_vohead_id=:vohead_id)"
                "           AND   (vodist_tax_id=-1) )) AS data2, "

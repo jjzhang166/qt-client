@@ -16,10 +16,11 @@
 #include <QGridLayout>
 #include <QSqlError>
 
-#include "xsqlquery.h"
-#include "xcombobox.h"
 #include "format.h"
+#include "xcombobox.h"
 #include "xdoublevalidator.h"
+#include "xmoney.h"
+#include "xsqlquery.h"
 
 #include <math.h>
 
@@ -840,6 +841,12 @@ void CurrDisplay::sValueLocalChanged(double newValue)
     
     if (ABS(oldBase - _valueBase) > EPSILON(_baseScale))
 	emit valueBaseChanged(_valueBase);
+}
+
+void CurrDisplay::set(QVariant newValue)
+{
+  xmoney amount(newValue);
+  set(amount.amount(), amount.getCurrId(), QDate::currentDate());
 }
 
 void CurrDisplay::set(const double newValue, const int newId, const QDate& newDate, const bool isBase)
