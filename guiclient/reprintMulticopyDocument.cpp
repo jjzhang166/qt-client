@@ -17,6 +17,7 @@
 
 #include <metasql.h>
 #include <openreports.h>
+#include <reportprinter.h>
 
 #include "errorReporter.h"
 #include "storedProcErrorLookup.h"
@@ -30,7 +31,7 @@ class reprintMulticopyDocumentPrivate : public Ui::reprintMulticopyDocument
       _printer(0)
     {
       setupUi(_parent);
-      _printer = new QPrinter(QPrinter::HighResolution);
+      _printer = new ReportPrinter(QPrinter::HighResolution);
 
       _print->setFocus();
     }
@@ -49,7 +50,7 @@ class reprintMulticopyDocumentPrivate : public Ui::reprintMulticopyDocument
     bool                        _mpIsInitialized;
     ::reprintMulticopyDocument *_parent;
     QList<QVariant>             _printed;
-    QPrinter                   *_printer;
+    ReportPrinter              *_printer;
     QString                     _reportKey;
 };
 

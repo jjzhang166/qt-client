@@ -23,6 +23,7 @@
 
 #include <metasql.h>
 #include <openreports.h>
+#include <reportprinter.h>
 #include <orprerender.h>
 #include <previewdialog.h>
 #include <orprintrender.h>
@@ -947,16 +948,12 @@ void dspFinancialReport::sPreview()
     return;
   }
 
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
   ORPreRender pre;
   pre.setDom(_doc);
   pre.setParamList(params);
-  ORODocument * doc = pre.generate();
 
-  ORPrintRender render;
-  render.setupPrinter(doc, &printer);
-
-  PreviewDialog preview (doc, &printer, this);
+  PreviewDialog preview (&pre, &printer, this);
   preview.exec();
 }
 

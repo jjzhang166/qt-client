@@ -13,6 +13,7 @@
 
 #include <metasql.h>
 #include <openreports.h>
+#include <reportprinter.h>
 #include "mqlutil.h"
 
 #include <QAction>
@@ -170,7 +171,7 @@ void postJournals::sPrint(QList<int> journalnumbers)
   if (!journalnumbers.size())
     return;
 
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
   bool setupPrinter = true;
   bool userCanceled = false;
 

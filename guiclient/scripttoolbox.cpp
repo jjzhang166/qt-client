@@ -35,6 +35,8 @@
 #include <parameter.h>
 #include <metasql.h>
 #include <openreports.h>
+#include <reportprinter.h>
+
 
 #include "creditCard.h"
 #include "creditcardprocessor.h"
@@ -493,7 +495,7 @@ bool ScriptToolbox::printReport(const QString & name, const ParameterList & para
   */
 bool ScriptToolbox::printReportCopies(const QString & name, const ParameterList & params, int copies)
 {
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
 
   orReport report(name, params);
   bool userCanceled = false;

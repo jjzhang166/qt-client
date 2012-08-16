@@ -18,6 +18,7 @@
 
 #include <parameter.h>
 #include <openreports.h>
+#include <reportprinter.h>
 
 #include "failedPostList.h"
 #include "salesOrder.h"
@@ -115,7 +116,7 @@ void quotes::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 void quotes::sPrint()
 {
   XSqlQuery quotesPrint;
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
   bool setupPrinter = TRUE;
   quotesPrint.prepare( "SELECT findCustomerForm(quhead_cust_id, 'Q') AS reportname "
              "FROM quhead "

@@ -204,18 +204,16 @@ void printCheck::sPrint()
     ORPreRender pre;
     pre.setDom(docReport);
     pre.setParamList(params);
-    ORODocument * doc = pre.generate();
+    ORODocument * doc = pre.generate(ORPreRender::ToPrinter);
 
-    QPrinter printer(QPrinter::HighResolution);
+    ReportPrinter printer(QPrinter::HighResolution);
     ORPrintRender render;
-    render.setupPrinter(doc, &printer);
 
     QPrintDialog pd(&printer);
     pd.setMinMax(1, doc->pages());
     if(pd.exec() == XDialog::Accepted)
     {
-      render.setPrinter(&printer);
-      render.render(doc);
+      render.render(&printer, doc);
     }
     else
       return;

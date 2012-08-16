@@ -22,6 +22,7 @@
 
 #include <parameter.h>
 #include <openreports.h>
+#include <reportprinter.h>
 
 assignLotSerial::assignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -283,7 +284,7 @@ void assignLotSerial::sFillList()
 
 void assignLotSerial::sPrint()
 {
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
   bool setupPrinter = true;
   bool userCanceled = false;
   QString label;

@@ -14,6 +14,7 @@
 #include <QVariant>
 
 #include <openreports.h>
+#include <reportprinter.h>
 
 printWoPickList::printWoPickList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -66,7 +67,7 @@ enum SetResponse printWoPickList::set(const ParameterList &pParams)
 
 void printWoPickList::sPrint()
 {
-  QPrinter printer(QPrinter::HighResolution);
+  ReportPrinter printer(QPrinter::HighResolution);
 
   ParameterList params;
   params.append("wo_id", _wo->id());
