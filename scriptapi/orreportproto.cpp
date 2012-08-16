@@ -41,7 +41,7 @@ QScriptValue scriptBeginMultiPrint(QScriptContext *context,
   bool result = false;
   if (context->argumentCount() > 1)
   {
-    QPrinter *printer = qscriptvalue_cast<QPrinter*>(context->argument(0).toObject());
+    ReportPrinter *printer = qscriptvalue_cast<ReportPrinter*>(context->argument(0).toObject());
     bool userCanceled = false;
     result  = orReport::beginMultiPrint(printer, userCanceled);
     if (DEBUG)
@@ -54,7 +54,7 @@ QScriptValue scriptBeginMultiPrint(QScriptContext *context,
   }
   else
   {
-    QPrinter *printer = qscriptvalue_cast<QPrinter*>(context->argument(0).toObject());
+    ReportPrinter *printer = qscriptvalue_cast<ReportPrinter*>(context->argument(0).toObject());
     result  = orReport::beginMultiPrint(printer);
   }
 
@@ -67,7 +67,7 @@ QScriptValue scriptEndMultiPrint(QScriptContext *context,
   bool result = false;
   if (context->argumentCount() > 0)
   {
-    QPrinter *printer = qscriptvalue_cast<QPrinter*>(context->argument(0).toObject());
+    ReportPrinter *printer = qscriptvalue_cast<ReportPrinter*>(context->argument(0).toObject());
     result = orReport::endMultiPrint(printer);
     if (DEBUG)
       qDebug("endMultiPrint(%p) returned %d", printer, result);
@@ -218,7 +218,7 @@ bool orReportProto::isValid()
   return false;
 }
 
-bool orReportProto::print(QPrinter *prtThis, bool boolSetupPrinter, bool showPreview, QWidget *parent)
+bool orReportProto::print(ReportPrinter *prtThis, bool boolSetupPrinter, bool showPreview, QWidget *parent)
 {
   orReport *item = qscriptvalue_cast<orReport*>(thisObject());
   if (item)
@@ -226,7 +226,7 @@ bool orReportProto::print(QPrinter *prtThis, bool boolSetupPrinter, bool showPre
   return false;
 }
 
-bool orReportProto::render(QPainter *painter, QPrinter *printer)
+bool orReportProto::render(QPainter *painter, ReportPrinter *printer)
 {
   orReport *item = qscriptvalue_cast<orReport*>(thisObject());
   if (item)
