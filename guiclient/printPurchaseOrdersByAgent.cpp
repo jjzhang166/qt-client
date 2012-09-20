@@ -15,7 +15,6 @@
 #include <QVariant>
 
 #include <openreports.h>
-#include <reportprinter.h>
 #include <parameter.h>
 
 #include "guiclient.h"
@@ -71,7 +70,7 @@ void printPurchaseOrdersByAgent::sPrint()
   pohead.exec();
   if (pohead.first())
   {
-    ReportPrinter  *printer = new ReportPrinter(QPrinter::HighResolution);
+    QPrinter  *printer = new QPrinter(QPrinter::HighResolution);
     bool      setupPrinter = TRUE;
 
     bool userCanceled = false;

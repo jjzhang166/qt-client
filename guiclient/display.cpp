@@ -210,34 +210,37 @@ void displayPrivate::print(ParameterList pParams, bool showPreview, bool forceSe
   ORPreRender pre;
   pre.setDom(_doc);
   pre.setParamList(params);
-  ORODocument * doc = pre.generate(ORPreRender::ToPrinter);
+  ORODocument * doc = pre.generate();
 
   if(doc)
   {
-    ReportPrinter printer(QPrinter::HighResolution);
+    QPrinter printer(QPrinter::HighResolution);
     printer.setNumCopies( numCopies );
+
+    ORPrintRender render;
+    render.setupPrinter(doc, &printer);
 
     if(showPreview)
     {
-      ReportPrinter * tPrinter = &printer;
-      ReportPrinter pdfPrinter(QPrinter::HighResolution);
+      QPrinter * tPrinter = &printer;
+      QPrinter pdfPrinter(QPrinter::HighResolution);
       if(!printer.isValid())
       {
+        render.setupPrinter(doc, &pdfPrinter);
         pdfPrinter.setOutputFormat(QPrinter::PdfFormat);
         tPrinter = &pdfPrinter;
       }
-      PreviewDialog preview (&pre, tPrinter, _parent);
+      PreviewDialog preview (doc, tPrinter, _parent);
       if (preview.exec() == QDialog::Rejected)
         return;
     }
-
-    ORPrintRender render;
 
     QPrintDialog pd(&printer);
     pd.setMinMax(1, doc->pages());
     if(pd.exec() == QDialog::Accepted)
     {
-      render.render(&printer, doc);
+      render.setPrinter(&printer);
+      render.render(doc);
     }
     delete doc;
   }

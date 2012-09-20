@@ -17,7 +17,6 @@
 #include <metasql.h>
 #include <parameter.h>
 #include <openreports.h>
-#include <reportprinter.h>
 
 #include "mqlutil.h"
 
@@ -46,7 +45,7 @@ void printPackingListBatchByShipvia::languageChange()
 
 void printPackingListBatchByShipvia::sPrint()
 {
-  ReportPrinter printer(QPrinter::HighResolution);
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
 
   if (!_dates->allValid())

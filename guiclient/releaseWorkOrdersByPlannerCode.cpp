@@ -15,7 +15,6 @@
 
 #include <metasql.h>
 #include <openreports.h>
-#include <reportprinter.h>
 
 releaseWorkOrdersByPlannerCode::releaseWorkOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -114,7 +113,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
       return;
     }
 
-    ReportPrinter  printer(QPrinter::HighResolution);
+    QPrinter  printer(QPrinter::HighResolution);
     bool      setupPrinter = TRUE;
     bool      userCanceled = false;
 

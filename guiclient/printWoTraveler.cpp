@@ -15,7 +15,6 @@
 #include <QVariant>
 
 #include <openreports.h>
-#include <reportprinter.h>
 
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
@@ -141,7 +140,7 @@ void printWoTraveler::sPrint()
 {
   if (DEBUG) qDebug("printWoTraveler::sPrint() entered");
 
-  ReportPrinter  printer(QPrinter::HighResolution);
+  QPrinter  printer(QPrinter::HighResolution);
   bool      setupPrinter = TRUE;
   bool      userCanceled = false;
 

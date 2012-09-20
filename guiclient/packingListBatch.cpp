@@ -18,7 +18,6 @@
 
 #include <metasql.h>
 #include <openreports.h>
-#include <reportprinter.h>
 
 #include "mqlutil.h"
 #include "printPackingList.h"
@@ -103,7 +102,7 @@ void packingListBatch::sPrintBatch()
     return;
   }
 
-  ReportPrinter printer(QPrinter::HighResolution);
+  QPrinter printer(QPrinter::HighResolution);
   bool     setupPrinter = TRUE;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)

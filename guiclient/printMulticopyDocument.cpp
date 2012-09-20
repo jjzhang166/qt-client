@@ -17,7 +17,6 @@
 
 #include <metasql.h>
 #include <openreports.h>
-#include <reportprinter.h>
 
 #include "distributeInventory.h"
 #include "errorReporter.h"
@@ -38,7 +37,7 @@ class printMulticopyDocumentPrivate : public Ui::printMulticopyDocument
     {
       setupUi(_parent);
 
-      _printer = new ReportPrinter(QPrinter::HighResolution);
+      _printer = new QPrinter(QPrinter::HighResolution);
 
       _print->setFocus();
     }
@@ -59,7 +58,7 @@ class printMulticopyDocumentPrivate : public Ui::printMulticopyDocument
     QString                   _doctypefull;
     ::printMulticopyDocument *_parent;
     QString                   _postPrivilege;
-    ReportPrinter            *_printer;
+    QPrinter                 *_printer;
     bool                      _mpIsInitialized;
     QList<QVariant>           _printed;
     QString                   _reportKey;

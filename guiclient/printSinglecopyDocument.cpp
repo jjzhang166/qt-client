@@ -16,7 +16,6 @@
 
 #include <metasql.h>
 #include <openreports.h>
-#include <reportprinter.h>
 
 #include "errorReporter.h"
 
@@ -33,7 +32,7 @@ class printSinglecopyDocumentPrivate : public Ui::printSinglecopyDocument
     {
       setupUi(_parent);
 
-      _printer = new ReportPrinter(QPrinter::HighResolution);
+      _printer = new QPrinter(QPrinter::HighResolution);
 
       _print->setFocus();
     }
@@ -53,7 +52,7 @@ class printSinglecopyDocumentPrivate : public Ui::printSinglecopyDocument
     QString                   _doctype;
     QString                   _doctypefull;
     ::printSinglecopyDocument *_parent;
-    ReportPrinter             *_printer;
+    QPrinter                 *_printer;
     bool                      _mpIsInitialized;
     QList<QVariant>           _printed;
     QString                   _reportKey;

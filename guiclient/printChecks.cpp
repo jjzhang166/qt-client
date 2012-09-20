@@ -181,7 +181,7 @@ void printChecks::sPrint()
     ORPreRender pre;
     pre.setDom(docReport);
     pre.setParamList(params);
-    ORODocument * doc = pre.generate(ORPreRender::ToPrinter);
+    ORODocument * doc = pre.generate();
 
     printedChecks.append(checks.value("checkhead_id").toInt());
 
@@ -224,8 +224,8 @@ void printChecks::sPrint()
 
   if(!printedChecks.empty())
   {
-    ReportPrinter printer(QPrinter::HighResolution);
-    ORODocument entireCheckRunPrerendered("check", ReportPrinter::Standard);
+    QPrinter printer(QPrinter::HighResolution);
+    ORODocument entireCheckRunPrerendered;
     for (int j = 0; j < singleCheckPrerendered.size(); j++)
     {
       for (int i = 0; i < singleCheckPrerendered.at(j)->pages(); i++)
@@ -235,12 +235,14 @@ void printChecks::sPrint()
     }
 
     ORPrintRender render;
+    render.setupPrinter(&entireCheckRunPrerendered, &printer);
 
     QPrintDialog pd(&printer, this);
     pd.setMinMax(1, entireCheckRunPrerendered.pages());
     if(pd.exec() != XDialog::Accepted)
       return;
-    render.render(&printer, &entireCheckRunPrerendered);
+    render.setPrinter(&printer);
+    render.render(&entireCheckRunPrerendered);
 
     QList<int>::iterator it;
 
