@@ -224,7 +224,7 @@ void printChecks::sPrint()
 
   if(!printedChecks.empty())
   {
-    QPrinter printer(QPrinter::HighResolution);
+    ReportPrinter printer(QPrinter::HighResolution);
     ORODocument entireCheckRunPrerendered;
     for (int j = 0; j < singleCheckPrerendered.size(); j++)
     {
@@ -241,8 +241,7 @@ void printChecks::sPrint()
     pd.setMinMax(1, entireCheckRunPrerendered.pages());
     if(pd.exec() != XDialog::Accepted)
       return;
-    render.setPrinter(&printer);
-    render.render(&entireCheckRunPrerendered);
+    render.render(&entireCheckRunPrerendered, &printer);
 
     QList<int>::iterator it;
 

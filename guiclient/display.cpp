@@ -214,7 +214,7 @@ void displayPrivate::print(ParameterList pParams, bool showPreview, bool forceSe
 
   if(doc)
   {
-    QPrinter printer(QPrinter::HighResolution);
+    ReportPrinter printer(QPrinter::HighResolution);
     printer.setNumCopies( numCopies );
 
     ORPrintRender render;
@@ -239,8 +239,7 @@ void displayPrivate::print(ParameterList pParams, bool showPreview, bool forceSe
     pd.setMinMax(1, doc->pages());
     if(pd.exec() == QDialog::Accepted)
     {
-      render.setPrinter(&printer);
-      render.render(doc);
+      render.render(doc, &printer);
     }
     delete doc;
   }
