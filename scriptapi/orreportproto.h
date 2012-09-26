@@ -28,7 +28,6 @@ class QStringList;
 
 Q_DECLARE_METATYPE(orReport*)
 Q_DECLARE_METATYPE(orReport)
-Q_DECLARE_METATYPE(ReportPrinter*)
 
 void setupOrReportProto(QScriptEngine *engine);
 QScriptValue constructOrReport(QScriptContext *context, QScriptEngine *engine);
@@ -55,8 +54,8 @@ class orReportProto : public QObject, public QScriptable
     Q_INVOKABLE bool                exportToPDF(const QString& fileName);
     Q_INVOKABLE ParameterList       getParamList();
     Q_INVOKABLE bool                isValid();
-    Q_INVOKABLE bool                print(ReportPrinter *prtThis = 0, bool boolSetupPrinter = TRUE, bool showPreview = false, QWidget *parent = 0);
-    Q_INVOKABLE bool                render(QPainter *painter, ReportPrinter *printer = 0);
+    Q_INVOKABLE bool                print(QPrinter *prtThis = 0, bool boolSetupPrinter = TRUE, bool showPreview = false, QWidget *parent = 0);
+    Q_INVOKABLE bool                render(QPainter *painter, QPrinter *printer = 0);
     Q_INVOKABLE int                 reportError(QWidget *widget);
     Q_INVOKABLE bool                satisfyParams(QWidget *widget);
     Q_INVOKABLE bool                setDom(const QDomDocument &docPReport);
