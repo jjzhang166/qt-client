@@ -15,6 +15,7 @@
 #include <QSqlError>
 #include <QVariant>
 
+#include "errorReporter.h"
 #include "financialLayoutColumns.h"
 #include "financialLayoutItem.h"
 #include "financialLayoutGroup.h"
@@ -31,7 +32,11 @@
 #define cAdHoc    3
 
 financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+    : XDialog(parent, name, modal, fl),
+      _last(0),
+      _flheadid(-1),
+      _mode(0),
+      _cachedType(cIncome)
 {
   setupUi(this);
 
@@ -66,9 +71,6 @@ financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, 
 
   _layouts->addColumn( tr("Name"), _itemColumn, Qt::AlignLeft, true, "flcol_name");
   _layouts->addColumn( tr("Description"),   -1, Qt::AlignLeft, true, "flcol_descrip");
-  
-  _cachedType=cIncome;
-
 }
 
 financialLayout::~financialLayout()
@@ -102,15 +104,16 @@ enum SetResponse financialLayout::set(const ParameterList &pParams)
     {
       _mode = cNew;
       
-      financialet.prepare("SELECT NEXTVAL('flhead_flhead_id_seq') AS flhead_id;");
+      financialet.prepare("INSERT INTO flhead (flhead_name)"
+                          "   VALUES ('TEMPORARY' || CURRENT_TIMESTAMP)"
+                          " RETURNING flhead_id;");
       financialet.exec();
       if (financialet.first())
-      {
         _flheadid = financialet.value("flhead_id").toInt();
-        financialet.prepare("INSERT INTO flhead (flhead_id) values(:flhead_id);");
-        financialet.bindValue(":flhead_id", _flheadid);
-        financialet.exec();
-      }
+      else if (ErrorReporter::error(QtCriticalMsg, this,
+                                    tr("Error Creating Temporary Record"),
+                                    financialet, __FILE__, __LINE__))
+        return UndefinedError;
       
       sSetType();
 //  ToDo
