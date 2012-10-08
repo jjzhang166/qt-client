@@ -265,7 +265,7 @@ to be bound by its terms.</comment>
            <string>Backflush &amp;Materials</string>
           </property>
           <property name="forgetful">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
