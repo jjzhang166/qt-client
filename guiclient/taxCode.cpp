@@ -19,10 +19,14 @@
 #include <QVariant>
 
 #include <metasql.h>
+
+#include "errorReporter.h"
 #include "taxCodeRate.h"
 
 taxCode::taxCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-    : XDialog(parent, name, modal, fl)
+    : XDialog(parent, name, modal, fl),
+      _mode(0),
+      _taxid(-1)
 {
   setupUi(this);
 
@@ -51,15 +55,14 @@ void taxCode::populateBasis()
 {
   _basis->clear();
 
-  QString sql(" SELECT tax_id, tax_code || '-' || tax_descrip, tax_code" 
-   			  " FROM tax"
-                          " WHERE (COALESCE(tax_taxclass_id, -1) = COALESCE(<? value('taxclass_id') ?>, -1))"
-                          "   AND (tax_id != <? value('tax_id') ?>);");
+  MetaSQLQuery mql(" SELECT tax_id, tax_code || '-' || tax_descrip, tax_code" 
+                   " FROM tax"
+                   " WHERE (COALESCE(tax_taxclass_id, -1) = COALESCE(<? value('taxclass_id') ?>, -1))"
+                   "   AND (tax_id != <? value('tax_id') ?>);");
 
-  MetaSQLQuery mql(sql);
   ParameterList params;
   params.append("taxclass_id", _taxClass->id()); 
-  params.append("tax_id", _taxid);
+  params.append("tax_id",      _taxid);
   XSqlQuery taxbasis = mql.toQuery(params);
   _basis->populate(taxbasis);
 } 
@@ -241,8 +244,20 @@ enum SetResponse taxCode::set(const ParameterList &pParams)
     if (param.toString() == "new") 
     {
       _mode = cNew;
-	  initTaxCode(); 
-	  populateBasis();
+
+      XSqlQuery newq;
+      newq.prepare("INSERT INTO tax (tax_code)"
+                   "  VALUES ('TEMPORARY' || CURRENT_TIMESTAMP)"
+                   " RETURNING tax_id;");
+      newq.exec();
+      if (newq.first())
+        _taxid = newq.value("tax_id").toInt();
+      else if (ErrorReporter::error(QtCriticalMsg, this,
+                                    tr("Error Creating Temporary Record"),
+                                    newq, __FILE__, __LINE__))
+        return UndefinedError;
+
+      populateBasis();
     }
     else if (param.toString() == "edit")
     {
@@ -383,24 +398,6 @@ void taxCode::populate()
   sFillList();
 }
 
-void taxCode::initTaxCode()
-{
-  XSqlQuery taxinitTaxCode;
-  taxinitTaxCode.exec("SELECT NEXTVAL('tax_tax_id_seq') AS tax_id;");
-  if (taxinitTaxCode.first())
-    _taxid = taxinitTaxCode.value("tax_id").toInt();
-  else
-  {
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                  .arg(__FILE__)
-                  .arg(__LINE__) );
-    return;
-  }
-
-  taxinitTaxCode.prepare( "INSERT INTO tax( tax_id) VALUES ( :tax_id );");
-  taxinitTaxCode.bindValue(":tax_id", _taxid);
-  taxinitTaxCode.exec();
-}
 
 void taxCode::closeEvent(QCloseEvent *pEvent)
 {

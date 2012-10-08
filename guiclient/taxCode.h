@@ -28,13 +28,12 @@ public:
 public slots:
     virtual enum SetResponse set( const ParameterList & pParams );
 
-	virtual bool setParams(ParameterList &pParams); 
-	virtual void initTaxCode(); 
-	virtual void closeEvent( QCloseEvent * pEvent );  
+    virtual bool setParams(ParameterList &pParams); 
+    virtual void closeEvent( QCloseEvent * pEvent );  
     virtual void sSave();
     virtual void sCheck();
     virtual void populate();
-	virtual void populateBasis();
+    virtual void populateBasis();
     virtual void sPopulateMenu( QMenu * menuThis );
     virtual void sFillList();
     virtual void sDelete();
