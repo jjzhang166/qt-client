@@ -56,7 +56,6 @@
 class QAction;
 class QMenu;
 class QScriptEngine;
-class QTextDocument;
 class XTreeWidget;
 class XTreeWidgetProgress;
 
@@ -205,9 +204,9 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     Q_INVOKABLE XTreeWidgetItem         *findXTreeWidgetItemWithId(const XTreeWidget *ptree, const int pid);
     Q_INVOKABLE XTreeWidgetItem         *findXTreeWidgetItemWithId(const XTreeWidgetItem *ptreeitem, const int pid);
 
-    Q_INVOKABLE QString toTxt();
-    Q_INVOKABLE QString toCsv();
-    Q_INVOKABLE QString toHtml();
+    Q_INVOKABLE QString toTxt() const;
+    Q_INVOKABLE QString toCsv() const;
+    Q_INVOKABLE QString toHtml() const;
 
     // just for scripting exposure:
     Q_INVOKABLE inline void addTopLevelItem(XTreeWidgetItem *item) {        QTreeWidget::addTopLevelItem(item); }
@@ -245,7 +244,7 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     Q_INVOKABLE inline QTreeWidgetItem    *takeTopLevelItem(int index)                                      { return QTreeWidget::takeTopLevelItem(index); }
     Q_INVOKABLE inline int                topLevelItemCount() const { return QTreeWidget::topLevelItemCount(); }
     Q_INVOKABLE inline QRect              visualItemRect(const XTreeWidgetItem *item) const                 { return QTreeWidget::visualItemRect(item); }
-	Q_INVOKABLE inline void               moveColumn(int from, int to)                                      { header()->moveSection(from, to); } //#13251
+  Q_INVOKABLE inline void               moveColumn(int from, int to)                                      { header()->moveSection(from, to); } //#13251
     // end of scripting exposure
 
     static GuiClientInterface *_guiClientInterface;
@@ -303,7 +302,6 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     virtual void  mousePressEvent(QMouseEvent *);
     virtual void  mouseMoveEvent(QMouseEvent *);
     virtual void  resizeEvent(QResizeEvent *);
-    virtual bool  populateTextDocument(QTextDocument *doc, QString suffix);
 
   private:
     QString _dragString;

@@ -16,8 +16,8 @@
 #include <QApplication>
 #include <QAbstractItemView>
 #include <QClipboard>
-//#include <QDate>
-//#include <QDateTime>
+#include <QDate>
+#include <QDateTime>
 #include <QDrag>
 #include <QFileDialog>
 #include <QFont>
@@ -449,7 +449,7 @@ void XTreeWidget::populateWorker()
       ++cnt;
       if (!_linear && cnt % WORKERROWS == 0)
       {
-        this->addTopLevelItems(topLevelItems); //#13439 
+        this->addTopLevelItems(topLevelItems); //#13439
         _progress->setValue(pQuery.at());
         return;
       }
@@ -512,7 +512,7 @@ void XTreeWidget::populateWorker()
 
       bool allNull = (indent > 0);
       for (int col = 0; col < _roles.size(); col++)
-      {            
+      {
         QVariantMap *role = _roles.value(col);
         if (!role)
         {
@@ -743,7 +743,7 @@ void XTreeWidget::populateWorker()
 
     } while (pQuery.next());
 
-  this->addTopLevelItems(topLevelItems); //#13439 
+  this->addTopLevelItems(topLevelItems); //#13439
 
   setId(pIndex);
   emit valid(currentItem() != 0);
@@ -1544,150 +1544,51 @@ void XTreeWidget::sShowHeaderMenu(const QPoint &pntThis)
 
 void XTreeWidget::sExport()
 {
-  QString path = xtsettingsValue(_settingsName + "/exportPath").toString();
+  QString   path = xtsettingsValue(_settingsName + "/exportPath").toString();
   QString selectedFilter;
-  QFile   file(QFileDialog::getSaveFileName(this, tr("Export Save Filename"), path,
+  QFileInfo fi(QFileDialog::getSaveFileName(this, tr("Export Save Filename"), path,
                                             tr("Text CSV (*.csv);;Text (*.txt);;ODF Text Document (*.odt);;HTML Document (*.html)"), &selectedFilter));
-  if (file.fileName().isEmpty())
-    return;
-
-  QString suffix          = ".txt";
-  QByteArray writerformat = "plaintext";
-  QIODevice::OpenMode mode= QIODevice::WriteOnly | QIODevice::Text;
-
-  if (selectedFilter.contains("csv"))
-    suffix = ".csv";
-  else if (selectedFilter.contains("odt"))
-  {
-    suffix       = ".odt";
-    writerformat = "odf";
-    mode         = QIODevice::WriteOnly;
-  }
-  else if (selectedFilter.contains("html"))
-  {
-    suffix       = ".html";
-    writerformat = "HTML";
-  }
-
-  if (! file.fileName().endsWith(suffix))
-    file.setFileName(file.fileName() + suffix);
-
-  if (! file.open(mode))
-    return;
-  xtsettingsSetValue(_settingsName + "/exportPath", QFileInfo(file).path());
-
-  QTextDocument doc;
-  if (populateTextDocument(&doc, suffix))
-  {
-    QTextDocumentWriter writer(&file, writerformat);
-    writer.write(&doc);
-  }
-
-  file.close();
-}
-
-// TODO: simplify by addressing the model directly instead of itemFromIndex?
-bool XTreeWidget::populateTextDocument(QTextDocument *doc, QString suffix)
-{
-  QTextCursor      cursor(doc);
-  QTreeWidgetItem *header = headerItem();
-
-  if (suffix == ".csv" || suffix == ".txt")
-  {
-    QStringList fields;
-    QString fieldWrapper   = (suffix == ".csv") ? "\"%1\"" : "%1";
-    QString fieldSeparator = (suffix == ".csv") ? ","      : "\t";
-
-    for (int col = 0; col < header->columnCount(); col++)
-      if (! isColumnHidden(col))
-	fields << fieldWrapper.arg(header->text(col)
-	                             .replace(QRegExp("\\s+"), " "));
-    cursor.insertText(fields.join(fieldSeparator));
-
-    for (int row = 0; row < model()->rowCount(); row++)
-    {
-      fields.clear();
-      if (! isRowHidden(row,  model()->parent(model()->index(row, 0))))
-      {
-	for (int col = 0; col < model()->columnCount(); col++)
-	  if (! isColumnHidden(col))
-	    fields << fieldWrapper.arg(model()->index(row, col)
-		                       .data(Qt::DisplayRole).toString()
-		                       .replace(QRegExp("\\s+"), " "));
-	cursor.insertBlock();
-	cursor.insertText(fields.join(fieldSeparator));
-      }
-    }
-  }
+  QString defaultSuffix;
+  if(selectedFilter.contains("csv"))
+    defaultSuffix = ".csv";
+  else if(selectedFilter.contains("odt"))
+    defaultSuffix = ".odt";
+  else if(selectedFilter.contains("html"))
+    defaultSuffix = ".html";
   else
+    defaultSuffix = ".txt";
+
+  if (!fi.filePath().isEmpty())
   {
-    QTextTableFormat  tableFormat;
-    QTextTableCell    cell;
-    QTextCharFormat   format;
-    QString           font;
-    int colcnt = 0;
-    int rowcnt = 0;
+    QTextDocument       *doc = new QTextDocument();
+    QTextDocumentWriter writer;
+    if (fi.suffix().isEmpty())
+      fi.setFile(fi.filePath() += defaultSuffix);
+    xtsettingsSetValue(_settingsName + "/exportPath", fi.path());
+    writer.setFileName(fi.filePath());
 
-    tableFormat.setHeaderRowCount(1);
-
-    for (int i = 0; i < header->columnCount(); i++)
-      if (!QTreeWidget::isColumnHidden(i))
-	colcnt++;
-    for (int i = 0; i < model() -> rowCount(); i++)
-      if (! isRowHidden(i,  model()->parent(model()->index(i, 0))))
-	rowcnt++;
-
-    // presizing the table gives a huge performance gain over adding dynamically
-    cursor.insertTable(rowcnt + 1, colcnt, tableFormat);
-
-    for (int col = 0; col < header->columnCount(); col++)
+    if (fi.suffix() == "txt")
     {
-      if (! isColumnHidden(col))
-      {
-	cell   = cursor.currentTable()->cellAt(cursor.position());
-	format = cell.format();
-	format.setBackground(Qt::lightGray);
-	cell.setFormat(format);
-	cursor.insertText(header->text(col));
-	cursor.movePosition(QTextCursor::NextCell);
-      }
+      doc->setPlainText(toTxt());
+      writer.setFormat("plaintext");
     }
-
-    for (int row = 0; row < model()->rowCount(); row++)
+    else if (fi.suffix() == "csv")
     {
-      if (! isRowHidden(row,  model()->parent(model()->index(row, 0))))
-      {
-	for (int col = 0; col < model()->columnCount(); col++)
-	{
-	  if (! isColumnHidden(col))
-	  {
-	    QModelIndex idx = model()->index(row, col);
-
-	    cell   = cursor.currentTable()->cellAt(cursor.position());
-	    format = cell.format();
-	    if (idx.data(Qt::BackgroundRole).isValid())
-	      format.setBackground(idx.data(Qt::BackgroundRole).value<QColor>());
-	    if (idx.data(Qt::ForegroundRole).isValid())
-	      format.setForeground(idx.data(Qt::ForegroundRole).value<QColor>());
-	    // Qt::TextAlignmentRole?
-
-	    if (idx.data(Qt::FontRole).isValid())
-	    {
-	      font = idx.data(Qt::FontRole).toString();
-	      if (!font.isEmpty())
-		format.setFont(QFont(font));
-	    }
-
-	    cell.setFormat(format);
-	    cursor.insertText(idx.data(Qt::DisplayRole).toString());
-	    cursor.movePosition(QTextCursor::NextCell);
-	  }
-	}
-      }
+      doc->setPlainText(toCsv());
+      writer.setFormat("plaintext");
     }
+    else if (fi.suffix() == "odt")
+    {
+      doc->setHtml(toHtml());
+      writer.setFormat("odf");
+    }
+    else if (fi.suffix() == "html")
+    {
+      doc->setHtml(toHtml());
+      writer.setFormat("HTML");
+    }
+    writer.write(doc);
   }
-
-  return true;
 }
 
 void XTreeWidget::mousePressEvent(QMouseEvent *event)
@@ -2371,28 +2272,179 @@ void XTreeWidget::sSearch(const QString &pTarget)
   }
 }
 
-QString XTreeWidget::toTxt()
+QString XTreeWidget::toTxt() const
 {
-  QTextDocument doc;
-  if (populateTextDocument(&doc, ".txt"))
-    return doc.toPlainText();
-  return QString();
+  QString line;
+  QString opText;
+  int     counter;
+
+  QTreeWidgetItem *header = headerItem();
+  for (counter = 0; counter < header->columnCount(); counter++)
+  {
+    if (!QTreeWidget::isColumnHidden(counter))
+      line = line + header->text(counter).replace("\r\n"," ") + "\t";
+  }
+  opText = line + "\r\n";
+
+  XTreeWidgetItem *item = topLevelItem(0);
+  if (item)
+  {
+    QModelIndex idx = indexFromItem(item);
+    while (idx.isValid())
+    {
+      item = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+      {
+        line = "";
+        for (counter = 0; counter < item->columnCount(); counter++)
+        {
+          if (!QTreeWidget::isColumnHidden(counter))
+            line = line + item->text(counter) + "\t";
+        }
+      }
+      opText = opText + line + "\r\n";
+      idx    = indexBelow(idx);
+    }
+  }
+  return opText;
 }
 
-QString XTreeWidget::toCsv()
+QString XTreeWidget::toCsv() const
 {
-  QTextDocument doc;
-  if (populateTextDocument(&doc, ".csv"))
-    return doc.toPlainText();
-  return QString();
+  QString line;
+  QString opText;
+  int     counter;
+  int     colcount         = 0;
+
+  QTreeWidgetItem *header  = headerItem();
+  for (counter = 0; counter < header->columnCount(); counter++)
+  {
+    if (!QTreeWidget::isColumnHidden(counter))
+    {
+      if (colcount)
+        line = line + ",";
+      line = line + header->text(counter).replace("\"","\"\"").replace("\r\n"," ").replace("\n"," ");
+      colcount++;
+    }
+  }
+  opText = line + "\r\n";
+
+  XTreeWidgetItem *item = topLevelItem(0);
+  if (item)
+  {
+    QModelIndex idx = indexFromItem(item);
+    while (idx.isValid())
+    {
+      colcount = 0;
+      item     = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+      {
+        line = "";
+        for (counter = 0; counter < item->columnCount(); counter++)
+        {
+          if (!QTreeWidget::isColumnHidden(counter))
+          {
+            if (colcount)
+              line = line + ",";
+            if (item->data(counter,Qt::DisplayRole).type() == QVariant::String)
+              line = line + "\"";
+            line = line + item->text(counter).replace("\"","\"\"");
+            if (item->data(counter,Qt::DisplayRole).type() == QVariant::String)
+              line = line + "\"";
+            colcount++;
+          }
+        }
+      }
+      opText = opText + line + "\r\n";
+      idx    = indexBelow(idx);
+    }
+  }
+  return opText;
 }
 
-QString XTreeWidget::toHtml()
+QString XTreeWidget::toHtml() const
 {
-  QTextDocument doc;
-  if (populateTextDocument(&doc, ".html"))
-    return doc.toHtml();
-  return QString();
+  QTextDocument     *doc     = new QTextDocument();
+  QTextCursor       *cursor  = new QTextCursor(doc);
+  QTextTableFormat  tableFormat;
+  QTextTableCell    cell;
+  QTextCharFormat   format;
+  QString font;
+  int     colcnt = 0;
+  int     rowcnt = 0;
+
+  tableFormat.setHeaderRowCount(1);
+
+  QTreeWidgetItem *header = headerItem();
+  for (int i = 0; i < header->columnCount(); i++)
+    if (!QTreeWidget::isColumnHidden(i))
+      colcnt++;
+
+  XTreeWidgetItem *item = topLevelItem(0);
+  if (item)
+  {
+    QModelIndex idx = indexFromItem(item);
+    while (idx.isValid())
+    {
+      item = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+        rowcnt++;
+      idx = indexBelow(idx);
+    }
+  }
+
+  cursor->insertTable(rowcnt + 1, colcnt, tableFormat);
+
+  for (int counter = 0; counter < header->columnCount(); counter++)
+  {
+    if (!QTreeWidget::isColumnHidden(counter))
+    {
+      cell   = cursor->currentTable()->cellAt(cursor->position());
+      format = cell.format();
+      format.setBackground(Qt::lightGray);
+      cell.setFormat(format);
+      cursor->insertText(header->text(counter));
+      cursor->movePosition(QTextCursor::NextCell);
+    }
+  }
+
+  item = topLevelItem(0);
+  if (item)
+  {
+    QModelIndex idx = indexFromItem(item);
+    while (idx.isValid())
+    {
+      item = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+      {
+        for (int counter = 0; counter < item->columnCount(); counter++)
+        {
+          if (!QTreeWidget::isColumnHidden(counter))
+          {
+            cell   = cursor->currentTable()->cellAt(cursor->position());
+            format = cell.format();
+            if (item->data(counter, Qt::BackgroundRole).isValid())
+              format.setBackground(item->data(counter, Qt::BackgroundRole).value<QColor>());
+            if (item->data(counter, Qt::ForegroundRole).isValid())
+              format.setForeground(item->data(counter, Qt::ForegroundRole).value<QColor>());
+
+            if (item->data(counter,Qt::FontRole).isValid())
+            {
+              font = item->data(counter,Qt::FontRole).toString();
+              if (!font.isEmpty())
+                format.setFont(QFont(font));
+            }
+
+            cell.setFormat(format);
+            cursor->insertText(item->text(counter));
+            cursor->movePosition(QTextCursor::NextCell);
+          }
+        }
+      }
+      idx = indexBelow(idx);
+    }
+  }
+  return doc->toHtml();
 }
 
 QList<XTreeWidgetItem *> XTreeWidget::selectedItems() const

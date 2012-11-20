@@ -143,8 +143,8 @@ enum SetResponse enterPoitemReturn::set(const ParameterList &pParams)
         }
       else if (enteret.lastError().type() != QSqlError::NoError)
       {
-	systemError(this, enteret.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+    systemError(this, enteret.lastError().databaseText(), __FILE__, __LINE__);
+    return UndefinedError;
       }
     }
     if (enteret.lastError().type() != QSqlError::NoError)
@@ -169,14 +169,7 @@ void enterPoitemReturn::sReturn()
     return;
   }
 
-  if (_cachedReceived < _toReturn->toDouble())
-  {
-    QMessageBox::critical( this, tr("Cannot Enter Return"),
-                           tr("You may not enter a return whose returned quantity is greater than the returnable quantity.") );
-    _toReturn->setFocus();
-    return;
-  }
-  if(_returned >= _cachedReceived)
+  if (_cachedReceived < (_toReturn->toDouble() + _returned))
   {
     QMessageBox::critical( this, tr("Cannot Enter Return"),
                            tr("You may not enter a return whose returned quantity is greater than the returnable quantity.") );
@@ -225,7 +218,7 @@ void enterPoitemReturn::sReturn()
     if (result < 0)
     {
       QMessageBox::critical(this, tr("Cannot Enter Return"),
-			    storedProcErrorLookup("enterPoReturn", result));
+                storedProcErrorLookup("enterPoReturn", result));
       return;
     }
   }

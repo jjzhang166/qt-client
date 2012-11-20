@@ -273,8 +273,8 @@ class xTupleGuiClientInterface : public GuiClientInterface
   QWidget* openWindow(const QString pname, ParameterList pparams, QWidget *parent = 0, Qt::WindowModality modality = Qt::NonModal, Qt::WindowFlags flags = 0)
   {
     ScriptToolbox toolbox(0);
-		QWidget* w = toolbox.openWindow(pname, parent, modality, flags);
-		
+        QWidget* w = toolbox.openWindow(pname, parent, modality, flags);
+
     if (w)
     {
       if (w->inherits("QDialog"))
@@ -564,7 +564,7 @@ GUIClient::~GUIClient()
 
   // Close the database connection
   XSqlQuery qlc("SELECT logout();");
-  QSqlDatabase::database().close();  
+  QSqlDatabase::database().close();
 }
 
 GUIClient::WindowSystem GUIClient::getWindowSystem()
@@ -1515,7 +1515,7 @@ void GUIClient::sCustomCommand()
       }
 
       XUiLoader loader;
-      QByteArray ba = GCustomCommand.value("uiform_source").toString().toUtf8(); 
+      QByteArray ba = GCustomCommand.value("uiform_source").toString().toUtf8();
       QBuffer uiFile(&ba);
       if(!uiFile.open(QIODevice::ReadOnly))
       {
@@ -1697,23 +1697,25 @@ bool GUIClient::saveWidgetSizePos(QWidget *pWidget)
 
   QString objName = pWidget->objectName();
 
+/*
+qDebug() << __FUNCTION__    << pWidget->isMaximized()
+         << pWidget->size() << xtsettingsValue(objName + "/geometry/rememberSize", true).toBool()
+         << pWidget->pos()  << xtsettingsValue(objName + "/geometry/rememberPos", true).toBool();
+
+*/
   if (! pWidget->isMaximized())
   {
-    QWidget *parentWindow = qobject_cast<QWidget*>(pWidget->parent());
-
     if (xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
     {
-      if (parentWindow)
-        xtsettingsSetValue(objName + "/geometry/size", parentWindow->size());
-      else
-        xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
+      xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
       returnVal = true;
     }
 
     if (xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
     {
-      if (parentWindow)
-        xtsettingsSetValue(objName + "/geometry/pos", parentWindow->pos());
+      QWidget *mdiSubWindow = qobject_cast<QMdiSubWindow*>(pWidget->parent());
+      if (mdiSubWindow)
+        xtsettingsSetValue(objName + "/geometry/pos", mdiSubWindow->pos());
       else
         xtsettingsSetValue(objName + "/geometry/pos", pWidget->pos());
       returnVal = true;
@@ -1725,12 +1727,13 @@ bool GUIClient::saveWidgetSizePos(QWidget *pWidget)
 
 bool GUIClient::restoreWidgetSizePos(QWidget *pWidget, bool forceFloat)
 {
-  Q_UNUSED(forceFloat);
   bool returnVal = false;
 
-  if (pWidget &&
-      windowFlags() & (Qt::Window | Qt::Dialog) &&
-      metaObject()->className() != QString("xTupleDesigner"))
+  if (! pWidget)
+    returnVal = false;
+
+  else if (windowFlags() & (Qt::Window | Qt::Dialog) &&
+           metaObject()->className() != QString("xTupleDesigner"))
   {
     QRect availableGeometry = QApplication::desktop()->availableGeometry();
     if (! showTopLevel() && ! pWidget->isModal())
@@ -1740,45 +1743,33 @@ bool GUIClient::restoreWidgetSizePos(QWidget *pWidget, bool forceFloat)
     QPoint  pos     = xtsettingsValue(objName + "/geometry/pos").toPoint();
     QSize   lsize   = xtsettingsValue(objName + "/geometry/size").toSize();
 
+/*
+qDebug() << __FUNCTION__   << pWidget->isModal()
+         << showTopLevel() << _workspace->viewMode()
+         << availableGeometry
+         << lsize << xtsettingsValue(objName + "/geometry/rememberSize", true).toBool()
+         << pos   << xtsettingsValue(objName + "/geometry/rememberPos", true).toBool();
+*/
     QMainWindow *mw = qobject_cast<QMainWindow*>(pWidget);
     if (mw)
       mw->statusBar()->show();
 
-    QWidget *parentWindow = qobject_cast<QWidget*>(pWidget->parent());
     if (lsize.isValid() &&
         xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
+      pWidget->resize(lsize);
+
+    bool shouldRestore = ! pos.isNull() &&
+                         availableGeometry.contains(QRect(pos, pWidget->size())) &&
+                         xtsettingsValue(objName + "/geometry/rememberPos", true).toBool();
+    if (showTopLevel() || pWidget->isModal() || forceFloat)
     {
-      if (showTopLevel())
-        pWidget->resize(lsize);
-      else if (parentWindow && _workspace->viewMode() == QMdiArea::SubWindowView)
-        parentWindow->resize(lsize);
-    }
-
-    if (_workspace->viewMode() == QMdiArea::TabbedView)
-      pWidget->setWindowState(Qt::WindowMaximized);
-    else if (! pos.isNull() &&
-             xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
-    {
-      if (! availableGeometry.contains(QRect(pos, pWidget->size())))
-      {
-        if (pos.x() < availableGeometry.left() ||
-            pWidget->size().width() > availableGeometry.width())
-          pos.setX(availableGeometry.left());
-        else if (pos.x() + pWidget->size().width() > availableGeometry.width())
-          pos.setX(availableGeometry.width() - pWidget->size().width());
-
-        if (pos.y() < availableGeometry.top() ||
-            pWidget->size().height() > availableGeometry.height())
-          pos.setY(availableGeometry.top());
-        else if (pos.y() + pWidget->size().height() > availableGeometry.height())
-          pos.setY(availableGeometry.height() - pWidget->size().height());
-      }
-
-      if (parentWindow)
-        parentWindow->move(pos);
-      else
+      if (shouldRestore)
         pWidget->move(pos);
     }
+    else if (_workspace->viewMode() == QMdiArea::TabbedView)
+      pWidget->setWindowState(Qt::WindowMaximized);
+    else if (shouldRestore)
+      pWidget->parentWidget()->move(pos);
 
     returnVal = true;
   }
@@ -1786,6 +1777,11 @@ bool GUIClient::restoreWidgetSizePos(QWidget *pWidget, bool forceFloat)
   return returnVal;
 }
 
+/* TODO: in workspace subwindow mode, w->show is called twice for every call to
+   handleNewWindow. w gets resized between the 1st and 2nd calls, so pos memory
+   works but not size memory. why are there 2 show() calls & who is resizing w?
+   TODO: combine window handling from here, scripttoolbox, & guiclientinterface
+*/
 void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloat)
 {
   if (! w->isModal())
@@ -2206,7 +2202,7 @@ void GUIClient::hunspell_initialize()
     }
     if(affFile.exists() && dicFile.exists())
     {
-      _spellReady = true;      
+      _spellReady = true;
     }
     _spellChecker = new Hunspell(QString(fullPathWithoutExt+tr(".aff")).toLatin1(),
                                  QString(fullPathWithoutExt+tr(".dic")).toLatin1());
@@ -2219,7 +2215,7 @@ void GUIClient::hunspell_initialize()
     {
         QFile file(homePath + tr("/xTuple/user.dic"));
         if(file.exists(homePath + tr("/xTuple/user.dic")))
-        {           
+        {
            //open user dictionary if exists
            _spellChecker->add_dic(QString(homePath + tr("/xTuple/user.dic")).toLatin1());
         }
@@ -2227,7 +2223,7 @@ void GUIClient::hunspell_initialize()
 }
 
 void GUIClient::hunspell_uninitialize()
-{   
+{
     delete (Hunspell *)(_spellChecker);
     QString homePath = QDir::homePath().toLatin1();
     QFile file(homePath + tr("/xTuple/user.dic"));
@@ -2243,7 +2239,7 @@ void GUIClient::hunspell_uninitialize()
       }
       //get old words from file
       if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-      {          
+      {
            QTextStream in(&file);
            //skip word count line
            in.readLine();
@@ -2280,7 +2276,7 @@ bool GUIClient::hunspell_ready()
 }
 
 int GUIClient::hunspell_check(const QString word)
-{     
+{
       QByteArray encodedString = _spellCodec->fromUnicode(word);
       return _spellChecker->spell(encodedString.data());
 }
@@ -2288,7 +2284,7 @@ int GUIClient::hunspell_check(const QString word)
 const QStringList GUIClient::hunspell_suggest(const QString word)
 {
     char **wlst;
-    QStringList wordList;    
+    QStringList wordList;
     QByteArray encodedString = _spellCodec->fromUnicode(word);
     if(_spellChecker->spell(encodedString.data()) < 1)
     {
@@ -2304,7 +2300,7 @@ const QStringList GUIClient::hunspell_suggest(const QString word)
 }
 
 int GUIClient::hunspell_add(const QString word)
-{   
+{
     QByteArray encodedString = _spellCodec->fromUnicode(word);
     //check if word has been added before
     if(!_spellAddWords.contains(encodedString.data()))
