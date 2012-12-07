@@ -97,7 +97,7 @@ customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
   _aritemsPage->layout()->addWidget(_aritems);
   _aritems->setCloseVisible(false);
   _aritems->findChild<QWidget*>("_customerSelector")->hide();
-  _aritems->findChild<QWidget*>("_asofGroup")->hide();
+//  _aritems->findChild<QWidget*>("_asofGroup")->hide();
   _aritems->findChild<DLineEdit*>("_asOf")->setDate(omfgThis->dbDate(), true);
   _aritems->findChild<XCheckBox*>("_closed")->show();
   _aritems->list()->hideColumn("cust_number");
