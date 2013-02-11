@@ -56,9 +56,18 @@ enum SetResponse itemSourceList::set(const ParameterList &pParams)
     _item->setEnabled(FALSE);
   }
 
+  param = pParams.value("vend_id", &valid);
+  if (valid)
+  {
+    _vendor->setId(param.toInt());
+    _vendor->setEnabled(FALSE);
+  }
+
   param = pParams.value("qty", &valid);
 
   sFillList();
+  connect(_item, SIGNAL(newId(int)), this, SLOT(sFillList()));
+  connect(_vendor, SIGNAL(newId(int)), this, SLOT(sFillList()));
 
   return NoError;
 }
@@ -75,6 +84,8 @@ void itemSourceList::sFillList()
 
   ParameterList params;
   params.append("item_id", _item->id());
+  if (_vendor->isValid())
+    params.append("vend_id", _vendor->id());
   params.append("onlyShowActive", true);
   itemFillList = mql.toQuery(params);
   _itemsrc->populate(itemFillList);

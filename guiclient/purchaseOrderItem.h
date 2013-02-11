@@ -42,6 +42,7 @@ protected slots:
     virtual void sPopulateItemsiteInfo();
     virtual void sPopulateItemSourceInfo( int pItemsrcid );
     virtual void sInventoryItemToggled( bool yes );
+    virtual void sVendorItemNumberSearch();
     virtual void sVendorItemNumberList();
     virtual void sHandleButtons();
     virtual void sVendorListPrices();
@@ -54,6 +55,7 @@ private:
     int _poitemid;
     int _parentwo;
     int _parentso;
+    int _vendid;
     int _preferredWarehouseid;
     int _taxzoneid;
     double _invVendUOMRatio;

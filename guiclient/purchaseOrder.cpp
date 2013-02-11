@@ -898,6 +898,7 @@ void purchaseOrder::sNew()
   ParameterList params;
   params.append("mode", "new");
   params.append("pohead_id", _poheadid);
+  params.append("vend_id", _vendor->id());
   params.append("warehous_id", _warehouse->id());
   params.append("dropship", QVariant(_dropShip->isChecked()));
 
@@ -917,8 +918,10 @@ void purchaseOrder::sEdit()
 
   ParameterList params;
   params.append("pohead_id", _poheadid);
-  params.append("poitem_id", _poitem->id());
+  params.append("vend_id", _vendor->id());
+  params.append("warehous_id", _warehouse->id());
   params.append("dropship", QVariant(_dropShip->isChecked()));
+  params.append("poitem_id", _poitem->id());
 
   if (_mode == cEdit || _mode == cNew)
     params.append("mode", "edit");

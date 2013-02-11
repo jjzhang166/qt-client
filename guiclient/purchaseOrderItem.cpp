@@ -22,6 +22,7 @@
 #include "taxDetail.h"
 #include "itemCharacteristicDelegate.h"
 #include "itemSourceSearch.h"
+#include "itemSourceList.h"
 #include "vendorPriceList.h"
 
 purchaseOrderItem::purchaseOrderItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
@@ -36,6 +37,8 @@ purchaseOrderItem::purchaseOrderItem(QWidget* parent, const char* name, bool mod
   _listPrices->setMinimumWidth(60);
 #endif
 
+  _vendid = -1;
+  _preferredWarehouseid = -1;
   _invVendUOMRatio = 1;
   _minimumOrder = 0;
   _orderMultiple = 0;
@@ -49,7 +52,7 @@ purchaseOrderItem::purchaseOrderItem(QWidget* parent, const char* name, bool mod
   connect(_item, SIGNAL(newId(int)), this, SLOT(sPopulateItemInfo(int)));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateItemsiteInfo()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_vendorItemNumberList, SIGNAL(clicked()), this, SLOT(sVendorItemNumberList()));
+  connect(_vendorItemNumberList, SIGNAL(clicked()), this, SLOT(sVendorItemNumberSearch()));
   connect(_notesButton, SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_listPrices, SIGNAL(clicked()), this, SLOT(sVendorListPrices()));
   connect(_taxLit, SIGNAL(leftClickedURL(QString)), this, SLOT(sTaxDetail()));  // new slot added for tax url //
@@ -136,6 +139,10 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
   bool     haveDate = FALSE;
 
 
+
+  param = pParams.value("vend_id", &valid);
+  if (valid)
+    _vendid = param.toInt();
 
   param = pParams.value("warehous_id", &valid);
   if (valid)
@@ -1057,19 +1064,10 @@ void purchaseOrderItem::sInventoryItemToggled( bool yes )
     sPopulateItemSourceInfo(-1);
 }
 
-void purchaseOrderItem::sVendorItemNumberList()
+void purchaseOrderItem::sVendorItemNumberSearch()
 {
-  XSqlQuery purchaseVendorItemNumberList;
   ParameterList params;
-
-  purchaseVendorItemNumberList.prepare( "SELECT vend_id"
-             "  FROM pohead, vendinfo "
-             " WHERE((pohead_vend_id=vend_id)"
-             "   AND (pohead_id=:pohead_id));" );
-  purchaseVendorItemNumberList.bindValue(":pohead_id", _poheadid);
-  purchaseVendorItemNumberList.exec();
-  if (purchaseVendorItemNumberList.first())
-    params.append("vend_id", purchaseVendorItemNumberList.value("vend_id").toInt());
+  params.append("vend_id", _vendid);
   if (!_vendorItemNumber->text().isEmpty())
     params.append("search", _vendorItemNumber->text());
   else if (_item->id() != -1)
@@ -1095,6 +1093,22 @@ void purchaseOrderItem::sVendorItemNumberList()
       _manufItemNumber->setText(newdlg.manufItemNumber());
       _manufItemDescrip->setText(newdlg.manufItemDescrip());
     }
+  }
+}
+
+void purchaseOrderItem::sVendorItemNumberList()
+{
+  ParameterList params;
+  params.append("item_id", _item->id());
+  params.append("vend_id", _vendid);
+
+  itemSourceList newdlg(this, "", true);
+  newdlg.set(params);
+  int itemsrcid = newdlg.exec();
+  if(itemsrcid > 0)
+  {
+    _inventoryItem->setChecked(TRUE);
+    sPopulateItemSourceInfo(itemsrcid);
   }
 }
 
