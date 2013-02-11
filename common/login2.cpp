@@ -224,6 +224,11 @@ void login2::sLogin()
     db.setPassword(QMd5(QString(_cPassword + "private" + _cUsername)));
     db.open();
   }
+  else if(hostName=="cloud.xtuple.com")
+  {
+      db.setPassword(QMd5(QString(_cPassword + "private" + _cUsername)));
+      db.open();
+  }
   else
   {
     // try connecting to the database in each of the following ways in this order

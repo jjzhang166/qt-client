@@ -415,7 +415,6 @@ bool userPreferences::save()
         passwd = QMd5(passwd);
       }
     }
-
     userave.prepare( QString( "ALTER USER %1 WITH PASSWORD :password;")
            .arg(_username->text()) );
     userave.bindValue(":password", passwd);
