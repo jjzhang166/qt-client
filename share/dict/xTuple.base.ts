@@ -44865,6 +44865,10 @@ before you may save this Item Source.</source>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Vendor:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemSourcePrice</name>
