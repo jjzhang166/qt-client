@@ -193,11 +193,12 @@ void characteristicAssignment::sSave()
 {
   if(_targetType == "I")
   {
-      if(_value->text().trimmed() == "")
+    if ( ((_stackedWidget->currentIndex() == characteristic::Text) && (_value->text().trimmed() == "")) ||
+         ((_stackedWidget->currentIndex() == characteristic::List) && (_listValue->currentText() == "")) ||
+         ((_stackedWidget->currentIndex() == characteristic::Date) && (_dateValue->date().toString() == "")) )
       {
           QMessageBox::information( this, tr("No Value Entered"),
                                     tr("You must enter a value before saving this Item Characteristic.") );
-          _value->setFocus();
           return;
       }
   }
