@@ -292,7 +292,9 @@ void vendorWorkBench::sPopulate()
   MetaSQLQuery purchbydate("SELECT SUM(currToBase(vohead_curr_id,"
                            "             vohead_amount,"
                            "             vohead_gldistdate)) AS purchases "
-                           "FROM vohead "
+                           "FROM vohead JOIN apopen ON (apopen_doctype='V' AND"
+                           "                            apopen_docnumber=vohead_number AND"
+                           "                            NOT apopen_void) "
                            "WHERE (vohead_posted"
                            "  AND (vohead_gldistdate "
                            "       BETWEEN (<? literal(\"older\") ?>)"
@@ -312,7 +314,7 @@ void vendorWorkBench::sPopulate()
   ParameterList ytdparams;
   ytdparams.append("vend_id", _vend->id());
   ytdparams.append("older",   "DATE_TRUNC('year', CURRENT_DATE)");
-  ytdparams.append("younger", "CURRENT_DATE - INTERVAL '1 day'");
+  ytdparams.append("younger", "CURRENT_DATE");
   vendorPopulate = purchbydate.toQuery(ytdparams);
   if (vendorPopulate.first())
     _ytdPurchases->setDouble(vendorPopulate.value("purchases").toDouble());
