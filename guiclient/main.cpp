@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
     if(metric.first())
       rkey = metric.value("metric_value").toString();
     XTupleProductKey pkey(rkey);
-    if(pkey.valid() && (pkey.version() == 1 || pkey.version() == 2))
+    if(pkey.valid() && (pkey.version() == 1 || pkey.version() == 2 || pkey.version() == 3))
     {
       if(pkey.expiration() < QDate::currentDate())
       {

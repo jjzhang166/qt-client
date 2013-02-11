@@ -44,7 +44,7 @@ class XTupleProductKeyPrivate
     bool valid;
     int version;
     QDate expiration;
-    int users;
+    quint8 users;
     QString custid;
     bool perpetual;
 };
@@ -72,7 +72,7 @@ XTupleProductKeyPrivate::XTupleProductKeyPrivate(const QString & k)
   }
 
   version = (data.at(0) >> 4);
-  if(version != 1 && version != 2)
+  if(version != 1 && version != 2 && version != 3)
   {
     valid = false;
     return;
@@ -94,7 +94,7 @@ XTupleProductKeyPrivate::XTupleProductKeyPrivate(const QString & k)
   users = data.at(2);
 
   tmp = data.at(3);
-  if(version == 2)
+  if(version == 2 || version == 3)
   {
     perpetual = (tmp & 0x01) == 0x01;
     tmp = tmp & 0xFE;
