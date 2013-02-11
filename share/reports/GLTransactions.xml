@@ -48,24 +48,11 @@ SELECT -1 AS gltrans_id,
        '' AS gltrans_source, '' AS gltrans_doctype, '' AS gltrans_docnumber, '' AS invhist_docnumber,
        'Beginning Balance' AS transnotes,
        (formatGLAccount(accnt_id) || ' - ' || accnt_descrip) AS account,
-       CASE WHEN (&lt;? value("beginningBalance") ?> &lt; 0) THEN
-                     formatMoney(ABS(&lt;? value("beginningBalance") ?>))
-            ELSE ''
-       END AS f_debit,
-       CASE WHEN (&lt;? value("beginningBalance") ?> &lt; 0) THEN
-                     ABS(&lt;? value("beginningBalance") ?>)
-            ELSE 0
-       END AS debit_amt,
-
-       CASE WHEN (&lt;? value("beginningBalance") ?> > 0) THEN
-                     formatMoney(ABS(&lt;? value("beginningBalance") ?>))
-            ELSE ''
-       END AS f_credit,
-       CASE WHEN (&lt;? value("beginningBalance") ?> > 0) THEN
-                     ABS(&lt;? value("beginningBalance") ?>)
-            ELSE 0
-       END AS credit_amt,
-       &lt;? value("beginningBalance") ?> * -1 AS balance_amt,
+       '' AS f_debit,
+       0.0 AS debit_amt,
+       '' AS f_credit,
+       0.0 AS credit_amt,
+       &lt;? value("beginningBalance") ?> AS balance_amt,
        &lt;? value("beginningBalance") ?> AS gltrans_amount,
        &lt;? value("beginningBalance") ?> AS running,
        NULL AS f_posted,
@@ -83,22 +70,24 @@ SELECT gltrans_id,
        firstLine(gltrans_notes) AS transnotes,
        (formatGLAccount(accnt_id) || ' - ' || accnt_descrip) AS account,
 -- Debits:
-       CASE WHEN (gltrans_amount &lt; 0) THEN formatMoney(ABS(gltrans_amount))
+       CASE WHEN (gltrans_amount &lt; 0 AND NOT gltrans_deleted) THEN formatMoney(ABS(gltrans_amount))
             ELSE ''
        END AS f_debit,       
        CASE WHEN (gltrans_amount &lt; 0 AND NOT gltrans_deleted) THEN ABS(gltrans_amount)
             ELSE 0
        END AS debit_amt, 
 --Credits:
-       CASE WHEN (gltrans_amount > 0) THEN formatMoney(gltrans_amount)
+       CASE WHEN (gltrans_amount > 0 AND NOT gltrans_deleted) THEN formatMoney(gltrans_amount)
             ELSE ''
        END AS f_credit,
        CASE WHEN (gltrans_amount > 0 AND NOT gltrans_deleted) THEN gltrans_amount
             ELSE 0
        END AS credit_amt,
 --Balance:
-       CASE WHEN (NOT gltrans_deleted) THEN
-         gltrans_amount * -1 
+       CASE WHEN (accnt_type IN ('A','E') AND NOT gltrans_deleted) THEN 
+         gltrans_amount * -1
+       WHEN (NOT gltrans_deleted) THEN 
+         gltrans_amount 
        ELSE 0 END AS balance_amt,
        gltrans_amount,
        CASE WHEN (accnt_type IN ('A','E') AND NOT gltrans_deleted) THEN 
