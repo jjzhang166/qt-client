@@ -1098,12 +1098,8 @@ void purchaseOrder::sHandleVendor(int pVendid)
     {
       _taxZone->setId(vq.value("vendtaxzoneid").toInt());
       _poCurrency->setId(vq.value("vend_curr_id").toInt());
-
-      if (_terms->id() == -1)
-        _terms->setId(vq.value("vend_terms_id").toInt());
-
-      if (_shipVia->currentText().length() == 0)
-        _shipVia->setText(vq.value("vend_shipvia"));
+      _terms->setId(vq.value("vend_terms_id").toInt());
+      _shipVia->setText(vq.value("vend_shipvia"));
 
       if (vq.value("vend_fobsource").toString() == "V")
       {
