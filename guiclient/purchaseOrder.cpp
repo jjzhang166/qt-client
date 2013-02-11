@@ -1039,16 +1039,14 @@ void purchaseOrder::sHandleDeleteButton()
   {
     QTreeWidgetItem *selected = _poitem->currentItem();
 
-    // _poitem->currentItem()->text(1) == values have to match sFillList()
     if (selected == 0)
       _delete->setEnabled(FALSE);
-    else if (_poitem->currentItem()->text(1) == tr("Unposted"))
+    else if (_poitem->currentItem()->rawValue("poitem_status") == "U")
     {
       _deleteMode = cDelete;
       _delete->setEnabled(TRUE);
       _delete->setText(tr("&Delete"));
     }
-    //else if (_poitem->currentItem()->text(1) == tr("Open"))
     else
     {
       _deleteMode = cClose;
