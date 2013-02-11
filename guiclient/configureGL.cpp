@@ -407,13 +407,9 @@ bool configureGL::sSave()
            "WHERE (salesaccnt_sales_accnt_id IS NULL) "
            "   OR (salesaccnt_credit_accnt_id IS NULL) "
            "   OR (salesaccnt_cos_accnt_id IS NULL) "
-           "   OR (salesaccnt_cor_accnt_id IS NULL) "
-           "   OR (salesaccnt_cow_accnt_id IS NULL) "
            "   OR (salesaccnt_sales_accnt_id = -1) "
            "   OR (salesaccnt_credit_accnt_id = -1) "
            "   OR (salesaccnt_cos_accnt_id = -1) "
-           "   OR (salesaccnt_cor_accnt_id = -1) "
-           "   OR (salesaccnt_cow_accnt_id = -1) "
            "LIMIT 1;");
     if (configureSave.first())
     {
@@ -426,7 +422,11 @@ bool configureGL::sSave()
       configureSave.exec("SELECT salesaccnt_id "
              "FROM salesaccnt "
              "WHERE (salesaccnt_returns_accnt_id IS NULL) "
+             "   OR (salesaccnt_cor_accnt_id IS NULL) "
+             "   OR (salesaccnt_cow_accnt_id IS NULL) "
              "   OR (salesaccnt_returns_accnt_id = -1) "
+             "   OR (salesaccnt_cor_accnt_id = -1) "
+             "   OR (salesaccnt_cow_accnt_id = -1) "
              "LIMIT 1;");
       if (configureSave.first())
       {
