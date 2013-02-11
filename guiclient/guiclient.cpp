@@ -1705,17 +1705,21 @@ qDebug() << __FUNCTION__    << pWidget->isMaximized()
 */
   if (! pWidget->isMaximized())
   {
+    QWidget *parentWindow = qobject_cast<QWidget*>(pWidget->parent());
+    
     if (xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
     {
-      xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
+      if (parentWindow)
+        xtsettingsSetValue(objName + "/geometry/size", parentWindow->size());
+      else
+        xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
       returnVal = true;
     }
 
     if (xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
     {
-      QWidget *mdiSubWindow = qobject_cast<QMdiSubWindow*>(pWidget->parent());
-      if (mdiSubWindow)
-        xtsettingsSetValue(objName + "/geometry/pos", mdiSubWindow->pos());
+      if (parentWindow)
+        xtsettingsSetValue(objName + "/geometry/pos", parentWindow->pos());
       else
         xtsettingsSetValue(objName + "/geometry/pos", pWidget->pos());
       returnVal = true;
@@ -1754,9 +1758,15 @@ qDebug() << __FUNCTION__   << pWidget->isModal()
     if (mw)
       mw->statusBar()->show();
 
+    QWidget *parentWindow = qobject_cast<QWidget*>(pWidget->parent());
     if (lsize.isValid() &&
         xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
-      pWidget->resize(lsize);
+    {
+      if (showTopLevel())
+        pWidget->resize(lsize);
+      else if (parentWindow && _workspace->viewMode() == QMdiArea::SubWindowView)
+        parentWindow->resize(lsize);
+    }
 
     bool shouldRestore = ! pos.isNull() &&
                          availableGeometry.contains(QRect(pos, pWidget->size())) &&
