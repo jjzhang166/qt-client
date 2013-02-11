@@ -39,7 +39,7 @@ printPurchaseOrder::printPurchaseOrder(QWidget* parent, const char* name, bool m
 
   _markOnePrintedQry = "UPDATE pohead"
                        "   SET pohead_printed=TRUE "
-                       " WHERE (pohead_id=:pohead_id);" ;
+                       " WHERE (pohead_id=<? value('docid') ?>);" ;
 
   connect(_po,  SIGNAL(newId(int, QString)),   this, SLOT(setId(int)));
   connect(this, SIGNAL(docUpdated(int)),       this, SLOT(sHandleDocUpdated(int)));
