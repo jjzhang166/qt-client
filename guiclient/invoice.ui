@@ -1379,35 +1379,40 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_tabWidget</tabstop>
+  <tabstop>_invoiceNumber</tabstop>
+  <tabstop>_invoiceDate</tabstop>
+  <tabstop>_terms</tabstop>
   <tabstop>_orderNumber</tabstop>
   <tabstop>_orderDate</tabstop>
   <tabstop>_shipDate</tabstop>
   <tabstop>_salesrep</tabstop>
   <tabstop>_commission</tabstop>
   <tabstop>_taxzone</tabstop>
+  <tabstop>_cust</tabstop>
+  <tabstop>_copyToShipto</tabstop>
   <tabstop>_billToName</tabstop>
   <tabstop>_billToPhone</tabstop>
-  <tabstop>_billToAddr</tabstop>
+  <tabstop>_shipTo</tabstop>
   <tabstop>_shipToName</tabstop>
   <tabstop>_shipToPhone</tabstop>
-  <tabstop>_shipToAddr</tabstop>
   <tabstop>_poNumber</tabstop>
   <tabstop>_fob</tabstop>
   <tabstop>_shipVia</tabstop>
+  <tabstop>_shipChrgs</tabstop>
+  <tabstop>_saleType</tabstop>
+  <tabstop>_shippingZone</tabstop>
   <tabstop>_project</tabstop>
-  <tabstop>_tabWidget</tabstop>
-  <tabstop>_invcitem</tabstop>
   <tabstop>_new</tabstop>
   <tabstop>_edit</tabstop>
   <tabstop>_view</tabstop>
   <tabstop>_delete</tabstop>
   <tabstop>_custCurrency</tabstop>
   <tabstop>_miscChargeDescription</tabstop>
+  <tabstop>_miscChargeAccount</tabstop>
   <tabstop>_miscAmount</tabstop>
   <tabstop>_freight</tabstop>
-  <tabstop>_total</tabstop>
   <tabstop>_payment</tabstop>
-  <tabstop>_notes</tabstop>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
