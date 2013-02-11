@@ -32,6 +32,7 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
     : XWidget (parent, name, fl)
 {
   setupUi(this);
+  _vend->setShowInactive(true);
 
   QWidget *hideme = 0;
 
