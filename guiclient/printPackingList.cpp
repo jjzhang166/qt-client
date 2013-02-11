@@ -157,6 +157,12 @@ ParameterList printPackingList::getParams(XSqlQuery *docq)
   // unlike other printSinglecopyDocuments, don't call parent::getParams
   ParameterList params;
 
+  setReportKey(reportKey());
+  params.append("head_id",    _order->id());
+  if (_order->isSO())
+    params.append("head_type",  "SO");
+  else if (_order->isTO())
+    params.append("head_type",  "TO");
   params.append(reportKey(),  _order->id());
   params.append("docid",      _order->id());
   params.append("form",       doctype());
