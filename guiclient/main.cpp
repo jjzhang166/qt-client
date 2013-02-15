@@ -252,6 +252,7 @@ int main(int argc, char *argv[])
     params.append("copyright", _Copyright);
     params.append("version",   _Version);
     params.append("build",     _Build.arg(__DATE__).arg(__TIME__));
+    params.append("setSearchPath", true);
 
     if (haveUsername)
       params.append("username", username);

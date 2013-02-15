@@ -60,6 +60,7 @@ class login2 : public QDialog, public Ui::login2
     bool _evaluation;
     bool _nonxTupleDB;
     bool _multipleConnections;
+    bool _setSearchPath;
     QSplashScreen *_splash;
     QString _cUsername;
     QString _cPassword;

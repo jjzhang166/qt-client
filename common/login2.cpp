@@ -55,6 +55,7 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _captive = false; _nonxTupleDB = false;
   _multipleConnections = false;
   _evalDatabaseURL = "pgsql://demo.xtuple.com:5434/%1";
+  _setSearchPath = false;
 
   _password->setEchoMode(QLineEdit::Password);
 
@@ -138,6 +139,10 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   param = pParams.value("multipleConnections", &valid);
   if (valid)
     _multipleConnections = true;
+
+  param = pParams.value("setSearchPath", &valid);
+  if (valid)
+    _setSearchPath = true;
 
   if(pParams.inList("login"))
     sLogin();
@@ -300,8 +305,12 @@ void login2::sLogin()
 
   if(!_nonxTupleDB)
   {
-    XSqlQuery login( "SELECT login() AS result,"
-                     "       CURRENT_USER AS user;" );
+    QString loginqry = "";
+    if (_setSearchPath)
+      loginqry="SELECT login(true) AS result, CURRENT_USER AS user;";
+    else
+      loginqry="SELECT login() AS result, CURRENT_USER AS user;";
+    XSqlQuery login( loginqry );
     setCursor(QCursor(Qt::ArrowCursor));
     if (login.first())
     {
