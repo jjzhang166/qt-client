@@ -34473,6 +34473,14 @@ Total</source>
         <source>View Parent Work Order...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Cannot Delete Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This Work Order is linked to a Sales Order and is a Job Costed Item.  The Work Order may not be deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>duplicateAccountNumbers</name>
@@ -41884,10 +41892,6 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>More</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tax Zone</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42386,6 +42390,10 @@ You may edit the Item Site and deactivate it.</source>
     </message>
     <message>
         <source>Documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Materials...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -75179,6 +75187,14 @@ that the selected Work Order does.</source>
     </message>
     <message>
         <source>Reference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick List</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
