@@ -34,6 +34,7 @@ adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowF
   connect(_item,                          SIGNAL(newId(int)), this, SLOT(sPopulateQOH()));
   connect(_warehouse,                     SIGNAL(newID(int)), this, SLOT(sPopulateQOH()));
   connect(_cost, SIGNAL(textChanged(const QString&)), this, SLOT(sCostUpdated()));
+  connect(_costManual, SIGNAL(toggled(bool)), this, SLOT(sPopulateQty()));
 
   _captive = FALSE;
 
@@ -337,7 +338,7 @@ void adjustmentTrans::sPopulateQty()
     if(neg)
       _costCalculated->setChecked(true);
     _costManual->setEnabled(!neg);
-    _cost->setEnabled(!neg);
+    _cost->setEnabled(!neg && _costManual->isChecked());
     _lblCost->setEnabled(!neg);
     _unitCost->setEnabled(!neg);
     _unitCostLit->setEnabled(!neg);
