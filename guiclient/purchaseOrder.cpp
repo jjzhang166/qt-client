@@ -840,7 +840,7 @@ void purchaseOrder::sSave()
     omfgThis->sPurchaseRequestsUpdated();
   }
 
-  if (_printPO->isChecked())
+  if (_printPO->isChecked() && (_status->currentIndex() != 2)) // don't print closed
   {
     ParameterList params;
     params.append("pohead_id", _poheadid);
