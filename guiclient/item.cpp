@@ -662,7 +662,7 @@ void item::sSave()
                  "  FROM itemsite "
                  " WHERE ((itemsite_item_id=:item_id) "
 				 " AND (itemsite_qtyonhand + qtyallocated(itemsite_id,startoftime(),endoftime()) +"
-		         "      qtyordered(itemsite_id,startoftime(),endoftime()) > 0 ));" );
+                         "      qtyordered(itemsite_id,startoftime(),endoftime()) != 0 ));" );
       itemSave.bindValue(":item_id", _itemid);
       itemSave.exec();
       if (itemSave.first())
