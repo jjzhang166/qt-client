@@ -40,6 +40,8 @@
 #include "substituteList.h"
 #include "scrapWoMaterialFromWIP.h"
 #include "woMaterialItem.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 #define DEBUG false
 
@@ -50,7 +52,7 @@ workOrder::workOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   setupUi(this);
 
   connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_save, SIGNAL(clicked()), this, SLOT(sSaveClicked()));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateLeadTime(int)));
   connect(_item, SIGNAL(newId(int)), this, SLOT(sPopulateItemChar(int)));
   connect(_dueDate, SIGNAL(newDate(const QDate&)), this, SLOT(sUpdateStartDate()));
@@ -512,75 +514,21 @@ void workOrder::sCreate()
   }
 }
 
-void workOrder::sSave()
+void workOrder::sSaveClicked()
 {
+  if (!sSave())
+    return;
+
   XSqlQuery workSave;
-  if ((!_qty->text().length()) || (_qty->toDouble() == 0.0))
-  {
-    QMessageBox::information( this, tr("Cannot Save Work Order"),
-                              tr( "You have entered an invalid Qty. Ordered.\n"
-                                  "Please correct before creating this Work Order"  ) );
-    _qty->setFocus();
-    return;
-  }
-
-  if (!_dueDate->isValid())
-  {
-    QMessageBox::information( this, tr("Cannot Save Work Order"),
-                              tr( "You have entered an invalid Due Date.\n"
-                                  "Please correct before updating this Work Order"  ) );
-    _dueDate->setFocus();
-    return;
-  }
-
-  if (!_startDate->isValid())
-  {
-    QMessageBox::information( this, tr("Cannot Save Work Order"),
-                              tr( "You have entered an invalid Start Date.\n"
-                                  "Please correct before updating this Work Order"  ) );
-    _dueDate->setFocus();
-    return;
-  }
-
-  workSave.prepare("UPDATE wo"
-            "   SET wo_prodnotes=:productionNotes,"
-            "       wo_prj_id=:prj_id,"
-            "       wo_bom_rev_id=:bom_rev_id,"
-            "       wo_boo_rev_id=:boo_rev_id,"
-            "       wo_cosmethod=:wo_cosmethod"
-            " WHERE (wo_id=:wo_id); ");
-  workSave.bindValue(":wo_id", _woid);
-  workSave.bindValue(":productionNotes", _productionNotes->toPlainText());
-  workSave.bindValue(":prj_id", _project->id());
-  workSave.bindValue(":bom_rev_id", _bomRevision->id());
-  workSave.bindValue(":boo_rev_id", _booRevision->id());
-  if (_todate->isChecked() && _jobCosGroup->isEnabled())
-    workSave.bindValue(":wo_cosmethod",QString("D"));
-  else if (_proportional->isChecked() && _jobCosGroup->isEnabled())
-    workSave.bindValue(":wo_cosmethod",QString("P"));
-  workSave.exec();
-
-  workSave.prepare("SELECT updateCharAssignment('W', :target_id, :char_id, :char_value);");
-  QModelIndex idx1, idx2;
-  for(int i = 0; i < _itemchar->rowCount(); i++)
-  {
-    idx1 = _itemchar->index(i, 0);
-    idx2 = _itemchar->index(i, 1);
-    workSave.bindValue(":target_id", _woid);
-    workSave.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
-    workSave.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
-    workSave.exec();
-  }
-  
   if (_mode == cRelease)
   {
     workSave.prepare("SELECT releasePlannedOrder(:planord_id, FALSE) AS result;");
     workSave.bindValue(":planord_id", _planordid);
     workSave.exec();
   }
-  
+
   omfgThis->sWorkOrdersUpdated(_woid, TRUE);
-  
+
   if (_printTraveler->isChecked() &&
       _printTraveler->isVisible())
   {
@@ -609,6 +557,68 @@ void workOrder::sSave()
     _close->setText(tr("&Close"));
     _item->setFocus();
   }
+}
+
+bool workOrder::sSave()
+{
+  XSqlQuery workSave;
+
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck((!_qty->text().length()) || (_qty->toDouble() == 0.0), _qty,
+                          tr( "You have entered an invalid Qty. Ordered.\n"
+                              "Please correct before creating this Work Order"  ) )
+         << GuiErrorCheck(!_dueDate->isValid(), _dueDate,
+                          tr( "You have entered an invalid Due Date.\n"
+                              "Please correct before updating this Work Order"  ) )
+         << GuiErrorCheck(!_startDate->isValid(), _startDate,
+                          tr( "You have entered an invalid Start Date.\n"
+                              "Please correct before updating this Work Order"  ) )
+     ;
+
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Work Order"), errors))
+    return false;
+
+  workSave.prepare("UPDATE wo"
+            "   SET wo_prodnotes=:productionNotes,"
+            "       wo_prj_id=:prj_id,"
+            "       wo_bom_rev_id=:bom_rev_id,"
+            "       wo_boo_rev_id=:boo_rev_id,"
+            "       wo_cosmethod=:wo_cosmethod"
+            " WHERE (wo_id=:wo_id); ");
+  workSave.bindValue(":wo_id", _woid);
+  workSave.bindValue(":productionNotes", _productionNotes->toPlainText());
+  workSave.bindValue(":prj_id", _project->id());
+  workSave.bindValue(":bom_rev_id", _bomRevision->id());
+  workSave.bindValue(":boo_rev_id", _booRevision->id());
+  if (_todate->isChecked() && _jobCosGroup->isEnabled())
+    workSave.bindValue(":wo_cosmethod",QString("D"));
+  else if (_proportional->isChecked() && _jobCosGroup->isEnabled())
+    workSave.bindValue(":wo_cosmethod",QString("P"));
+  workSave.exec();
+  if (workSave.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, workSave.lastError().databaseText(), __FILE__, __LINE__);
+    return false;
+  }
+
+  workSave.prepare("SELECT updateCharAssignment('W', :target_id, :char_id, :char_value);");
+  QModelIndex idx1, idx2;
+  for(int i = 0; i < _itemchar->rowCount(); i++)
+  {
+    idx1 = _itemchar->index(i, 0);
+    idx2 = _itemchar->index(i, 1);
+    workSave.bindValue(":target_id", _woid);
+    workSave.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
+    workSave.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
+    workSave.exec();
+    if (workSave.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, workSave.lastError().databaseText(), __FILE__, __LINE__);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void workOrder::sUpdateStartDate()
@@ -880,6 +890,8 @@ void workOrder::sFillList()
 
 void workOrder::sPostProduction()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -895,6 +907,8 @@ void workOrder::sPostProduction()
 
 void workOrder::sCorrectProductionPosting()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -909,6 +923,8 @@ void workOrder::sCorrectProductionPosting()
 
 void workOrder::sReleaseWO()
 {
+  if (!sSave())
+    return;
   XSqlQuery workReleaseWO;
   workReleaseWO.prepare("SELECT releaseWo(:wo_id, FALSE);");
   workReleaseWO.bindValue(":wo_id", _woIndentedList->id());
@@ -923,6 +939,8 @@ void workOrder::sReleaseWO()
 
 void workOrder::sRecallWO()
 {
+  if (!sSave())
+    return;
   XSqlQuery workRecallWO;
   workRecallWO.prepare("SELECT recallWo(:wo_id, FALSE);");
   workRecallWO.bindValue(":wo_id", _woIndentedList->id());
@@ -937,6 +955,8 @@ void workOrder::sRecallWO()
 
 void workOrder::sExplodeWO()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -952,6 +972,8 @@ void workOrder::sExplodeWO()
 
 void workOrder::sImplodeWO()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1028,6 +1050,8 @@ void workOrder::sDeleteWO()
 
 void workOrder::sCloseWO()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1043,6 +1067,8 @@ void workOrder::sCloseWO()
 
 void workOrder::sPrintTraveler()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1069,6 +1095,8 @@ void workOrder::sInventoryAvailabilityByWorkOrder()
 
 void workOrder::sReprioritizeParent()
 {
+  if (!sSave())
+    return;
   XSqlQuery workReprioritizeParent;
   if(_priority->value() != _oldPriority)
   {
@@ -1102,6 +1130,8 @@ void workOrder::sReprioritizeParent()
 
 void workOrder::sRescheduleParent()
 {
+  if (!sSave())
+    return;
   XSqlQuery workRescheduleParent;
   if(_startDate->date() != _oldStartDate || _dueDate->date() != _oldDueDate)
   {
@@ -1141,6 +1171,8 @@ void workOrder::sRescheduleParent()
 
 void workOrder::sChangeParentQty()
 {
+  if (!sSave())
+    return;
   XSqlQuery workChangeParentQty;
   if(_qty->text().toDouble() != _oldQty)
   {
@@ -1207,6 +1239,8 @@ void workOrder::sChangeParentQty()
 
 void workOrder::sReprioritizeWo()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1219,6 +1253,8 @@ void workOrder::sReprioritizeWo()
 
 void workOrder::sRescheduleWO()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1231,6 +1267,8 @@ void workOrder::sRescheduleWO()
 
 void workOrder::sChangeWOQty()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("wo_id", _woIndentedList->id());
 
@@ -1266,6 +1304,8 @@ void workOrder::sDspRunningAvailability()
 
 void workOrder::sReturnMatlBatch()
 {
+  if (!sSave())
+    return;
   XSqlQuery workReturnMatlBatch;
    workReturnMatlBatch.prepare( "SELECT wo_qtyrcv "
              "FROM wo "
@@ -1326,6 +1366,8 @@ void workOrder::sReturnMatlBatch()
 
 void workOrder::sIssueMatlBatch()
 {
+  if (!sSave())
+    return;
   XSqlQuery issue;
   issue.prepare("SELECT itemsite_id, "
                 "       item_number, "
@@ -1404,6 +1446,8 @@ void workOrder::sIssueMatlBatch()
 
 void workOrder::sIssueMatl()
 {
+  if (!sSave())
+    return;
   XSqlQuery workIssueMatl;
   issueWoMaterialItem newdlg(this);
   ParameterList params;
@@ -1425,6 +1469,8 @@ void workOrder::sIssueMatl()
 
 void workOrder::sReturnMatl()
 {
+  if (!sSave())
+    return;
   returnWoMaterialItem newdlg(this);
   ParameterList params;
   params.append("womatl_id", _woIndentedList->id());
@@ -1439,6 +1485,8 @@ void workOrder::sReturnMatl()
 
 void workOrder::sScrapMatl()
 {
+  if (!sSave())
+    return;
   scrapWoMaterialFromWIP newdlg(this);
   ParameterList params;
   params.append("womatl_id", _woIndentedList->id());
@@ -1453,6 +1501,8 @@ void workOrder::sScrapMatl()
 
 void workOrder::sNewMatl()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("mode", "new");
   params.append("wo_id", _woIndentedList->id());
@@ -1469,6 +1519,8 @@ void workOrder::sNewMatl()
 
 void workOrder::sEditMatl()
 {
+  if (!sSave())
+    return;
   ParameterList params;
   params.append("mode", "edit");
   params.append("womatl_id", _woIndentedList->id());
@@ -1495,6 +1547,8 @@ void workOrder::sViewMatl()
 
 void workOrder::sDeleteMatl()
 {
+  if (!sSave())
+    return;
   XSqlQuery workDeleteMatl;
   int womatlid = _woIndentedList->id();
   if (_woIndentedList->currentItem()->data(7, Qt::UserRole).toMap().value("raw").toDouble() > 0)
@@ -1625,6 +1679,8 @@ void workOrder::sViewMatlSubstituteAvailability()
 
 void workOrder::sSubstituteMatl()
 {
+  if (!sSave())
+    return;
   XSqlQuery workSubstituteMatl;
   int womatlid = _woIndentedList->id();
 

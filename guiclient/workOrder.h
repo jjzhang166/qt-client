@@ -66,7 +66,8 @@ public slots:
     virtual void sViewMatlSubstituteAvailability();
     virtual void sSubstituteMatl();
     virtual void sPopulateMenu( QMenu * pMenu, QTreeWidgetItem * selected );
-    virtual void sSave();
+    virtual void sSaveClicked();
+    virtual bool sSave();
     virtual void sNumberChanged();
 
 protected slots:
