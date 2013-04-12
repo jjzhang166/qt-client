@@ -1704,24 +1704,16 @@ qDebug() << __FUNCTION__    << pWidget->isMaximized()
 
 */
   if (! pWidget->isMaximized())
-  {
-    QWidget *parentWindow = qobject_cast<QWidget*>(pWidget->parent());
-    
+  { 
     if (xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
     {
-      if (parentWindow)
-        xtsettingsSetValue(objName + "/geometry/size", parentWindow->size());
-      else
-        xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
+      xtsettingsSetValue(objName + "/geometry/size", pWidget->size());
       returnVal = true;
     }
 
     if (xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
     {
-      if (parentWindow)
-        xtsettingsSetValue(objName + "/geometry/pos", parentWindow->pos());
-      else
-        xtsettingsSetValue(objName + "/geometry/pos", pWidget->pos());
+      xtsettingsSetValue(objName + "/geometry/pos", pWidget->pos());
       returnVal = true;
     }
   }
