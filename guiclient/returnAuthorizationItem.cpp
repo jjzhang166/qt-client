@@ -659,6 +659,26 @@ bool returnAuthorizationItem::sSave()
           }
         }
       }
+      // Update W/O with any changes to notes
+      if ( (_mode == cEdit) &&
+         (_createOrder->isChecked()) &&
+         (_qtyAuth->toDouble() > 0) &&
+         (_orderId != -1) &&
+         (_notes->toPlainText().length() > 0) )
+      {
+        if (_item->itemType() == "M")
+        {
+          returnSave.prepare("UPDATE wo SET wo_prodnotes=:comments WHERE (wo_id=:wo_id);");
+          returnSave.bindValue(":wo_id", _orderId);
+          returnSave.bindValue(":comments", so.value("cust_name").toString() + "\n" + _notes->toPlainText());
+          returnSave.exec();
+          if (returnSave.lastError().type() != QSqlError::NoError)
+          {
+            systemError(this, returnSave.lastError().databaseText(), __FILE__, __LINE__);
+            reject();
+          }
+        }
+      }
     }
   }
   _mode = cEdit;
