@@ -162,6 +162,8 @@ bool incidentWorkbench::setParams(ParameterList & params)
 
   params.append("startDate", omfgThis->startOfTime());
   params.append("endDate", omfgThis->endOfTime());
+  if (_metrics->boolean("LotSerialControl"))
+    params.append("LotSerialControl", true);
 
   if (!display::setParams(params))
     return false;
