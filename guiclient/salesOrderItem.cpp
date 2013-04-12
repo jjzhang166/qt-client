@@ -1997,7 +1997,7 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
                "       item_listcost, item_listprice, item_fractional,"
                "       stdcost(item_id) AS f_unitcost,"
                "       avgcost(item_id) AS f_avgcost,"
-               "       itemsite_createsopo, itemsite_dropship,"
+               "       itemsite_createsopo, itemsite_dropship, itemsite_costmethod,"
                "       getItemTaxType(item_id, :taxzone) AS taxtype_id "
                "FROM item JOIN uom ON (item_inv_uom_id=uom_id)"
                "LEFT OUTER JOIN itemsite ON ((itemsite_item_id=item_id) AND (itemsite_warehous_id=:warehous_id)) "
@@ -2131,12 +2131,13 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
       _taxtype->setId(salesPopulateItemInfo.value("taxtype_id").toInt());
 
       sCalculateDiscountPrcnt();
+
       if (!(salesPopulateItemInfo.value("itemsite_createsopo").toBool()))
       {
         if (_item->itemType() == "M")
         {
           if ( (_mode == cNew) || (_mode == cEdit) )
-            _createSupplyOrder->setEnabled((_item->itemType() == "M"));
+            _createSupplyOrder->setEnabled((_item->itemType() == "M" && salesPopulateItemInfo.value("itemsite_costmethod") != "J"));
 
           _createSupplyOrder->setTitle(tr("C&reate Work Order"));
           _supplyOrderQtyLit->setText(tr("W/O Q&ty.:"));

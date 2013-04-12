@@ -236,8 +236,8 @@ void dspWoSchedule::sImplodeWO()
 void dspWoSchedule::sDeleteWO()
 {
   XSqlQuery dspDeleteWO;
-  dspDeleteWO.prepare( "SELECT wo_ordtype "
-             "FROM wo "
+  dspDeleteWO.prepare( "SELECT wo_ordtype, itemsite_costmethod "
+             "FROM wo JOIN itemsite ON (itemsite_id=wo_itemsite_id) "
              "WHERE (wo_id=:wo_id);" );
   dspDeleteWO.bindValue(":wo_id", list()->id());
   dspDeleteWO.exec();
@@ -251,6 +251,12 @@ void dspWoSchedule::sDeleteWO()
 		    "Component Item will remain but the Work Order to relieve "
 		    "that demand will not. Are you sure that you want to "
 		    "delete the selected Work Order?" );
+    else if (dspDeleteWO.value("wo_ordtype") == "S" && dspDeleteWO.value("itemsite_costmethod") == "J")
+    {
+      QMessageBox::critical(this, tr("Cannot Delete Work Order"),
+                            tr("This Work Order is linked to a Sales Order and is a Job Costed Item.  The Work Order may not be deleted."));
+      return;
+    }
     else if (dspDeleteWO.value("wo_ordtype") == "S")
       question = tr("<p>The Work Order that you selected to delete was created "
 		    "to satisfy Sales Order demand. If you delete the selected "
