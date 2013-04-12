@@ -276,6 +276,20 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
         return UndefinedError;
       }
 
+      if(_parentwo != -1)
+      {
+        purchaseet.prepare("SELECT wo_number"
+                  "  FROM womatl JOIN wo ON (wo_id=womatl_wo_id)"
+                  " WHERE (womatl_id=:parentwo); ");
+        purchaseet.bindValue(":parentwo", _parentwo);
+        purchaseet.exec();
+        if(purchaseet.first())
+        {
+          _so->setText(purchaseet.value("wo_number").toString());
+          _soLine->setText("");
+        }
+      }
+
       if(_parentso != -1)
       {
         purchaseet.prepare( "INSERT INTO charass"
