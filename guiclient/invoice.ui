@@ -1393,9 +1393,11 @@ to be bound by its terms.</comment>
   <tabstop>_copyToShipto</tabstop>
   <tabstop>_billToName</tabstop>
   <tabstop>_billToPhone</tabstop>
+  <tabstop>_billToAddr</tabstop>
   <tabstop>_shipTo</tabstop>
   <tabstop>_shipToName</tabstop>
   <tabstop>_shipToPhone</tabstop>
+  <tabstop>_shipToAddr</tabstop>
   <tabstop>_poNumber</tabstop>
   <tabstop>_fob</tabstop>
   <tabstop>_shipVia</tabstop>
