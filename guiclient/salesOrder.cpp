@@ -2848,9 +2848,9 @@ void salesOrder::sFillItemList()
               " AND (coitem_cohead_id=:head_id)) "
               "GROUP BY cohead_freight;");
   else if (ISQUOTE(_mode))
-    fillSales.prepare("SELECT SUM(COALESCE(quitem_qtyord, 0.00) *"
+    fillSales.prepare("SELECT SUM(COALESCE(quitem_qtyord * quitem_qty_invuomratio, 0.00) *"
               "           COALESCE(item_prodweight, 0.00)) AS netweight,"
-              "       SUM(COALESCE(quitem_qtyord, 0.00) *"
+              "       SUM(COALESCE(quitem_qtyord * quitem_qty_invuomratio, 0.00) *"
               "           (COALESCE(item_prodweight, 0.00) +"
               "            COALESCE(item_packweight, 0.00))) AS grossweight "
               "  FROM quitem, item, quhead "
