@@ -206,6 +206,13 @@ to be bound by its terms.</comment>
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="_materials">
+         <property name="text">
+          <string>Materials...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="_site">
          <property name="text">
           <string>Inventory...</string>

@@ -23,6 +23,7 @@
 #include <metasql.h>
 #include <openreports.h>
 
+#include "bom.h"
 #include "characteristicAssignment.h"
 #include "comment.h"
 #include "image.h"
@@ -66,6 +67,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_deleteSubstitute, SIGNAL(clicked()), this, SLOT(sDeleteSubstitute()));
   connect(_newTransform, SIGNAL(clicked()), this, SLOT(sNewTransformation()));
   connect(_deleteTransform, SIGNAL(clicked()), this, SLOT(sDeleteTransformation()));
+  connect(_materials, SIGNAL(clicked()), this, SLOT(sEditBOM()));
   connect(_site, SIGNAL(clicked()), this, SLOT(sEditItemSite()));
   connect(_workbench, SIGNAL(clicked()), this, SLOT(sWorkbench()));
   connect(_deleteItemSite, SIGNAL(clicked()), this, SLOT(sDeleteItemSite()));
@@ -142,10 +144,10 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   _bom->findChild<QWidget*>("_moveUp")->hide();
   _bom->findChild<QWidget*>("_moveDown")->hide();
 
-  QPushButton *moreButton = new QPushButton(this);
-  moreButton->setText(tr("More"));
-  connect(moreButton, SIGNAL(clicked()), this, SLOT(sEditBOM()));
-  _bom->findChild<QVBoxLayout*>("_formButtonsLayout")->addWidget(moreButton);
+//  QPushButton *moreButton = new QPushButton(this);
+//  moreButton->setText(tr("More"));
+//  connect(moreButton, SIGNAL(clicked()), this, SLOT(sEditBOM()));
+//  _bom->findChild<QVBoxLayout*>("_formButtonsLayout")->addWidget(moreButton);
 
   ParameterList plist;
   if(_privileges->check("MaintainBOMs"))
@@ -1562,12 +1564,17 @@ void item::sEditBOM()
 {
   ParameterList params;
 
-  if(_privileges->check("MaintainBOMs"))
+  if(_privileges->check("MaintainBOMs") && _mode != cView)
     params.append("mode", "edit");
   else
     params.append("mode", "view");
   params.append("item_id", _itemid);
 
+  BOM *newdlg = new BOM(this);
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
+
+/*
   XDialog *newdlg = new XDialog(this);
   _bomwin = new BOM(this);
   QGridLayout *layout = new QGridLayout;
@@ -1582,6 +1589,7 @@ void item::sEditBOM()
   connect(_bomwin->_save, SIGNAL(clicked()), this, SLOT(sSaveBom()));
 
   newdlg->exec();
+*/
   _bom->sFillList();
 
 }
@@ -2042,6 +2050,20 @@ void item::sHandleRightButtons()
       else
         _workbench->show();
 
+    if(!_privileges->check("MaintainBOMs"))
+      _materials->hide();
+    else
+      if (itemtype == "M" || // manufactured
+          itemtype == "P" || // purchased
+          itemtype == "B" || // breeder
+          itemtype == "F" || // phantom
+          itemtype == "K" || // kit
+          itemtype == "T" || // tooling
+          itemtype == "L")   // planning
+        _materials->show();
+      else
+        _materials->hide();
+
     if((!_privileges->check("CreateCosts")) &&
        (!_privileges->check("EnterActualCosts")) &&
        (!_privileges->check("UpdateActualCosts")) &&
@@ -2070,6 +2092,7 @@ void item::sHandleRightButtons()
   }
   else
   {
+    _materials->hide();
     _workbench->hide();
     _site->hide();
   }
