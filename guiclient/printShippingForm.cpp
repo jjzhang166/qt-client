@@ -61,6 +61,11 @@ printShippingForm::printShippingForm(QWidget *parent, const char *name, Qt::WFla
 
   connect(_shipment,                  SIGNAL(newId(int)), this, SLOT(sHandleShipment()));
   connect(_order, SIGNAL(numberChanged(QString,QString)), this, SLOT(sHandleOrder()));
+
+  _order->setAllowedTypes(OrderLineEdit::Sales | OrderLineEdit::Transfer);
+  _order->setLabel("");
+  _shipment->setStatus(ShipmentClusterLineEdit::AllStatus);
+  _shipment->setStrict(true);
 }
 
 printShippingForm::~printShippingForm()
