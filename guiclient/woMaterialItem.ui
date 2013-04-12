@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>488</width>
-    <height>560</height>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -166,7 +166,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
+             <item row="1" column="2">
               <layout class="QHBoxLayout">
                <item>
                 <widget class="XLineEdit" name="_qtyPer">
@@ -200,7 +200,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="2" column="2">
               <layout class="QHBoxLayout">
                <item>
                 <widget class="XComboBox" name="_uom"/>
@@ -230,7 +230,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="3" column="1">
+             <item row="3" column="2">
               <layout class="QHBoxLayout">
                <item>
                 <widget class="XLineEdit" name="_scrap">
@@ -276,7 +276,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
+             <item row="4" column="2">
               <layout class="QHBoxLayout">
                <item>
                 <widget class="XLabel" name="_qtyRequired">
@@ -316,7 +316,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="5" column="1">
+             <item row="5" column="2">
               <layout class="QHBoxLayout">
                <property name="spacing">
                 <number>0</number>
@@ -338,6 +338,29 @@ to be bound by its terms.</comment>
                    <string>Mixed</string>
                   </property>
                  </item>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="XCheckBox" name="_pickList">
+                 <property name="text">
+                  <string>Pick List</string>
+                 </property>
+                 <property name="forgetful">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -368,7 +391,7 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
+             <item row="0" column="2">
               <layout class="QHBoxLayout" name="_2">
                <item>
                 <widget class="XLineEdit" name="_qtyFxd">
@@ -453,6 +476,11 @@ to be bound by its terms.</comment>
    <class>WoCluster</class>
    <extends>QWidget</extends>
    <header>wocluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>

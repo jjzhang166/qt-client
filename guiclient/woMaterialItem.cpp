@@ -11,9 +11,11 @@
 #include "woMaterialItem.h"
 
 #include <QVariant>
+#include <QSqlError>
 #include <QMessageBox>
 #include <QValidator>
 #include "inputManager.h"
+#include "errorReporter.h"
 
 woMaterialItem::woMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -125,6 +127,10 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
   if (valid)
     _ref->setText(param.toString());
 
+  param = pParams.value("picklist", &valid);
+  if (valid)
+    _pickList->setChecked(param.toBool());
+
   param = pParams.value("womatl_id", &valid);
   if (valid)
   {
@@ -218,7 +224,10 @@ void woMaterialItem::sSave()
 
     int itemsiteid = woSave.value("itemsiteid").toInt();
 
-    woSave.prepare("SELECT createWoMaterial(:wo_id, :itemsite_id, :issueMethod, :uom_id, :qtyFxd, :qtyPer, :scrap, :bomitem_id, :notes, :ref) AS womatlid;");
+    woSave.prepare("SELECT createWoMaterial(:wo_id, :itemsite_id, :issueMethod,"
+                   "                        :uom_id, :qtyFxd, :qtyPer,"
+                   "                        :scrap, :bomitem_id, :notes,"
+                   "                        :ref, :wooper_id, :picklist) AS womatlid;");
     woSave.bindValue(":wo_id", _wo->id());
     woSave.bindValue(":itemsite_id", itemsiteid);
     woSave.bindValue(":issueMethod", issueMethod);
@@ -230,29 +239,32 @@ void woMaterialItem::sSave()
     woSave.bindValue(":notes", _notes->toPlainText());
     woSave.bindValue(":ref",   _ref->toPlainText());
     woSave.bindValue(":wooper_id", _wooperid);
+    woSave.bindValue(":picklist", QVariant(_pickList->isChecked()));
     woSave.exec();
     if (woSave.first())
     {
       _womatlid = woSave.value("womatlid").toInt();
-      
-      woSave.prepare("UPDATE womatl SET womatl_wooper_id=:wooper_id WHERE womatl_id=:womatl_id");
-      woSave.bindValue(":wooper_id",_wooperid);
-      woSave.bindValue(":womatl_id",_womatlid);
-      woSave.exec();
     }
-    
-//  ToDo
+    else if (woSave.lastError().type() != QSqlError::NoError)
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving"),
+                           woSave, __FILE__, __LINE__);
+      return;
+    }
   }
   else if (_mode == cEdit)
   {
     woSave.prepare( "UPDATE womatl "
-               "SET womatl_qtyfxd=:qtyFxd, womatl_qtyper=:qtyPer, "
-			   "    womatl_scrap=:scrap, womatl_issuemethod=:issueMethod,"
+               "SET womatl_qtyfxd=:qtyFxd,"
+               "    womatl_qtyper=:qtyPer,"
+               "    womatl_scrap=:scrap,"
+               "    womatl_issuemethod=:issueMethod,"
                "    womatl_uom_id=:uom_id,"
-               "    womatl_qtyreq=:qtyReq, womatl_notes=:notes, womatl_ref=:ref "
-               "FROM wo "
-               "WHERE ( (womatl_wo_id=wo_id)"
-               " AND (womatl_id=:womatl_id) );" );
+               "    womatl_qtyreq=:qtyReq,"
+               "    womatl_notes=:notes,"
+               "    womatl_ref=:ref,"
+               "    womatl_picklist=:picklist "
+               "WHERE (womatl_id=:womatl_id);" );
     woSave.bindValue(":womatl_id", _womatlid);
     woSave.bindValue(":issueMethod", issueMethod);
     woSave.bindValue(":qtyFxd", _qtyFxd->toDouble());
@@ -262,7 +274,14 @@ void woMaterialItem::sSave()
     woSave.bindValue(":scrap", (_scrap->toDouble() / 100));
     woSave.bindValue(":notes", _notes->toPlainText());
     woSave.bindValue(":ref",   _ref->toPlainText());
+    woSave.bindValue(":picklist", QVariant(_pickList->isChecked()));
     woSave.exec();
+    if (woSave.lastError().type() != QSqlError::NoError)
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving"),
+                           woSave, __FILE__, __LINE__);
+      return;
+    }
   }
 
   omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatlid, TRUE);
@@ -279,6 +298,7 @@ void woMaterialItem::sSave()
     _item->setFocus();
     _notes->clear();
     _ref->clear();
+    _pickList->setChecked(false);
   }
 }
 
@@ -301,27 +321,23 @@ void woMaterialItem::sUpdateQtyRequired()
 void woMaterialItem::populate()
 {
   XSqlQuery wopopulate;
-  wopopulate.prepare( "SELECT womatl_wo_id, itemsite_item_id,"
-             "       womatl_qtyfxd AS qtyfxd,"
-             "       womatl_qtyper AS qtyper,"
-             "       womatl_uom_id,"
-             "       womatl_scrap * 100 AS scrap,"
-             "       womatl_issuemethod, womatl_notes, womatl_ref "
-             "FROM womatl, itemsite "
-             "WHERE ( (womatl_itemsite_id=itemsite_id)"
-             " AND (womatl_id=:womatl_id) );" );
+  wopopulate.prepare( "SELECT womatl.*, itemsite_item_id,"
+             "                womatl_scrap * 100 AS scrap "
+             "FROM womatl JOIN itemsite ON (womatl_itemsite_id=itemsite_id) "
+             "WHERE (womatl_id=:womatl_id);" );
   wopopulate.bindValue(":womatl_id", _womatlid);
   wopopulate.exec();
   if (wopopulate.first())
   {
     _wo->setId(wopopulate.value("womatl_wo_id").toInt());
     _item->setId(wopopulate.value("itemsite_item_id").toInt());
-    _qtyFxd->setDouble(wopopulate.value("qtyfxd").toDouble());
-    _qtyPer->setDouble(wopopulate.value("qtyper").toDouble());
+    _qtyFxd->setDouble(wopopulate.value("womatl_qtyfxd").toDouble());
+    _qtyPer->setDouble(wopopulate.value("womatl_qtyper").toDouble());
     _uom->setId(wopopulate.value("womatl_uom_id").toInt());
     _scrap->setDouble(wopopulate.value("scrap").toDouble());
     _notes->setText(wopopulate.value("womatl_notes").toString());
     _ref->setText(wopopulate.value("womatl_ref").toString());
+    _pickList->setChecked(wopopulate.value("womatl_picklist").toBool());
 
     if (wopopulate.value("womatl_issuemethod").toString() == "S")
       _issueMethod->setCurrentIndex(0);

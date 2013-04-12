@@ -296,12 +296,9 @@ void workOrderMaterials::sSubstitute()
   int womatlid = _womatl->id();
 
   XSqlQuery sub;
-  sub.prepare( "SELECT itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyper) AS qtyper,"
-               "       itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyfxd) AS qtyfxd,"
-			   "       womatl_wo_id,"
-               "       womatl_scrap, womatl_issuemethod,"
-               "       womatl_duedate, womatl_bomitem_id, "
-               "       womatl_notes, womatl_ref "
+  sub.prepare( "SELECT womatl.*,"
+               "       itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyper) AS qtyper,"
+               "       itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyfxd) AS qtyfxd "
                "FROM womatl JOIN itemsite ON (womatl_itemsite_id=itemsite_id) "
                "WHERE (womatl_id=:womatl_id);" );
   sub.bindValue(":womatl_id", womatlid);
@@ -328,6 +325,7 @@ void workOrderMaterials::sSubstitute()
       params.append("scrap", (sub.value("womatl_scrap").toDouble() * 100.0));
       params.append("notes", sub.value("womatl_notes"));
       params.append("reference", sub.value("womatl_ref"));
+      params.append("picklist", sub.value("womatl_picklist"));
 
       if (sub.value("womatl_issuemethod").toString() == "S")
         params.append("issueMethod", "push");
