@@ -24,7 +24,7 @@
 #include "guiclient.h"
 #include "authorizedotnetprocessor.h"
 
-#define DEBUG true
+#define DEBUG false
 
 // convenience macro to add Name and Content to the Request
 // outbound delimiter is always &
