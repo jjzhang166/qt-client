@@ -24,7 +24,7 @@
 #include "guiclient.h"
 #include "authorizedotnetprocessor.h"
 
-#define DEBUG false
+#define DEBUG true
 
 // convenience macro to add Name and Content to the Request
 // outbound delimiter is always &
@@ -177,7 +177,7 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
   APPENDFIELD(prequest, "x_method",     "CC");
   APPENDFIELD(prequest, "x_type",       pordertype);
 
-  if (! pcvv.isEmpty())
+  if (! pcvv.isEmpty() && pcvv.toInt() != -2)
     APPENDFIELD(prequest, "x_card_code", pcvv);
 
   if (DEBUG)
