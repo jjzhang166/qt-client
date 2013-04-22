@@ -177,7 +177,7 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
   APPENDFIELD(prequest, "x_method",     "CC");
   APPENDFIELD(prequest, "x_type",       pordertype);
 
-  if (! pcvv.isEmpty())
+  if (! pcvv.isEmpty() && pcvv.toInt() != -2)
     APPENDFIELD(prequest, "x_card_code", pcvv);
 
   if (DEBUG)
