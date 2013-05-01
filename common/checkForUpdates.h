@@ -49,6 +49,7 @@ private:
     QString suffix;
     QString newurl;
     QString filename;
+    qint64 filesize;
 };
 
 #endif // CHECKFORUPDATES_H
