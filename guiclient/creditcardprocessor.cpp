@@ -36,7 +36,7 @@
 #include "paymentechprocessor.h"
 #include "cybersourceprocessor.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /** \defgroup creditcards Credit Card API
     The xTuple Credit Card subsystem contains the internal code
