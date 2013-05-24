@@ -670,27 +670,19 @@ void opportunity::sDeleteSale()
 
 void opportunity::sPrintQuote()
 {
-  XSqlQuery opportunityPrintQuote;
-  opportunityPrintQuote.prepare( "SELECT findCustomerForm(quhead_cust_id, 'Q') AS report_name "
-             "FROM quhead "
-             "WHERE (quhead_id=:quheadid); " );
-  opportunityPrintQuote.bindValue(":quheadid", _salesList->id());
-  opportunityPrintQuote.exec();
-  if (opportunityPrintQuote.first())
-  {
-    ParameterList params;
-    params.append("quhead_id", _salesList->id());
+  printQuote newdlg(this);
 
-    orReport report(opportunityPrintQuote.value("report_name").toString(), params);
-    if (report.isValid())
-      report.print();
-    else
-      report.reportError(this);
+  ParameterList params;
+  params.append("quhead_id", _salesList->id());
+  params.append("persistentPrint");
+
+  newdlg.set(params);
+
+  if (! newdlg.isSetup())
+  {
+    if (newdlg.exec() != QDialog::Rejected)
+      newdlg.setSetup(true);
   }
-  else
-    QMessageBox::warning( this, tr("Could not locate report"),
-                          tr("Could not locate the report definition the form \"%1\"")
-                          .arg(opportunityPrintQuote.value("report_name").toString()) );
 }
 
 void opportunity::sConvertQuote()
