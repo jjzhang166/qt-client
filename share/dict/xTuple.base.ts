@@ -7999,6 +7999,10 @@ Are you sure that you want to save this change?</source>
         <source>Applications</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>You must enter an amount for this Receivable Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>arWorkBench</name>
@@ -45960,19 +45964,7 @@ You must reassign the Locales for these Users before you may delete the selected
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Log in to single-user demo with my xTuple web user</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Log in to a server I specify</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Username:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -46054,6 +46046,42 @@ You must reassign the Locales for these Users before you may delete the selected
     </message>
     <message>
         <source>Clear &amp;Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log in to xTuple Cloud</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Demo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quickstart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>.xtuplecloud.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cloud ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must specify the Cloud ID name to connect to the cloud.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -50075,14 +50103,6 @@ Version %2
     </message>
     <message>
         <source>Assigned</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not locate report</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not locate the report definition the form &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -61483,6 +61503,18 @@ Would you like to save them now?</source>
     </message>
     <message>
         <source>Show dependencies as Indented BOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>At least one child item from this kit has already shipped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>At least one child item from this kit is at shipping.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
