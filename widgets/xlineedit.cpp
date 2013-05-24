@@ -15,6 +15,7 @@
 #include <QLocale>
 #include <QMouseEvent>
 #include <QValidator>
+#include <QMessageBox>
 
 #include "format.h"
 
