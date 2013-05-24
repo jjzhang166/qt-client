@@ -582,15 +582,12 @@ void vendor::sCheck()
     dupq.prepare("SELECT vend_id, 1 AS type"
                  "  FROM vendinfo "
                  " WHERE (vend_number=:vend_number)"
-                 "  AND (vend_id!=:vendid)"
                  " UNION "
                  "SELECT crmacct_id, 2 AS type "
                  "  FROM crmacct "
                  " WHERE (crmacct_number=:vend_number)"
-                 "  AND (crmacct_vend_id!=:vendid)"
                  " ORDER BY type;");
     dupq.bindValue(":vend_number", _number->text());
-    dupq.bindValue(":vendid",      _vendid);
     dupq.exec();
     if (dupq.first())
     {
