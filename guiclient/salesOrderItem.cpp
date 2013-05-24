@@ -674,6 +674,8 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
 
   _modified = false;
 
+  sHandleButton();
+
   return NoError;
 }
 
@@ -2194,7 +2196,7 @@ void salesOrderItem::sPopulateItemInfo(int pItemid)
           _supplyOrderLineLit->hide();
           _supplyOrderLine->hide();
         }
-      }
+      } 
     }
     else if (salesPopulateItemInfo.lastError().type() != QSqlError::NoError)
     {
@@ -3733,6 +3735,59 @@ void salesOrderItem::sHandleButton()
     _historyStack->setCurrentWidget(_historyCostsPage);
   else if (_historySalesButton->isChecked())
     _historyStack->setCurrentWidget(_historySalesPage);
+
+  if ((_item->itemType() == "K"))
+  {
+    int lineNum, headId;
+    XSqlQuery firstQry;
+
+    firstQry.prepare("SELECT coitem_cohead_id, coitem_linenumber "
+                               "FROM coitem "
+                               "JOIN itemsite ON (itemsite_id=coitem_itemsite_id) "
+                               "JOIN item ON (itemsite_item_id=item_id) "
+                               "WHERE (coitem_id=:coitemid) AND (item_type='K');");
+    firstQry.bindValue(":coitemid", _soitemid);
+    firstQry.exec();
+    if (firstQry.first())
+    {
+      XSqlQuery secondQry;
+      lineNum = firstQry.value("coitem_linenumber").toInt();
+      headId = firstQry.value("coitem_cohead_id").toInt();
+      secondQry.prepare("SELECT coitem_qtyshipped "
+                                  "FROM coitem "
+                                  "JOIN cohead ON (cohead_id=coitem_cohead_id) "
+                                  "WHERE (coitem_linenumber=:line) "
+                                  "AND (coitem_cohead_id=:head) "
+                                  "AND (coitem_qtyshipped>0);");
+      secondQry.bindValue(":line", lineNum);
+      secondQry.bindValue(":head", headId);
+      secondQry.exec();
+      if(secondQry.first())
+      {
+          QMessageBox::critical(this, tr("Kit"),
+                                tr("At least one child item from this kit has already shipped."));
+         _cancel->setEnabled(false);
+      }
+      else
+      {
+        XSqlQuery thirdQry;
+        thirdQry.prepare("SELECT shipitem_qty, shiphead_shipped "
+                         "FROM shipitem "
+                         "JOIN shiphead ON (shiphead_id=shipitem_shiphead_id) "
+                         "WHERE (shipitem_orderitem_id=:soitemid) "
+                         "AND (shiphead_shipped='f') "
+                         "AND (shipitem_qty>0)");
+        thirdQry.bindValue(":soitemid", _soitemid);
+        thirdQry.exec();
+        if(thirdQry.first())
+        {
+            QMessageBox::critical(this, tr("Kit"),
+                                  tr("At least one child item from this kit is at shipping."));
+            _cancel->setEnabled(false);
+        }
+      }
+    }
+  }
 }
 
 void salesOrderItem::setItemExtraClause()
