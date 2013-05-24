@@ -671,6 +671,14 @@ void arOpenItem::sTaxDetail()
       return;
     }
     
+    if (_amount->isZero())
+    {
+      QMessageBox::critical( this, tr("Cannot set tax amounts"),
+                             tr("You must enter an amount for this Receivable Memo before you may set tax amounts.") );
+      _amount->setFocus();
+      return;
+    }
+
     ar.prepare("SELECT nextval('aropen_aropen_id_seq') AS result;");
     ar.exec();
     if (ar.first())
@@ -685,12 +693,13 @@ void arOpenItem::sTaxDetail()
     
     ar.prepare("INSERT INTO aropen "
       "( aropen_id, aropen_docdate, aropen_duedate, aropen_doctype, "
-      "  aropen_docnumber, aropen_curr_id, aropen_posted, aropen_amount ) "
+      "  aropen_docnumber, aropen_curr_id, aropen_open, aropen_posted, aropen_amount ) "
       "VALUES "
-      "( :aropen_id, :docDate, :dueDate, :docType, :docNumber, :currId, false, 0 ); ");
+      "( :aropen_id, :docDate, :dueDate, :docType, :docNumber, :currId, true, false, :amount ); ");
     ar.bindValue(":aropen_id",_aropenid);
     ar.bindValue(":docDate", _docDate->date());
     ar.bindValue(":dueDate", _dueDate->date());
+    ar.bindValue(":amount", _amount->localValue());
     if (_docType->currentIndex())
       ar.bindValue(":docType", "D" );
     else
