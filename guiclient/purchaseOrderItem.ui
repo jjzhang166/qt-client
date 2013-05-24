@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>740</width>
-    <height>838</height>
+    <width>744</width>
+    <height>844</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -504,7 +504,7 @@ to be bound by its terms.</comment>
             <item>
              <widget class="CurrCluster" name="_unitPrice">
               <property name="format">
-               <enum>CurrDisplay::Cost</enum>
+               <enum>CurrDisplay::PurchPrice</enum>
               </property>
               <property name="currencyEditable" stdset="0">
                <bool>false</bool>
@@ -669,7 +669,7 @@ to be bound by its terms.</comment>
             <item>
              <widget class="CurrCluster" name="_tax">
               <property name="format">
-               <enum>CurrDisplay::SalesPrice</enum>
+               <enum>CurrDisplay::PurchPrice</enum>
               </property>
               <property name="enabled">
                <bool>false</bool>
