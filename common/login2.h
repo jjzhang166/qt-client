@@ -37,6 +37,8 @@ class login2 : public QDialog, public Ui::login2
     virtual void populateDatabaseInfo();
     virtual QString username();
     virtual QString password();
+    virtual QString company();
+    virtual bool useCloud() const;
 
     QPushButton* _recent;
     QPushButton* _options;
@@ -52,19 +54,21 @@ class login2 : public QDialog, public Ui::login2
   protected slots:
     virtual void languageChange();
 
+    virtual void sHandleButton();
+    virtual void sOpenHelp();
     virtual void sLogin();
     virtual void sOptions();
 
   private:
     bool _captive;
-    bool _evaluation;
     bool _nonxTupleDB;
     bool _multipleConnections;
     bool _setSearchPath;
     QSplashScreen *_splash;
     QString _cUsername;
     QString _cPassword;
-    QString _evalDatabaseURL;
+    QString _cloudDatabaseURL;
+    QString _cCompany;
 };
 
 #endif
