@@ -43,7 +43,7 @@ printShippingForm::printShippingForm(QWidget *parent, const char *name, Qt::WFla
              "<? if exists('shipformid') ?>"
              "       <? value('shipformid') ?> AS shipform_id"
              "  FROM shiphead"
-             "  JOIN shipform ON (shiphead_shipform_id=<? value('shipformid') ?>)"
+             "  JOIN shipform ON (shipform_id=<? value('shipformid') ?>)"
              "<? else ?>"
              "       shipform_id"
              "  FROM shiphead"
@@ -86,6 +86,14 @@ void printShippingForm::clear()
   _order->setId(-1);
   _order->setEnabled(true);
   _order->setFocus();
+}
+
+ParameterList printShippingForm::getParamsDocList()
+{
+  ParameterList params = printMulticopyDocument::getParamsDocList();
+  params.append("shipformid", _shippingForm->id());
+
+  return params;
 }
 
 ParameterList printShippingForm::getParamsOneCopy(const int row, XSqlQuery *qry)
