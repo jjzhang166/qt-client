@@ -386,8 +386,10 @@ bool creditMemo::save()
   creditave.bindValue(":cmhead_curr_id", _currency->id());
   if (_project->isValid())
     creditave.bindValue(":cmhead_prj_id", _project->id());
-  creditave.bindValue(":cmhead_shipzone_id", _shippingZone->id());
-  creditave.bindValue(":cmhead_saletype_id", _saleType->id());
+  if(_shippingZone->isValid())
+    creditave.bindValue(":cmhead_shipzone_id", _shippingZone->id());
+  if(_saleType->isValid())
+    creditave.bindValue(":cmhead_saletype_id", _saleType->id());
   creditave.exec();
   if (creditave.lastError().type() != QSqlError::NoError)
   {
