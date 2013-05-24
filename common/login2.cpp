@@ -224,24 +224,33 @@ void login2::sLogin()
 
   db.setUserName(_cUsername);
 
+  QRegExp xtuplecloud(".*\\.xtuplecloud\\.com");
+  QRegExp xtuple(".*\\.xtuple\\.com");
+
+  bool isCloud = xtuplecloud.exactMatch(hostName);
+  bool isXtuple = xtuple.exactMatch(hostName);
+  QString salt;
+
+  if(isCloud || isXtuple)
+  {
+     salt = "private";
+  }
+  else
+  {
+     salt = "xTuple";
+  }
+
   if(_demoOption->isChecked())
   {
     db.setPassword(QMd5(QString(_cPassword + "private" + _cUsername)));
     db.open();
   }
-  else if(hostName=="cloud.xtuple.com")
-  {
-      db.setPassword(QMd5(QString(_cPassword + "private" + _cUsername)));
-      db.open();
-  }
-  else
-  {
     // try connecting to the database in each of the following ways in this order
     QList<QPair<QString, QString> > method;
-    method << QPair<QString, QString>("requiressl=1", QMd5(QString(_cPassword + "xTuple"  + _cUsername)))
+    method << QPair<QString, QString>("requiressl=1", QMd5(QString(_cPassword + salt  + _cUsername)))
            << QPair<QString, QString>("requiressl=1", _cPassword)
            << QPair<QString, QString>("requiressl=1", QMd5(QString(_cPassword + "OpenMFG" + _cUsername)))
-           << QPair<QString, QString>("",             QMd5(QString(_cPassword + "xTuple"  + _cUsername)))
+           << QPair<QString, QString>("",             QMd5(QString(_cPassword + salt  + _cUsername)))
            << QPair<QString, QString>("",             _cPassword)
            << QPair<QString, QString>("",             QMd5(QString(_cPassword + "OpenMFG" + _cUsername)))
         ;
@@ -257,7 +266,7 @@ void login2::sLogin()
     // if connected using OpenMFG enhanced auth, remangle the password
     if (db.isOpen() && (methodidx == 2 || methodidx == 5))
       XSqlQuery chgpass(QString("ALTER USER %1 WITH PASSWORD '%2'")
-                        .arg(_cUsername, QMd5(QString(_cPassword + "xTuple" + _cUsername))));
+                        .arg(_cUsername, QMd5(QString(_cPassword + salt + _cUsername))));
     else if (db.isOpen() && method.at(methodidx).first.isEmpty())
     {
       XSqlQuery sslq("SHOW ssl;");
@@ -268,7 +277,6 @@ void login2::sLogin()
                                 "secure. Please ask your administrator to set "
                                 "the 'ssl' configuration option to 'on'.")); */
     }
-  }
 
   if (! db.isOpen())
   {
