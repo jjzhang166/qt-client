@@ -60,6 +60,7 @@ protected slots:
     virtual void languageChange();
     virtual bool sCheckSave();
     virtual void sCrmAccount();
+    virtual void sLoadCrmAcct(int);
 
 protected:
     virtual void closeEvent(QCloseEvent*);
