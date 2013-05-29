@@ -1756,7 +1756,9 @@ qDebug() << __FUNCTION__   << pWidget->isModal()
     {
       if (showTopLevel())
         pWidget->resize(lsize);
-      else if (parentWindow && _workspace->viewMode() == QMdiArea::SubWindowView && !pWidget->inherits("setup"))
+      else if (parentWindow && _workspace->viewMode() == QMdiArea::SubWindowView &&
+               (!pWidget->inherits("setup") && !pWidget->inherits("userPreferences") &&
+                !pWidget->inherits("copyItem") && !pWidget->inherits("copyBOM")))
         parentWindow->resize(lsize);
     }
 
