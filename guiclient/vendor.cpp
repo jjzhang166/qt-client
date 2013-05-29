@@ -634,15 +634,61 @@ void vendor::sCheck()
           _number->setFocus();
           return;
         }
-        _vendid = -1;
-        _crmacctid = dupq.value("vend_id").toInt();
-        sPopulate();
+        sLoadCrmAcct(dupq.value("vend_id").toInt());
       }
     }
     else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Vendor"),
                                   dupq, __FILE__, __LINE__))
       return;
   }
+}
+
+void vendor::sLoadCrmAcct(int crmacctId)
+{
+  _notice = FALSE;
+  _crmacctid = crmacctId;
+
+  XSqlQuery getq;
+  getq.prepare("SELECT * FROM crmacct WHERE (crmacct_id=:crmacct_id);");
+  getq.bindValue(":crmacct_id", crmacctId);
+  getq.exec();
+  if (getq.first())
+  {
+    _crmowner = getq.value("crmacct_owner_username").toString();
+    _number->setText(getq.value("crmacct_number").toString());
+    _cachedNumber=_number->text().trimmed().toUpper();
+    _name->setText(getq.value("crmacct_name").toString());
+    _active->setChecked(getq.value("crmacct_active").toBool());
+
+    _contact1->setId(getq.value("crmacct_cntct_id_1").toInt());
+    _contact1->setSearchAcct(_crmacctid);
+    _contact2->setId(getq.value("crmacct_cntct_id_2").toInt());
+    _contact2->setSearchAcct(_crmacctid);
+
+    if (getq.value("crmacct_cntct_id_1").toInt() != 0)
+    {
+      XSqlQuery contactQry;
+      contactQry.prepare("SELECT cntct_addr_id FROM cntct WHERE (cntct_id=:cntct_id);");
+      contactQry.bindValue(":cntct_id", _contact1->id());
+      contactQry.exec();
+      if (contactQry.first())
+      {
+        _address->setId(contactQry.value("cntct_addr_id").toInt());
+        _address->setSearchAcct(_crmacctid);
+      }
+    }
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting CRM Account"),
+                           getq, __FILE__, __LINE__))
+    return;
+
+  _crmacct->setEnabled(_crmacctid > 0 &&
+                       (_privileges->check("MaintainAllCRMAccounts") ||
+                        _privileges->check("ViewAllCRMAccounts") ||
+                        (omfgThis->username() == _crmowner && _privileges->check("MaintainPersonalCRMAccounts")) ||
+                        (omfgThis->username() == _crmowner && _privileges->check("ViewPersonalCRMAccounts"))));
+
+  _name->setFocus();
 }
 
 bool vendor::sPopulate()
