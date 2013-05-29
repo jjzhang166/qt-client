@@ -291,7 +291,7 @@ bool user::save()
 
   if (_passwd->text() != "        ")
   {
-    usrq.prepare( QString( "ALTER USER %1 WITH PASSWORD :password;")
+  usrq.prepare( QString( "ALTER USER \"%1\" WITH PASSWORD :password;")
                .arg(username) );
     usrq.bindValue(":password", passwd);
     usrq.exec();
