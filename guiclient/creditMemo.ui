@@ -444,6 +444,9 @@ to be bound by its terms.</comment>
              </item>
              <item row="3" column="6">
               <widget class="XComboBox" name="_shippingZone">
+               <property name="allowNull">
+                <bool>true</bool>
+               </property>
                <property name="type">
                 <enum>XComboBox::ShippingZones</enum>
                </property>
