@@ -238,8 +238,8 @@ void syncCompanies::sSync()
     login2 newdlg(this, "testLogin", false);
     // disallow changing connection info
     newdlg._options->setEnabled(false);
-    newdlg._demoOption->setEnabled(false);
-    newdlg._otherOption->setEnabled(false);
+    //newdlg._demoOption->setEnabled(false);
+    //newdlg._otherOption->setEnabled(false);
     newdlg.set(params);
     if (newdlg.exec() == QDialog::Rejected)
     {

@@ -43,18 +43,21 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   Q_INIT_RESOURCE(xTupleCommon);
   setupUi(this);
 
-  _options = _buttonBox->addButton(tr("Options..."), QDialogButtonBox::ActionRole);
+  //_options = _buttonBox->addButton(tr("Options..."), QDialogButtonBox::ActionRole);
   _recent = _buttonBox->addButton(tr("Recent"), QDialogButtonBox::ActionRole);
-  _options->setEnabled(false);
+  //_options->setEnabled(false);
   _recent->setEnabled(false);
   _buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Login"));
 
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sLogin()));
   connect(_buttonBox, SIGNAL(helpRequested()), this, SLOT(sOpenHelp()));
-  connect(_options, SIGNAL(clicked()), this, SLOT(sOptions()));
-  connect(_otherOption, SIGNAL(toggled(bool)), _options, SLOT(setEnabled(bool)));
-  connect(_otherOption, SIGNAL(toggled(bool)), _recent, SLOT(setEnabled(bool)));
-  connect(_otherOption, SIGNAL(toggled(bool)), this, SLOT(sHandleButton()));
+  //connect(_options, SIGNAL(clicked()), this, SLOT(sOptions()));
+  connect(_server, SIGNAL(editingFinished()), this, SLOT(sChangeURL()));
+  connect(_database, SIGNAL(editTextChanged(QString)), this, SLOT(sChangeURL()));
+  connect(_port, SIGNAL(editingFinished()), this, SLOT(sChangeURL()));
+  //connect(_otherOption, SIGNAL(toggled(bool)), _options, SLOT(setEnabled(bool)));
+  //connect(_otherOption, SIGNAL(toggled(bool)), _recent, SLOT(setEnabled(bool)));
+  //connect(_otherOption, SIGNAL(toggled(bool)), this, SLOT(sHandleButton()));
 
   _splash = 0;
 
@@ -65,8 +68,9 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   _password->setEchoMode(QLineEdit::Password);
 
-  updateRecentOptionsActions();
-  _databaseURL = xtsettingsValue("/xTuple/_databaseURL", "pgsql://:5432/").toString();
+  //updateRecentOptionsActions();
+  _databaseURL = xtsettingsValue("/xTuple/_databaseURL", "pgsql://:5432/demo").toString();
+  /*
   if(xtsettingsValue("/xTuple/_demoOption", false).toBool())
     _demoOption->setChecked(true);
   else
@@ -77,6 +81,7 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   else
     _otherOption->setChecked(true);
   _company->setText(xtsettingsValue("/xTuple/cloud_company", "").toString());
+  */
 
   adjustSize();
 }
@@ -132,13 +137,17 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   if (valid)
     _build->setText(param.toString());
 
+  /*
   param = pParams.value("cloud", &valid);
   if (valid)
     _cloudOption->setChecked(true);
+  */
 
+  /*
   param = pParams.value("company", &valid);
   if (valid)
     _company->setText(param.toString());
+  */
 
   param = pParams.value("name", &valid);
   if (valid)
@@ -165,15 +174,33 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   if(pParams.inList("login"))
     sLogin();
 
+  updateRecentOptions();
+  updateRecentOptionsActions();
+
   return 0;
+}
+
+void login2::sChangeURL()
+{
+  buildDatabaseURL(_databaseURL, "psql", _server->text(), _database->lineEdit()->text(), _port->text());
+
+  _databaseURL.replace("https://", "");
+  _databaseURL.replace("http://", "");
+
+  updateRecentOptions();
+  populateDatabaseInfo();
+  updateRecentOptions();
+  updateRecentOptionsActions();
 }
 
 void login2::sHandleButton()
 {
+  /*
   if (_otherOption->isChecked())
     _loginModeStack->setCurrentWidget(_serverPage);
   else
     _loginModeStack->setCurrentWidget(_cloudPage);
+  */
 }
 
 void login2::sOpenHelp()
@@ -189,6 +216,7 @@ void login2::sLogin()
 
   QString databaseURL;
   databaseURL = _databaseURL;
+  /*
   if(_cloudOption->isChecked())
   {
     if(_demoOption->isChecked())
@@ -196,6 +224,7 @@ void login2::sLogin()
     else
       databaseURL = _cloudDatabaseURL.arg(_company->text().trimmed(), "quickstart");
   }
+  */
 
   QString protocol;
   QString hostName;
@@ -250,7 +279,7 @@ void login2::sLogin()
 
   _cUsername = _username->text().trimmed();
   _cPassword = _password->text().trimmed();
-  _cCompany  = _company->text().trimmed();
+  //_cCompany  = _company->text().trimmed();
 
   setCursor(QCursor(Qt::WaitCursor));
   qApp->processEvents();
@@ -261,6 +290,7 @@ void login2::sLogin()
     qApp->processEvents();
   }
 
+  /*
   if(_cloudOption->isChecked())
   {
     if(_cCompany.isEmpty())
@@ -270,6 +300,7 @@ void login2::sLogin()
       return;
     }
   }
+  */
 
   db.setUserName(_cUsername);
 
@@ -347,9 +378,11 @@ void login2::sLogin()
     return;
   }
 
+  /*
   xtsettingsSetValue("/xTuple/_demoOption", (bool)_demoOption->isChecked());
   xtsettingsSetValue("/xTuple/_cloudOption", (bool)_cloudOption->isChecked());
   xtsettingsSetValue("/xTuple/cloud_company", _company->text());
+  */
 
   if (_splash)
   {
@@ -449,7 +482,8 @@ void login2::populateDatabaseInfo()
 
   parseDatabaseURL(_databaseURL, protocol, hostName, dbName, port);
   _server->setText(hostName);
-  _database->setText(dbName);
+  _database->lineEdit()->setText(dbName);
+  _port->setText(port);
 }
 
 QString login2::username()
@@ -469,7 +503,8 @@ QString login2::company()
 
 bool login2::useCloud() const
 {
-  return _cloudOption->isChecked();
+  //return _cloudOption->isChecked();
+  return false;
 }
 
 void login2::setLogo(const QImage & img)
@@ -482,11 +517,10 @@ void login2::setLogo(const QImage & img)
 
 void login2::updateRecentOptions()
 {
-  if (_cloudOption->isChecked())
-    return;
-
-    
+  //if (_cloudOption->isChecked())
+  //  return;
   QStringList list = xtsettingsValue("/xTuple/_recentOptionsList").toStringList();
+  _recent->setEnabled(list.size());
   list.removeAll(_databaseURL);
   list.prepend(_databaseURL);
       
@@ -504,17 +538,27 @@ void login2::updateRecentOptionsActions()
     int size = list.size();
     if (size > 5)
       size = 5;
+
+    QString protocol;
+    QString hostName;
+    QString dbName;
+    QString port;
+    int alreadyExists;
   
     if (size)
     {
-      if (_otherOption->isChecked())
-        _recent->setEnabled(true);
+      //if (_otherOption->isChecked())
+      _recent->setEnabled(true);
       QAction *act;
       for (int i = 0; i < size; ++i) 
       {
         act = new QAction(list.value(i).remove("psql://"),this);
         connect(act, SIGNAL(triggered()), this, SLOT(selectRecentOptions()));
         recentMenu->addAction(act);
+        parseDatabaseURL(list.value(i), protocol, hostName, dbName, port);
+        alreadyExists = _database->findText(dbName);
+        if (alreadyExists == -1)
+          _database->addItem(dbName);
       }
   
       recentMenu->addSeparator();

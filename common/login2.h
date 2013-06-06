@@ -54,6 +54,7 @@ class login2 : public QDialog, public Ui::login2
   protected slots:
     virtual void languageChange();
 
+    virtual void sChangeURL();
     virtual void sHandleButton();
     virtual void sOpenHelp();
     virtual void sLogin();
@@ -63,10 +64,14 @@ class login2 : public QDialog, public Ui::login2
     bool _captive;
     bool _nonxTupleDB;
     bool _multipleConnections;
+    bool _saveSettings;
     bool _setSearchPath;
     QSplashScreen *_splash;
     QString _cUsername;
     QString _cPassword;
+    QString _cServer;
+    QString _cDatabase;
+    QString _cPort;
     QString _cloudDatabaseURL;
     QString _cCompany;
 };
