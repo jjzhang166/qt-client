@@ -186,11 +186,7 @@ void login2::sChangeURL()
 
   _databaseURL.replace("https://", "");
   _databaseURL.replace("http://", "");
-
-  updateRecentOptions();
   populateDatabaseInfo();
-  updateRecentOptions();
-  updateRecentOptionsActions();
 }
 
 void login2::sHandleButton()
