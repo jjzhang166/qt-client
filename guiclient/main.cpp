@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
                " WHERE pkghead_name IN ('xtmfg');" )
           << editionDesc( "Standard",       ":/images/splashStdEdition.png",        true,
                "SELECT fetchMetricText('Application') = 'Standard';" )
-          << editionDesc( "PostBooks",      ":/images/splashPostBooks.png",        false,
+          << editionDesc( "PostBooks",      ":/images/splashPostBooks.png",        true,
                "SELECT fetchMetricText('Application') = 'PostBooks';" )
   ;
 
@@ -379,7 +379,10 @@ int main(int argc, char *argv[])
       else if(pkey.users() != 0 && (pkey.users() < cnt || (!xtweb && (pkey.users() * 2 < tot))))
       {
         checkPass = false;
-        checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent users for your license.");
+        if (metric.value("Application") == "PostBooks" && pkey.users() == 1)
+          checkPassReason = QObject::tr("<p>Multiple concurrent users of xTuple PostBooks require a license key. <p>Please contact key@xtuple.com to request a free license key for your local installation, <p>or sales@xtuple.com to purchase additional users in the xTuple Cloud Service. <p>Thank you.");
+        else
+          checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent users for your license.");
         checkLock = forced = forceLimit;
       }
       else

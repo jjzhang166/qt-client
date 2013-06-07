@@ -71,11 +71,8 @@ setup::setup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   insert(tr("Manufacture"), "configureWO", Configure, Xt::ManufactureModule, mode("ConfigureWO"), 0);
   insert(tr("Products"), "configurePD", Configure, Xt::ProductsModule, mode("ConfigurePD"), 0 );
   insert(tr("Purchase"), "configurePO", Configure, Xt::PurchaseModule, mode("ConfigurePO"), 0 );
-  if (_metrics->value("Application") != "PostBooks")
-  {
-    insert(tr("Registration"), "registrationKey", Configure, Xt::SystemModule, mode("MaintainRegistrationKey"), 0 );
-    insert(tr("Schedule"), "configureMS", Configure, Xt::ScheduleModule, mode("ConfigureMS"), 0 );
-  }
+  insert(tr("Registration"), "registrationKey", Configure, Xt::SystemModule, mode("MaintainRegistrationKey"), 0 );
+  insert(tr("Schedule"), "configureMS", Configure, Xt::ScheduleModule, mode("ConfigureMS"), 0 );
   insert(tr("Search Path"), "configureSearchPath", Configure, Xt::SystemModule, _privileges->isDba() ? cEdit : 0, 0);
 
   // Account Mappings
