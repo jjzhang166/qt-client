@@ -174,6 +174,7 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   if(pParams.inList("login"))
     sLogin();
 
+  sChangeURL();
   updateRecentOptions();
   updateRecentOptionsActions();
 
