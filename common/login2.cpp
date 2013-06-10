@@ -582,6 +582,8 @@ void login2::selectRecentOptions()
     populateDatabaseInfo();
     updateRecentOptions();
     updateRecentOptionsActions();
+    
+    sChangeURL();
   }
 }
 
