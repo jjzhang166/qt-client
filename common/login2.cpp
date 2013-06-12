@@ -304,6 +304,8 @@ void login2::sLogin()
   QRegExp xtuplecloud(".*\\.xtuplecloud\\.com");
   QRegExp xtuple(".*\\.xtuple\\.com");
 
+  _cServer = hostName;
+
   bool isCloud = xtuplecloud.exactMatch(hostName);
   bool isXtuple = xtuple.exactMatch(hostName);
   QString salt;

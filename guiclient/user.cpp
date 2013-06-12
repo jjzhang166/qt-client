@@ -21,6 +21,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
+#include "login2.h"
 
 user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   : XDialog(parent, name, fl)
@@ -234,10 +235,23 @@ bool user::save()
     return false;
   }
 
+  bool isCloud = xtuplecloud.exactMatch(login2::_cServer);
+  bool isXtuple = xtuple.exactMatch(login2::_cServer);
+  QString salt;
+
+  if(isCloud || isXtuple)
+  {
+    salt = "private";
+  }
+  else
+  {
+    salt = "xTuple";
+  }
+
   QString passwd = _passwd->text();
   if(_enhancedAuth->isChecked())
   {
-    passwd = passwd + "xTuple" + username;
+    passwd = passwd + salt + username;
     passwd = QMd5(passwd);
   }
 
