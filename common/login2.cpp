@@ -304,6 +304,8 @@ void login2::sLogin()
   QRegExp xtuplecloud(".*\\.xtuplecloud\\.com");
   QRegExp xtuple(".*\\.xtuple\\.com");
 
+  _cServer = hostName;
+
   bool isCloud = xtuplecloud.exactMatch(hostName);
   bool isXtuple = xtuple.exactMatch(hostName);
   QString salt;
@@ -338,7 +340,7 @@ void login2::sLogin()
   // if connected using OpenMFG enhanced auth, remangle the password
   if (db.isOpen() && (methodidx == 2 || methodidx == 5))
       XSqlQuery chgpass(QString("ALTER USER \"%1\" WITH PASSWORD '%2'")
-                      .arg(_cUsername, QMd5(QString(_cPassword + "xTuple" + _cUsername))));
+                      .arg(_cUsername, QMd5(QString(_cPassword + salt + _cUsername))));
   else if (db.isOpen() && method.at(methodidx).first.isEmpty())
   {
     XSqlQuery sslq("SHOW ssl;");
