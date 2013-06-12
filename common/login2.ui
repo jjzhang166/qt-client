@@ -2617,9 +2617,6 @@ to be bound by its terms.</comment>
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
-         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
