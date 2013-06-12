@@ -21,7 +21,6 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
-#include "login2.h"
 
 user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   : XDialog(parent, name, fl)
@@ -235,8 +234,11 @@ bool user::save()
     return false;
   }
 
-  bool isCloud = xtuplecloud.exactMatch(login2::_cServer);
-  bool isXtuple = xtuple.exactMatch(login2::_cServer);
+  QRegExp xtuplecloud(".*\\.xtuplecloud\\.com.*");
+  QRegExp xtuple(".*\\.xtuple\\.com.*");
+
+  bool isCloud = xtuplecloud.exactMatch(omfgThis->databaseURL());
+  bool isXtuple = xtuple.exactMatch(omfgThis->databaseURL());
   QString salt;
 
   if(isCloud || isXtuple)

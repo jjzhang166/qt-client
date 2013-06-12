@@ -26,7 +26,6 @@
 #include "timeoutHandler.h"
 #include "translations.h"
 #include "dictionaries.h"
-#include "login2.h"
 
 extern QString __password;
 
@@ -412,8 +411,11 @@ bool userPreferences::save()
     {
       if (userave.value("usrpref_value").toString()=="t")
       {
-          bool isCloud = xtuplecloud.exactMatch(login2::_cServer);
-          bool isXtuple = xtuple.exactMatch(login2::_cServer);
+          QRegExp xtuplecloud(".*\\.xtuplecloud\\.com.*");
+          QRegExp xtuple(".*\\.xtuple\\.com.*");
+
+          bool isCloud = xtuplecloud.exactMatch(omfgThis->databaseURL());
+          bool isXtuple = xtuple.exactMatch(omfgThis->databaseURL());
           QString salt;
 
           if(isCloud || isXtuple)
