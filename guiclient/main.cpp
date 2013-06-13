@@ -355,10 +355,10 @@ int main(int argc, char *argv[])
     if(metric.first())
       rkey = metric.value("metric_value").toString();
     XTupleProductKey pkey(rkey);
+    QString application;
     metric.exec("SELECT fetchMetricText('Application') as app;");
     if(metric.first())
     {
-        QString application;
         application = metric.value("app").toString();
     }
     if(pkey.valid() && (pkey.version() == 1 || pkey.version() == 2 || pkey.version() == 3))
