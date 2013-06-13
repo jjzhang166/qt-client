@@ -386,6 +386,7 @@ int main(int argc, char *argv[])
       {
         if(pkey.users() < cnt)
         {
+          checkPass = false;
           checkPassReason = QObject::tr("<p>Multiple concurrent users of xTuple PostBooks require a license key. Please contact key@xtuple.com to request a free license key for your local installation, or sales@xtuple.com to purchase additional users in the xTuple Cloud Service. <p>Thank you.");
           checkLock = forced = forceLimit;
         }
