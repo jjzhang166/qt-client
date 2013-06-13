@@ -355,6 +355,12 @@ int main(int argc, char *argv[])
     if(metric.first())
       rkey = metric.value("metric_value").toString();
     XTupleProductKey pkey(rkey);
+    metric.exec("SELECT fetchMetricText('Application') as app;");
+    if(metric.first())
+    {
+        QString application;
+        application = metric.value("app").toString();
+    }
     if(pkey.valid() && (pkey.version() == 1 || pkey.version() == 2 || pkey.version() == 3))
     {
       if(pkey.expiration() < QDate::currentDate())
@@ -376,15 +382,18 @@ int main(int argc, char *argv[])
         else
           expired = true;
       }
+      else if(application == "PostBooks" && pkey.users() == 1)
+      {
+        if(pkey.users() < cnt)
+        {
+          checkPassReason = QObject::tr("<p>Multiple concurrent users of xTuple PostBooks require a license key. Please contact key@xtuple.com to request a free license key for your local installation, or sales@xtuple.com to purchase additional users in the xTuple Cloud Service. <p>Thank you.");
+          checkLock = forced = forceLimit;
+        }
+      }
       else if(pkey.users() != 0 && (pkey.users() < cnt || (!xtweb && (pkey.users() * 2 < tot))))
       {
         checkPass = false;
-        metric.exec("SELECT fetchMetricText('Application') as app;");
-        if (metric.first())
-        if (metric.value("app").toString() == "PostBooks" && pkey.users() == 1)
-          checkPassReason = QObject::tr("<p>Multiple concurrent users of xTuple PostBooks require a license key. Please contact key@xtuple.com to request a free license key for your local installation, or sales@xtuple.com to purchase additional users in the xTuple Cloud Service. <p>Thank you.");
-        else
-          checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent users for your license.");
+        checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent users for your license.");
         checkLock = forced = forceLimit;
       }
       else
