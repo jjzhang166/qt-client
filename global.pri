@@ -25,8 +25,8 @@ exists(../../openrpt) {
 }
 exists(../openrpt) {
     OPENRPT_DIR = ../openrpt
-
-! exists(openrpt) {
+}
+!exists(openrpt) {
     exists(../openrpt) {
         OPENRPT_DIR = ../openrpt
     }
@@ -49,7 +49,9 @@ exists(../../csvimp) {
 exists(../csvimp) {
     CSVIMP_DIR = ../csvimp
 
-! exists(csvimp) {
+}
+
+!exists(csvimp) {
     exists(../csvimp) {
         CSVIMP_DIR = ../csvimp
     }
