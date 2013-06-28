@@ -3,8 +3,8 @@ TARGET = xtuplewidgets
 TEMPLATE = lib
 CONFIG += qt \
     warn_on \
-    designer \
     plugin
+QT += widgets help designer uitools
 
 # INCLUDEPATH += $$QT_SOURCE_TREE/tools/designer/interfaces ../common .
 INCLUDEPATH += ../common \

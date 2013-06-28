@@ -25,7 +25,7 @@ class login2Options : public QDialog, public Ui::login2Options
     Q_OBJECT
 
   public:
-    login2Options(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    login2Options(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~login2Options();
 
     QString _databaseURL;

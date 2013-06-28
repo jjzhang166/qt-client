@@ -4,6 +4,7 @@ TEMPLATE = lib
 CONFIG += qt \
     warn_on \
     staticlib
+QT += widgets uitools designer help
 DBFILE = scriptapi.db
 LANGUAGE = C++
 INCLUDEPATH += $${XTUPLE_DIR}/common          $${XTUPLE_BLD}/common \

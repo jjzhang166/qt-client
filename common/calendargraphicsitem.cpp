@@ -88,7 +88,7 @@ CalendarGraphicsItem::CalendarGraphicsItem(CalendarControl * cc, QGraphicsItem *
   tbtnItem->setZValue(3);
   tbtnItem->setBrush(Qt::lightGray);
   tbtnItem->setRolloverBrush(Qt::green);
-  tbtnItem->scale(0.5, 1);
+  tbtnItem->setTransform(QTransform::fromScale(0.5, 1), true);
   tbtnItem->setReceiver(this);
   rt = tbtnItem->boundingRect();
   tbtnItem->setPos(offset, ct.y() - (rt.height() / 2));
@@ -100,7 +100,7 @@ CalendarGraphicsItem::CalendarGraphicsItem(CalendarControl * cc, QGraphicsItem *
   tbtnItem->setZValue(3);
   tbtnItem->setBrush(Qt::lightGray);
   tbtnItem->setRolloverBrush(Qt::green);
-  tbtnItem->scale(0.5, 1);
+  tbtnItem->setTransform(QTransform::fromScale(0.5, 1), true);
   tbtnItem->setReceiver(this);
   rt = tbtnItem->boundingRect();
   tbtnItem->setPos(rectItem->boundingRect().right() - offset - (rt.width() / 2), ct.y() - (rt.height() / 2));
@@ -113,7 +113,7 @@ CalendarGraphicsItem::CalendarGraphicsItem(CalendarControl * cc, QGraphicsItem *
   tbtnItem->setZValue(3);
   tbtnItem->setBrush(Qt::lightGray);
   tbtnItem->setRolloverBrush(Qt::green);
-  tbtnItem->scale(0.5, 1);
+  tbtnItem->setTransform(QTransform::fromScale(0.5, 1), true);
   tbtnItem->setReceiver(this);
   rt = tbtnItem->boundingRect();
   tbtnItem->setPos(offset, ct.y() - (rt.height() / 2));
@@ -124,7 +124,7 @@ CalendarGraphicsItem::CalendarGraphicsItem(CalendarControl * cc, QGraphicsItem *
   tbtnItem->setZValue(3);
   tbtnItem->setBrush(Qt::lightGray);
   tbtnItem->setRolloverBrush(Qt::green);
-  tbtnItem->scale(0.5, 1);
+  tbtnItem->setTransform(QTransform::fromScale(0.5, 1), true);
   tbtnItem->setReceiver(this);
   rt = tbtnItem->boundingRect();
   tbtnItem->setPos(rectItem->boundingRect().right() - offset - (rt.width() / 2), ct.y() - (rt.height() / 2));

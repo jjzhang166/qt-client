@@ -36,7 +36,7 @@
 /* TODO: rename _nonxTupleDB to _isxTupleDB internally and
          set it based on db contents, not command line parameter input
  */
-login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+login2::login2(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   setObjectName(name);

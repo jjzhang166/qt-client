@@ -29,10 +29,10 @@ bool keyCheck(const QString & key)
   QString csChar = nkey.left(1);
   int cs = 0;
   for(int i = 1; i < nkey.size(); ++i)
-    cs += nkey.at(i).toAscii();
+    cs += nkey.at(i).toLatin1();
   cs = cs % 32;
   static const char _base32Table[] = "ABCDEFGHJKMNPQRSTVWXYZ0123456789";
-  return ((csChar.size() > 0) && (csChar.at(0).toAscii() == _base32Table[cs]));
+  return ((csChar.size() > 0) && (csChar.at(0).toLatin1() == _base32Table[cs]));
 }
 
 class XTupleProductKeyPrivate

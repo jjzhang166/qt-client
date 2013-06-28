@@ -22,12 +22,15 @@ class QWidget;
 
 #include "parameter.h"
 
+#define TRUE 1
+#define FALSE 0
+
 class login2 : public QDialog, public Ui::login2
 {
   Q_OBJECT
 
   public:
-    login2(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    login2(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~login2();
 
     QString _databaseURL;

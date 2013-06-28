@@ -36,7 +36,7 @@
 #define DEBUG false
 #define QT_NO_URL_CAST_FROM_STRING
 
-checkForUpdates::checkForUpdates(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+checkForUpdates::checkForUpdates(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   QString url = "http://updates.xtuple.com/updates";

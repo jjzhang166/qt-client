@@ -17,6 +17,9 @@
 #include <QMap>
 #include <QVariant>
 
+#define TRUE 1
+#define FALSE 0
+
 typedef QMap<QString, QString> MetricMap;
 
 class Parametersenc : public QObject

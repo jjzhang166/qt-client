@@ -100,7 +100,7 @@ QByteArray QBase64Decode(const QString & _source) {
         // read in the next 4 valid bytes
         n = 0;
         while(n < 4 && p < l) {
-            c = ((QChar)source.at(p++)).toAscii();
+            c = ((QChar)source.at(p++)).toLatin1();
             a[n] = c;
             b[n] = (c == '=' ? 0 : getValue(c));
             if(b[n] != -1) {
