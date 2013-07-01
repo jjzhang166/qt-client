@@ -19,6 +19,7 @@
 #include <QDesktopServices>
 #include <QDebug>
 #include <QScrollBar>
+#include <QUrlQuery>
 
 #include <parameter.h>
 #include <xsqlquery.h>
