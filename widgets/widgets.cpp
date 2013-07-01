@@ -174,12 +174,6 @@ QList<QDesignerCustomWidgetInterface*> xTuplePlugin::customWidgets() const
   return m_plugins;
 }
 
-#ifndef QT_STATICPLUGIN
-Q_EXPORT_PLUGIN2(xtuplewidgets, xTuplePlugin)
-#else
-Q_EXPORT_STATIC_PLUGIN(xTuplePlugin)
-#endif
-
 Preferences *_x_preferences = 0;
 Metrics     *_x_metrics = 0;
 QMdiArea    *_x_workspace = 0;

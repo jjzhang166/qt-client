@@ -193,7 +193,7 @@ CRMAcctLineEdit::CRMAcctSubtype CRMAcctLineEdit::subtype() const
 
 ///////////////////////////////////////////////////////////////////////
 
-CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WFlags pFlags) :
+CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags pFlags) :
   VirtualList(pParent, pFlags)
 {
   _parent = pParent;

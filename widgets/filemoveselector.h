@@ -24,7 +24,7 @@ class FileMoveSelector : public QWidget, public Ui::FileMoveSelector
   public:
     enum FileMoveOption { Nothing, Suffix, ChangeDir, Delete };
 
-    FileMoveSelector(QWidget* parent = 0, Qt::WFlags fl = 0);
+    FileMoveSelector(QWidget* parent = 0, Qt::WindowFlags fl = 0);
     ~FileMoveSelector();
 
     Q_INVOKABLE QString        code()           const;

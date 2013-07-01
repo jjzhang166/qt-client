@@ -1080,7 +1080,7 @@ void ContactWidget::sLaunchWebaddr()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WFlags) 
+ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags) 
   : VirtualList(pParent, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);

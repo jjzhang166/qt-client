@@ -5,6 +5,7 @@ CONFIG += qt \
     warn_on \
     plugin
 QT += widgets help designer uitools
+OTHER_FILES += widgets.json xtuplewidgets.json
 
 # INCLUDEPATH += $$QT_SOURCE_TREE/tools/designer/interfaces ../common .
 INCLUDEPATH += ../common \

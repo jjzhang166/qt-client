@@ -665,7 +665,7 @@ void AddressCluster::setAddrChange(QString p)
 
 ///////////////////////////////////////////////////////////////////////////
 
-AddressList::AddressList(QWidget* pParent, const char* pName, bool, Qt::WFlags)
+AddressList::AddressList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags)
   : VirtualList(pParent, 0)
 {
     _parent = (AddressCluster*)(pParent);
