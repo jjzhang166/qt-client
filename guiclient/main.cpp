@@ -490,7 +490,7 @@ int main(int argc, char *argv[])
     //inserting temporary placeholder while checkForUpdates code is not being used
 
     int result;
-      if(!disallowMismatch)
+      if(disallowMismatch)
        result = QMessageBox::warning( 0, QObject::tr("Version Mismatch"),
           QObject::tr("<p>The version of the database you are connecting to is "
                         "not the version this client was designed to work against. "
