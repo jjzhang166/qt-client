@@ -14,7 +14,7 @@
 #include <QVariant>
 
 registrationKeyDialog::registrationKeyDialog(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
-  : XDialog(parent, name, modal, fl)
+ : QDialog(parent, modal ? (fl | Qt::Dialog) : fl) 
 {
   setupUi(this);
 
@@ -32,14 +32,6 @@ registrationKeyDialog::~registrationKeyDialog()
 void registrationKeyDialog::languageChange()
 {
   retranslateUi(this);
-}
-
-enum SetResponse registrationKeyDialog::set(const ParameterList &pParams)
-{
-  XDialog::set(pParams);
-  QVariant param;
-
-  return NoError;
 }
 
 void registrationKeyDialog::sCheckKey()

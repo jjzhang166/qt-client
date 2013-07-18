@@ -12,11 +12,10 @@
 #define REGISTRATIONKEYDIALOG_H
 
 #include "guiclient.h"
-#include "xdialog.h"
 #include <parameter.h>
 #include "ui_registrationKeyDialog.h"
 
-class registrationKeyDialog : public XDialog, public Ui::registrationKeyDialog
+class registrationKeyDialog : public QDialog, public Ui::registrationKeyDialog
 {
     Q_OBJECT
 
@@ -25,7 +24,6 @@ public:
     ~registrationKeyDialog();
 
 public slots:
-    virtual enum SetResponse set(const ParameterList & pParams);
     virtual void sCheckKey();
     virtual void sSelect();
     virtual void sClose();
