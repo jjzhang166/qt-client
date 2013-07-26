@@ -823,49 +823,6 @@ bool salesOrder::save(bool partial)
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Sales Order"), errors))
       return false;
 
-  // Cash Payment
-  if (_received->localValue() >  _balance->localValue() &&
-      QMessageBox::question(this, tr("Overapplied?"),
-                              tr("The Cash Payment is more than the Balance.  Do you want to continue?"),
-                              QMessageBox::Yes,
-                              QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
-        return FALSE;
-    
-  int _bankaccnt_curr_id = -1;
-  QString _bankaccnt_currAbbr;
-  saveSales.prepare( "SELECT bankaccnt_curr_id, "
-                     "       currConcat(bankaccnt_curr_id) AS currAbbr "
-                     "  FROM bankaccnt "
-                     " WHERE (bankaccnt_id=:bankaccnt_id);");
-  saveSales.bindValue(":bankaccnt_id", _bankaccnt->id());
-  saveSales.exec();
-  if (saveSales.first())
-  {
-    _bankaccnt_curr_id = saveSales.value("bankaccnt_curr_id").toInt();
-    _bankaccnt_currAbbr = saveSales.value("currAbbr").toString();
-  }
-  else if (saveSales.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, saveSales.lastError().databaseText(), __FILE__, __LINE__);
-    return FALSE;
-  }
-    
-  if (_received->currencyEnabled() && _received->id() != _bankaccnt_curr_id &&
-      QMessageBox::question(this, tr("Bank Currency?"),
-                                  tr("<p>This Sales Order is specified in %1 while the "
-                                     "Bank Account is specified in %2. Do you wish to "
-                                     "convert at the current Exchange Rate?"
-                                     "<p>If not, click NO "
-                                     "and change the Bank Account in the POST TO field.")
-                                  .arg(_received->currAbbr())
-                                  .arg(_bankaccnt_currAbbr),
-                              QMessageBox::Yes|QMessageBox::Escape,
-                              QMessageBox::No |QMessageBox::Default) != QMessageBox::Yes)
-  {
-    _bankaccnt->setFocus();
-    return FALSE;
-  }
-
   if ((_mode == cEdit) || ((_mode == cNew) && _saved))
     saveSales.prepare( "UPDATE cohead "
                "SET cohead_custponumber=:custponumber, cohead_shipto_id=:shipto_id, cohead_cust_id=:cust_id,"
@@ -4431,15 +4388,50 @@ void salesOrder::sShowReservations()
 
 void salesOrder::sEnterCashPayment()
 {
-  if (_received->localValue() > _balance->localValue())
+  XSqlQuery cashsave;
+
+  if (_received->localValue() >  _balance->localValue() &&
+      QMessageBox::question(this, tr("Overapplied?"),
+                            tr("The Cash Payment is more than the Balance.  Do you want to continue?"),
+                            QMessageBox::Yes,
+                            QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+    return;
+  
+  int _bankaccnt_curr_id = -1;
+  QString _bankaccnt_currAbbr;
+  cashsave.prepare( "SELECT bankaccnt_curr_id, "
+                    "       currConcat(bankaccnt_curr_id) AS currAbbr "
+                    "  FROM bankaccnt "
+                    " WHERE (bankaccnt_id=:bankaccnt_id);");
+  cashsave.bindValue(":bankaccnt_id", _bankaccnt->id());
+  cashsave.exec();
+  if (cashsave.first())
   {
-    QMessageBox::critical(this,tr("Invalid Cash Payment"),
-                               tr("Cash Payment Amount Received cannot be greater than Balance."));
-    _received->setFocus();
+    _bankaccnt_curr_id = cashsave.value("bankaccnt_curr_id").toInt();
+    _bankaccnt_currAbbr = cashsave.value("currAbbr").toString();
+  }
+  else if (cashsave.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, cashsave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-
-  XSqlQuery cashsave;
+  
+  if (_received->currencyEnabled() && _received->id() != _bankaccnt_curr_id &&
+      QMessageBox::question(this, tr("Bank Currency?"),
+                            tr("<p>This Sales Order is specified in %1 while the "
+                               "Bank Account is specified in %2. Do you wish to "
+                               "convert at the current Exchange Rate?"
+                               "<p>If not, click NO "
+                               "and change the Bank Account in the POST TO field.")
+                            .arg(_received->currAbbr())
+                            .arg(_bankaccnt_currAbbr),
+                            QMessageBox::Yes|QMessageBox::Escape,
+                            QMessageBox::No |QMessageBox::Default) != QMessageBox::Yes)
+  {
+    _bankaccnt->setFocus();
+    return;
+  }
+  
   QString _cashrcptnumber;
   int _cashrcptid;
 
@@ -4536,7 +4528,10 @@ void salesOrder::sEnterCashPayment()
                      "VALUES(:aropen_id, 'S', :doc_id, :amount, :curr_id);");
     cashPost.bindValue(":doc_id", _soheadid);
     cashPost.bindValue(":aropen_id", aropenid);
-    cashPost.bindValue(":amount", _received->localValue());
+    if (_received->localValue() >  _balance->localValue())
+      cashPost.bindValue(":amount", _balance->localValue());
+    else
+      cashPost.bindValue(":amount", _received->localValue());
     cashPost.bindValue(":curr_id", _received->id());
     cashPost.exec();
     if (cashPost.lastError().type() != QSqlError::NoError)
