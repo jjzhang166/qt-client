@@ -18,7 +18,7 @@
 
 #include "storedProcErrorLookup.h"
 
-#define DEBUG false
+#define DEBUG true
 
 int creditCard::saveCreditCard(QWidget *parent,
                               int &custId,

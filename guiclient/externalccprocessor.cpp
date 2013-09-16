@@ -16,7 +16,7 @@
 #include "externalccprocessor.h"
 #include "externalCCTransaction.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /** @ingroup creditcards
     @class   ExternalCCProcessor

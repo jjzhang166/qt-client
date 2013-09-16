@@ -21,7 +21,7 @@
 #include "version.h"
 #include "xmessageboxmessagehandler.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /** @ingroup creditcards
     @class   CyberSourceProcessor

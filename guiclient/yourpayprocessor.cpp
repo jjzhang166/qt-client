@@ -17,7 +17,7 @@
 #include "guiclient.h"
 #include "yourpayprocessor.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /** @ingroup creditcards
     @class   YourPayProcessor

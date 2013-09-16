@@ -36,7 +36,7 @@
 #include "paymentechprocessor.h"
 #include "cybersourceprocessor.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /* TODO: split this into CreditCardProcessor and CreditCardTransaction.
          the _passedAvs and _passedCvv flags are examples of why the

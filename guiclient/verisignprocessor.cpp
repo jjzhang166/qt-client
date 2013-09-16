@@ -15,7 +15,7 @@
 #include "guiclient.h"
 #include "verisignprocessor.h"
 
-#define DEBUG false
+#define DEBUG true
 
 /** @ingroup creditcards
     @class   VerisignProcessor
