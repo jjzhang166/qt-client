@@ -31,9 +31,10 @@
 #endif
 #include "../guiclient/guiclient.h"
 #include <parameter.h>
+#include "../guiclient/version.h"
 
 
-#define DEBUG false
+#define DEBUG true
 #define QT_NO_URL_CAST_FROM_STRING
 
 checkForUpdates::checkForUpdates(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
@@ -73,7 +74,7 @@ suffix = "run";
     serverVersion = versions.value("dbver").toString();
     newurl = url + "/xTuple-" + serverVersion + "-" + OS + "-installer." + suffix;
 
-    _label->setText(tr("Your client does not match the server version: %1. Would you like to update?").arg(serverVersion));
+    _label->setText(tr("Your client: %1, does not match the server version: %2. Would you like to update?").arg(_Version).arg(serverVersion));
 
     metric.exec("SELECT fetchMetricBool('DisallowMismatchClientVersion') as disallowed;");
     metric.first();
@@ -125,7 +126,7 @@ void checkForUpdates::downloadButtonPressed()
       connect(reply, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
       connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
       connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-      //connect(reply, SIGNAL(downloadComplete()), this, SLOT(startUpdate()));
+      connect(reply, SIGNAL(finished()), this, SLOT(startUpdate()));
 
       progressDialog->setLabelText(tr("Downloading %1...").arg(filename));
       _ok->setEnabled(false);
@@ -183,12 +184,15 @@ void checkForUpdates::downloadFinished()
     reply = NULL;
     delete file;
     file = NULL;
-    startUpdate();
 }
 void checkForUpdates::startUpdate()
 {
-    QFile *updater = new QFile(filename);
-    if(updater->exists())
+    QFileInfo *updater = new QFileInfo(filename);
+    if(DEBUG)
+    {
+        qDebug() << "fileInfo = " << updater->isExecutable() << " " << updater->isReadable() << " " << updater->size() << " " <<  filesize;
+    }
+    if((updater->isReadable()) && (updater->size() == filesize))
     {
         QStringList options;
         QProcess *installer = new QProcess(this);
@@ -220,6 +224,10 @@ void checkForUpdates::startUpdate()
         if (result <= 32)
             QMessageBox::information(this, "Download failed", tr("Failed: %1").arg(result));
         #endif
+    }
+    else
+    {
+        QMessageBox::information(this, "Download failed", tr("Failed: %1").arg(filename));
     }
 }
 
