@@ -32,12 +32,14 @@ public:
     QPushButton* _cancel;
     QPushButton* _ignore;
 
+signals:
+    void downloaded();
+
 public slots:
     void downloadButtonPressed();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
-    void downloadFinished();
-    void downloadReadyRead();
-    void cancelDownload();
+    void downloadFinished(QNetworkReply* pReply);
+    void cancelDownload(QNetworkReply* pReply);
     void startUpdate();
 
 protected slots:
@@ -47,7 +49,6 @@ private:
     QNetworkAccessManager manager;
     QFile *file;
     QProgressDialog *progressDialog;
-    QNetworkReply *reply;
     bool downloadRequestAborted;
     QString serverVersion;
     QString OS;

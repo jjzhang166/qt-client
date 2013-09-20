@@ -121,12 +121,12 @@ void checkForUpdates::downloadButtonPressed()
       }
 
       downloadRequestAborted = false;
-      reply = manager.get(QNetworkRequest(url));
-      connect(reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
-      connect(reply, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
-      connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
-      connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-      connect(reply, SIGNAL(finished()), this, SLOT(startUpdate()));
+      connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+      QNetworkRequest request(url);
+      QNetworkReply *fileDownload = manager.get(request);
+      connect(fileDownload, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
+      connect(this, SIGNAL(downloaded()), this, SLOT(startUpdate()));
+      connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload(QNetworkReply*)));
 
       progressDialog->setLabelText(tr("Downloading %1...").arg(filename));
       _ok->setEnabled(false);
@@ -140,18 +140,13 @@ void checkForUpdates::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     filesize = bytesTotal;
     progressDialog->setValue(bytesReceived);
 }
-void checkForUpdates::downloadReadyRead()
-{
-    if(file)
-        file->write(reply->readAll());
-}
-void checkForUpdates::cancelDownload()
+void checkForUpdates::cancelDownload(QNetworkReply* pReply)
 {
     downloadRequestAborted = true;
-    reply->abort();
+    pReply->abort();
     _ok->setEnabled(true);
 }
-void checkForUpdates::downloadFinished()
+void checkForUpdates::downloadFinished(QNetworkReply* pReply)
 {
     if(downloadRequestAborted)
     {
@@ -162,26 +157,29 @@ void checkForUpdates::downloadFinished()
             delete file;
             file = NULL;
         }
-        reply->deleteLater();
+        pReply->deleteLater();
         progressDialog->hide();
         _ok->setEnabled(true);
         return;
     }
 
-    downloadReadyRead();
+    if(file)
+        file->write(pReply->readAll());
+
     progressDialog->hide();
     _ok->setEnabled(true);
     file->flush();
     file->close();
 
-    if(reply->error())
+    if(pReply->error())
     {
         //Download failed
-        QMessageBox::information(this, "Download failed", tr("Failed: %1").arg(reply->errorString()));
+        QMessageBox::information(this, "Download failed", tr("Failed: %1").arg(pReply->errorString()));
     }
 
-    reply->deleteLater();
-    reply = NULL;
+    pReply->deleteLater();
+    emit downloaded();
+    pReply = NULL;
     delete file;
     file = NULL;
 }
