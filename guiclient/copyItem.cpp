@@ -222,6 +222,8 @@ void copyItem::sEditBomitem()
   bomItem newdlg(this, "", TRUE);
   newdlg.set(params);
   newdlg.exec();
+  
+  sFillBomitem();
 }
 
 void copyItem::sRevokeBomitem()
@@ -280,8 +282,8 @@ void copyItem::sFillBomitem()
   
   if (_rollupPrices->isChecked())
   {
-    bomitemq.prepare("SELECT SUM(item_listprice) AS listprice,"
-                     "       SUM(item_listcost) AS listcost "
+    bomitemq.prepare("SELECT roundSale(SUM(item_listprice * bomitem_qtyper * (1.0 + bomitem_scrap))) AS listprice,"
+                     "       roundSale(SUM(item_listcost * bomitem_qtyper * (1.0 + bomitem_scrap))) AS listcost "
                      "FROM bomitem JOIN item ON (item_id=bomitem_item_id) "
                      "WHERE (bomitem_parent_item_id=:targetitemid);");
     bomitemq.bindValue(":targetitemid", _newitemid);
