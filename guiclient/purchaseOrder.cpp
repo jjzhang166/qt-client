@@ -1663,25 +1663,25 @@ void purchaseOrder::sPopulateMenu( QMenu * pMenu, QTreeWidgetItem * pSelected )
 void purchaseOrder::sViewSo()
 {
   XSqlQuery fetchso;
-  fetchso.prepare( "SELECT pohead_cohead_id "
-                   "FROM pohead "
-                   "WHERE pohead_id = :pohead_id " );
-  fetchso.bindValue(":pohead_id", _poheadid);
+  fetchso.prepare( "SELECT coitem_cohead_id "
+                   "FROM poitem JOIN coitem ON (coitem_id=poitem_order_id) "
+                   "WHERE poitem_id = :poitem_id " );
+  fetchso.bindValue(":poitem_id", _poitem->id());
   fetchso.exec();
   if (fetchso.first())
-    salesOrder::viewSalesOrder(fetchso.value("pohead_cohead_id").toInt());
+    salesOrder::viewSalesOrder(fetchso.value("coitem_cohead_id").toInt());
 }
 
 void purchaseOrder::sEditSo()
 {
   XSqlQuery fetchso;
-  fetchso.prepare( "SELECT pohead_cohead_id "
-                   "FROM pohead "
-                   "WHERE pohead_id = :pohead_id " );
-  fetchso.bindValue(":pohead_id", _poheadid);
+  fetchso.prepare( "SELECT coitem_cohead_id "
+                  "FROM poitem JOIN coitem ON (coitem_id=poitem_order_id) "
+                  "WHERE poitem_id = :poitem_id " );
+  fetchso.bindValue(":poitem_id", _poitem->id());
   fetchso.exec();
   if (fetchso.first())
-    salesOrder::editSalesOrder(fetchso.value("pohead_cohead_id").toInt(), TRUE);
+    salesOrder::editSalesOrder(fetchso.value("coitem_cohead_id").toInt(), TRUE);
 }
 
 void purchaseOrder::sViewWo()
