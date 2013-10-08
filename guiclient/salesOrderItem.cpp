@@ -407,6 +407,9 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
   if (valid)
     _scheduledDate->setDate(param.toDate());
 
+  if (_metrics->boolean("AllowASAPShipSchedules") && !_scheduledDate->isValid())
+    _scheduledDate->setDate(QDate::currentDate());
+
   param = pParams.value("mode", &valid);
   if (valid)
   {
@@ -879,9 +882,6 @@ void salesOrderItem::sSave(bool pPartial)
   XSqlQuery salesSave;
   _save->setFocus();
 
-  if (_metrics->boolean("AllowASAPShipSchedules") && !_scheduledDate->isValid())
-    _scheduledDate->setDate(QDate::currentDate());
-
   _error = true;
   QList<GuiErrorCheck> errors;
   errors << GuiErrorCheck(!_warehouse->isValid(), _warehouse,
@@ -930,46 +930,6 @@ void salesOrderItem::sSave(bool pPartial)
     }
   }
 
-  /*
-  int   itemsrcid  = _itemsrc;
-  if (_supplyOrderType == "P" && _createSupplyOrder->isChecked() && (_item->itemType() == "P") &&
-      ((_mode == cNew) || ((_mode == cEdit) && (_supplyOrderId == -1))))
-  {
-    if ( _supplyDropShip->isChecked() && _shiptoid < 1)
-    {
-      QMessageBox::critical(this, tr("Cannot Save Sales Order Item"),
-                            tr("<p>You must enter a valid Ship-To # before saving this Sales Order Item."));
-      return;
-    }
-    
-    if (itemsrcid==-1)
-    {
-      XSqlQuery itemsrcdefault;
-      itemsrcdefault.prepare("SELECT itemsrc_id FROM itemsrc "
-                             "WHERE ((itemsrc_item_id=:item_id) AND (itemsrc_default) AND (itemsrc_active)) ");
-      itemsrcdefault.bindValue(":item_id", _item->id());
-      itemsrcdefault.exec();
-      if (itemsrcdefault.first())
-      {
-        itemsrcid=(itemsrcdefault.value("itemsrc_id").toInt());
-      }
-      else if (itemsrcdefault.lastError().type() != QSqlError::NoError)
-      {
-        systemError(this, itemsrcdefault.lastError().databaseText(), __FILE__, __LINE__);
-        return;
-      }
-      else
-      {
-        ParameterList itemSourceParams;
-        itemSourceParams.append("item_id", _item->id());
-        itemSourceParams.append("qty", _qtyOrdered->toDouble());
-        itemSourceList newdlg(omfgThis, "", TRUE);
-        newdlg.set(itemSourceParams);
-        itemsrcid = newdlg.exec();
-      }
-    }
-  }
-   */
   
   _error = false;
 
@@ -1154,87 +1114,6 @@ void salesOrderItem::sSave(bool pPartial)
         }
       }
     }
-
-    if (_supplyOrderId != -1 && !_item->isConfigured())
-    {
-      // Update Supply Order Characteristics
-      if (_itemchar->rowCount() > 0)
-      {
-        bool changed = false;
-        XSqlQuery chgq;
-        chgq.prepare("SELECT (charass_value=:value) AS same"
-                     "  FROM charass"
-                     " WHERE ((charass_char_id=:id)"
-                     "    AND (charass_target_id=:target)"
-                     "    AND (charass_target_type='SI'));");
-        for (int i = 0; i < _itemchar->rowCount(); i++)
-        {
-          chgq.bindValue(":id",     _itemchar->data(_itemchar->index(i, CHAR_ID),
-                                                    Qt::UserRole));
-          chgq.bindValue(":value",  _itemchar->data(_itemchar->index(i, CHAR_VALUE)));
-          chgq.bindValue(":target", _soitemid);
-          if (chgq.exec() && chgq.first() && ! chgq.value("same").toBool())
-          {
-            changed = true;
-            break;
-          }
-          else if (chgq.lastError().type() != QSqlError::NoError)
-          {
-            rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Checking Characteristics"),
-                                 chgq, __FILE__, __LINE__);
-            return;
-          }
-        }
-
-        if (changed &&
-            QMessageBox::question(this, tr("Change Characteristics?"),
-                                  tr("<p>Should the characteristics for the "
-                                       "associated supply order be updated?"),
-                                  QMessageBox::Yes | QMessageBox::Default,
-                                  QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
-        {
-          QModelIndex idx1, idx2;
-
-          salesSave.prepare("SELECT updateCharAssignment(:target_type, :target_id, :char_id, :char_value) AS result;");
-
-          for (int i = 0; i < _itemchar->rowCount(); i++)
-          {
-            idx1 = _itemchar->index(i, CHAR_ID);
-            idx2 = _itemchar->index(i, CHAR_VALUE);
-            if (_supplyOrderType == "P")
-              salesSave.bindValue(":target_type", "PI");
-            else
-              salesSave.bindValue(":target_type", "W");
-            salesSave.bindValue(":target_id", _supplyOrderId);
-            salesSave.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
-            salesSave.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
-            salesSave.exec();
-            if (salesSave.first())
-            {
-              int result = salesSave.value("result").toInt();
-              if (result < 0)
-              {
-                rollback.exec();
-                ErrorReporter::error(QtCriticalMsg, this, tr("Error with Characteristics"),
-                                     storedProcErrorLookup("updateCharAssignment", result),
-                                     __FILE__, __LINE__);
-                return;
-              }
-            }
-            else if (salesSave.lastError().type() != QSqlError::NoError)
-            {
-              rollback.exec();
-              ErrorReporter::error(QtCriticalMsg, this, tr("Error with Characteristics"),
-                                   salesSave, __FILE__, __LINE__);
-              return;
-            }
-          }
-        }
-      }
-
-      _qtyOrderedCache = _qtyOrdered->toDouble();
-    }
   }
   else if (_mode == cNewQuote && !_partialsaved)
   {
@@ -1383,8 +1262,98 @@ void salesOrderItem::sSave(bool pPartial)
     }
   }
 
-  if ( (_mode != cView) && (_mode != cViewQuote) && (_supplyOrderId == -1) )
-  {
+  if ( (_mode != cView) && (_mode != cViewQuote) )
+     {
+      if (_supplyOrderId != -1 && !_item->isConfigured())
+      {
+        // Update Supply Order Characteristics
+        if (_itemchar->rowCount() > 0)
+        {
+          bool changed = false;
+          QModelIndex idx1, idx2;
+          XSqlQuery chgq;
+          chgq.prepare("SELECT (charass_value=:value) AS same"
+                       "  FROM charass"
+                       " WHERE ((charass_char_id=:id)"
+                       "    AND (charass_target_id=:target)"
+                       "    AND (charass_target_type='SI'));");
+          for (int i = 0; i < _itemchar->rowCount(); i++)
+          {
+           idx1 = _itemchar->index(i, CHAR_ID);
+            idx2 = _itemchar->index(i, CHAR_VALUE);
+            chgq.bindValue(":id", _itemchar->data(idx1, Qt::UserRole));
+            chgq.bindValue(":value", _itemchar->data(idx2, Qt::DisplayRole));
+            chgq.bindValue(":target", _soitemid);
+            chgq.exec();
+            if (chgq.first())
+            {
+              if (! chgq.value("same").toBool())
+              {
+                changed = true;
+                break;
+              }
+            }
+            else if (_itemchar->data(idx2, Qt::DisplayRole) != "")
+            {
+              changed = true;
+              break;
+            }
+            else if (chgq.lastError().type() != QSqlError::NoError)
+            {
+              rollback.exec();
+              ErrorReporter::error(QtCriticalMsg, this, tr("Error Checking Characteristics"),
+                                   chgq, __FILE__, __LINE__);
+              return;
+            }
+          }
+
+          if (changed &&
+              QMessageBox::question(this, tr("Change Characteristics?"),
+                                    tr("<p>Should the characteristics for the "
+                                       "associated supply order be updated?"),
+                                    QMessageBox::Yes | QMessageBox::Default,
+                                    QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+          {
+            salesSave.prepare("SELECT updateCharAssignment(:target_type, :target_id, :char_id, :char_value) AS result;");
+
+            for (int i = 0; i < _itemchar->rowCount(); i++)
+            {
+              idx1 = _itemchar->index(i, CHAR_ID);
+              idx2 = _itemchar->index(i, CHAR_VALUE);
+              if (_supplyOrderType == "P")
+                salesSave.bindValue(":target_type", "PI");
+              else
+                salesSave.bindValue(":target_type", "W");
+              salesSave.bindValue(":target_id", _supplyOrderId);
+              salesSave.bindValue(":char_id", _itemchar->data(idx1, Qt::UserRole));
+              salesSave.bindValue(":char_value", _itemchar->data(idx2, Qt::DisplayRole));
+              salesSave.exec();
+              if (salesSave.first())
+              {
+                int result = salesSave.value("result").toInt();
+                if (result < 0)
+                {
+                  rollback.exec();
+                  ErrorReporter::error(QtCriticalMsg, this, tr("Error with Characteristics"),
+                                       storedProcErrorLookup("updateCharAssignment", result),
+                                       __FILE__, __LINE__);
+                  return;
+                }
+              }
+              else if (salesSave.lastError().type() != QSqlError::NoError)
+              {
+                rollback.exec();
+                ErrorReporter::error(QtCriticalMsg, this, tr("Error with Characteristics"),
+                                     salesSave, __FILE__, __LINE__);
+                return;
+              }
+            }
+          }
+        }
+
+        _qtyOrderedCache = _qtyOrdered->toDouble();
+      }
+
     QString type = "SI";
     if (_mode & 0x20)
       type = "QI";
