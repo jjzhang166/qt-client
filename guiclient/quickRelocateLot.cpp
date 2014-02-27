@@ -42,15 +42,17 @@ void quickRelocateLot::sPost()
     int location_id = -1;
     int qoh = -1;
     XSqlQuery lotQuery;
-    lotQuery.prepare(QString("SELECT ls_id FROM ls WHERE (ls_number='%1');").arg(_lotSerial->text()));
+    lotQuery.prepare("SELECT ls_id FROM ls WHERE (ls_number=:ls_number);");
+    lotQuery.bindValue(":ls_number", _lotSerial->text());
     lotQuery.exec();
     if(lotQuery.first())
     {
         ls_id = lotQuery.value("ls_id").toInt();
     }
-    else
+    else if (lotQuery.lastError().type() != QSqlError::NoError)
     {
-        qDebug() << "didn't get an ls_id:" << lotQuery.lastError().text()<<lotQuery.executedQuery();
+        systemError(this, lotQuery.lastError().databaseText(), __FILE__, __LINE__);
+        return;
     }
 
     if (ls_id == -1)
@@ -61,16 +63,17 @@ void quickRelocateLot::sPost()
     }
 
     XSqlQuery locationQuery;
-    locationQuery.prepare(QString("SELECT location_id FROM location WHERE "
-                          " formatLocationName(location_id)='%1';").arg(_location->text()));
+    locationQuery.prepare("SELECT location_id FROM location WHERE (formatLocationName(location_id)=:location);");
+    locationQuery.bindValue(":location", _location->text());
     locationQuery.exec();
     if (locationQuery.first())
     {
         location_id = locationQuery.value("location_id").toInt();
     }
-    else
+    else if(locationQuery.lastError().type() != QSqlError::NoError)
     {
-        qDebug() << "didn't get an location_id:" << locationQuery.lastError().text()<<locationQuery.executedQuery();
+      systemError(this, locationQuery.lastError().databaseText(), __FILE__, __LINE__);
+      return;
     }
 
     if (location_id == -1)
@@ -81,12 +84,17 @@ void quickRelocateLot::sPost()
     }
 
     XSqlQuery qohQuery;
-    qohQuery.prepare(QString("SELECT itemloc_qty FROM itemloc WHERE "
-                             " itemloc_ls_id=%1;").arg(ls_id));
+    qohQuery.prepare("SELECT itemloc_qty FROM itemloc WHERE itemloc_ls_id=:ls_id;");
+    qohQuery.bindValue(":ls_id", ls_id);
     qohQuery.exec();
     if (qohQuery.first())
     {
         qoh = qohQuery.value("itemloc_qty").toInt();
+    }
+    else if (qohQuery.lastError().type() != QSqlError::NoError)
+    {
+    systemError(this, qohQuery.lastError().databaseText(), __FILE__, __LINE__);
+    return;
     }
     if (qoh <= 0)
     {
@@ -98,12 +106,20 @@ void quickRelocateLot::sPost()
 
 
     XSqlQuery updateQuery;
-    updateQuery.prepare(QString("UPDATE itemloc SET itemloc_location_id=%1"
-                                " WHERE itemloc_ls_id=%2;").arg(location_id).arg(ls_id));
-    if (!updateQuery.exec())
+    updateQuery.prepare("SELECT relocateInventory(itemloc_id, :location_id,"
+                        "                         itemloc_itemsite_id, itemloc_qty,"
+                        "                         'Quick Relocate Lot') AS result "
+                        "FROM itemloc "
+                        "WHERE itemloc_ls_id=:ls_id;");
+    updateQuery.bindValue(":location_id", location_id);
+    updateQuery.bindValue(":ls_id", ls_id);
+    updateQuery.exec();
+    if (qohQuery.lastError().type() != QSqlError::NoError)
     {
-        qDebug() << "Relocate lot failed";
+     systemError(this, qohQuery.lastError().databaseText(), __FILE__, __LINE__);
+     return;
     }
+
     //accept();
     clearFields();
 }

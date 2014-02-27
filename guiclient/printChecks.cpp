@@ -73,6 +73,45 @@ enum SetResponse printChecks::set(const ParameterList & pParams )
 void printChecks::sPrint()
 {
   XSqlQuery printPrint;
+
+  if(_setCheckNumber != -1 && _setCheckNumber != _nextCheckNum->text().toInt())
+  {
+  int countCheckNum = _nextCheckNum->text().toInt();
+  XSqlQuery checks;
+  MetaSQLQuery mql = mqlLoad("checks", "detail");
+  ParameterList params;
+  params.append("bankaccnt_id", _bankaccnt->id());
+  params.append("toPrintOnly");
+  params.append("numtoprint", _numberOfChecks->value());
+  if (_orderByName->isChecked())
+     params.append("orderByName");
+
+  checks = mql.toQuery(params);
+  while (checks.next())
+    {
+     printPrint.prepare("SELECT checkhead_id "
+                        "FROM checkhead "
+                        "WHERE ( (checkhead_bankaccnt_id=:bankaccnt_id) "
+                        "  AND   (checkhead_id <> :checkhead_id) "
+                        "  AND   (checkhead_number=:nextCheckNumber));");
+     printPrint.bindValue(":bankaccnt_id", _bankaccnt->id());
+     printPrint.bindValue(":checkhead_id", checks.value("checkhead_id").toInt());
+     printPrint.bindValue(":nextCheckNumber", countCheckNum);
+     printPrint.exec();
+     if (printPrint.first())
+     {
+     QMessageBox::information( this, tr("Check Number Already Used"),
+                                     tr("<p>A Check Number has already been used.") );
+     return;
+     }
+     else if (printPrint.lastError().type() != QSqlError::NoError)
+     {
+     systemError(this, printPrint.lastError().databaseText(), __FILE__, __LINE__);
+     return;
+     }
+     countCheckNum = countCheckNum + 1;
+    }
+  }
   if (_somerecips_eft_enabled &&
       QMessageBox::question(this, tr("Print Anyway?"),
                             tr("<p>Some of the recipients of checks in this "

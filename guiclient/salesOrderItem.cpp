@@ -2382,7 +2382,7 @@ void salesOrderItem::sCheckSupplyOrder()
     if (_createSupplyOrder->isChecked())
       sHandleSupplyOrder();
     else
-      if ((_mode == cNew && !_stocked) || _costmethod == "J" || _supplyOrderId > -1)
+      if (((_mode == cNew || _mode == cNewQuote) && !_stocked) || _costmethod == "J" || _supplyOrderId > -1)
         _createSupplyOrder->setChecked(true);
   }
 }
@@ -2408,7 +2408,7 @@ void salesOrderItem::sHandleSupplyOrder()
     return;
   
   XSqlQuery ordq;
-  if (_createSupplyOrder->isChecked())
+  if (_createSupplyOrder->isChecked() && ISORDER(_mode))
   { // createSupplyOrder is checked
     
     double valqty = 0.0;

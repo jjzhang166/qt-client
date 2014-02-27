@@ -118,6 +118,10 @@ printMulticopyDocument::printMulticopyDocument(QString numCopiesMetric,
 
 printMulticopyDocument::~printMulticopyDocument()
 {
+ if(_data->_captive)
+ {
+  orReport::endMultiPrint(_data->_printer);
+ }
   if (_data)
   {
     delete _data;
@@ -324,7 +328,8 @@ void printMulticopyDocument::sPrint()
     message("");
   }
 
-  if (! mpStartedInitialized)
+ // if (! mpStartedInitialized)
+  if(!_data->_captive)
   {
     orReport::endMultiPrint(_data->_printer);
     _data->_mpIsInitialized = false;
