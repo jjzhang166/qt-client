@@ -276,6 +276,7 @@ void XComboBox::init()
   insertEditor(TaxTypes,"taxTypes","MaintainTaxTypes");
   insertEditor(Terms,"terms","MaintainTerms");
   insertEditor(TaskCommentTypes,"commentTypes","MaintainCommentTypes");
+  //insertEditor(TimeAttendanceCommentTypes,"commentTypes","MaintainCommentTypes");
   insertEditor(TodoItemCommentTypes,"commentTypes","MaintainCommentTypes");
   insertEditor(TransferOrderCommentTypes,"commentTypes","MaintainCommentTypes");
   insertEditor(TransferOrderItemCommentTypes,"commentTypes","MaintainCommentTypes");
@@ -900,6 +901,14 @@ void XComboBox::setType(XComboBoxTypes pType)
                   "WHERE (source_name='TA')"
                   "ORDER BY cmnttype_order, cmnttype_name;" );
       break;
+      
+     case TimeAttendanceCommentTypes:
+      query.exec( "SELECT cmnttype_id, cmnttype_name, cmnttype_name "
+                  "FROM cmnttype JOIN cmnttypesource ON (cmnttypesource_cmnttype_id=cmnttype_id)"
+                  "              JOIN source ON (source_id=cmnttypesource_source_id) "
+                  "WHERE (source_name='TATC')"
+                  "ORDER BY cmnttype_order, cmnttype_name;" );
+      break;     
 
     case TodoItemCommentTypes:
       query.exec( "SELECT cmnttype_id, cmnttype_name, cmnttype_name "

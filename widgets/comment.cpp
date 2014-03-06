@@ -334,6 +334,14 @@ void comment::set(const ParameterList &pParams)
     _cmnttype->setType(XComboBox::TaskCommentTypes);
     _targetId = param.toInt();
   }
+  
+  param = pParams.value("tatc_id", &valid);
+  if (valid)
+  {
+    _source = Comments::TimeAttendance;
+    _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
+    _targetId = param.toInt();
+  }
 
   param = pParams.value("addr_id", &valid);
   if (valid)
@@ -469,6 +477,9 @@ void comment::set(const ParameterList &pParams)
         case Comments::Task:
           _cmnttype->setType(XComboBox::TaskCommentTypes);
           break;
+        case Comments::TimeAttendance:
+          _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
+          break;          
         case Comments::TodoItem:
           _cmnttype->setType(XComboBox::TodoItemCommentTypes);
           break;
