@@ -41,13 +41,30 @@ projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
 {
   setupUi(optionsWidget());
   setWindowTitle(tr("Projects"));
-  setMetaSQLOptions("projects", "detail");
+  setMetaSQLOptions("projects", "detail_nohierarchy");
   setReportName("ProjectsList");
   setParameterWidgetVisible(true);
   setNewVisible(true);
   setSearchVisible(true);
   setQueryOnStartEnabled(true);
   setUseAltId(true);
+
+  //  Project Details
+  list()->addColumn(tr("Project"),                        _orderColumn, Qt::AlignLeft,   true,  "prj_number");
+  list()->addColumn(tr("Project Name"),                   -1,           Qt::AlignLeft,   true,  "prj_name");
+  list()->addColumn(tr("Project Description"),            -1,           Qt::AlignLeft,   true,  "prj_descrip");
+  list()->addColumn(tr("Status"),                         _itemColumn,  Qt::AlignCenter, true,  "project_status" );
+  list()->addColumn(tr("Project Type"),                   _itemColumn,  Qt::AlignCenter, true,  "project_type" );
+  list()->addColumn(tr("Owner"),                          _userColumn,  Qt::AlignLeft,   true,  "prj_owner_username");
+  list()->addColumn(tr("Assigned To"),                    _userColumn,  Qt::AlignLeft,   true,  "prj_username");
+  list()->addColumn(tr("Account"),                        _userColumn,  Qt::AlignLeft,   true,  "crmacct_name");
+  list()->addColumn(tr("Contact"),                        _userColumn,  Qt::AlignLeft,   true,  "cntct_name");
+  list()->addColumn(tr("City"),                           -1,           Qt::AlignLeft,   true,  "addr_city");
+  list()->addColumn(tr("State"),                          -1,           Qt::AlignLeft,   true,  "addr_state");
+  list()->addColumn(tr("Project Due"),                    _dateColumn,  Qt::AlignCenter, true,  "prj_due_date");
+  list()->addColumn(tr("Project Assigned"),               _dateColumn,  Qt::AlignCenter, true,  "prj_assigned_date");
+  list()->addColumn(tr("Project Started"),                _dateColumn,  Qt::AlignCenter, true,  "prj_start_date");
+  list()->addColumn(tr("Project Completed"),              _dateColumn,  Qt::AlignCenter, true,  "prj_completed_date");
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
@@ -62,11 +79,12 @@ projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
 
   connect(omfgThis, SIGNAL(projectsUpdated(int)), this, SLOT(sFillList()));
   connect(_showComplete, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_salesOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_workOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_purchaseOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_incidents, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_showHierarchy, SIGNAL(toggled(bool)), this, SLOT(sBuildList()));
+//  connect(_salesOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+//  connect(_workOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+//  connect(_purchaseOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+//  connect(_incidents, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+//  connect(_showHierarchy, SIGNAL(toggled(bool)), this, SLOT(sBuildList()));
+  _ordersGroup->hide();
 
   QString qryType = QString( "SELECT prjtype_id, prjtype_descr FROM prjtype " );
 
@@ -89,7 +107,9 @@ projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Completed Start Date"), "completedStartDate", ParameterWidget::Date, QDate::currentDate());
   parameterWidget()->append(tr("Completed End Date"), "completedEndDate", ParameterWidget::Date, QDate::currentDate());
 
-  sBuildList();
+  setupCharacteristics(characteristic::Projects);
+
+//  sBuildList();
 }
 
 void projects::sBuildList()
