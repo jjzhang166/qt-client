@@ -2729,7 +2729,7 @@ void salesOrderItem::sHandleSupplyOrder()
                                               "<p>Should the P/O quantity for this Line Item be changed?")
                                            .arg(_supplyOrderQtyOrderedCache).arg(_qtyOrdered->toDouble(),
                                            QMessageBox::Yes | QMessageBox::Default,
-                                           QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+                                           QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes))
               applychange = true;
             if (applychange)
             {
