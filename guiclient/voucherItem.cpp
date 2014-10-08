@@ -470,8 +470,8 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
   }
   _qtyToVoucher->setDouble(vch);
   _amtToVoucher->setDouble(amt);
-  _uninvoicedReceived->setDouble(rcv);
-  _uninvoicedRejected->setDouble(rej);
+  _uninvoicedReceived->setDouble(_received->toDouble() - rcv);
+  _uninvoicedRejected->setDouble(_rejected->toDouble() - rej);
 
   // Check PO Close flag
 
