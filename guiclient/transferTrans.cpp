@@ -47,6 +47,7 @@ transferTrans::transferTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   omfgThis->inputManager()->notify(cBCItem, this, _item, SLOT(setItemid(int)));
   omfgThis->inputManager()->notify(cBCItemSite, this, _item, SLOT(setItemsiteid(int)));
 
+  _item->setFocus();
 }
 
 transferTrans::~transferTrans()

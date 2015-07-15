@@ -44,6 +44,8 @@ issueWoMaterialItem::issueWoMaterialItem(QWidget* parent, const char* name, bool
   _qtyToIssue->setValidator(omfgThis->qtyVal());
   _beforeQty->setPrecision(omfgThis->transQtyVal());
   _afterQty->setPrecision(omfgThis->transQtyVal());
+
+  _wo->setFocus();
 }
 
 issueWoMaterialItem::~issueWoMaterialItem()

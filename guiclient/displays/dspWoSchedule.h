@@ -21,6 +21,8 @@ class dspWoSchedule : public display
 public:
     dspWoSchedule(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
 
+  Q_INVOKABLE virtual bool setParams(ParameterList &);
+  
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sChangeWOQty();

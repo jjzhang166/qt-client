@@ -10,10 +10,12 @@
 
 #include "xTupleDesigner.h"
 
+#include <QCloseEvent>
 #include <QDomDocument>
 #include <QFile>
 #include <QFileDialog>
 #include <QMenu>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QTextStream>
 #include <QtDesigner/QDesignerComponents>

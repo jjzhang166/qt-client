@@ -469,27 +469,52 @@ void Documents::refresh()
               " WHEN (purpose='D') THEN :dupe"
               " ELSE :other"
               " END AS purpose_qtdisplayrole, "
-              " CASE WHEN (target_type='T') THEN :contact "
-              " WHEN (target_type='CNTR') THEN :contract "
+              " CASE "
+              " WHEN (target_type='ADDR') THEN :address "
+              " WHEN (target_type='BBH') THEN :bbomhead "
+              " WHEN (target_type='BBI') THEN :bbomitem "
+              " WHEN (target_type='BMH') THEN :bomhead "
+              " WHEN (target_type='BMI') THEN :bomitem "
+              " WHEN (target_type='BOH') THEN :boohead "
+              " WHEN (target_type='BOI') THEN :booitem "
               " WHEN (target_type='CRMA') THEN :crma "
+              " WHEN (target_type='T') THEN :contact "
+              " WHEN (target_type='CNTR') THEN :contract "
+              " WHEN (target_type='CM') THEN :creditmemo "
+              " WHEN (target_type='CMI') THEN :creditmemoitem "
               " WHEN (target_type='C') THEN :cust "
               " WHEN (target_type='EMP') THEN :emp "
+              " WHEN (target_type='INCDT') THEN :incident "
+              " WHEN (target_type='INV') THEN :invoice "
+              " WHEN (target_type='INVI') THEN :invoiceitem "
+              " WHEN (target_type='I') THEN :item "
+              " WHEN (target_type='IS') THEN :itemsite "
+              " WHEN (target_type='IR') THEN :itemsrc "
+              " WHEN (target_type='L') THEN :location "
+              " WHEN (target_type='LS') THEN :lotserial "
+              " WHEN (target_type='OPP') THEN :opp "
+              " WHEN (target_type='J') THEN :project "
+              " WHEN (target_type='P') THEN :po "
+              " WHEN (target_type='PI') THEN :poitem "
+              " WHEN (target_type='RA') THEN :ra "
+              " WHEN (target_type='RI') THEN :raitem "
+              " WHEN (target_type='Q') THEN :quote "
+              " WHEN (target_type='QI') THEN :quoteitem "
+              " WHEN (target_type='S') THEN :so "
+              " WHEN (target_type='SI') THEN :soitem "
+              " WHEN (target_type='SHP') THEN :shipto "
+              " WHEN (target_type='TE') THEN :timeexpense "
+              " WHEN (target_type='TODO') THEN :todo "
+              " WHEN (target_type='TO') THEN :to "
+              " WHEN (target_type='TI') THEN :toitem "
+              " WHEN (target_type='V') THEN :vendor "
+              " WHEN (target_type='VCH') THEN :voucher "
+              " WHEN (target_type='WH') THEN :whse "
+              " WHEN (target_type='W') THEN :wo "
+              " WHEN (target_type='TASK') THEN :projecttask "
               " WHEN (target_type='URL') THEN :url "
               " WHEN (target_type='FILE') THEN :file "
               " WHEN (target_type='IMG') THEN :image "
-              " WHEN (target_type='INCDT') THEN :incident "
-              " WHEN (target_type='INV') THEN :invoice "
-              " WHEN (target_type='I') THEN :item "
-              " WHEN (target_type='OPP') THEN :opp "
-              " WHEN (target_type='J') THEN :project "
-              " WHEN (target_type='TASK') THEN :projecttask "
-              " WHEN (target_type='P') THEN :po "
-              " WHEN (target_type='S') THEN :so "
-              " WHEN (target_type='Q') THEN :quote "
-              " WHEN (target_type='V') THEN :vendor "
-              " WHEN (target_type='W') THEN :wo "
-              " WHEN (target_type='TE') THEN :timeexpense "
-              " WHEN (target_type='TODO') THEN :todo "
               " ELSE :error "
               " END AS target_type_qtdisplayrole "
               "FROM docinfo "
@@ -508,27 +533,51 @@ void Documents::refresh()
   query.bindValue(":dupe", tr("Duplicate of"));
   query.bindValue(":other", tr("Other"));
 
-  query.bindValue(":po", tr("Purchase Order"));
-  query.bindValue(":so", tr("Sales Order"));
-  query.bindValue(":invoice", tr("Invoice"));
-  query.bindValue(":quote", tr("Quote"));
-  query.bindValue(":wo", tr("Work Order"));
-  query.bindValue(":image", tr("Image"));
-  query.bindValue(":incident", tr("Incident"));
-  query.bindValue(":timeexpense", tr("Time Expense"));
-  query.bindValue(":todo", tr("To-Do"));
-  query.bindValue(":task", tr("Task"));
-  query.bindValue(":project", tr("Project"));
-  query.bindValue(":projecttask", tr("Project Task")); 
-  query.bindValue(":item", tr("Item"));
+  query.bindValue(":address", tr("Address"));
+  query.bindValue(":bbomhead", tr("Breeder BOM Head"));
+  query.bindValue(":bbomitem", tr("Breeder BOM Item"));
+  query.bindValue(":bomhead", tr("BOM Head"));
+  query.bindValue(":bomitem", tr("BOM Item"));
+  query.bindValue(":boohead", tr("Router Head"));
+  query.bindValue(":booitem", tr("Router Item"));
   query.bindValue(":crma", tr("Account"));
-  query.bindValue(":cust", tr("Customer"));
-  query.bindValue(":vendor", tr("Vendor"));
   query.bindValue(":contact", tr("Contact"));
   query.bindValue(":contract", tr("Contract"));
-  query.bindValue(":opp", tr("Opportunity"));
-  query.bindValue(":url", tr("URL"));
+  query.bindValue(":creditmemo", tr("Return"));
+  query.bindValue(":creditmemoitem", tr("Return Item"));
+  query.bindValue(":cust", tr("Customer"));
   query.bindValue(":emp", tr("Employee"));
+  query.bindValue(":incident", tr("Incident"));
+  query.bindValue(":invoice", tr("Invoice"));
+  query.bindValue(":invoiceitem", tr("Invoice Item"));
+  query.bindValue(":item", tr("Item"));
+  query.bindValue(":itemsite", tr("Item Site"));
+  query.bindValue(":itemsrc", tr("Item Source"));
+  query.bindValue(":location", tr("Location"));
+  query.bindValue(":lotserial", tr("Lot/Serial"));
+  query.bindValue(":opp", tr("Opportunity"));
+  query.bindValue(":project", tr("Project"));
+  query.bindValue(":po", tr("Purchase Order"));
+  query.bindValue(":poitem", tr("Purchase Order Item"));
+  query.bindValue(":ra", tr("Return Authorization"));
+  query.bindValue(":raitem", tr("Return Authorization Item"));
+  query.bindValue(":quote", tr("Quote"));
+  query.bindValue(":quoteitem", tr("Quote Item"));
+  query.bindValue(":so", tr("Sales Order"));
+  query.bindValue(":soitem", tr("Sales Order Item"));
+  query.bindValue(":shipto", tr("Ship To"));
+  query.bindValue(":timeexpense", tr("Time Expense"));
+  query.bindValue(":todo", tr("To-Do"));
+  query.bindValue(":to", tr("Transfer Order"));
+  query.bindValue(":toitem", tr("Transfer Order Item"));
+  query.bindValue(":vendor", tr("Vendor"));
+  query.bindValue(":voucher", tr("Voucher"));
+  query.bindValue(":whse", tr("Site"));
+  query.bindValue(":wo", tr("Work Order"));
+  query.bindValue(":projecttask", tr("Project Task"));
+  
+  query.bindValue(":image", tr("Image"));
+  query.bindValue(":url", tr("URL"));
   query.bindValue(":file", tr("File"));
 
   query.bindValue(":source", _documentMap[_source].ident);

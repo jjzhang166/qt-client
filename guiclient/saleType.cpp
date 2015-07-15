@@ -113,11 +113,12 @@ void saleType::sSave()
 void saleType::sCheck()
 {
   _code->setText(_code->text().trimmed());
-  if ( (_mode == cNew) && (_code->text().length()) )
+  if (_code->text().length())
   {
     MetaSQLQuery mql = mqlLoad("saletype", "table");
     ParameterList params;
-    params.append("ViewMode");
+    params.append("CheckMode");
+    params.append("saletype_id", _saletypeid);
     params.append("saletype_code", _code->text());
     XSqlQuery saleTypeCheck = mql.toQuery(params);
     if (saleTypeCheck.first())

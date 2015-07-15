@@ -21,10 +21,14 @@ VendorLineEdit::VendorLineEdit(QWidget *pParent, const char *pName) :
   setViewPriv("ViewVendors");
   setNewPriv("MaintainVendors");
 
-  _query = "SELECT vend_id AS id, vend_number AS number, vend_name AS name, vendtype_code AS type,"
-           "       addr.*,"
-           "       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street,"
-           "       cntct.*, vend_active as active "
+  _query = "SELECT vend_id AS id, vend_number AS number, vend_name AS name,"
+           "       vend_active AS active, vendtype_code AS type,"
+           "       cntct_id, cntct_honorific, cntct_first_name,"
+           "       cntct_middle, cntct_last_name, cntct_suffix,"
+           "       cntct_phone, cntct_title, cntct_fax, cntct_email,"
+           "       addr_id, addr_line1, addr_line2, addr_line3,"
+           "       addr_city, addr_state, addr_postalcode, addr_country,"
+           "       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street"
            "    FROM vendtype JOIN vendinfo"
            "           ON (vend_vendtype_id=vendtype_id) LEFT OUTER JOIN"
            "         cntct ON (vend_cntct1_id=cntct_id) LEFT OUTER JOIN"

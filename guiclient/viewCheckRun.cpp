@@ -10,6 +10,7 @@
 
 #include "viewCheckRun.h"
 
+#include <QInputDialog>
 #include <QSqlError>
 
 #include <metasql.h>
@@ -30,6 +31,7 @@ viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WFlags fl)
   setupUi(this);  
   
   connect(_check, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(sHandleItemSelection()));
+  connect(_check, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem *)), this, SLOT(sPopulateMenu(QMenu *)));
   connect(_bankaccnt,     SIGNAL(newID(int)), this, SLOT(sFillList()));
   connect(_delete,         SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_edit,           SIGNAL(clicked()), this, SLOT(sEdit()));
@@ -213,10 +215,58 @@ void viewCheckRun::sPost()
   newdlg.exec();
 }
 
+void viewCheckRun::sAltExchRate()
+{
+  XSqlQuery exchrateq;
+  exchrateq.prepare("SELECT COALESCE(checkhead_alt_curr_rate, checkhead_curr_rate, 1.0) AS exchrate "
+                    "FROM checkhead "
+                    "WHERE (checkhead_id=:checkhead_id);");
+  exchrateq.bindValue(":checkhead_id", _check->id());
+  exchrateq.exec();
+  if (exchrateq.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, exchrateq.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+  else if (exchrateq.first())
+  {
+    double rate = exchrateq.value("exchrate").toDouble();
+    bool ok;
+    rate = QInputDialog::getDouble(this, tr("Exchange Rate"),
+                                   tr("New Rate:"),
+                                   rate, 0, 100, 5, &ok);
+    if ( !ok )
+      return;
+    
+    exchrateq.prepare("UPDATE checkhead SET checkhead_alt_curr_rate=:exchrate "
+                      "WHERE (checkhead_id=:checkhead_id);");
+    exchrateq.bindValue(":checkhead_id", _check->id());
+    exchrateq.bindValue(":exchrate", rate);
+    exchrateq.exec();
+    if (exchrateq.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, exchrateq.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
+  }
+}
+
+void viewCheckRun::sPopulateMenu(QMenu *pMenu)
+{
+  QAction *menuItem;
+  
+  if(_metrics->boolean("AltCashExchangeRate"))
+  {
+    menuItem = pMenu->addAction(tr("Alternate Exchange Rate"), this, SLOT(sAltExchRate()));
+    menuItem->setEnabled(_privileges->check("PostPayments"));
+  }
+}
+
 void viewCheckRun::sHandleItemSelection()
 {
   XTreeWidgetItem *selected = _check->currentItem();
   bool select = false;
+  bool checkPrint = true;
 
   if (! selected)
   {
@@ -253,17 +303,26 @@ void viewCheckRun::sHandleItemSelection()
     _edit->setEnabled(selected->rawValue("checkhead_misc").toBool() &&
                       ! selected->rawValue("checkhead_printed").toBool());
   }
+
+  // Based on Bank Account settings allow/disallow posting of payment without
+  // having printed the payment
+  XSqlQuery bankRequiresPrint;
+  bankRequiresPrint.prepare("SELECT bankaccnt_prnt_check AS result FROM bankaccnt WHERE bankaccnt_id =:bankaccnt_id;");
+  bankRequiresPrint.bindValue(":bankaccnt_id", _bankaccnt->id());
+  bankRequiresPrint.exec();
+  if (bankRequiresPrint.first())
+    checkPrint = bankRequiresPrint.value("result").toBool();
   
   QMenu * printMenu = new QMenu;
-  if (select)
+  if (select && checkPrint)
     printMenu->addAction(tr("Selected Payment..."), this, SLOT(sPrint()));
-  if (_vendorgroup->isAll())
+  if (_vendorgroup->isAll()  && checkPrint)
     printMenu->addAction(tr("Payment Run..."), this, SLOT(sPrintCheckRun()));
   printMenu->addAction(tr("Edit List"), this, SLOT(sPrintEditList()));
   _print->setMenu(printMenu); 
 
   QMenu * postMenu = new QMenu;
-  if (selected->rawValue("checkhead_printed").toBool() &&
+  if ((selected->rawValue("checkhead_printed").toBool() || !checkPrint) &&
       _privileges->check("PostPayments"))
     postMenu->addAction(tr("Selected Payment..."), this, SLOT(sPost()));
   if (_vendorgroup->isAll())
@@ -280,9 +339,19 @@ void viewCheckRun::sFillList(int pBankaccntid)
 
 void viewCheckRun::sFillList()
 {
+  bool checkPrint;
+  // Based on Bank Account settings allow/disallow posting of payment without
+  // having printed the payment
+  XSqlQuery bankRequiresPrint;
+  bankRequiresPrint.prepare("SELECT bankaccnt_prnt_check AS result FROM bankaccnt WHERE bankaccnt_id =:bankaccnt_id;");
+  bankRequiresPrint.bindValue(":bankaccnt_id", _bankaccnt->id());
+  bankRequiresPrint.exec();
+  if (bankRequiresPrint.first())
+    checkPrint = bankRequiresPrint.value("result").toBool();
+
   XSqlQuery viewFillList;
   QMenu * printMenu = new QMenu;
-  if (_vendorgroup->isAll())
+  if (_vendorgroup->isAll() && checkPrint)
     printMenu->addAction(tr("Payment Run..."), this, SLOT(sPrintCheckRun()));
   printMenu->addAction(tr("Edit List"),   this, SLOT(sPrintEditList()));
   _print->setMenu(printMenu);   

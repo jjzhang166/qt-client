@@ -14,6 +14,7 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QShowEvent>
+#include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QDebug>
 #include <QStyleOptionTitleBar>

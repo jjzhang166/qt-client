@@ -16,7 +16,10 @@
 #include "glcluster.h"
 
 static QString _listAndSearchQueryString(
-  "SELECT accnt_id, *,"
+  "SELECT accnt_id, accnt_number, accnt_descrip, accnt_comments, accnt_profit,"
+  "       accnt_sub, accnt_type, accnt_extref, accnt_company,"
+  "       accnt_subaccnttype_code, accnt_name,"
+  "       subaccnttype_code, subaccnttype_descrip,"
   "       CASE accnt_type WHEN 'A' THEN <? value('asset') ?>"
   "                       WHEN 'E' THEN <? value('expense') ?>"
   "                       WHEN 'L' THEN <? value('liability') ?>"

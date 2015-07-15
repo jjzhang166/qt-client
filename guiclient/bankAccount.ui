@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>638</height>
+    <width>682</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,7 +196,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="2">
+      <item row="1" column="0" rowspan="3">
        <spacer>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -270,7 +270,7 @@ to be bound by its terms.</comment>
         </item>
        </layout>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QLabel" name="_checkFormatLit">
         <property name="enabled">
          <bool>false</bool>
@@ -283,7 +283,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="3" column="2">
        <layout class="QHBoxLayout">
         <item>
          <widget class="XComboBox" name="_form">
@@ -307,10 +307,23 @@ to be bound by its terms.</comment>
         </item>
        </layout>
       </item>
-      <item row="3" column="0" colspan="3">
+      <item row="4" column="0" colspan="3">
        <widget class="QCheckBox" name="_ar">
         <property name="text">
          <string>Used in Accounts Receivable</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="_printCheck">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Print Checks</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -619,6 +632,7 @@ to be bound by its terms.</comment>
   <tabstop>_currency</tabstop>
   <tabstop>_ap</tabstop>
   <tabstop>_nextCheckNum</tabstop>
+  <tabstop>_printCheck</tabstop>
   <tabstop>_form</tabstop>
   <tabstop>_ar</tabstop>
   <tabstop>_tab</tabstop>
@@ -645,6 +659,22 @@ to be bound by its terms.</comment>
    <sender>_ap</sender>
    <signal>toggled(bool)</signal>
    <receiver>_nextCheckNumLit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>76</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_ap</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_printCheck</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -691,6 +721,22 @@ to be bound by its terms.</comment>
   </connection>
   <connection>
    <sender>_ap</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_form</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>282</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_printCheck</sender>
    <signal>toggled(bool)</signal>
    <receiver>_form</receiver>
    <slot>setEnabled(bool)</slot>

@@ -303,49 +303,24 @@ bool itemSource::sSave()
                                "before you may save this Item Source." ) )
      ;
 
-  /* TODO - need this?
-  itemSave.prepare( "SELECT count(*) AS numberOfOverlaps "
-                    "FROM itemsrc "
-                    "WHERE (itemsrc_item_id = :itemsrc_item_id)"
-                    "  AND (itemsrc_vend_id = :itemsrc_vend_id)"
-                    "  AND (itemsrc_id != :itemsrc_id)"
-                    "  AND ( (itemsrc_effective BETWEEN :itemsrc_effective AND :itemsrc_expires OR"
-                    "         itemsrc_expires BETWEEN :itemsrc_effective AND :itemsrc_expires)"
-                    "   OR   (itemsrc_effective <= :itemsrc_effective AND"
-                    "         itemsrc_expires   >= :itemsrc_expires) );" );
-  itemSave.bindValue(":itemsrc_id", _itemsrcid);
-  itemSave.bindValue(":itemsrc_item_id", _item->id());
-  itemSave.bindValue(":itemsrc_vend_id", _vendor->id());
-  itemSave.bindValue(":itemsrc_effective", _dates->startDate());
-  itemSave.bindValue(":itemsrc_expires", _dates->endDate());
-  itemSave.exec();
-  if (itemSave.first())
-  {
-    if (itemSave.value("numberOfOverlaps").toInt() > 0)
-    {
-      errors << GuiErrorCheck(true, _dates,
-                              tr("The date range overlaps with another date range.\n"
-                                 "Please check the values of these dates."));
-    }
-  }
-  else if (itemSave.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
-    return false;
-  }
-  */
-
   if(_mode == cNew || _mode == cCopy)
   {
     itemSave.prepare( "SELECT itemsrc_id "
                       "  FROM itemsrc "
-                      " WHERE ((itemsrc_item_id=:item_id) "
-                      "   AND (itemsrc_vend_id=:vend_id) "
+                      " WHERE ((itemsrc_item_id=:itemsrc_item_id) "
+                      "   AND (itemsrc_vend_id=:itemsrc_vend_id) "
+                      "   AND (itemsrc_contrct_id=:itemsrc_contrct_id) "
+                      "   AND (itemsrc_effective=:itemsrc_effective) "
+                      "   AND (itemsrc_expires=:itemsrc_expires) "
                       "   AND (itemsrc_vend_item_number=:itemsrc_vend_item_number) "
                       "   AND (UPPER(itemsrc_manuf_name)=UPPER(:itemsrc_manuf_name)) "
                       "   AND (UPPER(itemsrc_manuf_item_number)=UPPER(:itemsrc_manuf_item_number)) ) ");
-    itemSave.bindValue(":item_id", _item->id());
-    itemSave.bindValue(":vend_id", _vendor->id());
+    itemSave.bindValue(":itemsrc_item_id", _item->id());
+    itemSave.bindValue(":itemsrc_vend_id", _vendor->id());
+    if (_contract->isValid())
+      itemSave.bindValue(":itemsrc_contrct_id", _contract->id());
+    itemSave.bindValue(":itemsrc_effective", _dates->startDate());
+    itemSave.bindValue(":itemsrc_expires", _dates->endDate());
     itemSave.bindValue(":itemsrc_vend_item_number", _vendorItemNumber->text());
     itemSave.bindValue(":itemsrc_manuf_name", _manufName->currentText());
     itemSave.bindValue(":itemsrc_manuf_item_number", _manufItemNumber->text());
@@ -354,6 +329,7 @@ bool itemSource::sSave()
     {
       errors << GuiErrorCheck(true, _item,
                               tr("An Item Source already exists for the Item Number, Vendor,\n"
+                                 "Contract, Effective Date, Expires Date,\n"
                                  "Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified."));
     }
     else if (itemSave.lastError().type() != QSqlError::NoError)

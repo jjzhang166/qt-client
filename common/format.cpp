@@ -10,12 +10,12 @@
 
 #include <string.h>
 
-#include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 
 #include "format.h"
 #include "xsqlquery.h"
+#include "errorReporter.h"
 
 #define MONEYSCALE            2
 #define COSTEXTRASCALE        2
@@ -59,22 +59,18 @@ static bool   loadLocale()
       userq.exec("SELECT CURRENT_USER AS user;");
     if (userq.first())
       user = userq.value("user").toString();
-    else if (userq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, 0,
+                                  QObject::tr("Error Getting User"),
+                                  userq, __FILE__, __LINE__))
     {
-      QMessageBox::critical(0,
-                            QObject::tr("A System Error Occurred at %1::%2.")
-                            .arg(__FILE__).arg(__LINE__),
-                            userq.lastError().databaseText());
       return false;
     }
 
     XSqlQuery localeq;
-    localeq.prepare("SELECT * "
-                      "FROM usr, locale LEFT OUTER JOIN"
-                      "     lang ON (locale_lang_id=lang_id) LEFT OUTER JOIN"
-                      "     country ON (locale_country_id=country_id) "
-                      "WHERE ( (usr_username=:user)"
-                      " AND (usr_locale_id=locale_id) );" );
+    localeq.prepare("SELECT locale.*"
+                    "  FROM usr"
+                    "  JOIN locale ON (usr_locale_id=locale_id)"
+                    " WHERE (usr_username=:user);");
     localeq.bindValue(":user", user);
     localeq.exec();
     if (localeq.first())
@@ -115,12 +111,10 @@ static bool   loadLocale()
 
       // TODO: add locale_percent_scale
     }
-    else if (localeq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, 0,
+                                  QObject::tr("Error Getting Locale"),
+                                  userq, __FILE__, __LINE__))
     {
-      QMessageBox::critical(0,
-                            QObject::tr("A System Error Occurred at %1::%2.")
-                            .arg(__FILE__).arg(__LINE__),
-                            localeq.lastError().databaseText());
       return false;
     }
     loadedLocales = true;

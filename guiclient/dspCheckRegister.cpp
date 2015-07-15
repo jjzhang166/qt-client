@@ -20,6 +20,7 @@
 #include <parameter.h>
 #include <xdateinputdialog.h>
 
+#include "check.h"
 #include "guiclient.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
@@ -205,11 +206,24 @@ void dspCheckRegister::sPopulateMenu( QMenu * pMenu )
 {
   QAction *menuItem;
 
+  menuItem = pMenu->addAction(tr("View Check..."), this, SLOT(sView()));
+  menuItem->setEnabled(true);
+
   if(_check->altId() == 1)
   {
     menuItem = pMenu->addAction(tr("Void Posted Check..."), this, SLOT(sVoidPosted()));
     menuItem->setEnabled(_privileges->check("VoidPostedAPCheck"));
   }
+}
+
+void dspCheckRegister::sView()
+{
+  ParameterList params;
+  params.append("checkhead_id", _check->id());
+  
+  check *newdlg = new check(this);
+  newdlg->set(params);
+  omfgThis->handleNewWindow(newdlg);
 }
 
 void dspCheckRegister::sVoidPosted()

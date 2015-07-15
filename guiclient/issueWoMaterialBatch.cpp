@@ -48,6 +48,8 @@ issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bo
   _womatl->addColumn(tr("Required"),       _qtyColumn,  Qt::AlignRight,  true,  "required"  );
   _womatl->addColumn(tr("Available QOH"),  _qtyColumn,  Qt::AlignRight,  true,  "availableqoh"  );
   _womatl->addColumn(tr("Short"),          _qtyColumn,  Qt::AlignRight,  true,  "short"  );
+
+  _wo->setFocus();
 }
 
 issueWoMaterialBatch::~issueWoMaterialBatch()

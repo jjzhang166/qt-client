@@ -252,7 +252,10 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WFlags fl)
 
   _project->setType(ProjectLineEdit::SalesOrder);
   if (!_metrics->boolean("UseProjects"))
+  {
+    _projectLit->hide();
     _project->hide();
+  }
 
   // If not multi-warehouse hide whs control
   if (!_metrics->boolean("MultiWhs"))
@@ -5122,6 +5125,42 @@ void salesOrder::sShipDateChanged()
                 "  AND (wo_status <> 'C') "
                 "  AND (cohead_id=<? value(\"cohead_id\") ?>)"
                 "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) )";
+        }
+      }
+
+      // Ask about purchase orders if applicable
+      XSqlQuery po;
+      QString poSql("SELECT poitem_id "
+                    "FROM poitem "
+                    "  JOIN coitem ON (coitem_order_id=poitem_id) AND (coitem_order_type='P') "
+                    "  JOIN cohead ON (cohead_id=coitem_cohead_id) "
+                    "  JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
+                    "WHERE ((cohead_id=<? value(\"cohead_id\") ?>) "
+                    "  AND (coitem_status NOT IN ('C','X')) "
+                    "  AND (NOT coitem_firm)"
+                    "  AND (poitem_status<>'C')"
+                    "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) );");
+      MetaSQLQuery poMql(poSql);
+      po = poMql.toQuery(params);
+      if(po.first())
+      {
+        if (QMessageBox::question(this, tr("Reschedule Purchase Order?"),
+                                  tr("<p>Should any associated Purchase Orders "
+                                     "be rescheduled to reflect this change?"),
+                                  QMessageBox::Yes | QMessageBox::Default,
+                                  QMessageBox::No | QMessageBox::Escape) == QMessageBox::Yes)
+        {
+          sql = sql +
+          "SELECT changePoitemDueDate(poitem_id, "
+          "                     <? value(\"newDate\") ?>, TRUE) AS result "
+          "FROM cohead JOIN coitem ON (coitem_cohead_id=cohead_id AND coitem_order_type='P') "
+          "            JOIN poitem ON (poitem_id=coitem_order_id) "
+          "            JOIN itemsite ON (itemsite_id=coitem_itemsite_id) "
+          "WHERE ( (coitem_status NOT IN ('C','X'))"
+          "  AND (NOT coitem_firm)"
+          "  AND (poitem_status <> 'C') "
+          "  AND (cohead_id=<? value(\"cohead_id\") ?>)"
+          "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) )";
         }
       }
     }

@@ -186,6 +186,15 @@ void selectOrderForBilling::sSave()
     return;
   }
   
+  if (_total->localValue() < 0)
+  {
+    QMessageBox::warning( this, tr("Negative total"),
+                          tr("<p>You may not approve "
+			     "for billing a negative total amount" ) );
+    _miscCharge->setFocus();
+    return;
+  }
+
   if (_cobmiscid != -1)
   {
     selectSave.prepare( "UPDATE cobmisc "

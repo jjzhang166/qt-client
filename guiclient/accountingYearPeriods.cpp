@@ -210,13 +210,12 @@ void accountingYearPeriods::sPrint()
 
 void accountingYearPeriods::sFillList()
 {
-  _period->clear();
-  _period->populate( "SELECT yearperiod_id,"
-                     "       CASE WHEN (NOT yearperiod_closed) THEN 0"
-                     "            ELSE 1"
-                     "       END,"
-                     "       *, "
-                     "       formatBoolYN(yearperiod_closed) AS closed "
-                     "FROM yearperiod "
-                     "ORDER BY yearperiod_start;", TRUE );
+  _period->populate("SELECT yearperiod_id,"
+                    "       CASE WHEN (NOT yearperiod_closed) THEN 0"
+                    "            ELSE 1"
+                    "       END,"
+                    "       yearperiod_start, yearperiod_end,"
+                    "       formatBoolYN(yearperiod_closed) AS closed"
+                    "  FROM yearperiod "
+                    " ORDER BY yearperiod_start;", TRUE );
 }

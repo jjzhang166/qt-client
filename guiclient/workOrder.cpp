@@ -94,7 +94,10 @@ workOrder::workOrder(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _project->setType(ProjectLineEdit::WorkOrder);
   if(!_metrics->boolean("UseProjects"))
+  {
+    _projectLit->hide();
     _project->hide();
+  }
 
   _itemchar = new QStandardItemModel(0, 2, this);
   _itemchar->setHeaderData( 0, Qt::Horizontal, tr("Name"), Qt::DisplayRole);
@@ -503,7 +506,7 @@ void workOrder::sCreate()
 
     if (_woid > 0)
     {
-      if (_mode == cNew)
+      if ((_mode == cNew) || (_mode == cRelease))
       {
         disconnect(_woNumber, SIGNAL(editingFinished()), this, SLOT(sCreate()));
         disconnect(_item, SIGNAL(privateIdChanged(int)), this, SLOT(sCreate()));
@@ -650,7 +653,7 @@ bool workOrder::sSave()
 
 void workOrder::sUpdateStartDate()
 {
-  if (!_warehouse->isValid() || !_dueDate->isValid())
+  if ((_warehouse->id() <= 0) || !_dueDate->isValid())
     return;
 
   if (_leadTime == 0)
@@ -1882,9 +1885,12 @@ void workOrder::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *selected)
           if (!_privileges->check("MaintainWoMaterials"))
             menuItem->setEnabled(false);
               
-          menuItem = pMenu->addAction(tr("Issue Batch..."), this, SLOT(sIssueMatlBatch()));
-          if (!_privileges->check("IssueWoMaterials"))
-            menuItem->setEnabled(false);
+          if ((_metrics->boolean("IssueToExplodedWO") && status == "E") || status == "R" || status == "I")
+          {
+            menuItem = pMenu->addAction(tr("Issue Batch..."), this, SLOT(sIssueMatlBatch()));
+            if (!_privileges->check("IssueWoMaterials"))
+              menuItem->setEnabled(false);
+          }
 
           if (status == "I")
           {
@@ -1971,7 +1977,7 @@ void workOrder::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *selected)
       
       pMenu->addSeparator();
 
-      if (status == "O" || status == "E" || status == "R" || status == "I")
+      if ((_metrics->boolean("IssueToExplodedWO") && status == "E") || status == "R" || status == "I")
       {
         menuItem = pMenu->addAction(tr("Issue..."), this, SLOT(sIssueMatl()));
         if (!_privileges->check("IssueWoMaterials"))

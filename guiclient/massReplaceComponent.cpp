@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
+#include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
 massReplaceComponent::massReplaceComponent(QWidget* parent, const char* name, Qt::WFlags fl)
@@ -71,22 +72,26 @@ void massReplaceComponent::sReplace()
     }
     if (_metrics->boolean("RevControl"))
     {
-      massReplace.prepare("SELECT * "
-	  	      "FROM bomitem, rev "
-	 		  "WHERE ( (bomitem_rev_id=rev_id) "
-			  "AND (rev_status='P') "
-			  "AND (bomitem_item_id=:item_id) ) "
-			  "LIMIT 1;");
-	  massReplace.bindValue(":item_id", _original->id());
-	  massReplace.exec();
-	  if (massReplace.first())
-        QMessageBox::information( this, tr("Mass Replace"),
-                          tr("<p>This process will only affect active revisions. "
-						  "Items on pending revisions must be replaced manually.")  );
+      massReplace.prepare("SELECT 1"
+                          "  FROM bomitem"
+                          "  JOIN rev ON (bomitem_rev_id=rev_id)"
+                          " WHERE ((rev_status='P') "
+                          "    AND (bomitem_item_id=:item_id))"
+                          " LIMIT 1;");
+      massReplace.bindValue(":item_id", _original->id());
+      massReplace.exec();
+      if (massReplace.first())
+        QMessageBox::information(this, tr("Mass Replace"),
+                                 tr("<p>This process will only affect active "
+                                    "revisions. Items on pending revisions "
+                                    "must be replaced manually."));
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Revisions"),
+                                    massReplace, __FILE__, __LINE__))
+        return;
     }
     massReplace.prepare("SELECT massReplaceBomitem(:replacement_item_id,"
-	      "                          :original_item_id, :effective_date,"
-	      "                          :ecn) AS result;");
+              "                          :original_item_id, :effective_date,"
+              "                          :ecn) AS result;");
     massReplace.bindValue(":replacement_item_id", _replacement->id());
     massReplace.bindValue(":original_item_id", _original->id());
     massReplace.bindValue(":ecn", _ecn->text());
@@ -100,16 +105,14 @@ void massReplaceComponent::sReplace()
       int result = massReplace.value("result").toInt();
       if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("massReplaceBomitem", result),
-		    __FILE__, __LINE__);
-	return;
+        systemError(this, storedProcErrorLookup("massReplaceBomitem", result),
+                    __FILE__, __LINE__);
+        return;
       }
     }
-    else if (massReplace.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, massReplace.lastError().databaseText(), __FILE__, __LINE__);
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Replacing BOM Items"),
+                                  massReplace, __FILE__, __LINE__))
       return;
-    }
 
     _original->setId(-1);
     _replacement->setId(-1);

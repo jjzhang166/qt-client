@@ -537,7 +537,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
       if(child->text(0) != (setto ? tr("Yes") : tr("No")))
       {
         double rate = QLocale().toDouble(child->text(6));
-        double amount = QLocale().toDouble(child->text(8));
+        double amount = QLocale().toDouble(child->text(7));
 
         if (_allowEdit->isChecked() && child->text(0) != tr("Yes"))
         {
@@ -558,7 +558,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
         }
         else
         {
-          reconcileReceiptsToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
+          reconcileReceiptsToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :baseamount) AS cleared");
           reconcileReceiptsToggleCleared.bindValue(":bankrecid", _bankrecid);
           reconcileReceiptsToggleCleared.bindValue(":sourceid", child->id());
           if(child->altId()==1)
@@ -568,7 +568,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
           else if(child->altId()==3)
             reconcileReceiptsToggleCleared.bindValue(":source", "AD");
           reconcileReceiptsToggleCleared.bindValue(":currrate", rate);
-          reconcileReceiptsToggleCleared.bindValue(":amount", amount);
+          reconcileReceiptsToggleCleared.bindValue(":baseamount", amount);
           reconcileReceiptsToggleCleared.exec();
           if(reconcileReceiptsToggleCleared.first())
             child->setText(0, (reconcileReceiptsToggleCleared.value("cleared").toBool() ? tr("Yes") : tr("No") ));
@@ -586,7 +586,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
   else
   {
     double rate = QLocale().toDouble(item->text(6));
-    double amount = QLocale().toDouble(item->text(8));
+    double amount = QLocale().toDouble(item->text(7));
     
     if (_allowEdit->isChecked() && item->text(0) != tr("Yes"))
     {
@@ -608,7 +608,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
     }
     else
     {
-      reconcileReceiptsToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
+      reconcileReceiptsToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :baseamount) AS cleared");
       reconcileReceiptsToggleCleared.bindValue(":bankrecid", _bankrecid);
       reconcileReceiptsToggleCleared.bindValue(":sourceid", item->id());
       if(item->altId()==1)
@@ -618,7 +618,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
       else if(item->altId()==3)
         reconcileReceiptsToggleCleared.bindValue(":source", "AD");
       reconcileReceiptsToggleCleared.bindValue(":currrate", rate);
-      reconcileReceiptsToggleCleared.bindValue(":amount", amount);
+      reconcileReceiptsToggleCleared.bindValue(":baseamount", amount);
       reconcileReceiptsToggleCleared.exec();
       if(reconcileReceiptsToggleCleared.first())
       {
@@ -659,7 +659,7 @@ void reconcileBankaccount::sChecksToggleCleared()
   _checks->scrollToItem(item);
 
   double rate = item->rawValue("doc_exchrate").toDouble();
-  double amount = item->rawValue("amount").toDouble();
+  double amount = item->rawValue("baseamount").toDouble();
   
   if (_allowEdit->isChecked() && item->text(0) != tr("Yes"))
   {
@@ -681,7 +681,7 @@ void reconcileBankaccount::sChecksToggleCleared()
   }
   else
   {
-    reconcileChecksToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount) AS cleared");
+    reconcileChecksToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :baseamount) AS cleared");
     reconcileChecksToggleCleared.bindValue(":bankrecid", _bankrecid);
     reconcileChecksToggleCleared.bindValue(":sourceid", item->id());
     if(item->altId()==1)
@@ -691,7 +691,7 @@ void reconcileBankaccount::sChecksToggleCleared()
     else if(item->altId()==3)
       reconcileChecksToggleCleared.bindValue(":source", "AD");
     reconcileChecksToggleCleared.bindValue(":currrate", rate);
-    reconcileChecksToggleCleared.bindValue(":amount", amount);
+    reconcileChecksToggleCleared.bindValue(":baseamount", amount);
     reconcileChecksToggleCleared.exec();
     if(reconcileChecksToggleCleared.first())
       item->setText(0, (reconcileChecksToggleCleared.value("cleared").toBool() ? tr("Yes") : tr("No") ));

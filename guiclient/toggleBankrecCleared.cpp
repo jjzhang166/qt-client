@@ -102,12 +102,12 @@ void toggleBankrecCleared::sSave()
     return;
   }
 
-  reconcileToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :amount, :transdate) AS cleared");
+  reconcileToggleCleared.prepare("SELECT toggleBankrecCleared(:bankrecid, :source, :sourceid, :currrate, :baseamount, :transdate) AS cleared");
   reconcileToggleCleared.bindValue(":bankrecid", _bankrecid);
   reconcileToggleCleared.bindValue(":sourceid", _sourceid);
   reconcileToggleCleared.bindValue(":source", _source);
   reconcileToggleCleared.bindValue(":currrate", _exchrate->toDouble());
-  reconcileToggleCleared.bindValue(":amount", (_exchrate->toDouble() * _baseamount));
+  reconcileToggleCleared.bindValue(":baseamount", _baseamount);
   reconcileToggleCleared.bindValue(":transdate", _transdate->date());
   reconcileToggleCleared.exec();
   if (reconcileToggleCleared.lastError().type() != QSqlError::NoError)

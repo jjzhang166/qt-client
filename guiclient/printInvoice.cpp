@@ -40,10 +40,10 @@ printInvoice::printInvoice(QWidget *parent, const char *name, bool modal, Qt::WF
                             "Would you like to post it anyway?</p>");
 
   _errCheckBeforePostingQry =
-         "SELECT EXISTS(SELECT *"
-         "                FROM curr_rate, invchead "
-         "               WHERE ((curr_id=invchead_curr_id)"
-         "                 AND  (invchead_invcdate BETWEEN curr_effective AND curr_expires)"
+         "SELECT EXISTS(SELECT 1"
+         "                FROM curr_rate"
+         "                JOIN invchead ON (curr_id=invchead_curr_id)"
+         "               WHERE ((invchead_invcdate BETWEEN curr_effective AND curr_expires)"
          "                 AND  (invchead_id=<? value('docid') ?>))) AS ok;" ;
   _errCheckBeforePostingMsg =
           tr("Could not post Invoice %1 because of a missing exchange rate.");

@@ -16,6 +16,7 @@
 #include "mqlutil.h"
 
 #include <QAction>
+#include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 

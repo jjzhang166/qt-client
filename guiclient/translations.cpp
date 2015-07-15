@@ -12,14 +12,17 @@
 
 #include <QDebug>
 #include <QDesktopServices>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QDir>
 #include <QFile>
+#include <QMenu>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QTranslator>
 
 #include <parameter.h>
+
+#include "errorReporter.h"
 
 translations::translations(QWidget* parent, const char* name, Qt::WFlags fl)
   : XWidget(parent, name, fl)
@@ -56,7 +59,7 @@ void translations::languageChange()
 void translations::sLocaleChanged()
 {
   XSqlQuery langq;
-  langq.prepare("SELECT * "
+  langq.prepare("SELECT lang_abbr2, country_abbr, lang_name, country_name"
                 "  FROM locale LEFT OUTER JOIN"
                 "       lang ON (locale_lang_id=lang_id) LEFT OUTER JOIN"
                 "       country ON (locale_country_id=country_id) "
@@ -65,15 +68,14 @@ void translations::sLocaleChanged()
   langq.exec();
   if(langq.first())
   {
-    if (!langq.value("lang_abbr2").toString().isEmpty() &&
-        !langq.value("country_abbr").toString().isEmpty())
-    {
-      langext = langq.value("lang_abbr2").toString() + "_" +
-                langq.value("country_abbr").toString().toLower();
-    }
-    else if (!langq.value("lang_abbr2").toString().isEmpty())
+    if (!langq.value("lang_abbr2").toString().isEmpty())
     {
       langext = langq.value("lang_abbr2").toString();
+      if (!langq.value("country_abbr").toString().isEmpty())
+      {
+        langext = langext + "_" +
+                  langq.value("country_abbr").toString().toLower();
+      }
     }
 
     _language->setText(langq.value("lang_name").toString());
@@ -81,6 +83,8 @@ void translations::sLocaleChanged()
   }
   else
   {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Getting Locale Info"),
+                         langq, __FILE__, __LINE__);
     langext = QLocale::system().name().toLower();
     _language->setText("Default");
     _country->setText("Default");

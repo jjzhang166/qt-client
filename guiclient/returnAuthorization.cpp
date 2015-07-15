@@ -642,16 +642,27 @@ void returnAuthorization::sOrigSoChanged()
       }
 
       XSqlQuery sohead;
-      sohead.prepare( "SELECT cohead.*,custinfo.*, custtype_code, "
-                      "       cohead_commission, "
-                      "       shipto_num "
-                      "FROM cohead "
-                      "  LEFT OUTER JOIN shiptoinfo ON (cohead_shipto_id=shipto_id), "
-                      "  custinfo, custtype "
-                      "WHERE ((cohead_id=:cohead_id) "
-                      "AND (cohead_cust_id=cust_id) "
-                      "AND (cust_custtype_id=custtype_id) ) "
-                      "LIMIT 1;" );
+      sohead.prepare("SELECT cohead_salesrep_id, cohead_commission,"
+                     "       cohead_taxzone_id, cohead_custponumber, cohead_prj_id,"
+                     "       cohead_shipzone_id, cohead_saletype_id, cohead_cust_id,"
+                     "       custtype_code, cohead_billtoname,"
+                     "       cohead_billtoaddress1, cohead_billtoaddress2,"
+                     "       cohead_billtoaddress3, cohead_billtocity,"
+                     "       cohead_billtostate, cohead_billtozipcode,"
+                     "       cohead_billtocountry, cust_ffbillto, cohead_shipto_id,"
+                     "       cohead_shiptoname, cohead_shiptoaddress1,"
+                     "       cohead_shiptoaddress2, cohead_shiptoaddress3,"
+                     "       cohead_shiptocity, cohead_shiptostate,"
+                     "       cohead_shiptozipcode, cohead_shiptocountry,"
+                     "       cust_ffshipto, custtype_code, cohead_commission, "
+                     "       shipto_num"
+                     "  FROM cohead"
+                     "  JOIN custinfo ON (cohead_cust_id=cust_id)"
+                     "  JOIN custtype ON (cust_custtype_id=custtype_id)"
+                     "  LEFT OUTER JOIN shiptoinfo ON (cohead_shipto_id=shipto_id)"
+                     " WHERE (cohead_id=:cohead_id)"
+                     " LIMIT 1;");
+      // TODO: why left outer join shipto if we don't use the shipto_num?
       sohead.bindValue(":cohead_id", _origso->id());
       sohead.exec();
       if (sohead.first())
@@ -707,9 +718,9 @@ void returnAuthorization::sOrigSoChanged()
         sSave(true);
         sFillList();
       }
-      else if (sohead.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Sales Order"),
+                                    sohead, __FILE__, __LINE__))
       {
-        systemError(this, sohead.lastError().databaseText(), __FILE__, __LINE__);
         _origso->setId(-1);
         return;
       }

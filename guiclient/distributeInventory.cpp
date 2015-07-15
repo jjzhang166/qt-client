@@ -21,6 +21,8 @@
 #include "assignLotSerial.h"
 #include "distributeToLocation.h"
 #include "inputManager.h"
+#include "errorReporter.h"
+#include "storedProcErrorLookup.h"
 
 #define cIncludeLotSerial   0x01
 #define cNoIncludeLotSerial 0x02
@@ -539,14 +541,14 @@ bool distributeInventory::sDefault()
         int result = distributeDefault.value("result").toInt();
         if (result < 0)
         {
-          QMessageBox::warning( 0, tr("Inventory Distribution"),
-                                tr("There was an error distributing to default location."));
+          systemError(this, storedProcErrorLookup("distributetodefault", result),
+                      __FILE__, __LINE__);
           return false;
         }
       }
-      else if (distributeDefault.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtWarningMsg, this, tr("Distribute Default Location"),
+                              distributeDefault, __FILE__, __LINE__))
       {
-        systemError(this, distributeDefault.lastError().databaseText(), __FILE__, __LINE__);
         return false;
       }
       sFillList();

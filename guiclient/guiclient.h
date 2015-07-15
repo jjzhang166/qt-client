@@ -11,31 +11,31 @@
 #ifndef GUICLIENT_H
 #define GUICLIENT_H
 
-#include <QDate>
-#include <QDateTime>
-#include <QMainWindow>
-#include <QMdiArea>
-#include <QTimer>
 #include <QAction>
-#include <QCloseEvent>
-#include <QFileSystemWatcher>
+#include <QDate>
 #include <QList>
-#include <QPixmap>
-#include <QMenu>
-#include <QMenuBar>
+#include <QMainWindow>
+#include <QTimer>
 
 #include <xsqlquery.h>
 
 #include "../common/format.h"
 #include "../hunspell/hunspell.hxx"
 
-class QSplashScreen;
-class QMdiArea;
-class QPushButton;
-class QIntValidator;
-class QDoubleValidator;
 class QCheckBox;
+class QCloseEvent;
+class QDockWidget;
+class QDoubleValidator;
+class QFileSystemWatcher;
+class QIntValidator;
+class QMdiArea;
+class QMenu;
+class QMenuBar;
+class QPushButton;
 class QScriptEngine;
+class QShowEvent;
+class QSplashScreen;
+class QToolbar;
 
 class menuProducts;
 class menuInventory;
@@ -53,7 +53,6 @@ class InputManager;
 class ReportHandler;
 
 class XMainWindow;
-class QMainWindow;
 class XWidget;
 
 
@@ -116,40 +115,29 @@ enum SetResponse
 class Action : public QAction
 {
   public:
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, bool );
+    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
+            QObject *pTarget, const char *pActivateSlot,
+            QWidget *pAddTo,  bool pEnabled);
 
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, bool,
-            const QPixmap &, QWidget *);  
+    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
+            QObject *pTarget, const char *pActivateSlot,
+            QWidget *pAddTo,  const QString &pEnabled);
+
+    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
+            QObject *pTarget, const char *pActivateSlot,
+            QWidget *pAddTo,  const QString &pEnabled,
+            const QPixmap &pIcon, QWidget *pToolBar);  
             
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, bool,
-            const QPixmap &, QWidget *,
-            const QString &); 
-
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, const QString & );
-
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, const QString &,
-            const QPixmap &, QWidget *);  
-            
-    Action( QWidget *, const char *, const QString &,
-            QObject *, const char *,
-            QWidget *, const QString &,
-            const QPixmap &, QWidget *,
-            const QString &); 
+    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
+            QObject *pTarget, const char *pActivateSlot,
+            QWidget *pAddTo,  const QString &pEnabled,
+            const QPixmap &pIcon, QWidget *pToolBar,
+            const QString &pToolTip); 
 
   private:
-    void init( QWidget *, const char *, const QString &,
-               QObject *, const char *,
-               QWidget *, const QString & );
+    void init( QWidget *pParent, const char *pName, const QString &pDisplayName,
+               QObject *pTarget, const char *pActivateSlot,
+               QWidget *pAddTo,  const QString &pEnabled);
 };
 
 class GUIClient : public QMainWindow
@@ -269,6 +257,9 @@ class GUIClient : public QMainWindow
     void sCustomCommand();
     void sCustomersUpdated(int, bool);
     void sEmitNotifyHeard(const QString &note);
+    void sEmitSignal(QString, QString);
+    void sEmitSignal(QString, int);
+    void sEmitSignal(QString, bool);
     void sEmployeeUpdated(int);
     void sGlSeriesUpdated();
     void initMenuBar();
@@ -314,51 +305,70 @@ class GUIClient : public QMainWindow
 
     void messageNotify();
 
-    void assortmentsUpdated(int, bool);
+    /** @name Data Update Signals
+     
+       Application windows can connect to the GUIClient to listen for specific
+       data update events. There is a signal for each corresponding slot.
+
+       For example, the opportunity window listens for updates to sales
+       orders to keep its list current:
+       @code{.cpp}
+       connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillSalesList()));
+       @endcode
+
+       @{
+     */
+    void assortmentsUpdated(int pItemid, bool pLocal);
     void bankAccountsUpdated();
-    void bankAdjustmentsUpdated(int, bool);
-    void bbomsUpdated(int, bool);
-    void billingSelectionUpdated(int, int);
-    void bomsUpdated(int, bool);
-    void boosUpdated(int, bool);
-    void budgetsUpdated(int, bool);
-    void cashReceiptsUpdated(int, bool);
-    void checksUpdated(int, int, bool);
+    void bankAdjustmentsUpdated(int pBankadjid, bool pLocal);
+    void bbomsUpdated(int pItemid, bool pLocal);
+    void billingSelectionUpdated(int pCoheadid, int pCoitemid);
+    void bomsUpdated(int pItemid, bool pLocal);
+    void boosUpdated(int pItemid, bool pLocal);
+    void budgetsUpdated(int pItemid, bool pLocal);
+    void cashReceiptsUpdated(int pCashrcptid, bool pLocal);
+    void checksUpdated(int pBankaccntid, int pCheckid, bool pLocal);
     void configureGLUpdated();
-    void contractsUpdated(int, bool);
+    void contractsUpdated(int pContrctid, bool pLocal);
     void creditMemosUpdated();
-    void crmAccountsUpdated(int);
-    void customersUpdated(int, bool);
-    void employeeUpdated(int);
+    void crmAccountsUpdated(int crmacctid);
+    void customersUpdated(int pCustid, bool pLocal);
+    void employeeUpdated(int id);
     void glSeriesUpdated();
-    void invoicesUpdated(int, bool);
-    void itemGroupsUpdated(int, bool);
-    void itemsUpdated(int, bool);
+    void invoicesUpdated(int pInvcheadid, bool pLocal);
+    void itemGroupsUpdated(int pItemgrpid, bool pLocal);
+    void itemsUpdated(int pItemid, bool pLocal);
     void itemsitesUpdated();
-    void paymentsUpdated(int, int, bool);
-    void projectsUpdated(int);
+    void paymentsUpdated(int pBankaccntid, int pApselectid, bool pLocal);
+    void projectsUpdated(int prjid);
     void prospectsUpdated();
     void purchaseOrderReceiptsUpdated();
-    void purchaseOrdersUpdated(int, bool);
+    void purchaseOrdersUpdated(int pPoheadid, bool pLocal);
     void purchaseRequestsUpdated();
-    void qohChanged(int, bool);
-    void quotesUpdated(int, bool);
-    void reportsChanged(int, bool);
+    void qohChanged(int pItemsiteid, bool pLocal);
+    void quotesUpdated(int pQuheadid, bool pLocal);
+    void reportsChanged(int pReportid, bool pLocal);
     void returnAuthorizationsUpdated();
-    void salesOrdersUpdated(int, bool);
-    void salesRepUpdated(int);
+    void salesOrdersUpdated(int pSoheadid, bool pLocal);
+    void salesRepUpdated(int id);
     void standardPeriodsUpdated();
     void systemMessageAdded();
-    void taxAuthsUpdated(int);
-    void transferOrdersUpdated(int);
-    void userUpdated(QString);
+    void taxAuthsUpdated(int taxauthid);
+    void transferOrdersUpdated(int id);
+    void userUpdated(QString username);
     void vendorsUpdated();
     void vouchersUpdated();
     void warehousesUpdated();
     void workCentersUpdated();
-    void workOrderMaterialsUpdated(int, int, bool);
-    void workOrderOperationsUpdated(int, int, bool);
-    void workOrdersUpdated(int, bool);
+    void workOrderMaterialsUpdated(int pWoid, int pWomatlid, bool pLocal);
+    void workOrderOperationsUpdated(int pWoid, int pWooperid, bool pLocal);
+    void workOrdersUpdated(int pWoid, bool pLocal);
+
+    /** @} */
+
+    void emitSignal(QString, QString);
+    void emitSignal(QString, int);
+    void emitSignal(QString, bool);
 
   protected:
     void closeEvent(QCloseEvent *);

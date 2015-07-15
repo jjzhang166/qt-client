@@ -19,6 +19,7 @@
 #include <parameter.h>
 #include <openreports.h>
 
+#include "errorReporter.h"
 #include "guiclient.h"
 #include "bankAdjustment.h"
 #include "storedProcErrorLookup.h"
@@ -140,22 +141,22 @@ void bankAdjustmentEditList::sDelete()
 void bankAdjustmentEditList::sFillList()
 {
   XSqlQuery bankFillList;
-  bankFillList.prepare( "SELECT *,"
+  bankFillList.prepare("SELECT bankadj_id, bankadjtype_name, bankadj_date,"
+             "       bankadj_docnumber, bankadj_amount,"
 	     "       (bankaccnt_name || '-' || bankaccnt_descrip) AS f_bank,"
-             "       'curr' AS bankadj_amount_xtnumericrole, "
-	     "       currConcat(bankadj_curr_id) AS currabbr "
-             "FROM bankadj LEFT OUTER JOIN bankaccnt ON (bankadj_bankaccnt_id=bankaccnt_id)"
-             "                       LEFT OUTER JOIN bankadjtype ON (bankadj_bankadjtype_id=bankadjtype_id) "
-             "WHERE ( (NOT bankadj_posted)"
-             " AND (bankadj_bankaccnt_id=:bankaccnt_id) ); ");
+             "       'curr' AS bankadj_amount_xtnumericrole,"
+	     "       currConcat(bankadj_curr_id) AS currabbr"
+             "  FROM bankadj"
+             "  LEFT OUTER JOIN bankaccnt ON (bankadj_bankaccnt_id=bankaccnt_id)"
+             "  LEFT OUTER JOIN bankadjtype ON (bankadj_bankadjtype_id=bankadjtype_id)"
+             " WHERE (NOT bankadj_posted"
+             "   AND  (bankadj_bankaccnt_id=:bankaccnt_id));");
   bankFillList.bindValue(":bankaccnt_id", _bankaccnt->id());
   bankFillList.exec();
   _adjustments->populate(bankFillList);
-  if (bankFillList.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, bankFillList.lastError().databaseText(), __FILE__, __LINE__);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Adjustments"),
+                           bankFillList, __FILE__, __LINE__))
     return;
-  }
 }
 
 void bankAdjustmentEditList::sPopulateMenu( QMenu * pMenu )

@@ -83,6 +83,7 @@
     @see XMainWindow
     @see XWidget
  */
+/** @example dspBacklog.js */
 
 QWidget *ScriptToolbox::_lastWindow = 0;
 
@@ -415,9 +416,9 @@ QObject * ScriptToolbox::createGridLayout()
   that contains the given widget. This lets a %script create a new
   QWidget and insert it into the %user interface near another widget.
 
-  @dontinclude addButton.js
-  @skip var
-  @until widgetGetLayout
+  @dontinclude dspBacklog.js
+  @skip createWidget
+  @until addWidget(_collapse
 
   @param w The widget whose layout you want to find
 
@@ -438,7 +439,6 @@ QObject * ScriptToolbox::widgetGetLayout(QWidget * w)
   }
   return NULL;
 }
-/** @example addButton.js */
 
 /** @brief Insert a QGridLayout into an existing QGridLayout.
     @deprecated Use QGridLayout::addLayout instead
@@ -716,8 +716,9 @@ QString ScriptToolbox::tabtabText(QWidget * tab, int idx)
   This is a wrapper around XUiLoader::createWidget.
 
   The following example creates a new QPushButton:
-  @dontinclude addButton.js
-  @skipline newbutton
+  @dontinclude dspBacklog.js
+  @skip  _expand
+  @until _collapse
 
   @param className The name of the class of the desired widget
   @param parent    The widget that should be set as the parent of the new widget
@@ -1174,11 +1175,11 @@ bool ScriptToolbox::removePath(const QString & rmPath, const QString & rootPath)
     This writes all of the properties of a QtScript object using qWarning.
     This is a debugging tool, most useful when not using the Qt script debugger.
     The property list is not sorted and is not generally recursive.
-    This method does show prototype properties in a separately labeled list
+    This method can show prototype properties in a separately labeled list
     if the given object has a prototype.
 
-    The output has the name of each property and the result of toString(),
-    so properties which are functions show as something like "function()".
+    The output has the name of each property and the result of @c toString() ,
+    so properties which are functions show as something like @c function() .
     The values which would be returned by these functions are not displayed.
     For example,
     @code
@@ -1188,12 +1189,14 @@ bool ScriptToolbox::removePath(const QString & rmPath, const QString & rootPath)
     @code
       id = "function() returning int"
     @endcode
-    rather than the usually-more-useful
+    rather than the more useful
     @code
       id = -1
     @endcode
 
     @param obj The object whose properties should be listed
+    @param showPrototype true: show the properties of @c obj 's prototype
+                         false: show just the top-level properties of @c obj
   */
 void ScriptToolbox::listProperties(const QScriptValue &obj, const bool showPrototype) const
 {

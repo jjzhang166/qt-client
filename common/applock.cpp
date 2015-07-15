@@ -12,6 +12,8 @@
 
 #include <QtScript>
 #include <QSqlError>
+#include <QVariant>
+#include <QWidget>
 
 #include "errorReporter.h"
 #include "xsqlquery.h"
@@ -25,6 +27,70 @@ class AppLockPrivate
         _otherLock(false),
         _parent(parent)
     {
+      if (_mobilizedDb.isNull()) {
+        XSqlQuery q("SELECT EXISTS(SELECT 1"
+                    "  FROM pg_class c"
+                    "  JOIN pg_namespace n ON (relnamespace = n.oid)"
+                    " WHERE relname = 'lock'"
+                    "   AND nspname = 'xt') AS mobilized;");
+        if (q.first())
+          _mobilizedDb = q.value("mobilized");
+        else
+          (void)ErrorReporter::error(QtCriticalMsg,
+                                     qobject_cast<QWidget*>(parent->parent()),
+                                     parent->tr("Locking Error"),
+                                     q, __FILE__, __LINE__);
+      }
+      updateLockStatus();
+    }
+
+    void updateLockStatus() {
+      XSqlQuery q;
+      if (_mobilizedDb.toBool()) {
+        q.prepare("SELECT lock_pid = pg_backend_pid() AS mylock"
+                  "  FROM xt.lock"
+                  "  JOIN pg_class c ON lock_table_oid = c.oid"
+                  " WHERE relname = :table"
+                  "   AND lock_record_id = :id;");
+        q.bindValue(":table", _table);
+        q.bindValue(":id",    _id);
+        q.exec();
+        if (q.first()) {
+          _myLock = q.value("mylock").toBool();
+          _otherLock = ! _myLock;
+          return;
+        }
+        else if (ErrorReporter::error(QtCriticalMsg,
+                                      qobject_cast<QWidget*>(_parent->parent()),
+                                      _parent->tr("Locking Error"),
+                                      q, __FILE__, __LINE__))
+          return;
+      }
+
+      // double-check pg_locks in mobilized dbs in case the search path is wrong
+      q.prepare("SELECT pid = pg_backend_pid() AS mylock"
+                "  FROM pg_locks l"
+                "  JOIN pg_class c    on relation = c.oid"
+                "  JOIN pg_database d on database = c.oid"
+                " WHERE datname = current_database()"
+                "   AND relname = :table"
+                "   AND objid   = :id"
+                "   AND locktype = 'advisory';");
+      q.bindValue(":table", _table);
+      q.bindValue(":id",    _id);
+      q.exec();
+      if (q.first()) {
+        _myLock = q.value("mylock").toBool();
+        _otherLock = ! _myLock;
+        return;
+      }
+      else if (ErrorReporter::error(QtCriticalMsg,
+                                    qobject_cast<QWidget*>(_parent->parent()),
+                                    _parent->tr("Locking Error"),
+                                    q, __FILE__, __LINE__))
+        return;
+      else
+        _myLock = _otherLock = false;
     }
 
     QString  _error;
@@ -33,7 +99,11 @@ class AppLockPrivate
     bool     _otherLock;
     AppLock *_parent;
     QString  _table;
+
+    static QVariant _mobilizedDb;
 };
+
+QVariant AppLockPrivate::_mobilizedDb;
 
 AppLock::AppLock(QObject *parent)
   : QObject(parent)
@@ -73,6 +143,7 @@ bool AppLock::acquire()
   }
 
   bool result = false;
+  _p->_error.clear();
   XSqlQuery q;
   q.prepare("SELECT tryLock(CAST(oid AS INTEGER), :id) AS locked"
             "  FROM pg_class"
@@ -83,26 +154,25 @@ bool AppLock::acquire()
   if (q.first())
   {
     result = q.value("locked").toBool();
-    // TODO: can we detect if _p->_myLock == true but the advisory lock was
-    //       released somehow and someone else acquired it in the meantime?
-    if (result || _p->_myLock)
+    if (result)
     {
       _p->_myLock    = true;
       _p->_otherLock = false;
-      _p->_error.clear();
       result = true;
     }
-    else if (! _p->_myLock)
+    else
     {
-      _p->_otherLock = true;
-      _p->_error = tr("The record you are trying to edit is currently being "
-                       "edited by another user.");
+      _p->updateLockStatus();
+      result = _p->_myLock;
+      if (_p->_otherLock)
+        _p->_error = tr("The record you are trying to edit is currently being "
+                         "edited by another user.");
     }
   }
-  else if (q.lastError().type() != QSqlError::NoError)
-  {
+  else if (ErrorReporter::error(QtCriticalMsg, qobject_cast<QWidget*>(parent()),
+                                tr("Locking Error"),
+                                q, __FILE__, __LINE__))
     _p->_error = q.lastError().databaseText();
-  }
 
   return result;
 }
@@ -129,51 +199,49 @@ bool AppLock::holdsLock() const
 /** @return true if the object appears locked by some other entity */
 bool AppLock::isLockedOut() const
 {
+  _p->updateLockStatus();
   return _p->_otherLock;
 }
 
 bool AppLock::release()
 {
-  if (_p->_id < 0 || _p->_table.isEmpty() || ! _p->_myLock)
-  {
-    // there's nothing for us to release
+  if (_p->_id < 0 || _p->_table.isEmpty())
     return true;
-  }
 
-  if (_p->_otherLock)
-  {
-    _p->_error = tr("Should not release someone else' lock.");
-    return false;
-  }
-
-  bool result = false;
-  XSqlQuery q;
-  q.prepare("SELECT pg_advisory_unlock(CAST(oid AS INTEGER), :id) AS unlocked"
-            "  FROM pg_class"
-            " WHERE relname = :table;");
-  q.bindValue(":id",    _p->_id);
-  q.bindValue(":table", _p->_table);
-  q.exec();
-  if (q.first())
-  {
-    result = q.value("unlocked").toBool();
-    if (result)
+  bool released = false;
+  _p->_error.clear();
+  if (_p->_myLock) {
+    XSqlQuery q;
+    q.prepare("SELECT pg_advisory_unlock(CAST(oid AS INTEGER), :id) AS released"
+              "  FROM pg_class"
+              " WHERE relname = :table;");
+    q.bindValue(":id",    _p->_id);
+    q.bindValue(":table", _p->_table);
+    q.exec();
+    if (q.first())
     {
-      _p->_error.clear();
-      _p->_myLock    = false;
-      _p->_otherLock = false;
+      released = q.value("released").toBool();
+      if (released)
+      {
+        _p->_myLock    = false;
+        _p->_otherLock = false;
+      }
     }
-    else
-    {
+    else if (ErrorReporter::error(QtCriticalMsg, qobject_cast<QWidget*>(parent()),
+                                  tr("Unlocking Error"),
+                                  q, __FILE__, __LINE__))
+      _p->_error = q.lastError().text();
+  }
+  if (! released)
+  {
+    _p->updateLockStatus();
+    if (_p->_myLock)
       _p->_error = tr("Could not release the lock.");
-    }
-  }
-  else if (q.lastError().type() != QSqlError::NoError)
-  {
-    _p->_error = q.lastError().text();
+    else
+      released = true;
   }
 
-  return result;
+  return released;
 }
 
 QString AppLock::lastError() const

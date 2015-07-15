@@ -45,6 +45,7 @@ scrapTrans::scrapTrans(QWidget* parent, const char* name, Qt::WFlags fl)
     _warehouse->hide();
   }
 
+  _item->setFocus();
 }
 
 scrapTrans::~scrapTrans()

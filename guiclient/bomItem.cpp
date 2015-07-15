@@ -469,16 +469,15 @@ void bomItem::sItemTypeChanged(const QString &type)
 void bomItem::populate()
 {
   XSqlQuery qbomitem;
-  qbomitem.prepare( "SELECT bomitem.*, item.* "
-                    "FROM bomitem JOIN item ON (item_id=bomitem_parent_item_id) "
-                    "WHERE (bomitem_id=:bomitem_id);" );
+  qbomitem.prepare("SELECT bomitem.*, item_type, item_config"
+                   "  FROM bomitem JOIN item ON (item_id=bomitem_parent_item_id) "
+                   " WHERE (bomitem_id=:bomitem_id);" );
   qbomitem.bindValue(":bomitem_id", _bomitemid);
   qbomitem.exec();
-  if (qbomitem.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, qbomitem.lastError().databaseText(), __FILE__, __LINE__);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting BOM Item"),
+                           qbomitem, __FILE__, __LINE__))
     return;
-  }
+
   if (qbomitem.first())
   {
     _parentitemid = qbomitem.value("bomitem_parent_item_id").toInt();

@@ -25,12 +25,14 @@ public:
     ~viewCheckRun();
 
 public slots:
+    virtual void sAltExchRate();
     virtual void sDelete();
     virtual void sEdit();
     virtual void sFillList();
     virtual void sFillList(int);
     virtual void sHandleItemSelection();
     virtual void sNewMiscCheck();
+    virtual void sPopulateMenu(QMenu *pMenu);
     virtual void sPost();
     virtual void sPostChecks();
     virtual void sPrepareCheckRun();

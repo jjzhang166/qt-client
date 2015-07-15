@@ -32,6 +32,7 @@ TODO:	refactor:
 
 #include "guiclient.h"
 #include "datecluster.h"
+#include "errorReporter.h"
 #include "itemcluster.h"
 #include "toitemTableModel.h"
 #include "projectcluster.h"
@@ -259,7 +260,7 @@ void ToitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	if (! item->itemNumber().isEmpty() && item->isValid())
 	{
 	  XSqlQuery itemq;
-	  itemq.prepare("SELECT *, stdCost(item_id) AS stdcost, uom_name "
+	  itemq.prepare("SELECT item_id, stdCost(item_id) AS stdcost, uom_name "
 			"FROM item JOIN uom ON (item_inv_uom_id=uom_id) "
 			"WHERE (item_id=:item_id);");
 	  itemq.bindValue(":item_id", item->id());
@@ -282,9 +283,9 @@ void ToitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	    model->setData(model->index(index.row(), TOITEM_STDCOST_COL),
 			   formatPurchPrice(itemq.value("stdcost").toDouble()));
 	  }
-	  else if (itemq.lastError().type() != QSqlError::NoError)
+          else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Getting Item"),
+                                        itemq, __FILE__, __LINE__))
 	  {
-	    systemError(0, itemq.lastError().databaseText(), __FILE__, __LINE__);
 	    hitError = true;
 	    break;
 	  }

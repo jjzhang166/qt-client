@@ -49,6 +49,7 @@ expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WFlags fl)
     _warehouse->hide();
   }
 
+  _item->setFocus();
 }
 
 expenseTrans::~expenseTrans()

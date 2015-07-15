@@ -38,6 +38,7 @@ dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->appendComboBox(tr("Customer Type"), "custtype_id", XComboBox::CustomerTypes);
   parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
+  parameterWidget()->append(tr("Item Pattern"), "item_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Product Category"), "prodcat_id", XComboBox::ProductCategories);
   parameterWidget()->append(tr("Product Category Pattern"), "prodcat_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Sales Order"), "cohead_id", ParameterWidget::SalesOrder);

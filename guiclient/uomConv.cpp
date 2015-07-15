@@ -215,7 +215,8 @@ void uomConv::populate()
   uompopulate.exec();
   if (uompopulate.first())
   {
-    _uomFrom->setId(uompopulate.value("uomconv_from_uom_id").toInt());
+    _uomidFrom = uompopulate.value("uomconv_from_uom_id").toInt();
+    _uomFrom->setId(_uomidFrom);
     _uomTo->setId(uompopulate.value("uomconv_to_uom_id").toInt());
     _fromValue->setText(uompopulate.value("uomconv_from_value").toDouble());
     _toValue->setText(uompopulate.value("uomconv_to_value").toDouble());

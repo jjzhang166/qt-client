@@ -101,7 +101,10 @@ transferOrder::transferOrder(QWidget* parent, const char* name, Qt::WFlags fl)
   _orderNumber->setValidator(omfgThis->orderVal());
 
   if(!_metrics->boolean("UseProjects"))
+  {
+    _projectLit->hide();
     _project->hide();
+  }
 
   _mode = cView;
 

@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include "errorReporter.h"
+
 #define cIncome		0
 #define cBalance	1
 #define cCash		2
@@ -81,18 +83,11 @@ financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool
   }
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 financialLayoutItem::~financialLayoutItem()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void financialLayoutItem::languageChange()
 {
   retranslateUi(this);
@@ -386,10 +381,10 @@ void financialLayoutItem::sSave()
 void financialLayoutItem::populate()
 {
   XSqlQuery financialpopulate;
-  financialpopulate.prepare( "SELECT * "
-             "FROM flitem "
-	     "LEFT OUTER JOIN subaccnttype ON flitem_subaccnttype_code=subaccnttype_code "
-             "WHERE (flitem_id=:flitem_id);" );
+  financialpopulate.prepare("SELECT flitem.*, subaccnttype_id"
+             "  FROM flitem"
+	     "  LEFT OUTER JOIN subaccnttype ON flitem_subaccnttype_code=subaccnttype_code"
+             " WHERE (flitem_id=:flitem_id);" );
   financialpopulate.bindValue(":flitem_id", _flitemid);
   financialpopulate.exec();
   if (financialpopulate.first())
@@ -469,21 +464,23 @@ void financialLayoutItem::populate()
     
     sToggleShowPrcnt();
   }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Financial Layout"),
+                                financialpopulate, __FILE__, __LINE__))
+    return;
 }
 
 void financialLayoutItem::sFillGroupList()
 {
   XSqlQuery financialFillGroupList;
-  _group->clear();
   financialFillGroupList.prepare("SELECT flgrp_id, flgrp_name"
             "  FROM flgrp"
             " WHERE (flgrp_flhead_id=:flhead_id)"
             " ORDER BY flgrp_name;");
   financialFillGroupList.bindValue(":flhead_id", _flheadid);
   financialFillGroupList.exec();
-  _group->append(-1, tr("Parent"));
-  while(financialFillGroupList.next())
-    _group->append(financialFillGroupList.value("flgrp_id").toInt(), financialFillGroupList.value("flgrp_name").toString());
+  _group->setAllowNull(true);   // TODO: move to .ui?
+  _group->setNullStr(tr("Parent"));
+  _group->populate(financialFillGroupList);
 }
 
 void financialLayoutItem::sToggleShowPrcnt()

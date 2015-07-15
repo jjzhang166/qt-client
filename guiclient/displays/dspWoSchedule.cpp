@@ -72,22 +72,25 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WFlags fl)
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
   parameterWidget()->append(tr("Has Parent Sales Order"), "woSoStatus", ParameterWidget::Exists);
   parameterWidget()->append(tr("Has Closed Parent Sales Order"), "woSoStatusMismatch", ParameterWidget::Exists);
+  parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
 
   parameterWidget()->applyDefaultFilterSet();
 
-  list()->addColumn(tr("parentType"),  0,             Qt::AlignCenter, true,  "wo_ordtype" );
-  list()->addColumn(tr("Work Order #"),_orderColumn,  Qt::AlignLeft,   true,  "wonumber"   );
-  list()->addColumn(tr("Status"),      _statusColumn, Qt::AlignCenter, true,  "wo_status" );
-  list()->addColumn(tr("Pri."),        _statusColumn, Qt::AlignCenter, false,  "wo_priority" );
-  list()->addColumn(tr("Site"),        _whsColumn,    Qt::AlignCenter, true,  "warehous_code" );
-  list()->addColumn(tr("Item Number"), _itemColumn,   Qt::AlignLeft,   true,  "item_number"   );
-  list()->addColumn(tr("Description"), -1,            Qt::AlignLeft,   true,  "itemdescrip"   );
-  list()->addColumn(tr("UOM"),         _uomColumn,    Qt::AlignCenter, true,  "uom_name" );
-  list()->addColumn(tr("Ordered"),     _qtyColumn,    Qt::AlignRight,  true,  "wo_qtyord"  );
-  list()->addColumn(tr("Received"),    _qtyColumn,    Qt::AlignRight,  true,  "wo_qtyrcv"  );
-  list()->addColumn(tr("Start Date"),  _dateColumn,   Qt::AlignRight,  true,  "wo_startdate"  );
-  list()->addColumn(tr("Due Date"),    _dateColumn,   Qt::AlignRight,  true,  "wo_duedate"  );
-  list()->addColumn(tr("Condition"),   _dateColumn,   Qt::AlignLeft,   true,  "condition"   );
+  list()->addColumn(tr("Work Order #"),   _orderColumn,  Qt::AlignLeft,   true,  "wonumber"   );
+  list()->addColumn(tr("Parent Type"),    _orderColumn,  Qt::AlignCenter, true,  "wo_ordtype" );
+  list()->addColumn(tr("Parent Order #"), _orderColumn,  Qt::AlignLeft,   true,  "parentorder" );
+  list()->addColumn(tr("Project #"),      _orderColumn,  Qt::AlignLeft,   true,  "prj_number" );
+  list()->addColumn(tr("Status"),         _statusColumn, Qt::AlignCenter, true,  "wo_status" );
+  list()->addColumn(tr("Pri."),           _statusColumn, Qt::AlignCenter, false, "wo_priority" );
+  list()->addColumn(tr("Site"),           _whsColumn,    Qt::AlignCenter, true,  "warehous_code" );
+  list()->addColumn(tr("Item Number"),    _itemColumn,   Qt::AlignLeft,   true,  "item_number"   );
+  list()->addColumn(tr("Description"),    -1,            Qt::AlignLeft,   true,  "itemdescrip"   );
+  list()->addColumn(tr("UOM"),            _uomColumn,    Qt::AlignCenter, true,  "uom_name" );
+  list()->addColumn(tr("Ordered"),        _qtyColumn,    Qt::AlignRight,  true,  "wo_qtyord"  );
+  list()->addColumn(tr("Received"),       _qtyColumn,    Qt::AlignRight,  true,  "wo_qtyrcv"  );
+  list()->addColumn(tr("Start Date"),     _dateColumn,   Qt::AlignRight,  true,  "wo_startdate"  );
+  list()->addColumn(tr("Due Date"),       _dateColumn,   Qt::AlignRight,  true,  "wo_duedate"  );
+  list()->addColumn(tr("Condition"),      _dateColumn,   Qt::AlignLeft,   true,  "condition"   );
 
   if (_privileges->check("MaintainWorkOrders"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
@@ -149,6 +152,27 @@ enum SetResponse dspWoSchedule::set(const ParameterList &pParams)
   }   
 
   return NoError;
+}
+
+bool dspWoSchedule::setParams(ParameterList & params)
+{
+  if (!display::setParams(params))
+    return false;
+  params.append("open", tr("Open"));
+  params.append("exploded", tr("Exploded"));
+  params.append("released", tr("Released"));
+  params.append("inprocess", tr("In-Process"));
+  params.append("closed", tr("Closed"));
+
+  params.append("wo", tr("W/O"));
+  params.append("planord", tr("Planned Order"));
+  params.append("mps", tr("MPS"));
+  params.append("so", tr("S/O"));
+
+  params.append("overdue", tr("Overdue"));
+  params.append("ontime", tr("On Time"));
+  
+  return true;
 }
 
 void dspWoSchedule::sView()
@@ -392,10 +416,12 @@ void dspWoSchedule::sViewParentWO()
   omfgThis->handleNewWindow(newdlg);
 }
 
-void dspWoSchedule::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *selected, int)
+void dspWoSchedule::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *pSelected, int)
 {
-  QString  status(selected->text(2));
   QAction *menuItem;
+  XTreeWidgetItem * item = (XTreeWidgetItem*)pSelected;
+  QString  status = item->rawValue("wo_status").toString();
+  QString  ordtype = item->rawValue("wo_ordtype").toString();
 
   menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
   menuItem->setEnabled(_privileges->check("MaintainWorkOrders"));
@@ -459,9 +485,11 @@ void dspWoSchedule::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *selected, int)
 
     pMenu->addSeparator();
 
-    menuItem = pMenu->addAction(tr("Issue Material Item..."), this, SLOT(sIssueWoMaterialItem()));
-    menuItem->setEnabled(_privileges->check("IssueWoMaterials"));
-
+    if ((_metrics->boolean("IssueToExplodedWO") && status == "E") || status == "R" || status == "I")
+    {
+      menuItem = pMenu->addAction(tr("Issue Material Item..."), this, SLOT(sIssueWoMaterialItem()));
+      menuItem->setEnabled(_privileges->check("IssueWoMaterials"));
+    }
 
     menuItem = pMenu->addAction(tr("Post Production..."), this, SLOT(sPostProduction()));
     menuItem->setEnabled(_privileges->check("PostProduction"));
@@ -492,12 +520,12 @@ void dspWoSchedule::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem *selected, int)
   
   if (list()->altId() != -1)
   {
-    if (selected->text(0) == "S")
+    if (ordtype == "S")
     {
       pMenu->addSeparator();
       menuItem = pMenu->addAction(tr("View Parent Sales Order Information..."), this, SLOT(sViewParentSO()));
     }
-    else if (selected->text(0) == "W")
+    else if (ordtype == "W")
     {
       pMenu->addSeparator();
       menuItem = pMenu->addAction(tr("View Parent Work Order..."), this, SLOT(sViewParentWO()));

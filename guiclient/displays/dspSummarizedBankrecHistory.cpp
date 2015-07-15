@@ -10,8 +10,10 @@
 
 #include "dspSummarizedBankrecHistory.h"
 
+#include <QMenu>
 #include <QSqlError>
 #include <QVariant>
+
 #include "xtreewidget.h"
 #include "xmessagebox.h"
 

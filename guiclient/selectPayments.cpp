@@ -655,25 +655,41 @@ void selectPayments::sViewVoucher()
 
 void selectPayments::sVoidVoucher()
 {
+  bool update = FALSE;
+  QList<XTreeWidgetItem*> list = _apopen->selectedItems();
+  XTreeWidgetItem * cursor = 0;
   XSqlQuery dspVoidVoucher;
   dspVoidVoucher.prepare("SELECT voidApopenVoucher(:apopen_id) AS result;");
-  dspVoidVoucher.bindValue(":apopen_id", _apopen->id());
-  dspVoidVoucher.exec();
-  
-  if(dspVoidVoucher.first())
+  for(int i = 0; i < list.size(); i++)
   {
-    if(dspVoidVoucher.value("result").toInt() < 0)
-      systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                  .arg(__FILE__)
-                  .arg(__LINE__)
-                  .arg(dspVoidVoucher.value("result").toInt()) );
-    else
-      sFillList();
+    cursor = (XTreeWidgetItem*)list.at(i);
+    if ( (cursor->rawValue("doctype") == tr("Voucher")) && (cursor->rawValue("selected") == 0.0) )
+    {
+      dspVoidVoucher.bindValue(":apopen_id", cursor->id());
+      dspVoidVoucher.exec();
+      
+      if(dspVoidVoucher.first())
+      {
+        if(dspVoidVoucher.value("result").toInt() < 0)
+        {
+          systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
+                      .arg(__FILE__)
+                      .arg(__LINE__)
+                      .arg(dspVoidVoucher.value("result").toInt()) );
+          return;
+        }
+      }
+      else
+      {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
+                             dspVoidVoucher, __FILE__, __LINE__);
+        return;
+      }
+      update = TRUE;
+    }
   }
-  else
-    ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
-                         dspVoidVoucher, __FILE__, __LINE__);
-  
+  if(update)
+    sFillList();
 }
 
 bool selectPayments::checkSitePrivs(int orderid)

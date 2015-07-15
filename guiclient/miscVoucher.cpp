@@ -325,6 +325,8 @@ void miscVoucher::sSave()
   ParameterList params;
   params.append("mode", "new");
   set(params);
+  _vendor->setFocus();
+
 }
 
 void miscVoucher::sHandleVoucherNumber()

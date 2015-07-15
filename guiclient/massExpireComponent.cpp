@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QSqlQuery>
 
+#include "errorReporter.h"
+
 massExpireComponent::massExpireComponent(QWidget* parent, const char* name, Qt::WFlags fl)
   : XWidget(parent, name, fl)
 {
@@ -58,25 +60,28 @@ enum SetResponse massExpireComponent::set(const ParameterList &pParams)
 
 void massExpireComponent::sExpire()
 {
-  XSqlQuery massExpire;
   if ( (_original->isValid()) && (_expireAsOf->isValid()) )
   {
+    QSqlQuery expire;
     if (_metrics->boolean("RevControl"))
     {
-      massExpire.prepare("SELECT * "
-	  	      "FROM bomitem, rev "
-	 		  "WHERE ( (bomitem_rev_id=rev_id) "
-			  "AND (rev_status='P') "
-			  "AND (bomitem_item_id=:item_id) ) "
-			  "LIMIT 1;");
-	  massExpire.bindValue(":item_id", _original->id());
-	  massExpire.exec();
-	  if (massExpire.first())
-        QMessageBox::information( this, tr("Mass Expire"),
-                          tr("<p>This process will only affect active revisions. "
-						  "Items on pending revisions must be expired manually.")  );
+      expire.prepare("SELECT 1"
+                     "  FROM bomitem"
+                     "  JOIN rev ON (bomitem_rev_id=rev_id)"
+                     " WHERE ((rev_status='P')"
+                     "   AND  (bomitem_item_id=:item_id))"
+                     " LIMIT 1;");
+      expire.bindValue(":item_id", _original->id());
+      expire.exec();
+      if (expire.first())
+        QMessageBox::information(this, tr("Mass Expire"),
+                                 tr("<p>This process will only affect active "
+                                   "revisions. Items on pending revisions must "
+                                   "be expired manually."));
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Revisions"),
+                                    expire, __FILE__, __LINE__))
+        return;
     }
-    QSqlQuery expire;
 
     if (_expireAsOf->isNull())
       expire.prepare("SELECT massExpireBomitem(:item_id, CURRENT_DATE, :ecn);");
@@ -91,11 +96,10 @@ void massExpireComponent::sExpire()
 
     if (_captive)
       close();
-    {
-      _close->setText(tr("&Close"));
-      _original->setId(-1);
-      _ecn->clear();
-      _original->setFocus();
-    }
+
+    _close->setText(tr("&Close"));
+    _original->setId(-1);
+    _ecn->clear();
+    _original->setFocus();
   }
 }

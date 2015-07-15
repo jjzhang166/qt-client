@@ -27,6 +27,7 @@ public:
 public slots:
     virtual void sPrint();
     virtual void sFillList();
+    virtual void sView();
     virtual void sVoidPosted();
 	  virtual void sHandleButtons();
    

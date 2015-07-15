@@ -10,6 +10,7 @@
 
 #include "configureIE.h"
 
+#include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>

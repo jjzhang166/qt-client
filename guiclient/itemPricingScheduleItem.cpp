@@ -20,6 +20,8 @@
 #include <QValidator>
 #include <QVariant>
 
+#include "errorReporter.h"
+
 itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -282,15 +284,16 @@ void itemPricingScheduleItem::sSave( bool pClose)
     itemSave.exec();
     if (itemSave.first())
     {
-      QMessageBox::critical( this, tr("Cannot Create Pricing Schedule Item"),
-                             tr( "There is an existing Pricing Schedule Item for the selected Pricing Schedule, Item and Quantity Break defined.\n"
-                                 "You may not create duplicate Pricing Schedule Items." ) );
+      QMessageBox::critical(this, tr("Cannot Create Pricing Schedule Item"),
+                            tr("<p>There is an existing Pricing Schedule Item"
+                              " for the selected Pricing Schedule, Item, and "
+                              "Quantity Break.<br/>You may not create "
+                              "duplicate Pricing Schedule Items.</p>"));
       return;
     }
-    else if (itemSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Duplicates"),
+                                  itemSave, __FILE__, __LINE__))
     {
-      systemError(this, _rejectedMsg.arg(itemSave.lastError().databaseText()),
-                __FILE__, __LINE__);
       done(-1);
     }
   }
@@ -298,7 +301,7 @@ void itemPricingScheduleItem::sSave( bool pClose)
   {
     if(_dscbyItem->isChecked())
     {
-      itemSave.prepare( "SELECT * "
+      itemSave.prepare( "SELECT 1 "
                  "FROM ipsiteminfo JOIN ipshead ON (ipsitem_ipshead_id=ipshead_id) "
                  "WHERE ((ipshead_id = :ipshead_id)"
                  "   AND (ipsitem_item_id = :item_id)"
@@ -312,15 +315,16 @@ void itemPricingScheduleItem::sSave( bool pClose)
       itemSave.exec();
       if (itemSave.first())
       {
-        QMessageBox::critical( this, tr("Cannot Create Pricing Schedule Item"),
-                               tr( "There is an existing Pricing Schedule Item for the selected Pricing Schedule, Item and Quantity Break defined.\n"
-                                   "You may not create duplicate Pricing Schedule Items." ) );
+        QMessageBox::critical(this, tr("Cannot Create Pricing Schedule Item"),
+                              tr("<p>There is an existing Pricing Schedule Item"
+                                " for the selected Pricing Schedule, Item, and "
+                                "Quantity Break.<br/>You may not create "
+                                "duplicate Pricing Schedule Items.</p>"));
         return;
       }
-      else if (itemSave.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Duplicates"),
+                                    itemSave, __FILE__, __LINE__))
       {
-        systemError(this, _rejectedMsg.arg(itemSave.lastError().databaseText()),
-                  __FILE__, __LINE__);
         done(-1);
       }
     }
@@ -356,7 +360,7 @@ void itemPricingScheduleItem::sSave( bool pClose)
   {
     if(_markupbyItem->isChecked())
     {
-      itemSave.prepare( "SELECT * "
+      itemSave.prepare( "SELECT 1 "
                  "FROM ipsiteminfo JOIN ipshead ON (ipsitem_ipshead_id=ipshead_id) "
                  "WHERE ((ipshead_id = :ipshead_id)"
                  "   AND (ipsitem_item_id = :item_id)"
@@ -946,7 +950,6 @@ void itemPricingScheduleItem::sQtyUOMChanged()
 
 void itemPricingScheduleItem::sPriceUOMChanged()
 {
-  XSqlQuery itemPriceUOMChanged;
   if(_priceUOM->id() == -1 || _qtyUOM->id() == -1)
     return;
 
@@ -973,10 +976,9 @@ void itemPricingScheduleItem::sPriceUOMChanged()
 
     sUpdateMargins();
   }
-  else if (itemPriceUOMChanged.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Checking Costs"),
+                                cost, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(itemPriceUOMChanged.lastError().databaseText()),
-                  __FILE__, __LINE__);
     done(-1);
   }
 }

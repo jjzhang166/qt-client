@@ -27,7 +27,7 @@ DIV.navtab {
        padding: 2px;
 }
 TD.navtab {
-       font-size: 70%;
+       font-size: 80%;
 }
 
 DL.el { margin-left: -1cm }
@@ -55,7 +55,7 @@ DIV.groupHeader {
        margin-bottom: 6px;
        font-weight: bold;
 }
-DIV.groupText { margin-left: 16px; font-style: italic; font-size: 90% }
+DIV.groupText { margin-left: 16px; font-size: 90% }
 BODY {
 	background: white;
 	color: black;
@@ -103,7 +103,7 @@ SPAN.stringliteral { color: #002080 }
 SPAN.charliteral   { color: #008080 }
 .mdescLeft {
        padding: 0px 8px 4px 8px;
-	font-size: 80%;
+	font-size: 90%;
 	font-style: italic;
 	background-color: #FAFAFA;
 	border-top: 1px none #E0E0E0;
@@ -114,7 +114,7 @@ SPAN.charliteral   { color: #008080 }
 }
 .mdescRight {
        padding: 0px 8px 4px 8px;
-	font-size: 80%;
+	font-size: 90%;
 	font-style: italic;
 	background-color: #FAFAFA;
 	border-top: 1px none #E0E0E0;
@@ -139,7 +139,7 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-size: 80%;
+	font-size: 90%;
 }
 .memItemRight {
 	padding: 1px 8px 0px 8px;
@@ -157,7 +157,7 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-size: 80%;
+	font-size: 90%;
 }
 .memTemplItemLeft {
 	padding: 1px 0px 0px 8px;
@@ -175,7 +175,7 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-size: 80%;
+	font-size: 90%;
 }
 .memTemplItemRight {
 	padding: 1px 8px 0px 8px;
@@ -193,7 +193,7 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-size: 80%;
+	font-size: 90%;
 }
 .memTemplParams {
 	padding: 1px 0px 0px 8px;
@@ -212,7 +212,7 @@ SPAN.charliteral   { color: #008080 }
 	border-left-style: none;
        color: #606060;
 	background-color: #FAFAFA;
-	font-size: 80%;
+	font-size: 90%;
 }
 .search     { color: #003399;
               font-weight: bold;
@@ -248,7 +248,7 @@ HR { height: 1px;
 
 /* Style for detailed member documentation */
 .memtemplate {
-  font-size: 80%;
+  font-size: 90%;
   color: #606060;
   font-weight: normal;
 } 

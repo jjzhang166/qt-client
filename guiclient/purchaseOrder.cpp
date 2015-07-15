@@ -647,18 +647,18 @@ void purchaseOrder::populate()
   }
   
   po.prepare( "SELECT pohead.*, COALESCE(pohead_warehous_id, -1) AS warehous_id,"
-                          "       COALESCE(pohead_cohead_id, -1) AS cohead_id,"
+              "       COALESCE(pohead_cohead_id, -1) AS cohead_id,"
               "       CASE WHEN (pohead_status='U') THEN 0"
-                          "            WHEN (pohead_status='O') THEN 1"
-                          "            WHEN (pohead_status='C') THEN 2"
-                          "       END AS status,"
+              "            WHEN (pohead_status='O') THEN 1"
+              "            WHEN (pohead_status='C') THEN 2"
+              "       END AS status,"
               "       COALESCE(pohead_terms_id, -1) AS terms_id,"
               "       COALESCE(pohead_vend_id, -1) AS vend_id,"
               "       COALESCE(vendaddr_id, -1) AS vendaddrid,"
-                          "       vendaddr_code "
+              "       vendaddr_code "
               "FROM pohead JOIN vendinfo ON (pohead_vend_id=vend_id)"
-                          "     LEFT OUTER JOIN vendaddrinfo ON (pohead_vendaddr_id=vendaddr_id)"
-                          "     LEFT OUTER JOIN cohead ON (pohead_cohead_id=cohead_id) "
+              "     LEFT OUTER JOIN vendaddrinfo ON (pohead_vendaddr_id=vendaddr_id)"
+              "     LEFT OUTER JOIN cohead ON (pohead_cohead_id=cohead_id) "
               "WHERE (pohead_id=:pohead_id);" );
   po.bindValue(":pohead_id", _poheadid);
   po.exec();
@@ -749,6 +749,9 @@ void purchaseOrder::populate()
     _poCurrency->setId(po.value("pohead_curr_id").toInt());
     _freight->setLocalValue(po.value("pohead_freight").toDouble());
   }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting P/O"),
+                                po, __FILE__, __LINE__))
+    return;
 
   sFillCharacteristic();
   sFillList();
@@ -769,6 +772,8 @@ void purchaseOrder::sSave()
                           tr("You may not save this Purchase Order until you have selected a Vendor." ))
          << GuiErrorCheck(_metrics->boolean("RequirePOTax") && !_taxZone->isValid(), _taxZone,
                           tr("You may not save this Purchase Order until you have selected a Tax Zone." ))
+         << GuiErrorCheck(!_orderDate->isValid(), _orderDate,
+                          tr("You may not save this Purchase Order until you have entered a valid Purchase Order Date."))
      ;
 
   if (_qeitem->isDirty() && ! sQESave())
@@ -1223,14 +1228,17 @@ void purchaseOrder::sHandleVendor(int pVendid)
     purchaseHandleVendor.bindValue(":pohead_id", _poheadid);
     purchaseHandleVendor.bindValue(":pohead_curr_id", _poCurrency->id());
     purchaseHandleVendor.exec();
-    if (purchaseHandleVendor.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, purchaseHandleVendor.lastError().text(), __FILE__, __LINE__);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Updating Vendor Info"),
+                             purchaseHandleVendor, __FILE__, __LINE__))
       return;
-    }
 
     XSqlQuery vq;
-    vq.prepare("SELECT addr.*, cntct.*, vend_terms_id, vend_curr_id,"
+    vq.prepare("SELECT addr_id, addr_line1, addr_line2, addr_line3,"
+               "       addr_city, addr_state, addr_postalcode, addr_country,"
+               "       cntct_id, cntct_honorific, cntct_first_name,"
+               "       cntct_middle, cntct_last_name, cntct_suffix,"
+               "       cntct_phone, cntct_title, cntct_fax, cntct_email,"
+               "       vend_terms_id, vend_curr_id,"
                "       vend_fobsource, vend_fob, vend_shipvia,"
                "       vend_name,"
                "       COALESCE(vend_addr_id, -1) AS vendaddrid,"
@@ -1295,9 +1303,9 @@ void purchaseOrder::sHandleVendor(int pVendid)
       if (vq.value("crmacct_id").toInt())
         _vendCntct->setSearchAcct(vq.value("crmacct_id").toInt());
     }
-    else if (vq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Vendor Info"),
+                                  vq, __FILE__, __LINE__))
     {
-      systemError(this, vq.lastError().text(), __FILE__, __LINE__);
       return;
     }
 
@@ -1660,7 +1668,10 @@ bool purchaseOrder::saveDetail()
 
   QList<GuiErrorCheck> errors;
   errors << GuiErrorCheck(_metrics->boolean("RequirePOTax") && !_taxZone->isValid(), _taxZone,
-                          tr("You may not save this Purchase Order until you have selected a Tax Zone." ));
+                          tr("You may not save this Purchase Order until you have selected a Tax Zone." ))
+         << GuiErrorCheck(!_orderDate->isValid(), _orderDate,
+                          tr("You may not save this Purchase Order until you have entered a valid Purchase Order Date."))
+  ;
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Purchase Order"), errors))
     return false;
@@ -1786,10 +1797,16 @@ void purchaseOrder::sEditWo()
 void purchaseOrder::sHandleShipTo()
 {
   XSqlQuery purchaseHandleShipTo;
-  purchaseHandleShipTo.prepare( "SELECT cntct.*, addr.* "
-             "FROM whsinfo LEFT OUTER JOIN cntct ON (warehous_cntct_id=cntct_id)"
-             "     LEFT OUTER JOIN addr ON (warehous_addr_id=addr_id) "
-             "WHERE (warehous_id=:warehous_id);" );
+  purchaseHandleShipTo.prepare("SELECT"
+                   "       cntct_id, cntct_honorific, cntct_first_name,"
+                   "       cntct_middle, cntct_last_name, cntct_suffix,"
+                   "       cntct_phone, cntct_title, cntct_fax, cntct_email,"
+                   "       addr_id, addr_line1, addr_line2, addr_line3,"
+                   "       addr_city, addr_state, addr_postalcode, addr_country"
+                   "  FROM whsinfo"
+                   "  LEFT OUTER JOIN cntct ON (warehous_cntct_id=cntct_id)"
+                   "  LEFT OUTER JOIN addr ON (warehous_addr_id=addr_id)"
+                   " WHERE (warehous_id=:warehous_id);");
   purchaseHandleShipTo.bindValue(":warehous_id", _warehouse->id());
   purchaseHandleShipTo.exec();
   if (purchaseHandleShipTo.first())
@@ -1814,6 +1831,9 @@ void purchaseOrder::sHandleShipTo()
     _shiptoAddr->setPostalCode(purchaseHandleShipTo.value("addr_postalcode").toString());
     _shiptoAddr->setCountry(purchaseHandleShipTo.value("addr_country").toString());
   }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Site Info"),
+                                purchaseHandleShipTo, __FILE__, __LINE__))
+    return;
 }
 
 void purchaseOrder::sHandleShipToName()

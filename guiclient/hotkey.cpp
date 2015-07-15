@@ -10,8 +10,9 @@
 
 #include "hotkey.h"
 
-#include <QVariant>
+#include <QMenu>
 #include <QMessageBox>
+#include <QVariant>
 
 hotkey::hotkey(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   : XDialog(parent, name, modal, fl)

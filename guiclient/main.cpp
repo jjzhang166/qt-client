@@ -106,6 +106,7 @@
 #include "xtupleplugin.h"
 #include "xtupleproductkey.h"
 
+#include "errorReporter.h"
 #include "login2.h"
 #include "currenciesDialog.h"
 #include "registrationKeyDialog.h"
@@ -573,12 +574,14 @@ int main(int argc, char *argv[])
   // Load the translator and set the locale from the User's preferences
   _splash->showMessage(QObject::tr("Loading Translation Dictionary"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
-  XSqlQuery langq("SELECT * "
-                  "FROM usr, locale LEFT OUTER JOIN"
-                  "     lang ON (locale_lang_id=lang_id) LEFT OUTER JOIN"
-                  "     country ON (locale_country_id=country_id) "
-                  "WHERE ( (usr_username=getEffectiveXtUser())"
-                  " AND (usr_locale_id=locale_id) );" );
+  XSqlQuery langq("SELECT locale_lang_file,"
+                  "       lang_abbr2, lang_qt_number,"
+                  "       country_abbr, country_qt_number"
+                  "  FROM usr"
+                  "  JOIN locale ON (usr_locale_id=locale_id)"
+                  "  LEFT OUTER JOIN lang ON (locale_lang_id=lang_id)"
+                  "  LEFT OUTER JOIN country ON (locale_country_id=country_id)"
+                  " WHERE (usr_username=getEffectiveXtUser());");
   if (langq.first())
   {
     QStringList files;
@@ -665,10 +668,10 @@ int main(int argc, char *argv[])
            QLocale().countryToString(QLocale().country()).toAscii().data());
 
   }
-  else if (langq.lastError().type() != QSqlError::NoError)
-  {
-    systemError(0, langq.lastError().databaseText(), __FILE__, __LINE__);
-  }
+  else
+    ErrorReporter::error(QtCriticalMsg, 0,
+                         QObject::tr("Error Getting Locale"),
+                         langq, __FILE__, __LINE__);
 
   qApp->processEvents();
   QString key;

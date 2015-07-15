@@ -35,6 +35,7 @@ returnWoMaterialBatch::returnWoMaterialBatch(QWidget* parent, const char* name, 
   // Change to Issued only
   //_wo->setType(cWoExploded | cWoReleased | cWoIssued);
   _wo->setType(cWoIssued);
+  _wo->setFocus();
 }
 
 returnWoMaterialBatch::~returnWoMaterialBatch()

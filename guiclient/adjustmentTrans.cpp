@@ -59,6 +59,8 @@ adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowF
 
   if (!_metrics->boolean("AllowAvgCostMethod"))
     _tab->removeTab(0);
+
+  _item->setFocus();
 }
 
 adjustmentTrans::~adjustmentTrans()

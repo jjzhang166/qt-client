@@ -15,6 +15,8 @@
 
 #include <metasql.h>
 
+#include "errorReporter.h"
+
 check::check(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
 {
@@ -68,11 +70,12 @@ enum SetResponse check::set(const ParameterList &pParams)
 void check::sPopulate()
 {
   XSqlQuery checkPopulate;
-  MetaSQLQuery mql("SELECT * "
-                   "FROM checkhead"
-                   "     JOIN checkrecip ON (checkhead_recip_id=checkrecip_id"
+  MetaSQLQuery mql("SELECT checkhead.*,"
+                   "       checkrecip_number, checkrecip_name, checkrecip_type"
+                   "  FROM checkhead"
+                   "  JOIN checkrecip ON (checkhead_recip_id=checkrecip_id"
                    "                 AND checkhead_recip_type=checkrecip_type)"
-                   "WHERE (checkhead_id=<? value(\"checkid\")?>);");
+                   " WHERE (checkhead_id=<? value('checkid')?>);");
   ParameterList params;
   params.append("checkid", _checkid);
   checkPopulate = mql.toQuery(params);
@@ -98,9 +101,9 @@ void check::sPopulate()
     _notes->setPlainText(checkPopulate.value("checkhead_notes").toString());
     sFillList();
   }
-  else if (checkPopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Check"),
+                                checkPopulate, __FILE__, __LINE__))
   {
-    systemError(this, checkPopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -134,25 +137,28 @@ void check::sFillList()
     _items->clear();
   else
   {
-    MetaSQLQuery mql("SELECT checkitem.*,"
+    MetaSQLQuery mql("SELECT checkitem_id, checkitem_ponumber,"
+                     "       checkitem_vouchernumber, checkitem_invcnumber,"
+                     "       checkitem_cmnumber, checkitem_ranumber,"
+                     "       checkitem_docdate, checkitem_amount, checkitem_discount,"
                      "       apopen_docnumber, aropen_docnumber,"
-                     "       currToBase(<? value(\"curr_id\") ?>, checkitem_amount,"
+                     "       currToBase(<? value('curr_id') ?>, checkitem_amount,"
                      "                  checkitem_docdate) AS baseamount,"
                      "       'curr' AS checkitem_amount_xtnumericrole,"
                      "       'curr' AS checkitem_discount_xtnumericrole,"
-                     "       'curr' AS baseamount_xtnumericrole "
-                     "FROM checkitem"
+                     "       'curr' AS baseamount_xtnumericrole"
+                     "  FROM checkitem"
                      "     LEFT OUTER JOIN apopen ON (checkitem_apopen_id=apopen_id)"
-                     "     LEFT OUTER JOIN aropen ON (checkitem_aropen_id=aropen_id) "
-                     "WHERE (checkitem_checkhead_id=<? value(\"checkid\") ?>);");
+                     "     LEFT OUTER JOIN aropen ON (checkitem_aropen_id=aropen_id)"
+                     " WHERE (checkitem_checkhead_id=<? value('checkid') ?>);");
     ParameterList params;
     params.append("checkid", _checkid);
     params.append("curr_id", _amount->id());
     checkFillList = mql.toQuery(params);
     _items->populate(checkFillList, true);
-    if (checkFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Checks"),
+                             checkFillList, __FILE__, __LINE__))
     {
-      systemError(this, checkFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

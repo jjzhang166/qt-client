@@ -59,6 +59,8 @@ transformTrans::transformTrans(QWidget* parent, const char* name, Qt::WFlags fl)
 
   _controlled = true;   // safest assumption
   _targetIsValid = false;
+
+  _item->setFocus();
 }
 
 transformTrans::~transformTrans()

@@ -19,6 +19,7 @@
 #include "applyARCreditMemo.h"
 #include "arOpenItem.h"
 #include "errorReporter.h"
+#include "mqlutil.h"
 
 unappliedARCreditMemos::unappliedARCreditMemos(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -74,6 +75,7 @@ void unappliedARCreditMemos::languageChange()
 void unappliedARCreditMemos::sPrint()
 {
   ParameterList params;
+  params.append("isReport", true);
 
   orReport report("UnappliedARCreditMemos", params);
   if (report.isValid())
@@ -113,42 +115,17 @@ void unappliedARCreditMemos::sPopulateMenu( QMenu * )
 
 void unappliedARCreditMemos::sFillList()
 {
-  XSqlQuery aq;
-  aq.prepare("SELECT aropen_id, aropen_docnumber,"
-             "       cust_number, cust_name,"
-             "       aropen_amount,"
-             "       (aropen_paid + COALESCE(prepared,0.0) + COALESCE(cashapplied,0.0)) AS applied,"
-             "       (aropen_amount - aropen_paid - COALESCE(prepared,0.0) - COALESCE(cashapplied,0.0)) AS balance, "
-             "       currConcat(aropen_curr_id) AS currAbbr,"
-             "       'curr' AS aropen_amount_xtnumericrole,"
-             "       'curr' AS applied_xtnumericrole,"
-             "       'curr' AS balance_xtnumericrole "
-             "FROM aropen "
-             "       LEFT OUTER JOIN (SELECT aropen_id AS prepared_aropen_id,"
-             "                               SUM(checkitem_amount + checkitem_discount) AS prepared"
-             "                          FROM checkhead JOIN checkitem ON (checkitem_checkhead_id=checkhead_id)"
-             "                                     JOIN aropen ON (checkitem_aropen_id=aropen_id)"
-             "                         WHERE ((NOT checkhead_posted)"
-             "                           AND  (NOT checkhead_void))"
-             "                         GROUP BY aropen_id ) AS sub1"
-             "         ON (prepared_aropen_id=aropen_id)"
-             "       LEFT OUTER JOIN (SELECT aropen_id AS cash_aropen_id,"
-             "                               SUM(cashrcptitem_amount + cashrcptitem_discount) * -1.0 AS cashapplied"
-             "                          FROM cashrcpt JOIN cashrcptitem ON (cashrcptitem_cashrcpt_id=cashrcpt_id)"
-             "                                     JOIN aropen ON (cashrcptitem_aropen_id=aropen_id)"
-             "                         WHERE (NOT cashrcpt_posted)"
-             "                         GROUP BY aropen_id ) AS sub2"
-             "         ON (cash_aropen_id=aropen_id)"
-             "  JOIN custinfo ON (aropen_cust_id=cust_id)"
-             "WHERE ( (aropen_doctype IN ('C', 'R'))"
-             " AND (aropen_open)"
-             " AND ((aropen_amount - aropen_paid - COALESCE(prepared,0.0) - COALESCE(cashapplied,0.0)) > 0.0)"
-             " ) "
-             "ORDER BY aropen_docnumber;" );
-  aq.exec();
-  _aropen->populate(aq);
-  ErrorReporter::error(QtCriticalMsg, this, tr("Getting Credit Memos"),
-                       aq, __FILE__, __LINE__);
+  MetaSQLQuery mql = mqlLoad("arCreditMemos", "unapplied");
+  
+  ParameterList params;
+  
+  XSqlQuery qry = mql.toQuery(params);
+  _aropen->populate(qry);
+  if (qry.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
 }
 
 void unappliedARCreditMemos::sApply()

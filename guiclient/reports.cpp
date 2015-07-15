@@ -10,9 +10,9 @@
 
 #include "reports.h"
 
+#include <QMdiArea>
 #include <QMessageBox>
 #include <QVariant>
-#include <QWorkspace>
 
 #include <metasql.h>
 #include <mqlutil.h>

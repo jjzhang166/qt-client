@@ -18,6 +18,7 @@
 
 #include "dspInventoryAvailability.h"
 #include "dspSubstituteAvailabilityByItem.h"
+#include "errorReporter.h"
 #include "inputManager.h"
 #include "returnWoMaterialItem.h"
 #include "storedProcErrorLookup.h"
@@ -368,7 +369,10 @@ void workOrderMaterials::sFillList()
   XSqlQuery workFillList;
   if (_wo->isValid())
   {
-    workFillList.prepare( "SELECT womatl_id, *,"
+    workFillList.prepare( "SELECT womatl_id, item_number, uom_name,"
+               "       womatl_qtyfxd, womatl_qtyper, womatl_scrap,"
+               "       womatl_qtyreq, womatl_qtyiss, womatl_qtywipscrap,"
+               "       womatl_duedate, womatl_notes, womatl_ref,"
                "       (item_descrip1 || ' ' || item_descrip2) AS description,"
                "       CASE WHEN (womatl_issuemethod = 'S') THEN :push"
                "            WHEN (womatl_issuemethod = 'L') THEN :pull"
@@ -385,12 +389,12 @@ void workOrderMaterials::sFillList()
                "       'qty' AS balance_xtnumericrole,"
                "       CASE WHEN (womatl_duedate <= CURRENT_DATE) THEN 'expired'"
                "       END AS womatl_duedate_qtforegroundrole "
-               "FROM wo, womatl, itemsite, item, uom "
-               "WHERE ( (womatl_wo_id=wo_id)"
-               " AND (womatl_uom_id=uom_id)"
-               " AND (womatl_itemsite_id=itemsite_id)"
-               " AND (itemsite_item_id=item_id)"
-               " AND (wo_id=:wo_id) ) "
+               "  FROM wo"
+               "  JOIN womatl   ON (wo_id=womatl_wo_id)"
+               "  JOIN itemsite ON (womatl_itemsite_id=itemsite_id)"
+               "  JOIN item     ON (itemsite_item_id=item_id)"
+               "  JOIN uom      ON (womatl_uom_id=uom_id)"
+               " WHERE (wo_id=:wo_id) "
                "ORDER BY item_number;" );
     workFillList.bindValue(":wo_id", _wo->id());
     workFillList.bindValue(":push",  tr("Push"));
@@ -399,9 +403,9 @@ void workOrderMaterials::sFillList()
     workFillList.bindValue(":error", tr("Error"));
     workFillList.exec();
     _womatl->populate(workFillList);
-    if (workFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Materials"),
+                             workFillList, __FILE__, __LINE__))
     {
-      systemError(this, workFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -437,9 +441,9 @@ void workOrderMaterials::sFillList()
         _nonPickQtyPer->setText(formatQtyPer(workFillList.value("qtyper").toDouble()));
       }
     }
-    if (workFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Pick Info"),
+                             workFillList, __FILE__, __LINE__))
     {
-      systemError(this, workFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 

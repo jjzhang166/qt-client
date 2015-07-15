@@ -115,9 +115,10 @@ void postChecks::sHandleBankAccount(int pBankaccntid)
   XSqlQuery postHandleBankAccount;
   postHandleBankAccount.prepare( "SELECT COUNT(*) AS numofchecks "
              "FROM checkhead "
+             "JOIN bankaccnt ON (bankaccnt_id=checkhead_bankaccnt_id) "
              "WHERE ( (NOT checkhead_void)"
              " AND (NOT checkhead_posted)"
-             " AND (checkhead_printed)"
+             " AND CASE WHEN (bankaccnt_prnt_check) THEN checkhead_printed ELSE 1=1 END"
              " AND (checkhead_bankaccnt_id=:bankaccnt_id) );" );
   postHandleBankAccount.bindValue(":bankaccnt_id", pBankaccntid);
   postHandleBankAccount.exec();

@@ -10,8 +10,9 @@
 
 #include "dspBriefSalesHistory.h"
 
-#include <QVariant>
+#include <QMenu>
 #include <QMessageBox>
+#include <QVariant>
 
 #include "parameterwidget.h"
 #include "xtreewidget.h"

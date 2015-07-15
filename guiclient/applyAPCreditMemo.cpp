@@ -15,6 +15,8 @@
 #include <QSqlError>
 
 #include "apCreditMemoApplication.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
 
 applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
@@ -106,11 +108,12 @@ void applyAPCreditMemo::sPost()
       return;
     }
   }
-  else if (applyPost.lastError().type() != QSqlError::NoError)
+  if (applyPost.lastError().type() != QSqlError::NoError)
   {
-    QString msg = applyPost.lastError().databaseText();
     applyPost.exec("ROLLBACK;");
-    systemError(this, msg, __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this,
+                         tr("Error posting"), applyPost,
+                         __FILE__, __LINE__);
     return;
   }
 

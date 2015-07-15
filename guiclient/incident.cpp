@@ -17,6 +17,7 @@
 #include <QVariant>
 
 #include "arOpenItem.h"
+#include "errorReporter.h"
 #include "returnAuthorization.h"
 #include "storedProcErrorLookup.h"
 #include "todoItem.h"
@@ -46,7 +47,6 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_editTodoItem,  SIGNAL(clicked()),        this,       SLOT(sEditTodoItem()));
   connect(_item,          SIGNAL(newId(int)),     _lotserial,   SLOT(setItemId(int)));
   connect(_newTodoItem,   SIGNAL(clicked()),        this,       SLOT(sNewTodoItem()));
-  //connect(_return,      SIGNAL(clicked()),        this, SLOT(sReturn()));
   connect(_buttonBox,     SIGNAL(accepted()),        this,       SLOT(sSave()));
   connect(_print,         SIGNAL(clicked()),        this,       SLOT(sPrint()));
   connect(_todoList,      SIGNAL(itemSelected(int)), _editTodoItem, SLOT(animateClick()));
@@ -652,25 +652,28 @@ void incident::sDeleteTodoItem()
 void incident::sFillTodoList()
 {
   XSqlQuery incidentFillTodoList;
-  incidentFillTodoList.prepare("SELECT todoitem_id, *, "
-            "       firstLine(todoitem_notes) AS todoitem_notes, "
+  incidentFillTodoList.prepare("SELECT todoitem_id, todoitem_owner_username,"
+            "       firstLine(todoitem_notes) AS todoitem_notes,"
+            "       todoitem_username, todoitem_name, todoitem_description,"
+            "       todoitem_status, todoitem_due_date,"
+            "       incdtpriority_name,"
             "       CASE WHEN (todoitem_status != 'C' AND"
             "                  todoitem_due_date < CURRENT_DATE) THEN 'expired'"
             "            WHEN (todoitem_status != 'C' AND"
             "                  todoitem_due_date > CURRENT_DATE) THEN 'future'"
             "       END AS todoitem_due_date_qtforegroundrole "
             "  FROM todoitem "
-            "       LEFT OUTER JOIN incdtpriority ON (incdtpriority_id=todoitem_priority_id) "
-            "WHERE ( (todoitem_incdt_id=:incdt_id) "
-            "  AND   (todoitem_active) ) "
-            "ORDER BY todoitem_due_date, todoitem_username;");
+            "  LEFT OUTER JOIN incdtpriority ON (incdtpriority_id=todoitem_priority_id)"
+            " WHERE ((todoitem_incdt_id=:incdt_id)"
+            "   AND  todoitem_active )"
+            " ORDER BY todoitem_due_date, todoitem_username;");
 
   incidentFillTodoList.bindValue(":incdt_id", _incdtid);
   incidentFillTodoList.exec();
   _todoList->populate(incidentFillTodoList);
-  if (incidentFillTodoList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting To-Do Items"),
+                           incidentFillTodoList, __FILE__, __LINE__))
   {
-    systemError(this, incidentFillTodoList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

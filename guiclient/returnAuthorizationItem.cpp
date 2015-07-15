@@ -167,7 +167,7 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
   if (valid)
   {
     _raheadid = param.toInt();
-    returnet.prepare("SELECT *, "
+    returnet.prepare("SELECT rahead.*,"
               "       COALESCE(cust_preferred_warehous_id,-1) AS prefwhs, "
               "       COALESCE(rahead_orig_cohead_id,-1) AS cohead_id, "
               "       crmacct_id "
@@ -871,9 +871,9 @@ void returnAuthorizationItem::populate()
                  "       shp.itemsite_warehous_id AS shipWhs_id, "
                  "       qtyToReceive('RA', raitem_id) AS qtytorcv, "
                  "       crmacct_id, "
-                 "       nc.coitem_price AS saleprice, "
-                 "       nch.cohead_curr_id AS salecurrid, "
-                 "       nch.cohead_orderdate AS saledate "
+                 "       COALESCE(nc.coitem_price, raitem_saleprice) AS saleprice, "
+                 "       COALESCE(nch.cohead_curr_id, rahead_curr_id) AS salecurrid, "
+                 "       COALESCE(nch.cohead_orderdate, rahead_authdate) AS saledate "
                  "FROM raitem "
                  "  LEFT OUTER JOIN coitem oc ON (raitem_orig_coitem_id=oc.coitem_id) "
                  "  LEFT OUTER JOIN cohead och ON (oc.coitem_cohead_id=och.cohead_id) "

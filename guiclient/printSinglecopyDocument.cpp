@@ -402,6 +402,7 @@ void printSinglecopyDocument::setId(int docid)
 void printSinglecopyDocument::setPrintEnabled(bool enabled)
 {
   _data->_print->setEnabled(enabled);
+  _data->_print->setFocus();
 }
 
 void printSinglecopyDocument::setReportKey(QString key)

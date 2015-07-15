@@ -293,13 +293,13 @@ bool configureSO::sSave()
   _metrics->set("IncludePackageWeight", _includePkgWeight->isChecked());
   _metrics->set("EnableReturnAuth", _enableReturns->isChecked());
   _metrics->set("EnableSOReservations", _enableReservations->isChecked());
-  _metrics->set("RequireSOReservations", _requireReservations->isChecked());
+  _metrics->set("RequireSOReservations", _enableReservations->isChecked() && _requireReservations->isChecked());
   _metrics->set("ItemPricingPrecedence", _itemPricingPrecedence->isChecked());
   _metrics->set("WholesalePriceCosting", _wholesalePriceCosting->isChecked());
   _metrics->set("Long30Markups", _long30Markups->isChecked());
 
-  _metrics->set("EnableSOReservationsByLocation", _locationGroup->isChecked());
-  _metrics->set("SOManualReservations", _manualReservations->isChecked());
+  _metrics->set("EnableSOReservationsByLocation", _enableReservations->isChecked() && _locationGroup->isChecked());
+  _metrics->set("SOManualReservations", _enableReservations->isChecked() && _manualReservations->isChecked());
   //SOReservationLocationMethod are three Options Either
   // Lowest quantity first,
   // Highest quantity first,

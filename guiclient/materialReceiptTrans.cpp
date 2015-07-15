@@ -53,6 +53,8 @@ materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt
 
   if (!_metrics->boolean("AllowAvgCostMethod"))
     _tab->removeTab(0);
+
+  _item->setFocus();
 }
 
 materialReceiptTrans::~materialReceiptTrans()

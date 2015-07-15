@@ -46,6 +46,7 @@ scrapWoMaterialFromWIP::scrapWoMaterialFromWIP(QWidget* parent, const char* name
   _qtyScrappedFromWIP->setPrecision(omfgThis->qtyVal());
 
   adjustSize();
+  _wo->setFocus();
 }
 
 scrapWoMaterialFromWIP::~scrapWoMaterialFromWIP()

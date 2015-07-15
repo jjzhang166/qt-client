@@ -12,6 +12,7 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QStatusBar>
 #include <QCloseEvent>

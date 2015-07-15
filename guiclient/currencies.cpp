@@ -18,6 +18,7 @@
 #include <parameter.h>
 
 #include "currency.h"
+#include "errorReporter.h"
 
 currencies::currencies(QWidget* parent, const char* name, Qt::WFlags fl)
     : XWidget(parent, name, fl)
@@ -42,7 +43,7 @@ currencies::currencies(QWidget* parent, const char* name, Qt::WFlags fl)
     connect(_curr, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
     
-  _curr->addColumn( tr("Base"),		_ynColumn,       Qt::AlignCenter, true, "flag");
+  _curr->addColumn( tr("Base"),		_ynColumn,       Qt::AlignCenter, true, "curr_base");
   _curr->addColumn( tr("Name"),		-1,              Qt::AlignLeft,   true, "curr_name");
   _curr->addColumn( tr("Symbol"),	_currencyColumn, Qt::AlignCenter, true, "curr_symbol");
   _curr->addColumn( tr("Abbreviation"),	_currencyColumn, Qt::AlignLeft,   true, "curr_abbr");
@@ -157,16 +158,15 @@ void currencies::sDelete()
 void currencies::sFillList()
 {
   XSqlQuery currenciesFillList;
-  currenciesFillList.prepare( "SELECT *, "
-             "	CASE WHEN curr_base = TRUE THEN 'Y' "
-             "	ELSE '' END AS flag "
-             "FROM curr_symbol "
-             "ORDER BY flag DESC, curr_name;" );
+  currenciesFillList.prepare("SELECT curr_id, curr_base, curr_name,"
+             "    curr_symbol, curr_abbr "
+             "  FROM curr_symbol"
+             " ORDER BY curr_base DESC, curr_name;" );
   currenciesFillList.exec();
   _curr->populate(currenciesFillList);
-  if (currenciesFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Currencies"),
+                           currenciesFillList, __FILE__, __LINE__))
   {
-    systemError(this, currenciesFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

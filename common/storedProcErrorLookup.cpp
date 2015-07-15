@@ -810,6 +810,11 @@ const struct {
   { "distributeVoucherLine", -5, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Item has multiple cost elements. "
                                     "Please distribute manually."),     0, "" },
 
+  { "distributetodefault", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "There was an error distributing to default location. "
+                                                 "There is no default location defined for this Item Site."),     0, "" },
+  { "distributetodefault", -2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "There was an error distributing to default location. "
+                                                 "There is no quantity to distribute for this Item Site."),     0, "" },
+
 
   { "editccnumber",	-1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "You must select Master Card, Visa, American "
 			       "Express or Discover as the credit card type."),
@@ -978,6 +983,9 @@ const struct {
 	QT_TRANSLATE_NOOP("storedProcErrorLookup", "The A/P Credit Memo to apply was not found."),              0, "" },
   { "postAPCreditMemoApplication", -6,
 	QT_TRANSLATE_NOOP("storedProcErrorLookup", "The amount to apply for this A/P Credit Memo is NULL."),    0, "" },
+  { "postAPCreditMemoApplication", -7,
+    QT_TRANSLATE_NOOP("storedProcErrorLookup", "The value of the applications that are you attempting to post "
+                      "is greater than the balance of the target A/P open item." ),  0, "" },
 
   { "postARCreditMemoApplication", -1,
 	    QT_TRANSLATE_NOOP("storedProcErrorLookup", "There are no A/R Credit Memo applications to post."),	0, "" },

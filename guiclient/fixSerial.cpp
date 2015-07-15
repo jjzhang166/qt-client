@@ -13,6 +13,7 @@
 
 #include <QApplication>
 #include <QCursor>
+#include <QMenu>
 #include <QSqlError>
 
 #include <metasql.h>

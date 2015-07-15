@@ -1679,6 +1679,7 @@ void customer::setId(int p)
 void customer::sClear()
 {
     _custid = -1;
+    emit newId(_custid);
     _crmacctid = -1;
     _crmacct->setEnabled(false);
 

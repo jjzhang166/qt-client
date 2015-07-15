@@ -14,8 +14,9 @@
 #include "xtreewidget.h"
 #include "xtsettings.h"
 
-#include <QVariant>
+#include <QMenu>
 #include <QMessageBox>
+#include <QVariant>
 
 dspSummarizedSales::dspSummarizedSales(QWidget* parent, const char*, Qt::WFlags fl)
   : display(parent, "dspSummarizedSales", fl)
@@ -42,6 +43,7 @@ dspSummarizedSales::dspSummarizedSales(QWidget* parent, const char*, Qt::WFlags 
   parameterWidget()->appendComboBox(tr("Product Category"), "prodcat_id", XComboBox::ProductCategories);
   parameterWidget()->append(tr("Product Category Pattern"), "prodcat_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesReps);
+  parameterWidget()->append(tr("Include Misc. Items"), "includeMisc", ParameterWidget::Exists, true);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 

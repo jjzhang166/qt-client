@@ -104,9 +104,10 @@ void postCheck::sHandleBankAccount(int pBankaccntid)
              "FROM checkhead LEFT OUTER JOIN"
 	     "     checkrecip ON ((checkhead_recip_id=checkrecip_id)"
 	     "                AND (checkhead_recip_type=checkrecip_type))"
-             "WHERE ((NOT checkhead_void)"
+             "     JOIN bankaccnt ON (checkhead_bankaccnt_id=bankaccnt_id)  "
+             " WHERE ((NOT checkhead_void)"
              "  AND  (NOT checkhead_posted)"
-             "  AND  (checkhead_printed)"
+             "  AND  CASE WHEN (bankaccnt_prnt_check) THEN checkhead_printed ELSE 1=1 END" 
              "  AND  (checkhead_bankaccnt_id=:bankaccnt_id) ) "
              "ORDER BY checkhead_number;" );
   postHandleBankAccount.bindValue(":bankaccnt_id", pBankaccntid);

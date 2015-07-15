@@ -90,19 +90,49 @@ enum SetResponse copyItem::set(const ParameterList &pParams)
 
 void copyItem::sSaveItem()
 {
+  if(_source->id() == -1)
+    return;
+
   XSqlQuery itemsave;
   if(_inTransaction)
-    return;
+    itemsave.exec("ROLLBACK;");
+  else
+    _inTransaction = true;
   
-  _inTransaction = true;
+  //Find an unused temporary item number
+  int tempCopyint = 0;
+  while (true)
+  {
+    itemsave.prepare("SELECT sourceitemnumber AS result "
+                     "FROM item,"
+                     " (SELECT item_number AS sourceitemnumber"
+                     "  FROM item"
+                     "  WHERE item_id=:sourceitemid) AS data "
+                     "WHERE (item_number = ('TEMPCOPY' || :tempcopyint::TEXT || sourceitemnumber));");
+    itemsave.bindValue(":sourceitemid", _source->id());
+    itemsave.bindValue(":tempcopyint", tempCopyint);
+    itemsave.exec();
+    if (itemsave.lastError().type() != QSqlError::NoError)
+    {
+      _inTransaction = false;
+      return;
+    }
+    if(!itemsave.first())
+    {
+      break;
+    }
+    tempCopyint = tempCopyint + 1;
+  }
+
   itemsave.exec("BEGIN;");
   
-  itemsave.prepare("SELECT copyItem(item_id, 'TEMPCOPY' || :sourceitemnumber) AS result,"
+  itemsave.prepare("SELECT copyItem(item_id, 'TEMPCOPY' || :tempcopyint::TEXT || :sourceitemnumber) AS result,"
                    "       item_descrip1, item_listprice, item_listcost "
                    "FROM item "
                    "WHERE (item_id=:sourceitemid);");
   itemsave.bindValue(":sourceitemid", _source->id());
   itemsave.bindValue(":sourceitemnumber", _source->number());
+  itemsave.bindValue(":tempcopyint", tempCopyint);
   itemsave.exec();
   if(itemsave.first())
   {
@@ -151,6 +181,12 @@ void copyItem::sCopyBom()
 
 void copyItem::sAddBomitem()
 {
+  if (_newitemid == -1)
+  {
+    QMessageBox::critical(this, tr("Error"), tr("Please enter a Source Item."));
+    return;
+  }
+  
   if (_availablebomitems->id() == -1)
   {
     QMessageBox::critical(this, tr("Error"), tr("Please select an Available BOM Item."));
@@ -160,7 +196,7 @@ void copyItem::sAddBomitem()
   XSqlQuery bomitemq;
   int uomid;
   QString uomname;
-  double qtyper;
+  double qtyper = 1.0;
   bool ok;
   
   bomitemq.prepare("SELECT item_inv_uom_id, uom_name "
@@ -217,6 +253,12 @@ void copyItem::sAddBomitem()
 
 void copyItem::sEditBomitem()
 {
+  if (_addedbomitems->id() == -1)
+  {
+    QMessageBox::critical(this, tr("Error"), tr("Please select a Component Item."));
+    return;
+  }
+  
   ParameterList params;
   params.append("mode", "edit");
   params.append("bomitem_id", _addedbomitems->id());
@@ -299,6 +341,19 @@ void copyItem::sFillBomitem()
       _listCost->setDouble(bomitemq.value("listcost").toDouble());
     }
   }
+  else
+  {
+    bomitemq.prepare("SELECT item_listprice, item_listcost "
+                     "FROM item "
+                     "WHERE (item_id=:sourceitemid);");
+    bomitemq.bindValue(":sourceitemid", _source->id());
+    bomitemq.exec();
+    if(bomitemq.first())
+    {
+      _listPrice->setDouble(bomitemq.value("item_listprice").toDouble());
+      _listCost->setDouble(bomitemq.value("item_listcost").toDouble());
+    }
+  }
 }
 
 void copyItem::sCopyItemsite()
@@ -307,8 +362,8 @@ void copyItem::sCopyItemsite()
   {
     XSqlQuery itemsiteq;
     itemsiteq.prepare("SELECT copyItemsite(itemsite_id, itemsite_warehous_id, :targetitemid) AS result FROM "
-                      "(SELECT * "
-                      " FROM itemsite JOIN whsinfo ON (warehous_id=itemsite_warehous_id) "
+                      "(SELECT itemsite_id, itemsite_warehous_id"
+                      "  FROM itemsite JOIN whsinfo ON (warehous_id=itemsite_warehous_id) "
                       " WHERE (itemsite_item_id=:sourceitemid) "
                       " ORDER BY warehous_sequence DESC) AS data;");
     itemsiteq.bindValue(":sourceitemid", _source->id());
@@ -594,6 +649,8 @@ void copyItem::clear()
   _source->setId(-1);
   _targetItemNumber->clear();
   _targetItemDescrip->clear();
+  _listCost->clear();
+  _listPrice->clear();
   _availablebomitems->clear();
   _addedbomitems->clear();
   _addeditemsites->clear();

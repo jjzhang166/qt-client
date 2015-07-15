@@ -36,6 +36,7 @@ configureWO::configureWO(QWidget* parent, const char* name, bool /*modal*/, Qt::
     _nextWoNumber->setText(configureconfigureWO.value("orderseq_number").toString());
 
   _autoExplode->setChecked(_metrics->boolean("AutoExplodeWO"));
+  _issueToExplodedWO->setChecked(_metrics->boolean("IssueToExplodedWO"));
   _workOrderChangeLog->setChecked(_metrics->boolean("WorkOrderChangeLog"));
 
   _woNumGeneration->append(0, tr("Automatic"),                  "A");
@@ -84,6 +85,7 @@ bool configureWO::sSave()
   configureSave.exec();
 
   _metrics->set("AutoExplodeWO", _autoExplode->isChecked());
+  _metrics->set("IssueToExplodedWO", _issueToExplodedWO->isChecked());
   _metrics->set("WorkOrderChangeLog", _workOrderChangeLog->isChecked());
 
   _metrics->set("WONumberGeneration", _woNumGeneration->code());

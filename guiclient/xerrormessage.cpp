@@ -13,6 +13,7 @@
 #include "guiclient.h"
 
 #include <QCheckBox>
+#include <QEvent>
 #include <QLabel>
 #include <QLayout>
 #include <QMessageBox>  

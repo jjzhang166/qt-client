@@ -17,6 +17,7 @@
 #include <metasql.h>
 
 #include "mqlutil.h"
+#include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
 #define DEBUG false
@@ -338,7 +339,7 @@ void package::populate()
   }
 
   // TODO: make this recursive?
-  packagepopulate.prepare("SELECT * "
+  packagepopulate.prepare("SELECT pkghead.* "
             "FROM pkgdep, pkghead "
             "WHERE ((pkgdep_pkghead_id=pkghead_id)"
             "  AND  (pkgdep_parent_pkghead_id=:pkghead_id));");
@@ -347,9 +348,9 @@ void package::populate()
   if (DEBUG)    qDebug("package::populate() select pkgdep exec'ed");
   _dep->populate(packagepopulate);
   if (DEBUG)    qDebug("package::populate() populate pkgdep done");
-  if (packagepopulate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Package Info"),
+                           packagepopulate, __FILE__, __LINE__))
   {
-    systemError(this, packagepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -363,9 +364,9 @@ void package::populate()
   if (DEBUG)    qDebug("package::populate() select pkgdep exec'ed");
   _req->populate(packagepopulate);
   if (DEBUG)    qDebug("package::populate() populate pkgdep done");
-  if (packagepopulate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Package Info"),
+                           packagepopulate, __FILE__, __LINE__))
   {
-    systemError(this, packagepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

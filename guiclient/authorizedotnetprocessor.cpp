@@ -192,13 +192,24 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
   return 0;
 }
 
-/** Build an outgoing request for a follow-on transaction - that is, one that
-    requires a previous transaction to be meaningful (e.g. capturing a pre-auth
-    requires a valid pre-auth). These require less data and are slightly more
-    secure than full messages.
+/** @brief Build an outgoing request for a follow-on transaction -
+           that is, one that requires a previous transaction to be meaningful.
 
-    @param pamount may be changed if Authorize.Net is configured to convert currencies
-    @param pcurrid may be changed if Authorize.Net is configured to convert currencies
+    Some Authorize.Net transactions can only occur after being set
+    up by a prior transaction. For example, @em capturing a
+    pre-authorization requires an existing valid pre-authorization.
+    These follow-on transactions pass less data and are somewhat
+    more secure than full messages.
+
+    @param         pccpayid the internal id of the @c ccpay record
+    @param         ptransid the transaction id, typically the order number
+    @param         pamount  in: the amount in the ERP transaction currency,
+                            out: the amount in the Authorize.Net transaction
+    @param[in,out] pcurrid  in: the currency of the ERP transaction,
+                            out: the currency of the Authorize.Net transaction
+    @param[in,out] prequest   The message to send to Authorize.Net
+    @param         pordertype The type of Authorize.Net transaction
+
     @see buildCommon
  */
 int AuthorizeDotNetProcessor::buildFollowup(const int pccpayid, const QString &ptransid, double &pamount, int &pcurrid, QString &prequest, QString pordertype)
@@ -579,7 +590,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
      starting at 0.
    */
   QStringList responseFields = presponse.split(delim);
-  
+
   QString r_response;
   int returnValue = fieldValue(responseFields, 1, r_response);
   if (returnValue < 0)
@@ -614,7 +625,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   if (returnValue < 0)
     return returnValue;
 
-  // fieldValue(responseFields, 8-10);	// echo invoice_number description amount 
+  // fieldValue(responseFields, 8-10);	// echo invoice_number description amount
   // fieldValue(responseFields, 11-13);	// echo method transtype cust_id
   // fieldValue(responseFields, 14-24);	// echo name, company, and address info
   // fieldValue(responseFields, 25-32);	// echo ship_to fields

@@ -18,6 +18,7 @@
 #include <parameter.h>
 #include <openreports.h>
 
+#include "errorReporter.h"
 #include "failedPostList.h"
 #include "getGLDistDate.h"
 #include "glSeries.h"
@@ -139,8 +140,6 @@ void unpostedGlSeries::sView()
 
 void unpostedGlSeries::sPost()
 {
-  QDate newDate = QDate::currentDate();
-
   QList<XTreeWidgetItem*>selected = _glseries->selectedItems();
   removeDupAltIds(selected);
   QList<XTreeWidgetItem*>triedToClosed;
@@ -171,9 +170,10 @@ void unpostedGlSeries::sPost()
       {
 	triedToClosed.append(selected[i]);
       }
-      else if (post.lastError().type() != QSqlError::NoError)
+      else
       {
-	systemError(this, post.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Posting Error"),
+                             post, __FILE__, __LINE__);
       }
     } // for each selected line
 
@@ -208,7 +208,7 @@ void unpostedGlSeries::sPopulateMenu(QMenu *pMenu)
 void unpostedGlSeries::sFillList()
 {
   XSqlQuery fillq;
-  fillq.prepare("SELECT *, "
+  fillq.prepare("SELECT glseries.*, "
                 "       (formatGLAccount(glseries_accnt_id) || ' - ' || accnt_descrip) AS account,"
                 "       CASE WHEN (glseries_amount < 0) THEN (glseries_amount * -1)"
                 "            ELSE 0 END AS debit,"
@@ -223,9 +223,9 @@ void unpostedGlSeries::sFillList()
                 "ORDER BY glseries_distdate, glseries_sequence, glseries_amount;");
   fillq.exec();
   _glseries->populate(fillq, true);
-  if (fillq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting G/L Series"),
+                           fillq, __FILE__, __LINE__))
   {
-    systemError(this, fillq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

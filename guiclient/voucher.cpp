@@ -330,6 +330,7 @@ bool voucher::sSave()
   ParameterList params;
   params.append("mode", "new");
   set(params);
+  _poNumber->setFocus();
   return true;
 }
 

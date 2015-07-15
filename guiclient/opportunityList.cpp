@@ -49,7 +49,7 @@ opportunityList::opportunityList(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Type"),        _orderColumn,    Qt::AlignLeft,   true, "optype_name" );
   list()->addColumn(tr("Prob.%"),      _prcntColumn,    Qt::AlignCenter, true, "ophead_probability_prcnt" );
   list()->addColumn(tr("Amount"),      _moneyColumn,    Qt::AlignRight,  true, "ophead_amount" );
-  list()->addColumn(tr("Weighted Value"),      _moneyColumn,    Qt::AlignRight,  true, "f_value" );
+  list()->addColumn(tr("Weighted Value"),      _moneyColumn,    Qt::AlignRight,  true, "value" );
   list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   false, "f_currency" );
   list()->addColumn(tr("Target Date"), _dateColumn,     Qt::AlignLeft,   true, "ophead_target_date" );
   list()->addColumn(tr("Actual Date"), _dateColumn,     Qt::AlignLeft,   false, "ophead_actual_date" );
