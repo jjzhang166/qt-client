@@ -21,7 +21,7 @@ class opportunitySource : public XDialog, public Ui::opportunitySource
     Q_OBJECT
 
 public:
-    opportunitySource(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    opportunitySource(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~opportunitySource();
 
     virtual void populate();

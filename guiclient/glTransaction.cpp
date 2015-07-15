@@ -17,7 +17,7 @@
 
 #include "glcluster.h"
 
-glTransaction::glTransaction(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+glTransaction::glTransaction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -36,7 +36,7 @@ glTransaction::glTransaction(QWidget* parent, const char* name, bool modal, Qt::
     QWidget::setTabOrder(_notes, _buttonBox->button(QDialogButtonBox::Ok));
     QWidget::setTabOrder(_buttonBox->button(QDialogButtonBox::Ok), _buttonBox->button(QDialogButtonBox::Cancel));
 
-    _captive = FALSE;
+    _captive = false;
 }
 
 glTransaction::~glTransaction()
@@ -71,20 +71,20 @@ enum SetResponse glTransaction::set(const ParameterList &pParams)
       
       _distDate->setDate(omfgThis->dbDate(), true);
 
-      _docType->setEnabled(FALSE);
+      _docType->setEnabled(false);
       _docType->setText("JE");
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _amount->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _distDate->setEnabled(FALSE);
-      _docType->setEnabled(FALSE);
-      _debit->setEnabled(FALSE);
-      _credit->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _amount->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _distDate->setEnabled(false);
+      _docType->setEnabled(false);
+      _debit->setEnabled(false);
+      _credit->setEnabled(false);
+      _notes->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }

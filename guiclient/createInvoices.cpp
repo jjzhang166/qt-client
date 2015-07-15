@@ -18,7 +18,7 @@
 
 #include "storedProcErrorLookup.h"
 
-createInvoices::createInvoices(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createInvoices::createInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,8 +61,8 @@ void createInvoices::sPost()
                   __FILE__, __LINE__);
       return;
     }
-    omfgThis->sInvoicesUpdated(-1, TRUE);
-    omfgThis->sBillingSelectionUpdated(-1, TRUE);
+    omfgThis->sInvoicesUpdated(-1, true);
+    omfgThis->sBillingSelectionUpdated(-1, true);
     omfgThis->sSalesOrdersUpdated(-1);
   }
   else if (createPost.lastError().type() != QSqlError::NoError)

@@ -19,14 +19,13 @@
 #include <metasql.h>
 #include <parameter.h>
 
-#include "characteristic.h"
 #include "purchaseOrder.h"
 #include "printPurchaseOrder.h"
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
 
-unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt::WFlags fl)
+unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "unpostedPurchaseOrders", fl)
 {
   setupUi(optionsWidget());
@@ -45,7 +44,6 @@ unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt:
   parameterWidget()->appendComboBox(tr("Vendor Type"), "vendtype_id", XComboBox::VendorTypes);
   parameterWidget()->append(tr("Vendor Type Pattern"), "vendtype_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Purchase Agent"), "pohead_agent_usr_id", XComboBox::Agent);
-  setupCharacteristics(characteristic::PurchaseOrders);
 
   connect(omfgThis,	SIGNAL(purchaseOrdersUpdated(int, bool)),
                                               this,	SLOT(sFillList()));
@@ -62,6 +60,7 @@ unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt:
   list()->addColumn(tr("Vend. Type"),    _orderColumn, Qt::AlignLeft,   false,"vendtype_code" );
   list()->addColumn(tr("Agent"),         _orderColumn, Qt::AlignLeft,   true, "pohead_agent_username");
 
+  setupCharacteristics("PO");
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   _showUnreleased->setChecked(false);
@@ -107,7 +106,7 @@ void unpostedPurchaseOrders::sEdit()
     }
   }
   if (done)
-    omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
+    omfgThis->sPurchaseOrdersUpdated(-1, true);
   else
     QMessageBox::information(this, tr("Nothing To Edit"),
 			     tr("<p>There were no selected Purchase Orders "
@@ -183,7 +182,7 @@ void unpostedPurchaseOrders::sDelete()
       }
     }
     if (done)
-      omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
+      omfgThis->sPurchaseOrdersUpdated(-1, true);
     else
       QMessageBox::information(this, tr("Nothing To Delete"),
 			       tr("<p>There were no selected Purchase Orders "
@@ -202,7 +201,7 @@ void unpostedPurchaseOrders::sPrint()
       ParameterList params;
       params.append("pohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
-      printPurchaseOrder newdlg(this, "", TRUE);
+      printPurchaseOrder newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
       break;
@@ -240,7 +239,7 @@ void unpostedPurchaseOrders::sRelease()
     }
   }
   if (done)
-    omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
+    omfgThis->sPurchaseOrdersUpdated(-1, true);
   else
     QMessageBox::information(this, tr("Nothing To Release"),
                              tr("<p>There were no selected Purchase Orders "
@@ -277,7 +276,7 @@ void unpostedPurchaseOrders::sUnrelease()
     }
   }
   if (done)
-    omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
+    omfgThis->sPurchaseOrdersUpdated(-1, true);
   else
     QMessageBox::information(this, tr("Nothing To Unrelease"),
                              tr("<p>There were no selected Purchase Orders "

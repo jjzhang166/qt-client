@@ -20,7 +20,7 @@ class dspStandardJournalHistory : public display, public Ui::dspStandardJournalH
     Q_OBJECT
 
 public:
-    dspStandardJournalHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspStandardJournalHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

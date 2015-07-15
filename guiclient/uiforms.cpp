@@ -25,7 +25,7 @@
 
 #define DEBUG false
 
-uiforms::uiforms(QWidget* parent, const char* name, Qt::WFlags fl)
+uiforms::uiforms(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

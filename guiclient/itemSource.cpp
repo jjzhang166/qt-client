@@ -26,7 +26,7 @@
 #include <parameter.h>
 #include "mqlutil.h"
 
-itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery itemitemSource;
@@ -52,9 +52,9 @@ itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::WFlags
   _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured | ItemLineEdit::cTooling);
   _item->setDefaultType(ItemLineEdit::cGeneralPurchased);
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
   _dates->setStartCaption(tr("Effective"));
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   _dates->setEndCaption(tr("Expires"));
 
   _captive = false;
@@ -135,14 +135,14 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setEnabled(FALSE);
+    _item->setEnabled(false);
   }
 
   param = pParams.value("vend_id", &valid);
   if (valid)
   {
     _vendor->setId(param.toInt());
-    _vendor->setEnabled(FALSE);
+    _vendor->setEnabled(false);
   }
   
   param = pParams.value("contrct_id", &valid);
@@ -184,31 +184,31 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
       connect(_itemsrcp, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
       connect(_itemsrcp, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
 
-      _item->setReadOnly(TRUE);
-      _vendor->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _vendor->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _active->setEnabled(FALSE);
-      _default->setEnabled(FALSE);
-      _vendor->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _vendorItemNumber->setEnabled(FALSE);
-      _vendorItemDescrip->setEnabled(FALSE);
-      _vendorUOM->setEnabled(FALSE);
-      _invVendorUOMRatio->setEnabled(FALSE);
-      _vendorRanking->setEnabled(FALSE);
-      _minOrderQty->setEnabled(FALSE);
-      _multOrderQty->setEnabled(FALSE);
-      _leadTime->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _upcCode->setEnabled(FALSE);
-      _documents->setReadOnly(TRUE);
-      _add->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _active->setEnabled(false);
+      _default->setEnabled(false);
+      _vendor->setEnabled(false);
+      _dates->setEnabled(false);
+      _vendorItemNumber->setEnabled(false);
+      _vendorItemDescrip->setEnabled(false);
+      _vendorUOM->setEnabled(false);
+      _invVendorUOMRatio->setEnabled(false);
+      _vendorRanking->setEnabled(false);
+      _minOrderQty->setEnabled(false);
+      _multOrderQty->setEnabled(false);
+      _leadTime->setEnabled(false);
+      _notes->setEnabled(false);
+      _upcCode->setEnabled(false);
+      _documents->setReadOnly(true);
+      _add->setEnabled(false);
+      _delete->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -232,7 +232,7 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
       connect(_itemsrcp, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
       connect(_itemsrcp, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
       
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
       _vendorItemNumber->setText(_vendorItemNumber->text().prepend("Copy Of "));
       _dates->setStartDate(omfgThis->dbDate());
 
@@ -303,40 +303,40 @@ bool itemSource::sSave()
                                "before you may save this Item Source." ) )
      ;
 
-  if(_mode == cNew || _mode == cCopy)
+  itemSave.prepare( "SELECT itemsrc_id "
+                   "  FROM itemsrc "
+                   " WHERE ((itemsrc_item_id=:itemsrc_item_id) "
+                   "   AND (itemsrc_vend_id=:itemsrc_vend_id) "
+                   "   AND ((itemsrc_contrct_id=:itemsrc_contrct_id) "
+                   "    OR  (itemsrc_contrct_id IS NULL AND :itemsrc_contrct_id IS NULL)) "
+                   "   AND (itemsrc_effective=:itemsrc_effective) "
+                   "   AND (itemsrc_expires=:itemsrc_expires) "
+                   "   AND (itemsrc_vend_item_number=:itemsrc_vend_item_number) "
+                   "   AND (UPPER(itemsrc_manuf_name)=UPPER(:itemsrc_manuf_name)) "
+                   "   AND (UPPER(itemsrc_manuf_item_number)=UPPER(:itemsrc_manuf_item_number)) "
+                   "   AND (itemsrc_id != :itemsrc_id) );");
+  itemSave.bindValue(":itemsrc_id", _itemsrcid);
+  itemSave.bindValue(":itemsrc_item_id", _item->id());
+  itemSave.bindValue(":itemsrc_vend_id", _vendor->id());
+  if (_contract->isValid())
+    itemSave.bindValue(":itemsrc_contrct_id", _contract->id());
+  itemSave.bindValue(":itemsrc_effective", _dates->startDate());
+  itemSave.bindValue(":itemsrc_expires", _dates->endDate());
+  itemSave.bindValue(":itemsrc_vend_item_number", _vendorItemNumber->text());
+  itemSave.bindValue(":itemsrc_manuf_name", _manufName->currentText());
+  itemSave.bindValue(":itemsrc_manuf_item_number", _manufItemNumber->text());
+  itemSave.exec();
+  if(itemSave.first())
   {
-    itemSave.prepare( "SELECT itemsrc_id "
-                      "  FROM itemsrc "
-                      " WHERE ((itemsrc_item_id=:itemsrc_item_id) "
-                      "   AND (itemsrc_vend_id=:itemsrc_vend_id) "
-                      "   AND (itemsrc_contrct_id=:itemsrc_contrct_id) "
-                      "   AND (itemsrc_effective=:itemsrc_effective) "
-                      "   AND (itemsrc_expires=:itemsrc_expires) "
-                      "   AND (itemsrc_vend_item_number=:itemsrc_vend_item_number) "
-                      "   AND (UPPER(itemsrc_manuf_name)=UPPER(:itemsrc_manuf_name)) "
-                      "   AND (UPPER(itemsrc_manuf_item_number)=UPPER(:itemsrc_manuf_item_number)) ) ");
-    itemSave.bindValue(":itemsrc_item_id", _item->id());
-    itemSave.bindValue(":itemsrc_vend_id", _vendor->id());
-    if (_contract->isValid())
-      itemSave.bindValue(":itemsrc_contrct_id", _contract->id());
-    itemSave.bindValue(":itemsrc_effective", _dates->startDate());
-    itemSave.bindValue(":itemsrc_expires", _dates->endDate());
-    itemSave.bindValue(":itemsrc_vend_item_number", _vendorItemNumber->text());
-    itemSave.bindValue(":itemsrc_manuf_name", _manufName->currentText());
-    itemSave.bindValue(":itemsrc_manuf_item_number", _manufItemNumber->text());
-    itemSave.exec();
-    if(itemSave.first())
-    {
-      errors << GuiErrorCheck(true, _item,
-                              tr("An Item Source already exists for the Item Number, Vendor,\n"
-                                 "Contract, Effective Date, Expires Date,\n"
-                                 "Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified."));
-    }
-    else if (itemSave.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
-      return false;
-    }
+    errors << GuiErrorCheck(true, _item,
+                            tr("An Item Source already exists for the Item Number, Vendor,\n"
+                               "Contract, Effective Date, Expires Date,\n"
+                               "Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified."));
+  }
+  else if (itemSave.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
+    return false;
   }
   
   if(_active->isChecked())
@@ -436,10 +436,10 @@ bool itemSource::sSave()
   {
     if (_mode != cCopy)
     {
-      _vendor->setEnabled(FALSE);
+      _vendor->setEnabled(false);
     }
     _mode = cEdit;
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
     _captive = false;
   }
   else
@@ -461,7 +461,7 @@ void itemSource::sAdd()
   params.append("itemsrc_id", _itemsrcid);
   params.append("curr_id", _vendorCurrency->id());
 
-  itemSourcePrice newdlg(this, "", TRUE);
+  itemSourcePrice newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -474,7 +474,7 @@ void itemSource::sEdit()
   params.append("mode", "edit");
   params.append("itemsrcp_id", _itemsrcp->id());
 
-  itemSourcePrice newdlg(this, "", TRUE);
+  itemSourcePrice newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -505,13 +505,16 @@ void itemSource::sDelete()
 
 void itemSource::sPopulateMenu(QMenu *pMenu)
 {
-  QAction *menuItem;
-
-  menuItem = pMenu->addAction("Edit Item Source Price...", this, SLOT(sEdit()));
-  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
-
-  menuItem = pMenu->addAction("Delete Item Source Price...", this, SLOT(sDelete()));
-  menuItem->setEnabled(_privileges->check("MaintainItemSources"));
+  if (_mode != cView)
+  {
+    QAction *menuItem;
+    
+    menuItem = pMenu->addAction("Edit Item Source Price...", this, SLOT(sEdit()));
+    menuItem->setEnabled(_privileges->check("MaintainItemSources"));
+    
+    menuItem = pMenu->addAction("Delete Item Source Price...", this, SLOT(sDelete()));
+    menuItem->setEnabled(_privileges->check("MaintainItemSources"));
+  }
 }
 
 void itemSource::sFillPriceList()

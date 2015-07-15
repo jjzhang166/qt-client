@@ -20,7 +20,7 @@ class dspFreightPricesByCustomerType : public display, public Ui::dspFreightPric
     Q_OBJECT
 
 public:
-    dspFreightPricesByCustomerType(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspFreightPricesByCustomerType(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

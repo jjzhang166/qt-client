@@ -21,7 +21,7 @@ class dspQuotesByItem : public display, public Ui::dspQuotesByItem
     Q_OBJECT
 
 public:
-    dspQuotesByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspQuotesByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool checkSitePrivs(int orderid);
     virtual bool setParams(ParameterList&);

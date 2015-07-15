@@ -17,7 +17,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-copyContract::copyContract(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copyContract::copyContract(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ copyContract::copyContract(QWidget* parent, const char* name, bool modal, Qt::WF
 
   _contrctid = -1;
   _vendid = -1;
-  _captive = FALSE;
+  _captive = false;
 }
 
 copyContract::~copyContract()
@@ -49,7 +49,7 @@ enum SetResponse copyContract::set(const ParameterList &pParams)
   param = pParams.value("contrct_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _contrctid = param.toInt();
     sPopulateContractInfo();
   }

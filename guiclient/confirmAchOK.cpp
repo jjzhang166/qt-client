@@ -10,7 +10,7 @@
 
 #include "confirmAchOK.h"
 
-confirmAchOK::confirmAchOK(QWidget* parent, const char* name, Qt::WFlags fl)
+confirmAchOK::confirmAchOK(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XDialog(parent, name, fl)
 {
   setupUi(this);

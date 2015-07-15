@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-dspItemCostDetail::dspItemCostDetail(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemCostDetail::dspItemCostDetail(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspItemCostDetail", fl)
 {
   setupUi(optionsWidget());

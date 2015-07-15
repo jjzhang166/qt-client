@@ -18,7 +18,7 @@
 #include "dspInventoryHistory.h"
 #include "guiclient.h"
 
-dspTimePhasedUsageStatisticsByItem::dspTimePhasedUsageStatisticsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspTimePhasedUsageStatisticsByItem::dspTimePhasedUsageStatisticsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : displayTimePhased(parent, "dspTimePhasedUsageStatisticsByItem", fl)
 {
   setupUi(optionsWidget());

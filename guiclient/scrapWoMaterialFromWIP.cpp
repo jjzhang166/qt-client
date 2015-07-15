@@ -19,7 +19,7 @@
 #include "postProduction.h"
 #include "returnWoMaterialItem.h"
 
-scrapWoMaterialFromWIP::scrapWoMaterialFromWIP(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+scrapWoMaterialFromWIP::scrapWoMaterialFromWIP(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,10 +33,10 @@ scrapWoMaterialFromWIP::scrapWoMaterialFromWIP(QWidget* parent, const char* name
   connect(_wo,     SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
   connect(_womatl, SIGNAL(valid(bool)), this, SLOT(sHandleButtons()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
-  _fromWOTC = FALSE;
+  _fromWOTC = false;
 
   omfgThis->inputManager()->notify(cBCWorkOrder, this, _wo, SLOT(setId(int)));
 
@@ -63,7 +63,7 @@ enum SetResponse scrapWoMaterialFromWIP::set(const ParameterList &pParams)
 {
   XSqlQuery scrapet;
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -71,7 +71,7 @@ enum SetResponse scrapWoMaterialFromWIP::set(const ParameterList &pParams)
   param = pParams.value("womatl_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     scrapet.prepare("SELECT womatl_wo_id FROM womatl WHERE (womatl_id=:womatl_id); ");
     scrapet.bindValue(":womatl_id", param.toInt());
@@ -98,7 +98,7 @@ enum SetResponse scrapWoMaterialFromWIP::set(const ParameterList &pParams)
 
   param = pParams.value("fromWOTC", &valid);
   if (valid)
-    _fromWOTC = TRUE;
+    _fromWOTC = true;
 
   param = pParams.value("wooper_id", &valid);
   if (valid)

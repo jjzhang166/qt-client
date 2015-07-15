@@ -22,7 +22,7 @@ class packingListBatch : public XWidget, public Ui::packingListBatch
     Q_OBJECT
 
 public:
-    packingListBatch(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    packingListBatch(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~packingListBatch();
 
 public slots:

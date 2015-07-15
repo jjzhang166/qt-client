@@ -48,7 +48,11 @@ XTableView::XTableView(QWidget *parent) :
   setContextMenuPolicy(Qt::CustomContextMenu);
   verticalHeader()->setDefaultSectionSize(20);
   horizontalHeader()->setStretchLastSection(false);
+#if QT_VERSION >= 0x050000
+  horizontalHeader()->setSectionsClickable(true);
+#else
   horizontalHeader()->setClickable(true);
+#endif
   horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu); 
 
   setAlternatingRowColors(true);
@@ -215,7 +219,7 @@ void XTableView::select()
   setTable();
   _model->select();
   
-  emit valid(FALSE);
+  emit valid(false);
 
 }
 
@@ -273,7 +277,7 @@ void XTableView::selectionChanged(const QItemSelection & selected, const QItemSe
     emit valid(true);
   }
   else
-    emit valid(FALSE);
+    emit valid(false);
   QTableView::selectionChanged(selected, deselected);
 }
 
@@ -339,8 +343,11 @@ void XTableView::setColumn(const QString &label, int width, int alignment, bool 
       break;
     }
   }
-
+#if QT_VERSION >= 0x050000
+  horizontalHeader()->setSectionResizeMode(colnum, QHeaderView::Interactive);
+#else
   horizontalHeader()->setResizeMode(colnum, QHeaderView::Interactive);
+#endif
 
   if (! cp->fromSettings)
     setColumnVisible(colnum, visible);
@@ -651,7 +658,7 @@ void XTableView::sShowMenu(const QPoint &pntThis)
     _menu->clear();
     emit populateMenu(_menu, item);
 
-    bool disableExport = FALSE;
+    bool disableExport = false;
     if(_x_preferences)
       disableExport = (_x_preferences->value("DisableExportContents")=="t");
     if(!disableExport)

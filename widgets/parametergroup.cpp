@@ -37,23 +37,23 @@ ParameterGroup::ParameterGroup(QWidget *pParent, const char *pName) :
   
   _all= new QRadioButton(QObject::tr("All"), this);
   _all->setObjectName("_all");
-  _all->setChecked(TRUE);
+  _all->setChecked(true);
 
   _selected = new QRadioButton(tr("Selected:"), this);
   _selected->setObjectName("_selected");
   
-  _items = new XComboBox(FALSE, _selectedGroup);
+  _items = new XComboBox(false, _selectedGroup);
   _items->setObjectName("_items");
   
   _items->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-  _items->setEnabled(FALSE);
+  _items->setEnabled(false);
   
   _usePattern = new QRadioButton(tr("Pattern:"), this);
   _usePattern->setObjectName("_usePattern");
   
   _pattern = new QLineEdit(this);
   _pattern->setObjectName("_pattern");
-  _pattern->setEnabled(FALSE);
+  _pattern->setEnabled(false);
   
   _buttonGroup = new QButtonGroup(this);
   
@@ -246,13 +246,13 @@ void ParameterGroup::setType(enum ParameterGroupTypes pType)
 
 void ParameterGroup::setId(int pId)
 {
-  _selected->setChecked(TRUE);
+  _selected->setChecked(true);
   _items->setId(pId);
 }
 
 void ParameterGroup::setPattern(const QString &pPattern)
 {
-  _usePattern->setChecked(TRUE);
+  _usePattern->setChecked(true);
   _pattern->setText(pPattern);
 }
 
@@ -492,6 +492,6 @@ QString ParameterGroup::selected()
 
 void ParameterGroup::setSelected(const QString &p)
 {
-  _selected->setChecked(TRUE);
+  _selected->setChecked(true);
   _items->setCode(p);
 }

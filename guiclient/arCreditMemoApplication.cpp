@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <QValidator>
 
-arCreditMemoApplication::arCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+arCreditMemoApplication::arCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -23,7 +23,7 @@ arCreditMemoApplication::arCreditMemoApplication(QWidget* parent, const char* na
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-  _cust->setReadOnly(TRUE);
+  _cust->setReadOnly(true);
   adjustSize();
 }
 

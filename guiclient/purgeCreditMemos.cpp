@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-purgeCreditMemos::purgeCreditMemos(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+purgeCreditMemos::purgeCreditMemos(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

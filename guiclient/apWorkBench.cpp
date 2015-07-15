@@ -19,7 +19,7 @@
 #include "viewCheckRun.h"
 #include "unappliedAPCreditMemos.h"
 
-apWorkBench::apWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
+apWorkBench::apWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

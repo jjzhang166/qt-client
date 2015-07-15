@@ -401,6 +401,6 @@ qint64 QNetworkReplyProto::write(const QString &string)
 {
   QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
   if (item)
-    return item->write(string.toAscii());
+    return item->write(string.toLatin1());
   return 0;
 }

@@ -45,7 +45,7 @@
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
 
-dspAROpenItems::dspAROpenItems(QWidget* parent, const char*, Qt::WFlags fl)
+dspAROpenItems::dspAROpenItems(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAROpenItems", fl)
 {
   setupUi(optionsWidget());
@@ -60,8 +60,8 @@ dspAROpenItems::dspAROpenItems(QWidget* parent, const char*, Qt::WFlags fl)
   connect(_customerSelector, SIGNAL(updated()), this, SLOT(sHandlePrintGroup()));
   connect(_closed, SIGNAL(toggled(bool)), this, SLOT(sClosedToggled(bool)));
 
-  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
   QString baseBalanceTitle(tr("Balance"));
   QString baseAmountTitle(tr("Amount"));
@@ -152,7 +152,7 @@ enum SetResponse dspAROpenItems::set(const ParameterList &pParams)
   if (valid)
   {
     _asOf->setDate(param.toDate());
-    _asOf->setEnabled(FALSE);
+    _asOf->setEnabled(false);
   }
 
   if (pParams.inList("run"))
@@ -378,7 +378,7 @@ void dspAROpenItems::sApplyAropenCM()
   ParameterList params;
   params.append("aropen_id", list()->id());
 
-  applyARCreditMemo newdlg(this, "", TRUE);
+  applyARCreditMemo newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -520,7 +520,7 @@ void dspAROpenItems::sDeleteInvoice()
                         dspDeleteInvoice.lastError().databaseText(), __FILE__, __LINE__);
     }
 
-    omfgThis->sInvoicesUpdated(-1, TRUE);
+    omfgThis->sInvoicesUpdated(-1, true);
     omfgThis->sBillingSelectionUpdated(-1, -1);
   }
 }
@@ -576,7 +576,7 @@ void dspAROpenItems::sEdit()
   {
     params.append("mode", "edit");
     params.append("aropen_id", list()->id());
-    arOpenItem newdlg(this, "", TRUE);
+    arOpenItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -587,7 +587,7 @@ void dspAROpenItems::sEdit()
   {
     params.append("mode", "edit");
     params.append("incdt_id", list()->currentItem()->id("ordernumber"));
-    incident newdlg(this, "", TRUE);
+    incident newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -606,7 +606,7 @@ void dspAROpenItems::sView()
   ParameterList params;
   params.append("mode", "view");
   params.append("aropen_id", list()->id());
-  arOpenItem newdlg(this, "", TRUE);
+  arOpenItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -689,7 +689,7 @@ void dspAROpenItems::sEnterMiscArCreditMemo()
   if (_customerSelector->isSelectedCust())
     params.append("cust_id", _customerSelector->custId());
 
-  arOpenItem newdlg(this, "", TRUE);
+  arOpenItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -703,7 +703,7 @@ void dspAROpenItems::sEnterMiscArDebitMemo()
   if (_customerSelector->isSelectedCust())
     params.append("cust_id", _customerSelector->custId());
 
-  arOpenItem newdlg(this, "", TRUE);
+  arOpenItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -861,7 +861,7 @@ void dspAROpenItems::sIncident()
     params.append("aropen_id", list()->id());
     params.append("crmacct_id", dspIncident.value("crmacct_id"));
     params.append("cntct_id", dspIncident.value("crmacct_cntct_id_1"));
-    incident newdlg(this, 0, TRUE);
+    incident newdlg(this, 0, true);
     newdlg.set(params);
 
     if (newdlg.exec() == XDialog::Accepted)
@@ -874,7 +874,7 @@ void dspAROpenItems::sViewIncident()
   ParameterList params;
   params.append("mode", "view");
   params.append("incdt_id", list()->currentItem()->id("ordernumber"));
-  incident newdlg(this, "", TRUE);
+  incident newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -972,7 +972,7 @@ void dspAROpenItems::sPrintItem()
   if (list()->altId() == 0)
   {
     // Print Invoice
-    printInvoice newdlg(this, "", TRUE);
+    printInvoice newdlg(this, "", true);
     
     if (checkInvoiceSitePrivs(list()->currentItem()->id("docnumber")))
     {
@@ -985,10 +985,10 @@ void dspAROpenItems::sPrintItem()
       {
         if(newdlg.exec() == QDialog::Rejected)
           return;
-        newdlg.setSetup(TRUE);
+        newdlg.setSetup(true);
       }
 
-      omfgThis->sInvoicesUpdated(-1, TRUE);
+      omfgThis->sInvoicesUpdated(-1, true);
       return;
     }
     else
@@ -1002,14 +1002,14 @@ void dspAROpenItems::sPrintItem()
       params.append("cmhead_id", list()->currentItem()->id("docnumber"));
       params.append("persistentPrint");
 
-      printCreditMemo newdlg(this, "", TRUE);
+      printCreditMemo newdlg(this, "", true);
       newdlg.set(params);
 
       if (!newdlg.isSetup())
       {
         if(newdlg.exec() == QDialog::Rejected)
           return;
-        newdlg.setSetup(TRUE);
+        newdlg.setSetup(true);
       }
       omfgThis->sCreditMemosUpdated();
       return;
@@ -1052,7 +1052,7 @@ void dspAROpenItems::sPostCreditMemo()
 
   if (_privileges->check("ChangeSOMemoPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Return Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -1145,7 +1145,7 @@ void dspAROpenItems::sPostInvoice()
 
   if (_privileges->check("ChangeARInvcDistDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Invoice Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -1286,7 +1286,7 @@ void dspAROpenItems::sPostInvoice()
                     __FILE__, __LINE__);
   }
 
-  omfgThis->sInvoicesUpdated(-1, TRUE);
+  omfgThis->sInvoicesUpdated(-1, true);
 }
 
 void dspAROpenItems::sShipment()
@@ -1379,6 +1379,6 @@ void dspAROpenItems::sClosedToggled(bool checked)
   if (checked)
     _dates->setStartDate(QDate().currentDate().addDays(-90));
   else
-    _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
+    _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
 }
 

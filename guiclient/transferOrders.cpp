@@ -25,7 +25,7 @@
 #include "transferOrder.h"
 #include "printPackingList.h"
 
-transferOrders::transferOrders(QWidget* parent, const char* name, Qt::WFlags fl)
+transferOrders::transferOrders(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -64,7 +64,7 @@ transferOrders::transferOrders(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_to, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -137,7 +137,7 @@ void transferOrders::sCopy()
   ParameterList params;
   params.append("tohead_id", _to->id());
       
-  copyTransferOrder newdlg(this, "", TRUE);
+  copyTransferOrder newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -246,7 +246,7 @@ void transferOrders::sPrintPackingList()
   params.append("tohead_id", _to->id());
   params.append("print");
 
-  printPackingList newdlg(this, "", TRUE);
+  printPackingList newdlg(this, "", true);
   if (newdlg.set(params) != NoError_Print)
     newdlg.exec();
 }
@@ -289,45 +289,45 @@ void transferOrders::sHandleButtons()
     {
       if (!_privileges->check("MaintainTransferOrders"))
       {
-        _edit->setEnabled(FALSE);
-        _delete->setEnabled(FALSE);
+        _edit->setEnabled(false);
+        _delete->setEnabled(false);
       }
       else
       {
-        _edit->setEnabled(TRUE);
-        _delete->setEnabled(TRUE);
+        _edit->setEnabled(true);
+        _delete->setEnabled(true);
       }
     }
     else
     {
-      _edit->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
+      _edit->setEnabled(false);
+      _delete->setEnabled(false);
     }
 
     if (selected->altId() == 1)
     {  
       if (!_privileges->check("ReleaseTransferOrders"))
-        _release->setEnabled(FALSE);
+        _release->setEnabled(false);
       else
-        _release->setEnabled(TRUE);
+        _release->setEnabled(true);
     }
     else
-      _release->setEnabled(FALSE);
+      _release->setEnabled(false);
 
     if (!_privileges->check("MaintainTransferOrders"))
-      _copy->setEnabled(FALSE);
+      _copy->setEnabled(false);
     else
-      _copy->setEnabled(TRUE);
+      _copy->setEnabled(true);
 
     if (selected->altId() == 2)
     {
       if (!_privileges->check("IssueStockToShipping"))
-        _issue->setEnabled(FALSE);
+        _issue->setEnabled(false);
       else
-        _issue->setEnabled(TRUE);
+        _issue->setEnabled(true);
     }
     else
-      _issue->setEnabled(FALSE);
+      _issue->setEnabled(false);
   }
 }
 

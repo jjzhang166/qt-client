@@ -17,7 +17,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-warehouseZone::warehouseZone(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+warehouseZone::warehouseZone(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -67,8 +67,8 @@ enum SetResponse warehouseZone::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -169,7 +169,7 @@ void warehouseZone::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
     else if (warehouseCheck.lastError().type() != QSqlError::NoError)
     {

@@ -20,7 +20,7 @@ class dspPricesByItem : public display, public Ui::dspPricesByItem
     Q_OBJECT
 
 public:
-    dspPricesByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPricesByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

@@ -15,7 +15,7 @@
 #include <openreports.h>
 #include "salesCategory.h"
 
-salesCategories::salesCategories(QWidget* parent, const char* name, Qt::WFlags fl)
+salesCategories::salesCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -43,7 +43,7 @@ salesCategories::salesCategories(QWidget* parent, const char* name, Qt::WFlags f
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_salescat, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -85,7 +85,7 @@ void salesCategories::sDelete()
         if (result == 0)
         {
           salesDelete.prepare( "UPDATE salescat "
-                     "SET salescat_active=FALSE "
+                     "SET salescat_active=false "
                      "WHERE (salescat_id=:salescat_id);" );
           salesDelete.bindValue(":salescat_id", _salescat->id());
           salesDelete.exec();
@@ -101,7 +101,7 @@ void salesCategories::sDelete()
         if (result == 0)
         {
           salesDelete.prepare( "UPDATE salescat "
-                     "SET salescat_active=FALSE "
+                     "SET salescat_active=false "
                      "WHERE (salescat_id=:salescat_id);" );
           salesDelete.bindValue(":salescat_id", _salescat->id());
           salesDelete.exec();
@@ -125,7 +125,7 @@ void salesCategories::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  salesCategory newdlg(this, "", TRUE);
+  salesCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -138,7 +138,7 @@ void salesCategories::sEdit()
   params.append("mode", "edit");
   params.append("salescat_id", _salescat->id());
 
-  salesCategory newdlg(this, "", TRUE);
+  salesCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -151,7 +151,7 @@ void salesCategories::sCopy()
   params.append("mode", "copy");
   params.append("salescat_id", _salescat->id());
 
-  salesCategory newdlg(this, "", TRUE);
+  salesCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -164,7 +164,7 @@ void salesCategories::sView()
   params.append("mode", "view");
   params.append("salescat_id", _salescat->id());
 
-  salesCategory newdlg(this, "", TRUE);
+  salesCategory newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -20,7 +20,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  true to construct a modal dialog.
  */
-opportunityStage::opportunityStage(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+opportunityStage::opportunityStage(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -77,9 +77,9 @@ enum SetResponse opportunityStage::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _opInactive->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _opInactive->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
       _buttonBox->setFocus();
@@ -106,7 +106,7 @@ void opportunityStage::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

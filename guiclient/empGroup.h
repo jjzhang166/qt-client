@@ -22,7 +22,7 @@ class empGroup : public XDialog, public Ui::empGroup
     Q_OBJECT
 
 public:
-    empGroup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    empGroup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~empGroup();
 
     static  bool userHasPriv(const int = cView);

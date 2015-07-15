@@ -20,7 +20,7 @@ class printPoForm : public printSinglecopyDocument,
     Q_OBJECT
 
   public:
-    printPoForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printPoForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printPoForm();
 
     Q_INVOKABLE virtual ParameterList getParamsDocList();

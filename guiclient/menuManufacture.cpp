@@ -156,7 +156,7 @@ menuManufacture::menuManufacture(GUIClient *Pparent) :
     { "menu",                           tr("&Reports"), (char*)reportsMenu,     mainMenu,       "true", 0, 0,   true, NULL },
     
     //  Production | Reports | Schedule
-    { "wo.dspWoSchedule",  tr("Work Order &Schedule"), SLOT(sDspWoSchedule()),reportsMenu, "MaintainWorkOrders ViewWorkOrders", QPixmap(":/images/dspWoScheduleByPlannerCode.png"), toolBar, true, tr("Work Order Schedule by Planner Code") },
+    { "wo.dspWoSchedule",  tr("Work Order &Schedule"), SLOT(sDspWoSchedule()),reportsMenu, "MaintainWorkOrders ViewWorkOrders", new QPixmap(":/images/dspWoScheduleByPlannerCode.png"), toolBar, true, tr("Work Order Schedule by Planner Code") },
 
     //  Production | Reports | Material Requirements
     { "menu",                                       tr("&Material Requirements"),(char*)reportsMatlReqMenu,              reportsMenu,        "true",                              0, 0, true, NULL },
@@ -269,52 +269,52 @@ void menuManufacture::sNewWorkOrder()
 
 void menuManufacture::sExplodeWorkOrder()
 {
-  explodeWo(parent, "", TRUE).exec();
+  explodeWo(parent, "", true).exec();
 }
 
 void menuManufacture::sImplodeWorkOrder()
 {
-  implodeWo(parent, "", TRUE).exec();
+  implodeWo(parent, "", true).exec();
 }
 
 void menuManufacture::sPrintTraveler()
 {
-  printWoTraveler(parent, "", TRUE).exec();
+  printWoTraveler(parent, "", true).exec();
 }
 
 void menuManufacture::sPrintPickList()
 {
-  printWoPickList(parent, "", TRUE).exec();
+  printWoPickList(parent, "", true).exec();
 }
 
 void menuManufacture::sCloseWorkOrder()
 {
-  closeWo(parent, "", TRUE).exec();
+  closeWo(parent, "", true).exec();
 }
 
 void menuManufacture::sReleaseWorkOrdersByPlannerCode()
 {
-  releaseWorkOrdersByPlannerCode(parent, "", TRUE).exec();
+  releaseWorkOrdersByPlannerCode(parent, "", true).exec();
 }
 
 void menuManufacture::sReprioritizeWorkOrder()
 {
-  reprioritizeWo(parent, "", TRUE).exec();
+  reprioritizeWo(parent, "", true).exec();
 }
 
 void menuManufacture::sRescheduleWorkOrder()
 {
-  rescheduleWo(parent, "", TRUE).exec();
+  rescheduleWo(parent, "", true).exec();
 }
 
 void menuManufacture::sChangeWorkOrderQty()
 {
-  changeWoQty(parent, "", TRUE).exec();
+  changeWoQty(parent, "", true).exec();
 }
 
 void menuManufacture::sPurgeClosedWorkOrders()
 {
-  purgeClosedWorkOrders(parent, "", TRUE).exec();
+  purgeClosedWorkOrders(parent, "", true).exec();
 }
 
 void menuManufacture::sCreateWoMaterialRequirement()
@@ -322,7 +322,7 @@ void menuManufacture::sCreateWoMaterialRequirement()
   ParameterList params;
   params.append("mode", "new");
 
-  woMaterialItem newdlg(parent, "", TRUE);
+  woMaterialItem newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -334,22 +334,22 @@ void menuManufacture::sMaintainWoMaterials()
 
 void menuManufacture::sIssueWoMaterialBatch()
 {
-  issueWoMaterialBatch(parent, "", TRUE).exec();
+  issueWoMaterialBatch(parent, "", true).exec();
 }
 
 void menuManufacture::sIssueWoMaterialItem()
 {
-  issueWoMaterialItem(parent, "", TRUE).exec();
+  issueWoMaterialItem(parent, "", true).exec();
 }
 
 void menuManufacture::sReturnWoMaterialBatch()
 {
-  returnWoMaterialBatch(parent, "", TRUE).exec();
+  returnWoMaterialBatch(parent, "", true).exec();
 }
 
 void menuManufacture::sReturnWoMaterialItem()
 {
-  returnWoMaterialItem(parent, "", TRUE).exec();
+  returnWoMaterialItem(parent, "", true).exec();
 }
 
 void menuManufacture::sScrapWoMaterialFromWo()
@@ -358,24 +358,24 @@ void menuManufacture::sScrapWoMaterialFromWo()
   if (_privileges->check("PostProduction"))
     params.append("canPostProd", true);
 
-  scrapWoMaterialFromWIP newdlg(parent, "", TRUE);
+  scrapWoMaterialFromWIP newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
 
 void menuManufacture::sPostProduction()
 {
-  postProduction(parent, "", TRUE).exec();
+  postProduction(parent, "", true).exec();
 }
 
 void menuManufacture::sCorrectProductionPosting()
 {
-  correctProductionPosting(parent, "", TRUE).exec();
+  correctProductionPosting(parent, "", true).exec();
 }
 
 void menuManufacture::sPostMiscProduction()
 {
-  postMiscProduction(parent, "", TRUE).exec();
+  postMiscProduction(parent, "", true).exec();
 }
 
 void menuManufacture::sDspWoHistoryByItem()
@@ -450,7 +450,7 @@ void menuManufacture::sDspMaterialUsageVarianceByWarehouse()
 
 void menuManufacture::sPrintWorkOrderForm()
 {
-  printWoForm(parent, "", TRUE).exec();
+  printWoForm(parent, "", true).exec();
 }
 
 void menuManufacture::sSetup()

@@ -11,6 +11,7 @@
 #ifndef VENDOR_H
 #define VENDOR_H
 
+#include "applock.h"
 #include "guiclient.h"
 #include "xwidget.h"
 #include <parameter.h>
@@ -22,10 +23,11 @@ class vendor : public XWidget, public Ui::vendor
     Q_OBJECT
 
 public:
-    vendor(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    vendor(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~vendor();
 
     Q_INVOKABLE virtual int id() const;
+    Q_INVOKABLE virtual int mode() const;
 
 public slots:
     virtual SetResponse set(const ParameterList & pParams );
@@ -35,6 +37,7 @@ public slots:
     virtual void sPrintAddresses();
     virtual void sNewAddress();
     virtual void sEditAddress();
+    virtual void setViewMode();
     virtual void sViewAddress();
     virtual void sDeleteAddress();
     virtual void sFillAddressList();
@@ -43,10 +46,6 @@ public slots:
     virtual void sEditTaxreg();
     virtual void sViewTaxreg();
     virtual void sDeleteTaxreg();
-    virtual void sNewCharacteristic();
-    virtual void sEditCharacteristic();
-    virtual void sDeleteCharacteristic();
-    virtual void sFillCharacteristic();
     virtual void sHandleButtons();
     virtual void sNumberEdited();
 
@@ -58,6 +57,7 @@ public slots:
 signals:
     void populated();
     void newId(int);
+    void newMode(int);
     void saved(int);
 
 protected slots:
@@ -76,6 +76,7 @@ private:
     int _vendid;
     int _crmacctid;
     int _NumberGen;
+    AppLock _lock;
     QString _cachedNumber;
     bool _ignoreClose;
     bool _notice;

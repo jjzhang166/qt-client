@@ -20,7 +20,7 @@ class arAccountAssignments : public XWidget, public Ui::arAccountAssignments
     Q_OBJECT
 
 public:
-    arAccountAssignments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    arAccountAssignments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~arAccountAssignments();
 
 public slots:

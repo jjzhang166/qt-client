@@ -24,7 +24,7 @@
 #include "bankAdjustment.h"
 #include "storedProcErrorLookup.h"
 
-bankAdjustmentEditList::bankAdjustmentEditList(QWidget* parent, const char* name, Qt::WFlags fl)
+bankAdjustmentEditList::bankAdjustmentEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -61,7 +61,7 @@ bankAdjustmentEditList::bankAdjustmentEditList(QWidget* parent, const char* name
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_adjustments, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
   

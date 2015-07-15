@@ -22,7 +22,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-itemSourceSearch::itemSourceSearch(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSourceSearch::itemSourceSearch(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -111,7 +111,7 @@ void itemSourceSearch::sFillList()
     params.append("searchManufNumber", _search->text());
 
   itemFillList = mql.toQuery(params);
-  _itemsrc->populate(itemFillList, TRUE);
+  _itemsrc->populate(itemFillList, true);
 }
 
 int itemSourceSearch::itemsrcId()

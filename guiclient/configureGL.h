@@ -20,7 +20,7 @@ class configureGL : public XAbstractConfigure, public Ui::configureGL
     Q_OBJECT
 
 public:
-    configureGL(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureGL(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureGL();
 
 public slots:

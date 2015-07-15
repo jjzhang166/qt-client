@@ -21,7 +21,7 @@ class terms : public XDialog, public Ui::terms
     Q_OBJECT
 
 public:
-    terms(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    terms(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~terms();
 
 public slots:

@@ -646,7 +646,7 @@ void VirtualClusterLineEdit::setTableAndColumnNames(const char* pTabName,
   if (_hasActive)
     _query += QString(", %1 AS active ").arg(pActiveColumn);
 
-  _query += QString("FROM %1 WHERE (TRUE) ").arg(pTabName);
+  _query += QString("FROM %1 WHERE (true) ").arg(pTabName);
 
   _idClause = QString(" AND (%1=:id) ").arg(pIdColumn);
   _numClause = QString(" AND (%1 ~* :number) ").arg(pNumberColumn);
@@ -971,7 +971,7 @@ void VirtualList::init()
     _searchLit	= new QLabel(tr("S&earch for:"), this);
     _searchLit->setBuddy(_search);
     _searchLit->setObjectName("_searchLit");
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     _search->setMinimumHeight(22);
 #endif
     _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -1188,7 +1188,7 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
 
     searchStrLyt->addWidget(_searchLit);
     searchStrLyt->addWidget(_search);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     _search->setMinimumHeight(22);
     selectorsLyt->setVerticalSpacing(6);
 #else

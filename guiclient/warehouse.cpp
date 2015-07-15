@@ -18,7 +18,7 @@
 #include "guiErrorCheck.h"
 #include "warehouseZone.h"
 
-warehouse::warehouse(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+warehouse::warehouse(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl),
     _mode(cView),
     _warehousid(-1)
@@ -41,7 +41,7 @@ warehouse::warehouse(QWidget* parent, const char* name, bool modal, Qt::WFlags f
 
   if (!_metrics->boolean("MultiWhs"))
   {
-    _active->setChecked(TRUE);
+    _active->setChecked(true);
     _active->hide();
   }
 
@@ -105,31 +105,31 @@ enum SetResponse warehouse::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _code->setEnabled(FALSE);
-      _sitetype->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _contact->setEnabled(FALSE);
-      _address->setEnabled(FALSE);
-      _defaultFOB->setEnabled(FALSE);
-      _bolPrefix->setEnabled(FALSE);
-      _bolNumber->setEnabled(FALSE);
-      _shipping->setEnabled(FALSE);
-      _countTagPrefix->setEnabled(FALSE);
-      _countTagNumber->setEnabled(FALSE);
-      _sequence->setEnabled(FALSE);
-      _useSlips->setEnabled(FALSE);
-      _arblGroup->setEnabled(FALSE);
-      _useZones->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
-      _account->setEnabled(FALSE);
-      _shipcomm->setEnabled(FALSE);
-      _taxzone->setEnabled(FALSE);
-      _comments->setReadOnly(TRUE);
-      _transit->setEnabled(FALSE);
-      _shipform->setEnabled(FALSE);
-      _shipvia->setEnabled(FALSE);
-      _shipcomments->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _sitetype->setEnabled(false);
+      _active->setEnabled(false);
+      _description->setEnabled(false);
+      _contact->setEnabled(false);
+      _address->setEnabled(false);
+      _defaultFOB->setEnabled(false);
+      _bolPrefix->setEnabled(false);
+      _bolNumber->setEnabled(false);
+      _shipping->setEnabled(false);
+      _countTagPrefix->setEnabled(false);
+      _countTagNumber->setEnabled(false);
+      _sequence->setEnabled(false);
+      _useSlips->setEnabled(false);
+      _arblGroup->setEnabled(false);
+      _useZones->setEnabled(false);
+      _new->setEnabled(false);
+      _account->setEnabled(false);
+      _shipcomm->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _comments->setReadOnly(true);
+      _transit->setEnabled(false);
+      _shipform->setEnabled(false);
+      _shipvia->setEnabled(false);
+      _shipcomments->setEnabled(false);
 
       _close->setText(tr("&Close"));
       _save->hide();
@@ -481,7 +481,7 @@ void warehouse::sCheck()
       populate();
       emit newMode(_mode);
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
     else
     {
@@ -500,7 +500,7 @@ void warehouse::sNewZone()
   params.append("warehous_id", _warehousid);
   params.append("mode", "new");
 
-  warehouseZone newdlg(this, "", TRUE);
+  warehouseZone newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -512,7 +512,7 @@ void warehouse::sEditZone()
   params.append("whsezone_id", _whsezone->id());
   params.append("mode", "edit");
 
-  warehouseZone newdlg(this, "", TRUE);
+  warehouseZone newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();

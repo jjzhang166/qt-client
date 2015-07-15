@@ -13,6 +13,7 @@
 #include <QMdiArea>
 #include <QMessageBox>
 #include <QVariant>
+//#include <QWorkspace>
 
 #include <metasql.h>
 #include <mqlutil.h>
@@ -21,7 +22,7 @@
 
 #include "errorReporter.h"
 
-reports::reports(QWidget* parent, const char* name, Qt::WFlags fl)
+reports::reports(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -107,9 +108,9 @@ void reports::sNew()
     omfgThis->_reportHandler = new ReportHandler(omfgThis, "report handler");
     if(_preferences->value("InterfaceWindowOption") != "TopLevel")
       omfgThis->_reportHandler->setParentWindow(omfgThis->workspace());
-    omfgThis->_reportHandler->setAllowDBConnect(FALSE);
-    omfgThis->_reportHandler->setPlaceMenusOnWindows(TRUE);
-    omfgThis->_reportHandler->setPlaceToolbarsOnWindows(TRUE);
+    omfgThis->_reportHandler->setAllowDBConnect(false);
+    omfgThis->_reportHandler->setPlaceMenusOnWindows(true);
+    omfgThis->_reportHandler->setPlaceToolbarsOnWindows(true);
     connect(omfgThis->_reportHandler, SIGNAL(reportsChanged(int, bool)), omfgThis, SLOT(sReportsChanged(int, bool)));
   }
 
@@ -123,9 +124,9 @@ void reports::sEdit()
     omfgThis->_reportHandler = new ReportHandler(omfgThis, "report handler");
     if(_preferences->value("InterfaceWindowOption") != "TopLevel")
       omfgThis->_reportHandler->setParentWindow(omfgThis->workspace());
-    omfgThis->_reportHandler->setAllowDBConnect(FALSE);
-    omfgThis->_reportHandler->setPlaceMenusOnWindows(TRUE);
-    omfgThis->_reportHandler->setPlaceToolbarsOnWindows(TRUE);
+    omfgThis->_reportHandler->setAllowDBConnect(false);
+    omfgThis->_reportHandler->setPlaceMenusOnWindows(true);
+    omfgThis->_reportHandler->setPlaceToolbarsOnWindows(true);
     connect(omfgThis->_reportHandler, SIGNAL(reportsChanged(int, bool)), omfgThis, SLOT(sReportsChanged(int, bool)));
   }
 

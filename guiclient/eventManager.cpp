@@ -36,7 +36,7 @@
 #include "incident.h"
 #include "task.h"
 
-eventManager::eventManager(QWidget* parent, const char* name, Qt::WFlags fl)
+eventManager::eventManager(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -52,7 +52,7 @@ eventManager::eventManager(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_warehouse,		SIGNAL(updated()),     this, SLOT(sFillList()));
 
   if (!_privileges->check("ViewOtherEvents"))
-    _selectedUser->setEnabled(FALSE);
+    _selectedUser->setEnabled(false);
 
   _event->addColumn("orderId",         0,               Qt::AlignCenter, true, "evntlog_ord_id");
   _event->addColumn("newDate",         0,               Qt::AlignCenter, true, "evntlog_newdate" );
@@ -95,13 +95,13 @@ void eventManager::sPopulateMenu(QMenu *menu)
     menuItem = menu->addAction(tr("Acknowledge"), this, SLOT(sAcknowledge()));
     if ( ((_currentUser->isChecked()) && (!_privileges->check("DispatchOwnEvents"))) ||
          ((_selectedUser->isChecked()) && (!_privileges->check("DispatchOtherEvents"))) )
-        menuItem->setEnabled(FALSE);
+        menuItem->setEnabled(false);
   }
 
   menuItem = menu->addAction(tr("Delete"), this, SLOT(sDelete()));
   if ( ((_currentUser->isChecked()) && (!_privileges->check("DeleteOwnEvents"))) ||
        ((_selectedUser->isChecked()) && (!_privileges->check("DeleteOtherEvents"))) )
-      menuItem->setEnabled(FALSE);
+      menuItem->setEnabled(false);
 
   // if multiple items are selected then keep the menu short
   QList<XTreeWidgetItem*> list = _event->selectedItems();
@@ -244,7 +244,7 @@ void eventManager::sViewPurchaseOrderItem()
   params.append("mode", "view");
   params.append("poitem_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
       
-  purchaseOrderItem newdlg(this, "", TRUE);
+  purchaseOrderItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -262,7 +262,7 @@ void eventManager::sPrintPackingList()
     ParameterList params;
     params.append("sohead_id", eventPrintPackingList.value("coitem_cohead_id").toInt());
 
-    printPackingList newdlg(this, "", TRUE);
+    printPackingList newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
@@ -278,7 +278,7 @@ void eventManager::sIssueCountTag()
   ParameterList params;
   params.append("itemsite_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
   
-  createCountTagsByItem newdlg(this, "", TRUE);
+  createCountTagsByItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -307,7 +307,7 @@ void eventManager::sViewInventoryAvailability()
 void eventManager::sRecallWo()
 {
   XSqlQuery eventRecallWo;
-  eventRecallWo.prepare("SELECT recallWo(:wo_id, FALSE) AS result;");
+  eventRecallWo.prepare("SELECT recallWo(:wo_id, false) AS result;");
   eventRecallWo.bindValue(":wo_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
   eventRecallWo.exec();
   if (eventRecallWo.first())
@@ -332,7 +332,7 @@ void eventManager::sChangeWoQty()
   params.append("wo_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
   params.append("newQty", _event->currentItem()->rawValue("evntlog_newvalue").toDouble());
 
-  changeWoQty newdlg(this, "", TRUE);
+  changeWoQty newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -352,7 +352,7 @@ void eventManager::sPrintWoTraveler()
   ParameterList params;
   params.append("wo_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
 
-  printWoTraveler newdlg(this, "", TRUE);
+  printWoTraveler newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -364,7 +364,7 @@ void eventManager::sDeleteWorkOrder()
                              tr("Are you sure that you want to delete the selected Work Order?"),
                              tr("&Yes"), tr("&No"), QString::null, 0, 1) == 0)
   {
-    eventDeleteWorkOrder.prepare("SELECT deleteWo(:wo_id, TRUE) AS returnVal;");
+    eventDeleteWorkOrder.prepare("SELECT deleteWo(:wo_id, true) AS returnVal;");
     eventDeleteWorkOrder.bindValue(":wo_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
     eventDeleteWorkOrder.exec();
     if (eventDeleteWorkOrder.first())
@@ -390,7 +390,7 @@ void eventManager::sViewTodoItem()
   params.append("mode", "view");
   params.append("todoitem_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
       
-  todoItem newdlg(this, "", TRUE);
+  todoItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -401,7 +401,7 @@ void eventManager::sViewIncident()
   params.append("mode", "view");
   params.append("incdt_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
       
-  incident newdlg(this, "", TRUE);
+  incident newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -412,7 +412,7 @@ void eventManager::sViewTask()
   params.append("mode", "view");
   params.append("prjtask_id", _event->currentItem()->rawValue("evntlog_ord_id").toInt());
       
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

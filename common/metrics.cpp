@@ -20,7 +20,7 @@
 Parameters::Parameters(QObject * parent)
   : QObject(parent)
 {
-  _dirty = FALSE;
+  _dirty = false;
 }
 
 void Parameters::load()
@@ -33,8 +33,13 @@ void Parameters::load()
   q.exec();
   while (q.next())
     _values[q.value("key").toString()] = q.value("value").toString();
+  if (q.lastError().type() != QSqlError::NoError) {
+    QMessageBox::critical(0, tr("Error loading %1").arg(metaObject()->className()),
+                         q.lastError().text());
+    return;
+  }
 
-  _dirty = FALSE;
+  _dirty = false;
 
   emit loaded();
 }
@@ -68,11 +73,11 @@ bool Parameters::boolean(const QString &pName)
 {
   MetricMap::iterator it = _values.find(pName);
   if (it == _values.end())
-    return FALSE;
+    return false;
   else if (it.value() == "t")
-    return TRUE;
+    return true;
 
-  return FALSE;
+  return false;
 }
 
 void Parameters::set(const char *pName, bool pValue)
@@ -125,7 +130,7 @@ void Parameters::_set(const QString &pName, QVariant pValue)
   q.bindValue(":value", pValue);
   q.exec();
 
-  _dirty = TRUE;
+  _dirty = true;
 }
 
 QString Parameters::parent(const QString &pValue)
@@ -167,7 +172,7 @@ void Preferences::remove(const QString &pPrefName)
   q.bindValue(":prefname", pPrefName);
   q.exec();
 
-  _dirty = TRUE;
+  _dirty = true;
 }
 
 
@@ -201,13 +206,34 @@ Privileges::Privileges()
 
 bool Privileges::check(const QString &pName)
 {
-  if(_dirty)
-    load();
-  MetricMap::iterator it = _values.find(pName);
-  if (it == _values.end())
-    return FALSE;
-  else
-    return TRUE;
+    if (pName == "#superuser")
+      return isDba();
+
+    if(_dirty)
+      load();
+
+    MetricMap::iterator it = _values.find(pName);
+    if (it != _values.end())
+      return true;
+
+    if (pName.contains(" ")) {
+      QStringList privlist = pName.split(' ', QString::SkipEmptyParts);
+      foreach (QString priv, privlist) {
+        if (check(priv))
+          return true;
+      }
+    }
+
+    if (pName.contains("+")) {
+      bool anded = true;
+      QStringList privlist = pName.split('+', QString::SkipEmptyParts);
+      foreach (QString priv, privlist) {
+        anded = anded && check(priv);
+      }
+      return anded;
+    }
+
+ return false;
 }
 
 bool Privileges::isDba()

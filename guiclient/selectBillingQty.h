@@ -21,7 +21,7 @@ class selectBillingQty : public XDialog, public Ui::selectBillingQty
     Q_OBJECT
 
 public:
-    selectBillingQty(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    selectBillingQty(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~selectBillingQty();
 
 public slots:

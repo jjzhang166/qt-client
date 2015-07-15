@@ -25,7 +25,7 @@
 
 static bool _foundCostElems;
 
-itemCost::itemCost(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemCost::itemCost(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -71,7 +71,7 @@ enum SetResponse itemCost::set(const ParameterList &pParams)
     if (itemet.first())
     {
       _item->setId(itemet.value("bomitem_item_id").toInt());
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
     }
   }
 
@@ -80,7 +80,7 @@ enum SetResponse itemCost::set(const ParameterList &pParams)
   {
     _type = cBOMItemCost;
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   param = pParams.value("bomitemcost_id", &valid);
@@ -88,7 +88,7 @@ enum SetResponse itemCost::set(const ParameterList &pParams)
   {
     _type = cBOMItemCost;
     _itemcostid = param.toInt();
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
 
     itemet.prepare( "SELECT bomitem_item_id, formatBoolYN(bomitemcost_lowlevel) AS lowlevel,"
                "       bomitemcost_actcost, bomitemcost_curr_id, bomitemcost_updated "
@@ -118,7 +118,7 @@ enum SetResponse itemCost::set(const ParameterList &pParams)
   {
     _type = cItemCost;
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   param = pParams.value("itemcost_id", &valid);
@@ -126,7 +126,7 @@ enum SetResponse itemCost::set(const ParameterList &pParams)
   {
     _type = cItemCost;
     _itemcostid = param.toInt();
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
 
     itemet.prepare( "SELECT item_id, formatBoolYN(itemcost_lowlevel) AS lowlevel,"
                "       itemcost_actcost, itemcost_curr_id, itemcost_updated "
@@ -222,7 +222,7 @@ void itemCost::sSave()
                    "  itemcost_curr_id ) "
                    "VALUES "
                    "( :itemcost_id, :itemcost_item_id,"
-                   "  :itemcost_costelem_id, FALSE,"
+                   "  :itemcost_costelem_id, false,"
                    "  0, startOfTime(),"
                    "  :itemcost_actcost, CURRENT_DATE, "
                    "  :itemcost_curr_id );" );
@@ -282,7 +282,7 @@ void itemCost::sSave()
                    "  bomitemcost_curr_id ) "
                    "VALUES "
                    "( :bomitemcost_id, :bomitemcost_bomitem_id,"
-                   "  :bomitemcost_costelem_id, FALSE,"
+                   "  :bomitemcost_costelem_id, false,"
                    "  0, startOfTime(),"
                    "  :bomitemcost_actcost, CURRENT_DATE, "
                    "  :bomitemcost_curr_id );" );

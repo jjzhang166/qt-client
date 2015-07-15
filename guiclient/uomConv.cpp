@@ -16,7 +16,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-uomConv::uomConv(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+uomConv::uomConv(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

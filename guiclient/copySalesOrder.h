@@ -22,7 +22,7 @@ class copySalesOrder : public XDialog, public Ui::copySalesOrder
     Q_OBJECT
 
 public:
-    copySalesOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    copySalesOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~copySalesOrder();
 
 public slots:

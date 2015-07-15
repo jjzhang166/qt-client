@@ -24,7 +24,7 @@ class dspFinancialReport : public display, public Ui::dspFinancialReport
     Q_OBJECT
 
 public:
-    dspFinancialReport(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+    dspFinancialReport(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = 0);
 
     Q_INVOKABLE virtual bool setParams(ParameterList &);
 

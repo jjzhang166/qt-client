@@ -20,7 +20,7 @@
 
 #include "productCategory.h"
 
-productCategories::productCategories(QWidget* parent, const char* name, Qt::WFlags fl)
+productCategories::productCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -48,8 +48,8 @@ productCategories::productCategories(QWidget* parent, const char* name, Qt::WFla
   {
     connect(_prodcat, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    _new->setEnabled(FALSE);
-    _deleteUnused->setEnabled(FALSE);
+    _new->setEnabled(false);
+    _deleteUnused->setEnabled(false);
   }
 
   sFillList(-1);
@@ -95,7 +95,7 @@ void productCategories::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  productCategory newdlg(this, "", TRUE);
+  productCategory newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -109,7 +109,7 @@ void productCategories::sEdit()
   params.append("mode", "edit");
   params.append("prodcat_id", _prodcat->id());
 
-  productCategory newdlg(this, "", TRUE);
+  productCategory newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -123,7 +123,7 @@ void productCategories::sView()
   params.append("mode", "view");
   params.append("prodcat_id", _prodcat->id());
 
-  productCategory newdlg(this, "", TRUE);
+  productCategory newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

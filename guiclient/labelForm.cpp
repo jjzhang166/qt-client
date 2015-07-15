@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-labelForm::labelForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+labelForm::labelForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -60,9 +60,9 @@ enum SetResponse labelForm::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _report->setEnabled(FALSE);
-      _labelsPerPage->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _report->setEnabled(false);
+      _labelsPerPage->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }

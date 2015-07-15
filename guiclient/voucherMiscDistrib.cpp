@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QValidator>
 
-voucherMiscDistrib::voucherMiscDistrib(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+voucherMiscDistrib::voucherMiscDistrib(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -104,12 +104,12 @@ void voucherMiscDistrib::populate()
     _notes->setText(vpopulateVoucher.value("vodist_notes").toString());
     if(vpopulateVoucher.value("vodist_expcat_id").toInt() != -1)
     {
-      _expcatSelected->setChecked(TRUE);
+      _expcatSelected->setChecked(true);
       _expcat->setId(vpopulateVoucher.value("vodist_expcat_id").toInt());
     }
     if(vpopulateVoucher.value("vodist_tax_id").toInt() != -1)
     {
-	   _taxSelected->setChecked(TRUE);
+	   _taxSelected->setChecked(true);
 	   _taxCode->setId(vpopulateVoucher.value("vodist_tax_id").toInt());
     }
   }
@@ -253,28 +253,30 @@ else if(_taxSelected->isChecked() && _mode == cNew)
 void voucherMiscDistrib::sPopulateVendorInfo(int pVendid)
 {
   XSqlQuery populateVoucher;
-  populateVoucher.prepare( "SELECT vend_accnt_id, vend_expcat_id, vend_tax_id "
-             "FROM vendinfo "
-             "WHERE (vend_id=:vend_id);" );
+  populateVoucher.prepare("SELECT COALESCE(vend_accnt_id, -1) AS vend_accnt_id,"
+                          "       COALESCE(vend_expcat_id, -1) AS vend_expcat_id,"
+                          "       COALESCE(vend_tax_id, -1) AS vend_tax_id "
+                          "FROM vendinfo "
+                          "WHERE (vend_id=:vend_id);" );
   populateVoucher.bindValue(":vend_id", pVendid);
   populateVoucher.exec();
   if (populateVoucher.first())
   {
     if(populateVoucher.value("vend_accnt_id").toInt() != -1)
     {
-      _accountSelected->setChecked(TRUE);
+      _accountSelected->setChecked(true);
       _account->setId(populateVoucher.value("vend_accnt_id").toInt());
       _amount->setFocus();
     }
     if(populateVoucher.value("vend_expcat_id").toInt() != -1)
     {
-      _expcatSelected->setChecked(TRUE);
+      _expcatSelected->setChecked(true);
       _expcat->setId(populateVoucher.value("vend_expcat_id").toInt());
       _amount->setFocus();
     }
     if(populateVoucher.value("vend_tax_id").toInt() != -1)
     {
-      _taxSelected->setChecked(TRUE);
+      _taxSelected->setChecked(true);
       _taxCode->setId(populateVoucher.value("vend_tax_id").toInt());
       _amount->setFocus();
     }

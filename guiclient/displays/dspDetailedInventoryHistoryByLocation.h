@@ -20,7 +20,7 @@ class dspDetailedInventoryHistoryByLocation : public display, public Ui::dspDeta
     Q_OBJECT
 
 public:
-    dspDetailedInventoryHistoryByLocation(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspDetailedInventoryHistoryByLocation(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

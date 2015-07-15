@@ -18,7 +18,7 @@
 
 const char *_alarmQualifiers[] = { "MB", "HB", "DB", "MA", "HA", "DA" };
 
-alarmMaint::alarmMaint(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+alarmMaint::alarmMaint(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : QDialog(parent, fl)
 {
   setupUi(this);

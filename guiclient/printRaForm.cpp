@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "guiclient.h"
 
-printRaForm::printRaForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printRaForm::printRaForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -25,7 +25,7 @@ printRaForm::printRaForm(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_ra, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
 
-  _captive = FALSE; 
+  _captive = false; 
 
   _report->populate( "SELECT form_id, form_name "
                      "FROM form "
@@ -46,7 +46,7 @@ void printRaForm::languageChange()
 enum SetResponse printRaForm::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

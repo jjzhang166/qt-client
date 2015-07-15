@@ -20,7 +20,7 @@
 #include "poLiabilityDistrib.h"
 #include "voucher.h"
 
-dspPoItemReceivingsByVendor::dspPoItemReceivingsByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemReceivingsByVendor::dspPoItemReceivingsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemReceivingsByVendor", fl)
 {
   setupUi(optionsWidget());

@@ -19,7 +19,7 @@ class printWoForm : public XDialog, public Ui::printWoForm
     Q_OBJECT
 
 public:
-    printWoForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printWoForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printWoForm();
 
 public slots:

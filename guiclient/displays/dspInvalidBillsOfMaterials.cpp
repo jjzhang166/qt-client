@@ -23,7 +23,7 @@
 #include "item.h"
 #include "itemSite.h"
 
-dspInvalidBillsOfMaterials::dspInvalidBillsOfMaterials(QWidget* parent, const char*, Qt::WFlags fl)
+dspInvalidBillsOfMaterials::dspInvalidBillsOfMaterials(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInvalidBillsOfMaterials", fl)
 {
   setupUi(optionsWidget());

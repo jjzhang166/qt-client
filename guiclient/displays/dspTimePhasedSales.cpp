@@ -20,7 +20,7 @@
 #include "parameterwidget.h"
 #include "guiclient.h"
 
-dspTimePhasedSales::dspTimePhasedSales(QWidget* parent, const char*, Qt::WFlags fl)
+dspTimePhasedSales::dspTimePhasedSales(QWidget* parent, const char*, Qt::WindowFlags fl)
   : displayTimePhased(parent, "dspTimePhasedSales", fl)
 {
   setupUi(optionsWidget());

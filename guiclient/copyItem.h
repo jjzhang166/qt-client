@@ -22,7 +22,7 @@ class copyItem : public XDialog, public Ui::copyItem
     Q_OBJECT
 
 public:
-    copyItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    copyItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~copyItem();
 
     Q_INVOKABLE inline  bool    captive() const { return _captive; }

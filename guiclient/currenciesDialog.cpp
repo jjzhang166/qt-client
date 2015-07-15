@@ -11,7 +11,7 @@
 #include "currenciesDialog.h"
 #include "currencies.h"
 
-currenciesDialog::currenciesDialog(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+currenciesDialog::currenciesDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   if (name)

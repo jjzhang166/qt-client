@@ -22,7 +22,7 @@ class lotSerial : public XDialog, public Ui::lotSerial
     Q_OBJECT
 
 public:
-    lotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    lotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~lotSerial();
 
     QPushButton* _print;
@@ -32,9 +32,6 @@ public slots:
     virtual void sSave();
     virtual void sChanged();
     virtual void sFillList();
-    virtual void sNewCharass();
-    virtual void sEditCharass();
-    virtual void sDeleteCharass();
     virtual void sNewReg();
     virtual void sEditReg();
     virtual void sDeleteReg();

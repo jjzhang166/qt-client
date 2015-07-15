@@ -19,7 +19,7 @@
 #include "itemSite.h"
 #include "storedProcErrorLookup.h"
 
-dspUnbalancedQOHByClassCode::dspUnbalancedQOHByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspUnbalancedQOHByClassCode::dspUnbalancedQOHByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspUnbalancedQOHByClassCode", fl)
 {
   setupUi(optionsWidget());

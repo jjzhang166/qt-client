@@ -30,7 +30,7 @@
 #include "purchaseOrder.h"
 #include "purchaseOrderItem.h"
 
-dspOrderActivityByProject::dspOrderActivityByProject(QWidget* parent, const char*, Qt::WFlags fl)
+dspOrderActivityByProject::dspOrderActivityByProject(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspOrderActivityByProject", fl)
 {
   setupUi(optionsWidget());
@@ -241,7 +241,7 @@ void dspOrderActivityByProject::sEdit()
     params.append("mode", "edit");
     params.append("prjtask_id", list()->id());
 
-    task newdlg(this, "", TRUE);
+    task newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Rejected)
      sFillList();
@@ -333,7 +333,7 @@ void dspOrderActivityByProject::sView()
     params.append("mode", "view");
     params.append("prjtask_id", list()->id());
 
-    task newdlg(this, "", TRUE);
+    task newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
@@ -527,7 +527,7 @@ void dspOrderActivityByProject::sNewProjectTask()
       tr("Please save the Project first."));
   }
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();

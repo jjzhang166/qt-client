@@ -24,7 +24,7 @@
 #include "quotecluster.h"
 #include "xsqlquery.h"
 
-quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog( parent, fl )
+quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl ) : QDialog( parent, fl )
 {
   setObjectName(name ? name : "quoteList" );
   setModal(modal);
@@ -70,8 +70,8 @@ quoteList::quoteList( QWidget* parent, const char* name, bool modal, Qt::WFlags 
 
   _select = new QPushButton(tr("&Select"), this);
   _select->setObjectName("_select");
-  _select->setEnabled( FALSE );
-  _select->setDefault( TRUE );
+  _select->setEnabled( false );
+  _select->setDefault( true );
 
   buttonsLayout->addWidget(_select);
   buttonsLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));

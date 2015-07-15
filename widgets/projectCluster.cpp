@@ -145,7 +145,7 @@ void ProjectLineEdit::sCopy()
   ParameterList params;
   params.append("prj_id", id());
 
-  projectCopy newdlg(parentWidget(), "", TRUE);
+  projectCopy newdlg(parentWidget(), "", true);
   newdlg.set(params);
 
   int copiedProjectid;

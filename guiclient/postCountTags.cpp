@@ -18,7 +18,7 @@
 
 #include "storedProcErrorLookup.h"
 
-postCountTags::postCountTags(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postCountTags::postCountTags(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -34,8 +34,8 @@ postCountTags::postCountTags(QWidget* parent, const char* name, bool modal, Qt::
 
   if(!_privileges->check("ThawInventory"))
   {
-    _thaw->setChecked(FALSE);
-    _thaw->setEnabled(FALSE);
+    _thaw->setChecked(false);
+    _thaw->setEnabled(false);
   }
 }
 

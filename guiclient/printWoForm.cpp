@@ -17,7 +17,7 @@
 #include "guiclient.h"
 #include "inputManager.h"
 
-printWoForm::printWoForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printWoForm::printWoForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

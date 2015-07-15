@@ -16,7 +16,6 @@
 
 #include <parameter.h>
 
-#include "characteristicAssignment.h"
 #include "crmaccount.h"
 #include "empGroup.h"
 #include "empgroupcluster.h"
@@ -26,7 +25,7 @@
 
 #define DEBUG   false
 
-// TODO: XDialog should have a default implementation that returns FALSE
+// TODO: XDialog should have a default implementation that returns false
 bool employee::userHasPriv(const int pMode)
 {
   if (DEBUG)
@@ -79,13 +78,11 @@ employee::employee(QWidget* parent, const char * name, Qt::WindowFlags fl)
   connect(_attachGroup,   SIGNAL(clicked()), this, SLOT(sAttachGroup()));
   connect(_code,  SIGNAL(editingFinished()), this, SLOT(sHandleButtons()));
   connect(_crmacct,       SIGNAL(clicked()), this, SLOT(sCrmAccount()));
-  connect(_deleteCharass, SIGNAL(clicked()), this, SLOT(sDeleteCharass()));
   connect(_detachGroup,   SIGNAL(clicked()), this, SLOT(sDetachGroup()));
-  connect(_editCharass,   SIGNAL(clicked()), this, SLOT(sEditCharass()));
   connect(_editGroup,     SIGNAL(clicked()), this, SLOT(sEditGroup()));
-  connect(_newCharass,    SIGNAL(clicked()), this, SLOT(sNewCharass()));
   connect(_save,          SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_viewGroup,     SIGNAL(clicked()), this, SLOT(sViewGroup()));
+
 
   XSqlQuery xtmfg;
   xtmfg.exec("SELECT pkghead_name FROM pkghead WHERE pkghead_name='xtmfg'");
@@ -100,8 +97,7 @@ employee::employee(QWidget* parent, const char * name, Qt::WindowFlags fl)
     shiftLit->setVisible(false);
   }
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name");
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value");
+  _charass->setType("EMP");
 
   _groups->addColumn(tr("Name"), _itemColumn, Qt::AlignLeft, true, "empgrp_name");
   _groups->addColumn(tr("Description"),   -1, Qt::AlignLeft, true, "empgrp_descrip");
@@ -158,7 +154,10 @@ enum SetResponse employee::set(const ParameterList &pParams)
 
   param = pParams.value("emp_id", &valid);
   if (valid)
+  {
     _empid   = param.toInt();
+    _charass->setId(_empid);
+  }
 
   if (_empid > 0 || _crmacctid > 0)
     if (! sPopulate())
@@ -199,9 +198,6 @@ enum SetResponse employee::set(const ParameterList &pParams)
   bool editing = (_mode == cNew || _mode == cEdit);
   if (editing)
   {
-    connect(_charass,SIGNAL(valid(bool)), _deleteCharass, SLOT(setEnabled(bool)));
-    connect(_charass,SIGNAL(valid(bool)), _editCharass, SLOT(setEnabled(bool)));
-    connect(_charass,SIGNAL(itemSelected(int)), _editCharass, SLOT(animateClick()));
     connect(_groups, SIGNAL(valid(bool)), _detachGroup, SLOT(setEnabled(bool)));
     _attachGroup->setEnabled(true);
     if (empGroup::userHasPriv(cEdit))
@@ -231,7 +227,7 @@ enum SetResponse employee::set(const ParameterList &pParams)
   _image->setEnabled(editing);
   _comments->setReadOnly(!editing);
   _save->setEnabled(editing);
-  _newCharass->setEnabled(editing);
+  _charass->setReadOnly(! editing);
 
   _origmode = _mode;
   if (DEBUG)
@@ -493,10 +489,11 @@ bool employee::sPopulate()
              qPrintable(getq.value("image").toString()),
              qPrintable(_image->number()));
 
-    sFillCharassList();
     sFillGroupsList();
     _comments->setId(_empid);
     _comments->setReadOnly(_empid==-1);
+    _charass->setId(_empid);
+    _charass->setReadOnly(_empid == -1);
     emit populated();
   }
   else if (ErrorReporter::error(QtCriticalMsg, this,
@@ -506,74 +503,6 @@ bool employee::sPopulate()
 
   sHandleButtons();
   return true;
-}
-
-void employee::sDeleteCharass()
-{
-  XSqlQuery delq;
-  delq.prepare("DELETE FROM charass WHERE (charass_id=:charass_id);");
-  delq.bindValue(":charass_id", _charass->id());
-  delq.exec();
-  if (ErrorReporter::error(QtCriticalMsg, this,
-                           tr("Error deleting Characteristic Assignment"),
-                           delq, __FILE__, __LINE__))
-    return;
-
-  sFillCharassList();
-}
-
-void employee::sEditCharass()
-{
-  ParameterList params;
-  params.append("mode",       "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharassList();
-}
-
-void employee::sNewCharass()
-{
-  if (_mode == cNew)
-  {
-    if (!sSave(false))
-      return;
-  }
-  ParameterList params;
-  params.append("mode",   "new");
-  params.append("emp_id", _empid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharassList();
-}
-
-void employee::sFillCharassList()
-{
-  XSqlQuery getq;
-  getq.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value "
-             "FROM charass, char "
-             "WHERE ((charass_target_type='EMP')"
-             " AND   (charass_char_id=char_id)"
-             " AND   (charass_target_id=:emp_id) ) "
-             "ORDER BY char_order, char_name;" );
-  getq.bindValue(":emp_id", _empid);
-  getq.exec();
-  _charass->populate(getq);
-  if (ErrorReporter::error(QtCriticalMsg, this,
-                           tr("Error getting Characteristic Assignments"),
-                           getq, __FILE__, __LINE__))
-    return;
 }
 
 void employee::sFillGroupsList()
@@ -682,7 +611,7 @@ void employee::sEditGroup()
   params.append("mode", "edit");
   params.append("empgrp_id", _groups->id());
 
-  empGroup newdlg(this, "", TRUE);
+  empGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillGroupsList();
@@ -694,7 +623,7 @@ void employee::sViewGroup()
   params.append("mode", "view");
   params.append("empgrp_id", _groups->id());
 
-  empGroup newdlg(this, "", TRUE);
+  empGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

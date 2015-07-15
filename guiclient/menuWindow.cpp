@@ -173,7 +173,8 @@ void menuWindow::sActivateWindow()
 {
   QWidget *wind = 0;
   if (QAction *m = qobject_cast<QAction*>(sender())) // not ==
-    wind = qVariantValue<QWidget*>(m->data());
+    //wind = qVariantValue<QWidget*>(m->data());
+      wind = m->data().value<QWidget*>();
 
   if (wind)
   {

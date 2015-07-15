@@ -17,7 +17,7 @@
 #include "customerGroup.h"
 #include "guiclient.h"
 
-customerGroups::customerGroups(QWidget* parent, const char* name, Qt::WFlags fl)
+customerGroups::customerGroups(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -38,7 +38,7 @@ customerGroups::customerGroups(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_custgrp, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -73,7 +73,7 @@ void customerGroups::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  customerGroup newdlg(this, "", TRUE);
+  customerGroup newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -85,7 +85,7 @@ void customerGroups::sEdit()
   params.append("mode", "edit");
   params.append("custgrp_id", _custgrp->id());
 
-  customerGroup newdlg(this, "", TRUE);
+  customerGroup newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -97,7 +97,7 @@ void customerGroups::sView()
   params.append("mode", "view");
   params.append("custgrp_id", _custgrp->id());
 
-  customerGroup newdlg(this, "", TRUE);
+  customerGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

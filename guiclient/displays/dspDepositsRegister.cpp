@@ -15,7 +15,7 @@
 
 #include "xtreewidget.h"
 
-dspDepositsRegister::dspDepositsRegister(QWidget* parent, const char*, Qt::WFlags fl)
+dspDepositsRegister::dspDepositsRegister(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspDepositsRegister", fl)
 {
   setupUi(optionsWidget());

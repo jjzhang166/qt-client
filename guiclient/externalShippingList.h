@@ -20,7 +20,7 @@ class externalShippingList : public XWidget, public Ui::externalShippingList
     Q_OBJECT
 
 public:
-    externalShippingList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    externalShippingList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~externalShippingList();
     
     static bool userHasPriv();

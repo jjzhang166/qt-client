@@ -22,7 +22,7 @@
 
 #define DEBUG false
 
-shipTo::shipTo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shipTo::shipTo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -134,29 +134,29 @@ enum SetResponse shipTo::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _shipToNumber->setEnabled(FALSE);
+      _shipToNumber->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _shipToNumber->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _default->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _contact->setEnabled(FALSE);
-      _address->setEnabled(FALSE);
-      _salesRep->setEnabled(FALSE);
-      _commission->setEnabled(FALSE);
-      _shipZone->setEnabled(FALSE);
-      _taxzone->setEnabled(FALSE);
-      _shipVia->setEnabled(FALSE);
-      _shipform->setEnabled(FALSE);
-      _shipchrg->setEnabled(FALSE);
-      _sellingWarehouse->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
-      _shippingComments->setEnabled(FALSE);
-      _documents->setReadOnly(TRUE);
+      _shipToNumber->setEnabled(false);
+      _active->setEnabled(false);
+      _default->setEnabled(false);
+      _name->setEnabled(false);
+      _contact->setEnabled(false);
+      _address->setEnabled(false);
+      _salesRep->setEnabled(false);
+      _commission->setEnabled(false);
+      _shipZone->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _shipVia->setEnabled(false);
+      _shipform->setEnabled(false);
+      _shipchrg->setEnabled(false);
+      _sellingWarehouse->setEnabled(false);
+      _comments->setEnabled(false);
+      _shippingComments->setEnabled(false);
+      _documents->setReadOnly(true);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -223,8 +223,8 @@ void shipTo::sSave()
   XSqlQuery saveq;
   saveq.prepare( "UPDATE shiptoinfo "
                  "SET shipto_active=:shipto_active, shipto_default=:shipto_default,"
-                 "    shipto_name=:shipto_name, shipto_cntct_id=:shipto_cntct_id,"
-                 "    shipto_commission=:shipto_commission,"
+                 "    shipto_num=:shipto_num, shipto_name=:shipto_name,"
+                 "    shipto_cntct_id=:shipto_cntct_id, shipto_commission=:shipto_commission,"
                  "    shipto_comments=:shipto_comments, shipto_shipcomments=:shipto_shipcomments,"
                  "    shipto_taxzone_id=:shipto_taxzone_id, shipto_salesrep_id=:shipto_salesrep_id,"
                  "    shipto_shipzone_id=:shipto_shipzone_id,"
@@ -392,7 +392,7 @@ void shipTo::sPopulateNumber()
       _shiptoid = dupnumq.value("shipto_id").toInt();
       populate();
 
-      _shipToNumber->setEnabled(FALSE);
+      _shipToNumber->setEnabled(false);
       _name->setFocus();
     }
     else if (dupnumq.lastError().type() != QSqlError::NoError)

@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-updateActualCostsByClassCode::updateActualCostsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateActualCostsByClassCode::updateActualCostsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -36,10 +36,10 @@ updateActualCostsByClassCode::updateActualCostsByClassCode(QWidget* parent, cons
   }
   else if (_metrics->value("TrackMachineOverhead") != "M")
   {
-    _machOverhead->setEnabled(FALSE);
-    _machOverhead->setChecked(TRUE);
-    _lowerMachOverhead->setEnabled(FALSE);
-    _lowerMachOverhead->setChecked(TRUE);
+    _machOverhead->setEnabled(false);
+    _machOverhead->setChecked(true);
+    _lowerMachOverhead->setEnabled(false);
+    _lowerMachOverhead->setChecked(true);
   }
 
   _updateActual = true;
@@ -87,19 +87,19 @@ enum SetResponse updateActualCostsByClassCode::set(const ParameterList &pParams)
 
 void updateActualCostsByClassCode::sSelectAll()
 {
-  _lowerMaterial->setChecked(TRUE);
-  _user->setChecked(TRUE);
-  _lowerUser->setChecked(TRUE);
+  _lowerMaterial->setChecked(true);
+  _user->setChecked(true);
+  _lowerUser->setChecked(true);
   if (_metrics->boolean("Routings"))
   {
-    _directLabor->setChecked(TRUE);
-    _lowerDirectLabor->setChecked(TRUE);
-    _overhead->setChecked(TRUE);
-    _lowerOverhead->setChecked(TRUE);
+    _directLabor->setChecked(true);
+    _lowerDirectLabor->setChecked(true);
+    _overhead->setChecked(true);
+    _lowerOverhead->setChecked(true);
     if (_metrics->value("TrackMachineOverhead") == "M")
     {
-      _machOverhead->setChecked(TRUE);
-      _lowerMachOverhead->setChecked(TRUE);
+      _machOverhead->setChecked(true);
+      _lowerMachOverhead->setChecked(true);
     }
   }
 }
@@ -107,7 +107,7 @@ void updateActualCostsByClassCode::sSelectAll()
 void updateActualCostsByClassCode::sUpdate()
 {
   XSqlQuery updateUpdate;
-  QString sql = "SELECT doUpdateCosts(item_id, TRUE, :lowMaterial, :directLabor, "
+  QString sql = "SELECT doUpdateCosts(item_id, true, :lowMaterial, :directLabor, "
                 "       :lowDirectLabor, :overhead, :lowOverhead, "
                 "       :machOverhead, :lowMachOverhead, :lowUser, :rollUp, "
                 "       :updateActual ) "

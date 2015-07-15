@@ -20,7 +20,7 @@ class dspUndefinedManufacturedItems : public display, public Ui::dspUndefinedMan
     Q_OBJECT
 
 public:
-    dspUndefinedManufacturedItems(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspUndefinedManufacturedItems(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

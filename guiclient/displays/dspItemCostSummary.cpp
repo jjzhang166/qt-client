@@ -23,7 +23,7 @@
 #include "dspItemCostDetail.h"
 #include "itemCost.h"
 
-dspItemCostSummary::dspItemCostSummary(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemCostSummary::dspItemCostSummary(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspItemCostSummary", fl)
 {
   setupUi(optionsWidget());

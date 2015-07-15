@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -71,8 +71,8 @@ enum SetResponse pricingScheduleAssignment::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _customerGroup->setEnabled(FALSE);
-      _ipshead->setEnabled(FALSE);
+      _customerGroup->setEnabled(false);
+      _ipshead->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -216,30 +216,30 @@ void pricingScheduleAssignment::populate()
 
     if (!pricingpopulate.value("ipsass_shipto_pattern").toString().isEmpty())
     {
-      _selectedShiptoPattern->setChecked(TRUE);
+      _selectedShiptoPattern->setChecked(true);
       _shiptoPattern->setText(pricingpopulate.value("ipsass_shipto_pattern").toString());
       _cust->setId(pricingpopulate.value("ipsass_cust_id").toInt());
     }
     else if (pricingpopulate.value("ipsass_cust_id").toInt() != -1)
     {
-      _selectedCustomer->setChecked(TRUE);
+      _selectedCustomer->setChecked(true);
       _cust->setId(pricingpopulate.value("ipsass_cust_id").toInt());
     }
     else if (pricingpopulate.value("ipsass_shipto_id").toInt() != -1)
     {
       int shiptoid = pricingpopulate.value("ipsass_shipto_id").toInt();
-      _selectedCustomerShipto->setChecked(TRUE);
+      _selectedCustomerShipto->setChecked(true);
       _cust->setId(pricingpopulate.value("shipto_cust_id").toInt());
       _customerShipto->setId(shiptoid);
     }
     else if (pricingpopulate.value("ipsass_custtype_id").toInt() != -1)
     {
-      _selectedCustomerType->setChecked(TRUE);
+      _selectedCustomerType->setChecked(true);
       _customerTypes->setId(pricingpopulate.value("ipsass_custtype_id").toInt());
     }
     else
     {
-      _customerTypePattern->setChecked(TRUE);
+      _customerTypePattern->setChecked(true);
       _customerType->setText(pricingpopulate.value("ipsass_custtype_pattern").toString());
     }
   }

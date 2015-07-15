@@ -75,11 +75,11 @@
 #include "setup.h"
 #include "setupscriptapi.h"
 
-#if defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 #define NOCRYPT
 #include <windows.h>
 #else
-#if defined(Q_OS_MACX)
+#if defined(Q_OS_MAC)
 #include <stdlib.h>
 #endif
 #endif
@@ -146,18 +146,6 @@ static SaveSizePositionEventFilter * __saveSizePositionEventFilter = 0;
 static int __interval = 0;
 static int __intervalCount = 0;
 
-/** @brief Check if the current user has the named privilege.
-    @param privname The name of the privilege to check.
-    @sa    Action
-  */
-static bool __privCheck(const QString & privname)
-{
-  if(privname == "#superuser")
-    return _privileges->isDba();
-
-  return _privileges->check(privname);
-}
-
 /** @brief Check if the current user has privileges to use the given Action.
     @sa    Action
   */
@@ -171,22 +159,7 @@ static void __menuEvaluate(QAction * act)
     act->setEnabled(false);
   else if(!privs.isEmpty())
   {
-    bool enable = false;
-    QStringList privlist = privs.split(' ', QString::SkipEmptyParts);
-    for (int i = 0; i < privlist.size(); ++i)
-    {
-      bool tb = true;
-      QStringList privandlist = privlist.at(i).split('+', QString::SkipEmptyParts);
-      if(privandlist.size() > 1)
-      {
-        for(int ii = 0; ii < privandlist.size(); ++ii)
-          tb = tb && __privCheck(privandlist.at(ii));
-      }
-      else
-        tb = enable || __privCheck(privlist.at(i));
-      enable = enable || tb;
-    }
-    act->setEnabled(enable);
+    act->setEnabled(_privileges->check(privs));
   }
 }
 
@@ -249,12 +222,12 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
                 QObject *pTarget, const char *pActivateSlot,
                 QWidget *pAddTo, const QString & pEnabled,
-                const QPixmap &pIcon, QWidget *pToolBar ) :
+                const QPixmap *pIcon, QWidget *pToolBar ) :
  QAction(pDisplayName, pParent)
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, pEnabled);
 
-  setIcon(QIcon(pIcon));
+  setIcon(QIcon(*pIcon));
   pToolBar->addAction(this);
 }
 
@@ -262,13 +235,13 @@ Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName
 Action::Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
                 QObject *pTarget, const char *pActivateSlot,
                 QWidget *pAddTo, const QString & pEnabled,
-                const QPixmap &pIcon, QWidget *pToolBar,
+                const QPixmap *pIcon, QWidget *pToolBar,
                 const QString &pToolTip ) :
  QAction(pDisplayName, pParent)
 {
   init(pParent, pName, pDisplayName, pTarget, pActivateSlot, pAddTo, pEnabled);
 
-  setIcon(QIcon(pIcon));
+  setIcon(QIcon(*pIcon));
   pToolBar->addAction(this);
   setToolTip(pToolTip);
 }
@@ -625,11 +598,11 @@ GUIClient::~GUIClient()
  */
 GUIClient::WindowSystem GUIClient::getWindowSystem()
 {
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
   return X11;
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   return WIN;
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
   return MAC;
 #elif defined Q_WS_QWS
   return QWS;
@@ -736,7 +709,7 @@ void GUIClient::initMenuBar()
     menuBar()->clear();
     _hotkeyList.clear();
 
-    QList<QToolBar *> toolbars = qFindChildren<QToolBar *>(this);
+    QList<QToolBar *> toolbars = this->findChildren<QToolBar *>();
     while(!toolbars.isEmpty())
       delete toolbars.takeFirst();
 
@@ -810,15 +783,6 @@ void GUIClient::initMenuBar()
   findChild<QToolBar*>("CRM Tools")->setVisible(_preferences->boolean("ShowCRMToolbar"));
   findChild<QToolBar*>("Sales Tools")->setVisible(_preferences->boolean("ShowSOToolbar"));
   findChild<QToolBar*>("Accounting Tools")->setVisible(_preferences->boolean("ShowGLToolbar"));
-
-  findChild<QToolBar*>("Community Tools")->setVisible(_preferences->boolean("ShowPDToolbar") ||
-                                                      _preferences->boolean("ShowIMToolbar") ||
-                                                      _preferences->boolean("ShowMSToolbar") ||
-                                                      _preferences->boolean("ShowPOToolbar") ||
-                                                      _preferences->boolean("ShowWOToolbar") ||
-                                                      _preferences->boolean("ShowCRMToolbar") ||
-                                                      _preferences->boolean("ShowSOToolbar") ||
-                                                      _preferences->boolean("ShowGLToolbar"));
 
   firstRun = false;
   qApp->restoreOverrideCursor();
@@ -1129,7 +1093,7 @@ void GUIClient::sSystemMessageAdded()
             ParameterList params;
             params.append("mode", "acknowledge");
 
-            systemMessage newdlg(this, "", TRUE);
+            systemMessage newdlg(this, "", true);
             newdlg.set(params);
 
             do
@@ -1255,7 +1219,7 @@ void GUIClient::sStandardPeriodsUpdated()
   */
 void GUIClient::sSalesOrdersUpdated(int pSoheadid)
 {
-  emit salesOrdersUpdated(pSoheadid, TRUE);
+  emit salesOrdersUpdated(pSoheadid, true);
 }
 
 /** @brief This slot tells other open windows the definition or status of one or more Sales Representatives has changed.
@@ -1276,7 +1240,7 @@ void GUIClient::sCreditMemosUpdated()
     @param pQuheadid the internal id of the Quote that changed or -1 for multiple or unspecified Quotes */
 void GUIClient::sQuotesUpdated(int pQuheadid)
 {
-  emit quotesUpdated(pQuheadid, TRUE);
+  emit quotesUpdated(pQuheadid, true);
 }
 
 /** @brief This slot tells other open windows the definition or status of one or more Work Order Materials records has changed.
@@ -1588,7 +1552,7 @@ void GUIClient::sIdleTimeout()
   ParameterList params;
   params.append("minutes", _timeoutHandler->idleMinutes());
 
-  idleShutdown newdlg(this, "", TRUE);
+  idleShutdown newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() == XDialog::Accepted)
@@ -1707,8 +1671,12 @@ QString translationFile(QString localestr, const QString component)
 QString translationFile(QString localestr, const QString component, QString &version)
 {
   QStringList paths;
-//qDebug() << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#if QT_VERSION >= 0x050000
+  paths << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+#else
+  //qDebug() << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
   paths << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
   paths << "/usr/lib/postbooks/dict";
   paths << "dict";
   paths << "";
@@ -1716,7 +1684,7 @@ QString translationFile(QString localestr, const QString component, QString &ver
   paths << QApplication::applicationDirPath() + "/dict";
   paths << QApplication::applicationDirPath();
   paths << QApplication::applicationDirPath() + "/../dict";
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   paths << QApplication::applicationDirPath() + "/../../../dict";
   paths << QApplication::applicationDirPath() + "/../../..";
 #endif
@@ -1728,7 +1696,7 @@ QString translationFile(QString localestr, const QString component, QString &ver
     if (translator.load(filename))
     {
       if (! version.isNull())
-        version = translator.translate(component.toAscii().data(), "Version");
+        version = translator.translate(component.toLatin1().data(), "Version");
 
       return filename;
     }
@@ -1776,7 +1744,7 @@ void GUIClient::populateCustomMenu(QMenu * menu, const QString & module)
       allowed = "Custom"+privname;
 
     QString cmdname = QString("custom." + qry.value("cmd_name").toString());
-    Action *action = new Action(this, cmdname.toAscii().data(), qry.value("cmd_title").toString(),
+    Action *action = new Action(this, cmdname.toLatin1().data(), qry.value("cmd_title").toString(),
                                 this, SLOT(sCustomCommand()), customMenu, allowed);
 
     _customCommands.insert(action, qry.value("cmd_id").toInt());
@@ -1989,12 +1957,12 @@ void GUIClient::sCustomCommand()
   */
 void GUIClient::launchBrowser(QWidget * w, const QString & url)
 {
-#if defined(Q_OS_WIN32)
-  // Windows - let the OS do the work
+#if defined(Q_OS_WIN) && QT_VERSION < 0x050000
+  // Windows - let the OS do the work , needs qt5 replacement
   QT_WA( {
       ShellExecute(w->winId(), 0, (TCHAR*)url.utf16(), 0, 0, SW_SHOWNORMAL );
     } , {
-      ShellExecuteA( w->winId(), 0, url.toLocal8Bit(), 0, 0, SW_SHOWNORMAL );
+      ShellExecuteA(w->winId(), 0, url.toLocal8Bit(), 0, 0, SW_SHOWNORMAL );
     } );
 #else
   const char *b = getenv("BROWSER");
@@ -2003,7 +1971,7 @@ void GUIClient::launchBrowser(QWidget * w, const QString & url)
     QString t(b);
     browser = t.split(':', QString::SkipEmptyParts);
   }
-#if defined(Q_OS_MACX)
+#if defined(Q_OS_MAC)
   browser.append("/usr/bin/open");
 #else
   // append this on linux just as a good guess
@@ -2170,7 +2138,7 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
 
 QMenuBar *GUIClient::menuBar()
 {
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
   if (_menuBar == 0)
     _menuBar = new QMenuBar();
 

@@ -21,7 +21,7 @@ class updateActualCostsByItem : public XDialog, public Ui::updateActualCostsByIt
     Q_OBJECT
 
 public:
-    updateActualCostsByItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    updateActualCostsByItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~updateActualCostsByItem();
 
 public slots:

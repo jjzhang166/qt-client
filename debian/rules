@@ -1,0 +1,45 @@
+#!/usr/bin/make -f
+
+#DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+export OPENRPT_HEADERS=/usr/include/openrpt
+export OPENRPT_LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+export OPENRPT_IMAGE_DIR=/usr/share/openrpt/OpenRPT/images
+export USE_SHARED_OPENRPT=1
+
+export CSVIMP_HEADERS=/usr/include/csvimp
+export CSVIMP_LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+
+export BUILD_XTCOMMON_SHARED=1
+
+%:
+	dh $@ --builddirectory=. --parallel
+
+override_dh_clean:
+	for pro in `find . -name '*.pro'` ; do \
+		rm -f $$(dirname $$pro)/Makefile*; \
+	done
+	rm -rf */tmp bin/*
+	dh_clean
+
+override_dh_auto_test:
+
+override_dh_auto_configure:
+	# FIXME: find will not fail on error!
+	find . -name '*.ts' -exec lrelease {} \;
+	# convert to use shared libs
+	#find . -name '*.pro' -exec sed -i -e "s/lib\(common\)\.a/lib\1.so/"  {} \;
+	#find . -name '*.pro' -exec sed -i -e "s/lib\(MetaSQL\)\.a/lib\1.so/"  {} \;
+	#find . -name '*.pro' -exec sed -i -e "s/lib\(wrtembed\)\.a/lib\1.so/"  {} \;
+	#find . -name '*.pro' -exec sed -i -e "s/lib\(renderer\)\.a/lib\1.so/"  {} \;
+	dh_auto_configure
+	make clean
+
+override_dh_auto_install:
+	mkdir -p debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)
+	mv lib/lib*.so* debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)
+	dh_auto_install
+
+.PHONY: override_dh_auto_configure override_dh_clean override_dh_auto_test

@@ -19,7 +19,7 @@ class opportunityStages : public XWidget, public Ui::opportunityStages
     Q_OBJECT
 
 public:
-    opportunityStages(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    opportunityStages(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~opportunityStages();
 
 public slots:

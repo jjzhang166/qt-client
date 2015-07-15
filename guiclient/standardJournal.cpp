@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include "standardJournalItem.h"
 
-standardJournal::standardJournal(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+standardJournal::standardJournal(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -106,10 +106,10 @@ enum SetResponse standardJournal::set(const ParameterList &pParams)
 
       connect(_stdjrnlitem, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-      _new->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _new->setEnabled(false);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _notes->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -182,7 +182,7 @@ void standardJournal::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
@@ -193,7 +193,7 @@ void standardJournal::sNew()
   params.append("mode", "new");
   params.append("stdjrnl_id", _stdjrnlid);
 
-  standardJournalItem newdlg(this, "", TRUE);
+  standardJournalItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -206,7 +206,7 @@ void standardJournal::sEdit()
   params.append("mode", "edit");
   params.append("stdjrnlitem_id", _stdjrnlitem->id());
 
-  standardJournalItem newdlg(this, "", TRUE);
+  standardJournalItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -219,7 +219,7 @@ void standardJournal::sView()
   params.append("mode", "view");
   params.append("stdjrnlitem_id", _stdjrnlitem->id());
 
-  standardJournalItem newdlg(this, "", TRUE);
+  standardJournalItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

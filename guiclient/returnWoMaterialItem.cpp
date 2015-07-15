@@ -18,7 +18,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-returnWoMaterialItem::returnWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+returnWoMaterialItem::returnWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ returnWoMaterialItem::returnWoMaterialItem(QWidget* parent, const char* name, bo
   connect(_womatl, SIGNAL(newId(int)), this, SLOT(sSetQOH(int)));
   connect(_qty, SIGNAL(textChanged(const QString&)), this, SLOT(sUpdateQty()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
 
@@ -57,7 +57,7 @@ enum SetResponse returnWoMaterialItem::set(const ParameterList &pParams)
 {
   XSqlQuery returnet;
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

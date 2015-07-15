@@ -16,7 +16,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 
-printChecksReview::printChecksReview(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printChecksReview::printChecksReview(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

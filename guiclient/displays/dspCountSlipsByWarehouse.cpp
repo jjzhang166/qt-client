@@ -17,7 +17,7 @@
 
 #define DEBUG false
 
-dspCountSlipsByWarehouse::dspCountSlipsByWarehouse(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCountSlipsByWarehouse::dspCountSlipsByWarehouse(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, "dspCountSlipsByWarehouse", fl)
 {
   if (name)

@@ -1,0 +1,3 @@
+version=3
+opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/qt-client-$1.tar.gz/ \
+  https://github.com/xtuple/qt-client/tags .*/v?(\d\S*)\.tar\.gz

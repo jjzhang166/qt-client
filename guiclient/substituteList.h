@@ -21,7 +21,7 @@ class substituteList : public XDialog, public Ui::substituteList
     Q_OBJECT
 
 public:
-    substituteList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    substituteList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~substituteList();
 
     double _uomratio;

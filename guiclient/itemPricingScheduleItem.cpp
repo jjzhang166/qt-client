@@ -22,7 +22,7 @@
 
 #include "errorReporter.h"
 
-itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery itemitemPricingScheduleItem;
@@ -85,7 +85,7 @@ itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* na
   _shipViaFreight->setType(XComboBox::ShipVias);
   _freightClass->setType(XComboBox::FreightClasses);
   
-  _tab->setTabEnabled(_tab->indexOf(_configuredPrices),FALSE);
+  _tab->setTabEnabled(_tab->indexOf(_configuredPrices),false);
  
   itemitemPricingScheduleItem.exec("SELECT uom_name FROM uom WHERE (uom_item_weight);");
   if (itemitemPricingScheduleItem.first())
@@ -168,39 +168,39 @@ enum SetResponse itemPricingScheduleItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _item->setReadOnly(TRUE);
-      _prodcat->setEnabled(FALSE);
-      _markupProdcat->setEnabled(FALSE);
-      _typeGroup->setEnabled(FALSE);
-      _dscitem->setReadOnly(TRUE);
-      _markupitem->setReadOnly(TRUE);
-      _discountBy->setEnabled(FALSE);
-      _markupBy->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _prodcat->setEnabled(false);
+      _markupProdcat->setEnabled(false);
+      _typeGroup->setEnabled(false);
+      _dscitem->setReadOnly(true);
+      _markupitem->setReadOnly(true);
+      _discountBy->setEnabled(false);
+      _markupBy->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _prodcat->setEnabled(FALSE);
-      _qtyBreak->setEnabled(FALSE);
-      _qtyBreakCat->setEnabled(FALSE);
-      _qtyBreakFreight->setEnabled(FALSE);
-      _price->setEnabled(FALSE);
-      _discount->setEnabled(FALSE);
-      _fixedAmtDiscount->setEnabled(FALSE);
-      _markup->setEnabled(FALSE);
-      _fixedAmtMarkup->setEnabled(FALSE);
-      _priceFreight->setEnabled(FALSE);
-      _typeGroup->setEnabled(FALSE);
-      _typeFreightGroup->setEnabled(FALSE);
-      _siteFreight->setEnabled(FALSE);
-      _zoneFreightGroup->setEnabled(FALSE);
-      _shipViaFreightGroup->setEnabled(FALSE);
-      _freightClassGroup->setEnabled(FALSE);
-      _dscitem->setReadOnly(TRUE);
-      _discountBy->setEnabled(FALSE);
-      _markupBy->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _prodcat->setEnabled(false);
+      _qtyBreak->setEnabled(false);
+      _qtyBreakCat->setEnabled(false);
+      _qtyBreakFreight->setEnabled(false);
+      _price->setEnabled(false);
+      _discount->setEnabled(false);
+      _fixedAmtDiscount->setEnabled(false);
+      _markup->setEnabled(false);
+      _fixedAmtMarkup->setEnabled(false);
+      _priceFreight->setEnabled(false);
+      _typeGroup->setEnabled(false);
+      _typeFreightGroup->setEnabled(false);
+      _siteFreight->setEnabled(false);
+      _zoneFreightGroup->setEnabled(false);
+      _shipViaFreightGroup->setEnabled(false);
+      _freightClassGroup->setEnabled(false);
+      _dscitem->setReadOnly(true);
+      _discountBy->setEnabled(false);
+      _markupBy->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }
@@ -261,7 +261,7 @@ void itemPricingScheduleItem::sCheckEnable()
 
 void itemPricingScheduleItem::sSave()
 {
-  sSave(TRUE);
+  sSave(true);
 }
 
 void itemPricingScheduleItem::sSave( bool pClose)
@@ -652,9 +652,9 @@ void itemPricingScheduleItem::sSave( bool pClose)
   {
     _mode = cEdit;
 
-    _item->setReadOnly(TRUE);
-    _prodcat->setEnabled(FALSE);
-    _typeGroup->setEnabled(FALSE);
+    _item->setReadOnly(true);
+    _prodcat->setEnabled(false);
+    _typeGroup->setEnabled(false);
   }
 
 }
@@ -792,35 +792,36 @@ void itemPricingScheduleItem::populate()
 
 void itemPricingScheduleItem::sUpdateCosts(int pItemid)
 {
-  XSqlQuery itemUpdateCosts;
-  XSqlQuery uom;
-  uom.prepare("SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN uom ON (item_inv_uom_id=uom_id)"
-              " WHERE(item_id=:item_id)"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_to_uom_id=uom_id)"
-              " WHERE((itemuomconv_from_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_from_uom_id=uom_id)"
-              " WHERE((itemuomconv_to_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " ORDER BY uom_name;");
-  uom.bindValue(":item_id", _item->id());
-  uom.exec();
-  if (itemUpdateCosts.lastError().type() != QSqlError::NoError)
+  // Get list of active, valid Selling UOMs
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+
+  ParameterList params;
+  params.append("uomtype", "Selling");
+  params.append("item_id", pItemid);
+
+  // Also have to factor UOMs previously used on Pricing Item now inactive
+  if (_ipsitemid != -1)
   {
-	systemError(this, _rejectedMsg.arg(itemUpdateCosts.lastError().databaseText()),
-                  __FILE__, __LINE__);
-        done(-1);
+    XSqlQuery pruom;
+    pruom.prepare("SELECT ipsitem_qty_uom_id, ipsitem_price_uom_id "
+                "  FROM ipsiteminfo"
+                " WHERE(ipsitem_id=:ipsitem_id);");
+    pruom.bindValue(":ipsitem_id", _ipsitemid);
+    pruom.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Sales Pricing UOMs"),
+                         pruom, __FILE__, __LINE__))
+      return;
+    else if (pruom.first())
+    {
+      params.append("uom_id", pruom.value("ipsitem_qty_uom_id"));
+      params.append("uom_id2", pruom.value("ipsitem_price_uom_id"));
+    }
   }
+  XSqlQuery uom = muom.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
+                         uom, __FILE__, __LINE__))
+    return;
+
   _qtyUOM->populate(uom);
   _priceUOM->populate(uom);
 
@@ -847,17 +848,14 @@ void itemPricingScheduleItem::sUpdateCosts(int pItemid)
     _qtyUOM->setId(cost.value("item_inv_uom_id").toInt());
     _priceUOM->setId(cost.value("item_price_uom_id").toInt());
   }
-  else if (itemUpdateCosts.lastError().type() != QSqlError::NoError)
-  {
-	systemError(this, _rejectedMsg.arg(itemUpdateCosts.lastError().databaseText()),
-                  __FILE__, __LINE__);
-        done(-1);
-  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Item Costs"),
+                         cost, __FILE__, __LINE__))
+    done(-1);
   
   if (_item->isConfigured())
-    _tab->setTabEnabled(_tab->indexOf(_configuredPrices),TRUE);
+    _tab->setTabEnabled(_tab->indexOf(_configuredPrices),true);
   else
-    _tab->setTabEnabled(_tab->indexOf(_configuredPrices),FALSE);
+    _tab->setTabEnabled(_tab->indexOf(_configuredPrices),false);
 }
 
 void itemPricingScheduleItem::sUpdateMargins()
@@ -986,14 +984,14 @@ void itemPricingScheduleItem::sPriceUOMChanged()
 void itemPricingScheduleItem::sNew()
 {
   if (_mode == cNew)
-    sSave(FALSE);
+    sSave(false);
   ParameterList params;
   params.append("mode", "new");
   params.append("ipsitem_id", _ipsitemid);
   params.append("curr_id", _price->id());
   params.append("item_id", _item->id());
 
-  characteristicPrice newdlg(this, "", TRUE);
+  characteristicPrice newdlg(this, "", true);
   newdlg.set(params);
 
   int result;
@@ -1015,7 +1013,7 @@ void itemPricingScheduleItem::sEdit()
   params.append("curr_id", _price->id());
   params.append("item_id", _item->id());
 
-  characteristicPrice newdlg(this, "", TRUE);
+  characteristicPrice newdlg(this, "", true);
   newdlg.set(params);
 
   int result;

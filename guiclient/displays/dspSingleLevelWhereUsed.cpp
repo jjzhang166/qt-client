@@ -19,7 +19,7 @@
 #include "dspInventoryHistory.h"
 #include "item.h"
 
-dspSingleLevelWhereUsed::dspSingleLevelWhereUsed(QWidget* parent, const char*, Qt::WFlags fl)
+dspSingleLevelWhereUsed::dspSingleLevelWhereUsed(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspSingleLevelWhereUsed", fl)
 {
   setupUi(optionsWidget());
@@ -29,9 +29,9 @@ dspSingleLevelWhereUsed::dspSingleLevelWhereUsed(QWidget* parent, const char*, Q
   setMetaSQLOptions("whereUsed", "detail");
 
   if (_metrics->boolean("AllowInactiveBomItems"))
-    _item->setType(ItemLineEdit::cGeneralComponents);
+    _item->setType(ItemLineEdit::cUsedOnBom);
   else
-    _item->setType(ItemLineEdit::cGeneralComponents | ItemLineEdit::cActive);
+    _item->setType(ItemLineEdit::cUsedOnBom | ItemLineEdit::cActive);
 
   _effective->setNullString(tr("Today"));
   _effective->setNullDate(QDate::currentDate());

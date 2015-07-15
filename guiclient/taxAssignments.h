@@ -21,7 +21,7 @@ class taxAssignments : public XWidget, public Ui::taxAssignments
   Q_OBJECT
 
   public:
-    taxAssignments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    taxAssignments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~taxAssignments();
 	
   public slots:

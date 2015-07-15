@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-substituteList::substituteList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+substituteList::substituteList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -89,8 +89,8 @@ enum SetResponse substituteList::set(const ParameterList &pParams)
                "child Work Order before substituting.") );
       }
       _item->setItemsiteid(substituteet.value("womatl_itemsite_id").toInt());
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
       
       _bomitemid = substituteet.value("bomitem_id").toInt();
       _itemsiteid = substituteet.value("womatl_itemsite_id").toInt();
@@ -105,14 +105,14 @@ enum SetResponse substituteList::set(const ParameterList &pParams)
   param = pParams.value("byDays", &valid);
   if (valid)
   {
-   _byDays->setChecked(TRUE);
+   _byDays->setChecked(true);
    _days->setValue(param.toInt());
   }
 
   param = pParams.value("byDate", &valid);
   if (valid)
   {
-   _byDate->setChecked(TRUE);
+   _byDate->setChecked(true);
    _date->setDate(param.toDate());
   }
 

@@ -20,7 +20,7 @@ class scripts : public XWidget, public Ui::scripts
     Q_OBJECT
 
 public:
-    scripts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    scripts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~scripts();
 
 public slots:

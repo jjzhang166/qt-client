@@ -23,7 +23,7 @@ class unappliedAPCreditMemos : public XWidget, public Ui::unappliedAPCreditMemos
     Q_OBJECT
 
 public:
-    unappliedAPCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    unappliedAPCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~unappliedAPCreditMemos();
     virtual bool setParams(ParameterList &params);
 

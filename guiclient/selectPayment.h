@@ -21,7 +21,7 @@ class selectPayment : public XDialog, public Ui::selectPayment
     Q_OBJECT
 
 public:
-    selectPayment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    selectPayment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~selectPayment();
 
 public slots:

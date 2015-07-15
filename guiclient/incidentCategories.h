@@ -21,7 +21,7 @@ class incidentCategories : public XWidget, public Ui::incidentCategories
     Q_OBJECT
 
 public:
-    incidentCategories(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    incidentCategories(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~incidentCategories();
 
 public slots:

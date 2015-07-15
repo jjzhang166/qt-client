@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>886</width>
-    <height>638</height>
+    <width>854</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -674,14 +674,31 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Comments</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="Comments" name="_comments">
+         <property name="type">
+          <enum>Comments::BOMHead</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
-  <zorder>frame_2</zorder>
-  <zorder>_tab</zorder>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
+  <customwidget>
+   <class>Comments</class>
+   <extends>QWidget</extends>
+   <header>comments.h</header>
+  </customwidget>
   <customwidget>
    <class>DLineEdit</class>
    <extends>QWidget</extends>

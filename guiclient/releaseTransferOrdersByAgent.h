@@ -20,7 +20,7 @@ class releaseTransferOrdersByAgent : public XDialog, public Ui::releaseTransferO
     Q_OBJECT
 
 public:
-    releaseTransferOrdersByAgent(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    releaseTransferOrdersByAgent(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~releaseTransferOrdersByAgent();
 
 public slots:

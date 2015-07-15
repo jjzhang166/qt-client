@@ -13,14 +13,14 @@
 #include <QMessageBox>
 #include <QVariant>
 
-rescheduleWo::rescheduleWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+rescheduleWo::rescheduleWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_reschedule, SIGNAL(clicked()), this, SLOT(sReschedule()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _wo->setType(cWoOpen | cWoExploded | cWoIssued);
   _cmnttype->setType(XComboBox::AllCommentTypes);
@@ -43,7 +43,7 @@ void rescheduleWo::languageChange()
 enum SetResponse rescheduleWo::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -52,7 +52,7 @@ enum SetResponse rescheduleWo::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   return NoError;
@@ -87,7 +87,7 @@ void rescheduleWo::sReschedule()
       rescheduleReschedule.exec();
     }
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
     if (_captive)
       close();

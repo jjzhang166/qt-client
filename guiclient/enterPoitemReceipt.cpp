@@ -23,7 +23,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-enterPoitemReceipt::enterPoitemReceipt(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+enterPoitemReceipt::enterPoitemReceipt(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -103,7 +103,7 @@ bool enterPoitemReceipt::correctReceipt(int pRecvid, QWidget *pParent)
       params.append("mode", "edit");
       params.append("recv_id", pRecvid);
 
-      enterPoitemReceipt newdlg(pParent, "", TRUE);
+      enterPoitemReceipt newdlg(pParent, "", true);
       newdlg.set(params);
 
       if (newdlg.exec() != XDialog::Rejected)

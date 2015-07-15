@@ -21,7 +21,7 @@ class dspTaxHistory : public XWidget, public Ui::dspTaxHistory
     Q_OBJECT
 
 public:
-    dspTaxHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspTaxHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspTaxHistory();
     virtual bool setParams(ParameterList &);
 

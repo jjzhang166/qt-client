@@ -17,11 +17,10 @@
 
 #include "relocateInventory.h"
 #include "reassignLotSerial.h"
-#include "characteristic.h"
 #include "parameterwidget.h"
 #include "metasql.h"
 
-dspInventoryLocator::dspInventoryLocator(QWidget* parent, const char*, Qt::WFlags fl)
+dspInventoryLocator::dspInventoryLocator(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspInventoryLocator", fl)
 {
   setupUi(optionsWidget());
@@ -44,7 +43,7 @@ dspInventoryLocator::dspInventoryLocator(QWidget* parent, const char*, Qt::WFlag
   pw->append(tr("Site"), "site", ParameterWidget::Site);
   pw->append(tr("Location"), "_location_name", ParameterWidget::Text);
   pw->append(tr("Lot/Serial"), "lot_serial", ParameterWidget::Text);
-  setupCharacteristics(characteristic::LotSerial);
+  setupCharacteristics("LS");
 
   setParameterWidgetVisible(true);
 

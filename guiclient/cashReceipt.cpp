@@ -42,7 +42,7 @@ const struct {
   { QT_TRANSLATE_NOOP("cashReceipt", "Other"),            "R", false }
 };
 
-cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
+cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -215,7 +215,7 @@ enum SetResponse cashReceipt::set(const ParameterList &pParams)
       _mode = cEdit;
 	  _transType = cEdit;
 
-      _cust->setReadOnly(TRUE);
+      _cust->setReadOnly(true);
 
     }
     else if (param.toString() == "view")
@@ -223,27 +223,27 @@ enum SetResponse cashReceipt::set(const ParameterList &pParams)
       _mode = cView;
 	  _transType = cView;
 
-      _cust->setReadOnly(TRUE);
-      _received->setEnabled(FALSE);
-      _fundsType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _docDate->setEnabled(FALSE);
-      _bankaccnt->setEnabled(FALSE);
-      _distDate->setEnabled(FALSE);
+      _cust->setReadOnly(true);
+      _received->setEnabled(false);
+      _fundsType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _docDate->setEnabled(false);
+      _bankaccnt->setEnabled(false);
+      _distDate->setEnabled(false);
       _applDate->setEnabled(false);
-      _aropen->setEnabled(FALSE);
+      _aropen->setEnabled(false);
       _searchDocNum->setEnabled(false);
-      _cashrcptmisc->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
-      _applyToBalance->setEnabled(FALSE);
-      _add->setEnabled(FALSE);
+      _cashrcptmisc->setEnabled(false);
+      _notes->setReadOnly(true);
+      _applyToBalance->setEnabled(false);
+      _add->setEnabled(false);
       _balCreditMemo->setEnabled(false);
       _balCustomerDeposit->setEnabled(false);
       _save->hide();
       _close->setText(tr("&Close"));
       _altAccnt->setEnabled(false);
-      _newCC->setEnabled(FALSE);
-      _editCC->setEnabled(FALSE);
+      _newCC->setEnabled(false);
+      _editCC->setEnabled(false);
       disconnect(_cashrcptmisc, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
       disconnect(_cashrcptmisc, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
 
@@ -256,13 +256,13 @@ enum SetResponse cashReceipt::set(const ParameterList &pParams)
 
     if(_ccEdit)
     {
-      _received->setEnabled(FALSE);
-      _fundsType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _docDate->setEnabled(FALSE);
-      _bankaccnt->setEnabled(FALSE);
-      _distDate->setEnabled(FALSE);
-      _applDate->setEnabled(FALSE);
+      _received->setEnabled(false);
+      _fundsType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _docDate->setEnabled(false);
+      _bankaccnt->setEnabled(false);
+      _distDate->setEnabled(false);
+      _applDate->setEnabled(false);
     }
 
   }
@@ -312,13 +312,13 @@ void cashReceipt::sApply()
 {
   if(_mode == cNew)
   {
-    if(!save(TRUE))
+    if(!save(true))
 	{
       return;
 	}
   }
 
-  bool update  = FALSE;
+  bool update  = false;
   QList<XTreeWidgetItem*> list = _aropen->selectedItems();
   XTreeWidgetItem *cursor = 0;
   for(int i = 0; i < list.size(); i++)
@@ -341,11 +341,11 @@ void cashReceipt::sApply()
     params.append("aropen_id", cursor->id());
     params.append("curr_id", _received->id());
 
-    cashReceiptItem newdlg(this, "", TRUE);
+    cashReceiptItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
-      update = TRUE;
+      update = true;
   }
 
   if (update)
@@ -476,7 +476,7 @@ void cashReceipt::sAdd()
   params.append("curr_id", _received->id());
   params.append("effective", _received->effective());
 
-  cashReceiptMiscDistrib newdlg(this, "", TRUE);
+  cashReceiptMiscDistrib newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -491,7 +491,7 @@ void cashReceipt::sEdit()
   params.append("curr_id", _received->id());
   params.append("effective", _received->effective());
 
-  cashReceiptMiscDistrib newdlg(this, "", TRUE);
+  cashReceiptMiscDistrib newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -554,7 +554,7 @@ void cashReceipt::sSave()
 {
   if (save(false))
   {
-    omfgThis->sCashReceiptsUpdated(_cashrcptid, TRUE);
+    omfgThis->sCashReceiptsUpdated(_cashrcptid, true);
     _cashrcptid = -1;
 
     close();
@@ -571,7 +571,7 @@ bool cashReceipt::save(bool partial)
                                "to save the current applications anyway?"),
                             QMessageBox::Yes,
                             QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
-    return FALSE;
+    return false;
 
   int _bankaccnt_curr_id = -1;
   QString _bankaccnt_currAbbr;
@@ -589,7 +589,7 @@ bool cashReceipt::save(bool partial)
   else if (cashave.lastError().type() != QSqlError::NoError)
   {
     systemError(this, cashave.lastError().databaseText(), __FILE__, __LINE__);
-    return FALSE;
+    return false;
   }
 
   if (_received->currencyEnabled() && _received->id() != _bankaccnt_curr_id &&
@@ -605,7 +605,7 @@ bool cashReceipt::save(bool partial)
                           QMessageBox::No |QMessageBox::Default) != QMessageBox::Yes)
   {
     _received->setFocus();
-    return FALSE;
+    return false;
   }
   _received->setCurrencyDisabled(true);
 
@@ -622,14 +622,14 @@ bool cashReceipt::save(bool partial)
                                 "before continuing."));
         _tab->setCurrentIndex(_tab->indexOf(_creditCardTab));
         _cc->setFocus();
-        return FALSE;
+        return false;
       }
       CreditCardProcessor *cardproc = CreditCardProcessor::getProcessor();
       if (! cardproc)
       {
         QMessageBox::critical(this, tr("Credit Card Processing Error"),
                               CreditCardProcessor::errorMsg());
-        return FALSE;
+        return false;
       }
 
       _save->setEnabled(false);
@@ -656,7 +656,7 @@ bool cashReceipt::save(bool partial)
 
       _save->setEnabled(true);
       if (returnVal < 0)
-        return FALSE;
+        return false;
     }
   }
 
@@ -724,10 +724,10 @@ bool cashReceipt::save(bool partial)
   if (cashave.lastError().type() != QSqlError::NoError)
   {
     systemError(this, cashave.lastError().databaseText(), __FILE__, __LINE__);
-    return FALSE;
+    return false;
   }
   _mode=cEdit;
-  return TRUE;
+  return true;
 }
 
 void cashReceipt::sPopulateCustomerInfo(int)
@@ -754,7 +754,7 @@ void cashReceipt::sFillApplyList()
 {
   if (_cust->isValid())
   {
-    _cust->setReadOnly(TRUE);
+    _cust->setReadOnly(true);
 
     _aropen->clear();
     MetaSQLQuery mql = mqlLoad("arOpenApplications", "detail");
@@ -910,12 +910,12 @@ void cashReceipt::populate()
     _posted = cashpopulate.value("cashrcpt_posted").toBool();
     if(cashpopulate.value("cashrcpt_salescat_id").toInt() != -1)
     {
-      _altAccnt->setChecked(TRUE);
+      _altAccnt->setChecked(true);
       _salescat->setId(cashpopulate.value("cashrcpt_salescat_id").toInt());
     }
     if(cashpopulate.value("cashrcpt_alt_curr_rate").toDouble() > 0.0)
     {
-      _altExchRate->setChecked(TRUE);
+      _altExchRate->setChecked(true);
       if (_metrics->value("CurrencyExchangeSense").toInt() == 1)
         _exchRate->setDouble(1.0 / cashpopulate.value("cashrcpt_alt_curr_rate").toDouble());
       else
@@ -1066,7 +1066,7 @@ void cashReceipt::sNewCreditCard()
   params.append("mode", "new");
   params.append("cust_id", _cust->id());
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1081,7 +1081,7 @@ void cashReceipt::sEditCreditCard()
   params.append("cust_id", _cust->id());
   params.append("ccard_id", _cc->id());
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1095,7 +1095,7 @@ void cashReceipt::sViewCreditCard()
   params.append("cust_id", _cust->id());
   params.append("ccard_id", _cc->id());
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

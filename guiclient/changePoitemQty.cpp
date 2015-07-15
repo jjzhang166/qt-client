@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-changePoitemQty::changePoitemQty(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+changePoitemQty::changePoitemQty(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -57,7 +57,7 @@ enum SetResponse changePoitemQty::set(const ParameterList &pParams)
 {
   XSqlQuery changeet;
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

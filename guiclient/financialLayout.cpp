@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include <QDebug>
 
 #include "errorReporter.h"
 #include "financialLayoutColumns.h"
@@ -31,7 +32,7 @@
 #define cCash    2
 #define cAdHoc    3
 
-financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl),
       _last(0),
       _flheadid(-1),
@@ -66,7 +67,7 @@ financialLayout::financialLayout(QWidget* parent, const char* name, bool modal, 
   connect(_showTotal, SIGNAL(toggled(bool)), this, SLOT(sUncheckAltGrandTotal()));
   connect(_showGrandTotal, SIGNAL(toggled(bool)), this, SLOT(sUncheckAltGrandTotal()));
 
-  _layout->setRootIsDecorated(TRUE);
+  _layout->setRootIsDecorated(true);
   _layout->addColumn( tr("Group/Account Name"), -1, Qt::AlignLeft   );
 
   _layouts->addColumn( tr("Name"), _itemColumn, Qt::AlignLeft, true, "flcol_name");
@@ -122,29 +123,29 @@ enum SetResponse financialLayout::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _view->setHidden(TRUE);
-      _viewCol->setHidden(TRUE);
+      _view->setHidden(true);
+      _viewCol->setHidden(true);
     }*/
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _showTotal->setEnabled(FALSE);
-      _showGrandTotal->setEnabled(FALSE);
-      _altLabels->setEnabled(FALSE);
-      _addTopLevelGroup->setHidden(TRUE);
-      _addGroup->setHidden(TRUE);
-      _addAccount->setHidden(TRUE);
-      _edit->setHidden(TRUE);
-      _delete->setHidden(TRUE);
-      _moveUp->setHidden(TRUE);
-      _moveDown->setHidden(TRUE);
-      _reportType->setEnabled(FALSE);
-      _addCol->setHidden(TRUE);
-      _editCol->setHidden(TRUE);
-      _deleteCol->setHidden(TRUE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _showTotal->setEnabled(false);
+      _showGrandTotal->setEnabled(false);
+      _altLabels->setEnabled(false);
+      _addTopLevelGroup->setHidden(true);
+      _addGroup->setHidden(true);
+      _addAccount->setHidden(true);
+      _edit->setHidden(true);
+      _delete->setHidden(true);
+      _moveUp->setHidden(true);
+      _moveDown->setHidden(true);
+      _reportType->setEnabled(false);
+      _addCol->setHidden(true);
+      _editCol->setHidden(true);
+      _deleteCol->setHidden(true);
     }
   }
 
@@ -170,7 +171,7 @@ void financialLayout::sCheck()
       _layout->setColumnCount(1);
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
@@ -469,7 +470,7 @@ void financialLayout::insertFlGroup(int pFlgrpid, QString pFlgrpname, XTreeWidge
       }
     }
   }
-
+  if(!_lastStack.isEmpty())
   _last = _lastStack.pop();
 }
 
@@ -622,7 +623,7 @@ void financialLayout::insertFlGroupAdHoc(int pFlgrpid, QString pFlgrpname, XTree
       }
     }
   }
-
+  if(!_lastStack.isEmpty())
   _last = _lastStack.pop();
 }
 
@@ -630,47 +631,47 @@ void financialLayout::sHandleButtons()
 {
     if (_layout->altId() == cFlRoot)
     {
-      _addGroup->setEnabled(TRUE);
-      _addAccount->setEnabled(FALSE);
-      _addSpecial->setEnabled(FALSE);
-      _edit->setEnabled(FALSE);
-      _view->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
-      _moveUp->setEnabled(FALSE);
-      _moveDown->setEnabled(FALSE);
+      _addGroup->setEnabled(true);
+      _addAccount->setEnabled(false);
+      _addSpecial->setEnabled(false);
+      _edit->setEnabled(false);
+      _view->setEnabled(false);
+      _delete->setEnabled(false);
+      _moveUp->setEnabled(false);
+      _moveDown->setEnabled(false);
     }
     else if (_layout->altId() == cFlGroup)
     {
-      _addGroup->setEnabled(TRUE);
-      _addAccount->setEnabled(TRUE);
-      _edit->setEnabled(TRUE);
-      _view->setEnabled(TRUE);
-      _delete->setEnabled(TRUE);
-      _moveUp->setEnabled(TRUE);
-      _moveDown->setEnabled(TRUE);
+      _addGroup->setEnabled(true);
+      _addAccount->setEnabled(true);
+      _edit->setEnabled(true);
+      _view->setEnabled(true);
+      _delete->setEnabled(true);
+      _moveUp->setEnabled(true);
+      _moveDown->setEnabled(true);
       if (_adHoc->isChecked())
-        _addSpecial->setEnabled(TRUE);
+        _addSpecial->setEnabled(true);
       else
-        _addSpecial->setEnabled(FALSE);
+        _addSpecial->setEnabled(false);
     }
     else if ((_layout->altId() == cFlItem) || (_layout->altId() == cFlSpec))
     {
-      _addGroup->setEnabled(FALSE);
-      _addAccount->setEnabled(FALSE);
-      _addSpecial->setEnabled(FALSE);
-      _edit->setEnabled(TRUE);
-      _view->setEnabled(TRUE);
-      _delete->setEnabled(TRUE);
-      _moveUp->setEnabled(TRUE);
-      _moveDown->setEnabled(TRUE);
+      _addGroup->setEnabled(false);
+      _addAccount->setEnabled(false);
+      _addSpecial->setEnabled(false);
+      _edit->setEnabled(true);
+      _view->setEnabled(true);
+      _delete->setEnabled(true);
+      _moveUp->setEnabled(true);
+      _moveDown->setEnabled(true);
     }
 }
 
 void financialLayout::sHandleButtonsCol()
 {
-      _editCol->setEnabled(TRUE);
-      _viewCol->setEnabled(TRUE);
-      _deleteCol->setEnabled(TRUE);
+      _editCol->setEnabled(true);
+      _viewCol->setEnabled(true);
+      _deleteCol->setEnabled(true);
 }
 
 void financialLayout::sHandleSelection()
@@ -694,7 +695,7 @@ void financialLayout::sAddTopLevelGroup()
   else if (_adHoc->isChecked())
       params.append("type", "adHoc");
   
-  financialLayoutGroup newdlg(this, "", TRUE);
+  financialLayoutGroup newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -715,7 +716,7 @@ void financialLayout::sAddGroup()
   else if (_adHoc->isChecked())
       params.append("type", "adHoc");
   
-  financialLayoutGroup newdlg(this, "", TRUE);
+  financialLayoutGroup newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -736,7 +737,7 @@ void financialLayout::sAddAccount()
   else if (_adHoc->isChecked())
       params.append("type", "adHoc");
   
-  financialLayoutItem newdlg(this, "", TRUE);
+  financialLayoutItem newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -749,7 +750,7 @@ void financialLayout::sAddSpecial()
   params.append("flhead_id", _flheadid);
   params.append("flgrp_id", _layout->id());
  
-  financialLayoutSpecial newdlg(this, "", TRUE);
+  financialLayoutSpecial newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -789,7 +790,7 @@ void financialLayout::sHandleEditOrView(ParameterList &rams)
       else if (_adHoc->isChecked())
         params.append("type", "adHoc");
 
-      financialLayoutGroup newdlg(this, "", TRUE);
+      financialLayoutGroup newdlg(this, "", true);
 
       newdlg.set(params);
       ok = (newdlg.exec() != XDialog::Rejected);
@@ -806,7 +807,7 @@ void financialLayout::sHandleEditOrView(ParameterList &rams)
       else if (_adHoc->isChecked())
         params.append("type", "adHoc");
 
-      financialLayoutItem newdlg(this, "", TRUE);
+      financialLayoutItem newdlg(this, "", true);
       newdlg.set(params);
       ok = (newdlg.exec() != XDialog::Rejected);
     }
@@ -814,7 +815,7 @@ void financialLayout::sHandleEditOrView(ParameterList &rams)
     {
       params.append("flspec_id", _layout->id());
 
-      financialLayoutSpecial newdlg(this, "", TRUE);
+      financialLayoutSpecial newdlg(this, "", true);
       newdlg.set(params);
       ok = (newdlg.exec() != XDialog::Rejected);
     }
@@ -891,13 +892,13 @@ void financialLayout::sSetType()
         QMessageBox::critical( this, tr("Cannot Change Type"),
               tr("All column layouts must be deleted before changing the type.") );
         if (_cachedType == cAdHoc)
-          _adHoc->setChecked(TRUE);
+          _adHoc->setChecked(true);
         else if (_cachedType == cIncome)
-          _income->setChecked(TRUE);
+          _income->setChecked(true);
         else if (_cachedType == cBalance)
-          _balance->setChecked(TRUE);
+          _balance->setChecked(true);
         else if (_cachedType == cCash)
-          _cash->setChecked(TRUE);
+          _cash->setChecked(true);
         return;
     }
   }
@@ -924,18 +925,18 @@ void financialLayout::sSetType()
           tr("Yes"), tr("No"), QString::null ) == 1 )
       {
         if (_cachedType == cAdHoc)
-          _adHoc->setChecked(TRUE);
+          _adHoc->setChecked(true);
         else if (_cachedType == cIncome)
-          _income->setChecked(TRUE);
+          _income->setChecked(true);
         else if (_cachedType == cBalance)
-          _balance->setChecked(TRUE);
+          _balance->setChecked(true);
         else if (_cachedType == cCash)
-          _cash->setChecked(TRUE);
+          _cash->setChecked(true);
         return;
       }
       else
       {
-        _showTotal->setChecked(FALSE);
+        _showTotal->setChecked(false);
           
         financialSetType.prepare("UPDATE flgrp "
               " SET flgrp_showstart=false,flgrp_showend=:showend,flgrp_showdelta=:showdelta,"
@@ -999,18 +1000,18 @@ void financialLayout::sSetType()
 
     if ( _adHoc->isChecked() )
     {
-      _tab->setTabEnabled(1,FALSE);
-      _showTotal->setHidden(FALSE);
-      _showGrandTotal->setHidden(TRUE);
-      _addSpecial->setHidden(FALSE);
-      _altBegin->setHidden(FALSE);
-      _altBeginText->setHidden(FALSE);
-      _altEnd->setHidden(FALSE);
-      _altEndText->setHidden(FALSE);
-      _customText->setHidden(FALSE);
-      _altDiff->setHidden(FALSE);
-      _altDiffText->setHidden(FALSE);
-      _customLit->setHidden(FALSE);
+      _tab->setTabEnabled(1,false);
+      _showTotal->setHidden(false);
+      _showGrandTotal->setHidden(true);
+      _addSpecial->setHidden(false);
+      _altBegin->setHidden(false);
+      _altBeginText->setHidden(false);
+      _altEnd->setHidden(false);
+      _altEndText->setHidden(false);
+      _customText->setHidden(false);
+      _altDiff->setHidden(false);
+      _altDiffText->setHidden(false);
+      _customLit->setHidden(false);
       _cachedType=cAdHoc;
 
       _layout->addColumn( tr("Show\nBeg'ng"),        _ynColumn, Qt::AlignCenter );
@@ -1022,18 +1023,18 @@ void financialLayout::sSetType()
     }
     else
     {
-      _tab->setTabEnabled(1,TRUE);
-      _showTotal->setHidden(TRUE);
-      _showGrandTotal->setHidden(FALSE);
-      _addSpecial->setHidden(TRUE);
-      _altBegin->setHidden(TRUE);
-      _altBeginText->setHidden(TRUE);
-      _altEnd->setHidden(TRUE);
-      _altEndText->setHidden(TRUE);
-      _altDiff->setHidden(TRUE);
-      _altDiffText->setHidden(TRUE);
-      _customText->setHidden(TRUE);
-      _customLit->setHidden(TRUE);
+      _tab->setTabEnabled(1,true);
+      _showTotal->setHidden(true);
+      _showGrandTotal->setHidden(false);
+      _addSpecial->setHidden(true);
+      _altBegin->setHidden(true);
+      _altBeginText->setHidden(true);
+      _altEnd->setHidden(true);
+      _altEndText->setHidden(true);
+      _altDiff->setHidden(true);
+      _altDiffText->setHidden(true);
+      _customText->setHidden(true);
+      _customLit->setHidden(true);
     }
 
     _layout->addColumn( tr("Sub./Summ."),       _dateColumn, Qt::AlignCenter );
@@ -1045,17 +1046,17 @@ void financialLayout::sSetType()
   //Change the display if necessary  
   if ((_cachedType == cCash) || (_cachedType == cAdHoc))
   {
-    _altDebits->setHidden(FALSE);
-    _altDebitsText->setHidden(FALSE);
-    _altCredits->setHidden(FALSE);
-    _altCreditsText->setHidden(FALSE);
+    _altDebits->setHidden(false);
+    _altDebitsText->setHidden(false);
+    _altCredits->setHidden(false);
+    _altCreditsText->setHidden(false);
   }
   else
   {
-    _altDebits->setHidden(TRUE);
-    _altDebitsText->setHidden(TRUE);
-    _altCredits->setHidden(TRUE);
-    _altCreditsText->setHidden(TRUE);
+    _altDebits->setHidden(true);
+    _altDebitsText->setHidden(true);
+    _altCredits->setHidden(true);
+    _altCreditsText->setHidden(true);
   }
 
 }
@@ -1073,7 +1074,7 @@ void financialLayout::sAddCol()
     params.append("type", "cash");
   if (_adHoc->isChecked())
     params.append("type", "adhoc");
-  financialLayoutColumns newdlg(this, "", TRUE);
+  financialLayoutColumns newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -1097,7 +1098,7 @@ void financialLayout::sEditCol()
     params.append("type", "cash");
   if (_adHoc->isChecked())
     params.append("type", "adhoc");
-  financialLayoutColumns newdlg(this, "", TRUE);
+  financialLayoutColumns newdlg(this, "", true);
   newdlg.set(params);
   ok = (newdlg.exec() != XDialog::Rejected);
   
@@ -1122,7 +1123,7 @@ void financialLayout::sDeleteCol()
 void financialLayout::sUncheckAltGrandTotal()
 {
   if ((!_showTotal->isChecked()) && (!_showGrandTotal->isChecked()))
-    _altTotal->setChecked(FALSE);
+    _altTotal->setChecked(false);
 }
 
 void financialLayout::reject()

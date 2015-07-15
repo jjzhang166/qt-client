@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-dspCostedIndentedBOM::dspCostedIndentedBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspCostedIndentedBOM::dspCostedIndentedBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCostedBOMBase(parent, "dspCostedIndentedBOM", fl)
 {
   setWindowTitle(tr("Costed Indented Bill of Materials"));

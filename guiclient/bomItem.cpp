@@ -26,7 +26,7 @@
 
 const char *_issueMethods[] = { "S", "L", "M" };
 
-bomItem::bomItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+bomItem::bomItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -51,9 +51,9 @@ bomItem::bomItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   _item->setType(ItemLineEdit::cGeneralComponents);
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
   _dates->setStartCaption(tr("Effective"));
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   _dates->setEndCaption(tr("Expires"));
 
   _qtyFxd->setValidator(omfgThis->qtyVal());
@@ -83,7 +83,7 @@ bomItem::bomItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   _parentitemid=0;
   _bomheadid=0;
-  _saved=FALSE;
+  _saved=false;
   adjustSize();
 }
 
@@ -205,7 +205,7 @@ enum SetResponse bomItem::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
       connect(_bomDefinedCosts, SIGNAL(toggled(bool)), this, SLOT(sHandleBomitemCost()));
     }
     else if (param.toString() == "copy")
@@ -228,20 +228,20 @@ enum SetResponse bomItem::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _qtyFxd->setEnabled(FALSE);
-      _qtyPer->setEnabled(FALSE);
-      _scrap->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _createWo->setEnabled(FALSE);
-      _issueWo->setEnabled(FALSE);
-      _issueMethod->setEnabled(FALSE);
-      _uom->setEnabled(FALSE);
-      _comments->setReadOnly(TRUE);
-      _ecn->setEnabled(FALSE);
-      _substituteGroup->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _ref->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _qtyFxd->setEnabled(false);
+      _qtyPer->setEnabled(false);
+      _scrap->setEnabled(false);
+      _dates->setEnabled(false);
+      _createWo->setEnabled(false);
+      _issueWo->setEnabled(false);
+      _issueMethod->setEnabled(false);
+      _uom->setEnabled(false);
+      _comments->setReadOnly(true);
+      _ecn->setEnabled(false);
+      _substituteGroup->setEnabled(false);
+      _notes->setEnabled(false);
+      _ref->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
 
       _newCost->setEnabled(false);
@@ -372,7 +372,7 @@ void bomItem::sSave()
 //  Not used?
 //  bomitem.bindValue(":configType", "N");
 //  bomitem.bindValue(":configId", -1);
-//  bomitem.bindValue(":configFlag", QVariant(FALSE));
+//  bomitem.bindValue(":configFlag", QVariant(false));
 
   bomitem.exec();
   if (bomitem.lastError().type() != QSqlError::NoError)
@@ -420,11 +420,11 @@ void bomItem::sSave()
     }
   }
 
-  omfgThis->sBOMsUpdated(_parentitemid, TRUE);
+  omfgThis->sBOMsUpdated(_parentitemid, true);
   
   emit saved(_bomitemid);
 
-  _saved=TRUE;
+  _saved=true;
 }
 
 void bomItem::sSaveClick()
@@ -458,11 +458,11 @@ void bomItem::sClose()
 void bomItem::sItemTypeChanged(const QString &type)
 {
   if (type == "M")
-    _createWo->setEnabled(TRUE);
+    _createWo->setEnabled(true);
   else
   {
-    _createWo->setEnabled(FALSE);
-    _createWo->setChecked(FALSE);
+    _createWo->setEnabled(false);
+    _createWo->setChecked(false);
   }
 }
 
@@ -552,7 +552,7 @@ void bomItem::sNewSubstitute()
   if (_mode == cNew)
     params.append("bomitem_item_id", _item->id());
 
-  itemSubstitute newdlg(this, "", TRUE);
+  itemSubstitute newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -565,7 +565,7 @@ void bomItem::sEditSubstitute()
   params.append("mode", "edit");
   params.append("bomitemsub_id", _bomitemsub->id());
 
-  itemSubstitute newdlg(this, "", TRUE);
+  itemSubstitute newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -609,6 +609,22 @@ void bomItem::sFillSubstituteList()
 
 void bomItem::sItemIdChanged()
 {
+// Prevent job costed items from being added to the BOM
+  XSqlQuery qry;
+  qry.prepare("SELECT EXISTS(SELECT 1 FROM itemsite WHERE itemsite_item_id = :item_id AND itemsite_costmethod = 'J')");
+  qry.bindValue(":item_id", _item->id());
+  qry.exec();
+  if (qry.first() && qry.value("exists").toBool())
+  {
+    QMessageBox::question(this, tr("Job Costed Item"),
+                            tr("You cannot add a Job Costed item to a Bill of Material"));
+    _item->setId(-1);
+    return;
+  }
+  else if (qry.lastError().type() != QSqlError::NoError)
+      ErrorReporter::error(QtCriticalMsg, this, tr("Item Job cost check"),
+                           qry, __FILE__, __LINE__);
+
   MetaSQLQuery muom = mqlLoad("uoms", "item");
 
   ParameterList params;
@@ -785,7 +801,7 @@ void bomItem::sNewCost()
   if (_mode == cNew)
     params.append("bomitem_item_id", _item->id());
 
-  itemCost newdlg(this, "", TRUE);
+  itemCost newdlg(this, "", true);
   if (newdlg.set(params) == NoError && newdlg.exec())
     sFillCostList();
 }
@@ -799,7 +815,7 @@ void bomItem::sEditCost()
   if (_mode == cView)
     params.append("mode", "view");
 
-  itemCost newdlg(this, "", TRUE);
+  itemCost newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec())

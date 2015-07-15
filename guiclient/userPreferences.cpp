@@ -29,7 +29,7 @@
 
 extern QString __password;
 
-userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -80,9 +80,9 @@ userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, 
                         "FROM whsinfo "
                         "ORDER BY warehous_code" );
 
-  _dirty = FALSE;
+  _dirty = false;
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _backgroundList->setMaximumWidth(25);
 #endif
 
@@ -140,7 +140,7 @@ void userPreferences::sBackgroundList()
   ParameterList params;
   params.append("image_id", _backgroundImageid);
 
-  imageList newdlg(this, "", TRUE);
+  imageList newdlg(this, "", true);
   newdlg.set(params);
 
   int imageid;
@@ -163,7 +163,7 @@ void userPreferences::sPopulate()
     _pref = _altPref;
     _username->setText(_user->currentText());
   }
-  _username->setEnabled(FALSE);
+  _username->setEnabled(false);
   _currentpassword->setEnabled(_currentUser->isChecked());
   _newpassword->setEnabled(_currentUser->isChecked());
   _retypepassword->setEnabled(_currentUser->isChecked());
@@ -171,21 +171,21 @@ void userPreferences::sPopulate()
 
   if (_pref->value("BackgroundImageid").toInt() > 0)
   {
-    _backgroundImage->setChecked(TRUE);
+    _backgroundImage->setChecked(true);
     setBackgroundImage(_pref->value("BackgroundImageid").toInt());
   }
   else
   {
-    _noBackgroundImage->setChecked(TRUE);
+    _noBackgroundImage->setChecked(true);
     _background->clear();
     _backgroundImageid = -1;
   }
 
   if (_pref->value("PreferredWarehouse").toInt() == -1)
-    _noWarehouse->setChecked(TRUE);
+    _noWarehouse->setChecked(true);
   else
   {
-    _selectedWarehouse->setChecked(TRUE);
+    _selectedWarehouse->setChecked(true);
     _warehouse->setId(_pref->value("PreferredWarehouse").toInt());
   }
 
@@ -526,12 +526,12 @@ void userPreferences::sNew()
   else
     params.append("username", _user->currentText());
 
-  hotkey newdlg(this, "", TRUE);
+  hotkey newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
   {
-    _dirty = TRUE;
+    _dirty = true;
     sFillList();
   }
 }
@@ -547,12 +547,12 @@ void userPreferences::sEdit()
   else
     params.append("username", _user->currentText());
 
-  hotkey newdlg(this, "", TRUE);
+  hotkey newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
   {
-    _dirty = TRUE;
+    _dirty = true;
     sFillList();
   }
 }
@@ -576,7 +576,7 @@ void userPreferences::sDelete()
     userDelete.exec();
   }
 
-  _dirty = TRUE;
+  _dirty = true;
   sFillList();
 }
 

@@ -8,15 +8,15 @@
  * to be bound by its terms.
  */
 
-#include <QDesktopServices>
-#include <QMessageBox>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDialog>
-#include <QUrl>
-#include <QMenu>
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
+#include <QMenu>
+#include <QMessageBox>
 #include <QSettings>
+#include <QUrl>
 
 #include <openreports.h>
 #include <parameter.h>
@@ -30,54 +30,61 @@
 #include "imageAssignment.h"
 #include "docAttach.h"
 
-// CAUTION: This will break if the order of this list does not match
-//          the order of the enumerated values as defined.
-const Documents::DocumentMap Documents::_documentMap[] =
+QMap<QString, struct DocumentMap*> Documents::_strMap;
+QMap<int,     struct DocumentMap*> Documents::_intMap;
+
+/** Add another document type to the map by both key and int.
+
+    Actually there are two parallel maps, one by DocumentSources/integer
+    and the other by string key. This simplifies lookups and provides
+    backward compatibility with existing UI file definitions.
+
+    @param id    A DocumentSources enum value or a unique extension-supplied int
+    @param key   A human-readable abbreviation for the document type
+    @param trans A human-readable, translatable term for the document type
+    @param param The name of the parameter a window checks for the record id
+    @param ui    The application or extension window to create a new record
+    @param priv  The privileges required to create a new record
+
+    @return true on success, false if this entry would create a duplicate
+            on either id or key.
+ */
+bool Documents::addToMap(int id,        QString key, QString trans,
+                         QString param, QString ui,  QString priv)
 {
-  DocumentMap( Uninitialized,     " "   ),
-  DocumentMap( Address,           "ADDR"),
-  DocumentMap( BBOMHead,          "BBH" ),
-  DocumentMap( BBOMItem,          "BBI" ),
-  DocumentMap( BOMHead,           "BMH",   "bomhead_id", "bom"           ),
-  DocumentMap( BOMItem,           "BMI" ),
-  DocumentMap( BOOHead,           "BOH" ),
-  DocumentMap( BOOItem,           "BOI" ),
-  DocumentMap( CRMAccount,        "CRMA",  "crmacct_id", "crmaccount"    ),
-  DocumentMap( Contact,           "T",     "cntct_id",   "contact"       ),
-  DocumentMap( Contract,          "CNTR",  "contrct_id", "contrct"       ),
-  DocumentMap( CreditMemo,        "CM",    "cmhead_id",  "creditMemo"    ),
-  DocumentMap( CreditMemoItem,    "CMI" ),
-  DocumentMap( Customer,          "C",     "cust_id",    "customer"      ),
-  DocumentMap( Employee,          "EMP",   "emp_id",     "employee"      ),
-  DocumentMap( Incident,          "INCDT", "incdt_id",   "incident"      ),
-  DocumentMap( Invoice,           "INV",   "invchead_id","invoice"       ),
-  DocumentMap( InvoiceItem,       "INVI"),
-  DocumentMap( Item,              "I",     "item_id",    "item"          ),
-  DocumentMap( ItemSite,          "IS"  ),
-  DocumentMap( ItemSource,        "IR",    "itemsrc_id", "itemSource"    ),
-  DocumentMap( Location,          "L"   ),
-  DocumentMap( LotSerial,         "LS",    "ls_id",      "lotSerial"     ),
-  DocumentMap( Opportunity,       "OPP",   "ophead_id",  "opportunity"   ),
-  DocumentMap( Project,           "J",     "prj_id",     "project"       ),
-  DocumentMap( PurchaseOrder,     "P",     "pohead_id",  "purchaseOrder" ),
-  DocumentMap( PurchaseOrderItem, "PI"  ),
-  DocumentMap( ReturnAuth,        "RA",    "rahead_id",  "returnAuthorization"  ),
-  DocumentMap( ReturnAuthItem,    "RI"  ),
-  DocumentMap( Quote,             "Q",     "quhead_id",  "salesOrder"    ),
-  DocumentMap( QuoteItem,         "QI"  ),
-  DocumentMap( SalesOrder,        "S",     "sohead_id",  "salesOrder"    ),
-  DocumentMap( SalesOrderItem,    "SI"  ),
-  DocumentMap( ShipTo,            "SHP",   "shipto_id",  "shipTo"        ),
-  DocumentMap( TimeExpense,       "TE"  ),
-  DocumentMap( Todo,              "TODO",  "todoitem_id","todoItem"      ),
-  DocumentMap( TransferOrder,     "TO",    "tohead_id",  "transferOrder" ),
-  DocumentMap( TransferOrderItem, "TI"  ),
-  DocumentMap( Vendor,            "V",     "vend_id",    "vendor"        ),
-  DocumentMap( Voucher,           "VCH",   "vohead_id",  "voucher"        ),
-  DocumentMap( Warehouse,         "WH"  ),
-  DocumentMap( WorkOrder,         "W",     "wo_id",      "workOrder"     ),
-  DocumentMap( ProjectTask,       "TASK",  "prjtask_id", "projectTask"   ),
-};
+  if (_strMap.contains(key) || _intMap.contains(id)) {
+    qDebug() << "Documents::addToMap(" << id << ", " << key << ") duplicate!";
+    return false;
+  }
+
+  DocumentMap *entry = new DocumentMap(id, key, trans, param, ui, priv);
+  _strMap.insert(key, entry);
+  _intMap.insert(id,  entry);
+  return true;
+}
+
+// Inconsistencies between here and the rest of the app: S? Q?
+QMap<QString, struct DocumentMap *> &Documents::documentMap() {
+  if (! _x_privileges)
+    return _strMap;
+
+  if (_strMap.isEmpty()) {
+    XSqlQuery q("SELECT * FROM source;");
+    addToMap(Uninitialized,     "",      tr("[Pick a Document Type]")                           );
+    while (q.next()) {
+      addToMap(q.value("source_docass_num").toInt(),
+               q.value("source_docass").toString(),
+               tr(q.value("source_descrip").toString().toLatin1().data()),
+               q.value("source_key_param").toString(),
+               q.value("source_uiform_name").toString(),
+               q.value("source_create_priv").toString());
+    }
+    ErrorReporter::error(QtCriticalMsg, 0, tr("Error Getting Document Types"),
+                         q, __FILE__, __LINE__);
+  }
+
+  return _strMap;
+}
 
 GuiClientInterface* Documents::_guiClientInterface = 0;
 
@@ -85,10 +92,12 @@ Documents::Documents(QWidget *pParent) :
   QWidget(pParent)
 {
   setupUi(this);
-  
-  _source = Uninitialized;
+
   _sourceid = -1;
   _readOnly = false;
+  if (_strMap.isEmpty()) {
+    (void)documentMap();
+  }
 
   _doc->addColumn(tr("Type"),  _itemColumn,  Qt::AlignLeft, true, "target_type" );
   _doc->addColumn(tr("Number"), _itemColumn, Qt::AlignLeft, true, "target_number" );
@@ -115,37 +124,37 @@ Documents::Documents(QWidget *pParent) :
     connect(imgAct, SIGNAL(triggered()), this, SLOT(sNewImage()));
     newDocMenu->addAction(imgAct);
 
-    QAction* incdtAct = new QAction(tr("Incident"), this);
-    incdtAct->setEnabled(_x_privileges->check("MaintainPersonalIncidents") ||
-                         _x_privileges->check("MaintainAllIncidents"));
-    connect(incdtAct, SIGNAL(triggered()), this, SLOT(sNewIncdt()));
-    newDocMenu->addAction(incdtAct);
-
-    QAction* todoAct = new QAction(tr("To Do"), this);
-    todoAct->setEnabled(_x_privileges->check("MaintainPersonalToDoItems") ||
-                        _x_privileges->check("MaintainAllToDoItems"));
-    connect(todoAct, SIGNAL(triggered()), this, SLOT(sNewToDo()));
-    newDocMenu->addAction(todoAct);
-
-    QAction* oppAct = new QAction(tr("Opportunity"), this);
-    oppAct->setEnabled(_x_privileges->check("MaintainPersonalOpportunities") ||
-                       _x_privileges->check("MaintainAllOpportunities"));
-    connect(oppAct, SIGNAL(triggered()), this, SLOT(sNewOpp()));
-    newDocMenu->addAction(oppAct);
-
-    QAction* projAct = new QAction(tr("Project"), this);
-    projAct->setEnabled(_x_privileges->check("MaintainPersonalProjects") ||
-                        _x_privileges->check("MaintainAllProjects"));
-    connect(projAct, SIGNAL(triggered()), this, SLOT(sNewProj()));
-    newDocMenu->addAction(projAct);
+    foreach (DocumentMap *value, _strMap) {
+      if (! value->newPriv.isEmpty()) {
+        QAction* act = new QAction(value->translation, this);
+        QStringList data;
+        data << value->doctypeStr << value->uiname;
+        act->setEnabled(_x_privileges->check(value->newPriv));
+        act->setData(data);
+        connect(act, SIGNAL(triggered()), this, SLOT(sNewDoc()));
+        newDocMenu->addAction(act);
+      }
+    }
 
     _newDoc->setMenu(newDocMenu);
   }
 }
 
-void Documents::setType(enum DocumentSources pSource)
+int Documents::type() const
 {
-  _source = pSource;
+  DocumentMap *elem = _strMap.value(_sourcetype);
+  return elem ? elem->doctypeId : Uninitialized;
+}
+
+void Documents::setType(int sourceType)
+{
+  DocumentMap *elem = _intMap.value(sourceType);
+  setType(elem ? elem->doctypeStr : "");
+}
+
+void Documents::setType(QString sourceType)
+{
+  _sourcetype = sourceType;
 }
 
 void Documents::setId(int pSourceid)
@@ -166,49 +175,39 @@ void Documents::setReadOnly(bool pReadOnly)
   handleSelection();
 }
 
-void Documents::sNewDoc(QString type, QString ui)
+void Documents::sNewDoc(QString ptype, QString pui)
 {
+  QString  type = ptype;
+  QString  ui   = pui;
+  QAction *act = qobject_cast<QAction*>(sender());
+  if (act) {
+    QStringList elem = act->data().toStringList();
+    type = elem.at(0);
+    ui   = elem.at(1);
+  }
+
   ParameterList params;
   params.append("mode", "new");
   int target_id;
   QDialog* newdlg = qobject_cast<QDialog*>(_guiClientInterface->openWindow(ui, params, parentWidget(),Qt::WindowModal, Qt::Dialog));
   target_id = newdlg->exec();
-  if (target_id != QDialog::Rejected)
+  if (target_id != QDialog::Rejected) {
     sInsertDocass(type, target_id);
+  }
   refresh();
 }
 
 void Documents::sNewImage()
 {
   ParameterList params;
-  params.append("sourceType", _source);
+  params.append("sourceType", _sourcetype);
   params.append("source_id", _sourceid);
 
-  imageAssignment newdlg(this, "", TRUE);
+  imageAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)
     refresh();
-}
-
-void Documents::sNewIncdt()
-{
-  sNewDoc("INCDT","incident");
-}
-
-void Documents::sNewToDo()
-{
-  sNewDoc("TODO", "todoItem");
-}
-
-void Documents::sNewProj()
-{
-  sNewDoc("J", "project");
-}
-
-void Documents::sNewOpp()
-{
-  sNewDoc("OPP","opportunity");
 }
 
 void Documents::sInsertDocass(QString target_type, int target_id)
@@ -217,7 +216,7 @@ void Documents::sInsertDocass(QString target_type, int target_id)
   ins.prepare("INSERT INTO docass ( docass_source_id, docass_source_type, docass_target_id, docass_target_type )"
             "  VALUES ( :sourceid, :sourcetype::text, :targetid, :targettype); ");
   ins.bindValue(":sourceid", _sourceid);
-  ins.bindValue(":sourcetype", _documentMap[_source].ident);
+  ins.bindValue(":sourcetype", _sourcetype);
   ins.bindValue(":targetid", target_id);
   ins.bindValue(":targettype", target_type);
   ins.exec();
@@ -258,7 +257,7 @@ void Documents::sOpenDoc(QString mode)
       return;
 
     params.append("image_id", img.value("imageass_image_id").toInt());
-    imageview newdlg(this, "", TRUE);
+    imageview newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != QDialog::Rejected)
@@ -274,7 +273,7 @@ void Documents::sOpenDoc(QString mode)
       ParameterList params;
       params.append("url_id", targetid);
 
-      docAttach newdlg(this, "", TRUE);
+      docAttach newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
 
@@ -297,7 +296,7 @@ void Documents::sOpenDoc(QString mode)
       QDir tdir;
       // TODO: QDesktopServices::openUrl(urldb) on windows does not open files
       // containing spaces. why not?
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
       QString fileName = fi.fileName().remove(" ");
 #else
       QString fileName = fi.fileName();
@@ -322,7 +321,7 @@ void Documents::sOpenDoc(QString mode)
       tfile.write(qfile.value("url_stream").toByteArray());
       QUrl urldb;
       urldb.setUrl(tfile.fileName());
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
       urldb.setScheme("file");
 #endif
       tfile.close();
@@ -353,21 +352,15 @@ void Documents::sOpenDoc(QString mode)
   }
   else
   {
-    unsigned int i = 0;
-    // TODO: find a better data structure than array of structs for _documentMap
-    for (  ; i < sizeof(_documentMap) / sizeof(_documentMap[0]); i++)
-      if (_documentMap[i].ident == docType)
-      {
-        params.append(_documentMap[i].keyparam, targetid);
-        ui = _documentMap[i].uiname;
-        break;
-      }
-    if (i >= sizeof(_documentMap) / sizeof(_documentMap[0]))
-    {
+    struct DocumentMap *elem = _strMap.value(docType);
+    if (! elem) {
       QMessageBox::critical(this, tr("Error"),
                             tr("Unknown document type %1").arg(docType));
       return;
     }
+
+    params.append(elem->idParam, targetid);
+    ui = elem->uiname;
   }
 
   QWidget* w = 0;
@@ -398,10 +391,10 @@ void Documents::sViewDoc()
 void Documents::sAttachDoc()
 {
   ParameterList params;
-  params.append("sourceType", _source);
+  params.append("sourceType", _sourcetype);
   params.append("source_id", _sourceid);
 
-  docAttach newdlg(this, "", TRUE);
+  docAttach newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 
@@ -515,7 +508,7 @@ void Documents::refresh()
               " WHEN (target_type='URL') THEN :url "
               " WHEN (target_type='FILE') THEN :file "
               " WHEN (target_type='IMG') THEN :image "
-              " ELSE :error "
+              " ELSE NULL "
               " END AS target_type_qtdisplayrole "
               "FROM docinfo "
               "WHERE ((source_type=:source) "
@@ -533,57 +526,57 @@ void Documents::refresh()
   query.bindValue(":dupe", tr("Duplicate of"));
   query.bindValue(":other", tr("Other"));
 
-  query.bindValue(":address", tr("Address"));
-  query.bindValue(":bbomhead", tr("Breeder BOM Head"));
-  query.bindValue(":bbomitem", tr("Breeder BOM Item"));
-  query.bindValue(":bomhead", tr("BOM Head"));
-  query.bindValue(":bomitem", tr("BOM Item"));
-  query.bindValue(":boohead", tr("Router Head"));
-  query.bindValue(":booitem", tr("Router Item"));
-  query.bindValue(":crma", tr("Account"));
-  query.bindValue(":contact", tr("Contact"));
-  query.bindValue(":contract", tr("Contract"));
-  query.bindValue(":creditmemo", tr("Return"));
-  query.bindValue(":creditmemoitem", tr("Return Item"));
-  query.bindValue(":cust", tr("Customer"));
-  query.bindValue(":emp", tr("Employee"));
-  query.bindValue(":incident", tr("Incident"));
-  query.bindValue(":invoice", tr("Invoice"));
-  query.bindValue(":invoiceitem", tr("Invoice Item"));
-  query.bindValue(":item", tr("Item"));
-  query.bindValue(":itemsite", tr("Item Site"));
-  query.bindValue(":itemsrc", tr("Item Source"));
-  query.bindValue(":location", tr("Location"));
-  query.bindValue(":lotserial", tr("Lot/Serial"));
-  query.bindValue(":opp", tr("Opportunity"));
-  query.bindValue(":project", tr("Project"));
-  query.bindValue(":po", tr("Purchase Order"));
-  query.bindValue(":poitem", tr("Purchase Order Item"));
-  query.bindValue(":ra", tr("Return Authorization"));
-  query.bindValue(":raitem", tr("Return Authorization Item"));
-  query.bindValue(":quote", tr("Quote"));
-  query.bindValue(":quoteitem", tr("Quote Item"));
-  query.bindValue(":so", tr("Sales Order"));
-  query.bindValue(":soitem", tr("Sales Order Item"));
-  query.bindValue(":shipto", tr("Ship To"));
-  query.bindValue(":timeexpense", tr("Time Expense"));
-  query.bindValue(":todo", tr("To-Do"));
-  query.bindValue(":to", tr("Transfer Order"));
-  query.bindValue(":toitem", tr("Transfer Order Item"));
-  query.bindValue(":vendor", tr("Vendor"));
-  query.bindValue(":voucher", tr("Voucher"));
-  query.bindValue(":whse", tr("Site"));
-  query.bindValue(":wo", tr("Work Order"));
-  query.bindValue(":projecttask", tr("Project Task"));
-  
+  query.bindValue(":address",        _strMap.value("ADDR")->translation);
+  query.bindValue(":bbomhead",       _strMap.value("BBH")->translation);
+  query.bindValue(":bbomitem",       _strMap.value("BBI")->translation);
+  query.bindValue(":bomhead",        _strMap.value("BMH")->translation);
+  query.bindValue(":bomitem",        _strMap.value("BMI")->translation);
+  query.bindValue(":boohead",        _strMap.value("BOH")->translation);
+  query.bindValue(":booitem",        _strMap.value("BOI")->translation);
+  query.bindValue(":crma",           _strMap.value("CRMA")->translation);
+  query.bindValue(":contact",        _strMap.value("T")->translation);
+  query.bindValue(":contract",       _strMap.value("CNTR")->translation);
+  query.bindValue(":creditmemo",     _strMap.value("CM")->translation);
+  query.bindValue(":creditmemoitem", _strMap.value("CMI")->translation);
+  query.bindValue(":cust",           _strMap.value("C")->translation);
+  query.bindValue(":emp",            _strMap.value("EMP")->translation);
+  query.bindValue(":incident",       _strMap.value("INCDT")->translation);
+  query.bindValue(":invoice",        _strMap.value("INV")->translation);
+  query.bindValue(":invoiceitem",    _strMap.value("INVI")->translation);
+  query.bindValue(":item",           _strMap.value("I")->translation);
+  query.bindValue(":itemsite",       _strMap.value("IS")->translation);
+  query.bindValue(":itemsrc",        _strMap.value("IR")->translation);
+  query.bindValue(":location",       _strMap.value("L")->translation);
+  query.bindValue(":lotserial",      _strMap.value("LS")->translation);
+  query.bindValue(":opp",            _strMap.value("OPP")->translation);
+  query.bindValue(":project",        _strMap.value("J")->translation);
+  query.bindValue(":po",             _strMap.value("P")->translation);
+  query.bindValue(":poitem",         _strMap.value("PI")->translation);
+  query.bindValue(":ra",             _strMap.value("RA")->translation);
+  query.bindValue(":raitem",         _strMap.value("RI")->translation);
+  query.bindValue(":quote",          _strMap.value("Q")->translation);
+  query.bindValue(":quoteitem",      _strMap.value("QI")->translation);
+  query.bindValue(":so",             _strMap.value("S")->translation);
+  query.bindValue(":soitem",         _strMap.value("SI")->translation);
+  query.bindValue(":shipto",         _strMap.value("SHP")->translation);
+  query.bindValue(":timeexpense",    _strMap.value("TE")->translation);
+  query.bindValue(":todo",           _strMap.value("TODO")->translation);
+  query.bindValue(":to",             _strMap.value("TO")->translation);
+  query.bindValue(":toitem",         _strMap.value("TI")->translation);
+  query.bindValue(":vendor",         _strMap.value("V")->translation);
+  query.bindValue(":voucher",        _strMap.value("VCH")->translation);
+  query.bindValue(":whse",           _strMap.value("WH")->translation);
+  query.bindValue(":wo",             _strMap.value("W")->translation);
+  query.bindValue(":projecttask",    _strMap.value("TASK")->translation);
+
   query.bindValue(":image", tr("Image"));
   query.bindValue(":url", tr("URL"));
   query.bindValue(":file", tr("File"));
 
-  query.bindValue(":source", _documentMap[_source].ident);
+  query.bindValue(":source",   _sourcetype);
   query.bindValue(":sourceid", _sourceid);
   query.exec();
-  _doc->populate(query,TRUE);
+  _doc->populate(query,true);
   ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Documents"),
                        query, __FILE__, __LINE__);
 }

@@ -21,7 +21,7 @@ class openSalesOrders : public display, public Ui::openSalesOrders
     Q_OBJECT
 
 public:
-    openSalesOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    openSalesOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     
     Q_INVOKABLE virtual void setCustId(int custId);
     Q_INVOKABLE virtual int custId();

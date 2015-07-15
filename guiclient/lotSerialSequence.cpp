@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-lotSerialSequence::lotSerialSequence(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+lotSerialSequence::lotSerialSequence(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -68,12 +68,12 @@ enum SetResponse lotSerialSequence::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _number->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _prefix->setEnabled(FALSE);
-      _nextValue->setEnabled(FALSE);
-      _length->setEnabled(FALSE);
-      _suffix->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _description->setEnabled(false);
+      _prefix->setEnabled(false);
+      _nextValue->setEnabled(false);
+      _length->setEnabled(false);
+      _suffix->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -99,11 +99,11 @@ bool lotSerialSequence::sCheck()
       _mode = cEdit;
       populate();
 
-      _number->setEnabled(FALSE);
-      return TRUE;
+      _number->setEnabled(false);
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 
 void lotSerialSequence::sSave()

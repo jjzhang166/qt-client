@@ -29,7 +29,7 @@
 #include "purchaseRequest.h"
 #include "workOrder.h"
 
-dspInventoryAvailabilityByWorkOrder::dspInventoryAvailabilityByWorkOrder(QWidget* parent, const char*, Qt::WFlags fl)
+dspInventoryAvailabilityByWorkOrder::dspInventoryAvailabilityByWorkOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInventoryAvailabilityByWorkOrder", fl)
 {
   setupUi(optionsWidget());

@@ -22,7 +22,7 @@ class contacts : public display, public Ui::contacts
     Q_OBJECT
 
 public:
-    contacts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    contacts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual void setCrmacctid(int crmacctId);
     virtual int crmacctId();

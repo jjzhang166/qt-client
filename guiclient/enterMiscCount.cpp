@@ -16,14 +16,14 @@
 
 #include "storedProcErrorLookup.h"
 
-enterMiscCount::enterMiscCount(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+enterMiscCount::enterMiscCount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));
 
-  _captive = FALSE;
+  _captive = false;
   
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _item->addExtraClause( QString("(item_type NOT IN ('R', 'F'))") );
@@ -51,7 +51,7 @@ void enterMiscCount::languageChange()
 enum SetResponse enterMiscCount::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -60,8 +60,8 @@ enum SetResponse enterMiscCount::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
 
   return NoError;

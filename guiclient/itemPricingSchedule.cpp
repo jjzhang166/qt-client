@@ -18,7 +18,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 
-itemPricingSchedule::itemPricingSchedule(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemPricingSchedule::itemPricingSchedule(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery itemitemPricingSchedule;
@@ -33,9 +33,9 @@ itemPricingSchedule::itemPricingSchedule(QWidget* parent, const char* name, bool
   connect(_currency, SIGNAL(newID(int)), this, SLOT(sFillList()));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sFillList()));
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
   _dates->setStartCaption(tr("Effective"));
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   _dates->setEndCaption(tr("Expires"));
 
   _ipsitem->addColumn(tr("Target"),          _ynColumn,    Qt::AlignLeft,   true,  "target"  );
@@ -95,12 +95,12 @@ enum SetResponse itemPricingSchedule::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _warehouse->setEnabled(FALSE);
-      _currency->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _dates->setEnabled(false);
+      _warehouse->setEnabled(false);
+      _currency->setEnabled(false);
+      _new->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -247,7 +247,7 @@ void itemPricingSchedule::sNew()
   params.append("curr_id", _currency->id());
   params.append("updated", _updated);
 
-  itemPricingScheduleItem newdlg(this, "", TRUE);
+  itemPricingScheduleItem newdlg(this, "", true);
   newdlg.set(params);
 
   int result;
@@ -275,7 +275,7 @@ void itemPricingSchedule::sEdit()
     return;
     // ToDo - tell the user why we're not showing the pricing sched?
 
-  itemPricingScheduleItem newdlg(this, "", TRUE);
+  itemPricingScheduleItem newdlg(this, "", true);
   newdlg.set(params);
 
   int result;
@@ -389,7 +389,7 @@ void itemPricingSchedule::populate()
     _dates->setStartDate(pop.value("ipshead_effective").toDate());
     _dates->setEndDate(pop.value("ipshead_expires").toDate());
     _currency->setId(pop.value("ipshead_curr_id").toInt());
-    _currency->setEnabled(FALSE);
+    _currency->setEnabled(false);
     QDate tmpDate = pop.value("ipshead_updated").toDate();
     if (tmpDate.isValid() && ! tmpDate.isNull())
 	_updated = tmpDate;

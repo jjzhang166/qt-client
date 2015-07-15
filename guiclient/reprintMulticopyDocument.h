@@ -34,14 +34,14 @@ class reprintMulticopyDocument : public XDialog
     reprintMulticopyDocument(QWidget    *parent = 0,
                              const char *name   = 0,
                              bool        modal  = false,
-                             Qt::WFlags  fl     = 0);
+                             Qt::WindowFlags  fl     = 0);
     reprintMulticopyDocument(QString numCopiesMetric,
                              QString watermarkMetric,
                              QString showPriceMetric,
                              QWidget    *parent = 0,
                              const char *name   = 0,
                              bool        modal  = false,
-                             Qt::WFlags  fl     = 0);
+                             Qt::WindowFlags  fl     = 0);
     ~reprintMulticopyDocument();
 
     Q_INVOKABLE virtual XDocCopySetter *copies();

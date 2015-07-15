@@ -103,10 +103,6 @@ to be bound by its terms.</comment>
    <header>xdoccopysetter.h</header>
   </customwidget>
  </customwidgets>
- <includes>
-  <include location="global">parameter.h</include>
-  <include location="global">qprinter.h</include>
- </includes>
  <resources/>
  <connections>
   <connection>

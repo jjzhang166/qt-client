@@ -17,7 +17,7 @@
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
 
-dspQuotesByCustomer::dspQuotesByCustomer(QWidget* parent, const char*, Qt::WFlags fl)
+dspQuotesByCustomer::dspQuotesByCustomer(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspQuotesByCustomer", fl)
 {
   setupUi(optionsWidget());

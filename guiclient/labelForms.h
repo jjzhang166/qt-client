@@ -21,7 +21,7 @@ class labelForms : public XWidget, public Ui::labelForms
     Q_OBJECT
 
 public:
-    labelForms(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    labelForms(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~labelForms();
 
 public slots:

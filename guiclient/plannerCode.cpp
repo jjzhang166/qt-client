@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-plannerCode::plannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+plannerCode::plannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -76,12 +76,12 @@ enum SetResponse plannerCode::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _mrpexcpResched->setEnabled(FALSE);
-      _mrpexcpDelete->setEnabled(FALSE);
-      _autoExplode->setEnabled(FALSE);
-      _explosionGroup->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _mrpexcpResched->setEnabled(false);
+      _mrpexcpDelete->setEnabled(false);
+      _autoExplode->setEnabled(false);
+      _explosionGroup->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -107,11 +107,11 @@ bool plannerCode::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
-      return TRUE;
+      _code->setEnabled(false);
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 
 void plannerCode::sSave()
@@ -217,15 +217,15 @@ void plannerCode::populate()
     _mrpexcpDelete->setChecked(plannerpopulate.value("plancode_mrpexcp_delete").toBool());
 
     if (plannerpopulate.value("plancode_mpsexplosion").toString() == "N")
-      _autoExplode->setChecked(FALSE);
+      _autoExplode->setChecked(false);
     else
     {
-      _autoExplode->setChecked(TRUE);
+      _autoExplode->setChecked(true);
 
       if (plannerpopulate.value("plancode_mpsexplosion").toString() == "S")
-        _singleLevel->setChecked(TRUE);
+        _singleLevel->setChecked(true);
       else if (plannerpopulate.value("plancode_mpsexplosion").toString() == "M")
-        _multipleLevel->setChecked(TRUE);
+        _multipleLevel->setChecked(true);
     }
   }
 } 

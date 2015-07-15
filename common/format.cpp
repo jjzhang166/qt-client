@@ -128,7 +128,7 @@ int decimalPlaces(QString pName)
   if (!loadedLocales)
     loadLocale();
 
-  QByteArray  tba  = pName.toAscii();
+  QByteArray  tba  = pName.toLatin1();
   char        *ptr = tba.data();
   // the following order is based on the relative frequencies of usage
   // for xtnumericrole in the .cpp and .mql files except for the final

@@ -21,7 +21,7 @@ class salesCategories : public XWidget, public Ui::salesCategories
     Q_OBJECT
 
 public:
-    salesCategories(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    salesCategories(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~salesCategories();
 
 public slots:

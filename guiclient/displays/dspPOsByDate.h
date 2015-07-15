@@ -20,7 +20,7 @@ class dspPOsByDate : public display, public Ui::dspPOsByDate
     Q_OBJECT
 
 public:
-    dspPOsByDate(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPOsByDate(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

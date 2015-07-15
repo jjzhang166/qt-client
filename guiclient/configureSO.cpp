@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QMessageBox>
 
-configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureSO;
@@ -95,6 +95,8 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   _shipform->setId(_metrics->value("DefaultShipFormId").toInt());
   _shipvia->setId(_metrics->value("DefaultShipViaId").toInt());
+  _shipchrg->setId(_metrics->value("DefaultShipChrgId").toInt());
+  _sellingWarehouse->setId(_metrics->value("DefaultSellingWarehouseId").toInt());
 
   if (_metrics->value("DefaultBalanceMethod") == "B")
     _balanceMethod->setCurrentIndex(0);
@@ -280,6 +282,8 @@ bool configureSO::sSave()
   _metrics->set("InvcNumberGeneration", _invoiceNumGeneration->methodCode());
   _metrics->set("DefaultShipFormId", _shipform->id());
   _metrics->set("DefaultShipViaId", _shipvia->id());
+  _metrics->set("DefaultShipChrgId", _shipchrg->id());
+  _metrics->set("DefaultSellingWarehouseId", _sellingWarehouse->id());
   _metrics->set("DefaultCustType", _custtype->id());
   _metrics->set("DefaultSalesRep", _salesrep->id());
   _metrics->set("DefaultTerms", _terms->id());

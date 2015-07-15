@@ -92,6 +92,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     double  _priceRatio;
     int     _preferredWarehouseid;
     int     _shiptoid;
+    QString _shiptoname;
     int     _supplyOrderId;
     int     _leadTime;
     int     _custid;

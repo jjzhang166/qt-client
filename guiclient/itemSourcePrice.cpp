@@ -17,7 +17,7 @@
 #include <QValidator>
 #include <QVariant>
 
-itemSourcePrice::itemSourcePrice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSourcePrice::itemSourcePrice(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -108,8 +108,8 @@ enum SetResponse itemSourcePrice::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _qtyBreak->setEnabled(FALSE);
-      _price->setEnabled(FALSE);
+      _qtyBreak->setEnabled(false);
+      _price->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

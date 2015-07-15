@@ -21,7 +21,7 @@ class taxRegistrations : public XWidget, public Ui::taxRegistrations
     Q_OBJECT
 
 public:
-    taxRegistrations(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    taxRegistrations(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~taxRegistrations();
 
 public slots:

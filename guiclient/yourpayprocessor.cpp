@@ -199,7 +199,7 @@ int YourPayProcessor::buildCommon(const int pccardid, const QString &pcvv, const
 		    ypq.value("ccard_address1").toString().section(" ", 0, 0));
 
   if (DEBUG)
-    qDebug("YP:buildCommon built %s", prequest.toString().toAscii().data());
+    qDebug("YP:buildCommon built %s", prequest.toString().toLatin1().data());
   return 0;
 }
 
@@ -208,7 +208,7 @@ int YourPayProcessor::doAuthorize(const int pccardid, const QString &pcvv, doubl
   if (DEBUG)
     qDebug("YP:doAuthorize(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int returnValue = 0;
   double amount = currToCurr(pcurrid, _ypcurrid, pamount, &returnValue);
@@ -280,7 +280,7 @@ int  YourPayProcessor::doCharge(const int pccardid, const QString &pcvv, const d
   if (DEBUG)
     qDebug("YP:doCharge(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount, ptax, ptaxexempt, pfreight, pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int returnValue = 0;
   double amount = currToCurr(pcurrid, _ypcurrid, pamount, &returnValue);
@@ -464,9 +464,9 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
 {
   if (DEBUG)
     qDebug("YP::handleResponse(%s, %d, %s, %f, %d, %s, %d, pparams)",
-	   presponse.toAscii().data(), pccardid,
-	   ptype.toAscii().data(), pamount, pcurrid,
-	   preforder.toAscii().data(), pccpayid);
+	   presponse.toLatin1().data(), pccardid,
+	   ptype.toLatin1().data(), pamount, pcurrid,
+	   preforder.toLatin1().data(), pccpayid);
 
   QDomDocument response;
   // YP doesn't even send back a valid XML doc!
@@ -654,7 +654,7 @@ int YourPayProcessor::handleResponse(const QString &presponse, const int pccardi
 
   if (DEBUG)
     qDebug("YP:%s\t_passedAvs %d\t_passedCvv %d\t_passedLinkShield %d",
-	    r_avs.toAscii().data(), _passedAvs, _passedCvv, _passedLinkShield);
+	    r_avs.toLatin1().data(), _passedAvs, _passedCvv, _passedLinkShield);
 
   pparams.append("ccard_id",    pccardid);
   pparams.append("auth_charge", ptype);
@@ -709,11 +709,11 @@ int YourPayProcessor::doTestConfiguration()
   if (DEBUG)
     qDebug("YP:doTestConfiguration()");
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
    QString pemfile = _metrics->value("CCYPWinPathPEM");
-#elif defined Q_WS_MACX
+#elif defined Q_OS_DARWIN
    QString pemfile = _metrics->value("CCYPMacPathPEM");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
    QString pemfile = _metrics->value("CCYPLinPathPEM");
 #endif
 

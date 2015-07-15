@@ -15,7 +15,7 @@
 
 #include "xtreewidget.h"
 
-dspMaterialUsageVarianceByWarehouse::dspMaterialUsageVarianceByWarehouse(QWidget* parent, const char*, Qt::WFlags fl)
+dspMaterialUsageVarianceByWarehouse::dspMaterialUsageVarianceByWarehouse(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspMaterialUsageVarianceByWarehouse", fl)
 {
   setupUi(optionsWidget());

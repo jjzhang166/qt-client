@@ -13,7 +13,7 @@
 
 #include <QMessageBox>
 
-dspFreightPricesByCustomer::dspFreightPricesByCustomer(QWidget* parent, const char*, Qt::WFlags fl)
+dspFreightPricesByCustomer::dspFreightPricesByCustomer(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspFreightPricesByCustomer", fl)
 {
   setupUi(optionsWidget());

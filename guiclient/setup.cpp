@@ -8,7 +8,7 @@
  * to be bound by its terms.
  */
 #include <QBuffer>
-#include <QUiLoader>
+#include <QtUiTools/QUiLoader>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScriptEngine>
@@ -33,7 +33,7 @@ void setupSetupApi(QScriptEngine *engine)
   engine->globalObject().setProperty("setup", obj, QScriptValue::ReadOnly | QScriptValue::Undeletable);
 }
 
-setup::setup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+setup::setup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

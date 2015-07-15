@@ -22,7 +22,7 @@ class itemSubstitute : public XDialog, public Ui::itemSubstitute
     Q_OBJECT
 
 public:
-    itemSubstitute(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    itemSubstitute(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~itemSubstitute();
 
 public slots:

@@ -19,7 +19,7 @@ class voidChecks : public XDialog, public Ui::voidChecks
     Q_OBJECT
 
 public:
-    voidChecks(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    voidChecks(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~voidChecks();
 
 public slots:

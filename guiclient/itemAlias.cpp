@@ -16,7 +16,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-itemAlias::itemAlias(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemAlias::itemAlias(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -81,12 +81,12 @@ enum SetResponse itemAlias::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _number->setEnabled(FALSE);
-      _crmacct->setEnabled(FALSE);
-      _useDescription->setEnabled(FALSE);
-      _descrip1->setEnabled(FALSE);
-      _descrip2->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _crmacct->setEnabled(false);
+      _useDescription->setEnabled(false);
+      _descrip1->setEnabled(false);
+      _descrip2->setEnabled(false);
+      _comments->setEnabled(false);
 
       _close->setText(tr("&Close"));
       _save->hide();
@@ -178,15 +178,15 @@ void itemAlias::populate()
 
     if (itempopulate.value("itemalias_usedescrip").toBool())
     {
-      _useDescription->setChecked(TRUE);
-      _descriptionGroup->setEnabled(TRUE);
+      _useDescription->setChecked(true);
+      _descriptionGroup->setEnabled(true);
       _descrip1->setText(itempopulate.value("itemalias_descrip1").toString());
       _descrip2->setText(itempopulate.value("itemalias_descrip2").toString());
     }
     else
     {
-      _useDescription->setChecked(FALSE);
-      _descriptionGroup->setEnabled(FALSE);
+      _useDescription->setChecked(false);
+      _descriptionGroup->setEnabled(false);
     }
 
     _comments->setText(itempopulate.value("itemalias_comments").toString());

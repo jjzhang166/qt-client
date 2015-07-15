@@ -22,7 +22,7 @@ class maintainItemCosts : public XWidget, public Ui::maintainItemCosts
     Q_OBJECT
 
 public:
-    maintainItemCosts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    maintainItemCosts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~maintainItemCosts();
 
 public slots:

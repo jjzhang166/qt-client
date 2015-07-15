@@ -28,7 +28,7 @@
 #include "storedProcErrorLookup.h"
 #include "voucher.h"
 
-openVouchers::openVouchers(QWidget* parent, const char* name, Qt::WFlags fl)
+openVouchers::openVouchers(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -63,8 +63,8 @@ openVouchers::openVouchers(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
-    _newMisc->setEnabled(FALSE);
+    _new->setEnabled(false);
+    _newMisc->setEnabled(false);
     connect(_vohead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -209,7 +209,7 @@ void openVouchers::sPost()
 
   if (_privileges->check("ChangeVOPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Distribution Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -254,7 +254,7 @@ void openVouchers::sPost()
                                 post, __FILE__, __LINE__))
     return;
 
-  post.prepare("SELECT postVoucher(:vohead_id, :journalNumber, FALSE) AS result;");
+  post.prepare("SELECT postVoucher(:vohead_id, :journalNumber, false) AS result;");
 
   bool tryagain = false;
   do {
@@ -368,7 +368,7 @@ void openVouchers::sFillList()
 	
   XSqlQuery r = mql.toQuery(params);
   _vohead->clear();
-  _vohead->populate(r, TRUE);
+  _vohead->populate(r, true);
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Open Vouchers"),
                            r, __FILE__, __LINE__))
     return;

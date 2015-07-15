@@ -67,7 +67,7 @@
 #define POITEM_PRJ_ID_COL		34
 #define POITEM_STDCOST_COL		35
 #define POITEM_BOM_REV_ID_COL           36
-#define POITEM_BOO_REV_ID_COL          37
+#define POITEM_BOO_REV_ID_COL           37
 #define POITEM_MANUF_NAME_COL           38
 #define POITEM_MANUF_ITEM_NUMBER_COL    39
 #define POITEM_MANUF_ITEM_DESCRIP_COL   40
@@ -76,6 +76,7 @@
 #define POITEM_RLSD_DUEDATE_COL         43
 #define POITEM_ORDER_ID_COL             44
 #define POITEM_ORDER_TYPE_COL           45
+#define POITEM_OBJ_UUID                 46
 
 class PoitemTableModel : public QSqlRelationalTableModel
 {

@@ -20,7 +20,7 @@ class standardJournals : public XWidget, public Ui::standardJournals
     Q_OBJECT
 
 public:
-    standardJournals(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    standardJournals(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~standardJournals();
 
 public slots:

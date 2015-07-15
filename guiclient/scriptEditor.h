@@ -24,7 +24,7 @@ class scriptEditor : public XWidget, public Ui::scriptEditor
     Q_OBJECT
 
 public:
-    scriptEditor(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+    scriptEditor(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = 0);
     ~scriptEditor();
     static bool saveFile(const QString &source, QString &filename);
 

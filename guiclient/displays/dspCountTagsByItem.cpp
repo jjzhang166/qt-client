@@ -10,7 +10,7 @@
 
 #include "dspCountTagsByItem.h"
 
-dspCountTagsByItem::dspCountTagsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspCountTagsByItem::dspCountTagsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCountTagsBase(parent, "dspCountTagsByItem", fl)
 {
   setWindowTitle(tr("Count Tags by Item"));

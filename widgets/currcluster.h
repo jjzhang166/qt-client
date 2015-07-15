@@ -147,13 +147,13 @@ Property descriptions:
     baseVisible	  whether the base currency abbreviation and value are shown;
     		  they are always hidden if the xcombobox shows the base
 		  currency is selected, but are usually visible if the current
-		  currency selected is NOT the base.  If baseVisible is FALSE
+		  currency selected is NOT the base.  If baseVisible is false
 		  then the base value is never shown
     format        locale format used to determine the number of decimal places
 		  displayed for currency values
     allowNegative whether input may include negative numbers or only >= 0
-    localControl  if TRUE then changes to the xcombobox leave the local value
-    		  unchanged and reconverts the local value to base; if FALSE
+    localControl  if true then changes to the xcombobox leave the local value
+    		  unchanged and reconverts the local value to base; if false
 		  then changes to the xcombobox leave the base value alone
 		  and converts the base value to local
 

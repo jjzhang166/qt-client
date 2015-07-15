@@ -21,7 +21,7 @@ class submitAction : public XDialog, public Ui::submitAction
     Q_OBJECT
 
 public:
-    submitAction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    submitAction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~submitAction();
 
 public slots:

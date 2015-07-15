@@ -28,7 +28,7 @@ class menuSales : public QObject
     const char*		slot;
     QMenu*		menu;
     QString		priv;
-    QPixmap		pixmap;
+    QPixmap*		pixmap;
     QToolBar*		toolBar;
     bool		visible;
     const QString   toolTip;
@@ -39,6 +39,7 @@ class menuSales : public QObject
 
   public slots:
     void sNewSalesOrder();
+    void sSalesOrders();
     void sOpenSalesOrders();
     void sNewQuote();
     void sQuotes();
@@ -81,10 +82,7 @@ class menuSales : public QObject
     void sDspFreightPricesByCustomer();
     void sDspFreightPricesByCustomerType();
 
-    void sDspOrderLookupByCustomer();
-    void sDspOrderLookupByCustomerType();
     void sDspOrderLookupByItem();
-    void sDspOrderLookupByCustomerPO();
     void sDspQuoteLookupByCustomer();
     void sDspQuoteLookupByItem();
     void sDspInventoryAvailability();

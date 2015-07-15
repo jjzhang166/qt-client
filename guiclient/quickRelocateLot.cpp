@@ -15,7 +15,7 @@
 #include <QSqlError>
 #include <QMessageBox>
 
-quickRelocateLot::quickRelocateLot(QWidget *parent, const char *name, bool modal, Qt::WFlags f1)
+quickRelocateLot::quickRelocateLot(QWidget *parent, const char *name, bool modal, Qt::WindowFlags f1)
     : XDialog(parent, name, modal, f1)
 {
     setupUi(this);

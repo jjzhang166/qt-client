@@ -22,7 +22,7 @@ class currencyConversions : public XWidget, public Ui::currencyConversions
     Q_OBJECT
 
 public:
-    currencyConversions(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    currencyConversions(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~currencyConversions();
 
 public slots:

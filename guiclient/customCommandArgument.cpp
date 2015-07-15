@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-customCommandArgument::customCommandArgument(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customCommandArgument::customCommandArgument(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

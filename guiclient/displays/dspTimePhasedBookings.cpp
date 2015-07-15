@@ -21,7 +21,7 @@
 #include "dspBookings.h"
 #include "parameterwidget.h"
 
-dspTimePhasedBookings::dspTimePhasedBookings(QWidget* parent, const char*, Qt::WFlags fl)
+dspTimePhasedBookings::dspTimePhasedBookings(QWidget* parent, const char*, Qt::WindowFlags fl)
   : displayTimePhased(parent, "dspTimePhasedBookings", fl)
 {
   setupUi(optionsWidget());

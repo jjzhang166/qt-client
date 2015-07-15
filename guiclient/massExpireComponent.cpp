@@ -15,12 +15,12 @@
 
 #include "errorReporter.h"
 
-massExpireComponent::massExpireComponent(QWidget* parent, const char* name, Qt::WFlags fl)
+massExpireComponent::massExpireComponent(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-  _captive = FALSE;
+  _captive = false;
 
   _original->setType(ItemLineEdit::cGeneralComponents);
 
@@ -46,7 +46,7 @@ void massExpireComponent::languageChange()
 enum SetResponse massExpireComponent::set(const ParameterList &pParams)
 {
   XWidget::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

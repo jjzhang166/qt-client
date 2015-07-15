@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-firmPlannedOrdersByPlannerCode::firmPlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+firmPlannedOrdersByPlannerCode::firmPlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -49,7 +49,7 @@ void firmPlannedOrdersByPlannerCode::sFirm()
   }
 
   QString sql( "UPDATE planord "
-               "SET planord_firm=TRUE "
+               "SET planord_firm=true "
                "FROM itemsite "
                "WHERE ( (planord_itemsite_id=itemsite_id)"
                " AND (NOT planord_firm)"

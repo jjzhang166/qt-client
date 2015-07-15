@@ -326,7 +326,7 @@ bool PoitemTableModel::validRow(QSqlRecord& record)
   }
 
   int index = record.indexOf("poitem_pohead_id"); //returns 14, based on #define value in header, fixes problem with poitem_pohead_id not being assigned
-  if (index > 0)
+  if (record.field(index).value() == 0)
   {
     QSqlField field("poitem_pohead_id", QVariant::Int);
     field.setValue(_poheadid);

@@ -26,7 +26,7 @@
 #include "purchaseOrderItem.h"
 #include "reschedulePoitem.h"
 
-dspPoItemsByDate::dspPoItemsByDate(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemsByDate::dspPoItemsByDate(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByDate", fl)
 {
   setupUi(optionsWidget());

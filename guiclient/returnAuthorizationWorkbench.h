@@ -22,7 +22,7 @@ class returnAuthorizationWorkbench : public XWidget, public Ui::returnAuthorizat
     Q_OBJECT
 
 public:
-    returnAuthorizationWorkbench(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    returnAuthorizationWorkbench(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~returnAuthorizationWorkbench();
   
     virtual bool checkSitePrivs(int ordid);

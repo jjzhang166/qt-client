@@ -21,7 +21,7 @@ class allocateARCreditMemo : public XDialog, public Ui::allocateARCreditMemo
     Q_OBJECT
 
 public:
-    allocateARCreditMemo(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    allocateARCreditMemo(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~allocateARCreditMemo();
 
 public slots:

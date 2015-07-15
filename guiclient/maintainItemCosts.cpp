@@ -22,7 +22,7 @@
 #include "mqlutil.h"
 #include "itemCost.h"
 
-maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::WFlags fl)
+maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
@@ -78,7 +78,7 @@ enum SetResponse maintainItemCosts::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   return NoError;
@@ -154,7 +154,7 @@ void maintainItemCosts::sUpdateDetail()
   XSqlQuery maintainUpdateDetail;
   QString cost = _itemcost->currentItem()->text(0);
 
-  maintainUpdateDetail.prepare("SELECT updateCost(:item_id, :cost, TRUE, lowerCost(:item_id, :cost));");
+  maintainUpdateDetail.prepare("SELECT updateCost(:item_id, :cost, true, lowerCost(:item_id, :cost));");
   maintainUpdateDetail.bindValue(":item_id", _item->id());
   maintainUpdateDetail.bindValue(":cost", cost);
   maintainUpdateDetail.exec();
@@ -165,7 +165,7 @@ void maintainItemCosts::sUpdateDetail()
 void maintainItemCosts::sUpdateDirectLabor()
 {
   XSqlQuery maintainUpdateDirectLabor;
-  maintainUpdateDirectLabor.prepare("SELECT updateCost(:item_id, 'Direct Labor', FALSE, directLaborCost(:item_id));");
+  maintainUpdateDirectLabor.prepare("SELECT updateCost(:item_id, 'Direct Labor', false, directLaborCost(:item_id));");
   maintainUpdateDirectLabor.bindValue(":item_id", _item->id());
   maintainUpdateDirectLabor.exec();
 
@@ -175,7 +175,7 @@ void maintainItemCosts::sUpdateDirectLabor()
 void maintainItemCosts::sUpdateOverhead()
 {
   XSqlQuery maintainUpdateOverhead;
-  maintainUpdateOverhead.prepare("SELECT updateCost(:item_id, 'Overhead', FALSE, overheadCost(:item_id));");
+  maintainUpdateOverhead.prepare("SELECT updateCost(:item_id, 'Overhead', false, overheadCost(:item_id));");
   maintainUpdateOverhead.bindValue(":item_id", _item->id());
   maintainUpdateOverhead.exec();
 
@@ -185,7 +185,7 @@ void maintainItemCosts::sUpdateOverhead()
 void maintainItemCosts::sUpdateMachineOverhead()
 {
   XSqlQuery maintainUpdateMachineOverhead;
-  maintainUpdateMachineOverhead.prepare("SELECT updateCost(:item_id, 'Machine Overhead', FALSE, machineOverheadCost(:item_id));");
+  maintainUpdateMachineOverhead.prepare("SELECT updateCost(:item_id, 'Machine Overhead', false, machineOverheadCost(:item_id));");
   maintainUpdateMachineOverhead.bindValue(":item_id", _item->id());
   maintainUpdateMachineOverhead.exec();
 
@@ -253,7 +253,7 @@ void maintainItemCosts::sEnterActualCost()
   params.append("itemcost_id", _itemcost->id());
   params.append("mode", "edit");
 
-  itemCost newdlg(this, "", TRUE);
+  itemCost newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec())
@@ -266,7 +266,7 @@ void maintainItemCosts::sCreateUserCost()
   params.append("item_id", _item->id());
   params.append("mode", "new");
 
-  itemCost newdlg(this, "", TRUE);
+  itemCost newdlg(this, "", true);
   if (newdlg.set(params) == NoError && newdlg.exec())
     sFillList();
 }
@@ -297,7 +297,7 @@ void maintainItemCosts::sFillList()
     params.append("never", tr("Never"));
 
     XSqlQuery qry = mql.toQuery(params);
-    _itemcost->populate(qry, TRUE);
+    _itemcost->populate(qry, true);
 
     bool multipleCurrencies = false;
     int firstCurrency = 0;

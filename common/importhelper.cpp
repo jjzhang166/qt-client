@@ -76,13 +76,13 @@ CSVImpPluginInterface *ImportHelper::getCSVImpPlugin(QObject *parent)
           XSqlQuery defq;
           defq.prepare("SELECT fetchMetricText(:datadir) AS datadir,"
                        "       fetchMetricText(:atlasdir) AS atlasdir;");
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
           defq.bindValue(":datadir",  "XMLDefaultDirMac");
           defq.bindValue(":atlasdir", "CSVAtlasDefaultDirMac");
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
           defq.bindValue(":datadir",  "XMLDefaultDirWindows");
           defq.bindValue(":atlasdir", "CSVAtlasDefaultDirWindows");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
           defq.bindValue(":datadir",  "XMLDefaultDirLinux");
           defq.bindValue(":atlasdir", "CSVAtlasDefaultDirLinux");
 #endif
@@ -146,11 +146,11 @@ bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, 
             "       fetchMetricText('ImportFailureDir')       AS failuredir,"
             "       fetchMetricText('ImportFailureSuffix')    AS failuresuffix,"
             "       fetchMetricText('ImportFailureTreatment') AS failuretreatment;");
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   q.bindValue(":xmldir",  "XMLDefaultDirMac");
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   q.bindValue(":xmldir",  "XMLDefaultDirWindows");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   q.bindValue(":xmldir",  "XMLDefaultDirLinux");
 #endif
   q.exec();
@@ -375,15 +375,15 @@ bool ImportHelper::importXML(const QString &pFileName, QString &errmsg, QString 
             "       fetchMetricText(:xsltdir) AS xsltdir,"
             "       fetchMetricText(:xsltcmd) AS xsltcmd,"
             "       fetchMetricBool('ImportXMLCreateErrorFile') AS createerr;");
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   q.bindValue(":xmldir",  "XMLDefaultDirMac");
   q.bindValue(":xsltdir", "XSLTDefaultDirMac");
   q.bindValue(":xsltcmd", "XSLTProcessorMac");
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   q.bindValue(":xmldir",  "XMLDefaultDirWindows");
   q.bindValue(":xsltdir", "XSLTDefaultDirWindows");
   q.bindValue(":xsltcmd", "XSLTProcessorWindows");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   q.bindValue(":xmldir",  "XMLDefaultDirLinux");
   q.bindValue(":xsltdir", "XSLTDefaultDirLinux");
   q.bindValue(":xsltcmd", "XSLTProcessorLinux");

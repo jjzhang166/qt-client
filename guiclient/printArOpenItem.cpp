@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-printArOpenItem::printArOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printArOpenItem::printArOpenItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printSinglecopyDocument(parent, name, modal, fl)
 {
   setupUi(optionsWidget());
@@ -61,34 +61,34 @@ ParameterList printArOpenItem::getParams(XSqlQuery *docq)
 {
   ParameterList params;
   params.append("aropen_id", docq->value("aropen_id").toInt());
-  switch (docq->value("aropen_doctype").toChar().toAscii())
+  QString _type = docq->value("aropen_doctype").toString();
+  if (_type == "I" || _type == "D")
   {
-    case 'I':
-    case 'D':
-      params.append("docTypeID", 1);
-      params.append("creditMemo",       tr("Credit Memo"));
-      params.append("cashdeposit",      tr("Cash Deposit"));
-      params.append("check",            tr("Check"));
-      params.append("certifiedCheck",   tr("Certified Check"));
-      params.append("masterCard",       tr("Master Card"));
-      params.append("visa",             tr("Visa"));
-      params.append("americanExpress",  tr("American Express"));
-      params.append("discoverCard",     tr("Discover Card"));
-      params.append("otherCreditCard",  tr("Other Credit Card"));
-      params.append("cash",             tr("Cash"));
-      params.append("wireTransfer",     tr("Wire Transfer"));
-      params.append("other",            tr("Other"));
-      break;
-    case 'C':
-    case 'R':
-      params.append("docTypeRC",   1);
-      params.append("invoice",     tr("Invoice"));
-      params.append("debitMemo",   tr("Debit Memo"));
-      params.append("apcheck",     tr("A/P Check"));
-      params.append("cashreceipt", tr("Cash Receipt"));
-      break;
-    default:
-      params.append("checkParamsReturn", false);
+    params.append("docTypeID", 1);
+    params.append("creditMemo",       tr("Credit Memo"));
+    params.append("cashdeposit",      tr("Cash Deposit"));
+    params.append("check",            tr("Check"));
+    params.append("certifiedCheck",   tr("Certified Check"));
+    params.append("masterCard",       tr("Master Card"));
+    params.append("visa",             tr("Visa"));
+    params.append("americanExpress",  tr("American Express"));
+    params.append("discoverCard",     tr("Discover Card"));
+    params.append("otherCreditCard",  tr("Other Credit Card"));
+    params.append("cash",             tr("Cash"));
+    params.append("wireTransfer",     tr("Wire Transfer"));
+    params.append("other",            tr("Other"));
+  }  
+  else if (_type == "C" || _type == "R")
+  {
+    params.append("docTypeRC",   1);
+    params.append("invoice",     tr("Invoice"));
+    params.append("debitMemo",   tr("Debit Memo"));
+    params.append("apcheck",     tr("A/P Check"));
+    params.append("cashreceipt", tr("Cash Receipt"));
+  }
+  else
+  {
+    params.append("checkParamsReturn", false);
   }
 
   return params;

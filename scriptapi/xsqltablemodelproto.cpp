@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2012 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -407,12 +407,14 @@ void XSqlTableModelProto::setSort(int column, int order)
     item->setSort(column, (Qt::SortOrder)order);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void XSqlTableModelProto::setSupportedDragActions(int actions)
 {
   XSqlTableModel *item = qscriptvalue_cast<XSqlTableModel*>(thisObject());
   if (item)
     item->setSupportedDragActions((Qt::DropActions)actions);
 }
+#endif
 
 void XSqlTableModelProto::setTable(const QString &tableName, int keyColumns)
 {

@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-expenseCategory::expenseCategory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+expenseCategory::expenseCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -77,13 +77,13 @@ enum SetResponse expenseCategory::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _category->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _expense->setReadOnly(TRUE);
-      _purchasePrice->setReadOnly(TRUE);
-      _liability->setReadOnly(TRUE);
-      _freight->setReadOnly(TRUE);
+      _category->setEnabled(false);
+      _active->setEnabled(false);
+      _description->setEnabled(false);
+      _expense->setReadOnly(true);
+      _purchasePrice->setReadOnly(true);
+      _liability->setReadOnly(true);
+      _freight->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -109,7 +109,7 @@ void expenseCategory::sCheck()
       _mode = cEdit;
       populate();
 
-      _category->setEnabled(FALSE);
+      _category->setEnabled(false);
     }
   }
 }
@@ -209,7 +209,7 @@ void expenseCategory::populate()
       _active->setChecked(expensepopulate.value("expcat_active").toBool());
     }
     else
-      _active->setChecked(TRUE);
+      _active->setChecked(true);
 
     _expense->setId(expensepopulate.value("expcat_exp_accnt_id").toInt());
     _purchasePrice->setId(expensepopulate.value("expcat_purchprice_accnt_id").toInt());

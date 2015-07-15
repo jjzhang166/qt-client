@@ -246,11 +246,11 @@ int CyberSourceProcessor::buildCommon(const int pccardid, const QString &pcvv, c
   createChildTextNode(_requestMessage, CPDATA_NS ":clientLibrary", "xTuple ERP");
   createChildTextNode(_requestMessage, CPDATA_NS ":clientLibraryVersion", _Version);
   createChildTextNode(_requestMessage, CPDATA_NS ":clientEnvironment",
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
                       "Mac OS X"
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
                       "Windows"
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
                       "X Windows"
 #else
                       "undefined Qt client"

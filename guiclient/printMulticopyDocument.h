@@ -34,7 +34,7 @@ class printMulticopyDocument : public XDialog
     printMulticopyDocument(QWidget    *parent = 0,
                            const char *name   = 0,
                            bool        modal  = false,
-                           Qt::WFlags  fl     = 0);
+                           Qt::WindowFlags  fl     = 0);
     printMulticopyDocument(QString numCopiesMetric,
                            QString watermarkMetric,
                            QString showPriceMetric,
@@ -42,7 +42,7 @@ class printMulticopyDocument : public XDialog
                            QWidget    *parent = 0,
                            const char *name   = 0,
                            bool        modal  = false,
-                           Qt::WFlags  fl     = 0);
+                           Qt::WindowFlags  fl     = 0);
     ~printMulticopyDocument();
 
     Q_INVOKABLE virtual enum SetResponse set(const ParameterList &pParams);

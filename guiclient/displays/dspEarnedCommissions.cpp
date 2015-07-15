@@ -16,7 +16,7 @@
 #include "guiclient.h"
 #include "xtreewidget.h"
 
-dspEarnedCommissions::dspEarnedCommissions(QWidget* parent, const char*, Qt::WFlags fl)
+dspEarnedCommissions::dspEarnedCommissions(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspEarnedCommissions", fl)
 {
   setupUi(optionsWidget());

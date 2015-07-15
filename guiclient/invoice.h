@@ -22,7 +22,7 @@ class invoice : public XWidget, public Ui::invoice
     Q_OBJECT
 
 public:
-    invoice(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    invoice(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~invoice();
 
     static void newInvoice( int pCustid, QWidget *parent = 0 );
@@ -44,10 +44,7 @@ public slots:
     virtual void sView();
     virtual void sDelete();
     virtual void populate();
-    virtual void sNewCharacteristic();
-    virtual void sEditCharacteristic();
-    virtual void sDeleteCharacteristic();
-    virtual void sFillCharacteristic();
+    virtual void postInvoice();
     virtual void sFillItemList();
     virtual void sCalculateTotal();
     virtual void sCalculateTax();

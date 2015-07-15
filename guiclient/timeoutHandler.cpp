@@ -103,7 +103,7 @@ bool TimeoutHandler::eventFilter(QObject* /*watched*/, QEvent* event) {
         _lastEvent.restart(); // reset our elapsed timer
     }
 
-    // ALWAYS RETURN FALSE so that the event gets
+    // ALWAYS RETURN false so that the event gets
     // passed on to the next widget for processing
     return false;
 }

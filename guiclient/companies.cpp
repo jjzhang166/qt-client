@@ -20,7 +20,7 @@
 #include "company.h"
 #include "storedProcErrorLookup.h"
 
-companies::companies(QWidget* parent, const char* name, Qt::WFlags fl)
+companies::companies(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ companies::companies(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_company, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -64,7 +64,7 @@ void companies::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  company *newdlg = new company(this, "", TRUE);
+  company *newdlg = new company(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -76,7 +76,7 @@ void companies::sEdit()
   params.append("company_id", _company->id());
   params.append("mode", "edit");
 
-  company *newdlg = new company(this, "", TRUE);
+  company *newdlg = new company(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -88,7 +88,7 @@ void companies::sView()
   params.append("company_id", _company->id());
   params.append("mode", "view");
 
-  company *newdlg = new company(this, "", TRUE);
+  company *newdlg = new company(this, "", true);
   newdlg->set(params);
   newdlg->exec();
 }

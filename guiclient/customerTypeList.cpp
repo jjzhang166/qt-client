@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-customerTypeList::customerTypeList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customerTypeList::customerTypeList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

@@ -132,10 +132,7 @@ to be bound by its terms.</comment>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <includes>
-  <include location="global">parameter.h</include>
-  <include location="global">qprinter.h</include>
- </includes>
+ <includes/>
  <resources/>
  <connections>
   <connection>

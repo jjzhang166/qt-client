@@ -37,7 +37,7 @@ void errorLogListener::destroy()
   listener = 0;
 }
 
-errorLog::errorLog(QWidget* parent, const char * name, Qt::WFlags flags)
+errorLog::errorLog(QWidget* parent, const char * name, Qt::WindowFlags flags)
     : XWidget(parent, name, flags)
 {
   setupUi(this);
@@ -129,7 +129,12 @@ void errorLogListener::clear()
   (void)blockSignals(blocked);
 }
 
+
+#if QT_VERSION >= 0x050000
+void xTupleMessageOutput(QtMsgType type, const QMessageLogContext&, const QString &pMsg)
+#else
 void xTupleMessageOutput(QtMsgType type, const char *pMsg)
+#endif
 {
   QString msg;
   msg = QDateTime::currentDateTime().toString();

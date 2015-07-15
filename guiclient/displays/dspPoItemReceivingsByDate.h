@@ -20,7 +20,7 @@ class dspPoItemReceivingsByDate : public display, public Ui::dspPoItemReceivings
     Q_OBJECT
 
 public:
-    dspPoItemReceivingsByDate(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPoItemReceivingsByDate(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

@@ -29,15 +29,51 @@ class QUrlProto : public QObject, public QScriptable
 {
   Q_OBJECT
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+  protected:
+    QUrlQuery *_query;
+#endif
+
   public:
     QUrlProto(QObject *parent = 0);
 
-    Q_INVOKABLE void addEncodedQueryItem(const QByteArray &key, const QByteArray &value);
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+    Q_INVOKABLE void       addEncodedQueryItem(const QByteArray &key, const QByteArray &value);
+    Q_INVOKABLE bool       hasEncodedQueryItem(const QByteArray &key) const;
+    Q_INVOKABLE void       removeAllEncodedQueryItems(const QByteArray &key);
+    Q_INVOKABLE void       removeEncodedQueryItem(const QByteArray &key);
+    Q_INVOKABLE void       setEncodedFragment(const QByteArray &fragment);
+    Q_INVOKABLE void       setEncodedHost(const QByteArray &host);
+    Q_INVOKABLE void       setEncodedPassword(const QByteArray &password);
+    Q_INVOKABLE void       setEncodedPath(const QByteArray &path);
+    Q_INVOKABLE void       setEncodedQuery(const QByteArray &query);
+    Q_INVOKABLE void       setEncodedQueryItems(const QList<QPair<QByteArray, QByteArray> > &query);
+    Q_INVOKABLE void       setEncodedUrl(const QByteArray &encodedUrl);
+    Q_INVOKABLE void       setEncodedUrl(const QByteArray &encodedUrl,
+                                         QUrl::ParsingMode parsingMode);
+    Q_INVOKABLE void       setEncodedUserName(const QByteArray &userName);
+#endif
+
+
     Q_INVOKABLE void addQueryItem(const QString &key, const QString & value);
+    #if QT_VERSION >= 0x050000
+    Q_INVOKABLE QStringList allEncodedQueryItemValues(const QString &key) const;
+    #else
     Q_INVOKABLE QList<QByteArray> allEncodedQueryItemValues(const QByteArray &key) const;
+    #endif
     Q_INVOKABLE QStringList       allQueryItemValues(const QString &key) const;
     Q_INVOKABLE QString    authority() const;
     Q_INVOKABLE void       clear();
+#if QT_VERSION >= 0x050000
+    Q_INVOKABLE QString encodedFragment() const;
+    Q_INVOKABLE QString encodedHost()     const;
+    Q_INVOKABLE QString encodedPassword() const;
+    Q_INVOKABLE QString encodedPath()     const;
+    Q_INVOKABLE QString encodedQuery()    const;
+    Q_INVOKABLE QString encodedQueryItemValue(const QString &key) const;
+    Q_INVOKABLE QList<QPair<QString, QString> > encodedQueryItems() const;
+    Q_INVOKABLE QString encodedUserName() const;
+#else
     Q_INVOKABLE QByteArray encodedFragment() const;
     Q_INVOKABLE QByteArray encodedHost()     const;
     Q_INVOKABLE QByteArray encodedPassword() const;
@@ -46,9 +82,9 @@ class QUrlProto : public QObject, public QScriptable
     Q_INVOKABLE QByteArray encodedQueryItemValue(const QByteArray &key) const;
     Q_INVOKABLE QList<QPair<QByteArray, QByteArray> > encodedQueryItems() const;
     Q_INVOKABLE QByteArray encodedUserName() const;
+#endif
     Q_INVOKABLE QString    errorString()     const;
     Q_INVOKABLE QString    fragment()       const;
-    Q_INVOKABLE bool       hasEncodedQueryItem(const QByteArray &key) const;
     Q_INVOKABLE bool       hasFragment()    const;
     Q_INVOKABLE bool       hasQuery()       const;
     Q_INVOKABLE bool       hasQueryItem(const QString &key) const;
@@ -65,23 +101,11 @@ class QUrlProto : public QObject, public QScriptable
     Q_INVOKABLE QList<QPair<QString, QString> > queryItems()  const;
     Q_INVOKABLE char       queryPairDelimiter()               const;
     Q_INVOKABLE char       queryValueDelimiter()              const;
-    Q_INVOKABLE void       removeAllEncodedQueryItems(const QByteArray &key);
     Q_INVOKABLE void       removeAllQueryItems(const QString &key);
-    Q_INVOKABLE void       removeEncodedQueryItem(const QByteArray &key);
     Q_INVOKABLE void       removeQueryItem(const QString &key);
     Q_INVOKABLE QUrl       resolved(const QUrl &relative)     const;
     Q_INVOKABLE QString    scheme() const;
     Q_INVOKABLE void       setAuthority(const QString &authority);
-    Q_INVOKABLE void       setEncodedFragment(const QByteArray &fragment);
-    Q_INVOKABLE void       setEncodedHost(const QByteArray &host);
-    Q_INVOKABLE void       setEncodedPassword(const QByteArray &password);
-    Q_INVOKABLE void       setEncodedPath(const QByteArray &path);
-    Q_INVOKABLE void       setEncodedQuery(const QByteArray &query);
-    Q_INVOKABLE void       setEncodedQueryItems(const QList<QPair<QByteArray, QByteArray> > &query);
-    Q_INVOKABLE void       setEncodedUrl(const QByteArray &encodedUrl);
-    Q_INVOKABLE void       setEncodedUrl(const QByteArray &encodedUrl,
-                                         QUrl::ParsingMode parsingMode);
-    Q_INVOKABLE void       setEncodedUserName(const QByteArray &userName);
     Q_INVOKABLE void       setFragment(const QString &fragment);
     Q_INVOKABLE void       setHost(const QString &host);
     Q_INVOKABLE void       setPassword(const QString &password);

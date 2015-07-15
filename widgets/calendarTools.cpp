@@ -18,7 +18,7 @@ CalendarComboBox::CalendarComboBox(QWidget *pParent, const char *pName) :
   XComboBox(pParent, pName)
 {
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  setAllowNull(TRUE);
+  setAllowNull(true);
 
   if(_x_metrics)
   {
@@ -201,7 +201,7 @@ void PeriodsListView::load(ParameterList &pParams)
   if (topLevelItemCount() > 0)
   {
     QVariant param;
-    bool     valid = TRUE;
+    bool     valid = true;
     for (unsigned int counter = 0; valid; counter++)
     {
       param = pParams.value(QString("calitem_id(%1)").arg(counter), &valid);

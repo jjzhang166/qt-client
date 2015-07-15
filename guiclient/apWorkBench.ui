@@ -143,7 +143,7 @@ to be bound by its terms.</comment>
        </widget>
        <widget class="QWidget" name="_checkRunTab" >
         <attribute name="title" >
-         <string>Checks</string>
+         <string>Payments</string>
         </attribute>
         <layout class="QGridLayout" name="_checkRunTabLayout" />
        </widget>

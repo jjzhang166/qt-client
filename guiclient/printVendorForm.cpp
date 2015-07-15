@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "guiclient.h"
 
-printVendorForm::printVendorForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printVendorForm::printVendorForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

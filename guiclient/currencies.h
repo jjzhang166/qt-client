@@ -21,7 +21,7 @@ class currencies : public XWidget, public Ui::currencies
     Q_OBJECT
 
 public:
-    currencies(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    currencies(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~currencies();
 
 public slots:

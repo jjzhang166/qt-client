@@ -17,11 +17,10 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "userList.h"
-#include "characteristicAssignment.h"
 
 const char *_taskStatuses[] = { "P", "O", "C" };
 
-task::task(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+task::task(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -31,10 +30,6 @@ task::task(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_budgetExp, SIGNAL(editingFinished()), this, SLOT(sExpensesAdjusted()));
   connect(_actualHours, SIGNAL(editingFinished()), this, SLOT(sHoursAdjusted()));
   connect(_budgetHours, SIGNAL(editingFinished()), this, SLOT(sHoursAdjusted()));
-  connect(_newCharacteristic, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_editCharacteristic, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_deleteCharacteristic, SIGNAL(clicked()), this, SLOT(sDelete()));
-
   
   _budgetHours->setValidator(omfgThis->qtyVal());
   _actualHours->setValidator(omfgThis->qtyVal());
@@ -48,11 +43,7 @@ task::task(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   
   _owner->setType(UsernameLineEdit::UsersActive);
   _assignedTo->setType(UsernameLineEdit::UsersActive);
-
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name" );
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value" );
-  _charass->addColumn(tr("Default"),        _ynColumn*2,   Qt::AlignCenter, true, "charass_default" );
-
+  _charass->setType("TASK");
 }
 
 task::~task()
@@ -126,13 +117,11 @@ enum SetResponse task::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
 
       _alarms->setId(_prjtaskid);
       _comments->setId(_prjtaskid);
       _documents->setId(_prjtaskid);
-
+      _charass->setId(_prjtaskid); 
     }
     if (param.toString() == "edit")
     {
@@ -140,8 +129,6 @@ enum SetResponse task::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
     }
     if (param.toString() == "view")
     {
@@ -163,10 +150,10 @@ enum SetResponse task::set(const ParameterList &pParams)
       _completed->setEnabled(false);
       _alarms->setEnabled(false);
       _comments->setReadOnly(true);
-      _newCharacteristic->setEnabled(FALSE);
+      _charass->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
-      _documents->setReadOnly(TRUE);
+      _documents->setReadOnly(true);
     }
   }
 
@@ -207,80 +194,16 @@ void task::populate()
     _alarms->setId(_prjtaskid);
     _comments->setId(_prjtaskid);   
     _documents->setId(_prjtaskid); 
+    _charass->setId(_prjtaskid); 
     _documents->setType(Documents::ProjectTask);
     sHoursAdjusted();
     sExpensesAdjusted();
-    sFillList();
-
-    //if (taskpopulate.value("prjtask_anyuser").toBool())
-    //  _anyUser->setChecked(TRUE);
-    //else
-    //  _userList->setChecked(TRUE);
   }
   else if (taskpopulate.lastError().type() != QSqlError::NoError)
   {
     systemError(this, taskpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-
-  //sFillUserList();
-}
-
-void task::sNew()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("prjtask_id", _prjtaskid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void task::sEdit()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void task::sDelete()
-{
-  XSqlQuery taskDelete;
-  taskDelete.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  taskDelete.bindValue(":charass_id", _charass->id());
-  taskDelete.exec();
-
-  sFillList();
-}
-
-void task::sFillList()
-{
-  XSqlQuery taskFillList;
-  taskFillList.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value, "
-             " charass_default "
-             "FROM charass, char "
-             "WHERE ( (charass_target_type='TASK')"
-             " AND (charass_char_id=char_id)"
-             " AND (charass_target_id=:prjtask_id) ) "
-             "ORDER BY char_order, char_name;" );
-  taskFillList.bindValue(":prjtask_id", _prjtaskid);
-  taskFillList.exec();
-  _charass->populate(taskFillList);
 }
 
 void task::sSave()
@@ -401,7 +324,7 @@ void task::sNewUser()
 {
   XSqlQuery taskNewUser;
 /*
-  userList newdlg(this, "", TRUE);
+  userList newdlg(this, "", true);
   int result = newdlg.exec();
   if (result != XDialog::Rejected)
   {

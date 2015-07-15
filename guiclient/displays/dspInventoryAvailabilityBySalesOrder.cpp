@@ -26,7 +26,7 @@
 #include "storedProcErrorLookup.h"
 #include "workOrder.h"
 
-dspInventoryAvailabilityBySalesOrder::dspInventoryAvailabilityBySalesOrder(QWidget* parent, const char*, Qt::WFlags fl)
+dspInventoryAvailabilityBySalesOrder::dspInventoryAvailabilityBySalesOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInventoryAvailabilityBySalesOrder", fl)
 {
   setupUi(optionsWidget());

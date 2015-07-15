@@ -24,7 +24,7 @@ class quickRelocateLot : public XDialog, public Ui_quickRelocateLot
     Q_OBJECT
 
 public:
-    quickRelocateLot(QWidget *parent, const char *name = 0, bool modal = false, Qt::WFlags f1 = 0);
+    quickRelocateLot(QWidget *parent, const char *name = 0, bool modal = false, Qt::WindowFlags f1 = 0);
     ~quickRelocateLot();
 
 public slots:

@@ -21,7 +21,7 @@
 #include "purchaseOrder.h"
 #include "voucher.h"
 
-dspVoucherRegister::dspVoucherRegister(QWidget* parent, const char*, Qt::WFlags fl)
+dspVoucherRegister::dspVoucherRegister(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspVoucherRegister", fl)
 {
   setupUi(optionsWidget());

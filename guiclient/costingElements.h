@@ -20,7 +20,7 @@ class costingElements : public XWidget, public Ui::costingElements
     Q_OBJECT
 
 public:
-    costingElements(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    costingElements(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~costingElements();
 
 public slots:

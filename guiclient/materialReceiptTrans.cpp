@@ -20,7 +20,7 @@
 #include "issueWoMaterialItem.h"
 #include "storedProcErrorLookup.h"
 
-materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt::WFlags fl)
+materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -30,7 +30,7 @@ materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateQty()));
   connect(_cost, SIGNAL(textChanged(const QString&)), this, SLOT(sCostUpdated()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _warehouse->setType(WComboBox::AllActiveInventory);
@@ -98,14 +98,14 @@ enum SetResponse materialReceiptTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _issueToWo->setEnabled(FALSE);
-      _wo->setReadOnly(TRUE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _transDate->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _issueToWo->setEnabled(false);
+      _wo->setReadOnly(true);
+      _documentNum->setEnabled(false);
+      _notes->setEnabled(false);
       _post->hide();
       _close->setText(tr("&Close"));
 
@@ -272,7 +272,7 @@ void materialReceiptTrans::sPost()
     _beforeQty->clear();
     _afterQty->clear();
     _documentNum->clear();
-    _issueToWo->setChecked(FALSE);
+    _issueToWo->setChecked(false);
     _wo->setId(-1);
     _notes->clear();
 

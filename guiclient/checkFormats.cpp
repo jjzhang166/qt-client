@@ -20,7 +20,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 
-checkFormats::checkFormats(QWidget* parent, const char* name, Qt::WFlags fl)
+checkFormats::checkFormats(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -69,7 +69,7 @@ void checkFormats::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  checkFormat newdlg(this, "", TRUE);
+  checkFormat newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -82,7 +82,7 @@ void checkFormats::sEdit()
   params.append("mode", "edit");
   params.append("form_id", _form->id());
 
-  checkFormat newdlg(this, "", TRUE);
+  checkFormat newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -95,7 +95,7 @@ void checkFormats::sView()
   params.append("mode", "view");
   params.append("form_id", _form->id());
 
-  checkFormat newdlg(this, "", TRUE);
+  checkFormat newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();

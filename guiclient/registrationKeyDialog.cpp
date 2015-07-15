@@ -13,7 +13,7 @@
 
 #include <QVariant>
 
-registrationKeyDialog::registrationKeyDialog(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+registrationKeyDialog::registrationKeyDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   setupUi(this);

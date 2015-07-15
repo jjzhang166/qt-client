@@ -11,6 +11,7 @@
 #ifndef ITEM_2_H
 #define ITEM_2_H
 
+#include "applock.h"
 #include "guiclient.h"
 #include "xwidget.h"
 #include "bom.h"
@@ -24,7 +25,7 @@ class item : public XWidget, public Ui::item
     Q_OBJECT
 
 public:
-    item(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    item(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~item();
 
     virtual void populate();
@@ -60,6 +61,7 @@ public slots:
     virtual void sDeleteTransformation();
     virtual void sFillTransformationList();
     virtual void sEditBOM();
+    virtual void setViewMode();
     virtual void sWorkbench();
     virtual void sNewItemSite();
     virtual void sEditItemSite();
@@ -102,11 +104,12 @@ signals:
     void saved(int);
 
 private:
-    int _mode;
-    int _itemid;
-    bool _disallowPlanningType;
+    int     _mode;
+    int     _itemid;
+    bool    _disallowPlanningType;
+    AppLock _lock;
     QString _originalItemType;
-    bool _inTransaction;
+    bool    _inTransaction;
 
     void saveCore();
 };

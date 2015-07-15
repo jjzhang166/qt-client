@@ -33,7 +33,7 @@
 #include "xcombobox.h"
 #include "parameterwidget.h"
 
-customer::customer(QWidget* parent, const char* name, Qt::WFlags fl)
+customer::customer(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -324,63 +324,7 @@ enum SetResponse customer::set(const ParameterList &pParams)
     }
     else if (param.toString() == "view")
     {
-      _mode = cView;
-
-      _number->setCanEdit(FALSE);
-      _name->setEnabled(FALSE);
-      _custtype->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _corrCntct->setEnabled(FALSE);
-      _billCntct->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
-      _balanceMethod->setEnabled(FALSE);
-      _defaultDiscountPrcnt->setEnabled(FALSE);
-      _creditLimit->setEnabled(FALSE);
-      _creditRating->setEnabled(FALSE);
-      _creditStatusGroup->setEnabled(FALSE);
-      _autoUpdateStatus->setEnabled(FALSE);
-      _autoHoldOrders->setEnabled(FALSE);
-      _taxzone->setEnabled(FALSE);
-      _sellingWarehouse->setEnabled(FALSE);
-      _salesrep->setEnabled(FALSE);
-      _defaultCommissionPrcnt->setEnabled(FALSE);
-      _shipvia->setEnabled(FALSE);
-      _shipform->setEnabled(FALSE);
-      _shipchrg->setEnabled(FALSE);
-      _backorders->setEnabled(FALSE);
-      _usesPOs->setEnabled(FALSE);
-      _blanketPos->setEnabled(FALSE);
-      _allowFFShipto->setEnabled(FALSE);
-      _allowFFBillto->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
-      _comments->setReadOnly(TRUE);
-      _newShipto->setEnabled(FALSE);
-      _newCharacteristic->setEnabled(FALSE);
-      _newTaxreg->setEnabled(FALSE);
-      _currency->setEnabled(FALSE);
-      _partialShipments->setEnabled(FALSE);
-      _save->hide();
-      _newCC->setEnabled(false);
-      _editCC->setEnabled(false);
-      _upCC->setEnabled(false);
-      _downCC->setEnabled(false);
-      _warnLate->setEnabled(false);
-      _charass->setEnabled(false);
-      _chartempl->setEnabled(false);
-
-      connect(_shipto, SIGNAL(itemSelected(int)), _viewShipto, SLOT(animateClick()));
-      connect(_cc, SIGNAL(itemSelected(int)), _viewCC, SLOT(animateClick()));
-
-      disconnect(_taxreg, SIGNAL(valid(bool)), _deleteTaxreg, SLOT(setEnabled(bool)));
-      disconnect(_taxreg, SIGNAL(valid(bool)), _editTaxreg, SLOT(setEnabled(bool)));
-      disconnect(_taxreg, SIGNAL(itemSelected(int)), _editTaxreg, SLOT(animateClick()));
-      connect(_taxreg, SIGNAL(itemSelected(int)), _viewTaxreg, SLOT(animateClick()));
-
-      ParameterList params;
-      params.append("mode", "view");
-      _contacts->set(params);
-
-      emit newMode(_mode);
+      setViewMode();
     }
   }
 
@@ -390,6 +334,14 @@ enum SetResponse customer::set(const ParameterList &pParams)
     _number->setEditMode(true);
     sLoadCrmAcct(param.toInt());
     _captive=true;
+  }
+
+  if (_mode == cEdit && _custid > 0)
+  {
+    if (!_lock.acquire("custinfo", _custid, AppLock::Interactive))
+    {
+      setViewMode();
+    }
   }
 
   return NoError;
@@ -406,6 +358,67 @@ int customer::id() const
 int customer::mode() const
 {
   return _mode;
+}
+
+void customer::setViewMode()
+{
+  _mode = cView;
+
+  _number->setEnabled(false);
+  _name->setEnabled(false);
+  _custtype->setEnabled(false);
+  _active->setEnabled(false);
+  _corrCntct->setEnabled(false);
+  _billCntct->setEnabled(false);
+  _terms->setEnabled(false);
+  _balanceMethod->setEnabled(false);
+  _defaultDiscountPrcnt->setEnabled(false);
+  _creditLimit->setEnabled(false);
+  _creditRating->setEnabled(false);
+  _creditStatusGroup->setEnabled(false);
+  _autoUpdateStatus->setEnabled(false);
+  _autoHoldOrders->setEnabled(false);
+  _taxzone->setEnabled(false);
+  _sellingWarehouse->setEnabled(false);
+  _salesrep->setEnabled(false);
+  _defaultCommissionPrcnt->setEnabled(false);
+  _shipvia->setEnabled(false);
+  _shipform->setEnabled(false);
+  _shipchrg->setEnabled(false);
+  _backorders->setEnabled(false);
+  _usesPOs->setEnabled(false);
+  _blanketPos->setEnabled(false);
+  _allowFFShipto->setEnabled(false);
+  _allowFFBillto->setEnabled(false);
+  _notes->setReadOnly(true);
+  _comments->setReadOnly(true);
+  _newShipto->setEnabled(false);
+  _newCharacteristic->setEnabled(false);
+  _newTaxreg->setEnabled(false);
+  _currency->setEnabled(false);
+  _partialShipments->setEnabled(false);
+  _save->hide();
+  _newCC->setEnabled(false);
+  _editCC->setEnabled(false);
+  _upCC->setEnabled(false);
+  _downCC->setEnabled(false);
+  _warnLate->setEnabled(false);
+  _charass->setEnabled(false);
+  _chartempl->setEnabled(false);
+
+  connect(_shipto, SIGNAL(itemSelected(int)), _viewShipto, SLOT(animateClick()));
+  connect(_cc, SIGNAL(itemSelected(int)), _viewCC, SLOT(animateClick()));
+
+  disconnect(_taxreg, SIGNAL(valid(bool)), _deleteTaxreg, SLOT(setEnabled(bool)));
+  disconnect(_taxreg, SIGNAL(valid(bool)), _editTaxreg, SLOT(setEnabled(bool)));
+  disconnect(_taxreg, SIGNAL(itemSelected(int)), _editTaxreg, SLOT(animateClick()));
+  connect(_taxreg, SIGNAL(itemSelected(int)), _viewTaxreg, SLOT(animateClick()));
+
+  ParameterList params;
+  params.append("mode", "view");
+  _contacts->set(params);
+
+  emit newMode(_mode);
 }
 
 void customer::setValid(bool valid)
@@ -658,7 +671,7 @@ bool customer::sSave()
 
   setValid(true);
   populate();
-  omfgThis->sCustomersUpdated(_custid, TRUE);
+  omfgThis->sCustomersUpdated(_custid, true);
   _autoSaved = true;
 
   return true;
@@ -673,7 +686,7 @@ void customer::sSaveClicked()
 
   _autoSaved=false;
   _NumberGen = -1;
-  omfgThis->sCustomersUpdated(_custid, TRUE);
+  omfgThis->sCustomersUpdated(_custid, true);
   emit saved(_custid);
   if (_captive || isModal())
     close();
@@ -727,7 +740,18 @@ void customer::sCheck()
         return;
       }
 
+      if (! _lock.release())
+        ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
+                             _lock.lastError(), __FILE__, __LINE__);
+
       _number->setId(customerCheck.value("cust_id").toInt());
+
+      if (_mode == cEdit && !_lock.acquire("custinfo", customerCheck.value("cust_id").toInt(), 
+                                          AppLock::Interactive))
+      {
+        setViewMode();
+      }
+
       _mode = cEdit;
       _name->setFocus();
       emit newMode(_mode);
@@ -890,7 +914,7 @@ void customer::sNewShipto()
   params.append("mode", "new");
   params.append("cust_id", _custid);
 
-  shipTo newdlg(this, "", TRUE);
+  shipTo newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -903,7 +927,7 @@ void customer::sEditShipto()
   params.append("mode", "edit");
   params.append("shipto_id", _shipto->id());
 
-  shipTo newdlg(this, "", TRUE);
+  shipTo newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -916,7 +940,7 @@ void customer::sViewShipto()
   params.append("mode", "view");
   params.append("shipto_id", _shipto->id());
 
-  shipTo newdlg(this, "", TRUE);
+  shipTo newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -962,7 +986,7 @@ void customer::sNewCharacteristic()
   params.append("mode", "new");
   params.append("cust_id", _custid);
 
-  characteristicAssignment newdlg(this, "", TRUE);
+  characteristicAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -975,7 +999,7 @@ void customer::sEditCharacteristic()
   params.append("mode", "edit");
   params.append("charass_id", _charass->id());
 
-  characteristicAssignment newdlg(this, "", TRUE);
+  characteristicAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1113,7 +1137,7 @@ void customer::sNewTaxreg()
   params.append("taxreg_rel_id", _custid);
   params.append("taxreg_rel_type", "C");
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   if (newdlg.set(params) == NoError && newdlg.exec() != XDialog::Rejected)
     sFillTaxregList();
 }
@@ -1124,7 +1148,7 @@ void customer::sEditTaxreg()
   params.append("mode", "edit");
   params.append("taxreg_id", _taxreg->id());
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.set(params) == NoError && newdlg.exec() != XDialog::Rejected)
@@ -1137,7 +1161,7 @@ void customer::sViewTaxreg()
   params.append("mode", "view");
   params.append("taxreg_id", _taxreg->id());
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   if (newdlg.set(params) == NoError)
     newdlg.exec();
 }
@@ -1192,11 +1216,11 @@ void customer::sPopulateCommission()
 void customer::populate()
 {
   XSqlQuery cust;
-  _notice = FALSE;
+  _notice = false;
   cust.prepare( "SELECT custinfo.*, "
                 "       cust_commprcnt, cust_discntprcnt,"
                 "       (cust_gracedays IS NOT NULL) AS hasGraceDays,"
-                "       COALESCE(cust_financecharge, TRUE) AS financecharge,"
+                "       COALESCE(cust_financecharge, true) AS financecharge,"
                 "       crmacct_id, crmacct_owner_username "
                 "FROM custinfo LEFT OUTER JOIN "
                 "     crmacct ON (cust_id=crmacct_cust_id) "
@@ -1279,11 +1303,11 @@ void customer::populate()
     _currency->setId(cust.value("cust_curr_id").toInt());
 
     if (cust.value("cust_creditstatus").toString() == "G")
-      _inGoodStanding->setChecked(TRUE);
+      _inGoodStanding->setChecked(true);
     else if (cust.value("cust_creditstatus").toString() == "W")
-      _onCreditWarning->setChecked(TRUE);
+      _onCreditWarning->setChecked(true);
     else
-      _onCreditHold->setChecked(TRUE);
+      _onCreditHold->setChecked(true);
     
     _comments->setId(_crmacctid);
     _documents->setId(_crmacctid);
@@ -1411,7 +1435,7 @@ void customer::sNewCreditCard()
   params.append("mode", "new");
   params.append("cust_id", _custid);
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1425,7 +1449,7 @@ void customer::sEditCreditCard()
   params.append("cust_id", _custid);
   params.append("ccard_id", _cc->id());
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1439,7 +1463,7 @@ void customer::sViewCreditCard()
   params.append("cust_id", _custid);
   params.append("ccard_id", _cc->id());
 
-  creditCard newdlg(this, "", TRUE);
+  creditCard newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -1540,7 +1564,7 @@ void customer::sFillCcardList()
 
 void customer::sLoadCrmAcct(int crmacctId)
 {
-  _notice = FALSE;
+  _notice = false;
   _crmacctid = crmacctId;
   _billCntct->setSearchAcct(_crmacctid);
   _corrCntct->setSearchAcct(_crmacctid);
@@ -1578,7 +1602,7 @@ void customer::sLoadCrmAcct(int crmacctId)
 
 void customer::sNumberEdited()
 {
-  _notice = TRUE;
+  _notice = true;
   sCheck();
 }
 
@@ -1670,6 +1694,13 @@ void customer::setId(int p)
   if (_custid==p)
     return;
 
+  if (! _lock.release())
+    ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
+                         _lock.lastError(), __FILE__, __LINE__);
+
+  if (_mode == cEdit && !_lock.acquire("custinfo", p, AppLock::Interactive))
+    setViewMode();
+
   _charfilled = false;
   _custid=p;
   populate();
@@ -1707,6 +1738,8 @@ void customer::sClear()
     _taxzone->setCurrentIndex(-1);
     _shipform->setId(_metrics->value("DefaultShipFormId").toInt());
     _shipvia->setId(_metrics->value("DefaultShipViaId").toInt());
+    _shipchrg->setId(_metrics->value("DefaultShipChrgId").toInt());
+    _sellingWarehouse->setId(_metrics->value("DefaultSellingWarehouseId").toInt());
     _custtype->setId(_metrics->value("DefaultCustType").toInt());
     _backorders->setChecked(_metrics->boolean("DefaultBackOrders"));
     _partialShipments->setEnabled(_metrics->boolean("DefaultBackOrders"));
@@ -1724,9 +1757,6 @@ void customer::sClear()
       _custtype->setEnabled(false);
 
     _defaultCommissionPrcnt->setDouble(0);
-    _shipchrg->setId(-1);
-    if (_metrics->boolean("MultiWhs"))
-      _sellingWarehouse->setId(_preferences->value("PreferredWarehouse").toInt());
     _active->setChecked(true);
     _allowFFBillto->setChecked(false);
     _usesPOs->setChecked(false);

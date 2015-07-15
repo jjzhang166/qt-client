@@ -172,7 +172,7 @@ void todoListCalendar::sNew()
   if (_usr->isSelected())
     _usr->appendValue(params);
 
-  todoItem newdlg(this, "", TRUE);
+  todoItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -185,7 +185,7 @@ void todoListCalendar::sEdit()
   params.append("mode", "edit");
   params.append("todoitem_id", _list->id());
 
-  todoItem newdlg(this, "", TRUE);
+  todoItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -198,7 +198,7 @@ void todoListCalendar::sView()
   params.append("mode", "view");
   params.append("todoitem_id", _list->id());
 
-  todoItem newdlg(this, "", TRUE);
+  todoItem newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();

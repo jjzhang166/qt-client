@@ -13,15 +13,15 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-taxCodeRate::taxCodeRate(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxCodeRate::taxCodeRate(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   
   _percent->setValidator(omfgThis->negPercentVal());
 }
@@ -100,9 +100,9 @@ enum SetResponse taxCodeRate::set( const ParameterList & pParams )
       _mode = cView;
 	  sPopulate();
 
-      _dates->setEnabled(FALSE);
-	  _percent->setEnabled(FALSE);
-	  _flat->setEnabled(FALSE);
+      _dates->setEnabled(false);
+	  _percent->setEnabled(false);
+	  _flat->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

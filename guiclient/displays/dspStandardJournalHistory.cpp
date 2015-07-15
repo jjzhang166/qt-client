@@ -22,7 +22,7 @@
 #include "mqlutil.h"
 #include "reverseGLSeries.h"
 
-dspStandardJournalHistory::dspStandardJournalHistory(QWidget* parent, const char*, Qt::WFlags fl)
+dspStandardJournalHistory::dspStandardJournalHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspStandardJournalHistory", fl)
 {
   setupUi(optionsWidget());

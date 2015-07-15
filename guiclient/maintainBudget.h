@@ -24,7 +24,7 @@ class maintainBudget : public XWidget, public Ui::maintainBudget
     Q_OBJECT
 
 public:
-    maintainBudget(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    maintainBudget(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~maintainBudget();
 
     Q_INVOKABLE int projectId() { return _prjid; }

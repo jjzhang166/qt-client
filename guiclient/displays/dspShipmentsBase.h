@@ -22,7 +22,7 @@ class dspShipmentsBase : public display, public Ui::dspShipmentsBase
     Q_OBJECT
 
 public:
-    dspShipmentsBase(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspShipmentsBase(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

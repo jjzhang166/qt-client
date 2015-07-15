@@ -21,7 +21,7 @@ class workOrderMaterials : public XWidget, public Ui::workOrderMaterials
     Q_OBJECT
 
 public:
-    workOrderMaterials(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    workOrderMaterials(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~workOrderMaterials();
 
 public slots:

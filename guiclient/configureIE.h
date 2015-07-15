@@ -21,7 +21,7 @@ class configureIE : public XAbstractConfigure, public Ui::configureIE
     Q_OBJECT
 
 public:
-    configureIE(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureIE(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureIE();
 
     static bool userHasPriv();

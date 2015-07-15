@@ -17,7 +17,7 @@
 
 #define DEBUG true
 
-sysLocale::sysLocale(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+sysLocale::sysLocale(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -92,20 +92,20 @@ enum SetResponse sysLocale::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _language->setEnabled(FALSE);
-      _country->setEnabled(FALSE);
-      _currencyScale->setEnabled(FALSE);
-      _salesPriceScale->setEnabled(FALSE);
-      _purchPriceScale->setEnabled(FALSE);
-      _extPriceScale->setEnabled(FALSE);
-      _costScale->setEnabled(FALSE);
-      _qtyScale->setEnabled(FALSE);
-      _qtyPerScale->setEnabled(FALSE);
-      _weightScale->setEnabled(FALSE);
-      _uomRatioScale->setEnabled(FALSE);
-      _comments->setReadOnly(TRUE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _language->setEnabled(false);
+      _country->setEnabled(false);
+      _currencyScale->setEnabled(false);
+      _salesPriceScale->setEnabled(false);
+      _purchPriceScale->setEnabled(false);
+      _extPriceScale->setEnabled(false);
+      _costScale->setEnabled(false);
+      _qtyScale->setEnabled(false);
+      _qtyPerScale->setEnabled(false);
+      _weightScale->setEnabled(false);
+      _uomRatioScale->setEnabled(false);
+      _comments->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -427,13 +427,13 @@ QString sysLocale::convert(const QString &input)
 
   for (i = 0; i < input.size(); i++)
   {
-    switch (input[i].toAscii())
+    switch (input[i].toLatin1())
     {
     case '\'':
       if (input[++i] == '\'')
         output.append('\'');
       else for (; input[i] != '\''; i++)
-        output.append(input[i].toAscii());
+        output.append(input[i].toLatin1());
       if (input[i] == '\'')
         i++;
       break;
@@ -596,7 +596,7 @@ QString sysLocale::convert(const QString &input)
       break;
 
     default:
-      output.append(input[i].toAscii());
+      output.append(input[i].toLatin1());
       break;
     }
   }

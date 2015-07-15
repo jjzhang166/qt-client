@@ -25,12 +25,14 @@ class AppLock : public QObject
   Q_OBJECT
 
   public:
+    enum AcquireMode { Silent, Interactive };
+
     AppLock(QObject *parent = 0);
     AppLock(QString table, int id, QObject *parent = 0);
     ~AppLock();
 
-    Q_INVOKABLE bool    acquire();
-    Q_INVOKABLE bool    acquire(QString table, int id);
+    Q_INVOKABLE bool    acquire(AcquireMode mode = Silent);
+    Q_INVOKABLE bool    acquire(QString table, int id, AcquireMode mode = Silent);
     Q_INVOKABLE bool    holdsLock()   const;
     Q_INVOKABLE bool    isLockedOut() const;
     Q_INVOKABLE QString lastError()   const;
@@ -42,6 +44,7 @@ class AppLock : public QObject
 };
 
 Q_DECLARE_METATYPE(AppLock *)
+Q_DECLARE_METATYPE(enum AppLock::AcquireMode)
 
 void setupAppLockProto(QScriptEngine *engine);
 QScriptValue constructAppLock(QScriptContext *context, QScriptEngine *engine);
@@ -52,8 +55,8 @@ class AppLockProto : public QObject, public QScriptable
   public:
     AppLockProto(QObject *parent);
 
-    Q_INVOKABLE bool    acquire();
-    Q_INVOKABLE bool    acquire(QString table, int id);
+    Q_INVOKABLE bool    acquire(AppLock::AcquireMode mode);
+    Q_INVOKABLE bool    acquire(QString table, int id, AppLock::AcquireMode mode);
     Q_INVOKABLE bool    holdsLock()   const;
     Q_INVOKABLE bool    isLockedOut() const;
     Q_INVOKABLE QString lastError()   const;

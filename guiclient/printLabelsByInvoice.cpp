@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "guiclient.h"
 
-printLabelsByInvoice::printLabelsByInvoice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printLabelsByInvoice::printLabelsByInvoice(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -87,13 +87,13 @@ void printLabelsByInvoice::sParseInvoiceNumber()
   query.exec();
   if (query.first())
   {
-    _print->setEnabled(TRUE);
+    _print->setEnabled(true);
 
     _invcheadid = query.value("invchead_id").toInt();
   }
   else
   {
-    _print->setEnabled(FALSE);
+    _print->setEnabled(false);
     _invoiceNumber->clear();
     _invoiceNumber->setFocus();
 

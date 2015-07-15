@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
+    <width>440</width>
     <height>278</height>
    </rect>
   </property>
@@ -51,91 +51,15 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <widget class="XComboBox" name="_docType">
-         <item>
-          <property name="text">
-           <string>[Select]</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Contact</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Account</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Customer</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Employee</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>File</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Image</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Incident</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Invoice</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Item</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Opportunity</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Project</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Purchase Order</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Sales Order</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Vendor</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Web Site</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Work Order</string>
-          </property>
-         </item>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAlphabetically</enum>
+         </property>
+         <property name="allowNull">
+          <bool>true</bool>
+         </property>
+         <property name="nullStr">
+          <string>[ Select One ]</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -955,14 +879,14 @@ to be bound by its terms.</comment>
    <header>imagecluster.h</header>
   </customwidget>
   <customwidget>
-   <class>IncidentCluster</class>
-   <extends>QWidget</extends>
-   <header>incidentcluster.h</header>
-  </customwidget>
-  <customwidget>
    <class>InvoiceCluster</class>
    <extends>QWidget</extends>
    <header>invoiceCluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>IncidentCluster</class>
+   <extends>QWidget</extends>
+   <header>incidentcluster.h</header>
   </customwidget>
   <customwidget>
    <class>ItemCluster</class>
@@ -1004,11 +928,6 @@ to be bound by its terms.</comment>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>XLabel</class>
-   <extends>QLabel</extends>
-   <header>xlabel.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>

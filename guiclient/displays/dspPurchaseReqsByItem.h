@@ -20,7 +20,7 @@ class dspPurchaseReqsByItem : public display, public Ui::dspPurchaseReqsByItem
     Q_OBJECT
 
 public:
-    dspPurchaseReqsByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPurchaseReqsByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 
@@ -28,6 +28,8 @@ public slots:
     virtual void sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int);
     virtual void sDspRunningAvailability();
     virtual void sRelease();
+    virtual void sNew();
+    virtual void sEdit();
     virtual void sDelete();
 
 protected slots:

@@ -22,7 +22,7 @@ class bankAdjustment : public XWidget, public Ui::bankAdjustment
     Q_OBJECT
 
 public:
-    bankAdjustment(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    bankAdjustment(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~bankAdjustment();
 
 public slots:

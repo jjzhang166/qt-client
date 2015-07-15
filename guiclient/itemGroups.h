@@ -20,7 +20,7 @@ class itemGroups : public XWidget, public Ui::itemGroups
     Q_OBJECT
 
 public:
-    itemGroups(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    itemGroups(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~itemGroups();
 
 public slots:

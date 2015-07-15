@@ -14,7 +14,7 @@
 
 extern bool shownEncryptedMsg;
 
-configureEncryption::configureEncryption(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureEncryption::configureEncryption(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   setupUi(this);

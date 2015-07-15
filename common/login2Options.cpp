@@ -15,7 +15,7 @@
 #include "xtsettings.h"
 #include "dbtools.h"
 
-login2Options::login2Options(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+login2Options::login2Options(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   setObjectName(name);

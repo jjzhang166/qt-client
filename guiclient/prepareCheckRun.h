@@ -21,7 +21,7 @@ class prepareCheckRun : public XDialog, public Ui::prepareCheckRun
     Q_OBJECT
 
 public:
-    prepareCheckRun(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    prepareCheckRun(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~prepareCheckRun();
 
 public slots:

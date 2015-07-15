@@ -20,7 +20,7 @@
 #include "profitCenter.h"
 #include "storedProcErrorLookup.h"
 
-profitCenters::profitCenters(QWidget* parent, const char* name, Qt::WFlags fl)
+profitCenters::profitCenters(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ profitCenters::profitCenters(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_prftcntr, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -64,7 +64,7 @@ void profitCenters::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  profitCenter *newdlg = new profitCenter(this, "", TRUE);
+  profitCenter *newdlg = new profitCenter(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -76,7 +76,7 @@ void profitCenters::sEdit()
   params.append("prftcntr_id", _prftcntr->id());
   params.append("mode", "edit");
 
-  profitCenter *newdlg = new profitCenter(this, "", TRUE);
+  profitCenter *newdlg = new profitCenter(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -88,7 +88,7 @@ void profitCenters::sView()
   params.append("prftcntr_id", _prftcntr->id());
   params.append("mode", "view");
 
-  profitCenter *newdlg = new profitCenter(this, "", TRUE);
+  profitCenter *newdlg = new profitCenter(this, "", true);
   newdlg->set(params);
   newdlg->exec();
 }

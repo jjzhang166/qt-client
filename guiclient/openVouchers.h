@@ -21,7 +21,7 @@ class openVouchers : public XWidget, public Ui::openVouchers
     Q_OBJECT
 
 public:
-    openVouchers(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    openVouchers(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~openVouchers();
 	
     virtual bool setParams(ParameterList &);

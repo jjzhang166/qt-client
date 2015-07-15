@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-postPurchaseOrdersByAgent::postPurchaseOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postPurchaseOrdersByAgent::postPurchaseOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -59,7 +59,7 @@ void postPurchaseOrdersByAgent::sRelease()
                               tr("%1 Purchase Orders have been released.")
                               .arg(postRelease.value("result").toString()) );
 
-    omfgThis->sPurchaseOrdersUpdated(-1, TRUE);
+    omfgThis->sPurchaseOrdersUpdated(-1, true);
   }
 
   accept();

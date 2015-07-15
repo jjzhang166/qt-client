@@ -15,7 +15,7 @@
 #include "inputManager.h"
 #include "distributeInventory.h"
 
-returnWoMaterialBatch::returnWoMaterialBatch(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+returnWoMaterialBatch::returnWoMaterialBatch(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   XSqlQuery returnreturnWoMaterialBatch;
@@ -25,7 +25,7 @@ returnWoMaterialBatch::returnWoMaterialBatch(QWidget* parent, const char* name, 
   connect(_return, SIGNAL(clicked()), this, SLOT(sReturn()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
   returnreturnWoMaterialBatch.bindValue(":date",  _transDate->date());
@@ -51,7 +51,7 @@ void returnWoMaterialBatch::languageChange()
 enum SetResponse returnWoMaterialBatch::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

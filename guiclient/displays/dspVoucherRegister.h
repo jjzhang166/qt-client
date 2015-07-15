@@ -21,7 +21,7 @@ class dspVoucherRegister : public display, public Ui::dspVoucherRegister
     Q_OBJECT
 
 public:
-    dspVoucherRegister(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspVoucherRegister(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual  bool setParams(ParameterList &);
 

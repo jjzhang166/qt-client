@@ -1017,7 +1017,7 @@ QString ScriptToolbox::fileDialog(QWidget * parent, const QString & caption, con
   if (! filter.isEmpty())
   {
     filters << filter << tr("Any Files (*)");
-    newdlg.setFilters(filters);
+    newdlg.setNameFilters(filters);
   }
   if (newdlg.exec())  path = newdlg.selectedFiles().join(", ");
   else path = "";
@@ -1330,7 +1330,7 @@ QWidget *ScriptToolbox::openWindow(QString pname, QWidget *parent, Qt::WindowMod
     }
 
     XMainWindow *window = new XMainWindow(parent,
-                                          screenq.value("uiform_name").toString().toAscii().data(),
+                                          screenq.value("uiform_name").toString().toLatin1().data(),
                                           flags);
 
     window->setCentralWidget(ui);
@@ -1377,7 +1377,7 @@ QWidget *ScriptToolbox::openWindow(QString pname, QWidget *parent, Qt::WindowMod
 
 QWidget *ScriptToolbox::newDisplay(QString pname, QWidget *parent, Qt::WindowModality modality, Qt::WindowFlags flags)
 {
-  display *window = new display(parent, pname.toAscii().data(), flags);
+  display *window = new display(parent, pname.toLatin1().data(), flags);
   window->setWindowModality(modality);
   omfgThis->handleNewWindow(window);
   _lastWindow = window;

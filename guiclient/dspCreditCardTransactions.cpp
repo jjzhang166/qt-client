@@ -22,7 +22,7 @@
 #include "storedProcErrorLookup.h"
 #include "xtreewidget.h"
 
-dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

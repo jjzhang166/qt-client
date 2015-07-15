@@ -33,7 +33,7 @@
 #include "dspJournals.h"
 #include "creditMemo.h"
 
-dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WFlags fl)
+dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspGLTransactions", fl)
 {
   setupUi(optionsWidget());
@@ -362,7 +362,7 @@ void dspGLTransactions::sViewTrans()
 
   params.append("gltrans_id", list()->id());
 
-  glTransactionDetail newdlg(this, "", TRUE);
+  glTransactionDetail newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -487,7 +487,7 @@ void dspGLTransactions::sViewDocument()
 
       params.append("mode", "view");
       params.append("apopen_id", dspViewDocument.value("apopen_id").toInt());
-      apOpenItem newdlg(this, "", TRUE);
+      apOpenItem newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
     }
@@ -504,7 +504,7 @@ void dspGLTransactions::sViewDocument()
 
       params.append("mode", "view");
       params.append("aropen_id", dspViewDocument.value("aropen_id").toInt());
-      arOpenItem newdlg(this, "", TRUE);
+      arOpenItem newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
     }
@@ -558,7 +558,7 @@ void dspGLTransactions::sViewDocument()
     params.append("mode", "view");
     params.append("invhist_id", dspViewDocument.value("gltrans_misc_id").toInt());
 
-    transactionInformation newdlg(this, "", TRUE);
+    transactionInformation newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }

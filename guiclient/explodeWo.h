@@ -22,7 +22,7 @@ class explodeWo : public XDialog, public Ui::explodeWo
     Q_OBJECT
 
 public:
-    explodeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    explodeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~explodeWo();
 
 public slots:

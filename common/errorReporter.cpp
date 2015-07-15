@@ -1430,7 +1430,12 @@ bool ErrorReporter::error(QtMsgType type,       QWidget *parent,
   }
 
   if (userMessage.isEmpty())
-    dlg.setText(reporter()->_private->text(qry.lastError().text(), stmttype));
+  {
+    QString msg = qry.lastError().text();
+    if (msg.length() > 200)
+      msg.replace(197, msg.length(), tr("..."));
+    dlg.setText(reporter()->_private->text(msg, stmttype));
+  }
 
   dlg.setDetailedText(QString("%1\n\nThe Query:\n%2\n\nBound Values:\n%3")
                       .arg(qry.lastError().text(), querystr, bindings.join("\n")));

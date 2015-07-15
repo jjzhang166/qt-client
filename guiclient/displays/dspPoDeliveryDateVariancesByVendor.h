@@ -20,7 +20,7 @@ class dspPoDeliveryDateVariancesByVendor : public display, public Ui::dspPoDeliv
     Q_OBJECT
 
 public:
-    dspPoDeliveryDateVariancesByVendor(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPoDeliveryDateVariancesByVendor(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

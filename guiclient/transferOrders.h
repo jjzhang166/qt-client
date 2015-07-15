@@ -22,7 +22,7 @@ class transferOrders : public XWidget, public Ui::transferOrders
     Q_OBJECT
 
 public:
-    transferOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    transferOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~transferOrders();
 
 public slots:

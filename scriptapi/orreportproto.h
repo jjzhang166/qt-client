@@ -54,7 +54,7 @@ class orReportProto : public QObject, public QScriptable
     Q_INVOKABLE bool                exportToPDF(const QString& fileName);
     Q_INVOKABLE ParameterList       getParamList();
     Q_INVOKABLE bool                isValid();
-    Q_INVOKABLE bool                print(QPrinter *prtThis = 0, bool boolSetupPrinter = TRUE, bool showPreview = false, QWidget *parent = 0);
+    Q_INVOKABLE bool                print(QPrinter *prtThis = 0, bool boolSetupPrinter = true, bool showPreview = false, QWidget *parent = 0);
     Q_INVOKABLE bool                render(QPainter *painter, QPrinter *printer = 0);
     Q_INVOKABLE int                 reportError(QWidget *widget);
     Q_INVOKABLE bool                satisfyParams(QWidget *widget);

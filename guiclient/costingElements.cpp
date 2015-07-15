@@ -18,7 +18,7 @@
 
 #include "userCostingElement.h"
 
-costingElements::costingElements(QWidget* parent, const char* name, Qt::WFlags fl)
+costingElements::costingElements(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -47,7 +47,7 @@ void costingElements::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  userCostingElement newdlg(this, "", TRUE);
+  userCostingElement newdlg(this, "", true);
   newdlg.set(params);
  
   if (newdlg.exec() != XDialog::Rejected)
@@ -60,7 +60,7 @@ void costingElements::sEdit()
   params.append("mode", "edit");
   params.append("costelem_id", _costelem->id());
 
-  userCostingElement newdlg(this, "", TRUE);
+  userCostingElement newdlg(this, "", true);
   newdlg.set(params);
  
   if (newdlg.exec() != XDialog::Rejected)

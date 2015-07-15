@@ -17,7 +17,7 @@
 #include <QValidator>
 #include <QVariant>
 
-glSeriesItem::glSeriesItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+glSeriesItem::glSeriesItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -167,12 +167,12 @@ void glSeriesItem::populate()
   {
     if (glpopulate.value("glseries_amount").toDouble() < 0)
     {
-      _debit->setChecked(TRUE);
+      _debit->setChecked(true);
       _amount->setBaseValue(fabs(glpopulate.value("glseries_amount").toDouble()));
     }
     else
     {
-      _credit->setChecked(TRUE);
+      _credit->setChecked(true);
       _amount->setBaseValue(glpopulate.value("glseries_amount").toDouble());
     }
 

@@ -20,7 +20,7 @@ class dspPoItemReceivingsByItem : public display, public Ui::dspPoItemReceivings
     Q_OBJECT
 
 public:
-    dspPoItemReceivingsByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPoItemReceivingsByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

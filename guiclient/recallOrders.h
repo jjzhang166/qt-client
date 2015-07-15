@@ -20,7 +20,7 @@ class recallOrders : public XWidget, public Ui::recallOrders
     Q_OBJECT
 
 public:
-    recallOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    recallOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~recallOrders();
     virtual bool checkSitePrivs(int orderid);
 

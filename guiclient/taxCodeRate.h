@@ -22,7 +22,7 @@ class taxCodeRate : public XDialog, public Ui::taxCodeRate
   Q_OBJECT
 
   public:
-    taxCodeRate(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    taxCodeRate(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~taxCodeRate();
 
   public slots:

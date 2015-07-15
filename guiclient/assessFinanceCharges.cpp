@@ -21,7 +21,7 @@
 #include "storedProcErrorLookup.h"
 #include "xtreewidget.h"
 
-assessFinanceCharges::assessFinanceCharges(QWidget* parent, const char* name, Qt::WFlags fl)
+assessFinanceCharges::assessFinanceCharges(QWidget* parent, const char* name, Qt::WindowFlags fl)
 : XWidget(parent, name, fl)
 {
   setupUi(this);

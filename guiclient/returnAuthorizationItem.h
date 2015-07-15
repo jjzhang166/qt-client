@@ -22,7 +22,7 @@ class returnAuthorizationItem : public XDialog, public Ui::returnAuthorizationIt
     Q_OBJECT
 
 public:
-    returnAuthorizationItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    returnAuthorizationItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~returnAuthorizationItem();
 
 public slots:

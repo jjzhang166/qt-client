@@ -21,7 +21,7 @@ class dspTimePhasedAvailability : public displayTimePhased, public Ui::dspTimePh
     Q_OBJECT
 
 public:
-    dspTimePhasedAvailability(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspTimePhasedAvailability(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     bool setParamsTP(ParameterList & params);
 

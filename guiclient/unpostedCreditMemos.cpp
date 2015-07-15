@@ -26,7 +26,7 @@
 #include "printCreditMemo.h"
 #include "storedProcErrorLookup.h"
 
-unpostedCreditMemos::unpostedCreditMemos(QWidget* parent, const char* name, Qt::WFlags fl)
+unpostedCreditMemos::unpostedCreditMemos(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
@@ -57,7 +57,7 @@ unpostedCreditMemos::unpostedCreditMemos(QWidget* parent, const char* name, Qt::
     }
     else
     {
-      _new->setEnabled(FALSE);
+      _new->setEnabled(false);
       connect(_cmhead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
     }
     
@@ -150,13 +150,13 @@ void unpostedCreditMemos::sPrint()
       params.append("cmhead_id", ((XTreeWidgetItem*)(selected[i]))->id());
       params.append("persistentPrint");
 
-      printCreditMemo newdlg(this, "", TRUE);
+      printCreditMemo newdlg(this, "", true);
       newdlg.set(params);
 
       if (!newdlg.isSetup())
       {
         newdlg.exec();
-        newdlg.setSetup(TRUE);
+        newdlg.setSetup(true);
       }
     }
   }
@@ -171,7 +171,7 @@ void unpostedCreditMemos::sPost()
 
   if (_privileges->check("ChangeSOMemoPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Return Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -323,7 +323,7 @@ void unpostedCreditMemos::sFillList()
 {
   _cmhead->clear();
   _cmhead->populate( "SELECT cmhead_id, cmhead_number,"
-                     "       COALESCE(cmhead_printed, FALSE) AS printed,"
+                     "       COALESCE(cmhead_printed, false) AS printed,"
                      "       cmhead_billtoname, cmhead_docdate, cmhead_hold,"
                      "       COALESCE(cmhead_gldistdate, cmhead_docdate) AS distdate "
                      "FROM cmhead "

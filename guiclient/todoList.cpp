@@ -23,7 +23,7 @@
 #include <QSqlError>
 #include <QToolBar>
 
-todoList::todoList(QWidget* parent, const char*, Qt::WFlags fl)
+todoList::todoList(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "todoList", fl)
 {
   _shown = false;
@@ -247,7 +247,7 @@ void todoList::sNew()
   parameterWidget()->appendValue(params);
   params.append("mode", "new");
 
-  todoItem newdlg(this, "", TRUE);
+  todoItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -282,7 +282,7 @@ void todoList::sEdit()
     params.append("mode", "edit");
     params.append("todoitem_id", list()->id());
 
-    todoItem newdlg(this, "", TRUE);
+    todoItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -306,7 +306,7 @@ void todoList::sView()
     params.append("mode", "view");
     params.append("todoitem_id", list()->id());
 
-    todoItem newdlg(this, "", TRUE);
+    todoItem newdlg(this, "", true);
     newdlg.set(params);
 
     newdlg.exec();
@@ -328,7 +328,7 @@ void todoList::sDelete()
   }
 
   bool deleteAll  = false;
-  bool createMore = false;
+  bool deleteOne  = false;
   if (! recurstr.isEmpty())
   {
     XSqlQuery recurq;
@@ -349,9 +349,9 @@ void todoList::sDelete()
         return;
       else if (ret == QMessageBox::YesToAll)
         deleteAll = true;
-      // user said delete one but the only one that exists is the base
-      else if (ret == QMessageBox::Yes && recurq.value("max").isNull())
-        createMore = true;
+      // user said delete one but the only one that exists is the parent ToDo
+      else if (ret == QMessageBox::Yes)
+        deleteOne = true;
     }
     else if (recurq.lastError().type() != QSqlError::NoError)
     {
@@ -372,40 +372,46 @@ void todoList::sDelete()
 			    QMessageBox::No) == QMessageBox::No)
     return;
 
-  QString procname;
   int procresult = 0;
-  if (deleteAll)
+  if (deleteAll)  // Delete all todos in the recurring series
   {
-    procname = "deleteOpenRecurringItems";
-    todoDelete.prepare("SELECT deleteOpenRecurringItems(:id, :type, NULL, TRUE)"
+    todoDelete.prepare("SELECT deleteOpenRecurringItems(:id, :type, NULL, true)"
               "       AS result;");
     todoDelete.bindValue(":id",   list()->id());
     todoDelete.bindValue(":type", recurtype);
     todoDelete.exec();
     if (todoDelete.first())
       procresult = todoDelete.value("result").toInt();
-  }
-  if (procresult >= 0 && createMore)
-  {
-    procname = "createRecurringItems";
-    todoDelete.prepare("SELECT createRecurringItems(:id, :type) AS result;");
-    todoDelete.bindValue(":id",   list()->id());
-    todoDelete.bindValue(":type", recurtype);
-    todoDelete.exec();
-    if (todoDelete.first())
-      procresult = todoDelete.value("result").toInt();
+
+    if (procresult < 0)
+    {
+      systemError(this, storedProcErrorLookup("deleteOpenRecurringItems", procresult));
+      return;
+    }
+    else if (todoDelete.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, todoDelete.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
 
-  // not elseif - error handling for 1 or 2 queries
-  if (procresult < 0)
+  if (deleteOne) // The base todo in a recurring series has been seleted.  Have to move
+                 // recurrence to the next item else we hit foreign key errors.
+                 // Make the next item on the list the parent in the series
   {
-    systemError(this, storedProcErrorLookup(procname, procresult));
-    return;
-  }
-  else if (todoDelete.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, todoDelete.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+    todoDelete.prepare("UPDATE todoitem SET todoitem_recurring_todoitem_id =("
+                        "               SELECT MIN(todoitem_id) FROM todoitem"
+                        "                 WHERE todoitem_recurring_todoitem_id=:id"
+                        "                   AND todoitem_id!=:id)"
+                        "  WHERE todoitem_recurring_todoitem_id=:id"
+                        "  AND todoitem_id!=:id;");
+    todoDelete.bindValue(":id",   list()->id());
+    todoDelete.exec();
+    if (todoDelete.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, todoDelete.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
 
   if (list()->altId() == 1)
@@ -493,7 +499,7 @@ void todoList::sEditIncident()
   params.append("mode", "edit");
   params.append("incdt_id", getId(2));
 
-  incident newdlg(this, "", TRUE);
+  incident newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -506,7 +512,7 @@ void todoList::sViewIncident()
   params.append("mode", "view");
   params.append("incdt_id", getId(2));
 
-  incident newdlg(this, "", TRUE);
+  incident newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();
@@ -531,7 +537,7 @@ void todoList::sEditProject()
   qDebug("project %d", getId(4));
   params.append("prj_id", getId(4));
 
-  project newdlg(this, "", TRUE);
+  project newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -544,7 +550,7 @@ void todoList::sViewProject()
   params.append("mode", "view");
   params.append("prj_id", getId(4));
 
-  project newdlg(this, "", TRUE);
+  project newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();
@@ -557,7 +563,7 @@ void todoList::sEditTask()
   params.append("mode", "edit");
   params.append("prjtask_id", list()->id());
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -570,7 +576,7 @@ void todoList::sViewTask()
   params.append("mode", "view");
   params.append("prjtask_id", list()->id());
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();
@@ -617,7 +623,7 @@ void todoList::sEditOpportunity()
   params.append("mode", "edit");
   params.append("ophead_id", getId(5));
 
-  opportunity newdlg(this, "", TRUE);
+  opportunity newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -630,7 +636,7 @@ void todoList::sViewOpportunity()
   params.append("mode", "view");
   params.append("ophead_id", getId(5));
 
-  opportunity newdlg(this, "", TRUE);
+  opportunity newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();

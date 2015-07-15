@@ -12,7 +12,7 @@
 
 #include "guiErrorCheck.h"
 
-printShippingForms::printShippingForms(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printShippingForms::printShippingForms(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("ShippingFormCopies",     "ShippingFormWatermark",
                              "ShippingFormShowPrices", "",
                              parent, name, modal, fl)

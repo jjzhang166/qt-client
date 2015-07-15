@@ -26,7 +26,7 @@
 #include "workOrder.h"
 #include "parameterwidget.h"
 
-dspInventoryHistory::dspInventoryHistory(QWidget* parent, const char* name, Qt::WFlags fl)
+dspInventoryHistory::dspInventoryHistory(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, name, fl)
 {
   this->setWindowTitle(tr("Inventory History"));

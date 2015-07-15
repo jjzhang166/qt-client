@@ -21,7 +21,7 @@ class reschedulePoitem : public XDialog, public Ui::reschedulePoitem
     Q_OBJECT
 
 public:
-    reschedulePoitem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    reschedulePoitem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~reschedulePoitem();
 
 public slots:

@@ -21,7 +21,7 @@
 #include "distributeInventory.h"
 #include "storedProcErrorLookup.h"
 
-issueLineToShipping::issueLineToShipping(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+issueLineToShipping::issueLineToShipping(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -32,7 +32,7 @@ issueLineToShipping::issueLineToShipping(QWidget* parent, const char* name, bool
   _requireInventory = false;
   _snooze = false;
   _transTS = QDateTime::currentDateTime();
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
   if(!_metrics->boolean("EnableSOReservations"))
   {
     _qtyReservedLit->hide();
@@ -323,9 +323,11 @@ void issueLineToShipping::sIssue()
         XSqlQuery lsdetail;
         lsdetail.prepare("INSERT INTO lsdetail "
 	                     "            (lsdetail_itemsite_id, lsdetail_created, lsdetail_source_type, "
-	  	  			     "             lsdetail_source_id, lsdetail_source_number, lsdetail_ls_id, lsdetail_qtytoassign) "
+	  	  			     "             lsdetail_source_id, lsdetail_source_number, lsdetail_ls_id, lsdetail_qtytoassign, "
+                                             "             lsdetail_expiration, lsdetail_warrpurc ) "
 					     "SELECT invhist_itemsite_id, NOW(), 'TR', "
-					     "       :orderitemid, invhist_ordnumber, invdetail_ls_id, (invdetail_qty * -1.0) "
+					     "       :orderitemid, invhist_ordnumber, invdetail_ls_id, (invdetail_qty * -1.0), "
+                                             "       invdetail_expiration, invdetail_warrpurc "
 					     "FROM invhist JOIN invdetail ON (invdetail_invhist_id=invhist_id) "
 					     "WHERE (invhist_series=:itemlocseries);");
         lsdetail.bindValue(":orderitemid", _itemid);

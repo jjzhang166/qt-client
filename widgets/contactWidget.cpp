@@ -44,7 +44,7 @@ void ContactWidget::init()
     _list->setObjectName("_list");
     _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-  #ifndef Q_WS_MAC
+  #ifndef Q_OS_MAC
     _list->setMaximumWidth(25);
   #else
     _list->setMinimumWidth(60);
@@ -161,7 +161,7 @@ void ContactWidget::init()
     _webaddr->setPalette(p);
     
     QFont newFont = _email->font();
-    newFont.setUnderline(TRUE);
+    newFont.setUnderline(true);
     emailEdit->setFont(newFont);
     _webaddr->setFont(newFont);
 
@@ -433,7 +433,7 @@ void ContactWidget::silentSetId(const int pId)
   }
 
   _changed=false;
-  // _parsed = TRUE;
+  // _parsed = true;
 }
 
 void ContactWidget::setListVisible(bool p)
@@ -860,7 +860,7 @@ void ContactWidget::layout()
     _grid->addWidget(_address,		8, 0, 1, -1);
   }
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
   setMinimumSize(_grid->columnCount() * 50, _grid->rowCount() * 11);
 #endif
   _layoutDone = true;
@@ -1080,7 +1080,7 @@ void ContactWidget::sLaunchWebaddr()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WFlags) 
+ContactList::ContactList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags) 
   : VirtualList(pParent, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);
@@ -1303,7 +1303,7 @@ void ContactSearch::sFillList()
   MetaSQLQuery mql("SELECT cntct.*, crmacct_name"
                    "  FROM cntct()"
                    "  LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id)"
-                   " WHERE TRUE"
+                   " WHERE true"
                    "<? if exists('crmacctid') ?>"
                    "  AND (cntct_crmacct_id=<? value('crmacctid') ?>)"
                    "<? endif ?>"
@@ -1315,27 +1315,27 @@ void ContactSearch::sFillList()
                    "  <? if exists('searchFirst') ?> "
                    "     COALESCE(TRIM(cntct_first_name),'') || ' ' "
                    "  <? else ?>"
-                   "    E'\n' "
+                   "    '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchLast') ?> "
-                   "     || COALESCE(TRIM(cntct_last_name),'') || E'\n' "
+                   "     || COALESCE(TRIM(cntct_last_name),'') || '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchCRMAcct') ?> "
-                   "     || COALESCE(crmacct_name,'') || E'\n' "
+                   "     || COALESCE(crmacct_name,'') || '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchTitle') ?> "
-                   "     || COALESCE(cntct_title,'') || E'\n' "
+                   "     || COALESCE(cntct_title,'') || '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchPhones') ?> "
-                   "    || COALESCE(cntct_phone,'') || E'\n' "
-                   "    || COALESCE(cntct_phone2,'') || E'\n' "
-                   "    || COALESCE(cntct_fax,'') || E'\n' "
+                   "    || COALESCE(cntct_phone,'') || '\n' "
+                   "    || COALESCE(cntct_phone2,'') || '\n' "
+                   "    || COALESCE(cntct_fax,'') || '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchEmail') ?> "
-                   "     || COALESCE(cntct_email,'') || E'\n' "
+                   "     || COALESCE(cntct_email,'') || '\n' "
                    "  <? endif ?>"
                    "  <? if exists('searchWebAddr') ?> "
-                   "     || COALESCE(cntct_webaddr,'') || E'\n' "
+                   "     || COALESCE(cntct_webaddr,'') || '\n' "
                    "  <? endif ?>"
                    "  ~* <? value('searchText') ?> ) "
                    "<? endif ?>"
@@ -1428,7 +1428,7 @@ void ContactWidget::sEditEmailList()
   ParameterList params;
   params.append("cntct_id", _id);
 
-  contactEmail newdlg(this, "", TRUE);
+  contactEmail newdlg(this, "", true);
   newdlg.set(params);
   int selected = newdlg.exec();
   fillEmail();

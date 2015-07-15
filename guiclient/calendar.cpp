@@ -19,7 +19,7 @@
 
 static const char *originTypes[] = { "D", "E", "W", "X", "M", "N", "L", "Y", "Z" };
 
-calendar::calendar(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+calendar::calendar(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -60,16 +60,16 @@ enum SetResponse calendar::set(const ParameterList &pParams)
     if (param.toString() == "absolute")
     {
       _type = 'A';
-      _absolute->setChecked(TRUE);
-      _relative->setEnabled(FALSE);
-      _absolute->setEnabled(FALSE);
+      _absolute->setChecked(true);
+      _relative->setEnabled(false);
+      _absolute->setEnabled(false);
     }
     else if (param.toString() == "relative")
     {
       _type = 'R';
-      _relative->setChecked(TRUE);
-      _relative->setEnabled(FALSE);
-      _absolute->setEnabled(FALSE);
+      _relative->setChecked(true);
+      _relative->setEnabled(false);
+      _absolute->setEnabled(false);
     }
   }
 
@@ -93,8 +93,8 @@ enum SetResponse calendar::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _relative->setEnabled(FALSE);
-      _absolute->setEnabled(FALSE);
+      _relative->setEnabled(false);
+      _absolute->setEnabled(false);
     }
   }
 
@@ -177,7 +177,7 @@ void calendar::sNew()
 
   if (_type == 'A')
   {
-    absoluteCalendarItem newdlg(this, "", TRUE);
+    absoluteCalendarItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -185,7 +185,7 @@ void calendar::sNew()
   }
   else if (_type == 'R')
   {
-    relativeCalendarItem newdlg(this, "", TRUE);
+    relativeCalendarItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -201,7 +201,7 @@ void calendar::sEdit()
 
   if (_type == 'A')
   {
-    absoluteCalendarItem newdlg(this, "", TRUE);
+    absoluteCalendarItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -209,7 +209,7 @@ void calendar::sEdit()
   }
   else if (_type == 'R')
   {
-    relativeCalendarItem newdlg(this, "", TRUE);
+    relativeCalendarItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -319,15 +319,15 @@ void calendar::populate()
     _name->setText(calendarpopulate.value("calhead_name"));
     _descrip->setText(calendarpopulate.value("calhead_descrip"));
 
-    _type = calendarpopulate.value("calhead_type").toString()[0].toAscii();
+    _type = calendarpopulate.value("calhead_type").toString()[0].toLatin1();
 
     if (_type == 'A')
     {
-      _absolute->setChecked(TRUE);
+      _absolute->setChecked(true);
     }
     else if (_type == 'R')
     {
-      _relative->setChecked(TRUE);
+      _relative->setChecked(true);
 
       for (int counter = 0; counter < _origin->count(); counter++)
         if (calendarpopulate.value("calhead_origin").toString() == originTypes[counter])

@@ -16,7 +16,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 
-createPlannedOrdersByPlannerCode::createPlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createPlannedOrdersByPlannerCode::createPlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -113,7 +113,7 @@ bool createPlannedOrdersByPlannerCode::setParams(ParameterList &pParams)
   _warehouse->appendValue(pParams); 
   
   pParams.append("cutOffDate", _cutOffDate->date());
-  pParams.append("cutoff_offset", QDate::currentDate().daysTo(_cutOffDate->date()));
+  pParams.append("cutoff_offset", (qint32)QDate::currentDate().daysTo(_cutOffDate->date()));
   pParams.append("deleteFirmed", QVariant(_deleteFirmed->isChecked()));
 
   return true;

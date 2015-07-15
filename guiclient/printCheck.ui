@@ -131,6 +131,16 @@ to be bound by its terms.</comment>
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="_printed">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>&amp;Already Printed/Paid</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="_createEFT">
        <property name="enabled">
         <bool>false</bool>
@@ -179,6 +189,7 @@ to be bound by its terms.</comment>
   <tabstop>_check</tabstop>
   <tabstop>_nextCheckNum</tabstop>
   <tabstop>_print</tabstop>
+  <tabstop>_printed</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
  <resources/>
@@ -203,6 +214,22 @@ to be bound by its terms.</comment>
    <sender>_check</sender>
    <signal>notNull(bool)</signal>
    <receiver>_print</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>245</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>348</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_check</sender>
+   <signal>notNull(bool)</signal>
+   <receiver>_printed</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

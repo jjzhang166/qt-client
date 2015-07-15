@@ -20,7 +20,7 @@
 
 #include "incidentResolution.h"
 
-incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::WFlags fl)
+incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -47,7 +47,7 @@ incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_incidentResolutions, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -101,7 +101,7 @@ void incidentResolutions::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  incidentResolution newdlg(this, "", TRUE);
+  incidentResolution newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -114,7 +114,7 @@ void incidentResolutions::sEdit()
   params.append("mode", "edit");
   params.append("incdtresolution_id", _incidentResolutions->id());
 
-  incidentResolution newdlg(this, "", TRUE);
+  incidentResolution newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -127,7 +127,7 @@ void incidentResolutions::sView()
   params.append("mode", "view");
   params.append("incdtresolution_id", _incidentResolutions->id());
 
-  incidentResolution newdlg(this, "", TRUE);
+  incidentResolution newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -20,7 +20,7 @@ class dspReorderExceptionsByPlannerCode : public display, public Ui::dspReorderE
     Q_OBJECT
 
 public:
-    dspReorderExceptionsByPlannerCode(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspReorderExceptionsByPlannerCode(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

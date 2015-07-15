@@ -21,7 +21,7 @@ class postCheck : public XDialog, public Ui::postCheck
     Q_OBJECT
 
 public:
-    postCheck(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    postCheck(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~postCheck();
 
 public slots:

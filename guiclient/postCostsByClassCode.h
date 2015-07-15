@@ -21,7 +21,7 @@ class postCostsByClassCode : public XDialog, public Ui::postCostsByClassCode
     Q_OBJECT
 
 public:
-    postCostsByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    postCostsByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~postCostsByClassCode();
 
 public slots:

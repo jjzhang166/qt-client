@@ -15,18 +15,22 @@
 #include <QValidator>
 #include <QVariant>
 
+#include <metasql.h>
+#include "mqlutil.h"
+#include "errorReporter.h"
+
 #include "priceList.h"
 #include "taxDetail.h"
 #include "storedProcErrorLookup.h"
 #include "returnAuthItemLotSerial.h"
 
-returnAuthorizationItem::returnAuthorizationItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+returnAuthorizationItem::returnAuthorizationItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery returnreturnAuthorizationItem;
   setupUi(this);
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _listPrices->setMaximumWidth(25);
   _saleListPrices->setMaximumWidth(25);
 #endif
@@ -274,9 +278,9 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _shipWhs->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _shipWhs->setEnabled(false);
       _comments->setType(Comments::ReturnAuthItem);
       _comments->setReadOnly(false);
 
@@ -287,30 +291,30 @@ enum SetResponse returnAuthorizationItem::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _shipWhs->setEnabled(FALSE);
-      _disposition->setEnabled(FALSE);
-      _qtyAuth->setEnabled(FALSE);
-      _qtyUOM->setEnabled(FALSE);
-      _netUnitPrice->setEnabled(FALSE);
-      _saleNetUnitPrice->setEnabled(FALSE);
-      _listPrices->setEnabled(FALSE);
-      _saleListPrices->setEnabled(FALSE);
-      _pricingUOM->setEnabled(FALSE);
-      _salePricingUOM->setEnabled(FALSE);
-      _discountFromSale->setEnabled(FALSE);
-      _saleDiscountFromSale->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
-      _taxType->setEnabled(FALSE);
-      _rsnCode->setEnabled(FALSE);
-      _altcosAccntid->setEnabled(FALSE);
-      _showAvailability->setEnabled(FALSE);
-      _createOrder->setEnabled(FALSE);
-      _scheduledDate->setEnabled(FALSE);
-      _warranty->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _shipWhs->setEnabled(false);
+      _disposition->setEnabled(false);
+      _qtyAuth->setEnabled(false);
+      _qtyUOM->setEnabled(false);
+      _netUnitPrice->setEnabled(false);
+      _saleNetUnitPrice->setEnabled(false);
+      _listPrices->setEnabled(false);
+      _saleListPrices->setEnabled(false);
+      _pricingUOM->setEnabled(false);
+      _salePricingUOM->setEnabled(false);
+      _discountFromSale->setEnabled(false);
+      _saleDiscountFromSale->setEnabled(false);
+      _notes->setReadOnly(true);
+      _taxType->setEnabled(false);
+      _rsnCode->setEnabled(false);
+      _altcosAccntid->setEnabled(false);
+      _showAvailability->setEnabled(false);
+      _createOrder->setEnabled(false);
+      _scheduledDate->setEnabled(false);
+      _warranty->setEnabled(false);
       _comments->setType(Comments::ReturnAuthItem);
-      _comments->setReadOnly(TRUE);
+      _comments->setReadOnly(true);
 
       _save->hide();
       _close->setText(tr("&Close"));
@@ -522,7 +526,7 @@ bool returnAuthorizationItem::sSave()
                    QMessageBox::Yes | QMessageBox::Default,
                    QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
       {
-        returnSave.prepare("SELECT changeWoDates(:wo_id, :schedDate, :schedDate, TRUE) AS result;");
+        returnSave.prepare("SELECT changeWoDates(:wo_id, :schedDate, :schedDate, true) AS result;");
         returnSave.bindValue(":wo_id", _orderId);
         returnSave.bindValue(":schedDate", _scheduledDate->date());
         returnSave.exec();
@@ -559,7 +563,7 @@ bool returnAuthorizationItem::sSave()
                   QMessageBox::Yes | QMessageBox::Default,
                   QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
         {
-          returnSave.prepare("SELECT changeWoQty(:wo_id, :qty, TRUE) AS result;");
+          returnSave.prepare("SELECT changeWoQty(:wo_id, :qty, true) AS result;");
           returnSave.bindValue(":wo_id", _orderId);
           returnSave.bindValue(":qty", _qtyAuth->toDouble() * _qtyinvuomratio);
           returnSave.exec();
@@ -642,7 +646,7 @@ bool returnAuthorizationItem::sSave()
 
           if (_item->itemType() == "M")
           {
-            omfgThis->sWorkOrdersUpdated(_orderId, TRUE);
+            omfgThis->sWorkOrdersUpdated(_orderId, true);
 
     //  Update the newly created coitem with the newly create wo_id
             returnSave.prepare( "UPDATE coitem "
@@ -687,28 +691,36 @@ bool returnAuthorizationItem::sSave()
 
 void returnAuthorizationItem::sPopulateItemInfo()
 {
-  XSqlQuery uom;
-  uom.prepare("SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN uom ON (item_inv_uom_id=uom_id)"
-              " WHERE(item_id=:item_id)"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_to_uom_id=uom_id)"
-              " WHERE((itemuomconv_from_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_from_uom_id=uom_id)"
-              " WHERE((itemuomconv_to_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " ORDER BY uom_name;");
-  uom.bindValue(":item_id", _item->id());
-  uom.exec();
+  // Get list of active, valid Selling UOMs
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+
+  ParameterList params;
+  params.append("uomtype", "Selling");
+  params.append("item_id", _item->id());
+
+  // Also have to factor UOMs previously used on Return Auth now inactive
+  if (_raitemid != -1)
+  {
+    XSqlQuery cmuom;
+    cmuom.prepare("SELECT raitem_qty_uom_id, raitem_price_uom_id "
+                "  FROM raitem"
+                " WHERE(raitem_id=:raitem_id);");
+    cmuom.bindValue(":raitem_id", _raitemid);
+    cmuom.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Returns UOMs"),
+                         cmuom, __FILE__, __LINE__))
+      return;
+    else if (cmuom.first())
+    {
+      params.append("uom_id", cmuom.value("raitem_qty_uom_id"));
+      params.append("uom_id2", cmuom.value("raitem_price_uom_id"));
+    }
+  }
+  XSqlQuery uom = muom.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
+                         uom, __FILE__, __LINE__))
+    return;
+
   _qtyUOM->populate(uom);
   _pricingUOM->populate(uom);
   _salePricingUOM->populate(uom);
@@ -746,9 +758,9 @@ void returnAuthorizationItem::sPopulateItemInfo()
   if (_item->itemType() == "M" && _costmethod != "J")
     _createOrder->setEnabled(_mode == cNew || _mode == cEdit);
   else
-    _createOrder->setEnabled(FALSE);
+    _createOrder->setEnabled(false);
   if (_costmethod == "J")
-    _createOrder->setChecked(TRUE);
+    _createOrder->setChecked(true);
 
   _warehouse->findItemsites(_item->id());
   _shipWhs->findItemsites(_item->id());
@@ -780,8 +792,8 @@ void returnAuthorizationItem::sPopulateItemsiteInfo()
 
       if (_costmethod == "J")
       {
-        _createOrder->setChecked(TRUE);
-        _createOrder->setEnabled(FALSE);
+        _createOrder->setChecked(true);
+        _createOrder->setEnabled(false);
       }
       else if (cNew == _mode)
       {
@@ -798,8 +810,8 @@ void returnAuthorizationItem::sPopulateItemsiteInfo()
           _createOrder->setChecked(itemsite.value("itemsite_createwo").toBool());
         else
         {
-          _createOrder->setChecked(FALSE);
-          _createOrder->setEnabled(FALSE);
+          _createOrder->setChecked(false);
+          _createOrder->setEnabled(false);
         }
       }
 
@@ -953,9 +965,9 @@ void returnAuthorizationItem::populate()
       _origSoLineNumber->setText(raitem.value("orig_linenumber").toString());
       _qtySold->setDouble(raitem.value("qtysold").toDouble());
       _soldQty=raitem.value("qtysold").toDouble();
-      _qtyUOM->setEnabled(FALSE);
-      _pricingUOM->setEnabled(FALSE);
-      _salePricingUOM->setEnabled(FALSE);
+      _qtyUOM->setEnabled(false);
+      _pricingUOM->setEnabled(false);
+      _salePricingUOM->setEnabled(false);
       _salePrice->setId(raitem.value("rahead_curr_id").toInt());
       _salePrice->setEffective(raitem.value("rahead_authdate").toDate());
       _salePrice->setLocalValue(raitem.value("coitem_price").toDouble());
@@ -981,7 +993,7 @@ void returnAuthorizationItem::populate()
         raitem.value("qtyshipd").toDouble() > 0 ||
         raitem.value("qtytorcv").toDouble() > 0 ||
         _qtycredited > 0)
-      _disposition->setEnabled(FALSE);
+      _disposition->setEnabled(false);
 
     if (_orderId != -1)
     {
@@ -1000,7 +1012,7 @@ void returnAuthorizationItem::populate()
         query.exec();
         if (query.first())
         {
-          _createOrder->setChecked(TRUE);
+          _createOrder->setChecked(true);
 
           _orderQty->setDouble(query.value("qty").toDouble());
           _orderDueDate->setDate(query.value("wo_duedate").toDate());
@@ -1010,7 +1022,7 @@ void returnAuthorizationItem::populate()
               (query.value("wo_status").toString() == "C") ||
               (query.value("wo_status").toString() == "I"))
           {
-            _createOrder->setEnabled(FALSE);
+            _createOrder->setEnabled(false);
             if (_costmethod == "J")
               _qtyAuth->setEnabled(false);
           }
@@ -1018,7 +1030,7 @@ void returnAuthorizationItem::populate()
         else
         {
           _orderId = -1;
-          _createOrder->setChecked(FALSE);
+          _createOrder->setChecked(false);
         }
       }
     }
@@ -1460,10 +1472,10 @@ void returnAuthorizationItem::sDispositionChanged()
   if (_disposition->code() == "V" || _disposition->code() == "S") // service or ship
   {
     _netUnitPrice->setLocalValue(0);
-    _netUnitPrice->setEnabled(FALSE);
-    _listPrices->setEnabled(FALSE);
-    _pricingUOM->setEnabled(FALSE);
-    _discountFromSale->setEnabled(FALSE);
+    _netUnitPrice->setEnabled(false);
+    _listPrices->setEnabled(false);
+    _pricingUOM->setEnabled(false);
+    _discountFromSale->setEnabled(false);
   }
   else
   {
@@ -1477,11 +1489,11 @@ void returnAuthorizationItem::sDispositionChanged()
       _disposition->code() == "V" ||
       _disposition->code() == "S")      // replace, service, or ship
   {
-    _tab->setTabEnabled(_tab->indexOf(_supply),TRUE);
+    _tab->setTabEnabled(_tab->indexOf(_supply),true);
     _scheduledDate->setEnabled(isEditing);
     _altcosAccntid->setEnabled(isEditing);
-    _shipWhsLit->setVisible(TRUE);
-    _shipWhs->setVisible(TRUE);
+    _shipWhsLit->setVisible(true);
+    _shipWhs->setVisible(true);
     _saleNetUnitPrice->setEnabled(isEditing);
     _saleListPrices->setEnabled(isEditing);
     _salePricingUOM->setEnabled(isEditing);
@@ -1489,26 +1501,26 @@ void returnAuthorizationItem::sDispositionChanged()
   }
   else
   {
-    _tab->setTabEnabled(_tab->indexOf(_supply),FALSE);
+    _tab->setTabEnabled(_tab->indexOf(_supply),false);
     _scheduledDate->clear();
-    _scheduledDate->setEnabled(FALSE);
+    _scheduledDate->setEnabled(false);
     _altcosAccntid->setEnabled(isEditing);
-    _shipWhsLit->setVisible(FALSE);
-    _shipWhs->setVisible(FALSE);
+    _shipWhsLit->setVisible(false);
+    _shipWhs->setVisible(false);
     _saleNetUnitPrice->setLocalValue(0);
-    _saleNetUnitPrice->setEnabled(FALSE);
-    _saleListPrices->setEnabled(FALSE);
-    _salePricingUOM->setEnabled(FALSE);
-    _saleDiscountFromSale->setEnabled(FALSE);
+    _saleNetUnitPrice->setEnabled(false);
+    _saleListPrices->setEnabled(false);
+    _salePricingUOM->setEnabled(false);
+    _saleDiscountFromSale->setEnabled(false);
   }
 
   if (_creditmethod == "N")
   {
     _netUnitPrice->setLocalValue(0);
-    _netUnitPrice->setEnabled(FALSE);
-    _listPrices->setEnabled(FALSE);
-    _pricingUOM->setEnabled(FALSE);
-    _discountFromSale->setEnabled(FALSE);
+    _netUnitPrice->setEnabled(false);
+    _listPrices->setEnabled(false);
+    _pricingUOM->setEnabled(false);
+    _discountFromSale->setEnabled(false);
     disconnect(_item, SIGNAL(valid(bool)), _listPrices, SLOT(setEnabled(bool)));
   }
 
@@ -1544,7 +1556,7 @@ void returnAuthorizationItem::sHandleWo(bool pCreate)
                         "FROM wo "
                         "WHERE ((coitem_id=wo_ordid) "
                         "AND (wo_id=:wo_id)); "
-                        "SELECT deleteWo(:wo_id, TRUE) AS result;");
+                        "SELECT deleteWo(:wo_id, true) AS result;");
           query.bindValue(":wo_id", _orderId);
           query.exec();
           if (query.first())
@@ -1569,7 +1581,7 @@ void returnAuthorizationItem::sHandleWo(bool pCreate)
                   _status == "O")
                 _disposition->setEnabled(_mode == cNew || _mode == cEdit);
 
-              _createOrder->setChecked(FALSE);
+              _createOrder->setChecked(false);
             }
           }
           else if (query.lastError().type() != QSqlError::NoError)
@@ -1580,10 +1592,10 @@ void returnAuthorizationItem::sHandleWo(bool pCreate)
             return;
           }
 
-          omfgThis->sWorkOrdersUpdated(-1, TRUE);
+          omfgThis->sWorkOrdersUpdated(-1, true);
         }
         else
-          _createOrder->setChecked(TRUE);
+          _createOrder->setChecked(true);
       }
     }
   }
@@ -1598,7 +1610,7 @@ void returnAuthorizationItem::sPopulateOrderInfo()
     if (_createOrder->isChecked())
     {
       XSqlQuery qty;
-      qty.prepare( "SELECT validateOrderQty(itemsite_id, :qty, TRUE) AS qty "
+      qty.prepare( "SELECT validateOrderQty(itemsite_id, :qty, true) AS qty "
                    "FROM itemsite "
                    "WHERE ((itemsite_item_id=:item_id)"
                    " AND (itemsite_warehous_id=:warehous_id));" );
@@ -1714,7 +1726,7 @@ void returnAuthorizationItem::sNew()
 		params.append("uom", _qtyUOM->currentText());
 		params.append("mode", "new");
 
-		returnAuthItemLotSerial newdlg(this, "", TRUE);
+		returnAuthItemLotSerial newdlg(this, "", true);
 		newdlg.set(params);
 		int raitemlsid = newdlg.exec();
 		if (raitemlsid > 0)
@@ -1729,7 +1741,7 @@ void returnAuthorizationItem::sEdit()
 	if (sSave())
 	{
 		bool fill;
-		fill = FALSE;
+		fill = false;
 		QList<XTreeWidgetItem*> selected = _raitemls->selectedItems();
 		for (int i = 0; i < selected.size(); i++)
 		{
@@ -1745,12 +1757,12 @@ void returnAuthorizationItem::sEdit()
 			else
 				params.append("mode", "edit");
 
-			returnAuthItemLotSerial newdlg(this, "", TRUE);
+			returnAuthItemLotSerial newdlg(this, "", true);
 			newdlg.set(params);
 
 			int raitemlsid = newdlg.exec();
 			if (raitemlsid > 0)
-				fill = TRUE;
+				fill = true;
 			else if (raitemlsid == -1)
 				reject();
 		}

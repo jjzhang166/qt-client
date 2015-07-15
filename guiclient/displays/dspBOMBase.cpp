@@ -15,7 +15,7 @@
 
 #include "item.h"
 
-dspBOMBase::dspBOMBase(QWidget* parent, const char* name, Qt::WFlags fl)
+dspBOMBase::dspBOMBase(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, name, fl)
 {
   setupUi(optionsWidget());
@@ -25,9 +25,7 @@ dspBOMBase::dspBOMBase(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_item, SIGNAL(valid(bool)), _revision, SLOT(setEnabled(bool)));
   connect(omfgThis, SIGNAL(bomsUpdated(int, bool)), this, SLOT(sFillList()));
 
-  _item->setType(ItemLineEdit::cGeneralManufactured | ItemLineEdit::cGeneralPurchased |
-                 ItemLineEdit::cPhantom | ItemLineEdit::cKit |
-                 ItemLineEdit::cPlanning | ItemLineEdit::cTooling);
+  _item->setType(ItemLineEdit::cHasBom);
 
   _expiredDaysLit->setEnabled(_showExpired->isChecked());
   _expiredDays->setEnabled(_showExpired->isChecked());

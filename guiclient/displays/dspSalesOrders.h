@@ -8,29 +8,29 @@
  * to be bound by its terms.
  */
 
-#ifndef DSPSALESORDERSBYPARAMETERLIST_H
-#define DSPSALESORDERSBYPARAMETERLIST_H
+#ifndef DSPSALESORDERS_H
+#define DSPSALESORDERS_H
 
-#include "guiclient.h"
 #include "display.h"
 
-#include "ui_dspSalesOrdersByParameterList.h"
+#include "ui_dspSalesOrders.h"
 
-class dspSalesOrdersByParameterList : public display, public Ui::dspSalesOrdersByParameterList
+class dspSalesOrders : public display, public Ui::dspSalesOrders
 {
     Q_OBJECT
 
 public:
-    dspSalesOrdersByParameterList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSalesOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool checkSitePrivs(int orderid);
-    virtual bool setParams(ParameterList&);
+    virtual bool setParams(ParameterList &);
 
 public slots:
-    virtual enum SetResponse set( const ParameterList & pParams );
     virtual void sPopulateMenu(QMenu * menuThis, QTreeWidgetItem*, int);
+    virtual void sNew();
     virtual void sEditOrder();
     virtual void sViewOrder();
+    virtual void sCopyOrder();
     virtual void sCreateRA();
     virtual void sDspShipmentStatus();
     virtual void sDspShipments();
@@ -40,4 +40,4 @@ protected slots:
 
 };
 
-#endif // DSPSALESORDERSBYPARAMETERLIST_H
+#endif // DSPSALESORDERS_H

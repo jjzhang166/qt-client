@@ -23,7 +23,7 @@
 #include "changePoitemQty.h"
 #include "dspRunningAvailability.h"
 
-dspPoItemsByVendor::dspPoItemsByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemsByVendor::dspPoItemsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByVendor", fl)
 {
   setupUi(optionsWidget());

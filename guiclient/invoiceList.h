@@ -22,7 +22,7 @@ class invoiceList : public XDialog, public Ui::invoiceList
     Q_OBJECT
 
 public:
-    invoiceList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    invoiceList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~invoiceList();
 
 public slots:

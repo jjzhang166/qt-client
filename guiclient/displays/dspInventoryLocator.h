@@ -21,7 +21,7 @@ class dspInventoryLocator : public display, public Ui::dspInventoryLocator
     Q_OBJECT
 
 public:
-    dspInventoryLocator(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInventoryLocator(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

@@ -25,7 +25,7 @@
 #include "storedProcErrorLookup.h"
 #include "mqlutil.h"
 
-dspSummarizedBacklogByWarehouse::dspSummarizedBacklogByWarehouse(QWidget* parent, const char*, Qt::WFlags fl)
+dspSummarizedBacklogByWarehouse::dspSummarizedBacklogByWarehouse(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedBacklogByWarehouse", fl)
 {
   setupUi(optionsWidget());

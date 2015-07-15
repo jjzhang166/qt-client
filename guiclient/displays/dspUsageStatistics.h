@@ -19,7 +19,7 @@ class dspUsageStatistics : public display
     Q_OBJECT
 
 public:
-    dspUsageStatistics(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspUsageStatistics(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList & params);
     virtual void viewTransactions(QString);

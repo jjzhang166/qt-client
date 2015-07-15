@@ -20,7 +20,7 @@ class updateOUTLevelsByClassCode : public XDialog, public Ui::updateOUTLevelsByC
     Q_OBJECT
 
 public:
-    updateOUTLevelsByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    updateOUTLevelsByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~updateOUTLevelsByClassCode();
 
 public slots:

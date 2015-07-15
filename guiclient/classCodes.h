@@ -20,7 +20,7 @@ class classCodes : public XWidget, public Ui::classCodes
     Q_OBJECT
 
 public:
-    classCodes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    classCodes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~classCodes();
 
 public slots:

@@ -12,7 +12,7 @@
 
 #include <QSqlError>
 
-currencySelect::currencySelect(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+currencySelect::currencySelect(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

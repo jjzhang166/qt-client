@@ -19,7 +19,7 @@
 #include "storedProcErrorLookup.h"
 #include "distributeInventory.h"
 
-printCreditMemos::printCreditMemos(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printCreditMemos::printCreditMemos(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("CreditMemoCopies",     "CreditMemoWatermark",
                              "CreditMemoShowPrices", "PostARDocuments",
                              parent, name, modal, fl)
@@ -44,7 +44,7 @@ printCreditMemos::printCreditMemos(QWidget* parent, const char* name, bool modal
              "    AND checkCreditMemoSitePrivs(cmhead_id));" ;
 
   _markAllPrintedQry = "UPDATE cmhead"
-                       "   SET cmhead_printed=TRUE "
+                       "   SET cmhead_printed=true "
                        " WHERE cmhead_id IN ("
                        "<? foreach('printedDocs') ?>"
                        "  <? if not isfirst('printedDocs') ?>, <? endif ?>"

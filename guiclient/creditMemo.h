@@ -22,7 +22,7 @@ class creditMemo : public XWidget, public Ui::creditMemo
     Q_OBJECT
 
 public:
-    creditMemo(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    creditMemo(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~creditMemo();
 
     virtual void setNumber();

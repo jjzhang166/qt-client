@@ -19,7 +19,7 @@
 #include "storedProcErrorLookup.h"
 #include "taxDetail.h"
 
-transferOrderItem::transferOrderItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+transferOrderItem::transferOrderItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -96,7 +96,7 @@ transferOrderItem::transferOrderItem(QWidget* parent, const char* name, bool mod
 
   _comments->setType(Comments::TransferOrderItem);
 
-  _captive = FALSE;
+  _captive = false;
   _dstwhsid	= -1;
   _itemsiteid	= -1;
   _transwhsid	= -1;
@@ -162,7 +162,7 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
     {
       _mode = cNew;
 
-      _save->setEnabled(FALSE);
+      _save->setEnabled(false);
       _next->setText(tr("New"));
       _comments->setReadOnly(true);
       _item->setReadOnly(false);
@@ -177,7 +177,7 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
 
       param = pParams.value("captive", &valid);
       if (valid)
-        _captive = TRUE;
+        _captive = true;
 
       param = pParams.value("item_id", &valid);
       if (valid)
@@ -276,7 +276,7 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   populate();	// TODO: should this go BEFORE pParams.value("item_id")?
@@ -766,7 +766,7 @@ void transferOrderItem::sDetermineAvailability()
         }
       }
       else
-        _availability->setEnabled(FALSE);
+        _availability->setEnabled(false);
     }
     else if (availability.lastError().type() != QSqlError::NoError)
     {

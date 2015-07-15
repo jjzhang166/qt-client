@@ -473,67 +473,7 @@ to be bound by its terms.</comment>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
-          <widget class="XTreeWidget" name="_charass">
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="_newChar">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::TabFocus</enum>
-             </property>
-             <property name="text">
-              <string>&amp;New</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="_editChar">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="_deleteChar">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Delete</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer>
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="CharacteristicsWidget" name="_charass"/>
          </item>
         </layout>
        </widget>
@@ -558,6 +498,11 @@ to be bound by its terms.</comment>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
   <customwidget>
    <class>ContactCluster</class>
    <extends>QWidget</extends>
@@ -607,12 +552,6 @@ to be bound by its terms.</comment>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>XTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>xtreewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>XTextEdit</class>
    <extends>QTextEdit</extends>
    <header>xtextedit.h</header>
@@ -633,9 +572,6 @@ to be bound by its terms.</comment>
   <tabstop>_tab</tabstop>
   <tabstop>_cntct</tabstop>
   <tabstop>_charass</tabstop>
-  <tabstop>_newChar</tabstop>
-  <tabstop>_editChar</tabstop>
-  <tabstop>_deleteChar</tabstop>
   <tabstop>_notes</tabstop>
  </tabstops>
  <resources/>
@@ -685,54 +621,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>137</x>
      <y>129</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_editChar</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>524</x>
-     <y>490</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>598</x>
-     <y>501</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_deleteChar</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>540</x>
-     <y>522</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>601</x>
-     <y>523</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>doubleClicked(QModelIndex)</signal>
-   <receiver>_editChar</receiver>
-   <slot>animateClick()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>532</x>
-     <y>481</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>506</y>
     </hint>
    </hints>
   </connection>

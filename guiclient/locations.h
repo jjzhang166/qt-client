@@ -21,7 +21,7 @@ class locations : public XWidget, public Ui::locations
     Q_OBJECT
 
 public:
-    locations(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    locations(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~locations();
 
 public slots:
@@ -31,6 +31,7 @@ public slots:
     virtual void sDelete();
     virtual void sPrint();
     virtual void sFillList();
+    virtual void updateZoneList();
 
 protected slots:
     virtual void languageChange();

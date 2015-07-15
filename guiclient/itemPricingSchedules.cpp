@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "itemPricingSchedule.h"
 
-itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt::WFlags fl)
+itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -48,7 +48,7 @@ itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_ipshead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -70,7 +70,7 @@ void itemPricingSchedules::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  itemPricingSchedule newdlg(this, "", TRUE);
+  itemPricingSchedule newdlg(this, "", true);
   newdlg.set(params);
 
   int result;
@@ -84,7 +84,7 @@ void itemPricingSchedules::sEdit()
   params.append("mode", "edit");
   params.append("ipshead_id", _ipshead->id());
 
-  itemPricingSchedule newdlg(this, "", TRUE);
+  itemPricingSchedule newdlg(this, "", true);
   newdlg.set(params);
 
   int result;
@@ -104,7 +104,7 @@ void itemPricingSchedules::sCopy()
     params.append("mode", "copy");
     params.append("ipshead_id", itemCopy.value("result").toInt());
 
-    itemPricingSchedule newdlg(this, "", TRUE);
+    itemPricingSchedule newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
 
@@ -121,7 +121,7 @@ void itemPricingSchedules::sView()
   params.append("mode", "view");
   params.append("ipshead_id", _ipshead->id());
 
-  itemPricingSchedule newdlg(this, "", TRUE);
+  itemPricingSchedule newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

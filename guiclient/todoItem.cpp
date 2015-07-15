@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-todoItem::todoItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+todoItem::todoItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -83,34 +83,34 @@ enum SetResponse todoItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _name->setEnabled(FALSE);
-      _incident->setEnabled(FALSE);
-      _ophead->setEnabled(FALSE);
-      _assigned->setEnabled(FALSE);
-      _due->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _incident->setEnabled(false);
+      _ophead->setEnabled(false);
+      _assigned->setEnabled(false);
+      _due->setEnabled(false);
       _assignedTo->setEnabled(_privileges->check("ReassignToDoItems"));
-      _description->setEnabled(FALSE);
+      _description->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _owner->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _priority->setEnabled(FALSE);
-      _incident->setEnabled(FALSE);
-      _ophead->setEnabled(FALSE);
-      _started->setEnabled(FALSE);
-      _assigned->setEnabled(FALSE);
-      _due->setEnabled(FALSE);
-      _completed->setEnabled(FALSE);
-      _pending->setEnabled(FALSE);
-      _deferred->setEnabled(FALSE);
-      _neither->setEnabled(FALSE);
-      _assignedTo->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _alarms->setReadOnly(TRUE);
+      _owner->setEnabled(false);
+      _name->setEnabled(false);
+      _priority->setEnabled(false);
+      _incident->setEnabled(false);
+      _ophead->setEnabled(false);
+      _started->setEnabled(false);
+      _assigned->setEnabled(false);
+      _due->setEnabled(false);
+      _completed->setEnabled(false);
+      _pending->setEnabled(false);
+      _deferred->setEnabled(false);
+      _neither->setEnabled(false);
+      _assignedTo->setEnabled(false);
+      _description->setEnabled(false);
+      _notes->setEnabled(false);
+      _alarms->setReadOnly(true);
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
       _crmacct->setReadOnly(true);

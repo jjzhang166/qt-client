@@ -19,7 +19,7 @@
 #include <parameter.h>
 #include "storedProcErrorLookup.h"
 
-recallOrders::recallOrders(QWidget* parent, const char* name, Qt::WFlags fl)
+recallOrders::recallOrders(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -111,7 +111,7 @@ void recallOrders::sFillList()
                 "WHERE ( (shiphead_shipped)"
                 "  AND   (shiphead_order_type='SO')"
                 "<? if exists(\"showInvoiced\") ?>"
-                "  AND   (NOT shipitem_invoiced OR invchead_posted=FALSE)"
+                "  AND   (NOT shipitem_invoiced OR invchead_posted=false)"
                 "<? else ?>"
                 "  AND   (NOT shipitem_invoiced) "
                 "<? endif ?>"

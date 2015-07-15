@@ -19,7 +19,7 @@
 
 #include "storedProcErrorLookup.h"
 
-reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -27,7 +27,7 @@ reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool mod
     connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sFillList()));
     connect(_reassign, SIGNAL(clicked()), this, SLOT(sReassign()));
 
-    _captive = FALSE;
+    _captive = false;
 
     _item->setType(ItemLineEdit::cLotSerialControlled);
     _qty->setValidator(omfgThis->qtyPerVal());
@@ -66,10 +66,10 @@ enum SetResponse reassignLotSerial::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   param = pParams.value("itemloc_id", &valid);
@@ -82,11 +82,11 @@ enum SetResponse reassignLotSerial::set(const ParameterList &pParams)
     reassignet.exec();
     if (reassignet.first())
     {
-      _captive = TRUE;
+      _captive = true;
 
       _item->setItemsiteid(reassignet.value("itemloc_itemsite_id").toInt());
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
 
       for (int i = 0; i < _source->topLevelItemCount(); i++)
       {
@@ -209,11 +209,11 @@ void reassignLotSerial::sFillList()
     {
       if (reassignFillList.value("itemsite_controlmethod").toString() == "S")
       {
-        _qty->setEnabled(FALSE);
+        _qty->setEnabled(false);
         _qty->setDouble(1.0);
       }
       else if (reassignFillList.value("itemsite_controlmethod").toString() == "L")
-        _qty->setEnabled(TRUE);
+        _qty->setEnabled(true);
       else
       {
         _source->clear();

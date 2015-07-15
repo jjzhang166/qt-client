@@ -25,7 +25,7 @@ class crmaccountMerge : public QWizard, public Ui::crmaccountMerge
     Q_OBJECT
 
   public:
-    crmaccountMerge(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    crmaccountMerge(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~crmaccountMerge();
 
     enum { Page_PickTask, Page_PickAccounts, Page_PickData,

@@ -20,7 +20,7 @@
 
 #define DEBUG   false
 
-// TODO: XDialog should have a default implementation that returns FALSE
+// TODO: XDialog should have a default implementation that returns false
 bool empGroup::userHasPriv(const int pMode)
 {
   if (DEBUG)
@@ -65,7 +65,7 @@ void empGroup::setVisible(bool visible)
     XDialog::setVisible(true);
 }
 
-empGroup::empGroup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+empGroup::empGroup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -110,7 +110,7 @@ enum SetResponse empGroup::set(const ParameterList &pParams)
     if (param.toString() == "new")
     {
       _mode = cNew;
-      _save->setEnabled(FALSE);
+      _save->setEnabled(false);
 
       empet.exec("SELECT NEXTVAL('empgrp_empgrp_id_seq') AS empgrpid;");
       if (empet.first())
@@ -164,7 +164,7 @@ void empGroup::sCheck()
       _empgrpid = empCheck.value("empgrp_id").toInt();
       _mode = cEdit;
       populate();
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
     else if (empCheck.lastError().type() != QSqlError::NoError)
     {
@@ -172,7 +172,7 @@ void empGroup::sCheck()
       return;
     }
   }
-  _save->setEnabled(TRUE);
+  _save->setEnabled(true);
 }
 
 bool empGroup::close()

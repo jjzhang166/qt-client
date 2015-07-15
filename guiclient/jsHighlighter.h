@@ -12,6 +12,7 @@
 #define JSHIGHLIGHTER_H
 
 #include <QSyntaxHighlighter>
+#include <QTextEdit>
 
 class QColor;
 class QTextDocument;

@@ -22,7 +22,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 
-customerTypes::customerTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+customerTypes::customerTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -41,7 +41,7 @@ customerTypes::customerTypes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   _custtype->addColumn(tr("Code"),        70, Qt::AlignLeft, true, "custtype_code");
@@ -65,7 +65,7 @@ void customerTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  customerType newdlg(this, "", TRUE);
+  customerType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -78,7 +78,7 @@ void customerTypes::sEdit()
   params.append("mode", "edit");
   params.append("custtype_id", _custtype->id());
 
-  customerType newdlg(this, "", TRUE);
+  customerType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -91,7 +91,7 @@ void customerTypes::sView()
   params.append("mode", "view");
   params.append("custtype_id", _custtype->id());
 
-  customerType newdlg(this, "", TRUE);
+  customerType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

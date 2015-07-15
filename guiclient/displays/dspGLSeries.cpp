@@ -23,7 +23,7 @@
 #include "reverseGLSeries.h"
 #include "dspJournals.h"
 
-dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WFlags fl)
+dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspGLSeries", fl)
 {
   setupUi(optionsWidget());

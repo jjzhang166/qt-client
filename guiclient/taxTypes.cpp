@@ -22,7 +22,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-taxTypes::taxTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+taxTypes::taxTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ taxTypes::taxTypes(QWidget* parent, const char* name, Qt::WFlags fl)
   {
     connect(_taxtype, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   sFillList(-1);
@@ -105,7 +105,7 @@ void taxTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  taxType newdlg(this, "", TRUE);
+  taxType newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -119,7 +119,7 @@ void taxTypes::sEdit()
   params.append("mode", "edit");
   params.append("taxtype_id", _taxtype->id());
 
-  taxType newdlg(this, "", TRUE);
+  taxType newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -133,7 +133,7 @@ void taxTypes::sView()
   params.append("mode", "view");
   params.append("taxtype_id", _taxtype->id());
 
-  taxType newdlg(this, "", TRUE);
+  taxType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

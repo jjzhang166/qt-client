@@ -20,7 +20,7 @@ class dspSingleLevelWhereUsed : public display, public Ui::dspSingleLevelWhereUs
     Q_OBJECT
 
 public:
-    dspSingleLevelWhereUsed(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSingleLevelWhereUsed(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

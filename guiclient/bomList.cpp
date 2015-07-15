@@ -18,7 +18,7 @@
 #include "bom.h"
 #include "copyBOM.h"
 
-bomList::bomList(QWidget* parent, const char* name, Qt::WFlags fl)
+bomList::bomList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -48,11 +48,11 @@ bomList::bomList(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_bom, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
-  sFillList(-1, FALSE);
+  sFillList(-1, false);
 }
 
 bomList::~bomList()
@@ -70,7 +70,7 @@ void bomList::sCopy()
   ParameterList params;
   params.append("item_id", _bom->id());
 
-  copyBOM newdlg(this, "", TRUE);
+  copyBOM newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -86,7 +86,7 @@ void bomList::sDelete()
     bomDelete.bindValue(":item_id", _bom->id());
     bomDelete.exec();
 
-    omfgThis->sBOMsUpdated(-1, TRUE);
+    omfgThis->sBOMsUpdated(-1, true);
   }
 }
 
@@ -127,9 +127,9 @@ void bomList::sFillList( int pItemid, bool pLocal )
          "ORDER BY item_number;";
 
   if ((pItemid != -1) && (pLocal))
-    _bom->populate(sql, TRUE, pItemid);
+    _bom->populate(sql, true, pItemid);
   else
-    _bom->populate(sql, TRUE);
+    _bom->populate(sql, true);
 }
 
 void bomList::sNew()
@@ -184,13 +184,13 @@ void bomList::sView()
 
 void bomList::sFillList()
 {
-  sFillList(-1, TRUE);
+  sFillList(-1, true);
 }
 
 void bomList::sHandleButtons()
 {
   if (_bom->altId() == 0)
-    _delete->setEnabled(TRUE);
+    _delete->setEnabled(true);
   else
-    _delete->setEnabled(FALSE);
+    _delete->setEnabled(false);
 }

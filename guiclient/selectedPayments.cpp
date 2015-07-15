@@ -20,7 +20,7 @@
 #include "selectPayment.h"
 #include "storedProcErrorLookup.h"
 
-selectedPayments::selectedPayments(QWidget* parent, const char* name, Qt::WFlags fl)
+selectedPayments::selectedPayments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -95,7 +95,7 @@ void selectedPayments::sEdit()
   params.append("mode", "edit");
   params.append("apopen_id", _apselect->id());
 
-  selectPayment newdlg(this, "", TRUE);
+  selectPayment newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -122,7 +122,7 @@ void selectedPayments::sClear()
     return;
   }
 
-  omfgThis->sPaymentsUpdated(_bankaccnt->id(), _apselect->altId(), TRUE);
+  omfgThis->sPaymentsUpdated(_bankaccnt->id(), _apselect->altId(), true);
 }
 
 void selectedPayments::sFillList(int pBankaccntid)

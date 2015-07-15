@@ -21,7 +21,7 @@ class task : public XDialog, public Ui::task
     Q_OBJECT
 
 public:
-    task(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    task(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~task();
 
     virtual SetResponse set(const ParameterList & pParams );
@@ -36,10 +36,6 @@ public slots:
     virtual void sStatusChanged(const int);
     virtual void sHoursAdjusted();
     virtual void sExpensesAdjusted();
-    virtual void sNew();
-    virtual void sEdit();
-    virtual void sDelete();
-    virtual void sFillList();
 
 protected slots:
     virtual void languageChange();

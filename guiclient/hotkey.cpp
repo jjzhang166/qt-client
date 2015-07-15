@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-hotkey::hotkey(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+hotkey::hotkey(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -119,7 +119,7 @@ enum SetResponse hotkey::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _hotkey->setEnabled(FALSE);
+      _hotkey->setEnabled(false);
     }
   }
 
@@ -127,12 +127,12 @@ enum SetResponse hotkey::set(const ParameterList &pParams)
   if (valid)
   {
     _username = param.toString();
-    _currentUser = FALSE;
+    _currentUser = false;
   }
 
   param = pParams.value("currentUser", &valid);
   if (valid)
-    _currentUser = TRUE;
+    _currentUser = true;
 
   param = pParams.value("hotkey", &valid);
   if (valid)

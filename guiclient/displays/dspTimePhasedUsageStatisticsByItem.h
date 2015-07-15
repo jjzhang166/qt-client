@@ -20,7 +20,7 @@ class dspTimePhasedUsageStatisticsByItem : public displayTimePhased, public Ui::
     Q_OBJECT
 
 public:
-    dspTimePhasedUsageStatisticsByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspTimePhasedUsageStatisticsByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParamsTP(ParameterList &);
 

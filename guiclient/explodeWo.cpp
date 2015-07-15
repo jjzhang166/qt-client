@@ -17,7 +17,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-explodeWo::explodeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+explodeWo::explodeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,7 +28,7 @@ explodeWo::explodeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags f
 
   connect(_explode, SIGNAL(clicked()), this, SLOT(sExplode()));
 
-  _captive = FALSE;
+  _captive = false;
 
   omfgThis->inputManager()->notify(cBCWorkOrder, this, _wo, SLOT(setId(int)));
 
@@ -49,7 +49,7 @@ void explodeWo::languageChange()
 enum SetResponse explodeWo::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -90,7 +90,7 @@ void explodeWo::sExplode()
       return;
     }
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
     if (_captive)
       accept();

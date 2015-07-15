@@ -15,13 +15,14 @@
 #include "xdialog.h"
 #include <parameter.h>
 #include "ui_printWoTraveler.h"
+#include <QPrinter>
 
 class printWoTraveler : public XDialog, public Ui::printWoTraveler
 {
     Q_OBJECT
 
 public:
-    printWoTraveler(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printWoTraveler(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printWoTraveler();
 
     Q_INVOKABLE virtual bool errorPrinting() const    { return _errorPrinting; }

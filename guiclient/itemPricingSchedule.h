@@ -22,7 +22,7 @@ class itemPricingSchedule : public XDialog, public Ui::itemPricingSchedule
     Q_OBJECT
 
 public:
-    itemPricingSchedule(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    itemPricingSchedule(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~itemPricingSchedule();
 
 public slots:

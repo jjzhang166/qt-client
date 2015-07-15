@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,95 +8,100 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>itemUOM</class>
- <widget class="QDialog" name="itemUOM" >
-  <property name="geometry" >
+ <widget class="QDialog" name="itemUOM">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>443</width>
-    <height>255</height>
+    <width>633</width>
+    <height>309</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Unit of Measure</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>6</number>
    </property>
+   <property name="margin">
+    <number>9</number>
+   </property>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>6</number>
      </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="spacing" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
          <item>
-          <layout class="QGridLayout" >
-           <property name="margin" >
+          <layout class="QGridLayout">
+           <property name="margin">
             <number>0</number>
            </property>
-           <property name="spacing" >
+           <property name="spacing">
             <number>6</number>
            </property>
-           <item rowspan="2" row="0" column="1" >
-            <widget class="QLabel" name="_perLit" >
-             <property name="text" >
+           <item row="0" column="2">
+            <widget class="XComboBox" name="_uomTo"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="XLineEdit" name="_toValue"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="XLineEdit" name="_fromValue"/>
+           </item>
+           <item row="0" column="1" rowspan="2">
+            <widget class="QLabel" name="_perLit">
+             <property name="text">
               <string> Per </string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0" >
-            <widget class="XComboBox" name="_uomFrom" />
+           <item row="0" column="0">
+            <widget class="XComboBox" name="_uomFrom"/>
            </item>
-           <item row="0" column="2" >
-            <widget class="XComboBox" name="_uomTo" />
-           </item>
-           <item row="1" column="2" >
-            <widget class="XLineEdit" name="_toValue" >
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="_fractional">
+             <property name="text">
+              <string>Fractional</string>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0" >
-            <widget class="XLineEdit" name="_fromValue" >
+           <item row="2" column="2">
+            <widget class="QCheckBox" name="_active">
+             <property name="text">
+              <string>Active</string>
+             </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="_fractional" >
-           <property name="text" >
-            <string>Fractional</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>329</width>
            <height>0</height>
@@ -107,37 +112,37 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="spacing" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Cancel</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_save" >
-           <property name="text" >
+          <widget class="QPushButton" name="_save">
+           <property name="text">
             <string>&amp;Save</string>
            </property>
-           <property name="autoDefault" >
+           <property name="autoDefault">
             <bool>true</bool>
            </property>
-           <property name="default" >
+           <property name="default">
             <bool>true</bool>
            </property>
           </widget>
@@ -146,13 +151,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>0</height>
@@ -165,82 +170,80 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <widget class="QFrame" name="_typeFrame" >
-     <property name="enabled" >
+    <widget class="QFrame" name="_typeFrame">
+     <property name="enabled">
       <bool>false</bool>
      </property>
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>5</hsizetype>
-       <vsizetype>7</vsizetype>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
      </property>
-     <property name="frameShape" >
+     <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="frameShadow" >
+     <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
-     <layout class="QHBoxLayout" >
-      <property name="margin" >
-       <number>0</number>
-      </property>
-      <property name="spacing" >
+     <layout class="QHBoxLayout">
+      <property name="spacing">
        <number>6</number>
       </property>
+      <property name="margin">
+       <number>0</number>
+      </property>
       <item>
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
+       <layout class="QVBoxLayout">
+        <property name="spacing">
          <number>0</number>
         </property>
-        <property name="spacing" >
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="label" >
-          <property name="text" >
+         <widget class="QLabel" name="label">
+          <property name="text">
            <string>Available Types</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="_available" />
+         <widget class="QListWidget" name="_available"/>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
+       <layout class="QVBoxLayout">
+        <property name="spacing">
          <number>0</number>
         </property>
-        <property name="spacing" >
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="_filler" >
-          <property name="text" >
+         <widget class="QLabel" name="_filler">
+          <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="_add" >
-          <property name="text" >
-           <string>Add ></string>
+         <widget class="QPushButton" name="_add">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
-         <property name="enabled" >
-          <bool>false</bool>
-         </property>
+          <property name="text">
+           <string>Add &gt;</string>
+          </property>
          </widget>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
             <height>40</height>
@@ -249,34 +252,34 @@ to be bound by its terms.</comment>
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="_remove" >
-          <property name="text" >
-           <string>&lt; Remove</string>
-          </property>
-          <property name="enabled" >
+         <widget class="QPushButton" name="_remove">
+          <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>&lt; Remove</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" >
-        <property name="margin" >
+       <layout class="QVBoxLayout">
+        <property name="spacing">
          <number>0</number>
         </property>
-        <property name="spacing" >
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_2" >
-          <property name="text" >
+         <widget class="QLabel" name="label_2">
+          <property name="text">
            <string>Selected Types</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="_selected" />
+         <widget class="QListWidget" name="_selected"/>
         </item>
        </layout>
       </item>
@@ -285,7 +288,7 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
    <class>XComboBox</class>
@@ -303,7 +306,6 @@ to be bound by its terms.</comment>
   <tabstop>_fromValue</tabstop>
   <tabstop>_uomTo</tabstop>
   <tabstop>_toValue</tabstop>
-  <tabstop>_fractional</tabstop>
   <tabstop>_available</tabstop>
   <tabstop>_add</tabstop>
   <tabstop>_remove</tabstop>
@@ -311,7 +313,6 @@ to be bound by its terms.</comment>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections>
   <connection>
@@ -320,11 +321,11 @@ to be bound by its terms.</comment>
    <receiver>itemUOM</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>363</x>
      <y>32</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>308</x>
      <y>16</y>
     </hint>
@@ -336,11 +337,11 @@ to be bound by its terms.</comment>
    <receiver>_add</receiver>
    <slot>animateClick()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>101</x>
      <y>115</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>181</x>
      <y>107</y>
     </hint>
@@ -352,11 +353,11 @@ to be bound by its terms.</comment>
    <receiver>_remove</receiver>
    <slot>animateClick()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>186</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>219</x>
      <y>183</y>
     </hint>
@@ -368,11 +369,11 @@ to be bound by its terms.</comment>
    <receiver>_typeFrame</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>218</x>
      <y>21</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>172</x>
      <y>78</y>
     </hint>

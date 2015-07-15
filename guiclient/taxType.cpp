@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-taxType::taxType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxType::taxType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,8 +61,8 @@ enum SetResponse taxType::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -88,7 +88,7 @@ void taxType::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

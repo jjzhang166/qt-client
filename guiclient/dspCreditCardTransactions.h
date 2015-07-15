@@ -25,7 +25,7 @@ class dspCreditCardTransactions : public XWidget, public Ui::dspCreditCardTransa
     Q_OBJECT
 
 public:
-    dspCreditCardTransactions(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCreditCardTransactions(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspCreditCardTransactions();
 
     virtual SetResponse set( const ParameterList & pParams );

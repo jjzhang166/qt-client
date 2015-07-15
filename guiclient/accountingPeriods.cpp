@@ -21,7 +21,7 @@
 #include "storedProcErrorLookup.h"
 #include "unpostedGLTransactions.h"
 
-accountingPeriods::accountingPeriods(QWidget* parent, const char* name, Qt::WFlags fl)
+accountingPeriods::accountingPeriods(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ accountingPeriods::accountingPeriods(QWidget* parent, const char* name, Qt::WFla
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_period, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -117,7 +117,7 @@ void accountingPeriods::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  accountingPeriod newdlg(this, "", TRUE);
+  accountingPeriod newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -130,7 +130,7 @@ void accountingPeriods::sEdit()
   params.append("mode", "edit");
   params.append("period_id", _period->id());
 
-  accountingPeriod newdlg(this, "", TRUE);
+  accountingPeriod newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -143,7 +143,7 @@ void accountingPeriods::sView()
   params.append("mode", "view");
   params.append("period_id", _period->id());
 
-  accountingPeriod newdlg(this, "", TRUE);
+  accountingPeriod newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -347,6 +347,6 @@ void accountingPeriods::sFillList()
     }
 
   _period->clear();
-  _period->populate(periodsList, TRUE );
+  _period->populate(periodsList, true );
 }
 

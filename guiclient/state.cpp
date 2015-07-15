@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-state::state(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+state::state(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -73,9 +73,9 @@ enum SetResponse state::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _country->setEnabled(FALSE);
-      _abbr->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
+      _country->setEnabled(false);
+      _abbr->setEnabled(false);
+      _name->setEnabled(false);
 
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);

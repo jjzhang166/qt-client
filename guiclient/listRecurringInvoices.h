@@ -21,7 +21,7 @@ class listRecurringInvoices : public XWidget, public Ui::listRecurringInvoices
     Q_OBJECT
 
 public:
-    listRecurringInvoices(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    listRecurringInvoices(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~listRecurringInvoices();
     virtual bool checkSitePrivs(int invcid);
 

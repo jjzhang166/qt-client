@@ -19,7 +19,7 @@
 #define cArchive 0x01
 #define cRestore  0x02
 
-archRestoreSalesHistory::archRestoreSalesHistory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+archRestoreSalesHistory::archRestoreSalesHistory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

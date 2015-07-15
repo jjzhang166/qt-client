@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "mqlutil.h"
 
-vendorPriceList::vendorPriceList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+vendorPriceList::vendorPriceList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -172,7 +172,7 @@ void vendorPriceList::sFillList()
   params.append("dropship", tr("Drop Ship"));
 
   priceq = mql.toQuery(params);
-  _price->populate(priceq, TRUE);
+  _price->populate(priceq, true);
 
   priceq = mql.toQuery(params);
   if (priceq.first())

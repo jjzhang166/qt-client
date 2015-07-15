@@ -280,7 +280,7 @@ int creditCard::saveCreditCard(QWidget *parent,
 
 ////////////////////////////////////////////////
 
-creditCard::creditCard(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+creditCard::creditCard(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -367,19 +367,19 @@ enum SetResponse creditCard::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _fundsType2->setEnabled(FALSE);
+      _fundsType2->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _fundsType2->setEnabled(FALSE);
-      _creditCardNumber->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _address->setEnabled(FALSE);
-      _expireMonth->setEnabled(FALSE);
-      _expireYear->setEnabled(FALSE);
+      _fundsType2->setEnabled(false);
+      _creditCardNumber->setEnabled(false);
+      _active->setEnabled(false);
+      _name->setEnabled(false);
+      _address->setEnabled(false);
+      _expireMonth->setEnabled(false);
+      _expireYear->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

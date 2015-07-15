@@ -941,6 +941,37 @@ to be bound by its terms.</comment>
                     </property>
                    </widget>
                   </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="_shipchrgLit">
+                    <property name="font">
+                     <font>
+                      <italic>false</italic>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Shipping Charges:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="XComboBox" name="_shipchrg">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="allowNull">
+                     <bool>true</bool>
+                    </property>
+                    <property name="type">
+                     <enum>XComboBox::ShippingCharges</enum>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="1">
                    <widget class="XComboBox" name="_salesrep">
                     <property name="type">
@@ -988,7 +1019,7 @@ to be bound by its terms.</comment>
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="0">
+                  <item row="6" column="0">
                    <widget class="QLabel" name="_terms2">
                     <property name="text">
                      <string>Terms:</string>
@@ -998,14 +1029,14 @@ to be bound by its terms.</comment>
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="1">
+                  <item row="6" column="1">
                    <widget class="XComboBox" name="_terms">
                     <property name="type">
                      <enum>XComboBox::ARTerms</enum>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="0">
+                  <item row="7" column="0">
                    <widget class="QLabel" name="_balanceMethodLit">
                     <property name="text">
                      <string>Balance Method:</string>
@@ -1015,7 +1046,7 @@ to be bound by its terms.</comment>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="1">
+                  <item row="7" column="1">
                    <widget class="QComboBox" name="_balanceMethod">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1047,6 +1078,23 @@ to be bound by its terms.</comment>
                      </size>
                     </property>
                    </spacer>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="_sellingWarehouseLit">
+                    <property name="text">
+                     <string>Preferred Selling Site:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="WComboBox" name="_sellingWarehouse">
+                    <property name="allowNull">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -1322,7 +1370,7 @@ to be bound by its terms.</comment>
               </item>
               <item>
                <property name="text">
-                <string>Check</string>
+                <string>Cash Payment</string>
                </property>
               </item>
               <item>
@@ -1395,6 +1443,11 @@ to be bound by its terms.</comment>
    <header>numbergencombobox.h</header>
   </customwidget>
   <customwidget>
+   <class>WComboBox</class>
+   <extends>XComboBox</extends>
+   <header>wcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>XCheckBox</class>
    <extends>QCheckBox</extends>
    <header>xcheckbox.h</header>
@@ -1459,6 +1512,8 @@ to be bound by its terms.</comment>
   <tabstop>_salesrep</tabstop>
   <tabstop>_shipvia</tabstop>
   <tabstop>_shipform</tabstop>
+  <tabstop>_shipchrg</tabstop>
+  <tabstop>_sellingWarehouse</tabstop>
   <tabstop>_terms</tabstop>
   <tabstop>_balanceMethod</tabstop>
   <tabstop>_partial</tabstop>

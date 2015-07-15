@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-productCategory::productCategory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+productCategory::productCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,8 +61,8 @@ enum SetResponse productCategory::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _category->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _category->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -88,7 +88,7 @@ void productCategory::sCheck()
       _mode = cEdit;
       populate();
 
-      _category->setEnabled(FALSE);
+      _category->setEnabled(false);
     }
   }
 }

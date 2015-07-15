@@ -20,7 +20,7 @@ class forms : public XWidget, public Ui::forms
     Q_OBJECT
 
 public:
-    forms(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    forms(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~forms();
 
 public slots:

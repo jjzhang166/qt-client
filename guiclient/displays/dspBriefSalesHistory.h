@@ -18,7 +18,7 @@ class dspBriefSalesHistory : public display
     Q_OBJECT
 
   public:
-    dspBriefSalesHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspBriefSalesHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     Q_INVOKABLE virtual bool setParams(ParameterList &);
 

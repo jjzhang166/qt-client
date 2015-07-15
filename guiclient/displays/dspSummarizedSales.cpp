@@ -18,7 +18,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-dspSummarizedSales::dspSummarizedSales(QWidget* parent, const char*, Qt::WFlags fl)
+dspSummarizedSales::dspSummarizedSales(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedSales", fl)
 {
   setupUi(optionsWidget());

@@ -21,7 +21,7 @@ class dspWoMaterialsByWorkOrder : public display, public Ui::dspWoMaterialsByWor
     Q_OBJECT
 
 public:
-    dspWoMaterialsByWorkOrder(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspWoMaterialsByWorkOrder(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

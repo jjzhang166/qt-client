@@ -15,7 +15,7 @@
 Parametersenc::Parametersenc(QObject * parent)
   : QObject(parent)
 {
-  _dirty = FALSE;
+  _dirty = false;
 }
 
 void Parametersenc::load()
@@ -30,7 +30,7 @@ void Parametersenc::load()
   while (q.next())
     _values[q.value("key").toString()] = q.value("value").toString();
 
-  _dirty = FALSE;
+  _dirty = false;
 }
 
 QString Parametersenc::value(const char *pName)
@@ -56,11 +56,11 @@ bool Parametersenc::boolean(const QString &pName)
 {
   MetricMap::iterator it = _values.find(pName);
   if (it == _values.end())
-    return FALSE;
+    return false;
   else if (it.value() == "t")
-    return TRUE;
+    return true;
 
-  return FALSE;
+  return false;
 }
 
 void Parametersenc::set(const char *pName, bool pValue)
@@ -122,7 +122,7 @@ void Parametersenc::_set(const QString &pName, QVariant pValue)
   q.bindValue(":key", _key);
   q.exec();
 
-  _dirty = TRUE;
+  _dirty = true;
 }
 
 QString Parametersenc::parent(const QString &pValue)

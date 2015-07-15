@@ -43,7 +43,7 @@
 #define cBudget   4
 #define cDiff     5
 
-dspFinancialReport::dspFinancialReport(QWidget* parent, const char*, Qt::WFlags fl)
+dspFinancialReport::dspFinancialReport(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspFinancialReport", fl)
 {
   setupUi(optionsWidget());
@@ -293,7 +293,7 @@ void dspFinancialReport::sFillListStatement()
         if (dspFillListStatement.value("flcol_prcnt").toBool())
         {
           list()->addColumn(tr("%1\n% of Group").arg(label.value("flstmthead_qtr").toString()),
-                             _bigMoneyColumn, Qt::AlignRight, true, "flstitem_qtrprcent");
+                             _bigMoneyColumn, Qt::AlignRight, true, "flstitem_qtrprcnt");
           qc += ",flstmtitem_qtrprcnt, 'percent' AS flstitem_qtrprcnt_xtnumericrole";
         }
         if (dspFillListStatement.value("flcol_budget").toBool())
@@ -306,7 +306,7 @@ void dspFinancialReport::sFillListStatement()
           {
             list()->addColumn(tr("%1\n% of Group").arg(label.value("flstmthead_qtr").toString()),
                                _bigMoneyColumn, Qt::AlignRight, true, "flstmtitem_qtrbudgetprcnt" );
-            qc += ",flstmtitem_qtrbudgetprcnt, 'percent' AS flstmtitem_qtrbudgetprcent_xtnumericrole";
+            qc += ",flstmtitem_qtrbudgetprcnt, 'percent' AS flstmtitem_qtrbudgetprcnt_xtnumericrole";
           }
           if (dspFillListStatement.value("flcol_budgetdiff").toBool())
           {
@@ -353,8 +353,8 @@ void dspFinancialReport::sFillListStatement()
           if (dspFillListStatement.value("flcol_budgetprcnt").toBool())
           {
             list()->addColumn(tr("%1\n% of Group").arg(label.value("flstmthead_year").toString()),
-                               _bigMoneyColumn, Qt::AlignRight, true, "flstmtitem_yearbudgetprcent");
-            qc += ",flstmtitem_yearbudgetprcnt, 'percent' AS flstmtitem_yearbudgetprcent_xtnumericrole";
+                               _bigMoneyColumn, Qt::AlignRight, true, "flstmtitem_yearbudgetprcnt");
+            qc += ",flstmtitem_yearbudgetprcnt, 'percent' AS flstmtitem_yearbudgetprcnt_xtnumericrole";
           }
           if (dspFillListStatement.value("flcol_budgetdiff").toBool())
           {
@@ -1257,7 +1257,7 @@ void dspFinancialReport::sNotes()
   params.append("period_id", _periods->id());
   params.append("flhead_id", _flhead->id());
 
-  financialReportNotes newdlg(this, "", TRUE);
+  financialReportNotes newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

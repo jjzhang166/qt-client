@@ -22,7 +22,7 @@ class financialLayoutSpecial : public XDialog, public Ui::financialLayoutSpecial
     Q_OBJECT
 
 public:
-    financialLayoutSpecial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    financialLayoutSpecial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~financialLayoutSpecial();
 
     virtual void populate();

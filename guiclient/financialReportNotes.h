@@ -22,7 +22,7 @@ class financialReportNotes : public XDialog, public Ui::financialReportNotes
     Q_OBJECT
 
 public:
-    financialReportNotes(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    financialReportNotes(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~financialReportNotes();
 
 public slots:

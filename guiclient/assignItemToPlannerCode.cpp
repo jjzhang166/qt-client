@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-assignItemToPlannerCode::assignItemToPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+assignItemToPlannerCode::assignItemToPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -23,7 +23,7 @@ assignItemToPlannerCode::assignItemToPlannerCode(QWidget* parent, const char* na
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sAssign()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-  _plannerCode->setAllowNull(TRUE);
+  _plannerCode->setAllowNull(true);
   _plannerCode->setType(XComboBox::PlannerCodes);
 }
 

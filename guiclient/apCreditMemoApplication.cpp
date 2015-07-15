@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-apCreditMemoApplication::apCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+apCreditMemoApplication::apCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -25,7 +25,7 @@ apCreditMemoApplication::apCreditMemoApplication(QWidget* parent, const char* na
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-  _vend->setReadOnly(TRUE);
+  _vend->setReadOnly(true);
   adjustSize();
 }
 

@@ -21,7 +21,7 @@ class standardJournalItem : public XDialog, public Ui::standardJournalItem
     Q_OBJECT
 
 public:
-    standardJournalItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    standardJournalItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~standardJournalItem();
 
 public slots:

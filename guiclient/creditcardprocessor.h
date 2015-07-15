@@ -14,8 +14,11 @@
 #include <QHash>
 #include <QObject>
 #include <QString>
+#if QT_VERSION < 0x050000
 #include <QHttp>
-
+#else
+#include <QNetworkAccessManager>
+#endif
 #include <parameter.h>
 
 class CreditCardProcessor : public QObject
@@ -103,6 +106,9 @@ class CreditCardProcessor : public QObject
     virtual int     fraudChecks();
     virtual int     sendViaHTTP(const QString&, QString&);
     virtual int     updateCCPay(int &, ParameterList &);
+#if QT_VERSION >= 0x050000
+    virtual bool    waitForHTTP();
+#endif
 
     QList<FraudCheckResult*> _avsCodes;
     QList<FraudCheckResult*> _cvvCodes;
@@ -120,11 +126,19 @@ class CreditCardProcessor : public QObject
     QString		_ppassword;
     QString		_pport;
     QString		_pserver;
+    #if QT_VERSION < 0x050000
     QHttp             * _http;
+    #else
+    QNetworkAccessManager *_manager;
+    #endif
     QList<QPair<QString, QString> > _extraHeaders;
 
     protected slots:
+    #if QT_VERSION < 0x050000
       void sslErrors(const QList<QSslError> &errors);
+    #else
+      void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
+    #endif
 
 };
 

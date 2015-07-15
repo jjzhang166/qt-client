@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-getLotInfo::getLotInfo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+getLotInfo::getLotInfo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

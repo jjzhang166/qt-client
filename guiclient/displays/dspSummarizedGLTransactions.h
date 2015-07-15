@@ -20,7 +20,7 @@ class dspSummarizedGLTransactions : public display, public Ui::dspSummarizedGLTr
     Q_OBJECT
 
 public:
-    dspSummarizedGLTransactions(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSummarizedGLTransactions(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

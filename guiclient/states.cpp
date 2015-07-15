@@ -20,7 +20,7 @@
 
 #include "state.h"
 
-states::states(QWidget* parent, const char* name, Qt::WFlags fl)
+states::states(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -43,7 +43,7 @@ states::states(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_state, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -119,7 +119,7 @@ void states::sNew()
   if (_country->isValid())
     params.append("country_id", _country->id());
 
-  state newdlg(this, "", TRUE);
+  state newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -133,7 +133,7 @@ void states::sEdit()
   if (_country->isValid())
     params.append("country_id", _country->id());
 
-  state newdlg(this, "", TRUE);
+  state newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -145,7 +145,7 @@ void states::sView()
   params.append("mode", "view");
   params.append("state_id", _state->id());
 
-  state newdlg(this, "", TRUE);
+  state newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

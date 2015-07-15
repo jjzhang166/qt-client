@@ -18,7 +18,7 @@
 #include "inputManager.h"
 #include "woMaterialItem.h"
 
-dspWoMaterialsByWorkOrder::dspWoMaterialsByWorkOrder(QWidget* parent, const char*, Qt::WFlags fl)
+dspWoMaterialsByWorkOrder::dspWoMaterialsByWorkOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoMaterialsByWorkOrder", fl)
 {
   setupUi(optionsWidget());

@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-invoiceList::invoiceList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+invoiceList::invoiceList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

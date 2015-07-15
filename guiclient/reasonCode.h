@@ -21,7 +21,7 @@ class reasonCode : public XDialog, public Ui::reasonCode
     Q_OBJECT
 
 public:
-    reasonCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    reasonCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~reasonCode();
 
 public slots:

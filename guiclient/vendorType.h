@@ -21,7 +21,7 @@ class vendorType : public XDialog, public Ui::vendorType
     Q_OBJECT
 
 public:
-    vendorType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    vendorType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~vendorType();
 
 public slots:

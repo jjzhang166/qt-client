@@ -30,7 +30,7 @@
 #include "dspCountSlipEditList.h"
 #include "storedProcErrorLookup.h"
 
-dspCountTagEditList::dspCountTagEditList(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCountTagEditList::dspCountTagEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -59,7 +59,7 @@ dspCountTagEditList::dspCountTagEditList(QWidget* parent, const char* name, Qt::
   _parameter->setType(ParameterGroup::ClassCode);
   _variancePercent->setValidator(omfgThis->percentVal());
 
-  _cnttag->setRootIsDecorated(TRUE);
+  _cnttag->setRootIsDecorated(true);
   _cnttag->addColumn(tr("Pri."), (_whsColumn + 10), Qt::AlignCenter,true, "invcnt_priority");
   _cnttag->addColumn(tr("Tag/Slip #"),_orderColumn, Qt::AlignRight, true, "tagnumber");
   _cnttag->addColumn(tr("Tag Date"),   _dateColumn, Qt::AlignCenter,true, "tagdate");
@@ -196,7 +196,7 @@ void dspCountTagEditList::sEnterCountSlip()
   params.append("mode", "new");
   params.append("cnttag_id", _cnttag->id());
   
-  countSlip newdlg(this, "", TRUE);
+  countSlip newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -248,7 +248,7 @@ void dspCountTagEditList::sViewInventoryHistory()
 
 void dspCountTagEditList::sEdit()
 {
-  bool update  = FALSE;
+  bool update  = false;
   if ( (_showSlips->isChecked()) &&
       (((XTreeWidgetItem *)_cnttag->currentItem())->altId() == -1) )
     sEditTag();
@@ -263,11 +263,11 @@ void dspCountTagEditList::sEdit()
       params.append("mode", "edit");
       params.append("cnttag_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
-      countTag newdlg(this, "", TRUE);
+      countTag newdlg(this, "", true);
       newdlg.set(params);
 
       if (newdlg.exec() != XDialog::Rejected)
-	update = TRUE;
+	update = true;
     }
     if (update)
       sFillList();
@@ -280,7 +280,7 @@ void dspCountTagEditList::sEditTag()
   params.append("mode", "edit");
   params.append("cnttag_id", _cnttag->id());
 
-  countTag newdlg(this, "", TRUE);
+  countTag newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -293,7 +293,7 @@ void dspCountTagEditList::sEditSlip()
   params.append("mode", "edit");
   params.append("cntslip_id", _cnttag->altId());
   
-  countSlip newdlg(this, "", TRUE);
+  countSlip newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -484,7 +484,7 @@ void dspCountTagEditList::sDeleteSlip()
 
 void dspCountTagEditList::sPost()
 {
-  bool update  = FALSE;
+  bool update  = false;
   if ( (_showSlips->isChecked()) &&
       (((XTreeWidgetItem *)_cnttag->currentItem())->altId() == -1) )
     sPostTag();
@@ -501,11 +501,11 @@ void dspCountTagEditList::sPost()
 	params.append("mode", "post");
 	params.append("cnttag_id", ((XTreeWidgetItem*)(selected[i]))->id());
 
-	countTag newdlg(this, "", TRUE);
+	countTag newdlg(this, "", true);
 	newdlg.set(params);
 
 	if (newdlg.exec() != XDialog::Rejected)
-	  update = TRUE;
+	  update = true;
       }
     }
     if (update)
@@ -519,7 +519,7 @@ void dspCountTagEditList::sPostTag()
   params.append("mode", "post");
   params.append("cnttag_id", _cnttag->id());
 
-  countTag newdlg(this, "", TRUE);
+  countTag newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -532,7 +532,7 @@ void dspCountTagEditList::sPostSlip()
   params.append("mode", "post");
   params.append("cntslip_id", _cnttag->altId());
   
-  countSlip newdlg(this, "", TRUE);
+  countSlip newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -546,7 +546,7 @@ void dspCountTagEditList::sSearch(const QString &pTarget)
 
   if (search.size() > 0)
   {
-    _cnttag->setCurrentItem(search[0], TRUE);
+    _cnttag->setCurrentItem(search[0], true);
     _cnttag->scrollToItem(search[0]);
   }
 }

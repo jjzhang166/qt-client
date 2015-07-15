@@ -21,7 +21,7 @@
 #include "storedProcErrorLookup.h"
 #include "taxBreakdown.h"
 
-creditMemo::creditMemo(QWidget* parent, const char* name, Qt::WFlags fl)
+creditMemo::creditMemo(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ creditMemo::creditMemo(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_shipToName, SIGNAL(textChanged(QString)), this, SLOT(sConvertShipto()));
   connect(_shipToAddr, SIGNAL(changed()), this, SLOT(sConvertShipto()));
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _invoiceList->setMaximumWidth(25);
 #endif
 
@@ -147,44 +147,44 @@ enum SetResponse creditMemo::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _memoNumber->setEnabled(FALSE);
-      _cust->setReadOnly(TRUE);
-      _invoiceNumber->setEnabled(FALSE);
+      _memoNumber->setEnabled(false);
+      _cust->setReadOnly(true);
+      _invoiceNumber->setEnabled(false);
       _invoiceList->hide();
 
-      _new->setEnabled(TRUE);
+      _new->setEnabled(true);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _memoNumber->setEnabled(FALSE);
-      _memoDate->setEnabled(FALSE);
-      _cust->setReadOnly(TRUE);
-      _invoiceNumber->setEnabled(FALSE);
-      _salesRep->setEnabled(FALSE);
-      _commission->setEnabled(FALSE);
+      _memoNumber->setEnabled(false);
+      _memoDate->setEnabled(false);
+      _cust->setReadOnly(true);
+      _invoiceNumber->setEnabled(false);
+      _salesRep->setEnabled(false);
+      _commission->setEnabled(false);
 
-      _billtoName->setEnabled(FALSE);
-      _billToAddr->setEnabled(FALSE);
+      _billtoName->setEnabled(false);
+      _billToAddr->setEnabled(false);
 
-      _taxzone->setEnabled(FALSE);
-      _rsnCode->setEnabled(FALSE);
-      _customerPO->setEnabled(FALSE);
-      _hold->setEnabled(FALSE);
-      _miscCharge->setEnabled(FALSE);
-      _miscChargeDescription->setEnabled(FALSE);
-      _miscChargeAccount->setReadOnly(TRUE);
-      _freight->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
+      _taxzone->setEnabled(false);
+      _rsnCode->setEnabled(false);
+      _customerPO->setEnabled(false);
+      _hold->setEnabled(false);
+      _miscCharge->setEnabled(false);
+      _miscChargeDescription->setEnabled(false);
+      _miscChargeAccount->setReadOnly(true);
+      _freight->setEnabled(false);
+      _comments->setEnabled(false);
       _invoiceList->hide();
-      _shipTo->setEnabled(FALSE);
-      _shipToName->setEnabled(FALSE);
-      _shipToAddr->setEnabled(FALSE);
-      _currency->setEnabled(FALSE);
-      _shippingZone->setEnabled(FALSE);
-      _saleType->setEnabled(FALSE);
-//      _documents->setReadOnly(TRUE);
+      _shipTo->setEnabled(false);
+      _shipToName->setEnabled(false);
+      _shipToAddr->setEnabled(false);
+      _currency->setEnabled(false);
+      _shippingZone->setEnabled(false);
+      _saleType->setEnabled(false);
+//      _documents->setReadOnly(true);
       _save->hide();
       _new->hide();
       _delete->hide();
@@ -225,7 +225,7 @@ void creditMemo::setNumber()
       _NumberGen = creditetNumber.value("cmnumber").toInt();
 
       if (_metrics->value("CMNumberGeneration") == "A")
-        _memoNumber->setEnabled(FALSE);
+        _memoNumber->setEnabled(false);
     }
     else if (creditetNumber.lastError().type() != QSqlError::NoError)
     {
@@ -241,7 +241,7 @@ void creditMemo::setNumber()
     {
       _memoNumber->setText(creditetNumber.value("cmnumber").toString());
       _NumberGen = creditetNumber.value("cmnumber").toInt();
-      _memoNumber->setEnabled(FALSE);
+      _memoNumber->setEnabled(false);
     }
     else if (creditetNumber.lastError().type() != QSqlError::NoError)
     {
@@ -421,7 +421,7 @@ void creditMemo::sInvoiceList()
   params.append("cust_id", _cust->id());
   params.append("invoiceNumber", _invoiceNumber->invoiceNumber());
 
-  invoiceList newdlg(this, "", TRUE);
+  invoiceList newdlg(this, "", true);
   newdlg.set(params);
   int invoiceid = newdlg.exec();
 
@@ -437,9 +437,9 @@ void creditMemo::sInvoiceList()
     sohead.exec();
     if (sohead.first())
     {
-      _cust->setEnabled(FALSE);
-      _billtoName->setEnabled(FALSE);
-      _billToAddr->setEnabled(FALSE);
+      _cust->setEnabled(false);
+      _billtoName->setEnabled(false);
+      _billToAddr->setEnabled(false);
 
       _cust->setId(sohead.value("invchead_cust_id").toInt());
       _billtoName->setText(sohead.value("invchead_billto_name"));
@@ -451,10 +451,10 @@ void creditMemo::sInvoiceList()
       _billToAddr->setPostalCode(sohead.value("invchead_billto_zipcode").toString());
       _billToAddr->setCountry(sohead.value("invchead_billto_country").toString());
 
-      _shipTo->setEnabled(FALSE);
-      _shipToName->setEnabled(FALSE);
-      _shipToAddr->setEnabled(FALSE);
-      _ignoreShiptoSignals = TRUE;
+      _shipTo->setEnabled(false);
+      _shipToName->setEnabled(false);
+      _shipToAddr->setEnabled(false);
+      _ignoreShiptoSignals = true;
       _shipToName->setText(sohead.value("invchead_shipto_name"));
       _shipToAddr->setLine1(sohead.value("invchead_shipto_address1").toString());
       _shipToAddr->setLine2(sohead.value("invchead_shipto_address2").toString());
@@ -463,7 +463,7 @@ void creditMemo::sInvoiceList()
       _shipToAddr->setState(sohead.value("invchead_shipto_state").toString());
       _shipToAddr->setPostalCode(sohead.value("invchead_shipto_zipcode").toString());
       _shipToAddr->setCountry(sohead.value("invchead_shipto_country").toString());
-      _ignoreShiptoSignals = FALSE;
+      _ignoreShiptoSignals = false;
 
       _invoiceNumber->setInvoiceNumber(sohead.value("invchead_invcnumber").toString());
       _salesRep->setId(sohead.value("invchead_salesrep_id").toInt());
@@ -563,7 +563,7 @@ void creditMemo::sPopulateCustomerInfo()
         if ( (_mode == cNew) || (_mode == cEdit) )
           ffBillTo = query.value("cust_ffbillto").toBool();
         else
-          ffBillTo = FALSE;
+          ffBillTo = false;
 
         _billtoName->setEnabled(ffBillTo);
         _billToAddr->setEnabled(ffBillTo);
@@ -603,7 +603,7 @@ qDebug("_numbergen->%d, memo#->%d", _NumberGen, _memoNumber->text().toInt());
        ( (_metrics->value("CMNumberGeneration") == "O") ||
          (_metrics->value("CMNumberGeneration") == "M")   ) )
   {
-    _memoNumber->setEnabled(FALSE);
+    _memoNumber->setEnabled(false);
 
     XSqlQuery query;
     query.prepare( "SELECT cmhead_id, cmhead_posted "
@@ -615,28 +615,28 @@ qDebug("_numbergen->%d, memo#->%d", _NumberGen, _memoNumber->text().toInt());
     {
       _cmheadid = query.value("cmhead_id").toInt();
 
-      _cust->setReadOnly(TRUE);
+      _cust->setReadOnly(true);
 
       populate();
 
       if (query.value("cmhead_posted").toBool())
       {
-        _memoDate->setEnabled(FALSE);
-        _invoiceNumber->setEnabled(FALSE);
-        _salesRep->setEnabled(FALSE);
-        _commission->setEnabled(FALSE);
-        _taxzone->setEnabled(FALSE);
-        _customerPO->setEnabled(FALSE);
-        _hold->setEnabled(FALSE);
-        _miscCharge->setEnabled(FALSE);
-        _miscChargeDescription->setEnabled(FALSE);
-        _miscChargeAccount->setReadOnly(TRUE);
-        _freight->setEnabled(FALSE);
-        _comments->setReadOnly(TRUE);
+        _memoDate->setEnabled(false);
+        _invoiceNumber->setEnabled(false);
+        _salesRep->setEnabled(false);
+        _commission->setEnabled(false);
+        _taxzone->setEnabled(false);
+        _customerPO->setEnabled(false);
+        _hold->setEnabled(false);
+        _miscCharge->setEnabled(false);
+        _miscChargeDescription->setEnabled(false);
+        _miscChargeAccount->setReadOnly(true);
+        _freight->setEnabled(false);
+        _comments->setReadOnly(true);
         _invoiceList->hide();
-        _shipTo->setEnabled(FALSE);
-        _shipToName->setEnabled(FALSE);
-        _cmitem->setEnabled(FALSE);
+        _shipTo->setEnabled(false);
+        _shipToName->setEnabled(false);
+        _cmitem->setEnabled(false);
         _save->hide();
         _new->hide();
         _delete->hide();
@@ -697,7 +697,7 @@ void creditMemo::sNew()
   params.append("mode", "new");
   params.append("cmhead_id", _cmheadid);
 
-  creditMemoItem newdlg(this, "", TRUE);
+  creditMemoItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -714,7 +714,7 @@ void creditMemo::sEdit()
   params.append("cmhead_id", _cmheadid);
   params.append("cmitem_id", _cmitem->id());
 
-  creditMemoItem newdlg(this, "", TRUE);
+  creditMemoItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -728,7 +728,7 @@ void creditMemo::sView()
   params.append("cmhead_id", _cmheadid);
   params.append("cmitem_id", _cmitem->id());
 
-  creditMemoItem newdlg(this, "", TRUE);
+  creditMemoItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -989,7 +989,7 @@ void creditMemo::sTaxDetail()
   else
     params.append("mode", "edit");
 
-  taxBreakdown newdlg(this, "", TRUE);
+  taxBreakdown newdlg(this, "", true);
   if (newdlg.set(params) == NoError)
   {
     newdlg.exec();

@@ -17,20 +17,20 @@
 #include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
-massReplaceComponent::massReplaceComponent(QWidget* parent, const char* name, Qt::WFlags fl)
+massReplaceComponent::massReplaceComponent(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
   connect(_replace, SIGNAL(clicked()), this, SLOT(sReplace()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _original->setType(ItemLineEdit::cGeneralComponents);
   _replacement->setType(ItemLineEdit::cGeneralComponents);
 
   _effective->setNullString(tr("Immediate"));
-  _effective->setAllowNullDate(TRUE);
+  _effective->setAllowNullDate(true);
   _effective->setNull();
 }
 
@@ -47,7 +47,7 @@ void massReplaceComponent::languageChange()
 enum SetResponse massReplaceComponent::set(const ParameterList &pParams)
 {
   XWidget::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

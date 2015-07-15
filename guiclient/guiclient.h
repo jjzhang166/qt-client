@@ -115,24 +115,35 @@ enum SetResponse
 class Action : public QAction
 {
   public:
-    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
-            QObject *pTarget, const char *pActivateSlot,
-            QWidget *pAddTo,  bool pEnabled);
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, bool );
 
-    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
-            QObject *pTarget, const char *pActivateSlot,
-            QWidget *pAddTo,  const QString &pEnabled);
-
-    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
-            QObject *pTarget, const char *pActivateSlot,
-            QWidget *pAddTo,  const QString &pEnabled,
-            const QPixmap &pIcon, QWidget *pToolBar);  
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, bool,
+            const QPixmap *, QWidget *);
             
-    Action( QWidget *pParent, const char *pName, const QString &pDisplayName,
-            QObject *pTarget, const char *pActivateSlot,
-            QWidget *pAddTo,  const QString &pEnabled,
-            const QPixmap &pIcon, QWidget *pToolBar,
-            const QString &pToolTip); 
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, bool,
+            const QPixmap *, QWidget *,
+            const QString &);
+
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, const QString & );
+
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, const QString &,
+            const QPixmap *, QWidget *);
+            
+    Action( QWidget *, const char *, const QString &,
+            QObject *, const char *,
+            QWidget *, const QString &,
+            const QPixmap *, QWidget *,
+            const QString &); 
 
   private:
     void init( QWidget *pParent, const char *pName, const QString &pDisplayName,

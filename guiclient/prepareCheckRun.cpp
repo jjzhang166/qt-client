@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-prepareCheckRun::prepareCheckRun(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+prepareCheckRun::prepareCheckRun(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -47,7 +47,7 @@ enum SetResponse prepareCheckRun::set(const ParameterList &pParams)
   {
     _bankaccnt->setId(param.toInt());
     if (_bankaccnt->isValid())
-      _bankaccnt->setEnabled(FALSE);
+      _bankaccnt->setEnabled(false);
   }
     
   return NoError;
@@ -82,7 +82,7 @@ void prepareCheckRun::sPrint()
       return;
   }
 
-  omfgThis->sChecksUpdated(_bankaccnt->id(), -1, TRUE);
+  omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
 
   accept();
 }

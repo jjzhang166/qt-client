@@ -14,7 +14,7 @@
 #include <QImage>
 #include <quuencode.h>
 
-itemImages::itemImages(QWidget* parent, const char* name, Qt::WFlags fl)
+itemImages::itemImages(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -25,7 +25,7 @@ itemImages::itemImages(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_next, SIGNAL(clicked()), this, SLOT(sNext()));
   connect(_item, SIGNAL(newId(int)), this, SLOT(sFillList()));
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _prev->setMaximumWidth(25);
   _next->setMaximumWidth(25);
 #endif
@@ -91,8 +91,8 @@ void itemImages::sFillList()
     loadImage();
   else
   {
-    _prev->setEnabled(FALSE);
-    _next->setEnabled(FALSE);
+    _prev->setEnabled(false);
+    _next->setEnabled(false);
     _image->clear();
   }
 }

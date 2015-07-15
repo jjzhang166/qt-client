@@ -16,7 +16,7 @@
 
 #include "taxDetail.h"
 
-apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -43,7 +43,7 @@ apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
       _apapply->hideColumn("currabbr");
 
   _terms->setType(XComboBox::APTerms);
-  _journalNumber->setEnabled(FALSE);
+  _journalNumber->setEnabled(false);
 
   _altAccntid->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
@@ -84,7 +84,7 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
       return UndefinedError;
 //  ToDo - better error return types
 
-    _docType->setEnabled(FALSE);
+    _docType->setEnabled(false);
   }
 
   param = pParams.value("mode", &valid);
@@ -110,36 +110,36 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _vend->setReadOnly(TRUE);
-      _docDate->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _docType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _poNumber->setEnabled(FALSE);
-      _journalNumber->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
-      _notes->setReadOnly(FALSE);
-      _useAltPrepaid->setEnabled(FALSE);
-      _altAccntid->setEnabled(FALSE);
+      _vend->setReadOnly(true);
+      _docDate->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _docType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _poNumber->setEnabled(false);
+      _journalNumber->setEnabled(false);
+      _terms->setEnabled(false);
+      _notes->setReadOnly(false);
+      _useAltPrepaid->setEnabled(false);
+      _altAccntid->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _vend->setReadOnly(TRUE);
-      _docDate->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _docType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _poNumber->setEnabled(FALSE);
-      _journalNumber->setEnabled(FALSE);
-      _amount->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
+      _vend->setReadOnly(true);
+      _docDate->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _docType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _poNumber->setEnabled(false);
+      _journalNumber->setEnabled(false);
+      _amount->setEnabled(false);
+      _terms->setEnabled(false);
       _terms->setType(XComboBox::Terms);
-      _notes->setReadOnly(TRUE);
-      _useAltPrepaid->setEnabled(FALSE);
-      _altAccntid->setEnabled(FALSE);
-      _status->setEnabled(FALSE);
+      _notes->setReadOnly(true);
+      _useAltPrepaid->setEnabled(false);
+      _altAccntid->setEnabled(false);
+      _status->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }
@@ -367,12 +367,12 @@ void apOpenItem::populate()
              "       (SELECT COALESCE(SUM(taxhist_tax),0) "
              "        FROM apopentax "
              "        WHERE (taxhist_parent_id=apopen_id)) AS tax, "
-             "       CASE WHEN (apopen_doctype IN ('D', 'C')) THEN TRUE "
-             "            ELSE FALSE "
+             "       CASE WHEN (apopen_doctype IN ('D', 'C')) THEN true "
+             "            ELSE false "
              "       END AS showTax "
              "FROM apopen "
              "WHERE ( (apopen_id=:apopen_id)"
-             "  AND   (apopen_void = FALSE) );" );
+             "  AND   (apopen_void = false) );" );
   populateOpenItem.bindValue(":apopen_id", _apopenid);
   populateOpenItem.exec();
   if (populateOpenItem.first())
@@ -401,7 +401,7 @@ void apOpenItem::populate()
             " FROM apopen "
             " WHERE apopen_status <> '' " ;
 	  _status->populate(status, -1);
-	  _status->setEnabled(FALSE);
+	  _status->setEnabled(false);
 	}
 	_status->setId(populateOpenItem.value("status_id").toInt());
 	
@@ -410,7 +410,7 @@ void apOpenItem::populate()
     selectpayment.bindValue(":apopen_id", _apopenid);
     selectpayment.exec();
     if (selectpayment.first())
-      _status->setEnabled(FALSE);
+      _status->setEnabled(false);
     _notes->setText(populateOpenItem.value("apopen_notes").toString());
     if (populateOpenItem.value("showTax").toBool())
       _tax->setLocalValue(populateOpenItem.value("tax").toDouble());
@@ -478,7 +478,7 @@ void apOpenItem::populate()
     populateOpenItem.exec();
     if (populateOpenItem.lastError().type() != QSqlError::NoError)
 	systemError(this, populateOpenItem.lastError().databaseText(), __FILE__, __LINE__);
-    _apapply->populate(populateOpenItem, TRUE);
+    _apapply->populate(populateOpenItem, true);
     if (populateOpenItem.lastError().type() != QSqlError::NoError)
     {
       systemError(this, populateOpenItem.lastError().databaseText(), __FILE__, __LINE__);

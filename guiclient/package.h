@@ -21,7 +21,7 @@ class package : public XDialog, public Ui::package
     Q_OBJECT
 
 public:
-    package(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    package(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~package();
 
     static bool userHasPriv(const int = cView);

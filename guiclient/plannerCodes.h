@@ -19,7 +19,7 @@ class plannerCodes : public XWidget, public Ui::plannerCodes
     Q_OBJECT
 
 public:
-    plannerCodes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    plannerCodes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~plannerCodes();
 
 public slots:

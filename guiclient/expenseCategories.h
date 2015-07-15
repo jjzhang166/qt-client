@@ -22,7 +22,7 @@ class expenseCategories : public XWidget, public Ui::expenseCategories
     Q_OBJECT
 
 public:
-    expenseCategories(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    expenseCategories(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~expenseCategories();
 
 public slots:

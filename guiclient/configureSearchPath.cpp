@@ -22,7 +22,7 @@ class configureSearchPathPrivate {
     }
 };
 
-configureSearchPath::configureSearchPath(QWidget *parent, const char *name, bool modal, Qt::WFlags fl)
+configureSearchPath::configureSearchPath(QWidget *parent, const char *name, bool modal, Qt::WindowFlags fl)
   : XAbstractConfigure(parent, fl),
     _private(0)
 {

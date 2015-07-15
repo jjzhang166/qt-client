@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-arAccountAssignment::arAccountAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+arAccountAssignment::arAccountAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -81,12 +81,12 @@ enum SetResponse arAccountAssignment::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _customerTypeGroup->setEnabled(FALSE);
-      _ar->setReadOnly(TRUE);
-      _prepaid->setReadOnly(TRUE);
-      _freight->setReadOnly(TRUE);
-      _deferred->setReadOnly(TRUE);
-      _discount->setReadOnly(TRUE);
+      _customerTypeGroup->setEnabled(false);
+      _ar->setReadOnly(true);
+      _prepaid->setReadOnly(true);
+      _freight->setReadOnly(true);
+      _deferred->setReadOnly(true);
+      _discount->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -206,12 +206,12 @@ void arAccountAssignment::populate()
   {
     if (arpopulate.value("araccnt_custtype_id").toInt() == -1)
     {
-      _customerTypePattern->setChecked(TRUE);
+      _customerTypePattern->setChecked(true);
       _customerType->setText(arpopulate.value("araccnt_custtype").toString());
     }
     else
     {
-      _selectedCustomerType->setChecked(TRUE);
+      _selectedCustomerType->setChecked(true);
       _customerTypes->setId(arpopulate.value("araccnt_custtype_id").toInt());
     }
 

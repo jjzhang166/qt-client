@@ -16,13 +16,12 @@
 #include <QSqlError>
 #include <QVariant>
 
-#include "characteristic.h"
 #include "crmaccount.h"
 #include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
 
-crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
+crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "crmaccounts", fl)
 {
   setWindowTitle(tr("Accounts"));
@@ -33,6 +32,25 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
   setSearchVisible(true);
   setQueryOnStartEnabled(true);
 
+  QString qryStatus = QString( "SELECT  1, '%1' UNION "
+                               "SELECT  2, '%2' UNION "
+                               "SELECT  3, '%3' UNION "
+                               "SELECT  4, '%4' UNION "
+                               "SELECT  5, '%5' UNION "
+                               "SELECT  6, '%6' UNION "
+                               "SELECT  7, '%7' UNION "
+                               "SELECT  8, '%8' UNION "
+                               "SELECT  9, '%9' ")
+  .arg(tr("Customer"))
+  .arg(tr("Prospect"))
+  .arg(tr("Vendor"))
+  .arg(tr("Competitor"))
+  .arg(tr("Partner"))
+  .arg(tr("Tax Auth."))
+  .arg(tr("User"))
+  .arg(tr("Employee"))
+  .arg(tr("Sales Rep."));
+
   if (_privileges->check("MaintainAllCRMAccounts") || _privileges->check("ViewAllCRMAccounts"))
   {
     parameterWidget()->append(tr("Owner"), "owner_username", ParameterWidget::User);
@@ -42,6 +60,7 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Account Number Pattern"), "crmacct_number_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Account Name Pattern"), "crmacct_name_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Contact Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Account Type"), "crmacct_acct_type", qryStatus);
   parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Email Pattern"), "cntct_email_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Street Pattern"), "addr_street_pattern", ParameterWidget::Text);
@@ -61,6 +80,7 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
   connect(omfgThis, SIGNAL(vendorsUpdated()),            this, SLOT(sFillList()));
 
   list()->addColumn(tr("Number"),         80, Qt::AlignLeft,    true, "crmacct_number");
+  list()->addColumn(tr("Active"),  _ynColumn,  Qt::AlignCenter,false, "crmacct_active");
   list()->addColumn(tr("Name"),           -1, Qt::AlignLeft,    true, "crmacct_name");
   list()->addColumn(tr("Owner"), _userColumn, Qt::AlignLeft,   false, "crmacct_owner_username");
   list()->addColumn(tr("First"),          50, Qt::AlignLeft  ,  true, "cntct_first_name" );
@@ -82,13 +102,13 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Employee"),       70, Qt::AlignCenter, false, "emp");
   list()->addColumn(tr("Sales Rep"),      70, Qt::AlignCenter, false, "salesrep");
 
-  setupCharacteristics(characteristic::CRMAccounts);
+  setupCharacteristics("CRMACCT");
   parameterWidget()->applyDefaultFilterSet();
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
   if (!_privileges->check("MaintainAllCRMAccounts") && !_privileges->check("MaintainPersonalCRMAccounts"))
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
 }
 
 void crmaccounts::sNew()

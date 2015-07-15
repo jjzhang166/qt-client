@@ -19,7 +19,7 @@
 #include "check.h"
 #include "voucher.h"
 
-dspAPApplications::dspAPApplications(QWidget* parent, const char*, Qt::WFlags fl)
+dspAPApplications::dspAPApplications(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAPApplications", fl)
 {
   setupUi(optionsWidget());

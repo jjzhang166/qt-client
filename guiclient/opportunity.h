@@ -22,7 +22,7 @@ class opportunity : public XDialog, public Ui::opportunity
     Q_OBJECT
 
 public:
-    opportunity(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    opportunity(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~opportunity();
 
 public slots:
@@ -59,11 +59,7 @@ public slots:
     virtual void sAttachSalesOrder();
     virtual void sPrintSalesOrder();
     virtual void sViewSalesOrder();
-    virtual void sFillCharList();
-    virtual void sNewCharacteristic();
-    virtual void sEditCharacteristic();
-    virtual void sDeleteCharacteristic();
-	virtual void sHandleCrmacct(int);
+    virtual void sHandleCrmacct(int);
 
 protected slots:
     virtual void languageChange();

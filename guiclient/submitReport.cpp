@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <xvariant.h>
 
-submitReport::submitReport(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+submitReport::submitReport(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   XSqlQuery submitubmitReport;

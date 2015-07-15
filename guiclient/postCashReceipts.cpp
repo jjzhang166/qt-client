@@ -19,7 +19,7 @@
 #include "errorReporter.h"
 #include "guiclient.h"
 
-postCashReceipts::postCashReceipts(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postCashReceipts::postCashReceipts(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

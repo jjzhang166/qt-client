@@ -243,7 +243,7 @@ to be bound by its terms.</comment>
      <item row="1" column="4" >
       <widget class="QLabel" name="_checkNumLit" >
        <property name="text" >
-        <string>Check Number:</string>
+        <string>Payment Number:</string>
        </property>
       </widget>
      </item>

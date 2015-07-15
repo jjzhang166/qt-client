@@ -20,7 +20,7 @@
 #include "applyAPCreditMemo.h"
 #include "apOpenItem.h"
 
-unappliedAPCreditMemos::unappliedAPCreditMemos(QWidget* parent, const char* name, Qt::WFlags fl)
+unappliedAPCreditMemos::unappliedAPCreditMemos(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -92,7 +92,7 @@ void unappliedAPCreditMemos::sNew()
   if (_vendorgroup->isSelectedVend())
     params.append("vend_id", _vendorgroup->vendId());
 
-  apOpenItem newdlg(this, "", TRUE);
+  apOpenItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -105,7 +105,7 @@ void unappliedAPCreditMemos::sView()
   params.append("mode", "view");
   params.append("apopen_id", _apopen->id());
 
-  apOpenItem newdlg(this, "", TRUE);
+  apOpenItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -162,7 +162,7 @@ void unappliedAPCreditMemos::sApply()
   ParameterList params;
   params.append("apopen_id", _apopen->id());
 
-  applyAPCreditMemo newdlg(this, "", TRUE);
+  applyAPCreditMemo newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

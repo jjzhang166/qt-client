@@ -10,7 +10,7 @@
 
 #include "imageList.h"
 
-imageList::imageList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+imageList::imageList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

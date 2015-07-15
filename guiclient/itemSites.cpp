@@ -11,7 +11,7 @@
 #include "itemSites.h"
 
 #include <QVariant>
-#include <QWorkspace>
+//include <QWorkspace>
 #include <QAction>
 #include <QMenu>
 #include <QSqlError>
@@ -23,7 +23,7 @@
 #include "parameterwidget.h"
 #include "storedProcErrorLookup.h"
 
-itemSites::itemSites(QWidget* parent, const char*, Qt::WFlags fl)
+itemSites::itemSites(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "itemSites", fl)
 {
   setWindowTitle(tr("Item Sites"));
@@ -169,7 +169,7 @@ void itemSites::sCopy()
     params.append("mode", "edit");
     params.append("itemsite_id", result);
 
-    itemSite newdlg(this, "", TRUE);
+    itemSite newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Accepted)
     {

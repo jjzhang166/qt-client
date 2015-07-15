@@ -21,7 +21,7 @@ class state : public XDialog, public Ui::state
     Q_OBJECT
 
   public:
-    state(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    state(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~state();
 
     Q_INVOKABLE virtual void enableWindowModifiedSetting();

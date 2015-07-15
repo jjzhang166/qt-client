@@ -1,0 +1,90 @@
+postbooks (4.8.1-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Daniel Pocock <daniel@pocock.pro>  Sat, 28 Feb 2015 14:20:13 +0100
+
+postbooks (4.7.0-2) unstable; urgency=medium
+
+  * Remove some explicit references to PostgreSQL 9.1.
+
+ -- Daniel Pocock <daniel@pocock.pro>  Sun, 19 Oct 2014 16:11:44 +0200
+
+postbooks (4.7.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Daniel Pocock <daniel@pocock.pro>  Sat, 18 Oct 2014 17:15:16 +0200
+
+postbooks (4.6.0-1) experimental; urgency=low
+
+  * New upstream release.
+
+ -- Daniel Pocock <daniel@pocock.pro>  Tue, 23 Sep 2014 10:39:30 +0200
+
+postbooks (4.1.0-3) unstable; urgency=low
+
+  * Ensure libxtuplecommon-dev depends on shlib (Closes: #725645)
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Mon, 07 Oct 2013 08:48:35 +0200
+
+postbooks (4.1.0-2) unstable; urgency=low
+
+  * README.Debian: mention postbooks-updater
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Sat, 05 Oct 2013 14:16:10 +0200
+
+postbooks (4.1.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Add menu entry (Closes: #724477)
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Sat, 05 Oct 2013 00:28:19 +0200
+
+postbooks (4.0.2-7) unstable; urgency=low
+
+  * Make libxtuplecommon shared
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Wed, 25 Sep 2013 08:16:36 +0200
+
+postbooks (4.0.2-6) unstable; urgency=low
+
+  * README.Debian: specify PostgreSQL version in examples
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Wed, 25 Sep 2013 08:13:34 +0200
+
+postbooks (4.0.2-5) unstable; urgency=low
+
+  * Check PostgreSQL version at runtime
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Tue, 24 Sep 2013 22:39:32 +0200
+
+postbooks (4.0.2-4) unstable; urgency=low
+
+  * README.Debian: add notes about PostgreSQL v9.3 incompatibility
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Mon, 23 Sep 2013 19:43:25 +0200
+
+postbooks (4.0.2-3) unstable; urgency=low
+
+  * Add build deps
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Sun, 22 Sep 2013 13:08:15 +0200
+
+postbooks (4.0.2-2) unstable; urgency=low
+
+  * More detail in README.source
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Sun, 22 Sep 2013 10:30:01 +0200
+
+postbooks (4.0.2-1) unstable; urgency=low
+
+  * New upstream tarball
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Thu, 19 Sep 2013 21:43:13 +0200
+
+postbooks (4.0.0-1) unstable; urgency=low
+
+  * Initial release. (Closes: #703645)
+
+ -- Daniel Pocock <daniel@pocock.com.au>  Thu, 19 Sep 2013 18:33:39 +0200

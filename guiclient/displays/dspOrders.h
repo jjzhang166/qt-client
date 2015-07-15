@@ -21,7 +21,7 @@ class dspOrders : public display, public Ui::dspOrders
     Q_OBJECT
 
 public:
-    dspOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

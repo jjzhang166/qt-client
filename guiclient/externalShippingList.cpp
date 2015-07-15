@@ -58,7 +58,7 @@ void externalShippingList::setVisible(bool visible)
     XWidget::setVisible(true);
 }
 
-externalShippingList::externalShippingList(QWidget* parent, const char* name, Qt::WFlags fl)
+externalShippingList::externalShippingList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -109,7 +109,7 @@ void externalShippingList::sOpen(int mode)
   params.append("mode", mode);
   params.append("currentIndex",_ship->currentIndex());
   
-  externalShipping newdlg(this, "", TRUE);
+  externalShipping newdlg(this, "", true);
   newdlg.setModel(_ship->model());
   newdlg.set(params);
   newdlg.exec();

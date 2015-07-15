@@ -21,7 +21,7 @@ class todoList : public display, public Ui::todoList
   Q_OBJECT
 
   public:
-    todoList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    todoList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
   public slots:
     virtual SetResponse	set(const ParameterList&);

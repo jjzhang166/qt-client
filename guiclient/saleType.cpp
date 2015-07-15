@@ -18,7 +18,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-saleType::saleType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+saleType::saleType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,6 +28,7 @@ saleType::saleType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_code, SIGNAL(editingFinished()), this, SLOT(sCheck()));
+  connect(_default, SIGNAL(clicked()), this, SLOT(sDefaultChecked()));
 }
 
 saleType::~saleType()
@@ -69,6 +70,7 @@ enum SetResponse saleType::set(const ParameterList &pParams)
       _mode = cView;
       _code->setEnabled(false);
       _active->setEnabled(false);
+      _default->setEnabled(false);
       _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
@@ -103,6 +105,7 @@ void saleType::sSave()
   params.append("saletype_code", _code->text());
   params.append("saletype_descr", _description->text());
   params.append("saletype_active", QVariant(_active->isChecked()));
+  params.append("saletype_default", QVariant(_default->isChecked()));
   saleTypeSave = mql.toQuery(params);
   if (saleTypeSave.first() && _mode == cNew)
     _saletypeid = saleTypeSave.value("saletype_id").toInt();
@@ -127,7 +130,7 @@ void saleType::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }
@@ -144,6 +147,18 @@ void saleType::populate()
     _code->setText(saleTypePopulate.value("saletype_code"));
     _description->setText(saleTypePopulate.value("saletype_descr"));
     _active->setChecked(saleTypePopulate.value("saletype_active").toBool());
+    _default->setChecked(saleTypePopulate.value("saletype_default").toBool());
   }
+}
+
+void saleType::sDefaultChecked()
+{
+  XSqlQuery setDefault;
+  setDefault.prepare("UPDATE saletype SET saletype_default = FALSE WHERE saletype_id <> :saletype_id;");
+  setDefault.bindValue(":saletype_id", _saletypeid);
+  setDefault.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Defaults"),
+                              setDefault, __FILE__, __LINE__))
+    return;
 }
 

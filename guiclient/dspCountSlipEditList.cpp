@@ -23,7 +23,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 
-dspCountSlipEditList::dspCountSlipEditList(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCountSlipEditList::dspCountSlipEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -37,11 +37,11 @@ dspCountSlipEditList::dspCountSlipEditList(QWidget* parent, const char* name, Qt
   connect(_postAll, SIGNAL(clicked()), this, SLOT(sPostAll()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _countTagList->setMaximumWidth(25);
 #endif
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
   _cntslip->addColumn(tr("User"),    _dateColumn, Qt::AlignCenter,true, "user");
   _cntslip->addColumn(tr("#"),       _itemColumn, Qt::AlignLeft,  true, "cntslip_number");
@@ -63,7 +63,7 @@ dspCountSlipEditList::dspCountSlipEditList(QWidget* parent, const char* name, Qt
   if (_privileges->check("PostCountSlips"))
   {
     connect(_cntslip, SIGNAL(valid(bool)), _post, SLOT(setEnabled(bool)));
-    _postAll->setEnabled(TRUE);
+    _postAll->setEnabled(true);
   }
     
   if (!_metrics->boolean("MultiWhs"))
@@ -133,7 +133,7 @@ void dspCountSlipEditList::sNew()
   params.append("mode", "new");
   params.append("cnttag_id", _cnttagid);
 
-  countSlip newdlg(this, "", TRUE);
+  countSlip newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -146,7 +146,7 @@ void dspCountSlipEditList::sEdit()
   params.append("mode", "edit");
   params.append("cntslip_id", _cntslip->id());
 
-  countSlip newdlg(this, "", TRUE);
+  countSlip newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -199,7 +199,7 @@ void dspCountSlipEditList::sCountTagList()
   params.append("cnttag_id", _cnttagid);
   params.append("tagType", cUnpostedCounts);
 
-  countTagList newdlg(this, "", TRUE);
+  countTagList newdlg(this, "", true);
   newdlg.set(params);
   _cnttagid = newdlg.exec();
 

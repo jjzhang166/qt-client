@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-standardJournalGroupItem::standardJournalGroupItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+standardJournalGroupItem::standardJournalGroupItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -23,9 +23,9 @@ standardJournalGroupItem::standardJournalGroupItem(QWidget* parent, const char* 
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
   _dates->setStartCaption(tr("Effective"));
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   _dates->setEndCaption(tr("Expires"));
 
   _stdjrnl->populate( "SELECT stdjrnl_id, stdjrnl_name "
@@ -75,9 +75,9 @@ enum SetResponse standardJournalGroupItem::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _stdjrnl->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _applyGroup->setEnabled(FALSE);
+      _stdjrnl->setEnabled(false);
+      _dates->setEnabled(false);
+      _applyGroup->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -166,10 +166,10 @@ void standardJournalGroupItem::populate()
     _dates->setEndDate(standardpopulate.value("stdjrnlgrpitem_expires").toDate());
 
     if (standardpopulate.value("stdjrnlgrpitem_toapply").toInt() == -1)
-      _unlimited->setChecked(TRUE);
+      _unlimited->setChecked(true);
     else
     {
-      _limited->setChecked(TRUE);
+      _limited->setChecked(true);
       _toApply->setValue(standardpopulate.value("stdjrnlgrpitem_toapply").toInt());
     }
   }

@@ -10,6 +10,9 @@
 
 #include "woMaterialItem.h"
 
+#include <metasql.h>
+#include "mqlutil.h"
+
 #include <QVariant>
 #include <QSqlError>
 #include <QMessageBox>
@@ -17,7 +20,7 @@
 #include "inputManager.h"
 #include "errorReporter.h"
 
-woMaterialItem::woMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+woMaterialItem::woMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -32,7 +35,7 @@ woMaterialItem::woMaterialItem(QWidget* parent, const char* name, bool modal, Qt
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _wo->setType(cWoOpen | cWoExploded | cWoIssued | cWoReleased);
 
@@ -72,7 +75,7 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
   
   param = pParams.value("bomitem_id", &valid);
@@ -82,10 +85,10 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
   param = pParams.value("item_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
   
   param = pParams.value("wooper_id", &valid);
@@ -141,10 +144,10 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
   param = pParams.value("womatl_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
-    _wo->setEnabled(FALSE);
-    _item->setEnabled(FALSE);
+    _wo->setEnabled(false);
+    _item->setEnabled(false);
 
     _womatlid = param.toInt();
     populate();
@@ -169,15 +172,15 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _wo->setEnabled(FALSE);
-      _item->setEnabled(FALSE);
-      _qtyFxd->setEnabled(FALSE);
-      _qtyPer->setEnabled(FALSE);
-      _uom->setEnabled(FALSE);
-      _scrap->setEnabled(FALSE);
-      _issueMethod->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _ref->setEnabled(FALSE);
+      _wo->setEnabled(false);
+      _item->setEnabled(false);
+      _qtyFxd->setEnabled(false);
+      _qtyPer->setEnabled(false);
+      _uom->setEnabled(false);
+      _scrap->setEnabled(false);
+      _issueMethod->setEnabled(false);
+      _notes->setEnabled(false);
+      _ref->setEnabled(false);
 
       _close->setText(tr("&Close"));
       _save->hide();
@@ -295,7 +298,7 @@ void woMaterialItem::sSave()
     }
   }
 
-  omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatlid, TRUE);
+  omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatlid, true);
 
   if (_captive)
     done(_womatlid);
@@ -362,29 +365,34 @@ void woMaterialItem::populate()
 
 void woMaterialItem::sItemIdChanged()
 {
-  XSqlQuery uom;
-  uom.prepare("SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN uom ON (item_inv_uom_id=uom_id)"
-              " WHERE(item_id=:item_id)"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_to_uom_id=uom_id)"
-              " WHERE((itemuomconv_from_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_from_uom_id=uom_id)"
-              " WHERE((itemuomconv_to_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " ORDER BY uom_name;");
-  uom.bindValue(":item_id", _item->id());
-  uom.exec();
+  // Get list of active, valid MaterialIssue UOMs
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+
+  ParameterList params;
+  params.append("uomtype", "MaterialIssue");
+  params.append("item_id", _item->id());
+
+  // Also have to factor UOMs previously used on WO Material now inactive
+  if (_womatlid != -1)
+  {
+    XSqlQuery wouom;
+    wouom.prepare("SELECT womatl_uom_id "
+                "  FROM womatl"
+                " WHERE(womatl_id=:womatl_id);");
+    wouom.bindValue(":womatl_id", _womatlid);
+    wouom.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Sales Order UOMs"),
+                         wouom, __FILE__, __LINE__))
+      return;
+    else if (wouom.first())
+        params.append("uom_id", wouom.value("womatl_uom_id"));
+  }
+  XSqlQuery uom = muom.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOM"),
+                         uom, __FILE__, __LINE__))
+    return;
   _uom->populate(uom);
+
   uom.prepare("SELECT item_inv_uom_id, item_type "
               "  FROM item"
               " WHERE(item_id=:item_id);");

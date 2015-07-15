@@ -23,7 +23,7 @@
 #include "warehousegroup.h"
 #include "xsqlquery.h"
 
-salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl ) : QDialog(parent, fl)
+salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl ) : QDialog(parent, fl)
 {
   setObjectName(name ? name : "salesOrderList");
   setModal(modal);
@@ -67,8 +67,8 @@ salesOrderList::salesOrderList( QWidget* parent, const char* name, bool modal, Q
 
   _select = new QPushButton(tr("&Select"), this);
   _select->setObjectName("_select");
-  _select->setEnabled( FALSE );
-  _select->setDefault( TRUE );
+  _select->setEnabled( false );
+  _select->setDefault( true );
   buttonsLayout->addWidget(_select);
   buttonsLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
   topLayout->addLayout(buttonsLayout);
@@ -160,7 +160,7 @@ void salesOrderList::sFillList()
   }
   else
   {
-    bool statusCheck = FALSE;
+    bool statusCheck = false;
 
     sql = "SELECT DISTINCT cohead_id, cohead_number, cust_name, cohead_custponumber,"
           "                cohead_orderdate,"
@@ -179,7 +179,7 @@ void salesOrderList::sFillList()
     if (_type & cSoOpen)
     {
       sql += "(coitem_status='O')";
-      statusCheck = TRUE;
+      statusCheck = true;
     }
 
     if (_type & cSoClosed)
@@ -187,7 +187,7 @@ void salesOrderList::sFillList()
       if (statusCheck)
         sql += " OR ";
       sql += "(coitem_status='C')";
-      statusCheck = TRUE;
+      statusCheck = true;
     }
 
     if (_type & cSoReleased)
@@ -195,7 +195,7 @@ void salesOrderList::sFillList()
       if (statusCheck)
         sql += " AND ";
       sql += "(cohead_holdtype='N')";
-      statusCheck = TRUE;
+      statusCheck = true;
     }
 
     if (_type & cSoCustomer)

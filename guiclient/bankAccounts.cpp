@@ -19,7 +19,7 @@
 
 #include "bankAccount.h"
 
-bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WFlags fl)
+bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -49,7 +49,7 @@ bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_bankaccnt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -71,7 +71,7 @@ void bankAccounts::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  bankAccount newdlg(this, "", TRUE);
+  bankAccount newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -84,7 +84,7 @@ void bankAccounts::sEdit()
   params.append("mode", "edit");
   params.append("bankaccnt_id", _bankaccnt->id());
 
-  bankAccount newdlg(this, "", TRUE);
+  bankAccount newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -97,7 +97,7 @@ void bankAccounts::sView()
   params.append("mode", "view");
   params.append("bankaccnt_id", _bankaccnt->id());
 
-  bankAccount newdlg(this, "", TRUE);
+  bankAccount newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

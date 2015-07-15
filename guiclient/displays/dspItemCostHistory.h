@@ -20,7 +20,7 @@ class dspItemCostHistory : public display, public Ui::dspItemCostHistory
     Q_OBJECT
 
 public:
-    dspItemCostHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspItemCostHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

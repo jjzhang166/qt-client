@@ -15,7 +15,7 @@
 #include <QValidator>
 #include <QVariant>
 
-createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -69,10 +69,10 @@ createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const ch
 
   _classCode->setType(ParameterGroup::ClassCode);
 
-  _plannerCode->setAllowNull(TRUE);
+  _plannerCode->setAllowNull(true);
   _plannerCode->setType(XComboBox::PlannerCodes);
 
-  _costcat->setAllowNull(TRUE);
+  _costcat->setAllowNull(true);
   _costcat->setType(XComboBox::CostCategories);
 
   _controlMethod->append(0, "None",     "N");
@@ -102,7 +102,7 @@ createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const ch
   }
   else
   {
-    _warehouse->setAllowNull(TRUE);
+    _warehouse->setAllowNull(true);
     _warehouse->setNull();
   }
 
@@ -238,9 +238,9 @@ void createItemSitesByClassCode::sSave()
                "  itemsite_cosdefault, itemsite_lsseq_id ) "
                "SELECT item_id,"
                "       :warehous_id, 0.0, 0.0,"
-               "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') THEN FALSE "
+               "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') THEN false "
                "            ELSE :itemsite_useparams       END,"
-               "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') THEN FALSE "
+               "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') THEN false "
                "            ELSE :itemsite_useparamsmanual END,"
                "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') THEN 0"
                "            ELSE :itemsite_reorderlevel END,"
@@ -265,9 +265,9 @@ void createItemSitesByClassCode::sSave()
                "       :itemsite_createpr, :itemsite_createwo,"
                "       :itemsite_sold, :itemsite_soldranking,"
                "       :itemsite_stocked, :itemsite_disallowblankwip,"
-               "       :itemsite_controlmethod, :itemsite_perishable, TRUE,"
+               "       :itemsite_controlmethod, :itemsite_perishable, true,"
                "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') "
-               "                 THEN FALSE "
+               "                 THEN false "
                "            ELSE :itemsite_loccntrl END,"
                "       CASE WHEN item_type IN ('B', 'F', 'R', 'L', 'K') "
                "                 THEN -1 "
@@ -276,9 +276,9 @@ void createItemSitesByClassCode::sSave()
                "                 THEN '' "
                "            ELSE :itemsite_location END,"
                "       :itemsite_location_comments, '',"
-               "       :itemsite_abcclass, FALSE, startOfTime(),"
+               "       :itemsite_abcclass, false, startOfTime(),"
                "       :itemsite_ordergroup, :itemsite_ordergroup_first, :itemsite_mps_timefence, "
-               "       FALSE, "
+               "       false, "
                "       CASE WHEN(item_type='L') THEN 'M' ELSE :itemsite_planning_type END, "
                "       CASE WHEN(item_type='R') THEN 'N' ELSE :itemsite_costmethod END, "
                "       :itemsite_cosdefault,  :itemsite_lsseq_id "
@@ -382,11 +382,11 @@ void createItemSitesByClassCode::sHandlePOSupply(bool /*pSupplied*/)
 {
     /*
   if (pSupplied)
-    _createPr->setEnabled(TRUE);
+    _createPr->setEnabled(true);
   else
   {
-    _createPr->setEnabled(FALSE);
-    _createPr->setChecked(FALSE);
+    _createPr->setEnabled(false);
+    _createPr->setChecked(false);
   }
   */
 } 
@@ -394,11 +394,11 @@ void createItemSitesByClassCode::sHandlePOSupply(bool /*pSupplied*/)
 void createItemSitesByClassCode::sHandleWOSupply(bool pSupplied)
 {
   if (pSupplied)
-    _createWo->setEnabled(TRUE);
+    _createWo->setEnabled(true);
   else
   {
-    _createWo->setEnabled(FALSE);
-    _createWo->setChecked(FALSE);
+    _createWo->setEnabled(false);
+    _createWo->setChecked(false);
   }
 } 
 
@@ -425,11 +425,11 @@ void createItemSitesByClassCode::sHandleControlMethod()
 
   if ( (_controlMethod->currentIndex() == 2) ||
        (_controlMethod->currentIndex() == 3) )
-    _perishable->setEnabled(TRUE);
+    _perishable->setEnabled(true);
   else
   {
-    _perishable->setChecked(FALSE);
-    _perishable->setEnabled(FALSE);
+    _perishable->setChecked(false);
+    _perishable->setEnabled(false);
   }
 }
 
@@ -437,21 +437,21 @@ void createItemSitesByClassCode::sHandlePlanningType()
 {
   if (_planningType->code() == "M" || _planningType->code() == "S")
   {
-    _createPlannedTransfers->setEnabled(TRUE);
-    _orderGroup->setEnabled(TRUE);
-    _orderGroupFirst->setEnabled(TRUE);
+    _createPlannedTransfers->setEnabled(true);
+    _orderGroup->setEnabled(true);
+    _orderGroupFirst->setEnabled(true);
 
     if (_planningType->code() == "S")
-      _mpsTimeFence->setEnabled(TRUE);
+      _mpsTimeFence->setEnabled(true);
     else
-      _mpsTimeFence->setEnabled(FALSE);
+      _mpsTimeFence->setEnabled(false);
   }
   else
   {
-    _createPlannedTransfers->setEnabled(FALSE);
-    _orderGroup->setEnabled(FALSE);
-    _orderGroupFirst->setEnabled(FALSE);
-    _mpsTimeFence->setEnabled(FALSE);
+    _createPlannedTransfers->setEnabled(false);
+    _orderGroup->setEnabled(false);
+    _orderGroupFirst->setEnabled(false);
+    _mpsTimeFence->setEnabled(false);
   }
 
 } 
@@ -470,20 +470,20 @@ void createItemSitesByClassCode::populateLocations()
 
   if (_locations->count())
   {
-    _location->setEnabled(TRUE);
-    _locations->setEnabled(TRUE);
+    _location->setEnabled(true);
+    _locations->setEnabled(true);
   }
   else
   {
-    _location->setEnabled(FALSE);
-    _locations->setEnabled(FALSE);
+    _location->setEnabled(false);
+    _locations->setEnabled(false);
   }
 }
 
 void createItemSitesByClassCode::clear()
 {
-  _useParameters->setChecked(FALSE);
-  _useParametersOnManual->setChecked(FALSE);
+  _useParameters->setChecked(false);
+  _useParametersOnManual->setChecked(false);
   _reorderLevel->setDouble(0.0);
   _orderUpToQty->setDouble(0.0);
   _minimumOrder->setDouble(0.0);
@@ -492,7 +492,7 @@ void createItemSitesByClassCode::clear()
   _safetyStock->setDouble(0.0);
 
   _orderGroup->setValue(1);
-  _orderGroupFirst->setChecked(FALSE);
+  _orderGroupFirst->setChecked(false);
 
   _cycleCountFreq->setValue(0);
   _leadTime->setValue(0);
@@ -500,19 +500,19 @@ void createItemSitesByClassCode::clear()
 
   _controlMethod->setCurrentIndex(1);
   sHandleControlMethod();
-  _poSupply->setChecked(TRUE);
-  _woSupply->setChecked(TRUE);
-  _sold->setChecked(TRUE);
-  _stocked->setChecked(FALSE);
+  _poSupply->setChecked(true);
+  _woSupply->setChecked(true);
+  _sold->setChecked(true);
+  _stocked->setChecked(false);
 
-  _locationControl->setChecked(FALSE);
-  _useDefaultLocation->setChecked(FALSE);
+  _locationControl->setChecked(false);
+  _useDefaultLocation->setChecked(false);
   _miscLocationName->clear();
   _locationComments->clear();
 
   _costcat->setId(-1);
   
-  _woCostGroup->setChecked(FALSE);
+  _woCostGroup->setChecked(false);
 
   populateLocations();
 }

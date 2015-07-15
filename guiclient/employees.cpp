@@ -16,13 +16,12 @@
 #include <QSqlError>
 #include <QVariant>
 
-#include "characteristic.h"
 #include "employee.h"
 #include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
 
-employees::employees(QWidget* parent, const char*, Qt::WFlags fl)
+employees::employees(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "employees", fl)
 {
   setWindowTitle(tr("Employees"));
@@ -47,13 +46,13 @@ employees::employees(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("First"),  _itemColumn, Qt::AlignLeft, true, "cntct_first_name");
   list()->addColumn(tr("Last"),   _itemColumn, Qt::AlignLeft, true, "cntct_last_name");
 
-  setupCharacteristics(characteristic::Employees);
+  setupCharacteristics("EMP");
   parameterWidget()->applyDefaultFilterSet();
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
   if (!_privileges->check("MaintainEmployees"))
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
 }
 
 void employees::sNew()

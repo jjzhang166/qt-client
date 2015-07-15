@@ -22,7 +22,7 @@ class returnAuthItemLotSerial : public XDialog, public Ui::returnAuthItemLotSeri
     Q_OBJECT
 
 public:
-    returnAuthItemLotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    returnAuthItemLotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~returnAuthItemLotSerial();
 
 public slots:

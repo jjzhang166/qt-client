@@ -122,7 +122,7 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
     APPENDFIELD(prequest, "x_delim_char", _metrics->value("CCANDelim"));
 
   APPENDFIELD(prequest, "x_version",      _metrics->value("CCANVer"));
-  APPENDFIELD(prequest, "x_delim_data", "TRUE");
+  APPENDFIELD(prequest, "x_delim_data", "true");
 
   if (! _metrics->value("CCANEncap").isEmpty())
     APPENDFIELD(prequest, "x_encap_char", _metrics->value("CCANEncap"));
@@ -134,9 +134,9 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
   APPENDFIELD(prequest, "x_card_num", anq.value("ccard_number").toString());
 
   if (_metrics->value("CCServer").contains("test.authorize.net")) {
-    APPENDFIELD(prequest, "x_test_request", "FALSE");
+    APPENDFIELD(prequest, "x_test_request", "false");
   } else {
-    APPENDFIELD(prequest, "x_test_request", isLive() ? "FALSE" : "TRUE");
+    APPENDFIELD(prequest, "x_test_request", isLive() ? "false" : "true");
   }
 
   // TODO: if check and not credit card transaction do something else
@@ -147,7 +147,7 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
   APPENDFIELD(prequest, "x_exp_date",
 	      work_month + anq.value("ccard_year_expired").toString().right(2));
 
-  APPENDFIELD(prequest, "x_relay_response", "FALSE");
+  APPENDFIELD(prequest, "x_relay_response", "false");
   APPENDFIELD(prequest, "x_duplicate_window",
 			_metrics->value("CCANDuplicateWindow"));
 
@@ -188,7 +188,7 @@ int AuthorizeDotNetProcessor::buildCommon(const int pccardid, const QString &pcv
     APPENDFIELD(prequest, "x_card_code", pcvv);
 
   if (DEBUG)
-    qDebug("AN:buildCommon built %s\n", prequest.toAscii().data());
+    qDebug("AN:buildCommon built %s\n", prequest.toLatin1().data());
   return 0;
 }
 
@@ -234,7 +234,7 @@ int AuthorizeDotNetProcessor::buildFollowup(const int pccpayid, const QString &p
     APPENDFIELD(prequest, "x_encap_char", _metrics->value("CCANEncap"));
 
   APPENDFIELD(prequest, "x_version",      _metrics->value("CCANVer"));
-  APPENDFIELD(prequest, "x_delim_data", "TRUE");
+  APPENDFIELD(prequest, "x_delim_data", "true");
   APPENDFIELD(prequest, "x_login",    _metricsenc->value("CCLogin"));
   APPENDFIELD(prequest, "x_tran_key", _metricsenc->value("CCPassword"));
   APPENDFIELD(prequest, "x_trans_id", ptransid);
@@ -242,12 +242,12 @@ int AuthorizeDotNetProcessor::buildFollowup(const int pccpayid, const QString &p
   APPENDFIELD(prequest, "x_method",   "CC");
 
   if (_metrics->value("CCServer").contains("test.authorize.net")) {
-    APPENDFIELD(prequest, "x_test_request", "FALSE");
+    APPENDFIELD(prequest, "x_test_request", "false");
   } else {
-    APPENDFIELD(prequest, "x_test_request", isLive() ? "FALSE" : "TRUE");
+    APPENDFIELD(prequest, "x_test_request", isLive() ? "false" : "true");
   }
 
-  APPENDFIELD(prequest, "x_relay_response", "FALSE");
+  APPENDFIELD(prequest, "x_relay_response", "false");
   APPENDFIELD(prequest, "x_duplicate_window",
 			_metrics->value("CCANDuplicateWindow"));
 
@@ -270,7 +270,7 @@ int AuthorizeDotNetProcessor::buildFollowup(const int pccpayid, const QString &p
   APPENDFIELD(prequest, "x_type",       pordertype);
 
   if (DEBUG)
-    qDebug("AN:buildFollowup built %s\n", prequest.toAscii().data());
+    qDebug("AN:buildFollowup built %s\n", prequest.toLatin1().data());
   return 0;
 }
 
@@ -279,7 +279,7 @@ int  AuthorizeDotNetProcessor::doAuthorize(const int pccardid, const QString &pc
   if (DEBUG)
     qDebug("AN:doAuthorize(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount, ptax, ptaxexempt,  pfreight,  pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int    returnValue = 0;
   double amount  = pamount;
@@ -311,7 +311,7 @@ int  AuthorizeDotNetProcessor::doAuthorize(const int pccardid, const QString &pc
     return returnValue;
 
   APPENDFIELD(request, "x_tax",        QString::number(tax, 'f', 2));
-  APPENDFIELD(request, "x_tax_exempt", ptaxexempt ? "TRUE" : "FALSE");
+  APPENDFIELD(request, "x_tax_exempt", ptaxexempt ? "true" : "false");
   APPENDFIELD(request, "x_freight",    QString::number(freight, 'f', 2));
   APPENDFIELD(request, "x_duty",       QString::number(duty,    'f', 2));
 
@@ -335,7 +335,7 @@ int  AuthorizeDotNetProcessor::doCharge(const int pccardid, const QString &pcvv,
   if (DEBUG)
     qDebug("AN:doCharge(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount,  ptax, ptaxexempt,  pfreight,  pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int    returnValue = 0;
   double amount  = pamount;
@@ -368,7 +368,7 @@ int  AuthorizeDotNetProcessor::doCharge(const int pccardid, const QString &pcvv,
     return returnValue;
 
   APPENDFIELD(request, "x_tax",        QString::number(tax, 'f', 2));
-  APPENDFIELD(request, "x_tax_exempt", ptaxexempt ? "TRUE" : "FALSE");
+  APPENDFIELD(request, "x_tax_exempt", ptaxexempt ? "true" : "false");
   APPENDFIELD(request, "x_freight",    QString::number(freight, 'f', 2));
   APPENDFIELD(request, "x_duty",       QString::number(duty,    'f', 2));
 
@@ -393,7 +393,7 @@ int AuthorizeDotNetProcessor::doChargePreauthorized(const int pccardid, const QS
   if (DEBUG)
     qDebug("AN:doChargePreauthorized(%d, pcvv, %f, %d, %s, %s, %d)",
 	   pccardid, pamount,  pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int    returnValue = 0;
   double amount  = pamount;
@@ -421,7 +421,7 @@ int AuthorizeDotNetProcessor::doCredit(const int pccardid, const QString &pcvv, 
   if (DEBUG)
     qDebug("AN:doCredit(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount, ptax, ptaxexempt,  pfreight,  pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int     returnValue = 0;
   double  amount  = pamount;
@@ -499,8 +499,8 @@ int AuthorizeDotNetProcessor::doVoidPrevious(const int pccardid, const QString &
   if (DEBUG)
     qDebug("AN:doVoidPrevious(%d, pcvv, %f, %d, %s, %s, %s, %d)",
 	   pccardid, pamount, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(),
-	   papproval.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(),
+	   papproval.toLatin1().data(), pccpayid);
 
   QString tmpErrorMsg = _errorMsg;
 
@@ -543,7 +543,7 @@ int AuthorizeDotNetProcessor::fieldValue(const QStringList plist, const int pind
     pvalue = pvalue.mid(firstPos + 1, lastPos - firstPos - 1);
   }
   if (DEBUG)
-    qDebug("AN:fieldValue of %d is %s", pindex, pvalue.toAscii().data());
+    qDebug("AN:fieldValue of %d is %s", pindex, pvalue.toLatin1().data());
   return 0;
 }
 
@@ -551,9 +551,9 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
 {
   if (DEBUG)
     qDebug("AN::handleResponse(%s, %d, %s, %f, %d, %s, %d, pparams)",
-	   presponse.toAscii().data(), pccardid,
-	   ptype.toAscii().data(), pamount, pcurrid,
-	   preforder.toAscii().data(), pccpayid);
+	   presponse.toLatin1().data(), pccardid,
+	   ptype.toLatin1().data(), pamount, pcurrid,
+	   preforder.toLatin1().data(), pccpayid);
 
   // if we got an error msg very early on
   if (presponse.startsWith("<HTML>"))
@@ -778,7 +778,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
     }
     if (DEBUG)
       qDebug("AN:handleResponse expected md5 %s and got %s",
-	      expected_hash.toAscii().data(), r_hash.toAscii().data());
+	      expected_hash.toLatin1().data(), r_hash.toLatin1().data());
 
     if (_metrics->value("CCANMD5HashAction") == "F" && expected_hash != r_hash)
     {
@@ -794,7 +794,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
 
   if (DEBUG)
     qDebug("AN::handleResponse returning %d %s",
-           returnValue, errorMsg().toAscii().data());
+           returnValue, errorMsg().toLatin1().data());
   return returnValue;
 }
 

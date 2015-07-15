@@ -22,7 +22,7 @@ class department : public XDialog, public Ui::department
     Q_OBJECT
 
 public:
-    department(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    department(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~department();
 
 public slots:

@@ -23,7 +23,7 @@
 #include "purchaseOrderItem.h"
 #include "reschedulePoitem.h"
 
-dspPoItemsByItem::dspPoItemsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemsByItem::dspPoItemsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByItem", fl)
 {
   setupUi(optionsWidget());

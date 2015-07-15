@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-dspValidLocationsByItem::dspValidLocationsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspValidLocationsByItem::dspValidLocationsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspValidLocationsByItem", fl)
 {
   setupUi(optionsWidget());

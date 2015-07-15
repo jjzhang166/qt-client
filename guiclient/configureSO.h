@@ -21,7 +21,7 @@ class configureSO : public XAbstractConfigure, public Ui::configureSO
     Q_OBJECT
 
   public:
-    configureSO(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureSO(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureSO();
 
   public slots:

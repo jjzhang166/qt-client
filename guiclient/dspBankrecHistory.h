@@ -20,7 +20,7 @@ class dspBankrecHistory : public XWidget, public Ui::dspBankrecHistory
     Q_OBJECT
 
 public:
-    dspBankrecHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspBankrecHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspBankrecHistory();
 
 public slots:

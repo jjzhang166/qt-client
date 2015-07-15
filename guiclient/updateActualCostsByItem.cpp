@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QSqlError>
 
-updateActualCostsByItem::updateActualCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateActualCostsByItem::updateActualCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -35,14 +35,14 @@ updateActualCostsByItem::updateActualCostsByItem(QWidget* parent, const char* na
   }
   else if (_metrics->value("TrackMachineOverhead") != "M")
   {
-    _machOverhead->setEnabled(FALSE);
-    _machOverhead->setChecked(TRUE);
-    _lowerMachOverhead->setEnabled(FALSE);
-    _lowerMachOverhead->setChecked(TRUE);
+    _machOverhead->setEnabled(false);
+    _machOverhead->setChecked(true);
+    _lowerMachOverhead->setEnabled(false);
+    _lowerMachOverhead->setChecked(true);
   }
 
-  _captive = FALSE;
-  _updateActual = TRUE;
+  _captive = false;
+  _updateActual = true;
 }
 
 updateActualCostsByItem::~updateActualCostsByItem()
@@ -65,8 +65,8 @@ enum SetResponse updateActualCostsByItem::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
-    _captive = TRUE;
+    _item->setReadOnly(true);
+    _captive = true;
   }
 
   // default cost type is "actual"
@@ -83,19 +83,19 @@ enum SetResponse updateActualCostsByItem::set(const ParameterList &pParams)
 
 void updateActualCostsByItem::sSelectAll()
 {
-  _lowerMaterial->setChecked(TRUE);
-  _user->setChecked(TRUE);
-  _lowerUser->setChecked(TRUE);
+  _lowerMaterial->setChecked(true);
+  _user->setChecked(true);
+  _lowerUser->setChecked(true);
   if (_metrics->boolean("Routings"))
   {
-    _directLabor->setChecked(TRUE);
-    _lowerDirectLabor->setChecked(TRUE);
-    _overhead->setChecked(TRUE);
-    _lowerOverhead->setChecked(TRUE);
+    _directLabor->setChecked(true);
+    _lowerDirectLabor->setChecked(true);
+    _overhead->setChecked(true);
+    _lowerOverhead->setChecked(true);
     if (_metrics->value("TrackMachineOverhead") == "M")
     {
-      _machOverhead->setChecked(TRUE);
-      _lowerMachOverhead->setChecked(TRUE);
+      _machOverhead->setChecked(true);
+      _lowerMachOverhead->setChecked(true);
     }
   }
 }
@@ -103,7 +103,7 @@ void updateActualCostsByItem::sSelectAll()
 void updateActualCostsByItem::sUpdate()
 {
   XSqlQuery sql;
-  sql.prepare("SELECT doUpdateCosts(:item_id, TRUE, :lowMaterial, :dirLabor, "
+  sql.prepare("SELECT doUpdateCosts(:item_id, true, :lowMaterial, :dirLabor, "
               "         :lowDirLabor, :overhead, :lowOverhead, :machOverhead, "
               "         :lowMachOverhead, :lowUser, :rollUp, :updateActual)");
   sql.bindValue(":item_id",         _item->id());

@@ -21,7 +21,7 @@ class dspQOHByLocation : public display, public Ui::dspQOHByLocation
     Q_OBJECT
 
 public:
-    dspQOHByLocation(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspQOHByLocation(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

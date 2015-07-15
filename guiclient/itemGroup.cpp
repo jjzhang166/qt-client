@@ -15,7 +15,7 @@
 
 #include "itemcluster.h"
 
-itemGroup::itemGroup(QWidget* parent, const char* name, Qt::WFlags fl)
+itemGroup::itemGroup(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -57,6 +57,7 @@ enum SetResponse itemGroup::set(const ParameterList &pParams)
   {
     _itemgrpid = param.toInt();
     populate();
+    emit newId(_itemgrpid);
   }
 
   param = pParams.value("mode", &valid);
@@ -74,6 +75,8 @@ enum SetResponse itemGroup::set(const ParameterList &pParams)
 
       connect(_itemgrpitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
       connect(_itemgrpparent, SIGNAL(valid(bool)), _deleteParent, SLOT(setEnabled(bool)));
+      emit newId(_itemgrpid);
+      emit newMode(_mode);
     }
     else if (param.toString() == "edit")
     {
@@ -81,17 +84,19 @@ enum SetResponse itemGroup::set(const ParameterList &pParams)
 
       connect(_itemgrpitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
       connect(_itemgrpparent, SIGNAL(valid(bool)), _deleteParent, SLOT(setEnabled(bool)));
+      emit newMode(_mode);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _catalog->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
-      _newParent->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _catalog->setEnabled(false);
+      _new->setEnabled(false);
+      _newParent->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
+      emit newMode(_mode);
     }
   }
 
@@ -115,7 +120,10 @@ void itemGroup::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
+
+      emit newId(_itemgrpid);
+      emit newMode(_mode);
     }
   }
 }
@@ -169,14 +177,14 @@ void itemGroup::sSave()
   if (_catalog->isChecked())
   {
     itemSave.prepare( "UPDATE itemgrp "
-                     "SET itemgrp_catalog=FALSE "
+                     "SET itemgrp_catalog=false "
                      "WHERE (itemgrp_id != :itemgrp_id);" );
     
     itemSave.bindValue(":itemgrp_id", _itemgrpid);
     itemSave.exec();
   }
 
-  omfgThis->sItemGroupsUpdated(_itemgrpid, TRUE);
+  omfgThis->sItemGroupsUpdated(_itemgrpid, true);
 
   close();
 }

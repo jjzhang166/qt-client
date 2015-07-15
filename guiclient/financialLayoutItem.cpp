@@ -21,7 +21,7 @@
 #define cCash		2
 #define cAdHoc		3
 
-financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery financialfinancialLayoutItem;
@@ -61,7 +61,7 @@ financialLayoutItem::financialLayoutItem(QWidget* parent, const char* name, bool
   _number->append(-1,tr("All"),"All");
   _number->setId(-1);
 
-  _subType->setAllowNull(FALSE);
+  _subType->setAllowNull(false);
   populateSubTypes();
 
   if (_metrics->value("GLCompanySize").toInt() == 0)
@@ -134,13 +134,13 @@ enum SetResponse financialLayoutItem::set(const ParameterList &pParams)
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
 
-      _selectAccount->setEnabled(FALSE);
-      _selectSegment->setEnabled(FALSE);
-      _operationGroup->setEnabled(FALSE);
-      _showColumns->setEnabled(FALSE);
-      _showPrcnt->setEnabled(FALSE);
-      _group->setEnabled(FALSE);
-      _showCustom->setEnabled(FALSE);
+      _selectAccount->setEnabled(false);
+      _selectSegment->setEnabled(false);
+      _operationGroup->setEnabled(false);
+      _showColumns->setEnabled(false);
+      _showPrcnt->setEnabled(false);
+      _group->setEnabled(false);
+      _showCustom->setEnabled(false);
     }
   }
   param = pParams.value("type", &valid);
@@ -150,43 +150,43 @@ enum SetResponse financialLayoutItem::set(const ParameterList &pParams)
         if (param.toString() == "adHoc")
         {
    			_rpttype = cAdHoc;
-   			_showPrcnt->setHidden(TRUE);
+   			_showPrcnt->setHidden(true);
    		}
 		else
 		{
-			_showColumns->setHidden(TRUE);
-			_showCustom->setHidden(TRUE);
+			_showColumns->setHidden(true);
+			_showCustom->setHidden(true);
 		}
 		
         if (param.toString() == "income")
         {
         	_rpttype = cIncome;	
-   			_showBeginning->setChecked(FALSE);
-			_showEnding->setChecked(FALSE);
-			_showDB->setChecked(FALSE);
-			_showBudget->setChecked(TRUE);
-			_showDiff->setChecked(TRUE);
-			_showCustom->setChecked(FALSE);
+   			_showBeginning->setChecked(false);
+			_showEnding->setChecked(false);
+			_showDB->setChecked(false);
+			_showBudget->setChecked(true);
+			_showDiff->setChecked(true);
+			_showCustom->setChecked(false);
         }
         else if (param.toString() == "balance")
         {
             _rpttype = cBalance;
-   			_showBeginning->setChecked(FALSE);
-			_showEnding->setChecked(TRUE);
-			_showDB->setChecked(FALSE);
-			_showBudget->setChecked(TRUE);
-			_showDiff->setChecked(TRUE);
-			_showCustom->setChecked(FALSE);
+   			_showBeginning->setChecked(false);
+			_showEnding->setChecked(true);
+			_showDB->setChecked(false);
+			_showBudget->setChecked(true);
+			_showDiff->setChecked(true);
+			_showCustom->setChecked(false);
         }
         else if (param.toString() == "cash")
         {
 			_rpttype = cCash;
-   			_showBeginning->setChecked(FALSE);
-			_showEnding->setChecked(FALSE);
-			_showDB->setChecked(TRUE);
-			_showBudget->setChecked(TRUE);
-			_showDiff->setChecked(TRUE);
-			_showCustom->setChecked(FALSE);
+   			_showBeginning->setChecked(false);
+			_showEnding->setChecked(false);
+			_showDB->setChecked(true);
+			_showBudget->setChecked(true);
+			_showDiff->setChecked(true);
+			_showCustom->setChecked(false);
 		}
     }
 
@@ -391,7 +391,7 @@ void financialLayoutItem::populate()
   {
     if ( financialpopulate.value("flitem_accnt_id").toInt() == -1 )
     {
-      _selectSegment->setChecked(TRUE);
+      _selectSegment->setChecked(true);
 
       if (_metrics->value("GLCompanySize").toInt())
         _company->setCode(financialpopulate.value("flitem_company").toString());
@@ -418,7 +418,7 @@ void financialLayoutItem::populate()
     }
     else
     {
-      _selectAccount->setChecked(TRUE);
+      _selectAccount->setChecked(true);
       _account->setId(financialpopulate.value("flitem_accnt_id").toInt());
     }
     _showBeginning->setChecked(financialpopulate.value("flitem_showstart").toBool());
@@ -435,26 +435,26 @@ void financialLayoutItem::populate()
     _showCustomPrcnt->setChecked(financialpopulate.value("flitem_showcustomprcnt").toBool());
     
     if ((_rpttype != cAdHoc) & ((_showDiffPrcnt->isChecked()) || (_showEndingPrcnt->isChecked())))
-		_showPrcnt->setChecked(TRUE);
+		_showPrcnt->setChecked(true);
 
     QString src = financialpopulate.value("flitem_custom_source").toString();
     if("S" == src)
-      _customUseBeginning->setChecked(TRUE);
+      _customUseBeginning->setChecked(true);
     else if("E" == src)
-      _customUseEnding->setChecked(TRUE);
+      _customUseEnding->setChecked(true);
     else if("D" == src)
-      _customUseDebits->setChecked(TRUE);
+      _customUseDebits->setChecked(true);
     else if("C" == src)
-      _customUseCredits->setChecked(TRUE);
+      _customUseCredits->setChecked(true);
     else if("B" == src)
-      _customUseBudget->setChecked(TRUE);
+      _customUseBudget->setChecked(true);
     else if("F" == src)
-      _customUseDiff->setChecked(TRUE);
+      _customUseDiff->setChecked(true);
 
     if(financialpopulate.value("flitem_subtract").toBool())
-      _subtract->setChecked(TRUE);
+      _subtract->setChecked(true);
     else
-      _add->setChecked(TRUE);
+      _add->setChecked(true);
 
     _flheadid = financialpopulate.value("flitem_flhead_id").toInt();
 
@@ -489,41 +489,41 @@ void financialLayoutItem::sToggleShowPrcnt()
 	{
 		if (_showPrcnt->isChecked())
 		{
-			_showBudgetPrcnt->setChecked(TRUE);
-			_showDiffPrcnt->setChecked(TRUE);
+			_showBudgetPrcnt->setChecked(true);
+			_showDiffPrcnt->setChecked(true);
 		}
 		else
 		{
-			_showBudgetPrcnt->setChecked(FALSE);
-			_showDiffPrcnt->setChecked(FALSE);
+			_showBudgetPrcnt->setChecked(false);
+			_showDiffPrcnt->setChecked(false);
 		}
 	}
 	else if (_rpttype == cBalance)
 	{
 		if (_showPrcnt->isChecked())
 		{
-			_showBudgetPrcnt->setChecked(TRUE);
-			_showEndingPrcnt->setChecked(TRUE);
+			_showBudgetPrcnt->setChecked(true);
+			_showEndingPrcnt->setChecked(true);
 		}
 		else
 		{
-			_showBudgetPrcnt->setChecked(FALSE);
-			_showEndingPrcnt->setChecked(FALSE);
+			_showBudgetPrcnt->setChecked(false);
+			_showEndingPrcnt->setChecked(false);
 		}
 	}
 	else if (_rpttype == cCash)
 	{
 		if (_showPrcnt->isChecked())
 		{
-			_showDBPrcnt->setChecked(TRUE);
-			_showBudgetPrcnt->setChecked(TRUE);
-			_showDiffPrcnt->setChecked(TRUE);
+			_showDBPrcnt->setChecked(true);
+			_showBudgetPrcnt->setChecked(true);
+			_showDiffPrcnt->setChecked(true);
 		}
 		else
 		{
-			_showDBPrcnt->setChecked(FALSE);
-			_showBudgetPrcnt->setChecked(FALSE);
-			_showDiffPrcnt->setChecked(FALSE);
+			_showDBPrcnt->setChecked(false);
+			_showBudgetPrcnt->setChecked(false);
+			_showDiffPrcnt->setChecked(false);
 		}
 	}
 }
@@ -531,17 +531,17 @@ void financialLayoutItem::sToggleShowPrcnt()
 void financialLayoutItem::sToggleSegment()
 {
     if (_selectAccount->isChecked())
-      _selectSegment->setChecked(FALSE);
+      _selectSegment->setChecked(false);
     else
-      _selectSegment->setChecked(TRUE);
+      _selectSegment->setChecked(true);
 }
 
 void financialLayoutItem::sToggleAccount()
 {
     if (_selectSegment->isChecked())
-      _selectAccount->setChecked(FALSE);
+      _selectAccount->setChecked(false);
     else
-      _selectAccount->setChecked(TRUE);
+      _selectAccount->setChecked(true);
 }
 
 void financialLayoutItem::populateSubTypes()

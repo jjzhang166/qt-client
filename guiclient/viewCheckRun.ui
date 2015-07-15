@@ -206,7 +206,7 @@ to be bound by its terms.</comment>
                  <bool>true</bool>
                 </property>
                 <property name="text" >
-                 <string>Pri&amp;nt</string>
+                 <string>Pri&amp;nt/Written/Paid</string>
                 </property>
                </widget>
               </item>

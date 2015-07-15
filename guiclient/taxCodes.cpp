@@ -21,7 +21,7 @@
 #include "storedProcErrorLookup.h"
 #include "taxCode.h"
 
-taxCodes::taxCodes(QWidget* parent, const char* name, Qt::WFlags fl)
+taxCodes::taxCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
@@ -46,7 +46,7 @@ taxCodes::taxCodes(QWidget* parent, const char* name, Qt::WFlags fl)
     }
     else
     {
-      _new->setEnabled(FALSE);
+      _new->setEnabled(false);
       connect(_tax, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
     }
 
@@ -68,7 +68,7 @@ void taxCodes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  taxCode newdlg(this, "", TRUE);
+  taxCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -81,7 +81,7 @@ void taxCodes::sEdit()
   params.append("mode", "edit");
   params.append("tax_id", _tax->id());
 
-  taxCode newdlg(this, "", TRUE);
+  taxCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -94,7 +94,7 @@ void taxCodes::sView()
   params.append("mode", "view");
   params.append("tax_id", _tax->id());
 
-  taxCode newdlg(this, "", TRUE);
+  taxCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

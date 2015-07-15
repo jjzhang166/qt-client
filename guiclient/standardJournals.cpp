@@ -18,7 +18,7 @@
 #include "postStandardJournal.h"
 #include "standardJournal.h"
 
-standardJournals::standardJournals(QWidget* parent, const char* name, Qt::WFlags fl)
+standardJournals::standardJournals(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -41,7 +41,7 @@ standardJournals::standardJournals(QWidget* parent, const char* name, Qt::WFlags
     connect(_stdjrnl, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }
   else
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
 
   if (_privileges->check("PostStandardJournals"))
     connect(_stdjrnl, SIGNAL(valid(bool)), _post, SLOT(setEnabled(bool)));
@@ -67,7 +67,7 @@ void standardJournals::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  standardJournal newdlg(this, "", TRUE);
+  standardJournal newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -80,7 +80,7 @@ void standardJournals::sEdit()
   params.append("mode", "edit");
   params.append("stdjrnl_id", _stdjrnl->id());
 
-  standardJournal newdlg(this, "", TRUE);
+  standardJournal newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -93,7 +93,7 @@ void standardJournals::sView()
   params.append("mode", "view");
   params.append("stdjrnl_id", _stdjrnl->id());
 
-  standardJournal newdlg(this, "", TRUE);
+  standardJournal newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -103,7 +103,7 @@ void standardJournals::sPost()
   ParameterList params;
   params.append("stdjrnl_id", _stdjrnl->id());
 
-  postStandardJournal newdlg(this, "", TRUE);
+  postStandardJournal newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

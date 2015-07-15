@@ -31,7 +31,7 @@
 #include "transferOrderItem.h"
 #include "returnAuthorizationItem.h"
 
-unpostedPoReceipts::unpostedPoReceipts(QWidget* parent, const char* name, Qt::WFlags fl)
+unpostedPoReceipts::unpostedPoReceipts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -156,21 +156,21 @@ void unpostedPoReceipts::sViewOrderItem()
   if (ordertype == "PO")
   {
     params.append("poitem_id",	_recv->altId());
-    purchaseOrderItem newdlg(this, "", TRUE);
+    purchaseOrderItem newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
   else if (ordertype == "TO")
   {
     params.append("toitem_id",	_recv->altId());
-    transferOrderItem newdlg(this, "", TRUE);
+    transferOrderItem newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
   else if (ordertype == "RA")
   {
     params.append("raitem_id",	_recv->altId());
-    returnAuthorizationItem newdlg(this, "", TRUE);
+    returnAuthorizationItem newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
@@ -184,7 +184,7 @@ void unpostedPoReceipts::sPost()
 
   if (_privileges->check("ChangePORecvPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Receipt Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {

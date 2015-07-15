@@ -22,7 +22,7 @@
 #include "updateActualCostsByItem.h"
 #include "postCostsByItem.h"
 
-dspItemCostsByClassCode::dspItemCostsByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemCostsByClassCode::dspItemCostsByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspItemCostsByClassCode", fl)
 {
   setupUi(optionsWidget());

@@ -19,7 +19,7 @@
 #include "inputManager.h"
 #include "printShippingForm.h"
 
-dspShipmentsByDate::dspShipmentsByDate(QWidget* parent, const char*, Qt::WFlags fl)
+dspShipmentsByDate::dspShipmentsByDate(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspShipmentsByDate", fl)
 {
   setupUi(optionsWidget());

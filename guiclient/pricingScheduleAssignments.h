@@ -19,7 +19,7 @@ class pricingScheduleAssignments : public XWidget, public Ui::pricingScheduleAss
     Q_OBJECT
 
 public:
-    pricingScheduleAssignments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    pricingScheduleAssignments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~pricingScheduleAssignments();
 
 public slots:

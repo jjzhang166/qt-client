@@ -8,8 +8,14 @@
  * to be bound by its terms.
  */
 
+/* Important note: currently this window is only called from Setup, which
+   wraps everything in a transaction. If this changes we'll have to revisit
+   this code to add transaction handling and shift error reporting.
+ */
+
 #include "characteristic.h"
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QItemSelectionModel>
 #include <QSqlError>
@@ -19,16 +25,132 @@
 #include <QSqlTableModel>
 #include <QVariant>
 
-characteristic::characteristic(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+#include <metasql.h>
+#include "errorReporter.h"
+
+#define DEBUG false
+
+class characteristicPrivate {
+  public:
+    int idCol;
+    int charIdCol;
+    int valueCol;
+    int orderCol;
+
+    int charid;
+    QSqlTableModel *charoptModel;
+    QMap<QString, QCheckBox*> checkboxMap;
+    int mode;
+    characteristic *parent;
+    QCheckBox *firstWidget;
+
+    characteristicPrivate(characteristic *p)
+      : parent(p)
+    {
+      charid = -1;
+      firstWidget = 0;
+
+      charoptModel = new QSqlTableModel;
+      charoptModel->setTable("charopt");
+      charoptModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+      idCol     = charoptModel->fieldIndex("charopt_id");
+      charIdCol = charoptModel->fieldIndex("charopt_char_id");
+      valueCol  = charoptModel->fieldIndex("charopt_value");
+      orderCol  = charoptModel->fieldIndex("charopt_order");
+
+      int counter   = 0;
+      int colHeight = 7;
+      QGroupBox   *useGroup = parent->findChild<QGroupBox*>("_useGroup");
+      QLayout     *lyt      = useGroup->layout();
+      QGridLayout *grid     = qobject_cast<QGridLayout*>(lyt);
+
+      XSqlQuery q("SELECT source_charass, source_descrip"
+                  "  FROM source"
+                  "  JOIN pg_class c on source_table = relname AND relkind = 'r'"
+                  "  JOIN pg_namespace n on relnamespace = n.oid"
+                  "  JOIN regexp_split_to_table(buildSearchPath(), ',\\s*') sp"
+                  "       on nspname = sp"
+                  " WHERE source_charass not in ('', 'CT')" // bug 25940
+                  " ORDER BY source_descrip;");
+      // make the window a max of 4 columns of checkboxes wide
+      if (q.size() > 4 * colHeight)
+      {
+        colHeight = q.size() / 4 + 1;
+      }
+
+      while (q.next())
+      {
+        QString    descrip = q.value("source_descrip").toString();
+        QCheckBox *cb      = new QCheckBox(parent->tr(descrip.toLatin1()), parent);
+        QString    abbr    = q.value("source_charass").toString();
+        cb->setObjectName(QString("_") + abbr.toLower());
+        if (DEBUG) qDebug() << abbr << cb->objectName();
+        checkboxMap.insert(abbr, cb);
+        grid->addWidget(cb, counter % colHeight, counter / colHeight);
+        counter++;
+
+        if (! firstWidget)
+          firstWidget = cb;
+      }
+      ErrorReporter::error(QtCriticalMsg, parent,
+                           parent->tr("Error Finding Characteristic Information"),
+                           q, __FILE__, __LINE__);
+      setMode(cView); // must follow building the checkboxes
+    }
+
+    bool updateCharUse(int charId, QString targetType, bool isUsed)
+    {
+      QCheckBox *cb = checkboxMap.value(targetType);
+      if (cb)
+      {
+        QString str;
+        if (isUsed)
+          str = "INSERT INTO charuse (charuse_char_id, charuse_target_type)"
+                " SELECT :char_id, :target_type"
+                "  WHERE NOT EXISTS (SELECT 1"
+                "                      FROM charuse"
+                "                     WHERE charuse_char_id = :char_id"
+                "                       AND charuse_target_type = :target_type);";
+        else
+          str = "DELETE FROM charuse"
+                " WHERE charuse_char_id = :char_id"
+                "   AND charuse_target_type = :target_type;";
+
+        XSqlQuery q;
+        q.prepare(str);
+        q.bindValue(":char_id",     charId);
+        q.bindValue(":target_type", targetType);
+        q.exec();
+        ErrorReporter::error(QtCriticalMsg, parent,
+                             parent->tr("Error Saving Characteristic Usage"),
+                             q, __FILE__, __LINE__);
+        return (q.lastError().type() == QSqlError::NoError);
+      }
+      return false;
+    }
+
+  public slots:
+    void setId(int id)
+    {
+      charid = id;
+    }
+    void setMode(int pMode)
+    {
+      mode = pMode;
+      foreach (QCheckBox *cb, checkboxMap.values())
+      {
+        cb->setEnabled(mode != cView);
+      }
+    }
+};
+
+characteristic::characteristic(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-  _charid = -1;
-
-  _charoptModel = new QSqlTableModel;
-  _charoptModel->setTable("charopt");
-  _charoptModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+  _d = new characteristicPrivate(this);
 
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_name, SIGNAL(editingFinished()), this, SLOT(sCheck()));
@@ -39,7 +161,11 @@ characteristic::characteristic(QWidget* parent, const char* name, bool modal, Qt
 
 characteristic::~characteristic()
 {
-  // no need to delete child widgets, Qt does it all for us
+  if (_d)
+  {
+    delete _d;
+    _d = 0;
+  }
 }
 
 void characteristic::languageChange()
@@ -57,7 +183,7 @@ enum SetResponse characteristic::set(const ParameterList &pParams)
   param = pParams.value("char_id", &valid);
   if (valid)
   {
-    _charid = param.toInt();
+    _d->setId(param.toInt());
     populate();
   }
 
@@ -66,48 +192,27 @@ enum SetResponse characteristic::set(const ParameterList &pParams)
   {
     if (param.toString() == "new")
     {
-      _mode = cNew;
+      _d->setMode(cNew);
 
       characteristicet.exec("SELECT NEXTVAL('char_char_id_seq') AS char_id;");
       if (characteristicet.first())
-        _charid = characteristicet.value("char_id").toInt();
+        _d->setId(characteristicet.value("char_id").toInt());
 
       sFillList();
     }
     else if (param.toString() == "edit")
     {
-      _mode = cEdit;
-// TODO
-//      _mask->setEnabled(FALSE);
-//      _validator->setEnabled(FALSE);
+      _d->setMode(cEdit);
     }
     else if (param.toString() == "view")
     {
-      _mode = cView;
+      _d->setMode(cView);
       _name->setEnabled(false);
       _search->setEnabled(false);
       _useGroup->setEnabled(false);
       _order->setEnabled(false);
       _mask->setEnabled(false);
       _validator->setEnabled(false);
-
-      _items->setEnabled(FALSE);
-      _customers->setEnabled(FALSE);
-      _lotSerial->setEnabled(FALSE);
-      _addresses->setEnabled(FALSE);
-      _crmaccounts->setEnabled(FALSE);
-      _contacts->setEnabled(FALSE);
-      _opportunity->setEnabled(FALSE);
-      _employees->setEnabled(FALSE);
-      _incidents->setEnabled(false);
-      _projects->setEnabled(FALSE);
-      _tasks->setEnabled(FALSE);
-      _quotes->setEnabled(false);
-      _salesorders->setEnabled(false);
-      _invoices->setEnabled(false);
-      _vendors->setEnabled(false);
-      _purchaseorders->setEnabled(false);
-      _vouchers->setEnabled(false);
 
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
@@ -119,6 +224,8 @@ enum SetResponse characteristic::set(const ParameterList &pParams)
 
 void characteristic::sSave()
 {
+// TODO: verify that _mask      applies to all existing charass
+// TODO: verify that _validator applies to all existing charass
   XSqlQuery characteristicSave;
   if (_name->text().trimmed().isEmpty())
   {
@@ -128,28 +235,30 @@ void characteristic::sSave()
     _name->setFocus();
     return;
   }
-  if (! (_items->isChecked()       || _customers->isChecked() ||
-	 _lotSerial->isChecked()   || _addresses->isChecked() ||
-	 _crmaccounts->isChecked() || _contacts->isChecked()  ||
-         _opportunity->isChecked() || _employees->isChecked() ||
-         _incidents->isChecked()   || _quotes->isChecked()    ||
-         _salesorders->isChecked() || _invoices->isChecked()  ||
-         _vendors->isChecked()     || _purchaseorders->isChecked() ||
-         _vouchers->isChecked()    || _projects->isChecked()  ||
-	     _tasks->isChecked()  ))
 
+  bool allClear = true;
+  foreach (QCheckBox *cb, _d->checkboxMap.values())
+  {
+    if (cb && cb->isChecked())
+    {
+      allClear = false;
+      break;
+    }
+  }
+  
+  if (allClear)
   {
     QMessageBox::critical(this, tr("Apply Characteristic"),
 			  tr("<p>You must apply this Characteristic to at "
 			     "least one type of application object."));
-    _items->setFocus();
+    _d->firstWidget->setFocus();
     return;
   }
 
   QStringList values;
-  for (int i = 0; i < _charoptModel->rowCount(); i++)
+  for (int i = 0; i < _d->charoptModel->rowCount(); i++)
   {
-    QString data = _charoptModel->data(_charoptModel->index(i,2), Qt::EditRole).toString();
+    QString data = _d->charoptModel->data(_d->charoptModel->index(i,_d->valueCol), Qt::EditRole).toString();
     if (values.contains(data))
     {
       QMessageBox::critical(this, tr("Error"), tr("Option list may not contain duplicates."));
@@ -158,52 +267,24 @@ void characteristic::sSave()
     values.append(data);
   }
 
-  if (_mode == cNew)
+  if (_d->mode == cNew)
   {
     characteristicSave.prepare( "INSERT INTO char "
-               "( char_id, char_name, char_items, char_customers, "
-               "  char_contacts, char_crmaccounts, char_addresses, "
-               "  char_options, char_opportunity,"
-               "  char_attributes, char_lotserial, char_employees,"
-               "  char_incidents, char_projects, char_tasks, "
-			   "  char_quotes, char_salesorders, char_invoices,"
-               "  char_vendors, char_purchaseorders, char_vouchers,"
+               "( char_id, char_name, char_options, char_attributes,"
                "  char_notes, char_mask, char_validator, char_type, "
                "  char_order, char_search ) "
                "VALUES "
-               "( :char_id, :char_name, :char_items, :char_customers, "
-               "  :char_contacts, :char_crmaccounts, :char_addresses, "
-               "  :char_options, :char_opportunity,"
-               "  :char_attributes, :char_lotserial, :char_employees,"
-               "  :char_incidents, :char_projects, :char_tasks, "
-               "  :char_quotes, :char_salesorders, :char_invoices,"
-               "  :char_vendors, :char_purchaseorders, :char_vouchers,"
+               "( :char_id, :char_name, :char_options, :char_attributes,"
                "  :char_notes, :char_mask, :char_validator, :char_type, "
                "  :char_order, :char_search );" );
 
     characteristicSave.bindValue(":char_type", _type->currentIndex());
   }
-  else if (_mode == cEdit)
+  else if (_d->mode == cEdit)
     characteristicSave.prepare( "UPDATE char "
-               "SET char_name=:char_name, char_items=:char_items, "
-               "    char_customers=:char_customers, "
-               "    char_contacts=:char_contacts, "
-               "    char_crmaccounts=:char_crmaccounts, "
-               "    char_addresses=:char_addresses, "
+               "SET char_name=:char_name, "
                "    char_options=:char_options,"
                "    char_attributes=:char_attributes, "
-               "    char_opportunity=:char_opportunity,"
-               "    char_lotserial=:char_lotserial,"
-               "    char_employees=:char_employees,"
-               "    char_incidents=:char_incidents,"
-               "    char_projects=:char_projects,"
-               "    char_tasks=:char_tasks,"
-               "    char_quotes=:char_quotes,"
-               "    char_salesorders=:char_salesorders,"
-               "    char_invoices=:char_invoices,"
-               "    char_vendors=:char_vendors,"
-               "    char_purchaseorders=:char_purchaseorders,"
-               "    char_vouchers=:char_vouchers,"
                "    char_notes=:char_notes,"
                "    char_mask=:char_mask,"
                "    char_validator=:char_validator, "
@@ -211,28 +292,13 @@ void characteristic::sSave()
                "    char_search=:char_search "
                "WHERE (char_id=:char_id);" );
 
-  characteristicSave.bindValue(":char_id", _charid);
+  characteristicSave.bindValue(":char_id", _d->charid);
   characteristicSave.bindValue(":char_name", _name->text());
-  characteristicSave.bindValue(":char_items",       QVariant(_items->isChecked()));
-  characteristicSave.bindValue(":char_customers",   QVariant(_customers->isChecked()));
-  characteristicSave.bindValue(":char_crmaccounts", QVariant(_crmaccounts->isChecked()));
-  characteristicSave.bindValue(":char_contacts",	   QVariant(_contacts->isChecked()));
-  characteristicSave.bindValue(":char_addresses",   QVariant(_addresses->isChecked()));
-  characteristicSave.bindValue(":char_options",     QVariant(FALSE));
-  characteristicSave.bindValue(":char_attributes",  QVariant(FALSE));
-  characteristicSave.bindValue(":char_lotserial",   QVariant(_lotSerial->isChecked()));
-  characteristicSave.bindValue(":char_opportunity", QVariant(_opportunity->isChecked()));
-  characteristicSave.bindValue(":char_employees",   QVariant(_employees->isChecked()));
-  characteristicSave.bindValue(":char_incidents",   QVariant(_incidents->isChecked()));
-  characteristicSave.bindValue(":char_projects",    QVariant(_projects->isChecked()));
-  characteristicSave.bindValue(":char_tasks",       QVariant(_tasks->isChecked()));
-  characteristicSave.bindValue(":char_quotes",         QVariant(_quotes->isChecked()));
-  characteristicSave.bindValue(":char_salesorders",    QVariant(_salesorders->isChecked()));
-  characteristicSave.bindValue(":char_invoices",       QVariant(_invoices->isChecked()));
-  characteristicSave.bindValue(":char_vendors",        QVariant(_vendors->isChecked()));
-  characteristicSave.bindValue(":char_purchaseorders", QVariant(_purchaseorders->isChecked()));
-  characteristicSave.bindValue(":char_vouchers",       QVariant(_vouchers->isChecked()));
+
+  characteristicSave.bindValue(":char_options",     QVariant(false));
+  characteristicSave.bindValue(":char_attributes",  QVariant(false));
   characteristicSave.bindValue(":char_notes",       _description->toPlainText().trimmed());
+
   if (_mask->currentText().trimmed().size() > 0)
     characteristicSave.bindValue(":char_mask",        _mask->currentText());
   if (_validator->currentText().trimmed().size() > 0)
@@ -240,22 +306,32 @@ void characteristic::sSave()
   characteristicSave.bindValue(":char_order", _order->value());
   characteristicSave.bindValue(":char_search", QVariant(_search->isChecked()));
   characteristicSave.exec();
-  if (characteristicSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Characteristic"),
+                           characteristicSave, __FILE__, __LINE__))
   {
-    systemError(this, characteristicSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
-  _charoptModel->submitAll();
+  foreach (QString targetType, _d->checkboxMap.keys())
+  {
+    QCheckBox *cb = _d->checkboxMap.value(targetType);
+    if (! _d->updateCharUse(_d->charid, targetType, cb->isChecked()))
+    {
+      cb->setFocus();
+      return;
+    }
+  }
 
-  done(_charid);
+  _d->charoptModel->submitAll();
+
+  done(_d->charid);
 }
 
 void characteristic::sCheck()
 {
   XSqlQuery characteristicCheck;
   _name->setText(_name->text().trimmed());
-  if ((_mode == cNew) && (_name->text().trimmed().length()))
+  if ((_d->mode == cNew) && (_name->text().trimmed().length()))
   {
     characteristicCheck.prepare( "SELECT char_id "
                "FROM char "
@@ -264,82 +340,87 @@ void characteristic::sCheck()
     characteristicCheck.exec();
     if (characteristicCheck.first())
     {
-      _charid = characteristicCheck.value("char_id").toInt();
-      _mode = cEdit;
+      _d->setId(characteristicCheck.value("char_id").toInt());
+      _d->setMode(cEdit);
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
 
 void characteristic::populate()
 {
-  XSqlQuery characteristicpopulate;
+  XSqlQuery charq;
 
-  characteristicpopulate.prepare( "SELECT * "
-             "FROM char "
-             "WHERE (char_id=:char_id);" );
-  characteristicpopulate.bindValue(":char_id", _charid);
-  characteristicpopulate.exec();
-  if (characteristicpopulate.first())
+  charq.prepare("SELECT * FROM char WHERE (char_id=:char_id);");
+  charq.bindValue(":char_id", _d->charid);
+  charq.exec();
+  if (charq.first())
   {
-    _name->setText(characteristicpopulate.value("char_name").toString());
-    _items->setChecked(characteristicpopulate.value("char_items").toBool());
-    _customers->setChecked(characteristicpopulate.value("char_customers").toBool());
-    _contacts->setChecked(characteristicpopulate.value("char_contacts").toBool());
-    _crmaccounts->setChecked(characteristicpopulate.value("char_crmaccounts").toBool());
-    _addresses->setChecked(characteristicpopulate.value("char_addresses").toBool());
-    _lotSerial->setChecked(characteristicpopulate.value("char_lotserial").toBool());
-    _opportunity->setChecked(characteristicpopulate.value("char_opportunity").toBool());
-    _employees->setChecked(characteristicpopulate.value("char_employees").toBool());
-    _incidents->setChecked(characteristicpopulate.value("char_incidents").toBool());
-    _projects->setChecked(characteristicpopulate.value("char_projects").toBool());
-    _tasks->setChecked(characteristicpopulate.value("char_tasks").toBool());
-    _quotes->setChecked(characteristicpopulate.value("char_quotes").toBool());
-    _salesorders->setChecked(characteristicpopulate.value("char_salesorders").toBool());
-    _invoices->setChecked(characteristicpopulate.value("char_invoices").toBool());
-    _vendors->setChecked(characteristicpopulate.value("char_vendors").toBool());
-    _purchaseorders->setChecked(characteristicpopulate.value("char_purchaseorders").toBool());
-    _vouchers->setChecked(characteristicpopulate.value("char_vouchers").toBool());
-    _description->setText(characteristicpopulate.value("char_notes").toString());
-    _mask->setText(characteristicpopulate.value("char_mask").toString());
-    _validator->setText(characteristicpopulate.value("char_validator").toString());
-    _type->setCurrentIndex(characteristicpopulate.value("char_type").toInt());
+    _name->setText(charq.value("char_name").toString());
+    _description->setText(charq.value("char_notes").toString());
+    _mask->setText(charq.value("char_mask").toString());
+    _validator->setText(charq.value("char_validator").toString());
+    _type->setCurrentIndex(charq.value("char_type").toInt());
     _type->setEnabled(false);
-    _order->setValue(characteristicpopulate.value("char_order").toInt());
-    _search->setChecked(characteristicpopulate.value("char_search").toBool());
+    _order->setValue(charq.value("char_order").toInt());
+    _search->setChecked(charq.value("char_search").toBool());
   }
-  else if (characteristicpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this,
+                           tr("Error Getting Characteristic"),
+                           charq, __FILE__, __LINE__))
   {
-    systemError(this, characteristicpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
+  charq.prepare("SELECT * FROM charuse WHERE charuse_char_id=:char_id;");
+  charq.bindValue(":char_id", _d->charid);
+  charq.exec();
+  while (charq.next())
+  {
+    QCheckBox *cb = _d->checkboxMap.value(charq.value("charuse_target_type")
+                                               .toString());
+    if (DEBUG)
+      qDebug() << charq.value("charuse_target_type")
+               << (cb ? cb->objectName() : "[no cb]");
+    if (cb)
+      cb->setChecked(true);
+  }
+  ErrorReporter::error(QtCriticalMsg, this,
+                       tr("Error Getting Characteristic"),
+                       charq, __FILE__, __LINE__);
 
   sFillList();
 }
 
 void characteristic::sFillList()
 {
-  QString filter = QString("charopt_char_id=%1").arg(_charid);
-  _charoptModel->setFilter(filter);
-  _charoptModel->setSort(3, Qt::AscendingOrder);
-  _charoptModel->select();
-  _charoptModel->setHeaderData(2, Qt::Horizontal, QVariant(tr("Value")));
-  _charoptModel->setHeaderData(3, Qt::Horizontal, QVariant(tr("Order")));
+  QString filter = QString("charopt_char_id=%1").arg(_d->charid);
+  _d->charoptModel->setFilter(filter);
+  _d->charoptModel->setSort(_d->orderCol, Qt::AscendingOrder);
+  _d->charoptModel->select();
+  _d->charoptModel->setHeaderData(_d->valueCol, Qt::Horizontal, QVariant(tr("Value")));
+  _d->charoptModel->setHeaderData(_d->orderCol, Qt::Horizontal, QVariant(tr("Order")));
 
-  _charoptView->setModel(_charoptModel);
-  _charoptView->setColumnHidden(0, true);
-  _charoptView->setColumnHidden(1, true);
+  _charoptView->setModel(_d->charoptModel);
+  for (int i = 0; i < _d->charoptModel->columnCount(); i++) {
+    if (DEBUG)
+    {
+      qDebug() << i << _d->valueCol << _d->orderCol
+               << (i != _d->valueCol && i !=_d->orderCol);
+    }
+    _charoptView->setColumnHidden(i, i != _d->valueCol && i !=_d->orderCol);
+  }
 }
 
 void characteristic::sNew()
 {
-  int row = _charoptModel->rowCount();
-  _charoptModel->insertRows(row,1);
-  _charoptModel->setData(_charoptModel->index(row,1), QVariant(_charid));
-  _charoptModel->setData(_charoptModel->index(row,3), 0);
-  QModelIndex idx = _charoptModel->index(row,0);
+  int row = _d->charoptModel->rowCount();
+  _d->charoptModel->insertRows(row,1);
+  _d->charoptModel->setData(_d->charoptModel->index(row, _d->charIdCol), QVariant(_d->charid));
+  _d->charoptModel->setData(_d->charoptModel->index(row, _d->orderCol), 0);
+  QModelIndex idx = _d->charoptModel->index(row, _d->idCol);
   _charoptView->selectionModel()->select(QItemSelection(idx, idx),
                                          QItemSelectionModel::ClearAndSelect |
                                          QItemSelectionModel::Rows);
@@ -348,7 +429,7 @@ void characteristic::sNew()
 void characteristic::sDelete()
 {
   int row = _charoptView->selectionModel()->currentIndex().row();
-  QVariant value = _charoptModel->data(_charoptModel->index(row,2));
+  QVariant value = _d->charoptModel->data(_d->charoptModel->index(row, _d->valueCol));
 
   // Validate
   XSqlQuery qry;
@@ -356,7 +437,7 @@ void characteristic::sDelete()
               "FROM charass "
               "WHERE ((charass_char_id=:char_id) "
               " AND (charass_value=:value));");
-  qry.bindValue(":char_id", _charid);
+  qry.bindValue(":char_id", _d->charid);
   qry.bindValue(":value", value);
   qry.exec();
   if (qry.first())
@@ -370,7 +451,7 @@ void characteristic::sDelete()
     return;
   }
 
-  _charoptModel->removeRows(row, 1);
+  _d->charoptModel->removeRows(row,  _d->charIdCol);
   _charoptView->setRowHidden(row, QModelIndex(), true);
 }
 
@@ -378,5 +459,4 @@ void characteristic::sCharoptClicked(QModelIndex idx)
 {
   _delete->setEnabled(idx.isValid());
 }
-
 

@@ -303,7 +303,7 @@ OrderLineEdit::OrderLineEdit(QWidget *pParent, const char *pName) :
   _query = "SELECT orderhead_id AS id, orderhead_number AS number,"
 	   "       orderhead_type AS name, orderhead_status AS description,"
 	   "       orderhead_from, orderhead_to "
-	   "FROM orderhead WHERE (TRUE) ";
+	   "FROM orderhead WHERE (true) ";
 }
 
 OrderLineEdit::~OrderLineEdit()
@@ -325,7 +325,7 @@ void OrderLineEdit::sParse()
 
     if (! _parsed)
     {
-      _parsed = TRUE;
+      _parsed = true;
       QString stripped = text().trimmed().toUpper();
       if (stripped.length() == 0)
       {
@@ -344,7 +344,7 @@ void OrderLineEdit::sParse()
         {
           // Check for other active orders with the same number
           XSqlQuery countQ;
-          countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (TRUE) " + _numClause +
+          countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (true) " + _numClause +
                           (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                           (_hasActive ? _activeClause : "" ) + QString(";"));
           countQ.bindValue(":number", numQ.value("number").toString());
@@ -791,7 +791,7 @@ void OrderLineEdit::silentSetId(const int pId)
     QString oldExtraClause = _extraClause;
 
     XSqlQuery countQ;
-    countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (TRUE) " + _idClause +
+    countQ.prepare("SELECT COUNT(*) AS count FROM orderhead WHERE (true) " + _idClause +
 		    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
 		    QString(";"));
     countQ.bindValue(":id", pId);
@@ -883,7 +883,7 @@ void OrderLineEdit::silentSetId(const int pId)
     _idColName="orderhead_id";
   }
 
-  _parsed = TRUE;
+  _parsed = true;
   emit parsed();
 }
 

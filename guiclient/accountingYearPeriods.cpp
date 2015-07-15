@@ -15,11 +15,12 @@
 #include <QSqlError>
 
 #include <openreports.h>
+#include "errorReporter.h"
 
 #include "accountingYearPeriod.h"
 #include "storedProcErrorLookup.h"
 
-accountingYearPeriods::accountingYearPeriods(QWidget* parent, const char* name, Qt::WFlags fl)
+accountingYearPeriods::accountingYearPeriods(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
@@ -31,6 +32,7 @@ accountingYearPeriods::accountingYearPeriods(QWidget* parent, const char* name, 
     connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
     connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
     connect(_closePeriod, SIGNAL(clicked()), this, SLOT(sClosePeriod()));
+    connect(_copyPeriod, SIGNAL(clicked()), this, SLOT(sCopyPeriod()));
 
     _period->addColumn(tr("Start"),  _dateColumn, Qt::AlignCenter, true, "yearperiod_start");
     _period->addColumn(tr("End"),    _dateColumn, Qt::AlignCenter, true, "yearperiod_end");
@@ -44,7 +46,7 @@ accountingYearPeriods::accountingYearPeriods(QWidget* parent, const char* name, 
     }
     else
     {
-      _new->setEnabled(FALSE);
+      _new->setEnabled(false);
       connect(_period, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
     }
 
@@ -97,7 +99,7 @@ void accountingYearPeriods::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  accountingYearPeriod newdlg(this, "", TRUE);
+  accountingYearPeriod newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -110,7 +112,7 @@ void accountingYearPeriods::sEdit()
   params.append("mode", "edit");
   params.append("yearperiod_id", _period->id());
 
-  accountingYearPeriod newdlg(this, "", TRUE);
+  accountingYearPeriod newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -123,7 +125,7 @@ void accountingYearPeriods::sView()
   params.append("mode", "view");
   params.append("yearperiod_id", _period->id());
 
-  accountingYearPeriod newdlg(this, "", TRUE);
+  accountingYearPeriod newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -199,6 +201,21 @@ void accountingYearPeriods::sOpenPeriod()
   }
 }
 
+void accountingYearPeriods::sCopyPeriod()
+{
+  XSqlQuery copyAccountingYear;
+  copyAccountingYear.prepare("SELECT copyAccountingYearPeriod(max(yearperiod_id)) AS result FROM yearperiod;");
+  copyAccountingYear.exec();
+  if (copyAccountingYear.first())
+  {
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Could not Copy Fiscal Year"),
+                             copyAccountingYear, __FILE__, __LINE__))
+      return;
+    else   
+      sFillList();
+  }
+}
+
 void accountingYearPeriods::sPrint()
 {
   orReport report("AccountingYearPeriodsMasterList");
@@ -215,7 +232,8 @@ void accountingYearPeriods::sFillList()
                     "            ELSE 1"
                     "       END,"
                     "       yearperiod_start, yearperiod_end,"
-                    "       formatBoolYN(yearperiod_closed) AS closed"
+                    "       formatBoolYN(yearperiod_closed) AS closed,"
+                    "       ((SELECT max(yearperiod_end) FROM yearperiod) = yearperiod_end) AS lastfiscalyear"
                     "  FROM yearperiod "
-                    " ORDER BY yearperiod_start;", TRUE );
+                    " ORDER BY yearperiod_start;", true );
 }

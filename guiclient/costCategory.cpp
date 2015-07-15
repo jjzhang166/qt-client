@@ -16,7 +16,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-costCategory::costCategory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+costCategory::costCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -108,21 +108,21 @@ enum SetResponse costCategory::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _category->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _asset->setReadOnly(TRUE);
-      _expense->setReadOnly(TRUE);
-      _wip->setReadOnly(TRUE);
-      _inventoryCost->setReadOnly(TRUE);
-      _adjustment->setReadOnly(TRUE);
-      _invScrap->setReadOnly(TRUE);
-      _mfgScrap->setReadOnly(TRUE);
-      _transformClearing->setReadOnly(TRUE);
-      _purchasePrice->setReadOnly(TRUE);
-      _liability->setReadOnly(TRUE);
-      _freight->setReadOnly(TRUE);
-      _shippingAsset->setReadOnly(TRUE);
-      _toLiabilityClearing->setReadOnly(TRUE);
+      _category->setEnabled(false);
+      _description->setEnabled(false);
+      _asset->setReadOnly(true);
+      _expense->setReadOnly(true);
+      _wip->setReadOnly(true);
+      _inventoryCost->setReadOnly(true);
+      _adjustment->setReadOnly(true);
+      _invScrap->setReadOnly(true);
+      _mfgScrap->setReadOnly(true);
+      _transformClearing->setReadOnly(true);
+      _purchasePrice->setReadOnly(true);
+      _liability->setReadOnly(true);
+      _freight->setReadOnly(true);
+      _shippingAsset->setReadOnly(true);
+      _toLiabilityClearing->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -149,7 +149,7 @@ void costCategory::sCheck()
       _mode = cEdit;
       populate();
 
-      _category->setEnabled(FALSE);
+      _category->setEnabled(false);
     }
     else if (costCheck.lastError().type() != QSqlError::NoError)
     {

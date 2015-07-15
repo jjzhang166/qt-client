@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include "standardJournalGroupItem.h"
 
-standardJournalGroup::standardJournalGroup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+standardJournalGroup::standardJournalGroup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -32,7 +32,7 @@ standardJournalGroup::standardJournalGroup(QWidget* parent, const char* name, bo
   connect(_showFuture, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_stdjrnlgrpitem, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
 
-  setAcceptDrops(TRUE);
+  setAcceptDrops(true);
 
   _stdjrnlgrpitem->addColumn(tr("Name"),        _itemColumn,  Qt::AlignLeft,   true,  "stdjrnl_name"   );
   _stdjrnlgrpitem->addColumn(tr("Description"), -1,           Qt::AlignLeft,   true,  "stdjrnl_descrip"   );
@@ -94,12 +94,12 @@ enum SetResponse standardJournalGroup::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
 
-      _new->setEnabled(FALSE);
+      _new->setEnabled(false);
       connect(_stdjrnlgrpitem, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
     }
   }
@@ -126,7 +126,7 @@ void standardJournalGroup::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
@@ -209,7 +209,7 @@ void standardJournalGroup::sNew()
   params.append("mode", "new");
   params.append("stdjrnlgrp_id", _stdjrnlgrpid);
 
-  standardJournalGroupItem newdlg(this, "", TRUE);
+  standardJournalGroupItem newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -222,7 +222,7 @@ void standardJournalGroup::sEdit()
   params.append("mode", "edit");
   params.append("stdjrnlgrpitem_id", _stdjrnlgrpitem->id());
 
-  standardJournalGroupItem newdlg(this, "", TRUE);
+  standardJournalGroupItem newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -235,7 +235,7 @@ void standardJournalGroup::sView()
   params.append("mode", "view");
   params.append("stdjrnlgrpitem_id", _stdjrnlgrpitem->id());
 
-  standardJournalGroupItem newdlg(this, "", TRUE);
+  standardJournalGroupItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -32,7 +32,7 @@
     \see ImportHelper
  */
 
-FileMoveSelector::FileMoveSelector(QWidget* parent, Qt::WFlags fl)
+FileMoveSelector::FileMoveSelector(QWidget* parent, Qt::WindowFlags fl)
   : QWidget(parent, fl)
 {
   setupUi(this);
@@ -206,7 +206,7 @@ QScriptValue constructFileMoveSelector(QScriptContext *context,
            qscriptvalue_cast<QWidget*>(context->argument(0))
            && context->argument(1).isNumber())
     obj = new FileMoveSelector(qscriptvalue_cast<QWidget*>(context->argument(0)),
-                               (Qt::WFlags)context->argument(1).toInteger());
+                               (Qt::WindowFlags)context->argument(1).toInt32());
   else
      context->throwError(QScriptContext::UnknownError,
                          "Could not find an appropriate FileMoveSelector constructor");

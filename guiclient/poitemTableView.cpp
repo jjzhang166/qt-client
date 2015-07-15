@@ -50,7 +50,7 @@ PoitemTableView::PoitemTableView(QWidget* parent) :
   setItemDelegate(delegate);
   setShowGrid(false);
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   QFont f = font();
   f.setPointSize(f.pointSize() - 2);
   setFont(f);
@@ -275,7 +275,7 @@ QWidget *PoitemTableDelegate::createEditor(QWidget *parent,
 
   if (editor)
   {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     // compensate for many custom widgets making themselves smaller on OS X
     QFont f = editor->font();
     f.setPointSize(f.pointSize() + 2);

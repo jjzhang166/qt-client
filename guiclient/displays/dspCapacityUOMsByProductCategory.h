@@ -18,7 +18,7 @@ class dspCapacityUOMsByProductCategory : public dspCapacityUOMsByParameter
     Q_OBJECT
 
 public:
-    dspCapacityUOMsByProductCategory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCapacityUOMsByProductCategory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 };
 

@@ -22,7 +22,7 @@ class itemGroup : public XWidget, public Ui::itemGroup
     Q_OBJECT
 
 public:
-    itemGroup(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    itemGroup(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~itemGroup();
 
 public slots:
@@ -36,6 +36,10 @@ public slots:
     virtual void sNewParent();
     virtual void sFillList();
     virtual void populate();
+
+signals:
+    void newId(int id);
+    void newMode(int mode);
 
 protected slots:
     virtual void languageChange();

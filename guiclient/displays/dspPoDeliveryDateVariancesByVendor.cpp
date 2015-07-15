@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-dspPoDeliveryDateVariancesByVendor::dspPoDeliveryDateVariancesByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoDeliveryDateVariancesByVendor::dspPoDeliveryDateVariancesByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoDeliveryDateVariancesByVendor", fl)
 {
   setupUi(optionsWidget());

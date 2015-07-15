@@ -22,7 +22,7 @@ class cashReceipt : public XWidget, public Ui::cashReceipt
     Q_OBJECT
 
 public:
-    cashReceipt(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    cashReceipt(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~cashReceipt();
     virtual bool save( bool partial );
 

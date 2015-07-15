@@ -17,7 +17,7 @@
 #define cCash     2
 #define cAdHoc    3
 
-financialLayoutGroup::financialLayoutGroup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+financialLayoutGroup::financialLayoutGroup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -86,10 +86,10 @@ enum SetResponse financialLayoutGroup::set(const ParameterList &pParams)
       
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _subSummGroup->setEnabled(FALSE);
-      _operationGroup->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _subSummGroup->setEnabled(false);
+      _operationGroup->setEnabled(false);
     }
   }
   param = pParams.value("type", &valid);
@@ -98,55 +98,55 @@ enum SetResponse financialLayoutGroup::set(const ParameterList &pParams)
         if (param.toString() == "adHoc")
         {
 			_rpttype = cAdHoc;
-			_showPrcnt->setHidden(TRUE);
+			_showPrcnt->setHidden(true);
 		}
         else
         {
         
-          _showStart->setHidden(TRUE);
-		  _showEnd->setHidden(TRUE);
-          _showDelta->setHidden(TRUE);
-          _showBudget->setHidden(TRUE);
-          _showDiff->setHidden(TRUE);
-          _showCustom->setHidden(TRUE);
-          _showStartPrcnt->setHidden(TRUE);
-          _showEndPrcnt->setHidden(TRUE);
-          _showDeltaPrcnt->setHidden(TRUE);
-          _showBudgetPrcnt->setHidden(TRUE);
-          _showDiffPrcnt->setHidden(TRUE);
-          _showCustomPrcnt->setHidden(TRUE);
+          _showStart->setHidden(true);
+		  _showEnd->setHidden(true);
+          _showDelta->setHidden(true);
+          _showBudget->setHidden(true);
+          _showDiff->setHidden(true);
+          _showCustom->setHidden(true);
+          _showStartPrcnt->setHidden(true);
+          _showEndPrcnt->setHidden(true);
+          _showDeltaPrcnt->setHidden(true);
+          _showBudgetPrcnt->setHidden(true);
+          _showDiffPrcnt->setHidden(true);
+          _showCustomPrcnt->setHidden(true);
     
         }
         if (param.toString() == "income")
         {
           _rpttype = cIncome;
-          _showPrcnt->setHidden(FALSE);
-		  _showStart->setChecked(FALSE);
-          _showEnd->setChecked(FALSE);
-          _showDelta->setChecked(FALSE);
-          _showBudget->setChecked(TRUE);
-          _showDiff->setChecked(TRUE);
+          _showPrcnt->setHidden(false);
+		  _showStart->setChecked(false);
+          _showEnd->setChecked(false);
+          _showDelta->setChecked(false);
+          _showBudget->setChecked(true);
+          _showDiff->setChecked(true);
       
         }
         else if (param.toString() == "balance")
         {
         _rpttype = cBalance;
-      _showPrcnt->setHidden(FALSE);
-      _showStart->setChecked(FALSE);
-      _showEnd->setChecked(TRUE);
-      _showDelta->setChecked(FALSE);
-      _showBudget->setChecked(TRUE);
-      _showDiff->setChecked(FALSE);
+      _showPrcnt->setHidden(false);
+      _showStart->setChecked(false);
+      _showEnd->setChecked(true);
+      _showDelta->setChecked(false);
+      _showBudget->setChecked(true);
+      _showDiff->setChecked(false);
         }
         else if (param.toString() == "cash")
         {
          _rpttype = cCash;
-      _showPrcnt->setHidden(FALSE);
-      _showStart->setChecked(FALSE);
-      _showEnd->setChecked(FALSE);
-      _showDelta->setChecked(TRUE);
-      _showBudget->setChecked(TRUE);
-      _showDiff->setChecked(TRUE);
+      _showPrcnt->setHidden(false);
+      _showStart->setChecked(false);
+      _showEnd->setChecked(false);
+      _showDelta->setChecked(true);
+      _showBudget->setChecked(true);
+      _showDiff->setChecked(true);
       }
     }
 
@@ -303,7 +303,7 @@ void financialLayoutGroup::populate()
       _add->setChecked(true);
 
   if ((_rpttype != cAdHoc) && ((_showEndPrcnt->isChecked()) || (_showDiffPrcnt->isChecked())))
-    _showPrcnt->setChecked(TRUE);
+    _showPrcnt->setChecked(true);
 
     int grpid = financialpopulate.value("flgrp_prcnt_flgrp_id").toInt();
     sFillGroupList();
@@ -341,41 +341,41 @@ void financialLayoutGroup::sToggleShowPrcnt()
   {
     if (_showPrcnt->isChecked())
     {
-      _showBudgetPrcnt->setChecked(TRUE);
-      _showDiffPrcnt->setChecked(TRUE);
+      _showBudgetPrcnt->setChecked(true);
+      _showDiffPrcnt->setChecked(true);
     }
     else
     {
-      _showBudgetPrcnt->setChecked(FALSE);
-      _showDiffPrcnt->setChecked(FALSE);
+      _showBudgetPrcnt->setChecked(false);
+      _showDiffPrcnt->setChecked(false);
     }
   }
   else if (_rpttype == cBalance)
   {
     if (_showPrcnt->isChecked())
     {
-      _showBudgetPrcnt->setChecked(TRUE);
-      _showEndPrcnt->setChecked(TRUE);
+      _showBudgetPrcnt->setChecked(true);
+      _showEndPrcnt->setChecked(true);
     }
     else
     {
-      _showBudgetPrcnt->setChecked(FALSE);
-      _showEndPrcnt->setChecked(FALSE);
+      _showBudgetPrcnt->setChecked(false);
+      _showEndPrcnt->setChecked(false);
     }
   }
   else if (_rpttype == cCash)
   {
     if (_showPrcnt->isChecked())
     {
-      _showDeltaPrcnt->setChecked(TRUE);
-      _showBudgetPrcnt->setChecked(TRUE);
-      _showDiffPrcnt->setChecked(TRUE);
+      _showDeltaPrcnt->setChecked(true);
+      _showBudgetPrcnt->setChecked(true);
+      _showDiffPrcnt->setChecked(true);
     }
     else
     {
-      _showDeltaPrcnt->setChecked(FALSE);
-      _showBudgetPrcnt->setChecked(FALSE);
-      _showDiffPrcnt->setChecked(FALSE);
+      _showDeltaPrcnt->setChecked(false);
+      _showBudgetPrcnt->setChecked(false);
+      _showDiffPrcnt->setChecked(false);
     }
   }
 }

@@ -27,7 +27,7 @@ class contact : public XDialog, public Ui::contact
     Q_OBJECT
 
 public:
-    contact(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    contact(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~contact();
 
     QPushButton *_save;
@@ -39,10 +39,8 @@ protected slots:
     virtual void languageChange();
 
     virtual void sClose();
-    virtual void sDeleteCharass();
     virtual void sDetachUse();
     virtual void sEditCRMAccount();
-    virtual void sEditCharass();
     virtual void sEditCustomer();
     virtual void sEditEmployee();
     virtual void sEditIncident();
@@ -61,7 +59,6 @@ protected slots:
     virtual void sEditWarehouse();
     virtual void sFillList();
     virtual void sHandleValidUse(bool);
-    virtual void sNewCharass();
     virtual void sPopulate();
     virtual void sPopulateUsesMenu(QMenu*);
     virtual void sSave();

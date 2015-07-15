@@ -29,7 +29,7 @@
 
 #define NUM_COLUMNS_BEFORE_CHARS 4
 
-assignLotSerial::assignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+assignLotSerial::assignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -44,9 +44,9 @@ assignLotSerial::assignLotSerial(QWidget* parent, const char* name, bool modal, 
   connect(_options, SIGNAL(clicked()), this, SLOT(sPrintOptions()));
 
   _itemlocSeries = -1;
-  _trapClose = TRUE;
+  _trapClose = true;
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
   _itemlocdist->addColumn( tr("Lot/Serial #"),     -1, Qt::AlignLeft,  true, "ls_number");
   _itemlocdist->addColumn( tr("Expires"), _dateColumn, Qt::AlignCenter,true, "itemlocdist_expiration");
@@ -152,7 +152,7 @@ void assignLotSerial::sNew()
   params.append("itemlocdist_id", _itemlocdistid);
   params.append("qtyRemaining",    _qtyBalance->text());
 
-  createLotSerial newdlg(this, "", TRUE);
+  createLotSerial newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
   {
@@ -225,7 +225,7 @@ void assignLotSerial::sAssign()
     return;
   }
 
-  _trapClose = FALSE;
+  _trapClose = false;
   done(_itemlocSeries);
 }
 

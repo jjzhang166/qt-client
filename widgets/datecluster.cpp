@@ -113,11 +113,11 @@ XDateEdit::XDateEdit(QWidget *parent, const char *name) :
   else
     setObjectName(metaObject()->className());
 
-  _allowNull   = FALSE;
+  _allowNull   = false;
   _default     = Empty;
-  _parsed      = FALSE;
+  _parsed      = false;
   _nullString  = QString::null;
-  _valid       = FALSE;
+  _valid       = false;
   _siteId      = -1;
 }
 
@@ -398,16 +398,16 @@ void XDateEdit::setNull()
            _allowNull);
   if (_allowNull)
   {
-    _valid  = TRUE;
-    _parsed = TRUE;
+    _valid  = true;
+    _parsed = true;
     setText(_nullString);
     _currentDate = _nullDate;
     emit newDate(_currentDate);
   }
   else
   {
-    _valid = FALSE;
-    _parsed = TRUE;
+    _valid = false;
+    _parsed = true;
     setText("");
     _currentDate = QDate();
   }
@@ -464,7 +464,7 @@ void XDateEdit::checkDate(const QDate &pDate)
 {
   QDate nextWorkDate = pDate;
 
-  if(determineIfStd() && (_siteId != -1))
+  if(determineIfStd() && (_siteId != -1) && (pDate != _currentDate))
   {
     XSqlQuery workday;
 
@@ -486,7 +486,7 @@ void XDateEdit::checkDate(const QDate &pDate)
   }
 
   if (nextWorkDate == pDate)
-    setDate(pDate, TRUE);
+    setDate(pDate, true);
   else
   {
     if (QMessageBox::question(this, tr("Non-Working Day Entered"),
@@ -495,9 +495,9 @@ void XDateEdit::checkDate(const QDate &pDate)
                                 "automatically select the next working day?"),
                              QMessageBox::Yes | QMessageBox::Default,
                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
-      setDate(nextWorkDate, TRUE);
+      setDate(nextWorkDate, true);
     else
-      setDate(pDate, TRUE);
+      setDate(pDate, true);
   }
 }
 
@@ -707,7 +707,7 @@ void DateCluster::setEndDate(const QVariant &pDate)
 
 void DateCluster::setStartNull(const QString &pString, const QDate &pDate, bool pSetNull)
 {
-  _startDate->setAllowNullDate(TRUE);
+  _startDate->setAllowNullDate(true);
   _startDate->setNullString(pString);
   _startDate->setNullDate(pDate);
 
@@ -717,7 +717,7 @@ void DateCluster::setStartNull(const QString &pString, const QDate &pDate, bool 
 
 void DateCluster::setEndNull(const QString &pString, const QDate &pDate, bool pSetNull)
 {
-  _endDate->setAllowNullDate(TRUE);
+  _endDate->setAllowNullDate(true);
   _endDate->setNullString(pString);
   _endDate->setNullDate(pDate);
 

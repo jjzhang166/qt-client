@@ -49,7 +49,7 @@ void externalShipping::showEvent(QShowEvent *event)
   }
 }
 
-externalShipping::externalShipping(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+externalShipping::externalShipping(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

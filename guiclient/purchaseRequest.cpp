@@ -17,16 +17,20 @@
 
 #include <QCloseEvent>
 
-purchaseRequest::purchaseRequest(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
+
+purchaseRequest::purchaseRequest(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-  connect(_create, SIGNAL(clicked()), this, SLOT(sCreate()));
+  connect(_create, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sCheckWarehouse(int)));
   connect(_number, SIGNAL(textEdited(QString)), this, SLOT(sReleaseNumber()));
 
+  _prid = -1;
   _planordid = -1;
   _NumberGen = -1;
   _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured);
@@ -60,20 +64,29 @@ void purchaseRequest::languageChange()
 
 enum SetResponse purchaseRequest::set(const ParameterList &pParams)
 {
-  XSqlQuery purchaseet;
   XDialog::set(pParams);
   QVariant param;
   bool     valid;
-  int      prid = -1;
 
+  param = pParams.value("pr_id", &valid);
+  if (valid)
+    _prid = param.toInt();
+  
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
 
+  param = pParams.value("item_id", &valid);
+  if (valid)
+  {
+    _item->setId(param.toInt());
+    _item->setEnabled(false);
+  }
+  
   param = pParams.value("qty", &valid);
   if (valid)
     _qty->setDouble(param.toDouble());
@@ -95,52 +108,46 @@ enum SetResponse purchaseRequest::set(const ParameterList &pParams)
 
       populateNumber();
     }
+    else if (param.toString() == "edit")
+    {
+      _mode = cEdit;
+      _captive = true;
+      _create->setText(tr("Save"));
+      
+      populate();
+      
+      _number->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+    }
     else if (param.toString() == "view")
     {
       _mode = cView;
-
-      param = pParams.value("pr_id", &valid);
-      if (valid)
-        prid = param.toInt();
-
-      _number->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _project->setEnabled(FALSE);
+      _captive = true;
+      
+      populate();
+      
+      _number->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _notes->setEnabled(false);
+      _project->setEnabled(false);
       _create->hide();
-
-      purchaseet.prepare( "SELECT pr_itemsite_id,"
-                 "       pr_number,"
-                 "       pr_qtyreq,"
-                 "       pr_duedate,"
-                 "       pr_prj_id "
-                 "FROM pr "
-                 "WHERE (pr_id=:pr_id);" );
-      purchaseet.bindValue(":pr_id", prid);
-      purchaseet.exec();
-      if (purchaseet.first())
-      {
-        _number->setText(purchaseet.value("pr_number").toString());
-        _item->setItemsiteid(purchaseet.value("pr_itemsite_id").toInt());
-        _qty->setDouble(purchaseet.value("pr_qtyreq").toDouble());
-        _dueDate->setDate(purchaseet.value("pr_duedate").toDate());
-        _project->setId(purchaseet.value("pr_prj_id").toInt());
-      }
     }
     else if (param.toString() == "release")
     {
       _mode = cRelease;
-      _captive = TRUE;
+      _captive = true;
 
-      _number->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _dueDate->setEnabled(false);
 
+      XSqlQuery purchaseet;
       purchaseet.prepare( "SELECT planord_itemsite_id, planord_duedate,"
                  "       planord_qty, planord_comments "
                  "FROM planord "
@@ -168,59 +175,36 @@ void purchaseRequest::sClose()
   reject();
 }
 
-void purchaseRequest::sCreate()
+void purchaseRequest::sSave()
 {
   XSqlQuery purchaseCreate;
-  if (!_number->text().length())
-  {
-    QMessageBox::information( this, tr("Invalid Purchase Request Number"),
-                              tr("You must enter a valid Purchase Request number before creating this Purchase Request")  );
-    _number->setFocus();
-    return;
-  }
-
-  if (!(_item->isValid()))
-  {
-    QMessageBox::information( this, tr("No Item Number Selected"),
-                              tr("You must enter or select a valid Item number before creating this Purchase Request")  );
-    return;
-  }
-
-  if (_qty->toDouble() == 0.0)
-  {
-    QMessageBox::information( this, tr("Invalid Quantity Ordered"),
-                              tr( "You have entered an invalid Qty. Ordered.\n"
-                                  "Please correct before creating this Purchase Request."  ) );
-    _qty->setFocus();
-    return;
-  }
-
-  if (!_dueDate->isValid())
-  {
-    QMessageBox::information( this, tr("Invalid Due Date Entered"),
-                              tr( "You have entered an invalid Due Date.\n"
-                                  "Please correct before creating this Purchase Request."  ) );
-    _dueDate->setFocus();
-    return;
-  }
-
-  purchaseCreate.prepare( "SELECT itemsite_id "
-             "FROM itemsite "
-             "WHERE ( (itemsite_item_id=:item_id)"
-             " AND (itemsite_warehous_id=:warehous_id) );" );
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(!_number->text().length(), _number,
+                          tr("<p>You must enter a valid Purchase Request number."))
+  << GuiErrorCheck(!_item->isValid(), _item,
+                   tr("<p>You must enter or select a valid Item number."))
+  << GuiErrorCheck(_qty->toDouble() == 0.0, _qty,
+                   tr("<p>You have entered an invalid Qty. Ordered."))
+  << GuiErrorCheck(!_dueDate->isValid(), _dueDate,
+                   tr("<p>You have entered an invalid Due Date."))
+  ;
+  
+  purchaseCreate.prepare("SELECT itemsite_id "
+                         "FROM itemsite "
+                         "WHERE ( (itemsite_item_id=:item_id)"
+                         " AND (itemsite_warehous_id=:warehous_id) );" );
   purchaseCreate.bindValue(":item_id", _item->id());
   purchaseCreate.bindValue(":warehous_id", _warehouse->id());
   purchaseCreate.exec();
   if (!purchaseCreate.first())
-  {
-    QMessageBox::warning(this, tr("Invalid Site"),
-        tr("The selected Site for this Purchase Request is not\n"
-           "a \"Supplied At\" Site. You must select a different\n"
-           "Site before creating the Purchase Request.") );
-    return;
-  }
+    errors << GuiErrorCheck(true, _warehouse,
+                            tr("The selected Site for this Purchase Request is not\n"
+                               "a \"Supplied At\" Site. You must select a different\n"
+                              "Site before creating the Purchase Request.") );
 
-  int prid = -1;
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Purchase Request"), errors))
+    return;
+  
   int itemsiteid = purchaseCreate.value("itemsite_id").toInt();
 
   if (_mode == cNew)
@@ -241,7 +225,26 @@ void purchaseRequest::sCreate()
       return;
     }
     else
-      prid = purchaseCreate.value("prid").toInt();
+      _prid = purchaseCreate.value("prid").toInt();
+  }
+  else if (_mode == cEdit)
+  {
+    purchaseCreate.prepare("UPDATE pr SET pr_qtyreq=:qty,"
+                           "              pr_duedate=:dueDate,"
+                           "              pr_prj_id=:prj_id,"
+                           "              pr_releasenote=:notes "
+                           "WHERE (pr_id=:pr_id);");
+    purchaseCreate.bindValue(":pr_id", _prid);
+    purchaseCreate.bindValue(":qty", _qty->toDouble());
+    purchaseCreate.bindValue(":dueDate", _dueDate->date());
+    purchaseCreate.bindValue(":prj_id", _project->id());
+    purchaseCreate.bindValue(":notes", _notes->toPlainText());
+    purchaseCreate.exec();
+    if (purchaseCreate.lastError().type() != QSqlError::NoError)
+    {
+      systemError(this, purchaseCreate.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
   }
   else if (_mode == cRelease)
   {
@@ -252,26 +255,18 @@ void purchaseRequest::sCreate()
     purchaseCreate.exec();
     if (purchaseCreate.first())
     {
-      prid = purchaseCreate.value("prid").toInt();
+      _prid = purchaseCreate.value("prid").toInt();
 
-      purchaseCreate.prepare("SELECT releasePlannedOrder(:planord_id, FALSE) AS result;");
+      purchaseCreate.prepare("SELECT releasePlannedOrder(:planord_id, false) AS result;");
       purchaseCreate.bindValue(":planord_id", _planordid);
       purchaseCreate.exec();
     }
   }
 
-  if(-1 != prid)
-  {
-    purchaseCreate.prepare("UPDATE pr SET pr_prj_id=:prj_id WHERE (pr_id=:pr_id);");
-    purchaseCreate.bindValue(":pr_id", prid);
-    purchaseCreate.bindValue(":prj_id", _project->id());
-    purchaseCreate.exec();
-  }
-
   omfgThis->sPurchaseRequestsUpdated();
 
   if (_captive)
-    done(prid);
+    done(_prid);
   else
   {
     populateNumber();
@@ -281,6 +276,30 @@ void purchaseRequest::sCreate()
     _notes->clear();
 
     _item->setFocus();
+  }
+}
+
+void purchaseRequest::populate()
+{
+  XSqlQuery purchaseet;
+  purchaseet.prepare( "SELECT pr.* "
+                     "FROM pr "
+                     "WHERE (pr_id=:pr_id);" );
+  purchaseet.bindValue(":pr_id", _prid);
+  purchaseet.exec();
+  if (purchaseet.first())
+  {
+    _number->setText(purchaseet.value("pr_number").toString());
+    _item->setItemsiteid(purchaseet.value("pr_itemsite_id").toInt());
+    _qty->setDouble(purchaseet.value("pr_qtyreq").toDouble());
+    _dueDate->setDate(purchaseet.value("pr_duedate").toDate());
+    _project->setId(purchaseet.value("pr_prj_id").toInt());
+    _notes->setText(purchaseet.value("pr_releasenote").toString());
+  }
+  else if (purchaseet.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, purchaseet.lastError().databaseText(), __FILE__, __LINE__);
+    return;
   }
 }
 
@@ -308,17 +327,17 @@ void purchaseRequest::populateNumber()
 
   if (generationMethod == "M")
   {
-    _number->setEnabled(TRUE);
+    _number->setEnabled(true);
     _number->setFocus();
   }
   else if (generationMethod == "O")
   {
-    _number->setEnabled(TRUE);
+    _number->setEnabled(true);
     _item->setFocus();
   }
   else if (generationMethod == "A")
   {
-    _number->setEnabled(FALSE);
+    _number->setEnabled(false);
     _item->setFocus();
   } 
 }
@@ -369,6 +388,6 @@ void purchaseRequest::sCheckWarehouse( int pWarehousid )
         tr("The selected Site for this Purchase Request is not\n"
            "a \"Supplied At\" Site. You must select a different\n"
            "Site before creating the Purchase Request.") );
-    _warehouse->setEnabled(TRUE);
+    _warehouse->setEnabled(true);
   }
 }

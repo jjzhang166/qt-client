@@ -21,7 +21,7 @@ class warehouse : public XDialog, public Ui::warehouse
     Q_OBJECT
 
 public:
-    warehouse(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    warehouse(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~warehouse();
 
     Q_INVOKABLE virtual int id()   const;

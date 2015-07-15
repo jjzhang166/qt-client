@@ -17,7 +17,7 @@
 #include "distributeInventory.h"
 #include <openreports.h>
 
-postInvoices::postInvoices(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postInvoices::postInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -184,7 +184,7 @@ void postInvoices::sPost()
         report.reportError(this);
     }
 
-    omfgThis->sInvoicesUpdated(-1, TRUE);
+    omfgThis->sInvoicesUpdated(-1, true);
     omfgThis->sSalesOrdersUpdated(-1);
 
   }

@@ -62,7 +62,7 @@ QWidget *ItemCharacteristicDelegate::createEditor(QWidget *parent,
     editor->setEditable(chartype == characteristic::Text);
 
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QFont boxfont = editor->font();
     boxfont.setPointSize((boxfont.pointSize() == -1) ? boxfont.pixelSize() - 3 : boxfont.pointSize() - 3);
     editor->setFont(boxfont);

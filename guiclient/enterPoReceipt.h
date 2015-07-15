@@ -22,7 +22,7 @@ class enterPoReceipt : public XWidget, public Ui::enterPoReceipt
     Q_OBJECT
 
 public:
-    enterPoReceipt(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    enterPoReceipt(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~enterPoReceipt();
 
     static  void post(const QString, const int);

@@ -22,7 +22,7 @@ class enterPoitemReceipt : public XDialog, public Ui::enterPoitemReceipt
     Q_OBJECT
 
 public:
-    enterPoitemReceipt(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    enterPoitemReceipt(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~enterPoitemReceipt();
     
     static bool correctReceipt( int pRecvid, QWidget * pParent );

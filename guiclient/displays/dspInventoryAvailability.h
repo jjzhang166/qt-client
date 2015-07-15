@@ -26,7 +26,7 @@ class dspInventoryAvailability : public display, public Ui::dspInventoryAvailabi
     Q_OBJECT
 
 public:
-    dspInventoryAvailability(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInventoryAvailability(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     virtual bool setParams(ParameterList &);
     Q_INVOKABLE virtual void setItemId(int itemId);
 

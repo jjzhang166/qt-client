@@ -19,7 +19,7 @@
 #include <QTextStream>
 #include <QStatusBar>
 #include <QVariant>
-#include <QtDesigner/QDesignerComponents>
+#include <QDesignerComponents>
 
 #include "customCommand.h"
 #include "package.h"
@@ -28,7 +28,7 @@
 #include "xTupleDesigner.h"
 #include "xuiloader.h"
 
-uiform::uiform(QWidget* parent, const char* name, Qt::WFlags fl)
+uiform::uiform(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -448,7 +448,7 @@ void uiform::sCmdNew()
   ParameterList params;
   params.append("mode", "new");
 
-  customCommand newdlg(this, "", TRUE);
+  customCommand newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();
@@ -460,7 +460,7 @@ void uiform::sCmdEdit()
   params.append("mode", "edit");
   params.append("cmd_id", _commands->id());
 
-  customCommand newdlg(this, "", TRUE);
+  customCommand newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();

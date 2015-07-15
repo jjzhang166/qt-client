@@ -23,7 +23,7 @@
 #include "transferOrder.h"
 #include "workOrder.h"
 
-dspReservations::dspReservations(QWidget* parent, const char*, Qt::WFlags fl)
+dspReservations::dspReservations(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspReservations", fl)
 {
   setupUi(optionsWidget());

@@ -20,7 +20,7 @@
 #include "inputManager.h"
 #include "countTagList.h"
 
-countTag::countTag(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+countTag::countTag(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -29,9 +29,9 @@ countTag::countTag(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_enter, SIGNAL(clicked()), this, SLOT(sEnter()));
   connect(_countTagNumber, SIGNAL(editingFinished()), this, SLOT(sParseCountTagNumber()));
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _countTagList->setMaximumWidth(25);
 #endif
 
@@ -64,18 +64,18 @@ enum SetResponse countTag::set(const ParameterList &pParams)
   param = pParams.value("cnttag_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _cnttagid = param.toInt();
     populate();
-    _countTagNumber->setEnabled(FALSE);
+    _countTagNumber->setEnabled(false);
     _countTagList->hide();
   }
 
   param = pParams.value("invhist_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     countet.prepare( "SELECT invcnt_id "
                "FROM invcnt "
@@ -107,7 +107,7 @@ enum SetResponse countTag::set(const ParameterList &pParams)
     else if (param.toString() == "post")
     {
       _mode = cPost;
-      _captive = TRUE;
+      _captive = true;
 
       setWindowTitle("Post Count Tag");
       _countTagNumber->setEnabled(false);
@@ -119,9 +119,9 @@ enum SetResponse countTag::set(const ParameterList &pParams)
       _mode = cView;
 
       setWindowTitle("Count Tag");
-      _qty->setEnabled(FALSE);
+      _qty->setEnabled(false);
       _thaw->hide();
-      _newComments->setEnabled(FALSE);
+      _newComments->setEnabled(false);
       _enter->hide();
       _close->setText(tr("&Close"));
 
@@ -253,7 +253,7 @@ void countTag::sCountTagList()
   params.append("cnttag_id", _cnttagid);
   params.append("tagType", cUnpostedCounts);
 
-  countTagList newdlg(this, "", TRUE);
+  countTagList newdlg(this, "", true);
   newdlg.set(params);
   _cnttagid = newdlg.exec();
 
@@ -339,7 +339,7 @@ void countTag::clear()
   _countTagNumber->clear();
   _item->setItemsiteid(-1);
   _qty->clear();
-  _thaw->setChecked(FALSE);
+  _thaw->setChecked(false);
   _currentComments->clear();
   _newComments->clear();
   _countTagNumber->setFocus();

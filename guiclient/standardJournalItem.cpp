@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QValidator>
 
-standardJournalItem::standardJournalItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+standardJournalItem::standardJournalItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -64,10 +64,10 @@ enum SetResponse standardJournalItem::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _account->setEnabled(FALSE);
-      _amount->setEnabled(FALSE);
-      _senseGroup->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _account->setEnabled(false);
+      _amount->setEnabled(false);
+      _senseGroup->setEnabled(false);
+      _notes->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -158,9 +158,9 @@ void standardJournalItem::populate()
   {
     _amount->setBaseValue(standardpopulate.value("amount").toDouble());
     if (standardpopulate.value("debit").toBool())
-      _debit->setChecked(TRUE);
+      _debit->setChecked(true);
     else
-      _credit->setChecked(TRUE);
+      _credit->setChecked(true);
 
     _account->setId(standardpopulate.value("stdjrnlitem_accnt_id").toInt());
     _notes->setText(standardpopulate.value("stdjrnlitem_notes").toString());

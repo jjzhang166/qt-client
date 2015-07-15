@@ -17,7 +17,7 @@
 
 #include "workOrder.h"
 
-dspWoHistoryByNumber::dspWoHistoryByNumber(QWidget* parent, const char*, Qt::WFlags fl)
+dspWoHistoryByNumber::dspWoHistoryByNumber(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoHistoryByNumber", fl)
 {
   setupUi(optionsWidget());

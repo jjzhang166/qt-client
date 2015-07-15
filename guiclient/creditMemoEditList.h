@@ -22,7 +22,7 @@ class creditMemoEditList : public XWidget, public Ui::creditMemoEditList
     Q_OBJECT
 
 public:
-    creditMemoEditList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    creditMemoEditList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~creditMemoEditList();
   
     virtual bool checkSitePrivs(int orderid);

@@ -23,7 +23,7 @@ class financialLayout : public XDialog, public Ui::financialLayout
     Q_OBJECT
 
 public:
-    financialLayout(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    financialLayout(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~financialLayout();
 
     virtual void insertFlGroup( int pFlgrpid, QString pFlgrpname, XTreeWidgetItem * pParent, int pId, int pType );

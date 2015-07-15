@@ -20,7 +20,7 @@ class printPackingListBatchByShipvia : public XDialog, public Ui::printPackingLi
     Q_OBJECT
 
 public:
-    printPackingListBatchByShipvia(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printPackingListBatchByShipvia(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printPackingListBatchByShipvia();
 
 public slots:

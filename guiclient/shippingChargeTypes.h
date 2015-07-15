@@ -19,7 +19,7 @@ class shippingChargeTypes : public XWidget, public Ui::shippingChargeTypes
     Q_OBJECT
 
 public:
-    shippingChargeTypes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    shippingChargeTypes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~shippingChargeTypes();
 
 public slots:

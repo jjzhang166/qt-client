@@ -11,22 +11,22 @@
 #ifndef CHARACTERISTICASSIGNMENT_H
 #define CHARACTERISTICASSIGNMENT_H
 
-#include "guiclient.h"
-#include "xdialog.h"
 #include <parameter.h>
 
 #include "ui_characteristicAssignment.h"
 
-class characteristicAssignment : public XDialog, public Ui::characteristicAssignment
+class CharacteristicAssignmentPrivate;
+
+class characteristicAssignment : public QDialog, public Ui::characteristicAssignment
 {
     Q_OBJECT
 
 public:
-    characteristicAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    characteristicAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~characteristicAssignment();
 
 public slots:
-    virtual enum SetResponse set(const ParameterList & pParams );
+    virtual int  set(const ParameterList &pParams);
     virtual void sSave();
     virtual void sCheck();
     virtual void populate();
@@ -36,14 +36,11 @@ protected slots:
     virtual void languageChange();
 
 private:
-    bool _template;
     int _mode;
     int _charassid;
     int _targetId;
-    QString _targetType;
 
-    void	handleTargetType();
-
+    CharacteristicAssignmentPrivate *_d;
 };
 
 #endif // CHARACTERISTICASSIGNMENT_H

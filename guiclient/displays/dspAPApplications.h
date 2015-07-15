@@ -22,7 +22,7 @@ class dspAPApplications : public display, public Ui::dspAPApplications
     Q_OBJECT
 
   public:
-    dspAPApplications(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspAPApplications(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

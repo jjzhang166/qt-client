@@ -26,7 +26,7 @@ class XTUPLEWIDGETS_EXPORT purchaseOrderList : public QDialog
     Q_OBJECT
 
 public:
-    purchaseOrderList( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+    purchaseOrderList( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
 
     XTreeWidget* _pohead;
     QPushButton* _close;

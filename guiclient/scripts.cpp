@@ -21,7 +21,7 @@
 #include "guiclient.h"
 #include "scriptEditor.h"
 
-scripts::scripts(QWidget* parent, const char* name, Qt::WFlags fl)
+scripts::scripts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

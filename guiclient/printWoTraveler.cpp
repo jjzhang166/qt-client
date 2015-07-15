@@ -21,7 +21,7 @@
 
 #define DEBUG false
 
-printWoTraveler::printWoTraveler(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printWoTraveler::printWoTraveler(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,14 +33,14 @@ printWoTraveler::printWoTraveler(QWidget* parent, const char* name, bool modal, 
   connect(_wo,           SIGNAL(valid(bool)), this, SLOT(sHandlePrintButton()));
   connect(_woLabel,    SIGNAL(toggled(bool)), this, SLOT(sHandlePrintButton()));
 
-  _captive = FALSE;
+  _captive = false;
 
   omfgThis->inputManager()->notify(cBCWorkOrder, this, _wo, SLOT(setId(int)));
 
   _wo->setType(cWoExploded | cWoReleased | cWoIssued);
 
   if (!_privileges->check("ReleaseWorkOrders"))
-    _releaseWo->setEnabled(FALSE);
+    _releaseWo->setEnabled(false);
     
   _errorPrinting = false;
 }
@@ -58,7 +58,7 @@ void printWoTraveler::languageChange()
 enum SetResponse printWoTraveler::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -141,7 +141,7 @@ void printWoTraveler::sPrint()
   if (DEBUG) qDebug("printWoTraveler::sPrint() entered");
 
   QPrinter  printer(QPrinter::HighResolution);
-  bool      setupPrinter = TRUE;
+  bool      setupPrinter = true;
   bool      userCanceled = false;
 
   _errorPrinting = false;
@@ -162,7 +162,7 @@ void printWoTraveler::sPrint()
 
     orReport report("PickList", params);
     if (report.isValid() && report.print(&printer, setupPrinter))
-      setupPrinter = FALSE;
+      setupPrinter = false;
     else
     {
       report.reportError(this);
@@ -188,7 +188,7 @@ void printWoTraveler::sPrint()
 
       orReport report("WOLabel", params);
       if (report.isValid() && report.print(&printer, setupPrinter))
-	setupPrinter = FALSE;
+	setupPrinter = false;
       else
       {
 	report.reportError(this);
@@ -226,7 +226,7 @@ void printWoTraveler::sPrint()
 
       orReport report(query.value("reportname").toString(), params);
       if (report.isValid() && report.print(&printer, setupPrinter))
-	setupPrinter = FALSE;
+	setupPrinter = false;
       else
       {
 	report.reportError(this);
@@ -257,7 +257,7 @@ void printWoTraveler::sPrint()
   if (_releaseWo->isChecked())
   {
     XSqlQuery release;
-    release.prepare("SELECT releaseWo(:wo_id, FALSE) AS result;");
+    release.prepare("SELECT releaseWo(:wo_id, false) AS result;");
     release.bindValue(":wo_id", _wo->id());
     release.exec();
     if (release.first())
@@ -276,7 +276,7 @@ void printWoTraveler::sPrint()
       return;
     }
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
   }
 
   if (_captive)

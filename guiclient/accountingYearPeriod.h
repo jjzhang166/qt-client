@@ -22,7 +22,7 @@ class accountingYearPeriod : public XDialog, public Ui::accountingYearPeriod
     Q_OBJECT
 
 public:
-    accountingYearPeriod(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    accountingYearPeriod(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~accountingYearPeriod();
 
 public slots:

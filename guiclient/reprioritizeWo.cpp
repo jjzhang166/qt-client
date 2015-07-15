@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-reprioritizeWo::reprioritizeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reprioritizeWo::reprioritizeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -21,7 +21,7 @@ reprioritizeWo::reprioritizeWo(QWidget* parent, const char* name, bool modal, Qt
   connect(_reprioritize, SIGNAL(clicked()), this, SLOT(sReprioritize()));
   connect(_wo, SIGNAL(newId(int)), this, SLOT(sPopulateWoInfo(int)));
 
-  _captive = FALSE;
+  _captive = false;
 
   _wo->setType(cWoOpen | cWoExploded | cWoReleased | cWoIssued);
 
@@ -42,7 +42,7 @@ void reprioritizeWo::languageChange()
 enum SetResponse reprioritizeWo::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -51,7 +51,7 @@ enum SetResponse reprioritizeWo::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   return NoError;
@@ -67,7 +67,7 @@ void reprioritizeWo::sReprioritize()
   reprioritizeReprioritize.bindValue(":reprioritizeChildren", QVariant(_changeChildren->isChecked()));
   reprioritizeReprioritize.exec();
 
-  omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+  omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
   if (_captive)
     close();

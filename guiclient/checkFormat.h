@@ -22,7 +22,7 @@ class checkFormat : public XDialog, public Ui::checkFormat
     Q_OBJECT
 
 public:
-    checkFormat(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    checkFormat(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~checkFormat();
 
 public slots:

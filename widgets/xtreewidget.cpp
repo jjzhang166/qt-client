@@ -127,7 +127,11 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
   setContextMenuPolicy(Qt::CustomContextMenu);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   header()->setStretchLastSection(false);
+#if QT_VERSION >= 0x050000
+  header()->setSectionsClickable(true);
+#else
   header()->setClickable(true);
+#endif
   if (_x_preferences)
     setAlternatingRowColors(!_x_preferences->boolean("NoAlternatingRowColors"));
 
@@ -143,12 +147,12 @@ XTreeWidget::XTreeWidget(QWidget *pParent) :
   connect(this,           SIGNAL(itemClicked(QTreeWidgetItem*, int)),                       SLOT(sItemClicked(QTreeWidgetItem*, int)));
   connect(&_workingTimer, SIGNAL(timeout()), this, SLOT(populateWorker()));
 
-  emit valid(FALSE);
+  emit valid(false);
   setColumnCount(0);
 
   header()->setContextMenuPolicy(Qt::CustomContextMenu);
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   QFont f = font();
   f.setPointSize(f.pointSize() - 2);
   setFont(f);
@@ -900,11 +904,19 @@ void XTreeWidget::addColumn(const QString &pString, int pWidth, int pAlignment, 
   if (pWidth >= 0)
   {
     header()->resizeSection(column, pWidth);
+    #if QT_VERSION >= 0x050000
+    header()->setSectionResizeMode(column, QHeaderView::Interactive);
+    #else
     header()->setResizeMode(column, QHeaderView::Interactive);
+    #endif
   }
   else
   {
+    #if QT_VERSION >= 0x050000
+    header()->setSectionResizeMode(column, QHeaderView::Interactive);
+    #else
     header()->setResizeMode(column, QHeaderView::Interactive);
+    #endif
     _stretch.append(column);
   }
   bool forgetCache = _forgetful;
@@ -1419,7 +1431,7 @@ void XTreeWidget::clear()
     delete _subtotals;
     _subtotals = 0;
   }
-  emit valid(FALSE);
+  emit valid(false);
   _savedId = false; // was -1;
 
   QTreeWidget::clear();
@@ -1480,7 +1492,7 @@ void XTreeWidget::sShowMenu(const QPoint &pntThis)
       emit  populateMenu(_menu, item, logicalColumn);
     }
 
-    bool disableExport = FALSE;
+    bool disableExport = false;
     if (_x_preferences)
       disableExport = (_x_preferences->value("DisableExportContents")=="t");
     if (!disableExport)

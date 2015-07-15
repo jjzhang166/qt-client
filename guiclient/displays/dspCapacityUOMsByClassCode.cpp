@@ -13,7 +13,7 @@
 #include "guiclient.h"
 #include "xtreewidget.h"
 
-dspCapacityUOMsByClassCode::dspCapacityUOMsByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspCapacityUOMsByClassCode::dspCapacityUOMsByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCapacityUOMsByParameter(parent, "dspCapacityUOMsByClassCode", fl)
 {
   setWindowTitle(tr("Capacity UOMs by Class Code"));

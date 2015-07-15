@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QTimerEvent>
 
-idleShutdown::idleShutdown(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+idleShutdown::idleShutdown(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

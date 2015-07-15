@@ -33,7 +33,7 @@
 #include "item.h"
 #include "parameterwidget.h"
 
-itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char* name, Qt::WFlags fl)
+itemAvailabilityWorkbench::itemAvailabilityWorkbench(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -328,6 +328,9 @@ void itemAvailabilityWorkbench::populate()
 
 void itemAvailabilityWorkbench::sFillList()
 {
+  if (!_item->isValid())
+    return;
+  
   bool _sold = false;
   XSqlQuery itemq;
   itemq.prepare("SELECT item_sold FROM item "
@@ -358,7 +361,7 @@ void itemAvailabilityWorkbench::sFillList()
       _dspInventoryHistory->sFillList();
     else if (_receivingHistoryButton->isChecked())
       _dspPoItemReceivingsByItem->sFillList();
-    else if (_salesHistoryButton->isChecked())
+    else if (_salesHistoryButton->isChecked() && _sold)
       _dspSalesHistory->sFillList();
   }
   else if (_tab->currentIndex() == _tab->indexOf(_ordersTab))

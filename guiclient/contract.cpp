@@ -29,7 +29,7 @@
 #include "enterPoReturn.h"
 #include <openreports.h>
 
-contract::contract(QWidget* parent, const char* name, Qt::WFlags fl)
+contract::contract(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -49,9 +49,9 @@ contract::contract(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_itemSource,         SIGNAL(itemClicked(XTreeWidgetItem *, int)), this, SLOT(sHandleButtons(XTreeWidgetItem *, int)));
   connect(_itemSource,         SIGNAL(itemSelected(int)), this, SLOT(sEditItemSrc()));
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true);
   _dates->setStartCaption(tr("Effective"));
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true);
   _dates->setEndCaption(tr("Expires"));
 
   if (_metrics->value("Application") == "Standard")
@@ -105,7 +105,7 @@ enum SetResponse contract::set(const ParameterList &pParams)
   if (valid)
   {
     _vendor->setId(param.toInt());
-    _vendor->setEnabled(FALSE);
+    _vendor->setEnabled(false);
   }
 
   param = pParams.value("mode", &valid);
@@ -141,7 +141,7 @@ enum SetResponse contract::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _vendor->setEnabled(FALSE);
+      _vendor->setEnabled(false);
       _newItemSrc->setEnabled(true);
       _newPo->setEnabled(false);
       _editPo->setEnabled(false);
@@ -155,10 +155,10 @@ enum SetResponse contract::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _vendor->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _number->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _vendor->setEnabled(false);
+      _dates->setEnabled(false);
+      _number->setEnabled(false);
+      _descrip->setEnabled(false);
 //      _documents->setReadOnly(true);
       _newItemSrc->setEnabled(true);
       _newPo->setEnabled(false);
@@ -201,7 +201,7 @@ void contract::sSaveClicked()
   _captive = false;
   if (sSave())
   {
-    omfgThis->sContractsUpdated(_contrctid, TRUE);
+    omfgThis->sContractsUpdated(_contrctid, true);
     close();
   }
 }
@@ -314,7 +314,7 @@ bool contract::sSave()
   {
     if (_mode != cCopy)
     {
-      _vendor->setEnabled(FALSE);
+      _vendor->setEnabled(false);
     }
     _mode = cEdit;
     _captive = false;
@@ -396,7 +396,7 @@ void contract::sNewItemSrc()
   params.append("contrct_id", _contrctid);
   params.append("vend_id", _vendor->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -414,7 +414,7 @@ void contract::sEditItemSrc()
   params.append("mode", "edit");
   params.append("itemsrc_id", _itemSource->id());
   
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)

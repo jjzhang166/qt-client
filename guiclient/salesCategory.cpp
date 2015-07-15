@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-salesCategory::salesCategory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+salesCategory::salesCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -76,12 +76,12 @@ enum SetResponse salesCategory::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _category->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _sales->setReadOnly(TRUE);
-      _prepaid->setReadOnly(TRUE);
-      _araccnt->setReadOnly(TRUE);
+      _category->setEnabled(false);
+      _active->setEnabled(false);
+      _description->setEnabled(false);
+      _sales->setReadOnly(true);
+      _prepaid->setReadOnly(true);
+      _araccnt->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -107,7 +107,7 @@ void salesCategory::sCheck()
       _mode = cEdit;
       populate();
 
-      _category->setEnabled(FALSE);
+      _category->setEnabled(false);
     }
   }
 }
@@ -198,7 +198,7 @@ void salesCategory::populate()
       _active->setChecked(salespopulate.value("salescat_active").toBool());
     }
     else
-      _active->setChecked(TRUE);
+      _active->setChecked(true);
 
     _sales->setId(salespopulate.value("salescat_sales_accnt_id").toInt());
     _prepaid->setId(salespopulate.value("salescat_prepaid_accnt_id").toInt());

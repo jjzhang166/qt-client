@@ -24,7 +24,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-listRecurringInvoices::listRecurringInvoices(QWidget* parent, const char* name, Qt::WFlags fl)
+listRecurringInvoices::listRecurringInvoices(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ listRecurringInvoices::listRecurringInvoices(QWidget* parent, const char* name, 
 
   if (_privileges->check("MaintainMiscInvoices"))
   {
-    _new->setEnabled(TRUE);
+    _new->setEnabled(true);
     connect(_invchead, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
     connect(_invchead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }

@@ -28,7 +28,7 @@
 #include "unappliedAPCreditMemos.h"
 #include "vendor.h"
 
-vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags fl)
+vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WindowFlags fl)
     : XWidget (parent, name, fl)
 {
   setupUi(this);
@@ -108,8 +108,8 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
     _checks->findChild<QWidget*>("_close")->hide();
     _checks->findChild<QGroupBox*>("_recipGroup")->setChecked(true);
     _checks->findChild<QGroupBox*>("_recipGroup")->hide();
-    _checks->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-    _checks->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   TRUE);
+    _checks->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _checks->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   true);
     VendorCluster *checkvend = _checks->findChild<VendorCluster*>("_vend");
     connect(checkvend,   SIGNAL(newId(int)), _checks,       SLOT(sFillList()));
     connect(_vend,       SIGNAL(newId(int)), checkvend,     SLOT(setId(int)));
@@ -123,8 +123,8 @@ vendorWorkBench::vendorWorkBench(QWidget* parent, const char *name, Qt::WFlags f
     _historyTab->layout()->addWidget(_history);
     _history->setCloseVisible(false);
     _history->findChild<QWidget*>("_vendGroup")->hide();
-    _history->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-    _history->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   TRUE);
+    _history->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _history->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   true);
     VendorCluster *histvend = _history->findChild<VendorCluster*>("_vend");
     connect(histvend,    SIGNAL(newId(int)), _history,      SLOT(sFillList()));
     connect(_vend,       SIGNAL(newId(int)), histvend,      SLOT(setId(int)));
@@ -169,7 +169,7 @@ enum SetResponse vendorWorkBench::set(const ParameterList & pParams)
   if (valid)
   {
     _vend->setId(param.toInt());
-    _vend->setReadOnly(TRUE);
+    _vend->setReadOnly(true);
   }
 
   return NoError;

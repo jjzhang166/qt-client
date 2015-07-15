@@ -118,6 +118,7 @@ class XTUPLEWIDGETS_EXPORT ContactCluster : public VirtualCluster
       QLabel* _emailLit;
       QLabel* _webaddrLit;
       QLabel* _addr;
+      QLabel* _addrLit;
       QStringList* _fname;
       XURLLabel* _email;
       XURLLabel* _webaddr;

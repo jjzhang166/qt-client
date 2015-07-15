@@ -21,7 +21,7 @@ class postJournals : public XWidget, public Ui::postJournals
     Q_OBJECT
 
 public:
-    postJournals(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    postJournals(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~postJournals();
 
 public slots:

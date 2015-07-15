@@ -21,7 +21,7 @@ class shippingForm : public XDialog, public Ui::shippingForm
     Q_OBJECT
 
 public:
-    shippingForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    shippingForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~shippingForm();
 
 public slots:

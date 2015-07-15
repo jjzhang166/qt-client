@@ -19,7 +19,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-transformTrans::transformTrans(QWidget* parent, const char* name, Qt::WFlags fl)
+transformTrans::transformTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -34,7 +34,7 @@ transformTrans::transformTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_warehouse,  SIGNAL(newID(int)), this, SLOT(sFillList()));
   connect(_warehouse,  SIGNAL(newID(int)), this, SLOT(sPopulateQOH()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _warehouse->setType(WComboBox::AllActiveInventory);
@@ -77,7 +77,7 @@ enum SetResponse transformTrans::set(const ParameterList &pParams)
 {
   XSqlQuery transformet;
   XWidget::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -91,8 +91,8 @@ enum SetResponse transformTrans::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
 
   param = pParams.value("mode", &valid);
@@ -110,13 +110,13 @@ enum SetResponse transformTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setEnabled(FALSE);
-      _warehouse->setEnabled(FALSE);
-      _target->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _transDate->setEnabled(false);
+      _item->setEnabled(false);
+      _warehouse->setEnabled(false);
+      _target->setEnabled(false);
+      _qty->setEnabled(false);
+      _documentNum->setEnabled(false);
+      _notes->setReadOnly(true);
       _close->setText(tr("&Close"));
       _post->hide();
 

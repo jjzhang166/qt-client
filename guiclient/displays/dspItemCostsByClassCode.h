@@ -21,7 +21,7 @@ class dspItemCostsByClassCode : public display, public Ui::dspItemCostsByClassCo
     Q_OBJECT
 
 public:
-    dspItemCostsByClassCode(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspItemCostsByClassCode(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     Q_INVOKABLE bool setParams(ParameterList &params);
 

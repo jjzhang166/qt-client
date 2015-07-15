@@ -17,7 +17,7 @@
 #include "inputManager.h"
 #include "distributeInventory.h"
 
-issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,7 +28,7 @@ issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bo
   connect(_wo, SIGNAL(newId(int)), this, SLOT(sFillList()));
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
 
-  _hasPush = FALSE;
+  _hasPush = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
 
@@ -71,10 +71,10 @@ enum SetResponse issueWoMaterialBatch::set(const ParameterList &pParams)
   param = pParams.value("wo_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   return NoError;
@@ -153,7 +153,7 @@ void issueWoMaterialBatch::sIssue()
   while(items.next())
   {
     issue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-    issue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, 0, TRUE, :date) AS result;");
+    issue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, 0, true, :date) AS result;");
     issue.bindValue(":womatl_id", items.value("womatl_id").toInt());
     issue.bindValue(":qty", items.value("qty").toDouble());
     issue.bindValue(":date",  _transDate->date());
@@ -214,7 +214,7 @@ void issueWoMaterialBatch::sIssue()
     issue.exec("COMMIT;");
   }
 
-  omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+  omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
   if (_captive)
     accept();

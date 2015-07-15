@@ -20,7 +20,7 @@ class dspPendingBOMChanges : public display, public Ui::dspPendingBOMChanges
     Q_OBJECT
 
 public:
-    dspPendingBOMChanges(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPendingBOMChanges(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

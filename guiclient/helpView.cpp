@@ -9,11 +9,11 @@
  */
 
 #include <QGridLayout>
-#include <QHelpContentWidget>
-#include <QHelpSearchEngine>
-#include <QHelpSearchQueryWidget>
-#include <QHelpSearchResultWidget>
-#include <QHelpIndexWidget>
+#include <QtHelp/QHelpContentWidget>
+#include <QtHelp/QHelpSearchEngine>
+#include <QtHelp/QHelpSearchQueryWidget>
+#include <QtHelp/QHelpSearchResultWidget>
+#include <QtHelp/QHelpIndexWidget>
 #include <QPixmap>
 #include <QSplitter>
 #include <QToolBar>

@@ -18,13 +18,13 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Check Information</string>
+   <string>Payment Information</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" >
    <item row="0" column="0" colspan="2" >
     <widget class="QLabel" name="_checkNumberLit" >
      <property name="text" >
-      <string>Check Number:</string>
+      <string>Payment Number:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -101,7 +101,7 @@ to be bound by its terms.</comment>
    <item row="13" column="0" >
     <widget class="QLabel" name="_itemsLit" >
      <property name="text" >
-      <string>Check Items:</string>
+      <string>Payment Items:</string>
      </property>
      <property name="buddy" >
       <cstring>_items</cstring>

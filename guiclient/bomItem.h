@@ -22,7 +22,7 @@ class bomItem : public XDialog, public Ui::bomItem
     Q_OBJECT
 
 public:
-    bomItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    bomItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~bomItem();
 
 public slots:

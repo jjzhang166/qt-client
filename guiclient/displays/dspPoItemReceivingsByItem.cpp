@@ -15,7 +15,7 @@
 
 #include "guiclient.h"
 
-dspPoItemReceivingsByItem::dspPoItemReceivingsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemReceivingsByItem::dspPoItemReceivingsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemReceivingsByItem", fl)
 {
   setupUi(optionsWidget());

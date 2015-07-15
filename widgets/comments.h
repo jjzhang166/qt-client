@@ -23,14 +23,39 @@ class QTextBrowser;
 class XTreeWidget;
 class Comment;
 
+struct CommentMap
+{
+  int     doctypeId;
+  QString doctypeStr;
+  QString translation;
+  QString idParam;
+  QString uiname;
+  QString newPriv;
+
+  CommentMap(int     id,       // enum DocumentSources + extensions
+             QString key,
+             QString trans,
+             QString param,
+             QString ui    = QString(),
+             QString priv  = QString()) {
+
+    doctypeId   = id;
+    doctypeStr  = key;
+    translation = trans;
+    idParam     = param;
+    uiname      = ui;
+    newPriv     = priv;
+  }
+};
+
 class XTUPLEWIDGETS_EXPORT Comments : public QWidget
 {
   Q_OBJECT
 
   Q_ENUMS(CommentSources)
 
-  Q_PROPERTY(CommentSources type READ type WRITE setType)
-
+  Q_PROPERTY(int type READ type WRITE setType)
+  
   friend class comment;
 
   public:
@@ -58,25 +83,15 @@ class XTUPLEWIDGETS_EXPORT Comments : public QWidget
     };
 
     inline int sourceid()             { return _sourceid; }
-    inline enum CommentSources type() { return _source;   }
-
-    struct CommentMap
-    {
-      enum CommentSources source;
-      const char *        ident;
-
-      CommentMap(enum CommentSources s, const char * i)
-      {
-        source = s;
-        ident = i;
-      }
-    };
-    static const struct CommentMap _commentMap[]; // see comments.cpp for init
+    int         type() const;
+  
+    static QMap<QString, struct CommentMap*> &commentMap();
 
     bool userCanEdit(int);
 
   public slots:
-    void setType(enum CommentSources);
+    void setType(int sourceType);
+    void setType(QString sourceType);
     void setId(int);
     void setReadOnly(bool);
     void setVerboseCommentList(bool);
@@ -96,7 +111,12 @@ class XTUPLEWIDGETS_EXPORT Comments : public QWidget
   private:
     void showEvent(QShowEvent *event);
   
-    enum CommentSources _source;
+    static QMap<QString, struct CommentMap*> _strMap;
+    static QMap<int,     struct CommentMap*> _intMap;
+    QString              _sourcetype;
+  
+    static bool addToMap(int id, QString key, QString trans, QString param = QString(), QString ui = QString(), QString priv = QString());
+
     int                 _sourceid;
     QList<QVariant> _commentIDList;
     bool _verboseCommentList;

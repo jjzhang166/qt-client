@@ -15,7 +15,7 @@
 
 const char *_docTypes[] = { "ARCM", "ARDM", "RA" };
 
-reasonCode::reasonCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reasonCode::reasonCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -64,8 +64,8 @@ enum SetResponse reasonCode::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -148,7 +148,7 @@ void reasonCode::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }
@@ -167,20 +167,20 @@ void reasonCode::populate()
     _description->setText(reasonpopulate.value("rsncode_descrip").toString());
     if (reasonpopulate.value("rsncode_doctype").toString() == "ARCM")
     {
-      _selectedDocType->setChecked(TRUE);
+      _selectedDocType->setChecked(true);
       _docType->setCurrentIndex(0);
     }
     else if (reasonpopulate.value("rsncode_doctype").toString() == "ARDM")
     {
-      _selectedDocType->setChecked(TRUE);
+      _selectedDocType->setChecked(true);
       _docType->setCurrentIndex(1);
     }
     else if (reasonpopulate.value("rsncode_doctype").toString() == "RA")
     {
-      _selectedDocType->setChecked(TRUE);
+      _selectedDocType->setChecked(true);
       _docType->setCurrentIndex(2);
     }
     else
-      _allDocTypes->setChecked(TRUE);      
+      _allDocTypes->setChecked(true);      
   }
 } 

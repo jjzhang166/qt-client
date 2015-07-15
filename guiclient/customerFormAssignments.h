@@ -21,7 +21,7 @@ class customerFormAssignments : public XWidget, public Ui::customerFormAssignmen
     Q_OBJECT
 
 public:
-    customerFormAssignments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    customerFormAssignments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~customerFormAssignments();
 
 public slots:

@@ -647,7 +647,7 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
     QString procname = "deleteOpenRecurringItems";
     XSqlQuery cfq;
     cfq.prepare("SELECT deleteOpenRecurringItems(:parentId, :parentType,"
-                "                                :splitdate, FALSE) AS result;");
+                "                                :splitdate, false) AS result;");
     cfq.bindValue(":parentId",   _parentId);
     cfq.bindValue(":parentType", _parentType);
     cfq.bindValue(":splitdate",  startDate());
@@ -937,7 +937,7 @@ QScriptValue constructRecurrenceWidget(QScriptContext *context,
   QWidget *parent = (qscriptvalue_cast<QWidget*>(context->argument(0)));
   const char *objname = "_recurrenceWidget";
   if (context->argumentCount() > 1)
-    objname = context->argument(1).toString().toAscii().data();
+    objname = context->argument(1).toString().toLatin1().data();
   return engine->toScriptValue(new RecurrenceWidget(parent, objname));
 }
 

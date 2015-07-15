@@ -53,7 +53,7 @@ class XTUPLEWIDGETS_EXPORT CRMAcctList : public VirtualList
     friend class CRMAcctLineEdit;
 
     public:
-	CRMAcctList(QWidget*, const char* = 0, bool = false, Qt::WFlags = 0);
+	CRMAcctList(QWidget*, const char* = 0, bool = false, Qt::WindowFlags = 0);
 
     public slots:
 	virtual void sFillList();

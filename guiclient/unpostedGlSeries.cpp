@@ -24,7 +24,7 @@
 #include "glSeries.h"
 #include "storedProcErrorLookup.h"
 
-unpostedGlSeries::unpostedGlSeries(QWidget* parent, const char* name, Qt::WFlags fl)
+unpostedGlSeries::unpostedGlSeries(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

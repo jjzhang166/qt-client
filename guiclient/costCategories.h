@@ -22,7 +22,7 @@ class costCategories : public XWidget, public Ui::costCategories
     Q_OBJECT
 
 public:
-    costCategories(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    costCategories(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~costCategories();
 
 public slots:

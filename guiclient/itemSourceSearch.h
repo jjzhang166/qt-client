@@ -21,7 +21,7 @@ class itemSourceSearch : public XDialog, public Ui::itemSourceSearch
     Q_OBJECT
 
 public:
-    itemSourceSearch(QWidget* parent = 0, const char* name = 0, bool model = false, Qt::WFlags fl = 0);
+    itemSourceSearch(QWidget* parent = 0, const char* name = 0, bool model = false, Qt::WindowFlags fl = 0);
     ~itemSourceSearch();
 
     int itemsrcId();

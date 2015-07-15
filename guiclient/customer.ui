@@ -49,7 +49,7 @@ to be bound by its terms.</comment>
             <bool>false</bool>
            </property>
            <property name="canEdit">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
          </item>

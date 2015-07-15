@@ -29,7 +29,7 @@ bool metasqls::userHasPriv(const int priv)
          ((priv == cEdit || priv == cNew) && _privileges->check("MaintainMetaSQL"));
 }
 
-metasqls::metasqls(QWidget* parent, const char* name, Qt::WFlags fl)
+metasqls::metasqls(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

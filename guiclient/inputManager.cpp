@@ -39,7 +39,7 @@ typedef struct
 #define cHeader       0x08
 #define cData         0x10
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
 #define cPrologCtrl   0x80    /* Macintosh-only */
 #endif
 
@@ -74,7 +74,7 @@ class ReceiverItem
   public:
     ReceiverItem()
     {
-      _null = TRUE;
+      _null = true;
     };
 
     ReceiverItem(int pType, QObject *pParent, QObject *pTarget, const QString &pSlot)
@@ -83,13 +83,13 @@ class ReceiverItem
       _parent = pParent;
       _target = pTarget;
       _slot   = pSlot;
-      _null   = FALSE;
+      _null   = false;
     };
 
     inline int type()        { return _type;   };
     inline QObject *parent() { return _parent; };
     inline QObject *target() { return _target; };
-    inline char* slot()    { return _slot.toAscii().data();   };
+    inline char* slot()    { return _slot.toLatin1().data();   };
     inline bool isNull()     { return _null;   };
     bool operator==(const ReceiverItem &value) const
     {
@@ -169,9 +169,9 @@ bool InputManager::eventFilter(QObject *, QEvent *pEvent)
 //  Swallow the Shift key as the Symbol Bar Code readers express a Shift key
 //  for each upper case alpha character
     if (((QKeyEvent *)pEvent)->key() == Qt::Key_Shift)
-      return FALSE;
+      return false;
 
-    int character = ((QKeyEvent *)pEvent)->text().data()->toAscii();
+    int character = ((QKeyEvent *)pEvent)->text().data()->toLatin1();
     /* qDebug("Scanned %d (key %d) at _private->_state=%d",
            character, ((QKeyEvent *)pEvent)->key(), _private->_state);
      */
@@ -184,7 +184,7 @@ bool InputManager::eventFilter(QObject *, QEvent *pEvent)
     switch (_private->_state)
     {
       case cIdle:
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
         if (((QKeyEvent *)pEvent)->key() == Qt::Key_Meta)
         {
           _private->_state = cPrologCtrl;
@@ -198,11 +198,11 @@ bool InputManager::eventFilter(QObject *, QEvent *pEvent)
         }
 #endif
         else
-          return FALSE;
+          return false;
 
         break;
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
       case cPrologCtrl:
         // why does character come back as 0?
 	// on an Intel Mac with Qt 4 the key() came back as Key_PageUp
@@ -404,10 +404,10 @@ bool InputManager::eventFilter(QObject *, QEvent *pEvent)
         break;
     }
 
-    return TRUE;
+    return true;
   }
   else
-    return FALSE;
+    return false;
 }
 
 void InputManager::dispatchWorkOrder()

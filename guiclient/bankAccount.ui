@@ -218,7 +218,7 @@ to be bound by its terms.</comment>
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Next Check #:</string>
+         <string>Next Payment #:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -320,7 +320,7 @@ to be bound by its terms.</comment>
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Print Checks</string>
+         <string>Print Checks/EFT Payments</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -394,7 +394,7 @@ to be bound by its terms.</comment>
        <item row="0" column="0">
         <widget class="QGroupBox" name="_transmitGroup">
          <property name="title">
-          <string>Enable EFT Check Printing</string>
+          <string>Enable EFT Payments</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -422,7 +422,7 @@ to be bound by its terms.</comment>
           <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="_genCheckNumber">
             <property name="text">
-             <string>Create Check Number for EFT Checks</string>
+             <string>Create Payment Number for EFT File</string>
             </property>
            </widget>
           </item>

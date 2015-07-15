@@ -21,7 +21,7 @@
 #include "mqlutil.h"
 
 
-dspInvoiceInformation::dspInvoiceInformation(QWidget* parent, const char* name, Qt::WFlags fl)
+dspInvoiceInformation::dspInvoiceInformation(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -35,11 +35,11 @@ dspInvoiceInformation::dspInvoiceInformation(QWidget* parent, const char* name, 
 
   _invoiceAmount->setPrecision(omfgThis->moneyVal());
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _invoiceList->setMaximumWidth(25);
 #endif
 
-  _cust->setReadOnly(TRUE);
+  _cust->setReadOnly(true);
 
   _arapply->addColumn(tr("Type"),            _dateColumn, Qt::AlignCenter,true, "doctype");
   _arapply->addColumn(tr("Doc./Ref. #"),              -1, Qt::AlignLeft,  true, "docnumber");
@@ -74,7 +74,7 @@ enum SetResponse dspInvoiceInformation::set(const ParameterList &pParams)
   if (valid)
   {
     _invoiceNumber->setInvoiceNumber(param.toString());
-    _invoiceNumber->setEnabled(FALSE);
+    _invoiceNumber->setEnabled(false);
     _invoiceList->hide();
   }
 
@@ -113,8 +113,8 @@ void dspInvoiceInformation::sParseInvoiceNumber()
   dspParseInvoiceNumber.exec();
   if (dspParseInvoiceNumber.first())
   {
-    _print->setEnabled(TRUE);
-    _view->setEnabled(TRUE);
+    _print->setEnabled(true);
+    _view->setEnabled(true);
 
     _invcheadid = dspParseInvoiceNumber.value("invchead_id").toInt();
 
@@ -154,8 +154,8 @@ void dspInvoiceInformation::sParseInvoiceNumber()
   {
     if (dspParseInvoiceNumber.lastError().type() != QSqlError::NoError)
       systemError(this, dspParseInvoiceNumber.lastError().databaseText(), __FILE__, __LINE__);
-    _print->setEnabled(FALSE);
-    _view->setEnabled(FALSE);
+    _print->setEnabled(false);
+    _view->setEnabled(false);
     _invoiceNumber->clear();
     _arapply->clear();
     _invcheadid = -1;
@@ -205,7 +205,7 @@ void dspInvoiceInformation::sInvoiceList()
   ParameterList params;
   params.append("invoiceNumber", _invoiceNumber->invoiceNumber());
 
-  invoiceList newdlg(this, "", TRUE);
+  invoiceList newdlg(this, "", true);
   newdlg.set(params);
   int invoiceid = newdlg.exec();
 

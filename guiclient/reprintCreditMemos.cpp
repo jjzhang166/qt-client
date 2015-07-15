@@ -19,7 +19,7 @@
 reprintCreditMemos::reprintCreditMemos(QWidget    *parent,
                                        const char *name,
                                        bool        modal,
-                                       Qt::WFlags  fl)
+                                       Qt::WindowFlags  fl)
     : reprintMulticopyDocument("CreditMemoCopies",     "CreditMemoWatermark",
                                "CreditMemoShowPrices", parent, name, modal, fl)
 {

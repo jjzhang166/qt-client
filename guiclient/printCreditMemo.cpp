@@ -14,7 +14,7 @@
 #include <QSqlRecord>
 #include <QVariant>
 
-printCreditMemo::printCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printCreditMemo::printCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("CreditMemoCopies",     "CreditMemoWatermark",
                              "CreditMemoShowPrices", "PostARDocuments",
                              parent, name, modal, fl)
@@ -37,7 +37,7 @@ printCreditMemo::printCreditMemo(QWidget* parent, const char* name, bool modal, 
              "WHERE (cmhead_id=<? value('docid') ?>);" ;
 
   _markOnePrintedQry = "UPDATE cmhead "
-                       "   SET cmhead_printed=TRUE "
+                       "   SET cmhead_printed=true "
                        " WHERE (cmhead_id=<? value('docid') ?>);" ;
   _postFunction = "postCreditMemo";
   _postQuery    = "SELECT postCreditMemo(<? value('docid') ?>, 0) AS result;" ;

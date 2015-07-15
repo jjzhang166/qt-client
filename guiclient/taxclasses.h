@@ -20,7 +20,7 @@ class taxClasses : public XWidget, public Ui::taxClasses
     Q_OBJECT
 
 public:
-    taxClasses(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    taxClasses(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~taxClasses();
 
 public slots:

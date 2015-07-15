@@ -21,7 +21,7 @@ class incidentPriority : public XDialog, public Ui::incidentPriority
     Q_OBJECT
 
 public:
-    incidentPriority(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    incidentPriority(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~incidentPriority();
 
 public slots:

@@ -20,7 +20,7 @@ class printLabelsByTo : public XDialog, public Ui::printLabelsByTo
     Q_OBJECT
 
 public:
-    printLabelsByTo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printLabelsByTo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printLabelsByTo();
 
 public slots:

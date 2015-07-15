@@ -15,7 +15,7 @@
 
 #include "guiclient.h"
 
-dspPoReturnsByVendor::dspPoReturnsByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoReturnsByVendor::dspPoReturnsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoReturnsByVendor", fl)
 {
   setupUi(optionsWidget());

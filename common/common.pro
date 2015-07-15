@@ -8,6 +8,10 @@ win32 {
   CONFIG -= dll
   CONFIG += staticlib
 }
+macx {
+  CONFIG -= dll
+  CONFIG += staticlib
+}
 
 DEFINES     += MAKELIB
 
@@ -70,6 +74,6 @@ HEADERS = applock.h              \
 
 FORMS = login2.ui login2Options.ui checkForUpdates.ui
 
-QT +=  script sql xml xmlpatterns network
+QT +=  script sql xml xmlpatterns network widgets
 
 RESOURCES += xTupleCommon.qrc

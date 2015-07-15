@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-reverseGLSeries::reverseGLSeries(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reverseGLSeries::reverseGLSeries(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

@@ -23,7 +23,7 @@ class printCheck : public XWidget, public Ui::printCheck
     Q_OBJECT
 
 public:
-    printCheck(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+    printCheck(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = 0);
     ~printCheck();
 
     static QString eftFileDir;
@@ -35,6 +35,7 @@ public slots:
     virtual void sEnableCreateEFT();
     virtual void sHandleBankAccount( int pBankaccntid );
     virtual void sPrint();
+    virtual void sPrintedAlready();
     virtual void populate( int pcheckid );
 
 protected slots:
@@ -48,6 +49,7 @@ private:
     int  _setCheckNumber;
 
     virtual void markCheckAsPrinted(const int);
+    virtual void sPrintImpl(bool printedAlready);
 
 };
 

@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-bankAdjustmentType::bankAdjustmentType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+bankAdjustmentType::bankAdjustmentType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -60,10 +60,10 @@ enum SetResponse bankAdjustmentType::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _accnt->setEnabled(FALSE);
-      _senseGroup->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _accnt->setEnabled(false);
+      _senseGroup->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -136,7 +136,7 @@ void bankAdjustmentType::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

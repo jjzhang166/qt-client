@@ -14,7 +14,7 @@
 #include <QVariant>
 #include "mqlutil.h"
 
-itemSourceList::itemSourceList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSourceList::itemSourceList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -58,14 +58,14 @@ enum SetResponse itemSourceList::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setEnabled(FALSE);
+    _item->setEnabled(false);
   }
 
   param = pParams.value("vend_id", &valid);
   if (valid)
   {
     _vendor->setId(param.toInt());
-    _vendor->setEnabled(FALSE);
+    _vendor->setEnabled(false);
   }
 
   param = pParams.value("qty", &valid);

@@ -20,7 +20,7 @@ class externalShipping : public XDialog, public Ui::externalShipping
     Q_OBJECT
 
   public:
-    externalShipping(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    externalShipping(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~externalShipping();
 
     static bool userHasPriv(const int = cView);

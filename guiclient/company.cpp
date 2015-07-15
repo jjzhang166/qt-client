@@ -19,10 +19,11 @@
 
 #include "login2.h"
 #include "currcluster.h"
+#include "version.h"
 
 #define DEBUG false
 
-company::company(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+company::company(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -54,6 +55,9 @@ company::company(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _discrepancy->setType(GLCluster::cExpense);
   _discrepancy->setShowExternal(true);
   _discrepancy->setIgnoreCompany(true);
+  _unassigned->setType(GLCluster::cLiability);
+  _unassigned->setShowExternal(true);
+  _unassigned->setIgnoreCompany(true);
 }
 
 company::~company()
@@ -92,10 +96,10 @@ enum SetResponse company::set(const ParameterList &pParams)
     {
       _mode = cView;
       
-      _number->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _external->setEnabled(FALSE);
-      _authGroup->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _descrip->setEnabled(false);
+      _external->setEnabled(false);
+      _authGroup->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }
@@ -186,6 +190,15 @@ void company::sSave()
     return;
   }
 
+  if (_unassigned->isValid() &&
+      _companyid != _unassigned->companyId())
+  {
+    QMessageBox::critical(this, tr("Company Account Mismatch"),
+                          tr("The Unassigned G/L Account must belong to this Company.") );
+    _unassigned->setFocus();
+    return;
+  }
+
   if (_unrlzgainloss->isValid() &&
       _companyid != _unrlzgainloss->companyId())
   {
@@ -211,13 +224,13 @@ void company::sSave()
                "  company_external, company_server, company_port,"
                "  company_database, company_curr_id, company_yearend_accnt_id, "
                "  company_gainloss_accnt_id, company_dscrp_accnt_id, "
-               "  company_unrlzgainloss_accnt_id) "
+               "  company_unrlzgainloss_accnt_id, company_unassigned_accnt_id) "
                "VALUES "
                "( :company_id, :company_number, :company_descrip,"
                "  :company_external, :company_server, :company_port, "
                "  :company_database, :company_curr_id, :company_yearend_accnt_id, "
                "  :company_gainloss_accnt_id, :company_dscrp_accnt_id, "
-               "  :company_unrlzgainloss_accnt_id);" );
+               "  :company_unrlzgainloss_accnt_id, :company_unassigned_accnt_id);" );
   }
   else if (_mode == cEdit)
   {
@@ -262,7 +275,8 @@ void company::sSave()
                "    company_yearend_accnt_id=:company_yearend_accnt_id, "
                "    company_gainloss_accnt_id=:company_gainloss_accnt_id, "
                "    company_dscrp_accnt_id=:company_dscrp_accnt_id, "
-               "    company_unrlzgainloss_accnt_id=:company_unrlzgainloss_accnt_id "
+               "    company_unrlzgainloss_accnt_id=:company_unrlzgainloss_accnt_id, "
+               "    company_unassigned_accnt_id=:company_unassigned_accnt_id "
                "WHERE (company_id=:company_id);" );
   }
   
@@ -277,6 +291,8 @@ void company::sSave()
     companySave.bindValue(":company_gainloss_accnt_id", _gainloss->id());
   if (_discrepancy->isValid())
     companySave.bindValue(":company_dscrp_accnt_id", _discrepancy->id());
+  if (_unassigned->isValid())
+    companySave.bindValue(":company_unassigned_accnt_id", _unassigned->id());
   if (_yearend->isValid())
     companySave.bindValue(":company_yearend_accnt_id", _yearend->id());
   if (_external->isChecked())
@@ -295,6 +311,7 @@ void company::sSave()
   if ((!_yearend->isValid()) ||
      (!_gainloss->isValid()) ||
      (!_discrepancy->isValid()) ||
+     (!_unassigned->isValid()) ||
      (_external->isChecked() &&
       _currency->id() != CurrCluster::baseId() &&
       !_unrlzgainloss->isValid()))
@@ -327,6 +344,7 @@ void company::populate()
     _yearend->setId(companypopulate.value("company_yearend_accnt_id").toInt());
     _gainloss->setId(companypopulate.value("company_gainloss_accnt_id").toInt());
     _discrepancy->setId(companypopulate.value("company_dscrp_accnt_id").toInt());
+    _unassigned->setId(companypopulate.value("company_unassigned_accnt_id").toInt());
     if (_external->isChecked())
     {
       _cachedCurrid = companypopulate.value("company_curr_id").toInt();
@@ -383,6 +401,7 @@ void company::sTest()
   ParameterList params;
   params.append("databaseURL", dbURL);
   params.append("multipleConnections");
+  params.append("applicationName", _ConnAppName);
 
   login2 newdlg(this, "testLogin", false);
   newdlg.set(params);

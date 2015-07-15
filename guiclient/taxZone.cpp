@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-taxZone::taxZone(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxZone::taxZone(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -65,8 +65,8 @@ enum SetResponse taxZone::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _taxZone->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _taxZone->setEnabled(false);
+      _description->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -92,7 +92,7 @@ void taxZone::sCheck()
       _mode = cEdit;
       populate();
 
-      _taxZone->setEnabled(FALSE);
+      _taxZone->setEnabled(false);
     }
   }
 }

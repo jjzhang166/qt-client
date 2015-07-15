@@ -49,7 +49,7 @@ void RateValidator::fixup ( QString & input ) const
   //input.setNum(rateDouble, 'f', decimals());
 }
 
-currencyConversion::currencyConversion(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+currencyConversion::currencyConversion(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -113,9 +113,9 @@ enum SetResponse currencyConversion::set(const ParameterList &pParams)
     {
       _mode = cView;
       
-      _currency->setEnabled(FALSE);
-      _rate->setEnabled(FALSE);
-      _dateCluster->setEnabled(FALSE);
+      _currency->setEnabled(false);
+      _rate->setEnabled(false);
+      _dateCluster->setEnabled(false);
       
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);

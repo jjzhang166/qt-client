@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-profitCenter::profitCenter(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+profitCenter::profitCenter(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

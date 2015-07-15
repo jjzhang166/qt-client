@@ -14,6 +14,7 @@
 #include <QFont>
 #include <QObject>
 #include <QtScript>
+#include <QPaintDevice>
 
 class QString;
 
@@ -50,8 +51,10 @@ class QFontProto : public QObject, public QScriptable
     Q_INVOKABLE QString lastResortFont()        const;
     Q_INVOKABLE qreal   letterSpacing() const;
     Q_INVOKABLE int     letterSpacingType()    const;
-#ifdef Q_WS_MAC
+#if QT_VERSION < 5
+#ifdef Q_OS_MAC
     Q_INVOKABLE quint32 macFontID()     const;
+#endif
 #endif
     Q_INVOKABLE bool    overline()      const;
     Q_INVOKABLE int     pixelSize()     const;

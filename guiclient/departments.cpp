@@ -19,7 +19,7 @@
 #include <openreports.h>
 #include "department.h"
 
-departments::departments(QWidget* parent, const char* name, Qt::WFlags fl)
+departments::departments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -82,7 +82,7 @@ void departments::sNew()
     ParameterList params;
     params.append("mode", "new");
 
-    department newdlg(this, "", TRUE);
+    department newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();	//if (newdlg.exec() != XDialog::Rejected)
 	sFillList();
@@ -94,7 +94,7 @@ void departments::sEdit()
     params.append("mode", "edit");
     params.append("dept_id", _deptList->id());
 
-    department newdlg(this, "", TRUE);
+    department newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();	//if (newdlg.exec() != XDialog::Rejected)
 	sFillList();
@@ -106,7 +106,7 @@ void departments::sView()
     params.append("mode", "view");
     params.append("dept_id", _deptList->id());
 
-    department* newdlg = new department(this, "", TRUE);
+    department* newdlg = new department(this, "", true);
     newdlg->set(params);
     newdlg->show();
 }

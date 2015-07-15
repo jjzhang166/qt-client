@@ -21,7 +21,7 @@ class dspCashReceipts : public display, public Ui::dspCashReceipts
     Q_OBJECT
 
 public:
-    dspCashReceipts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCashReceipts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     virtual bool setParams(ParameterList &);
 
 public slots:

@@ -19,7 +19,7 @@ class projectTypes : public XWidget, public Ui::projectTypes
     Q_OBJECT
 
 public:
-    projectTypes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    projectTypes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~projectTypes();
 
 public slots:

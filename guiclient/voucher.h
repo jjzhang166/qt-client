@@ -21,7 +21,7 @@ class voucher : public XWidget, public Ui::voucher
     Q_OBJECT
 
 public:
-    voucher(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    voucher(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~voucher();
 
     Q_INVOKABLE void enableWindowModifiedSetting();
@@ -41,10 +41,6 @@ public slots:
     virtual void sNewMiscDistribution();
     virtual void sEditMiscDistribution();
     virtual void sDeleteMiscDistribution();
-    virtual void sNewCharacteristic();
-    virtual void sEditCharacteristic();
-    virtual void sDeleteCharacteristic();
-    virtual void sFillCharacteristic();
     virtual void sFillList();
     virtual void sFillMiscList();
     virtual void sPopulatePoInfo();

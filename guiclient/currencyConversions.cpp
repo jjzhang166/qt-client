@@ -25,7 +25,7 @@
 #include "datecluster.h"
 #include "xcombobox.h"
 
-currencyConversions::currencyConversions(QWidget* parent, const char* name, Qt::WFlags fl)
+currencyConversions::currencyConversions(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -63,8 +63,8 @@ currencyConversions::currencyConversions(QWidget* parent, const char* name, Qt::
   
   connect(_conversionRates, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
 
-  _dateCluster->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-  _dateCluster->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+  _dateCluster->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+  _dateCluster->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
   
   _queryParameters->setType(ParameterGroup::CurrencyNotBase);
 
@@ -117,7 +117,7 @@ void currencyConversions::sNew()
 	if (_queryParameters->isSelected())
 	    params.append("curr_id", _queryParameters->id());
 	
-	currencyConversion newdlg(this, "", TRUE);
+	currencyConversion newdlg(this, "", true);
 	newdlg.set(params);
 	newdlg.exec();
 	sFillList();
@@ -130,7 +130,7 @@ void currencyConversions::sEdit()
     params.append("mode", "edit");
     params.append("curr_rate_id", _conversionRates->id());
     
-    currencyConversion newdlg(this, "", TRUE);
+    currencyConversion newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
     sFillList();
@@ -142,7 +142,7 @@ void currencyConversions::sView()
     params.append("mode", "view");
     params.append("curr_rate_id", _conversionRates->id());
     
-    currencyConversion newdlg(this, "", TRUE);
+    currencyConversion newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
 }
@@ -185,7 +185,7 @@ void currencyConversions::sNewCurrency()
     ParameterList params;
     params.append("mode", "new");
     
-    currency newdlg(this, "", TRUE);
+    currency newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
     setBaseCurrency();
@@ -236,7 +236,7 @@ void currencyConversions::setBaseCurrency()
   XSqlQuery currencyetBaseCurrency;
     currencyetBaseCurrency.prepare("SELECT currConcat(curr_abbr, curr_symbol) AS baseCurrency "
 	      "FROM curr_symbol "
-	      "WHERE curr_base = TRUE");
+	      "WHERE curr_base = true");
     currencyetBaseCurrency.exec();
     if (currencyetBaseCurrency.first())
     {

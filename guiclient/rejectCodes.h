@@ -21,7 +21,7 @@ class rejectCodes : public XWidget, public Ui::rejectCodes
     Q_OBJECT
 
 public:
-    rejectCodes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    rejectCodes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~rejectCodes();
 
 public slots:

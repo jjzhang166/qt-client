@@ -21,7 +21,7 @@ class dspInvoiceRegister : public display, public Ui::dspInvoiceRegister
     Q_OBJECT
 
 public:
-    dspInvoiceRegister(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInvoiceRegister(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &params);
 

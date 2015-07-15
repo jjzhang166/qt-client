@@ -19,7 +19,7 @@
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
 
-applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -29,11 +29,11 @@ applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool mod
   connect(_available, SIGNAL(idChanged(int)), this, SLOT(sPriceGroup()));
   connect(_clear,          SIGNAL(clicked()), this, SLOT(sClear()));
   connect(_buttonBox,      SIGNAL(accepted()), this, SLOT(sPost()));
-  connect(_buttonBox,      SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox,      SIGNAL(rejected()), this, SLOT(sClose()));
 
   _buttonBox->button(QDialogButtonBox::Save)->setText(tr("Post"));
 
-  _captive = FALSE;
+  _captive = false;
 
   _apopen->addColumn(tr("Doc. Type"),   _docTypeColumn,  Qt::AlignCenter,true, "doctype");
   _apopen->addColumn(tr("Doc. Number"), -1,              Qt::AlignCenter,true, "apopen_docnumber");
@@ -52,7 +52,7 @@ applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool mod
     _apopen->hideColumn("appliedcurrabbr");
   }
 
-  _vend->setReadOnly(TRUE);
+  _vend->setReadOnly(true);
   sPriceGroup();
   adjustSize();
 }
@@ -76,7 +76,7 @@ enum SetResponse applyAPCreditMemo::set(const ParameterList &pParams)
   param = pParams.value("apopen_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _apopenid = param.toInt();
     populate();
   }
@@ -87,42 +87,14 @@ enum SetResponse applyAPCreditMemo::set(const ParameterList &pParams)
 void applyAPCreditMemo::sPost()
 {
   XSqlQuery applyPost;
-  applyPost.exec("BEGIN;");
-  if (applyPost.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, applyPost.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
 
   applyPost.prepare("SELECT postAPCreditMemoApplication(:apopen_id) AS result;");
   applyPost.bindValue(":apopen_id", _apopenid);
   applyPost.exec();
-  if (applyPost.first())
-  {
-    int result = applyPost.value("result").toInt();
-    if (result < 0)
-    {
-      applyPost.exec("ROLLBACK;");
-      systemError(this, storedProcErrorLookup("postAPCreditMemoApplication",
-                                              result), __FILE__, __LINE__);
-      return;
-    }
-  }
-  if (applyPost.lastError().type() != QSqlError::NoError)
-  {
-    applyPost.exec("ROLLBACK;");
-    ErrorReporter::error(QtCriticalMsg, this,
-                         tr("Error posting"), applyPost,
-                         __FILE__, __LINE__);
+  if (ErrorReporter::error(QtCriticalMsg, this,
+                           tr("Error posting"), applyPost,
+                           __FILE__, __LINE__))
     return;
-  }
-
-  applyPost.exec("COMMIT;");
-  if (applyPost.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, applyPost.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
 
   accept();
 }
@@ -158,7 +130,7 @@ void applyAPCreditMemo::sApply()
   params.append("sourceApopenid", _apopenid);
   params.append("targetApopenid", _apopen->id());
 
-  apCreditMemoApplication newdlg(this, "", TRUE);
+  apCreditMemoApplication newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     populate();

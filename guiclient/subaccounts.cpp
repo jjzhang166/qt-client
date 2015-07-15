@@ -21,7 +21,7 @@
 #include "storedProcErrorLookup.h"
 #include "subaccount.h"
 
-subaccounts::subaccounts(QWidget* parent, const char* name, Qt::WFlags fl)
+subaccounts::subaccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -40,7 +40,7 @@ subaccounts::subaccounts(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_subaccnt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -65,7 +65,7 @@ void subaccounts::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  subaccount *newdlg = new subaccount(this, "", TRUE);
+  subaccount *newdlg = new subaccount(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -77,7 +77,7 @@ void subaccounts::sEdit()
   params.append("subaccnt_id", _subaccnt->id());
   params.append("mode", "edit");
 
-  subaccount *newdlg = new subaccount(this, "", TRUE);
+  subaccount *newdlg = new subaccount(this, "", true);
   newdlg->set(params);
   if (newdlg->exec() != XDialog::Rejected)
     sFillList();
@@ -89,7 +89,7 @@ void subaccounts::sView()
   params.append("subaccnt_id", _subaccnt->id());
   params.append("mode", "view");
 
-  subaccount *newdlg = new subaccount(this, "", TRUE);
+  subaccount *newdlg = new subaccount(this, "", true);
   newdlg->set(params);
   newdlg->exec();
 }

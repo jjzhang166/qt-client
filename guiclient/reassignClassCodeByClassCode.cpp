@@ -12,7 +12,7 @@
 
 #include <QMessageBox>
 
-reassignClassCodeByClassCode::reassignClassCodeByClassCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reassignClassCodeByClassCode::reassignClassCodeByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

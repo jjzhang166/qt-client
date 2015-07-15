@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-enterPoitemReturn::enterPoitemReturn(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+enterPoitemReturn::enterPoitemReturn(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,9 +28,9 @@ enterPoitemReturn::enterPoitemReturn(QWidget* parent, const char* name, bool mod
   _received->setPrecision(omfgThis->qtyVal());
   _toReturn->setValidator(omfgThis->qtyVal());
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
-  _rejectCode->setAllowNull(TRUE);
+  _rejectCode->setAllowNull(true);
   _rejectCode->populate( "SELECT rjctcode_id, rjctcode_code "
                          "FROM rjctcode "
                          "ORDER BY rjctcode_code;" );
@@ -82,7 +82,7 @@ enum SetResponse enterPoitemReturn::set(const ParameterList &pParams)
     _receipts->clear();
     _receipts->populate(enteret);
 
-    enteret.prepare(	"SELECT CASE WHEN itemsite_costmethod='A' THEN TRUE ELSE FALSE END AS costmethod_average "
+    enteret.prepare(	"SELECT CASE WHEN itemsite_costmethod='A' THEN true ELSE false END AS costmethod_average "
                 "FROM poitem LEFT OUTER JOIN itemsite ON (poitem_itemsite_id = itemsite_id) "
                 "WHERE poitem_id = :poitem_id;");
     enteret.bindValue(":poitem_id", _poitemid);

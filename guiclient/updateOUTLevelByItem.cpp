@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <parameter.h>
 
-updateOUTLevelByItem::updateOUTLevelByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateOUTLevelByItem::updateOUTLevelByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

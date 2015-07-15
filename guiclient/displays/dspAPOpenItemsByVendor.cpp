@@ -20,7 +20,7 @@
 #include "miscVoucher.h"
 #include "voucher.h"
 
-dspAPOpenItemsByVendor::dspAPOpenItemsByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspAPOpenItemsByVendor::dspAPOpenItemsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAPOpenItemsByVendor", fl)
 {
   setupUi(optionsWidget());

@@ -21,7 +21,7 @@ class incidentResolution : public XDialog, public Ui::incidentResolution
     Q_OBJECT
 
 public:
-    incidentResolution(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    incidentResolution(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~incidentResolution();
 
 public slots:

@@ -20,7 +20,7 @@ class dspCapacityUOMsByParameter : public display, public Ui::dspCapacityUOMsByP
     Q_OBJECT
 
 public:
-    dspCapacityUOMsByParameter(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCapacityUOMsByParameter(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

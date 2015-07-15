@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-dspMaterialUsageVarianceByComponentItem::dspMaterialUsageVarianceByComponentItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspMaterialUsageVarianceByComponentItem::dspMaterialUsageVarianceByComponentItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspMaterialUsageVarianceByComponentItem", fl)
 {
   setupUi(optionsWidget());

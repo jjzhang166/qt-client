@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">postbooks.desktop</id>
+  <metadata_license>CC0</metadata_license>
+  <project_license>CPAL</project_license>
+  <name>Postbooks</name>
+  <summary>Multi-usr accounting, CRM and ERP suite</summary>
+  <description>
+    <p>
+      A full-featured, fully-integrated business management system, the core of
+      the award winning xTuple ERP Suite. Built with the open source PostgreSQL
+      database and the open source Qt framework for C++, it provides the
+      ultimate in power and flexibility for a range of businesses and
+      industries of any size.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://www.xtuple.com/sites/default/files/imagecache/product_full/dt-sales_0.png</screenshot>
+    <screenshot>https://www.xtuple.com/sites/default/files/imagecache/product_full/FAD-Screenshot.png</screenshot>
+  </screenshots>
+  <url type="homepage">http://www.xtuple.org/</url>
+</application>

@@ -21,7 +21,7 @@
 #include "guiclient.h"
 #include "parameterwidget.h"
 
-contracts::contracts(QWidget* parent, const char*, Qt::WFlags fl)
+contracts::contracts(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "contracts", fl)
 {
   setWindowTitle(tr("Contracts"));
@@ -111,7 +111,7 @@ void contracts::sEdit()
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 
-//  contract newdlg(this, "", TRUE);
+//  contract newdlg(this, "", true);
 //  newdlg.set(params);
 
 //  if (newdlg.exec() != XDialog::Rejected)
@@ -128,7 +128,7 @@ void contracts::sView()
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 
-//  contract newdlg(this, "", TRUE);
+//  contract newdlg(this, "", true);
 //  newdlg.set(params);
 //  newdlg.exec();
 }
@@ -138,7 +138,7 @@ void contracts::sCopy()
   ParameterList params;
   params.append("contrct_id", list()->id());
 
-  copyContract newdlg(this, "", TRUE);
+  copyContract newdlg(this, "", true);
   newdlg.set(params);
 //  if (newdlg.exec() != XDialog::Rejected)
 //    sFillList();
@@ -159,7 +159,7 @@ void contracts::sDelete()
                                   QMessageBox::No) == QMessageBox::Yes)
     {
       // itemsrcp deleted on cascade
-      itemDelete.prepare( "UPDATE itemsrc SET itemsrc_active=FALSE, "
+      itemDelete.prepare( "UPDATE itemsrc SET itemsrc_active=false, "
                           "                   itemsrc_contrct_id=NULL "
                           "WHERE (itemsrc_contrct_id=:contrct_id);");
       itemDelete.bindValue(":contrct_id", list()->id());

@@ -22,7 +22,7 @@ class glTransaction : public XDialog, public Ui::glTransaction
     Q_OBJECT
 
 public:
-    glTransaction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    glTransaction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~glTransaction();
 
 public slots:

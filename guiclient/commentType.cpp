@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery commentcommentType;
@@ -93,9 +93,9 @@ enum SetResponse commentType::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _editable->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _editable->setEnabled(false);
       _order->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
@@ -158,7 +158,7 @@ void commentType::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

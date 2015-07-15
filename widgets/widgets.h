@@ -19,7 +19,7 @@
 
 #include "parameter.h"
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   #ifdef MAKEDLL
     #define XTUPLEWIDGETS_EXPORT __declspec(dllexport)
   #else

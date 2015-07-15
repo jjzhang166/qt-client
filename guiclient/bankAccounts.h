@@ -22,7 +22,7 @@ class bankAccounts : public XWidget, public Ui::bankAccounts
     Q_OBJECT
 
 public:
-    bankAccounts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    bankAccounts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~bankAccounts();
 
 protected slots:

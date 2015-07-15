@@ -15,7 +15,7 @@
 #include <QFile>
 #include <QProgressDialog>
 
-purgeInvoices::purgeInvoices(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+purgeInvoices::purgeInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -104,7 +104,7 @@ void purgeInvoices::sPurge()
         logmessage += invoices.value("invchead_invcnumber").toString();
         logmessage += ", result=";
         logmessage += purgePurge.value("result").toString();
-        logfile.write(logmessage.toAscii());
+        logfile.write(logmessage.toLatin1());
         logfile.write("\n");
       }
       if (_progress.wasCanceled())

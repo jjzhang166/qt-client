@@ -15,7 +15,7 @@
 #include <QSqlError>
 #include <QValidator>
 
-bankAdjustment::bankAdjustment(QWidget* parent, const char* name, Qt::WFlags fl)
+bankAdjustment::bankAdjustment(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -60,7 +60,7 @@ SetResponse bankAdjustment::set( const ParameterList & pParams )
   if (valid)
   {
     _bankaccnt->setId(param.toInt());
-    //_bankaccnt->setEnabled(FALSE);
+    //_bankaccnt->setEnabled(false);
   }
 
   param = pParams.value("bankadj_id", &valid);
@@ -85,12 +85,12 @@ SetResponse bankAdjustment::set( const ParameterList & pParams )
     {
       _mode = cView;
 
-      _bankaccnt->setEnabled(FALSE);
-      _bankadjtype->setEnabled(FALSE);
-      _date->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _amount->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _bankaccnt->setEnabled(false);
+      _bankadjtype->setEnabled(false);
+      _date->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _amount->setEnabled(false);
+      _notes->setReadOnly(true);
       _save->hide();
     }
   }
@@ -156,7 +156,7 @@ void bankAdjustment::sSave()
     return;
   }
 
-  omfgThis->sBankAdjustmentsUpdated(_bankadjid, TRUE);
+  omfgThis->sBankAdjustmentsUpdated(_bankadjid, true);
 
   close();
 }

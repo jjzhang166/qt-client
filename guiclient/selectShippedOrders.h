@@ -19,7 +19,7 @@ class selectShippedOrders : public XDialog, public Ui::selectShippedOrders
     Q_OBJECT
 
 public:
-    selectShippedOrders(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    selectShippedOrders(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~selectShippedOrders();
 
 public slots:

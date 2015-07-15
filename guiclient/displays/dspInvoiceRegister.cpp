@@ -20,7 +20,7 @@
 #include "creditMemo.h"
 #include "dspInvoiceInformation.h"
 
-dspInvoiceRegister::dspInvoiceRegister(QWidget* parent, const char*, Qt::WFlags fl)
+dspInvoiceRegister::dspInvoiceRegister(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInvoiceRegister", fl)
 {
   setupUi(optionsWidget());

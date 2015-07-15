@@ -29,7 +29,7 @@
 #define EPSILON(d) (pow(10.0, -1 * (1 + d + decimals())) * 5)
 #define ABS(f)	((f) > 0 ? (f) : 0 - (f))
 
-#define MINWIDTH       120
+#define MINWIDTH       155
 #define MAXWIDTH       200
 #define MAXHEIGHT    32767
 #define MAXCURRWIDTH    80	/* max width of _currency combobox */
@@ -190,18 +190,18 @@ CurrCluster::CurrCluster(QWidget * parent, const char* name)
 
     _valueBaseLit->setText(_baseAbbr);
 
-    _valueBaseLit->setHidden(TRUE);
-    _valueBaseWidget->setHidden(TRUE);
+    _valueBaseLit->setHidden(true);
+    _valueBaseWidget->setHidden(true);
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     setMinimumWidth(160);
 #endif
 
     clear();
 
-    setEnabled(TRUE);
-    setBaseVisible(TRUE);
-    setCurrencyEnabled(TRUE);
+    setEnabled(true);
+    setBaseVisible(true);
+    setCurrencyEnabled(true);
 }
 
 void CurrCluster::clear()
@@ -226,8 +226,8 @@ void CurrCluster::setBaseVisible(bool showBase)
     }
     else
     {
-	_valueBaseLit->setHidden(TRUE);
-	_valueBaseWidget->setHidden(TRUE);
+	_valueBaseLit->setHidden(true);
+	_valueBaseWidget->setHidden(true);
     }
 }
 
@@ -472,7 +472,7 @@ int CurrDisplay::baseId()
     baseQuery.prepare("SELECT curr_id, "
                       "  ' ' || curr_abbr || '-' || curr_symbol AS f_curr " //currConcat(curr_id) AS curr_symbol "
 		      "FROM curr_symbol "
-		      "WHERE curr_base = TRUE;");
+		      "WHERE curr_base = true;");
     baseQuery.exec();
     if (baseQuery.first())
     {
@@ -534,8 +534,8 @@ CurrDisplay::CurrDisplay(QWidget * parent, const char* name)
     _default = 0;
     clear();
 
-    setEnabled(FALSE);
-    setLocalControl(TRUE);
+    setEnabled(false);
+    setLocalControl(true);
     setMinimumSize(MINWIDTH, 0);
     setMaximumSize(MAXWIDTH, MAXHEIGHT);
     

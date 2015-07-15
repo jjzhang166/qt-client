@@ -17,7 +17,7 @@
 #include "storedProcErrorLookup.h"
 #include "unpostedGLTransactions.h"
 
-accountingPeriod::accountingPeriod(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+accountingPeriod::accountingPeriod(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -97,11 +97,11 @@ enum SetResponse accountingPeriod::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _startDate->setEnabled(FALSE);
-      _endDate->setEnabled(FALSE);
-      _closed->setEnabled(FALSE);
-      _frozen->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _startDate->setEnabled(false);
+      _endDate->setEnabled(false);
+      _closed->setEnabled(false);
+      _frozen->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }

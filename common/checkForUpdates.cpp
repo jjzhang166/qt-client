@@ -87,7 +87,7 @@ class checkForUpdatesPrivate {
     {
       Q_UNUSED(parent);
 
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MAC
       _newExePath   = "xTuple-" + _serverVersion + ".app/Contents/MacOS/xtuple";
       _downloadFile = "xTuple-" + _serverVersion + "-MACi386.dmg";
       _destdir = ".";
@@ -141,7 +141,7 @@ class checkForUpdatesPrivate {
     QString _serverVersion;
 };
 
-checkForUpdates::checkForUpdates(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+checkForUpdates::checkForUpdates(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl),
       reply(0)
 {

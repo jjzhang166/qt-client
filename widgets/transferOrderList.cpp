@@ -23,7 +23,7 @@
 #include "warehousegroup.h"
 #include "salesOrderList.h"
 
-transferOrderList::transferOrderList( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+transferOrderList::transferOrderList( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
   : QDialog(parent, fl)
 {
   setObjectName(name ? name : "transferOrderList");
@@ -73,8 +73,8 @@ transferOrderList::transferOrderList( QWidget* parent, const char* name, bool mo
 
   _select = new QPushButton(tr("&Select"), this);
   _select->setObjectName("_select");
-  _select->setEnabled( FALSE );
-  _select->setDefault( TRUE );
+  _select->setEnabled( false );
+  _select->setDefault( true );
   buttonsLayout->addWidget(_select);
   topLayout->addLayout(buttonsLayout);
   mainLayout->addLayout(topLayout);
@@ -177,11 +177,11 @@ void transferOrderList::sFillList()
   {
     QString toitem_statuslist;
 
-    bool statusCheck = FALSE;
+    bool statusCheck = false;
     if (_type & cToOpen)
     {
       toitem_statuslist += "'O'";
-      statusCheck = TRUE;
+      statusCheck = true;
     }
 
     if (_type & cToClosed)
@@ -189,7 +189,7 @@ void transferOrderList::sFillList()
       if (statusCheck)
         toitem_statuslist += ", ";
       toitem_statuslist += "'C'";
-      statusCheck = TRUE;
+      statusCheck = true;
     }
 
     if (statusCheck)

@@ -21,7 +21,7 @@ class productCategory : public XDialog, public Ui::productCategory
     Q_OBJECT
 
 public:
-    productCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    productCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~productCategory();
 
 public slots:

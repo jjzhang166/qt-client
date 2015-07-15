@@ -21,7 +21,7 @@
 #include "itemSites.h"
 #include "warehouse.h"
 
-warehouses::warehouses(QWidget* parent, const char* name, Qt::WFlags fl)
+warehouses::warehouses(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ warehouses::warehouses(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_warehouse, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -70,7 +70,7 @@ void warehouses::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  warehouse newdlg(this, "", TRUE);
+  warehouse newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -81,7 +81,7 @@ void warehouses::sView()
   params.append("mode", "view");
   params.append("warehous_id", _warehouse->id());
 
-  warehouse newdlg(this, "", TRUE);
+  warehouse newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -92,7 +92,7 @@ void warehouses::sEdit()
   params.append("mode", "edit");
   params.append("warehous_id", _warehouse->id());
 
-  warehouse newdlg(this, "", TRUE);
+  warehouse newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -110,7 +110,7 @@ void warehouses::sFillList()
                  "       warehous_descrip, addr_line1 "
                  "FROM site() LEFT OUTER JOIN addr ON (addr_id=warehous_addr_id) "
                  "  LEFT OUTER JOIN sitetype ON (sitetype_id=warehous_sitetype_id) "
-                 "WHERE ((TRUE) "
+                 "WHERE ((true) "
                  "<? if not exists(\"showInactive\") ?>"
                  "  AND (warehous_active) "
                  "<? endif ?>"

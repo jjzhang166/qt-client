@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-customerFormAssignment::customerFormAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customerFormAssignment::customerFormAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -60,13 +60,13 @@ enum SetResponse customerFormAssignment::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _customerTypeGroup->setEnabled(FALSE);
-      _invoiceForm->setEnabled(FALSE);
-      _creditMemoForm->setEnabled(FALSE);
-      _statementForm->setEnabled(FALSE);
-      _quoteForm->setEnabled(FALSE);
-      _packingListForm->setEnabled(FALSE);
-      _soPickListForm->setEnabled(FALSE);
+      _customerTypeGroup->setEnabled(false);
+      _invoiceForm->setEnabled(false);
+      _creditMemoForm->setEnabled(false);
+      _statementForm->setEnabled(false);
+      _quoteForm->setEnabled(false);
+      _packingListForm->setEnabled(false);
+      _soPickListForm->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -169,12 +169,12 @@ void customerFormAssignment::populate()
   {
     if (customerpopulate.value("custform_custtype_id").toInt() == -1)
     {
-      _customerTypePattern->setChecked(TRUE);
+      _customerTypePattern->setChecked(true);
       _customerType->setText(customerpopulate.value("custform_custtype").toString());
     }
     else
     {
-      _selectedCustomerType->setChecked(TRUE);
+      _selectedCustomerType->setChecked(true);
       _customerTypes->setId(customerpopulate.value("custform_custtype_id").toInt());
     }
 

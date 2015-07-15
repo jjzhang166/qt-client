@@ -22,7 +22,8 @@ LotSerialUtils::LotSerialUtils()
 
     XSqlQuery q;
     bool success = q.exec("SELECT char_name, char_type, char_id "
-                "FROM char WHERE char_lotserial=TRUE "
+                "FROM char "
+                "JOIN charuse ON (char_id=charuse_char_id AND charuse_target_type = 'LS') "
                 "ORDER BY char_name ASC");
     while(q.next())
     {
@@ -198,7 +199,7 @@ void _addCharsToItem(QTreeWidgetItem *item, int column, int numInitialColumns)
     }
     XSqlQuery q;
     bool success = q.exec(QString("SELECT charass.charass_value FROM charass LEFT JOIN ls on "
-                " charass.charass_target_id=ls.ls_id WHERE ls.ls_number='%1'"
+                " charass.charass_target_id=ls.ls_id WHERE charass.charass_target_type = 'LS' AND ls.ls_number='%1'"
                 " ORDER BY charass.charass_id ASC").arg(item->text(column)));
     if (!success)
     {

@@ -71,8 +71,14 @@ QScriptValue constructQUrl(QScriptContext *context, QScriptEngine *engine)
 QUrlProto::QUrlProto(QObject *parent)
   : QObject(parent)
 {
+  // Set this instance's QUrlQuery member for Qt5+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+  _query = new QUrlQuery();
+#endif
 }
 
+// addEncodedQueryItem removed from both QtUrl and QtUrlQuery classes in Qt5
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void QUrlProto::addEncodedQueryItem(const QByteArray &key,
                                     const QByteArray &value)
 {
@@ -80,29 +86,66 @@ void QUrlProto::addEncodedQueryItem(const QByteArray &key,
   if (item)
     item->addEncodedQueryItem(key, value);
 }
+#endif
 
 void QUrlProto::addQueryItem(const QString &key, const QString &value)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
-    item->addQueryItem(key, value);
+
+  if (item) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+     _query->addQueryItem(key, value);
+     item->setQuery(*_query);
+#else
+     item->addQueryItem(key, value);
+#endif
+  }
 }
 
-QList<QByteArray> QUrlProto::allEncodedQueryItemValues(const QByteArray &key) const
+// RETURN AND PARAM TYPES CHANGED FOR Qt5
+// I did not bother with Qt4 backwards compatibility directives - true backwards compatibility
+// would require varying the return/param types of several methods since QStrings are now used over QByteArrays
+#if QT_VERSION >= 0x050000
+QStringList QUrlProto::allEncodedQueryItemValues(const QString &key) const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+
+  if (item) {
+      return _query->allQueryItemValues(key,QUrl::FullyEncoded);
+  }
+
+  return QStringList();
+}
+#else
+QList<QByteArray> QUrlProto::allEncodedQueryItemValues(const QByteArray &key) const {
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
     return item->allEncodedQueryItemValues(key);
   return QList<QByteArray>();
-}
-
+ }
+#endif
+#if QT_VERSION >= 0x050000
 QStringList QUrlProto::allQueryItemValues(const QString &key) const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
-    return item->allQueryItemValues(key);
+
+  if (item) {
+      return _query->allQueryItemValues(key);
+  }
+
   return QStringList();
-}    
+}
+#else
+QStringList QUrlProto::allQueryItemValues(const QString &key) const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) {
+  return item->allQueryItemValues(key);
+  }
+
+  return QStringList();
+}
+#endif
 
 QString QUrlProto::authority() const
 {
@@ -115,73 +158,164 @@ QString QUrlProto::authority() const
 void QUrlProto::clear()
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+  if (item) {
     item->clear();
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->clear();
+#endif
+  }
 }
 
+
+// NOTE: The return types of many of the following methods have been changed from QByteArray to QString for Qt5
+// This is to accommodate the new return type of the QUrl getter methods (since QStrings can now be encodings)
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedFragment() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) {
+    return item->fragment(QUrl::FullyEncoded);
+  }
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedFragment() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
-    return item->encodedFragment();
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
+   return item->encodedFragment();
+   }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedHost() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item)
+    return item->host(QUrl::FullyEncoded);
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedHost() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
     return item->encodedHost();
+   }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedPassword() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item)
+    return item->password(QUrl::FullyEncoded);
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedPassword() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
     return item->encodedPassword();
+   }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedPath() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item)
+    return item->path(QUrl::FullyEncoded);
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedPath() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
     return item->encodedPath();
+   }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedQuery() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item)
+    return item->query(QUrl::FullyEncoded);
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedQuery() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
     return item->encodedQuery();
+   }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedQueryItemValue(const QString &key) const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) 
+    return _query->queryItemValue(key, QUrl::FullyEncoded);
+ 
+  return QString();
+}
+#else
 QByteArray QUrlProto::encodedQueryItemValue(const QByteArray &key) const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) {
     return item->encodedQueryItemValue(key);
+  }
   return QByteArray();
 }
-
+#endif
+#if QT_VERSION >= 0x050000
+QList<QPair<QString, QString> > QUrlProto::encodedQueryItems() const
+{
+  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) 
+    return _query->queryItems(QUrl::FullyEncoded);
+  
+  return QList<QPair<QString, QString> >();
+}
+#else
 QList<QPair<QByteArray, QByteArray> > QUrlProto::encodedQueryItems() const
 {
-  QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+  if (item) {
     return item->encodedQueryItems();
+  }
   return QList<QPair<QByteArray, QByteArray> >();
 }
-
-QByteArray QUrlProto::encodedUserName() const
+#endif
+#if QT_VERSION >= 0x050000
+QString QUrlProto::encodedUserName() const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+    return item->userName(QUrl::FullyEncoded);
+  return QString();
+}
+#else
+QByteArray QUrlProto::encodedUserName() const
+{
+   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
+   if (item) {
     return item->encodedUserName();
+   }
   return QByteArray();
 }
+#endif
 
 QString QUrlProto::errorString() const
 {
@@ -199,6 +333,7 @@ QString QUrlProto::fragment() const
   return QString();
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 bool QUrlProto::hasEncodedQueryItem(const QByteArray &key) const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
@@ -206,6 +341,7 @@ bool QUrlProto::hasEncodedQueryItem(const QByteArray &key) const
     return item->hasEncodedQueryItem(key);
   return false;
 }
+#endif
 
 bool QUrlProto::hasFragment() const
 {
@@ -227,7 +363,11 @@ bool QUrlProto::hasQueryItem(const QString &key) const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    return _query->hasQueryItem(key);
+#else
     return item->hasQueryItem(key);
+#endif
   return false;
 }
 
@@ -307,7 +447,11 @@ QString QUrlProto::queryItemValue(const QString &key) const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    return _query->queryItemValue(key);
+#else
     return item->queryItemValue(key);
+#endif
   return QString();
 }
 
@@ -315,7 +459,11 @@ QList<QPair<QString, QString> > QUrlProto::queryItems() const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    return _query->queryItems();
+#else    
     return item->queryItems();
+#endif
   return QList<QPair<QString, QString> >();
 }
 
@@ -323,7 +471,11 @@ char QUrlProto::queryPairDelimiter() const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    return _query->queryPairDelimiter().toLatin1();
+#else
     return item->queryPairDelimiter();
+#endif
   return '\0';
 }
 
@@ -331,37 +483,58 @@ char QUrlProto::queryValueDelimiter() const
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    return _query->queryValueDelimiter().toLatin1();
+#else
     return item->queryValueDelimiter();
+#endif
   return '\0';
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void QUrlProto::removeAllEncodedQueryItems(const QByteArray &key)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
     item->removeAllEncodedQueryItems(key);
 }
+#endif
 
 void QUrlProto::removeAllQueryItems(const QString &key)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+  if (item) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->removeAllQueryItems(key);
+    item->setQuery(*_query);
+#else
     item->removeAllQueryItems(key);
+#endif
+  }
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void QUrlProto::removeEncodedQueryItem(const QByteArray &key)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
   if (item)
     item->removeEncodedQueryItem(key);
 }
+#endif
 
 void QUrlProto::removeQueryItem(const QString &key)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+  if (item) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->removeQueryItem(key);
+    item->setQuery(*_query);
+#else
     item->removeQueryItem(key);
+#endif
+  }
 }
+
 
 QUrl QUrlProto::resolved(const QUrl &relative) const
 {
@@ -386,6 +559,7 @@ void QUrlProto::setAuthority(const QString &authority)
     item->setAuthority(authority);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void QUrlProto::setEncodedFragment(const QByteArray &fragment)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
@@ -448,6 +622,7 @@ void QUrlProto::setEncodedUserName(const QByteArray &userName)
   if (item)
     item->setEncodedUserName(userName);
 }
+#endif
 
 void QUrlProto::setFragment(const QString &fragment)
 {
@@ -487,15 +662,27 @@ void QUrlProto::setPort(int port)
 void QUrlProto::setQueryDelimiters(char valueDelimiter, char pairDelimiter)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+  if (item) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->setQueryDelimiters(valueDelimiter, pairDelimiter);
+    item->setQuery(*_query);
+#else
     item->setQueryDelimiters(valueDelimiter, pairDelimiter);
+#endif
+  }
 }
 
 void QUrlProto::setQueryItems(const QList<QPair<QString, QString> > &query)
 {
   QUrl *item = qscriptvalue_cast<QUrl*>(thisObject());
-  if (item)
+  if (item) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->setQueryItems(query);
+    item->setQuery(*_query);
+#else
     item->setQueryItems(query);
+#endif
+  }
 }
 
 void QUrlProto::setQueryItems(const QVariantMap &map)
@@ -512,9 +699,15 @@ void QUrlProto::setQueryItems(const QVariantMap &map)
       query.append(qMakePair(i.key(), i.value().toString()));
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    _query->setQueryItems(query);
+    item->setQuery(*_query);
+#else
     item->setQueryItems(query);
+#endif
   }
 }
+
 
 void QUrlProto::setScheme(const QString &scheme)
 {

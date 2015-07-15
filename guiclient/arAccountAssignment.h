@@ -22,7 +22,7 @@ class arAccountAssignment : public XDialog, public Ui::arAccountAssignment
     Q_OBJECT
 
 public:
-    arAccountAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    arAccountAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~arAccountAssignment();
 
 public slots:

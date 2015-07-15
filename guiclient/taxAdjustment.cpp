@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-taxAdjustment::taxAdjustment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxAdjustment::taxAdjustment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

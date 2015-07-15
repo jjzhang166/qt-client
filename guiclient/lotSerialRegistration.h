@@ -25,7 +25,7 @@ class lotSerialRegistration : public XDialog, public Ui::lotSerialRegistration
     Q_OBJECT
 
 public:
-    lotSerialRegistration(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    lotSerialRegistration(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~lotSerialRegistration();
 
 public slots:
@@ -33,10 +33,6 @@ public slots:
     virtual void closeEvent( QCloseEvent * pEvent );
     virtual void populate();
     virtual void sSave();
-    virtual void sNewCharass();
-    virtual void sEditCharass();
-    virtual void sDeleteCharass();
-    virtual void sFillList();
     virtual void sDateUpdated();
     virtual void sSetSoCustId();
     virtual void sSetSoId();

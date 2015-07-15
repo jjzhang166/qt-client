@@ -21,7 +21,7 @@ class dspInventoryAvailabilityBySalesOrder : public display, public Ui::dspInven
     Q_OBJECT
 
 public:
-    dspInventoryAvailabilityBySalesOrder(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInventoryAvailabilityBySalesOrder(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     
     virtual bool setParams(ParameterList &);
 

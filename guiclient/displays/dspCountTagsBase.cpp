@@ -18,7 +18,7 @@
 
 #include "countTag.h"
 
-dspCountTagsBase::dspCountTagsBase(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCountTagsBase::dspCountTagsBase(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, name, fl)
 {
   setupUi(optionsWidget());

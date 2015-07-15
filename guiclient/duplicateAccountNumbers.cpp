@@ -22,7 +22,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-duplicateAccountNumbers::duplicateAccountNumbers(QWidget* parent, const char* name, Qt::WFlags fl)
+duplicateAccountNumbers::duplicateAccountNumbers(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

@@ -17,7 +17,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-salesAccount::salesAccount(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+salesAccount::salesAccount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -103,17 +103,17 @@ enum SetResponse salesAccount::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _warehouse->setEnabled(FALSE);
-      _shippingZones->setEnabled(FALSE);
-      _saleTypes->setEnabled(FALSE);
-      _customerTypes->setEnabled(FALSE);
-      _productCategories->setEnabled(FALSE);
-      _sales->setReadOnly(TRUE);
-      _credit->setReadOnly(TRUE);
-      _cos->setReadOnly(TRUE);
-      _returns->setReadOnly(TRUE);
-      _cor->setReadOnly(TRUE);
-      _cow->setReadOnly(TRUE);
+      _warehouse->setEnabled(false);
+      _shippingZones->setEnabled(false);
+      _saleTypes->setEnabled(false);
+      _customerTypes->setEnabled(false);
+      _productCategories->setEnabled(false);
+      _sales->setReadOnly(true);
+      _credit->setReadOnly(true);
+      _cos->setReadOnly(true);
+      _returns->setReadOnly(true);
+      _cor->setReadOnly(true);
+      _cow->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }

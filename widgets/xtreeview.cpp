@@ -48,7 +48,11 @@ XTreeView::XTreeView(QWidget *parent) :
 
   setContextMenuPolicy(Qt::CustomContextMenu);
   header()->setStretchLastSection(false);
+#if QT_VERSION >= 0x050000
+  header()->setSectionsClickable(true);
+#else
   header()->setClickable(true);
+#endif
   header()->setContextMenuPolicy(Qt::CustomContextMenu);
 
   if (_x_preferences)
@@ -223,7 +227,7 @@ void XTreeView::select()
   setTable();
   _model->select();
   
-  emit valid(FALSE);
+  emit valid(false);
 
 }
 
@@ -281,7 +285,7 @@ void XTreeView::selectionChanged(const QItemSelection & selected, const QItemSel
     emit valid(true);
   }
   else
-    emit valid(FALSE);
+    emit valid(false);
   QTreeView::selectionChanged(selected, deselected);
 }
 
@@ -347,8 +351,11 @@ void XTreeView::setColumn(const QString &label, int width, int alignment, bool v
       break;
     }
   }
-
+#if QT_VERSION >= 0x050000
+  header()->setSectionResizeMode(colnum, QHeaderView::Interactive);
+#else
   header()->setResizeMode(colnum, QHeaderView::Interactive);
+#endif
 
   if (! cp->fromSettings)
     setColumnVisible(colnum, visible);
@@ -660,7 +667,7 @@ void XTreeView::sShowMenu(const QPoint &pntThis)
     _menu->clear();
     emit populateMenu(_menu, item);
 
-    bool disableExport = FALSE;
+    bool disableExport = false;
     if(_x_preferences)
       disableExport = (_x_preferences->value("DisableExportContents")=="t");
     if(!disableExport)

@@ -15,7 +15,7 @@
 #include <parameter.h>
 #include "shippingForm.h"
 
-shippingForms::shippingForms(QWidget* parent, const char* name, Qt::WFlags fl)
+shippingForms::shippingForms(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ shippingForms::shippingForms(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_bolformat, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -61,7 +61,7 @@ void shippingForms::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  shippingForm newdlg(this, "", TRUE);
+  shippingForm newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -74,7 +74,7 @@ void shippingForms::sEdit()
   params.append("mode", "edit");
   params.append("shipform_id", _bolformat->id());
 
-  shippingForm newdlg(this, "", TRUE);
+  shippingForm newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -87,7 +87,7 @@ void shippingForms::sView()
   params.append("mode", "view");
   params.append("shipform_id", _bolformat->id());
 
-  shippingForm newdlg(this, "", TRUE);
+  shippingForm newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

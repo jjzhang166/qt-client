@@ -22,7 +22,7 @@ class idleShutdown : public XDialog, public Ui::idleShutdown
     Q_OBJECT
 
 public:
-    idleShutdown(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    idleShutdown(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~idleShutdown();
 
 public slots:

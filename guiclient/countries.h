@@ -21,7 +21,7 @@ class countries : public XWidget, public Ui::countries
     Q_OBJECT
 
 public:
-    countries(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    countries(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~countries();
 
 public slots:

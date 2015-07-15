@@ -100,62 +100,8 @@ to be bound by its terms.</comment>
          <string>Characteristics</string>
         </attribute>
         <layout class="QGridLayout">
-         <item row="0" column="1">
-          <layout class="QVBoxLayout">
-           <item>
-            <widget class="QPushButton" name="_newChar">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;New</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="_editChar">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="_deleteChar">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>&amp;Delete</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer>
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
          <item row="0" column="0">
-          <widget class="XTreeWidget" name="_charass">
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-          </widget>
+          <widget class="CharacteristicsWidget" name="_charass"/>
          </item>
         </layout>
        </widget>
@@ -277,6 +223,11 @@ to be bound by its terms.</comment>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>Comments</class>
    <extends>QWidget</extends>
    <header>comments.h</header>
@@ -313,9 +264,6 @@ to be bound by its terms.</comment>
   <tabstop>_item</tabstop>
   <tabstop>_lotSerial</tabstop>
   <tabstop>_charass</tabstop>
-  <tabstop>_newChar</tabstop>
-  <tabstop>_editChar</tabstop>
-  <tabstop>_deleteChar</tabstop>
   <tabstop>_tab</tabstop>
   <tabstop>_reg</tabstop>
   <tabstop>_newReg</tabstop>
@@ -326,38 +274,6 @@ to be bound by its terms.</comment>
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_editChar</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>317</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>565</x>
-     <y>210</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_deleteChar</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>317</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>565</x>
-     <y>210</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>_reg</sender>
    <signal>valid(bool)</signal>
@@ -435,22 +351,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>529</x>
      <y>182</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_lotSerial</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_newChar</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>138</x>
-     <y>110</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>565</x>
-     <y>210</y>
     </hint>
    </hints>
   </connection>

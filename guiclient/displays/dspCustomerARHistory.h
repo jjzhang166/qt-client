@@ -21,7 +21,7 @@ class dspCustomerARHistory : public display, public Ui::dspCustomerARHistory
     Q_OBJECT
 
 public:
-    dspCustomerARHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCustomerARHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

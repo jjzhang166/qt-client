@@ -21,7 +21,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  true to construct a modal dialog.
  */
-returnAuthItemLotSerial::returnAuthItemLotSerial(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+returnAuthItemLotSerial::returnAuthItemLotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -127,8 +127,8 @@ enum SetResponse returnAuthItemLotSerial::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _lotSerial->setEnabled(FALSE);
-      _qtyAuth->setEnabled(FALSE);
+      _lotSerial->setEnabled(false);
+      _qtyAuth->setEnabled(false);
       _cancel->setText(tr("&Close"));
       _save->hide();
     }

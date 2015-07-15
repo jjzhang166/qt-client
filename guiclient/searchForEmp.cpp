@@ -23,7 +23,7 @@
 
 #define DEBUG   false
 
-// TODO: XDialog should have a default implementation that returns FALSE
+// TODO: XDialog should have a default implementation that returns false
 bool searchForEmp::userHasPriv(const int pMode)
 {
   if (DEBUG)
@@ -55,7 +55,7 @@ void searchForEmp::setVisible(bool visible)
     XWidget::setVisible(true);
 }
 
-searchForEmp::searchForEmp(QWidget* parent, const char* name, Qt::WFlags fl)
+searchForEmp::searchForEmp(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

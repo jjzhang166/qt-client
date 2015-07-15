@@ -27,7 +27,7 @@
 #include "storedProcErrorLookup.h"
 #include "distributeInventory.h"
 
-unpostedInvoices::unpostedInvoices(QWidget* parent, const char* name, Qt::WFlags fl)
+unpostedInvoices::unpostedInvoices(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, "unpostedInvoices", fl)
 {
   if (name)
@@ -129,7 +129,7 @@ void unpostedInvoices::sDelete()
       }
     }
 
-    omfgThis->sInvoicesUpdated(-1, TRUE);
+    omfgThis->sInvoicesUpdated(-1, true);
     omfgThis->sBillingSelectionUpdated(-1, -1);
   }
 }
@@ -137,7 +137,7 @@ void unpostedInvoices::sDelete()
 void unpostedInvoices::sPrint()
 {
   QList<XTreeWidgetItem*> selected = list()->selectedItems();
-  printInvoice newdlg(this, "", TRUE);
+  printInvoice newdlg(this, "", true);
 
   for (int i = 0; i < selected.size(); i++)
   {
@@ -153,12 +153,12 @@ void unpostedInvoices::sPrint()
       {
         if(newdlg.exec() == QDialog::Rejected)
           break;
-        newdlg.setSetup(TRUE);
+        newdlg.setSetup(true);
       }
     }
   }
 
-  omfgThis->sInvoicesUpdated(-1, TRUE);
+  omfgThis->sInvoicesUpdated(-1, true);
 }
 
 void unpostedInvoices::sPost()
@@ -169,7 +169,7 @@ void unpostedInvoices::sPost()
 
   if (_privileges->check("ChangeARInvcDistDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Invoice Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -364,7 +364,7 @@ void unpostedInvoices::sPost()
       report.reportError(this);
   }
 
-  omfgThis->sInvoicesUpdated(-1, TRUE);
+  omfgThis->sInvoicesUpdated(-1, true);
 }
 
 void unpostedInvoices::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)

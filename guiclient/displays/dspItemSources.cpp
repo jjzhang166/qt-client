@@ -23,7 +23,7 @@
 #include "guiclient.h"
 #include "parameterwidget.h"
 
-dspItemSources::dspItemSources(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemSources::dspItemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspItemSources", fl)
 {
   setWindowTitle(tr("Item Sources"));
@@ -124,7 +124,7 @@ void dspItemSources::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -137,7 +137,7 @@ void dspItemSources::sEdit()
   params.append("mode", "edit");
   params.append("itemsrc_id", list()->altId());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -150,7 +150,7 @@ void dspItemSources::sView()
   params.append("mode", "view");
   params.append("itemsrc_id", list()->altId());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -159,7 +159,7 @@ void dspItemSources::sDefault()
 {
   XSqlQuery itemSave;
     itemSave.prepare( "UPDATE itemsrc "
-               "SET itemsrc_default=TRUE "
+               "SET itemsrc_default=true "
                "WHERE (itemsrc_id=:itemsrc_id);" );
 
   itemSave.bindValue(":itemsrc_id", list()->altId());
@@ -178,7 +178,7 @@ void dspItemSources::sCopy()
   params.append("mode", "copy");
   params.append("itemsrc_id", list()->altId());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-characteristicPrice::characteristicPrice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+characteristicPrice::characteristicPrice(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ characteristicPrice::characteristicPrice(QWidget* parent, const char* name, bool
   connect(_char, SIGNAL(newID(int)), this, SLOT(sCheck()));
   connect(_value, SIGNAL(activated(int)), this, SLOT(sCheck()));
 
-  _char->setAllowNull(TRUE);
+  _char->setAllowNull(true);
   
   _rejectedMsg = tr("The application has encountered an error and must "
                     "stop editing this Pricing Schedule.\n%1");
@@ -88,9 +88,9 @@ enum SetResponse characteristicPrice::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _char->setEnabled(FALSE);
-      _value->setEnabled(FALSE);
-      _price->setEnabled(FALSE);
+      _char->setEnabled(false);
+      _value->setEnabled(false);
+      _price->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
       populate();

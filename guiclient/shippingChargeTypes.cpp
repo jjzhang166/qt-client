@@ -16,7 +16,7 @@
 #include "shippingChargeType.h"
 #include "guiclient.h"
 
-shippingChargeTypes::shippingChargeTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+shippingChargeTypes::shippingChargeTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -35,7 +35,7 @@ shippingChargeTypes::shippingChargeTypes(QWidget* parent, const char* name, Qt::
     connect(_shipchrg, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }
   else
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
 
   _shipchrg->addColumn(tr("Name"),        _itemColumn, Qt::AlignLeft,   true,  "shipchrg_name" );
   _shipchrg->addColumn(tr("Description"), -1,          Qt::AlignLeft,   true,  "shipchrg_descrip" ); 
@@ -58,7 +58,7 @@ void shippingChargeTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  shippingChargeType newdlg(this, "", TRUE);
+  shippingChargeType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -71,7 +71,7 @@ void shippingChargeTypes::sEdit()
   params.append("mode", "edit");
   params.append("shipchrg_id", _shipchrg->id());
 
-  shippingChargeType newdlg(this, "", TRUE);
+  shippingChargeType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -84,7 +84,7 @@ void shippingChargeTypes::sView()
   params.append("mode", "view");
   params.append("shipchrg_id", _shipchrg->id());
 
-  shippingChargeType newdlg(this, "", TRUE);
+  shippingChargeType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

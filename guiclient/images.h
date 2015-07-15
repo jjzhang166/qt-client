@@ -20,7 +20,7 @@ class images : public XWidget, public Ui::images
     Q_OBJECT
 
 public:
-    images(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    images(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~images();
 
 public slots:

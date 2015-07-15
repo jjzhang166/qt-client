@@ -18,7 +18,7 @@
 #include <openreports.h>
 #include "siteType.h"
 
-siteTypes::siteTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+siteTypes::siteTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -43,7 +43,7 @@ siteTypes::siteTypes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_sitetype, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -75,7 +75,7 @@ void siteTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  siteType newdlg(this, "", TRUE);
+  siteType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -88,7 +88,7 @@ void siteTypes::sEdit()
   params.append("mode", "edit");
   params.append("sitetype_id", _sitetype->id());
 
-  siteType newdlg(this, "", TRUE);
+  siteType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -101,7 +101,7 @@ void siteTypes::sView()
   params.append("mode", "view");
   params.append("sitetype_id", _sitetype->id());
 
-  siteType newdlg(this, "", TRUE);
+  siteType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -141,15 +141,15 @@ void siteTypes::sPopulateMenu(QMenu *menu)
 
   menuItem = menu->addAction(tr("Edit Site Type..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainSiteTypes"))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 
   menuItem = menu->addAction(tr("View Site Type..."), this, SLOT(sView()));
   if ((!_privileges->check("MaintainSiteTypes")) && (!_privileges->check("ViewSiteTypes")))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 
   menuItem = menu->addAction(tr("Delete Site Type..."), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainSiteTypes"))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 }
 
 void siteTypes::sFillList()

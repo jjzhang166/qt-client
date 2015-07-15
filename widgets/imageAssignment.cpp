@@ -13,7 +13,7 @@
 #include "imageAssignment.h"
 #include "imageview.h"
 
-imageAssignment::imageAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+imageAssignment::imageAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : QDialog(parent, fl)
 {
   setupUi(this);
@@ -21,7 +21,6 @@ imageAssignment::imageAssignment(QWidget* parent, const char* name, bool modal, 
   setObjectName(name ? name : "imageAssignment");
   setModal(modal);
 
-  // signals and slots connections
   connect(_image, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
@@ -33,24 +32,16 @@ imageAssignment::imageAssignment(QWidget* parent, const char* name, bool modal, 
 
   _imageassid = -1;
   _mode = cNew;
-  _source = Documents::Uninitialized;
   _sourceid = -1;
 
   sFillList();
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
 imageAssignment::~imageAssignment()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void imageAssignment::languageChange()
 {
   retranslateUi(this);
@@ -64,8 +55,8 @@ void imageAssignment::set(const ParameterList &pParams)
   param = pParams.value("sourceType", &valid);
   if (valid)
   {
-    _source = (enum Documents::DocumentSources)param.toInt();
-    if (_source != Documents::Item)
+    _sourcetype = param.toString();
+    if (_sourcetype != "I") // Item
     {
       _purpose->setCurrentIndex(3);
       _purpose->hide();
@@ -96,15 +87,15 @@ void imageAssignment::set(const ParameterList &pParams)
     {
       _mode = cEdit;
       _save->setFocus();
-      _purpose->setEnabled(FALSE);
+      _purpose->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
       _save->hide();
       _new->hide();
-      _purpose->setEnabled(FALSE);
-      _image->setEnabled(FALSE);
+      _purpose->setEnabled(false);
+      _image->setEnabled(false);
     }
   }
 }
@@ -135,7 +126,7 @@ void imageAssignment::sSave()
                            "WHERE ( (imageass_source_id=:source_id)"
                            " AND ( imageass_source=:source) "
                            " AND (imageass_purpose=:imageass_purpose) );" );
-      imageassid.bindValue(":source", Documents::_documentMap[_source].ident);
+      imageassid.bindValue(":source",    _sourcetype);
       imageassid.bindValue(":source_id", _sourceid);
       imageassid.bindValue(":imageass_purpose", purpose);
       imageassid.exec();
@@ -167,7 +158,7 @@ void imageAssignment::sSave()
                       "WHERE (imageass_id=:imageass_id);" );
 
   newImage.bindValue(":imageass_id", _imageassid);
-  newImage.bindValue(":imageass_source", Documents::_documentMap[_source].ident);
+  newImage.bindValue(":imageass_source",    _sourcetype);
   newImage.bindValue(":imageass_source_id", _sourceid);
   newImage.bindValue(":imageass_image_id", _image->id());
   newImage.bindValue(":imageass_purpose", purpose);
@@ -182,7 +173,7 @@ void imageAssignment::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  imageview newdlg(this, "", TRUE);
+  imageview newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)
@@ -195,7 +186,7 @@ void imageAssignment::sView()
   params.append("mode", "view");
   params.append("image_id", _image->id());
 
-  imageview newdlg(this, "", TRUE);
+  imageview newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

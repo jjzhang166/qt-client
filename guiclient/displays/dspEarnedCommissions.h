@@ -20,7 +20,7 @@ class dspEarnedCommissions : public display, public Ui::dspEarnedCommissions
     Q_OBJECT
 
 public:
-    dspEarnedCommissions(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspEarnedCommissions(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

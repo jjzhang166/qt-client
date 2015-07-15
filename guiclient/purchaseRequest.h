@@ -21,13 +21,14 @@ class purchaseRequest : public XDialog, public Ui::purchaseRequest
     Q_OBJECT
 
 public:
-    purchaseRequest(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    purchaseRequest(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~purchaseRequest();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams);
     virtual void sClose();
-    virtual void sCreate();
+    virtual void sSave();
+    virtual void populate();
     virtual void populateNumber();
     virtual void closeEvent( QCloseEvent * pEvent );
     virtual void sNumberChanged();
@@ -42,6 +43,7 @@ protected slots:
 private:
     int _mode;
     bool _captive;
+    int _prid;
     int _planordid;
     int _lastWarehousid;
     int _NumberGen;

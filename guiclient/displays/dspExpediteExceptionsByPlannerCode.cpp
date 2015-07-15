@@ -14,7 +14,7 @@
 
 #include "xtreewidget.h"
 
-dspExpediteExceptionsByPlannerCode::dspExpediteExceptionsByPlannerCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspExpediteExceptionsByPlannerCode::dspExpediteExceptionsByPlannerCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspExpediteExceptionsByPlannerCode", fl)
 {
   setupUi(optionsWidget());

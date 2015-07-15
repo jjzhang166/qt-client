@@ -24,7 +24,7 @@ class translations : public XWidget, public Ui::translations
     Q_OBJECT
 
 public:
-    translations(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    translations(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~translations();
 
 public slots:

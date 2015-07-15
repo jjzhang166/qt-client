@@ -20,7 +20,7 @@ class printQuote : public printSinglecopyDocument,
     Q_OBJECT
 
   public:
-    printQuote(QWidget* parent = 0, const char* name = 0, bool modal = 0, Qt::WFlags fl = 0);
+    printQuote(QWidget* parent = 0, const char* name = 0, bool modal = 0, Qt::WindowFlags fl = 0);
     ~printQuote();
 
     Q_INVOKABLE virtual ParameterList getParamsDocList();

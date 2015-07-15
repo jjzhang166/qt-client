@@ -16,7 +16,7 @@
 #include <metasql.h>
 #include <openreports.h>
 
-releaseWorkOrdersByPlannerCode::releaseWorkOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+releaseWorkOrdersByPlannerCode::releaseWorkOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -72,7 +72,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
   QString sql( "SELECT <? if exists(\"paperwork\") ?>"
 	       "       wo_id, CAST(wo_qtyord AS INTEGER) AS wo_qtyord_int "
 	       "       <? else ?>"
-	       "       releaseWo(wo_id, FALSE) "
+	       "       releaseWo(wo_id, false) "
 	       "       <? endif ?>"
 	       "FROM wo, itemsite, plancode "
 	       "WHERE ((wo_itemsite_id=itemsite_id)"
@@ -114,7 +114,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
     }
 
     QPrinter  printer(QPrinter::HighResolution);
-    bool      setupPrinter = TRUE;
+    bool      setupPrinter = true;
     bool      userCanceled = false;
 
     while (releaseRelease.next())
@@ -137,7 +137,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 	orReport report("PickList", params);
 
 	if (report.isValid() && report.print(&printer, setupPrinter))
-	  setupPrinter = FALSE;
+	  setupPrinter = false;
 	else
 	{
 	  report.reportError(this);
@@ -151,7 +151,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 	orReport report("Routing", params);
 
 	if (report.isValid() && report.print(&printer, setupPrinter))
-	  setupPrinter = FALSE;
+	  setupPrinter = false;
 	else
 	{
 	  report.reportError(this);
@@ -164,7 +164,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
       {
 	orReport report("WOLabel", params);
 	if (report.isValid() && report.print(&printer, setupPrinter))
-	  setupPrinter = FALSE;
+	  setupPrinter = false;
 	else
 	{
 	  report.reportError(this);
@@ -195,7 +195,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 
 	  orReport report(query.value("reportname").toString(), params);
 	  if (report.isValid() && report.print(&printer, setupPrinter))
-	    setupPrinter = FALSE;
+	    setupPrinter = false;
 	  else
 	  {
 	    report.reportError(this);
@@ -234,7 +234,7 @@ void releaseWorkOrdersByPlannerCode::sRelease()
     return;
   }
 
-  omfgThis->sWorkOrdersUpdated(-1, TRUE);
+  omfgThis->sWorkOrdersUpdated(-1, true);
 
   accept();
 }

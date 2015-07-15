@@ -11,7 +11,7 @@
 #include "dspFreightPricesByCustomerType.h"
 #include "xtreewidget.h"
 
-dspFreightPricesByCustomerType::dspFreightPricesByCustomerType(QWidget* parent, const char* name, Qt::WFlags fl)
+dspFreightPricesByCustomerType::dspFreightPricesByCustomerType(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, "dspFreightPricesByCustomerType", fl)
 {
   if (name)

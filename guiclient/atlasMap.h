@@ -24,7 +24,7 @@ class atlasMap : public XDialog, public Ui::atlasMap
     Q_OBJECT
 
   public:
-    atlasMap(QWidget* parent = 0, const char * = 0, Qt::WFlags fl = 0);
+    atlasMap(QWidget* parent = 0, const char * = 0, Qt::WindowFlags fl = 0);
     ~atlasMap();
 
     static bool userHasPriv();

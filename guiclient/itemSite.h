@@ -22,7 +22,7 @@ class itemSite : public XDialog, public Ui::itemSite
     Q_OBJECT
 
 public:
-    itemSite(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    itemSite(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~itemSite();
     static int		createItemSite(QWidget*, int, int, bool);
     Q_INVOKABLE virtual int id() { return _itemsiteid; }

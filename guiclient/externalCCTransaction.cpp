@@ -17,7 +17,7 @@
 #include <QFileDialog>
 #include <QFile>
 
-externalCCTransaction::externalCCTransaction(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+externalCCTransaction::externalCCTransaction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

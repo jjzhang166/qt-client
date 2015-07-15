@@ -19,7 +19,7 @@ class groups : public XWidget, public Ui::groups
     Q_OBJECT
 
 public:
-    groups(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    groups(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~groups();
 
 public slots:

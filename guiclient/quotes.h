@@ -20,7 +20,7 @@ class quotes : public display, public Ui::quotes
     Q_OBJECT
 
 public:
-    quotes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    quotes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     
     virtual bool checkSitePrivs(int orderid);
 
@@ -32,6 +32,7 @@ public slots:
     virtual void sConvertSalesOrder();
     virtual void sConvertInvoice();
     virtual void sCopy();
+    virtual void sCopyToCustomer();
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();

@@ -21,7 +21,7 @@
 #include "salesAccount.h"
 #include "guiclient.h"
 
-salesAccounts::salesAccounts(QWidget* parent, const char* name, Qt::WFlags fl)
+salesAccounts::salesAccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -59,7 +59,7 @@ salesAccounts::salesAccounts(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_salesaccnt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -90,7 +90,7 @@ void salesAccounts::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  salesAccount newdlg(this, "", TRUE);
+  salesAccount newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -103,7 +103,7 @@ void salesAccounts::sEdit()
   params.append("mode", "edit");
   params.append("salesaccnt_id", _salesaccnt->id());
 
-  salesAccount newdlg(this, "", TRUE);
+  salesAccount newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -116,7 +116,7 @@ void salesAccounts::sView()
   params.append("mode", "view");
   params.append("salesaccnt_id", _salesaccnt->id());
 
-  salesAccount newdlg(this, "", TRUE);
+  salesAccount newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

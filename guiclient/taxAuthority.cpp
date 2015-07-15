@@ -21,7 +21,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-taxAuthority::taxAuthority(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxAuthority::taxAuthority(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -98,7 +98,7 @@ enum SetResponse taxAuthority::set(const ParameterList &pParams)
   }
 
   bool canEdit = (cNew == _mode || cEdit == _mode);
-  _code->setEnabled(FALSE);
+  _code->setEnabled(false);
 
   _code->setEnabled(canEdit &&
                     _metrics->value("CRMAccountNumberGeneration") != "A");
@@ -139,7 +139,7 @@ void taxAuthority::sCheck()
       _mode = cEdit;
       sPopulate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
     else if (ErrorReporter::error(QtCriticalMsg, this,
                                   tr("Error checking for existing Tax Authority"),

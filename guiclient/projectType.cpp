@@ -18,7 +18,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-projectType::projectType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+projectType::projectType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -70,8 +70,8 @@ enum SetResponse projectType::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _typeCode->setEnabled(FALSE);
-      _typeDescr->setEnabled(FALSE);
+      _typeCode->setEnabled(false);
+      _typeDescr->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -121,7 +121,7 @@ void projectType::sSave()
   typeSave.bindValue(":prjtype_active", QVariant(_active->isChecked()));
   typeSave.exec();
 
-  omfgThis->sItemGroupsUpdated(-1, TRUE);
+  omfgThis->sItemGroupsUpdated(-1, true);
 
   close();
 }

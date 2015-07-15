@@ -18,7 +18,7 @@
 #include <QTableWidgetItem>
 #include <QtScript>
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 #include <QFont>
 #endif
 
@@ -264,7 +264,7 @@ void ParameterWidget::addParam()
 
   toolButton->setObjectName("button" + currRow);
   toolButton->setText(tr("-"));
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   toolButton->setMinimumWidth(25);
 #else
   toolButton->setMinimumWidth(21);
@@ -1207,7 +1207,7 @@ void ParameterWidget::changeFilterObject(int index)
   case Multiselect:
     {
       QTableWidget *tab = new QTableWidget(_filterGroup);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
       QFont f = tab->font();
       f.setPointSize(f.pointSize() - 2);
       tab->setFont(f);

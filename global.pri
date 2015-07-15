@@ -43,6 +43,7 @@ CSVIMP_HEADERS = $$(CSVIMP_HEADERS)
 isEmpty( CSVIMP_HEADERS ) {
   exists(csvimp)    { CSVIMP_DIR = csvimp    }
   exists(../csvimp) { CSVIMP_DIR = ../csvimp }
+  exists(../../csvimp) { CSVIMP_DIR = ../../csvimp }
   CSVIMP_HEADERS = $$CSVIMP_DIR/csvimpcommon
   CSVIMP_HEADERS_REL = true
 }
@@ -96,12 +97,14 @@ isEmpty( OPENRPT_IMAGE_DIR ) {
 
 OPENRPTLIBEXT = $${QMAKE_EXTENSION_SHLIB}
 XTLIBEXT      = $${QMAKE_EXTENSION_SHLIB}
+win32:OPENRPTLIBEXT = a
+win32:XTLIBEXT      = a
+macx:OPENRPTLIBEXT  = a
+macx:XTLIBEXT       = a
 isEmpty( OPENRPTLIBEXT ) {
-  win32:OPENRPTLIBEXT = a
   unix:OPENRPTLIBEXT  = so
 }
 isEmpty( XTLIBEXT ) {
-  win32:XTLIBEXT = a
   unix:XTLIBEXT  = so
 }
 

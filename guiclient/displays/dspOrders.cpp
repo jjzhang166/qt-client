@@ -21,7 +21,7 @@
 #include "reschedulePoitem.h"
 #include "rescheduleWo.h"
 
-dspOrders::dspOrders(QWidget* parent, const char*, Qt::WFlags fl)
+dspOrders::dspOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspOrders", fl)
 {
   setupUi(optionsWidget());

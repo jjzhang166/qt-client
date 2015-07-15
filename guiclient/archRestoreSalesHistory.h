@@ -22,7 +22,7 @@ class archRestoreSalesHistory : public XDialog, public Ui::archRestoreSalesHisto
     Q_OBJECT
 
 public:
-    archRestoreSalesHistory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    archRestoreSalesHistory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~archRestoreSalesHistory();
 
 public slots:

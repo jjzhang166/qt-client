@@ -21,7 +21,7 @@ class errorLog : public XWidget, public Ui::errorLog
     Q_OBJECT
 
 public:
-    errorLog(QWidget* parent = 0, const char * = 0, Qt::WFlags flags = 0);
+    errorLog(QWidget* parent = 0, const char * = 0, Qt::WindowFlags flags = 0);
     ~errorLog();
 
 public slots:

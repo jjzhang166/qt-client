@@ -19,7 +19,9 @@
 #include <QDesktopServices>
 #include <QDebug>
 #include <QScrollBar>
-
+#if QT_VERSION >= 0x050000
+#include <QUrlQuery>
+#endif
 #include <parameter.h>
 #include <xsqlquery.h>
 
@@ -36,55 +38,100 @@ void Comments::showEvent(QShowEvent *event)
 }
 
 
-// CAUTION: This will break if the order of this list does not match
-//          the order of the enumerated values as defined.
-const Comments::CommentMap Comments::_commentMap[] =
-  {
-    CommentMap( Uninitialized,     " "   ),
-    CommentMap( Address,           "ADDR"),
-    CommentMap( BBOMHead,          "BBH" ),
-    CommentMap( BBOMItem,          "BBI" ),
-    CommentMap( BOMHead,           "BMH" ),
-    CommentMap( BOMItem,           "BMI" ),
-    CommentMap( BOOHead,           "BOH" ),
-    CommentMap( BOOItem,           "BOI" ),
-    CommentMap( CRMAccount,        "CRMA"),
-    CommentMap( Contact,           "T"   ),
-    CommentMap( Customer,          "C"   ),
-    CommentMap( Employee,          "EMP" ),
-    CommentMap( Incident,          "INCDT"),
-    CommentMap( Item,              "I"   ),
-    CommentMap( ItemSite,          "IS"  ),
-    CommentMap( ItemSource,        "IR"  ),
-    CommentMap( Location,          "L"   ),
-    CommentMap( LotSerial,         "LS"   ),
-    CommentMap( Opportunity,       "OPP" ),
-    CommentMap( Project,           "J"   ),
-    CommentMap( PurchaseOrder,     "P"   ),
-    CommentMap( PurchaseOrderItem, "PI"  ),
-    CommentMap( ReturnAuth,        "RA"  ),
-    CommentMap( ReturnAuthItem,    "RI"  ),
-    CommentMap( Quote,             "Q"   ),
-    CommentMap( QuoteItem,         "QI"  ),
-    CommentMap( SalesOrder,        "S"   ),
-    CommentMap( SalesOrderItem,    "SI"  ),
-    CommentMap( Task,              "TA"  ),
-    CommentMap( TimeAttendance,    "TATC"),
-    CommentMap( TodoItem,          "TD"  ),
-    CommentMap( TransferOrder,     "TO"  ),
-    CommentMap( TransferOrderItem, "TI"  ),
-    CommentMap( Vendor,            "V"   ),
-    CommentMap( Warehouse,         "WH"  ),
-    CommentMap( WorkOrder,         "W"   ),
-  };
+QMap<QString, struct CommentMap*> Comments::_strMap;
+QMap<int,     struct CommentMap*> Comments::_intMap;
+
+/** Add another document type to the map by both key and int.
+
+    Actually there are two parallel maps, one by DocumentSources/integer
+    and the other by string key. This simplifies lookups and provides
+    backward compatibility with existing UI file definitions.
+
+    @param id    A DocumentSources enum value or a unique extension-supplied int
+    @param key   A human-readable abbreviation for the document type
+    @param trans A human-readable, translatable term for the document type
+    @param param The name of the parameter a window checks for the record id
+    @param ui    The application or extension window to create a new record
+    @param priv  The privileges required to create a new record
+
+    @return true on success, false if this entry would create a duplicate
+            on either id or key.
+ */
+bool Comments::addToMap(int id,        QString key, QString trans,
+                        QString param, QString ui,  QString priv)
+{
+  if (_strMap.contains(key) || _intMap.contains(id)) {
+    qDebug() << "Comments::addToMap(" << id << ", " << key << ") duplicate!";
+    return false;
+  }
+
+  CommentMap *entry = new CommentMap(id, key, trans, param, ui, priv);
+  _strMap.insert(key, entry);
+  _intMap.insert(id,  entry);
+  return true;
+}
+
+// Inconsistencies between here and the rest of the app: S? Q?
+QMap<QString, struct CommentMap *> &Comments::commentMap() {
+  if (_strMap.isEmpty()) {
+    addToMap(Uninitialized,     "",      tr("[Pick a Document Type]")                           );
+    addToMap(Address,           "ADDR",  tr("Address")                                          );
+    addToMap(BBOMHead,          "BBH",   tr("Breeder BOM Head")                                 );
+    addToMap(BBOMItem,          "BBI",   tr("Breeder BOM Item")                                 );
+    addToMap(BOMHead,           "BMH",   tr("BOM Head"),        "bomhead_id", "bom"             );
+    addToMap(BOMItem,           "BMI",   tr("BOM Item")                                         );
+    addToMap(BOOHead,           "BOH",   tr("Router Head")                                      );
+    addToMap(BOOItem,           "BOI",   tr("Router Item")                                      );
+    addToMap(CRMAccount,        "CRMA",  tr("Account"),         "crmacct_id", "crmaccount"      );
+    addToMap(Contact,           "T",     tr("Contact"),         "cntct_id",   "contact"         );
+//    addToMap(Contract,          "CNTR",  tr("Contract"),        "contrct_id", "contrct"         );
+//    addToMap(CreditMemo,        "CM",    tr("Return"),          "cmhead_id",  "creditMemo"      );
+//    addToMap(CreditMemoItem,    "CMI",   tr("Return Item")                                      );
+    addToMap(Customer,          "C",     tr("Customer"),        "cust_id",    "customer"        );
+    addToMap(Employee,          "EMP",   tr("Employee"),        "emp_id",     "employee"        );
+    addToMap(Incident,          "INCDT", tr("Incident"),        "incdt_id",   "incident",     "MaintainPersonalIncidents MaintainAllIncidents" );
+//    addToMap(Invoice,           "INV",   tr("Invoice"),         "invchead_id","invoice"         );
+//    addToMap(InvoiceItem,       "INVI",  tr("Invoice Item")                                     );
+    addToMap(Item,              "I",     tr("Item"),            "item_id",    "item"            );
+    addToMap(ItemSite,          "IS",    tr("Item Site")                                        );
+    addToMap(ItemSource,        "IR",    tr("Item Source"),     "itemsrc_id", "itemSource"      );
+    addToMap(Location,          "L",     tr("Location")                                         );
+    addToMap(LotSerial,         "LS",    tr("Lot/Serial"),      "ls_id",      "lotSerial"       );
+    addToMap(Opportunity,       "OPP",   tr("Opportunity"),     "ophead_id",  "opportunity",  "MaintainPersonalOpportunities MaintainAllOpportunities" );
+    addToMap(Project,           "J",     tr("Project"),         "prj_id",     "project",      "MaintainPersonalProjects MaintainAllProjects" );
+    addToMap(PurchaseOrder,     "P",     tr("Purchase Order"),  "pohead_id",  "purchaseOrder"   );
+    addToMap(PurchaseOrderItem, "PI",    tr("Purchase Order Item")                              );
+    addToMap(ReturnAuth,        "RA",    tr("Return Authorization"), "rahead_id", "returnAuthorization");
+    addToMap(ReturnAuthItem,    "RI",    tr("Return Authorization Item")                        );
+    addToMap(Quote,             "Q",     tr("Quote"),           "quhead_id",  "salesOrder"      );
+    addToMap(QuoteItem,         "QI",    tr("Quote Item")                                       );
+    addToMap(SalesOrder,        "S",     tr("Sales Order"),     "sohead_id",  "salesOrder"      );
+    addToMap(SalesOrderItem,    "SI",    tr("Sales Order Item")                                 );
+//    addToMap(ShipTo,            "SHP",   tr("Ship To"),         "shipto_id",  "shipTo"          );
+    addToMap(TimeAttendance,    "TATC",  tr("Time Attendance")                                     );
+//    addToMap(TimeExpense,       "TE",    tr("Time Expense")                                     );
+    addToMap(TodoItem,          "TD",    tr("To-Do"),           "todoitem_id","todoItem",     "MaintainPersonalToDoItems MaintainAllTodoItems" );
+    addToMap(TransferOrder,     "TO",    tr("Transfer Order"),  "tohead_id",  "transferOrder"   );
+    addToMap(TransferOrderItem, "TI",    tr("Transfer Order Item")                              );
+    addToMap(Vendor,            "V",     tr("Vendor"),          "vend_id",    "vendor"          );
+//    addToMap(Voucher,           "VCH",   tr("Voucher"),         "vohead_id",  "voucher"         );
+    addToMap(Warehouse,         "WH",    tr("Site")                                             );
+    addToMap(WorkOrder,         "W",     tr("Work Order"),      "wo_id",      "workOrder"       );
+    addToMap(Task,              "TA",    tr("Project Task"),    "prjtask_id", "projectTask"     );
+  }
+
+  return _strMap;
+}
 
 Comments::Comments(QWidget *pParent, const char *name) :
   QWidget(pParent)
 {
   setObjectName(name);
-  _source = Uninitialized;
   _sourceid = -1;
   _editable = true;
+  if (_strMap.isEmpty()) {
+    (void)commentMap();
+  }
 
   _verboseCommentList = false;
 
@@ -129,7 +176,7 @@ Comments::Comments(QWidget *pParent, const char *name) :
 
   _viewComment = new QPushButton(tr("View"), buttons);
   _viewComment->setObjectName("_viewComment");
-  _viewComment->setEnabled(FALSE);
+  _viewComment->setEnabled(false);
   buttonsLayout->addWidget(_viewComment);
 
   _editComment = new QPushButton(tr("Edit"), buttons);
@@ -157,9 +204,21 @@ Comments::Comments(QWidget *pParent, const char *name) :
   setVerboseCommentList(_verboseCommentList);
 }
 
-void Comments::setType(enum CommentSources pSource)
+int Comments::type() const
 {
-  _source = pSource;
+  CommentMap *elem = _strMap.value(_sourcetype);
+  return elem ? elem->doctypeId : Uninitialized;
+}
+
+void Comments::setType(int sourceType)
+{
+  CommentMap *elem = _intMap.value(sourceType);
+  setType(elem ? elem->doctypeStr : "");
+}
+
+void Comments::setType(QString sourceType)
+{
+  _sourcetype = sourceType;
 }
 
 void Comments::setId(int pSourceid)
@@ -175,13 +234,13 @@ void Comments::setReadOnly(bool pReadOnly)
 }
 
 void Comments::sNew()
-{ 
+{
   ParameterList params;
   params.append("mode", "new");
-  params.append("sourceType", _source);
+  params.append("sourceType", _sourcetype);
   params.append("source_id", _sourceid);
 
-  comment newdlg(this, "", TRUE);
+  comment newdlg(this, "", true);
   newdlg.setWindowModality(Qt::WindowModal);
   newdlg.set(params);
 
@@ -196,12 +255,12 @@ void Comments::sView()
 {
   ParameterList params;
   params.append("mode", "view");
-  params.append("sourceType", _source);
+  params.append("sourceType", _sourcetype);
   params.append("source_id", _sourceid);
   params.append("comment_id", _comment->id());
   params.append("commentIDList", _commentIDList);
 
-  comment newdlg(this, "", TRUE);
+  comment newdlg(this, "", true);
   newdlg.setWindowModality(Qt::WindowModal);
   newdlg.set(params);
   newdlg.exec();
@@ -211,12 +270,12 @@ void Comments::sEdit()
 {
   ParameterList params;
   params.append("mode", "edit");
-  params.append("sourceType", _source);
+  params.append("sourceType", _sourcetype);
   params.append("source_id", _sourceid);
   params.append("comment_id", _comment->id());
   params.append("commentIDList", _commentIDList);
 
-  comment newdlg(this, "", TRUE);
+  comment newdlg(this, "", true);
   newdlg.setWindowModality(Qt::WindowModal);
   newdlg.set(params);
   newdlg.exec();
@@ -235,7 +294,7 @@ void Comments::refresh()
   }
 
   XSqlQuery comment;
-  if(_source != CRMAccount)
+  if(_sourcetype != "CRMA")
   {
     _comment->hideColumn(2);
     comment.prepare( "SELECT comment_id, comment_date, comment_source,"
@@ -313,12 +372,12 @@ void Comments::refresh()
                      "   AND (cntct_crmacct_id=:sourceid)"
                      "   AND (comment_source_id=cntct_id) ) "
                      "ORDER BY comment_date DESC;" );
-    comment.bindValue(":sourceCust", _commentMap[Customer].ident);
-    comment.bindValue(":sourceContact", _commentMap[Contact].ident);
-    comment.bindValue(":sourceVend", _commentMap[Vendor].ident);
+    comment.bindValue(":sourceCust", "C");
+    comment.bindValue(":sourceContact", "T");
+    comment.bindValue(":sourceVend", "V");
   }
   comment.bindValue(":none", tr("None"));
-  comment.bindValue(":source", _commentMap[_source].ident);
+  comment.bindValue(":source", _sourcetype);
   comment.bindValue(":sourceid", _sourceid);
   comment.exec();
 
@@ -376,17 +435,21 @@ void Comments::anchorClicked(const QUrl & url)
 {
   if(url.host().isEmpty() && url.path() == "edit")
   {
+    #if QT_VERSION >= 0x050000
+    int cid = QUrlQuery(url).queryItemValue("id").toInt();
+    #else
     int cid = url.queryItemValue("id").toInt();
+    #endif
     if(userCanEdit(cid))
     {
       ParameterList params;
       params.append("mode", "edit");
-      params.append("sourceType", _source);
+      params.append("sourceType", _sourcetype);
       params.append("source_id", _sourceid);
       params.append("comment_id", cid);
       params.append("commentIDList", _commentIDList);
 
-      comment newdlg(this, "", TRUE);
+      comment newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
       refresh();

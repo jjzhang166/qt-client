@@ -16,7 +16,7 @@
 
 #include <openreports.h>
 
-printLabelsByOrder::printLabelsByOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printLabelsByOrder::printLabelsByOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ printLabelsByOrder::printLabelsByOrder(QWidget* parent, const char* name, bool m
   connect(_labelFrom, SIGNAL(valueChanged(int)), this, SLOT(sSetToMin(int)));
   connect(_print,	      SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _report->populate( "SELECT labelform_id, labelform_name "
                      "FROM labelform "
@@ -50,7 +50,7 @@ void printLabelsByOrder::languageChange()
 enum SetResponse printLabelsByOrder::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

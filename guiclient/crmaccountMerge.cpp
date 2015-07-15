@@ -36,7 +36,7 @@ class crmaccountMergePrivate {
     int         _selectCol;
 };
 
-crmaccountMerge::crmaccountMerge(QWidget* parent, const char* name, Qt::WFlags fl)
+crmaccountMerge::crmaccountMerge(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : QWizard(parent, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ crmaccountMerge::crmaccountMerge(QWidget* parent, const char* name, Qt::WFlags f
   QPixmap *pixmap = new QPixmap(":/images/icon128x32.png");
   if (pixmap)
   {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   setPixmap(BackgroundPixmap, *pixmap);
 #else
   setPixmap(BannerPixmap,     *pixmap);

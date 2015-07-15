@@ -20,7 +20,7 @@ class thawItemSitesByClassCode : public XDialog, public Ui::thawItemSitesByClass
     Q_OBJECT
 
 public:
-    thawItemSitesByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    thawItemSitesByClassCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~thawItemSitesByClassCode();
 
 public slots:

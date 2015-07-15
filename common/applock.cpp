@@ -11,6 +11,7 @@
 #include "applock.h"
 
 #include <QtScript>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 #include <QWidget>
@@ -41,13 +42,22 @@ class AppLockPrivate
                                      parent->tr("Locking Error"),
                                      q, __FILE__, __LINE__);
       }
+      XSqlQuery vq("SELECT compareversion('9.2.0') <= 0 AS isNew;");
+      if (vq.first()) {
+        _actPidCol = vq.value("isNew").toBool() ? "pid" : "procpid";
+      } else {
+        (void)ErrorReporter::error(QtCriticalMsg,
+                                   qobject_cast<QWidget*>(parent->parent()),
+                                   parent->tr("Locking Error"),
+                                   vq, __FILE__, __LINE__);
+      }
       updateLockStatus();
     }
 
     void updateLockStatus() {
       XSqlQuery q;
       if (_mobilizedDb.toBool()) {
-        q.prepare("SELECT lock_pid = pg_backend_pid() AS mylock"
+        q.prepare("SELECT lock_pid = pg_backend_pid() AS mylock, lock_username"
                   "  FROM xt.lock"
                   "  JOIN pg_class c ON lock_table_oid = c.oid"
                   " WHERE relname = :table"
@@ -56,8 +66,9 @@ class AppLockPrivate
         q.bindValue(":id",    _id);
         q.exec();
         if (q.first()) {
-          _myLock = q.value("mylock").toBool();
+          _myLock    = q.value("mylock").toBool();
           _otherLock = ! _myLock;
+          _username  = q.value("lock_username").toString();
           return;
         }
         else if (ErrorReporter::error(QtCriticalMsg,
@@ -68,11 +79,12 @@ class AppLockPrivate
       }
 
       // double-check pg_locks in mobilized dbs in case the search path is wrong
-      q.prepare("SELECT pid = pg_backend_pid() AS mylock"
+      q.prepare("SELECT l.pid = pg_backend_pid() AS mylock, usename"
                 "  FROM pg_locks l"
                 "  JOIN pg_class c    on relation = c.oid"
                 "  JOIN pg_database d on database = c.oid"
-                " WHERE datname = current_database()"
+                "  JOIN pg_stat_activity a ON l.pid = a." + _actPidCol +
+                " WHERE d.datname = current_database()"
                 "   AND relname = :table"
                 "   AND objid   = :id"
                 "   AND locktype = 'advisory';");
@@ -80,8 +92,9 @@ class AppLockPrivate
       q.bindValue(":id",    _id);
       q.exec();
       if (q.first()) {
-        _myLock = q.value("mylock").toBool();
+        _myLock    = q.value("mylock").toBool();
         _otherLock = ! _myLock;
+        _username  = q.value("usename").toString();
         return;
       }
       else if (ErrorReporter::error(QtCriticalMsg,
@@ -89,16 +102,20 @@ class AppLockPrivate
                                     _parent->tr("Locking Error"),
                                     q, __FILE__, __LINE__))
         return;
-      else
+      else {
         _myLock = _otherLock = false;
+        _username.clear();
+      }
     }
 
+    QString  _actPidCol;
     QString  _error;
     int      _id;
     bool     _myLock;
     bool     _otherLock;
     AppLock *_parent;
     QString  _table;
+    QString  _username;
 
     static QVariant _mobilizedDb;
 };
@@ -135,10 +152,13 @@ AppLock::~AppLock()
    @see isLockedOut()
    @see lastError()
  */
-bool AppLock::acquire()
+bool AppLock::acquire(AppLock::AcquireMode mode)
 {
   if (_p->_id < 0 || _p->_table.isEmpty()) {
     _p->_error = tr("Cannot acquire a lock without a table and record id.");
+    if (mode == Interactive) {
+      QMessageBox::critical(0, tr("Cannot Acquire Lock"), _p->_error);
+    }
     return false;
   }
 
@@ -158,15 +178,20 @@ bool AppLock::acquire()
     {
       _p->_myLock    = true;
       _p->_otherLock = false;
+      _p->_username.clear();
       result = true;
     }
     else
     {
       _p->updateLockStatus();
       result = _p->_myLock;
-      if (_p->_otherLock)
+      if (_p->_otherLock) {
         _p->_error = tr("The record you are trying to edit is currently being "
-                         "edited by another user.");
+                         "edited by another user (%1).").arg(_p->_username);
+        if (mode == Interactive) {
+          QMessageBox::critical(0, tr("Cannot Acquire Lock"), _p->_error);
+        }
+      }
     }
   }
   else if (ErrorReporter::error(QtCriticalMsg, qobject_cast<QWidget*>(parent()),
@@ -177,7 +202,7 @@ bool AppLock::acquire()
   return result;
 }
 
-bool AppLock::acquire(QString table, int id)
+bool AppLock::acquire(QString table, int id, AppLock::AcquireMode mode)
 {
   if (_p->_myLock && id != _p->_id && table != _p->_table)
   {
@@ -187,7 +212,7 @@ bool AppLock::acquire(QString table, int id)
   _p->_table = table;
   _p->_id    = id;
 
-  return acquire();
+  return acquire(mode);
 }
 
 /** @return true if _this_ instance of AppLock holds the lock */
@@ -276,6 +301,9 @@ void setupAppLockProto(QScriptEngine *engine)
 
   QScriptValue constructor = engine->newFunction(constructAppLock, proto);
   engine->globalObject().setProperty("AppLock", constructor);
+
+  constructor.setProperty("Silent",      QScriptValue(engine, AppLock::Silent),      QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  constructor.setProperty("Interactive", QScriptValue(engine, AppLock::Interactive), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 }
 
 QScriptValue constructAppLock(QScriptContext *context, QScriptEngine *engine)
@@ -307,19 +335,19 @@ AppLockProto::AppLockProto(QObject *parent)
 {
 }
 
-bool AppLockProto::acquire()
+bool AppLockProto::acquire(AppLock::AcquireMode mode)
 {
   AppLock *lock = qscriptvalue_cast<AppLock*>(thisObject());
   if (lock)
-    return lock->acquire();
+    return lock->acquire(mode);
   return false;
 }
 
-bool AppLockProto::acquire(QString table, int id)
+bool AppLockProto::acquire(QString table, int id, enum AppLock::AcquireMode mode)
 {
   AppLock *lock = qscriptvalue_cast<AppLock*>(thisObject());
   if (lock)
-    return lock->acquire(table, id);
+    return lock->acquire(table, id, mode);
   return false;
 }
 

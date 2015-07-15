@@ -20,7 +20,7 @@ class productCategories : public XWidget, public Ui::productCategories
     Q_OBJECT
 
 public:
-    productCategories(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    productCategories(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~productCategories();
 
 public slots:

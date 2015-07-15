@@ -21,7 +21,7 @@ class releasePlannedOrdersByPlannerCode : public XDialog, public Ui::releasePlan
     Q_OBJECT
 
 public:
-    releasePlannedOrdersByPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    releasePlannedOrdersByPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~releasePlannedOrdersByPlannerCode();
 
 public slots:

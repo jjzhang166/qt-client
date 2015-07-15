@@ -126,7 +126,7 @@ QByteArray XBase32Decode(const QString & _source) {
         // read in the next 8 valid bytes
         n = 0;
         while(n < 8 && p < l) {
-            c = ((QChar)source.at(p++)).toUpper().toAscii();
+            c = ((QChar)source.at(p++)).toUpper().toLatin1();
             a[n] = c;
             b[n] = (c == 'U' ? 0 : getValue(c));
             if(b[n] != -1) {

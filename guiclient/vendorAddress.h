@@ -22,7 +22,7 @@ class vendorAddress : public XDialog, public Ui::vendorAddress
     Q_OBJECT
 
 public:
-    vendorAddress(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    vendorAddress(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~vendorAddress();
 
 public slots:

@@ -16,7 +16,7 @@
 
 QScriptValue scriptFind(QScriptContext *context, QScriptEngine  * engine)
 {
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
   if (context->argumentCount() >= 1 &&
       qscriptvalue_cast<WId>(context->argument(0)))
     return engine->toScriptValue(QWidget::find(qscriptvalue_cast<WId>(context->argument(0))));
@@ -171,7 +171,7 @@ QRect QWidgetProto::contentsRect() const
   return QRect();
 }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 WId QWidgetProto::effectiveWinId() const
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
@@ -298,6 +298,7 @@ int QWidgetProto::heightForWidth(int w) const
   return 0;
 }
 
+#if QT_VERSION < 0x050000
 QInputContext *QWidgetProto::inputContext()
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
@@ -305,6 +306,8 @@ QInputContext *QWidgetProto::inputContext()
     return item->inputContext();
   return 0;
 }
+#endif
+
 
 QVariant QWidgetProto::inputMethodQuery(int query) const
 {
@@ -637,12 +640,14 @@ void QWidgetProto::setForegroundRole(int role)
     item->setForegroundRole((QPalette::ColorRole)role);
 }
 
+#if QT_VERSION < 0x050000
 void QWidgetProto::setInputContext(QInputContext *context)
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
   if (item)
     item->setInputContext(context);
 }
+#endif
 
 void QWidgetProto::setLayout(QLayout *layout)
 {
@@ -788,7 +793,7 @@ QRegion QWidgetProto::visibleRegion() const
   return QRegion();
 }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 WId QWidgetProto::winId() const
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());

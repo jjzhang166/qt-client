@@ -341,7 +341,7 @@ to be bound by its terms.</comment>
            <item>
             <widget class="XCheckBox" name="_check">
              <property name="text">
-              <string>Check</string>
+              <string>Payment</string>
              </property>
             </widget>
            </item>

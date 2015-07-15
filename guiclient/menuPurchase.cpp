@@ -125,13 +125,13 @@ menuPurchase::menuPurchase(GUIClient *Pparent) :
   actionProperties acts[] = {
     //  Purchase | Requisitions
     { "menu", tr("Purchase &Requests"), (char*)requestMenu, mainMenu, "true", NULL, NULL, true , NULL },
-    { "po.dspPurchaseRequestsByPlannerCode", tr("by &Planner Code..."), SLOT(sDspPurchaseReqsByPlannerCode()), requestMenu, "ViewPurchaseRequests", QPixmap(":/images/dspPurchaseReqByPlannerCode.png"), toolBar, true , tr("Purchase Requests by Planner Code") },
+    { "po.dspPurchaseRequestsByPlannerCode", tr("by &Planner Code..."), SLOT(sDspPurchaseReqsByPlannerCode()), requestMenu, "ViewPurchaseRequests", new QPixmap(":/images/dspPurchaseReqByPlannerCode.png"), toolBar, true , tr("Purchase Requests by Planner Code") },
     { "po.dspPurchaseRequestsByItem", tr("by &Item..."), SLOT(sDspPurchaseReqsByItem()), requestMenu, "ViewPurchaseRequests", NULL, NULL, true , NULL },
 
     //  Purchase | Purchase Order
     { "menu", tr("&Purchase Order"), (char*)ordersMenu, mainMenu, "true", NULL, NULL, true , NULL },
     { "po.newPurchaseOrder", tr("&New..."), SLOT(sNewPurchaseOrder()), ordersMenu, "MaintainPurchaseOrders", NULL, NULL, true , NULL },
-    { "po.listUnpostedPurchaseOrders", tr("&List Open..."), SLOT(sPurchaseOrderEditList()), ordersMenu, "MaintainPurchaseOrders ViewPurchaseOrders", QPixmap(":/images/listUnpostedPo.png"), toolBar, true , tr("List Open Purchase Orders") },
+    { "po.listUnpostedPurchaseOrders", tr("&List Open..."), SLOT(sPurchaseOrderEditList()), ordersMenu, "MaintainPurchaseOrders ViewPurchaseOrders", new QPixmap(":/images/listUnpostedPo.png"), toolBar, true , tr("List Open Purchase Orders") },
     { "separator", NULL, NULL, ordersMenu, "true", NULL, NULL, true , NULL },
     { "po.postPurchaseOrder", tr("&Release..."), SLOT(sPostPurchaseOrder()), ordersMenu, "ReleasePurchaseOrders", NULL, NULL, true , NULL },
     { "po.postPurchaseOrdersByAgent", tr("Release by A&gent..."), SLOT(sPostPurchaseOrdersByAgent()), ordersMenu, "ReleasePurchaseOrders", NULL, NULL, true , NULL },
@@ -328,42 +328,42 @@ void menuPurchase::sPurchaseOrderEditList()
 
 void menuPurchase::sPrintPurchaseOrder()
 {
-  printPurchaseOrder(parent, "", TRUE).exec();
+  printPurchaseOrder(parent, "", true).exec();
 }
 
 void menuPurchase::sPrintPurchaseOrdersByAgent()
 {
-  printPurchaseOrdersByAgent(parent, "", TRUE).exec();
+  printPurchaseOrdersByAgent(parent, "", true).exec();
 }
 
 void menuPurchase::sPostPurchaseOrder()
 {
-  postPurchaseOrder(parent, "", TRUE).exec();
+  postPurchaseOrder(parent, "", true).exec();
 }
 
 void menuPurchase::sPostPurchaseOrdersByAgent()
 {
-  postPurchaseOrdersByAgent(parent, "", TRUE).exec();
+  postPurchaseOrdersByAgent(parent, "", true).exec();
 }
 
 void menuPurchase::sClosePurchaseOrder()
 {
-  closePurchaseOrder(parent, "", TRUE).exec();
+  closePurchaseOrder(parent, "", true).exec();
 }
 
 void menuPurchase::sReschedulePoitem()
 {
-  reschedulePoitem(parent, "", TRUE).exec();
+  reschedulePoitem(parent, "", true).exec();
 }
 
 void menuPurchase::sChangePoitemQty()
 {
-  changePoitemQty(parent, "", TRUE).exec();
+  changePoitemQty(parent, "", true).exec();
 }
 
 void menuPurchase::sAddPoComment()
 {
-  addPoComment(parent, "", TRUE).exec();
+  addPoComment(parent, "", true).exec();
 }
 
 void menuPurchase::sDspUninvoicedReceipts()
@@ -398,7 +398,7 @@ void menuPurchase::sUnpostedVouchers()
 
 void menuPurchase::sPostVouchers()
 {
-  postVouchers(parent, "", TRUE).exec();
+  postVouchers(parent, "", true).exec();
 }
 
 void menuPurchase::sNewItemSource()
@@ -406,7 +406,7 @@ void menuPurchase::sNewItemSource()
   ParameterList params;
   params.append("mode", "new");
 
-  itemSource newdlg(parent, "", TRUE);
+  itemSource newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -425,7 +425,7 @@ void menuPurchase::sNewContract()
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 
-//  contract newdlg(parent, "", TRUE);
+//  contract newdlg(parent, "", true);
 //  newdlg.set(params);
 //  newdlg.exec();
 }
@@ -536,12 +536,12 @@ void menuPurchase::sDspRejectedMaterialByVendor()
 
 void menuPurchase::sPrintPOForm()
 {
-  printPoForm(parent, "", TRUE).exec();
+  printPoForm(parent, "", true).exec();
 }
 
 void menuPurchase::sPrintVendorForm()
 {
-  printVendorForm(parent, "", TRUE).exec();
+  printVendorForm(parent, "", true).exec();
 }
 
 //  Master Information
@@ -573,12 +573,12 @@ void menuPurchase::sItemsWithoutItemSources()
 
 void menuPurchase::sAssignItemToPlannerCode()
 {
-  assignItemToPlannerCode(parent, "", TRUE).exec();
+  assignItemToPlannerCode(parent, "", true).exec();
 }
 
 void menuPurchase::sAssignClassCodeToPlannerCode()
 {
-  assignClassCodeToPlannerCode(parent, "", TRUE).exec();
+  assignClassCodeToPlannerCode(parent, "", true).exec();
 }
 
 void menuPurchase::sSetup()

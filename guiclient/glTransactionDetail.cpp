@@ -16,7 +16,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 
-glTransactionDetail::glTransactionDetail(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+glTransactionDetail::glTransactionDetail(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

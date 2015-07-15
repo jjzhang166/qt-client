@@ -16,7 +16,7 @@
 #include "shipVia.h"
 #include "guiclient.h"
 
-shipVias::shipVias(QWidget* parent, const char* name, Qt::WFlags fl)
+shipVias::shipVias(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -35,7 +35,7 @@ shipVias::shipVias(QWidget* parent, const char* name, Qt::WFlags fl)
     connect(_shipvia, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }
   else
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
 
   _shipvia->addColumn(tr("Code"),        _itemColumn, Qt::AlignLeft,   true,  "shipvia_code" );
   _shipvia->addColumn(tr("Description"), -1,          Qt::AlignLeft,   true,  "shipvia_descrip" ); 
@@ -58,7 +58,7 @@ void shipVias::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  shipVia newdlg(this, "", TRUE);
+  shipVia newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -71,7 +71,7 @@ void shipVias::sEdit()
   params.append("mode", "edit");
   params.append("shipvia_id", _shipvia->id());
 
-  shipVia newdlg(this, "", TRUE);
+  shipVia newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -84,7 +84,7 @@ void shipVias::sView()
   params.append("mode", "view");
   params.append("shipvia_id", _shipvia->id());
 
-  shipVia newdlg(this, "", TRUE);
+  shipVia newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

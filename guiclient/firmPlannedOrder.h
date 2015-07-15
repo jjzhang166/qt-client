@@ -22,7 +22,7 @@ class firmPlannedOrder : public XDialog, public Ui::firmPlannedOrder
     Q_OBJECT
 
 public:
-    firmPlannedOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    firmPlannedOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~firmPlannedOrder();
 
 public slots:

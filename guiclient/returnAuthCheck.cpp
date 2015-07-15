@@ -15,7 +15,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-returnAuthCheck::returnAuthCheck(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+returnAuthCheck::returnAuthCheck(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ returnAuthCheck::returnAuthCheck(QWidget* parent, const char* name, bool modal, 
 
   _date->setDate(omfgThis->dbDate(), true);
 
-  _bankaccnt->setAllowNull(TRUE);
+  _bankaccnt->setAllowNull(true);
   _bankaccnt->setType(XComboBox::APBankAccounts);
   _cmheadcurrid = CurrDisplay::baseId();
 }
@@ -91,7 +91,7 @@ void returnAuthCheck::sSave()
   {
     returnSave.prepare("SELECT createCheck(:bankaccnt_id, 'C', :recipid,"
 	      "                   :checkDate, :amount, :curr_id, NULL,"
-	      "                   NULL, :for, :notes, TRUE, :aropen_id) AS result; ");
+	      "                   NULL, :for, :notes, true, :aropen_id) AS result; ");
     returnSave.bindValue(":bankaccnt_id", _bankaccnt->id());
     returnSave.bindValue(":recipid",	_custid);
     returnSave.bindValue(":checkDate", _date->date());
@@ -120,7 +120,7 @@ void returnAuthCheck::sSave()
         systemError(this, returnSave.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
-	  done(TRUE);
+	  done(true);
 	}
     else if (returnSave.lastError().type() != QSqlError::NoError)
     {

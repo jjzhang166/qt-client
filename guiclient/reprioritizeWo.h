@@ -21,7 +21,7 @@ class reprioritizeWo : public XDialog, public Ui::reprioritizeWo
     Q_OBJECT
 
 public:
-    reprioritizeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    reprioritizeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~reprioritizeWo();
 
 public slots:

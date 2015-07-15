@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <openreports.h>
 
-printItemLabelsByClassCode::printItemLabelsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printItemLabelsByClassCode::printItemLabelsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ printItemLabelsByClassCode::printItemLabelsByClassCode(QWidget* parent, const ch
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _classCode->setType(ParameterGroup::ClassCode);
 
@@ -46,7 +46,7 @@ void printItemLabelsByClassCode::languageChange()
 enum SetResponse printItemLabelsByClassCode::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

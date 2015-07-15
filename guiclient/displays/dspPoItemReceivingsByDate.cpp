@@ -16,7 +16,7 @@
 #include "guiclient.h"
 #include "xtreewidget.h"
 
-dspPoItemReceivingsByDate::dspPoItemReceivingsByDate(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoItemReceivingsByDate::dspPoItemReceivingsByDate(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemReceivingsByDate", fl)
 {
   setupUi(optionsWidget());

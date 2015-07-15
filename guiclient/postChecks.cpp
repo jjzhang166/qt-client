@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-postChecks::postChecks(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postChecks::postChecks(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ postChecks::postChecks(QWidget* parent, const char* name, bool modal, Qt::WFlags
 
   _numberOfChecks->setPrecision(0);
 
-  _bankaccnt->setAllowNull(TRUE);
+  _bankaccnt->setAllowNull(true);
   _bankaccnt->setType(XComboBox::APBankAccounts);
 
   if (_preferences->boolean("XCheckBox/forgetful"))
@@ -48,7 +48,7 @@ void postChecks::languageChange()
 enum SetResponse postChecks::set(const ParameterList & pParams )
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -72,7 +72,7 @@ void postChecks::sPost()
     if (result < 0)
       systemError(this, storedProcErrorLookup("postChecks", result), __FILE__, __LINE__);
 
-    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, TRUE);
+    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
 
     if (_printJournal->isChecked())
     {
@@ -118,7 +118,6 @@ void postChecks::sHandleBankAccount(int pBankaccntid)
              "JOIN bankaccnt ON (bankaccnt_id=checkhead_bankaccnt_id) "
              "WHERE ( (NOT checkhead_void)"
              " AND (NOT checkhead_posted)"
-             " AND CASE WHEN (bankaccnt_prnt_check) THEN checkhead_printed ELSE 1=1 END"
              " AND (checkhead_bankaccnt_id=:bankaccnt_id) );" );
   postHandleBankAccount.bindValue(":bankaccnt_id", pBankaccntid);
   postHandleBankAccount.exec();

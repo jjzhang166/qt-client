@@ -12,7 +12,7 @@
 
 #include "xtreewidget.h"
 
-dspCapacityUOMsByProductCategory::dspCapacityUOMsByProductCategory(QWidget* parent, const char*, Qt::WFlags fl)
+dspCapacityUOMsByProductCategory::dspCapacityUOMsByProductCategory(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCapacityUOMsByParameter(parent, "dspCapacityUOMsByProductCategory", fl)
 {
   setWindowTitle(tr("Capacity UOMs by Product Category"));

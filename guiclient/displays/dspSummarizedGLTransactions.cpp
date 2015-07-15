@@ -22,7 +22,7 @@
 #include "invoice.h"
 #include "purchaseOrder.h"
 
-dspSummarizedGLTransactions::dspSummarizedGLTransactions(QWidget* parent, const char*, Qt::WFlags fl)
+dspSummarizedGLTransactions::dspSummarizedGLTransactions(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedGLTransactions", fl)
 {
   setupUi(optionsWidget());

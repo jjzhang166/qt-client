@@ -19,7 +19,7 @@ class printLabelsByInvoice : public XDialog, public Ui::printLabelsByInvoice
     Q_OBJECT
 
 public:
-    printLabelsByInvoice(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printLabelsByInvoice(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printLabelsByInvoice();
 
 public slots:

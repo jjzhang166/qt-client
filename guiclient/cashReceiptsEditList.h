@@ -20,7 +20,7 @@ class cashReceiptsEditList : public XWidget, public Ui::cashReceiptsEditList
     Q_OBJECT
 
 public:
-    cashReceiptsEditList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    cashReceiptsEditList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~cashReceiptsEditList();
     virtual bool setParams(ParameterList &);
 

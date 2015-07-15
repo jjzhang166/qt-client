@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-dspCostedSingleLevelBOM::dspCostedSingleLevelBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspCostedSingleLevelBOM::dspCostedSingleLevelBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCostedBOMBase(parent, "dspCostedSingleLevelBOM", fl)
 {
   setWindowTitle(tr("Costed Single Level Bill of Materials"));

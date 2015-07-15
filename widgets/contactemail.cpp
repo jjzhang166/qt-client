@@ -19,7 +19,7 @@
  *  or delete alternate email addresses.
  */
 
-contactEmail::contactEmail(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+contactEmail::contactEmail(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : QDialog(parent, fl)
 {
   setupUi(this);

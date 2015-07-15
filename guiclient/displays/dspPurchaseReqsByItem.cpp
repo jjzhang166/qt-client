@@ -20,11 +20,13 @@
 
 #include "dspRunningAvailability.h"
 #include "purchaseOrder.h"
+#include "purchaseRequest.h"
 
-dspPurchaseReqsByItem::dspPurchaseReqsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspPurchaseReqsByItem::dspPurchaseReqsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPurchaseReqsByItem", fl)
 {
   setupUi(optionsWidget());
+  setNewVisible(true);
   setWindowTitle(tr("Purchase Requests by Item"));
   setListLabel(tr("Purchase Requests"));
   setReportName("PurchaseRequestsByItem");
@@ -44,6 +46,11 @@ dspPurchaseReqsByItem::dspPurchaseReqsByItem(QWidget* parent, const char*, Qt::W
 
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
+  if (_privileges->check("MaintainPurchaseRequests"))
+    connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
+  else
+    newAction()->setEnabled(false);
+  
   connect(omfgThis, SIGNAL(purchaseRequestsUpdated()), this, SLOT(sFillList()));
 }
 
@@ -149,6 +156,28 @@ void dspPurchaseReqsByItem::sRelease()
 
   sFillList();
   omfgThis->sPurchaseRequestsUpdated();
+}
+
+void dspPurchaseReqsByItem::sNew()
+{
+  ParameterList params;
+  params.append("mode", "new");
+  params.append("item_id", _item->id());
+  
+  purchaseRequest newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
+}
+
+void dspPurchaseReqsByItem::sEdit()
+{
+  ParameterList params;
+  params.append("mode", "edit");
+  params.append("pr_id", list()->id());
+  
+  purchaseRequest newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
 }
 
 void dspPurchaseReqsByItem::sDelete()

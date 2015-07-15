@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-selectBankAccount::selectBankAccount(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+selectBankAccount::selectBankAccount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -21,7 +21,7 @@ selectBankAccount::selectBankAccount(QWidget* parent, const char* name, bool mod
   connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
   connect(_select, SIGNAL(clicked()), this, SLOT(sSelect()));
 
-  _bankaccnt->setAllowNull(TRUE);
+  _bankaccnt->setAllowNull(true);
 }
 
 selectBankAccount::~selectBankAccount()

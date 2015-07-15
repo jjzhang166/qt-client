@@ -21,7 +21,7 @@ class firmPlannedOrdersByPlannerCode : public XDialog, public Ui::firmPlannedOrd
     Q_OBJECT
 
 public:
-    firmPlannedOrdersByPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    firmPlannedOrdersByPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~firmPlannedOrdersByPlannerCode();
 
 public slots:

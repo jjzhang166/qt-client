@@ -101,7 +101,7 @@ void RevisionCluster::sModeChanged()
                                                               (RevisionLineEdit::View==(static_cast<RevisionLineEdit*>(_number))->mode())));
     }
     else
-      (static_cast<RevisionLineEdit*>(_number))->setEnabled(TRUE);
+      (static_cast<RevisionLineEdit*>(_number))->setEnabled(true);
 
     static_cast<RevisionLineEdit*>(_number)->_listAct->setEnabled(canSearch);
     static_cast<RevisionLineEdit*>(_number)->_searchAct->setEnabled(canSearch);
@@ -111,7 +111,7 @@ void RevisionCluster::sModeChanged()
 
 RevisionLineEdit::RevisionLineEdit(QWidget *pParent, const char *pName) :
   VirtualClusterLineEdit(pParent, "rev", "rev_id", "rev_number", "rev_status",
-                         QString("case rev_status when 'A' then '%1' when 'S' then '%2' when 'P' then '%3' else '%4' end ").arg(tr("Active")).arg(tr("Substitute")).arg(tr("Pending")).arg(tr("Inactive")).toAscii(),
+                         QString("case rev_status when 'A' then '%1' when 'S' then '%2' when 'P' then '%3' else '%4' end ").arg(tr("Active")).arg(tr("Substitute")).arg(tr("Pending")).arg(tr("Inactive")).toLatin1(),
                          0, pName),
   _allowNew(false),
   _isRevControl(false),
@@ -410,7 +410,7 @@ void RevisionLineEdit::sParse()
 {
   if ((_isRevControl) && (!_parsed))
   { 
-    _parsed = TRUE;
+    _parsed = true;
     QString stripped = text().trimmed().toUpper();
     if (stripped.length() == 0)
     {

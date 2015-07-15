@@ -155,7 +155,7 @@ class ScriptToolbox : public QObject
     QWidget * newDisplay(const QString pname, QWidget *parent = 0, Qt::WindowModality modality = Qt::NonModal, Qt::WindowFlags flags = 0);
 
     void addColumnXTreeWidget(QWidget * tree, const QString &, int, int, bool = true, const QString = QString(), const QString = QString());
-    void populateXTreeWidget(QWidget * tree, XSqlQuery pSql, bool = FALSE);
+    void populateXTreeWidget(QWidget * tree, XSqlQuery pSql, bool = false);
 
     void loadQWebView(QWidget * webView, const QString & url);
 

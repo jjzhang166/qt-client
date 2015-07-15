@@ -22,7 +22,7 @@ class financialLayoutGroup : public XDialog, public Ui::financialLayoutGroup
     Q_OBJECT
 
 public:
-    financialLayoutGroup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    financialLayoutGroup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~financialLayoutGroup();
 
 public slots:

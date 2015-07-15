@@ -19,7 +19,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-salesRep::salesRep(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+salesRep::salesRep(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -156,7 +156,7 @@ void salesRep::sCheck()
       _mode = cEdit;
       sPopulate();
 
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
     }
     else if (ErrorReporter::error(QtCriticalMsg, this,
                                   tr("Error checking for existing Sales Rep"),
@@ -347,7 +347,7 @@ bool salesRep::sPopulate()
     _empid     = getq.value("crmacct_emp_id").toInt();
     _crmowner  = getq.value("crmacct_owner_username").toString();
 
-    _number->setEnabled(FALSE);
+    _number->setEnabled(false);
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
                                 getq, __FILE__, __LINE__))

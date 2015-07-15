@@ -14,7 +14,7 @@
 #include "projectType.h"
 #include "guiclient.h"
 
-projectTypes::projectTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+projectTypes::projectTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -38,7 +38,7 @@ projectTypes::projectTypes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   connect(omfgThis, SIGNAL(itemGroupsUpdated(int, bool)), this, SLOT(sFillList()));

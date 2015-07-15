@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "storedProcErrorLookup.h"
 
-itemUOM::itemUOM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemUOM::itemUOM(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -101,7 +101,10 @@ enum SetResponse itemUOM::set(const ParameterList &pParams)
   if (valid)
   {
     if (param.toString() == "new")
+    {
+      _active->setChecked(true);
       _mode = cNew;
+    }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
@@ -156,12 +159,14 @@ void itemUOM::sSave()
   itemSave.prepare("UPDATE itemuomconv"
             "   SET itemuomconv_to_value=:tovalue,"
             "       itemuomconv_from_value=:fromvalue,"
-            "       itemuomconv_fractional=:fractional "
+            "       itemuomconv_fractional=:fractional, "
+            "       itemuomconv_active=:active "
             " WHERE(itemuomconv_id=:itemuomconv_id);");
   itemSave.bindValue(":itemuomconv_id", _itemuomconvid);
   itemSave.bindValue(":tovalue", _toValue->toDouble());
   itemSave.bindValue(":fromvalue", _fromValue->toDouble());
   itemSave.bindValue(":fractional", QVariant(_fractional->isChecked()));
+  itemSave.bindValue(":active", QVariant(_active->isChecked()));
   if(itemSave.exec())
     accept();
 }
@@ -172,7 +177,7 @@ void itemUOM::populate()
   itempopulate.prepare("SELECT itemuomconv_item_id, item_inv_uom_id,"
             "       itemuomconv_from_uom_id, itemuomconv_to_uom_id,"
             "       itemuomconv_from_value, itemuomconv_to_value, itemuomconv_fractional,"
-            "       (uomconv_id IS NOT NULL) AS global"
+            "       itemuomconv_active, (uomconv_id IS NOT NULL) AS global"
             "  FROM itemuomconv"
             "  JOIN item ON (itemuomconv_item_id=item_id)"
             "  LEFT OUTER JOIN uomconv"
@@ -190,6 +195,7 @@ void itemUOM::populate()
     _fromValue->setDouble(itempopulate.value("itemuomconv_from_value").toDouble());
     _toValue->setDouble(itempopulate.value("itemuomconv_to_value").toDouble());
     _fractional->setChecked(itempopulate.value("itemuomconv_fractional").toBool());
+    _active->setChecked(itempopulate.value("itemuomconv_active").toBool());
     _toValue->setEnabled(!itempopulate.value("global").toBool());
     _fromValue->setEnabled(!itempopulate.value("global").toBool());
 
@@ -362,6 +368,13 @@ void itemUOM::reject()
               "DELETE FROM itemuomconv WHERE itemuomconv_id=:itemuomconv_id;");
     itemreject.bindValue(":itemuomconv_id", _itemuomconvid);
     itemreject.exec();
+  }
+
+  if(cEdit == _mode && _selected->count() == 0)
+  {
+    QMessageBox::warning(this, tr("No Types Selected"),
+      tr("<p>You must select at least one UOM Type for this conversion."));
+    return;
   }
 
   XDialog::reject();

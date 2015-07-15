@@ -20,7 +20,7 @@ class dspPartiallyShippedOrders : public display, public Ui::dspPartiallyShipped
     Q_OBJECT
 
 public:
-    dspPartiallyShippedOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPartiallyShippedOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

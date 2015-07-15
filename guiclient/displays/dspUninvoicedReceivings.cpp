@@ -18,7 +18,7 @@
 #include "poLiabilityDistrib.h"
 #include "postPoReturnCreditMemo.h"
 
-dspUninvoicedReceivings::dspUninvoicedReceivings(QWidget* parent, const char*, Qt::WFlags fl)
+dspUninvoicedReceivings::dspUninvoicedReceivings(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspUninvoicedReceivings", fl)
 {
   setupUi(optionsWidget());

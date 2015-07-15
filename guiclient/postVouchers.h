@@ -21,7 +21,7 @@ class postVouchers : public XDialog, public Ui::postVouchers
     Q_OBJECT
 
 public:
-    postVouchers(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    postVouchers(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~postVouchers();
 
 public slots:

@@ -15,7 +15,7 @@
 
 #include <openreports.h>
 
-printWoPickList::printWoPickList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printWoPickList::printWoPickList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -23,7 +23,7 @@ printWoPickList::printWoPickList(QWidget* parent, const char* name, bool modal, 
   connect(_wo, SIGNAL(valid(bool)), _print, SLOT(setEnabled(bool)));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _wo->setType(cWoExploded | cWoReleased | cWoIssued);
 
@@ -43,7 +43,7 @@ void printWoPickList::languageChange()
 enum SetResponse printWoPickList::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -52,7 +52,7 @@ enum SetResponse printWoPickList::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   if (pParams.inList("print"))

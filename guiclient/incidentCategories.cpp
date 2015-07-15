@@ -20,7 +20,7 @@
 
 #include "incidentCategory.h"
 
-incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WFlags fl)
+incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WF
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_incidentCategories, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -100,7 +100,7 @@ void incidentCategories::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  incidentCategory newdlg(this, "", TRUE);
+  incidentCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -113,7 +113,7 @@ void incidentCategories::sEdit()
   params.append("mode", "edit");
   params.append("incdtcat_id", _incidentCategories->id());
 
-  incidentCategory newdlg(this, "", TRUE);
+  incidentCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -126,7 +126,7 @@ void incidentCategories::sView()
   params.append("mode", "view");
   params.append("incdtcat_id", _incidentCategories->id());
 
-  incidentCategory newdlg(this, "", TRUE);
+  incidentCategory newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

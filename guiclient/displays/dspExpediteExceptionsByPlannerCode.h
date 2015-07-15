@@ -20,7 +20,7 @@ class dspExpediteExceptionsByPlannerCode : public display, public Ui::dspExpedit
     Q_OBJECT
 
 public:
-    dspExpediteExceptionsByPlannerCode(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspExpediteExceptionsByPlannerCode(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
  

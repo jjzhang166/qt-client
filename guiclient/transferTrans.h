@@ -21,7 +21,7 @@ class transferTrans : public XWidget, public Ui::transferTrans
     Q_OBJECT
 
 public:
-    transferTrans(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    transferTrans(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~transferTrans();
 
 public slots:

@@ -225,7 +225,7 @@ void LotserialLineEdit::sParse()
           }
       }
 
-      _parsed = TRUE;
+      _parsed = true;
       emit parsed();
     }
 }

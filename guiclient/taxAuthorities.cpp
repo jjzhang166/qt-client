@@ -19,7 +19,7 @@
 #include "parameterwidget.h"
 #include "taxAuthority.h"
 
-taxAuthorities::taxAuthorities(QWidget* parent, const char*, Qt::WFlags fl)
+taxAuthorities::taxAuthorities(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "taxAuthorities", fl)
 {
   setWindowTitle(tr("Tax Authorities"));
@@ -81,7 +81,7 @@ void taxAuthorities::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  taxAuthority newdlg(this, "", TRUE);
+  taxAuthority newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -95,7 +95,7 @@ void taxAuthorities::sEdit()
   params.append("mode", "edit");
   params.append("taxauth_id", list()->id());
 
-  taxAuthority newdlg(this, "", TRUE);
+  taxAuthority newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -109,7 +109,7 @@ void taxAuthorities::sView()
   params.append("mode", "view");
   params.append("taxauth_id", list()->id());
 
-  taxAuthority newdlg(this, "", TRUE);
+  taxAuthority newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

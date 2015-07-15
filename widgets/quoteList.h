@@ -26,7 +26,7 @@ class XTUPLEWIDGETS_EXPORT quoteList : public QDialog
     Q_OBJECT
 
 public:
-    quoteList( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+    quoteList( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
 
     WarehouseGroup *_warehouse;
     QPushButton    *_close;

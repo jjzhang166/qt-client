@@ -22,7 +22,7 @@ class dspMRPDetail : public XWidget, public Ui::dspMRPDetail
     Q_OBJECT
 
 public:
-    dspMRPDetail(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspMRPDetail(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspMRPDetail();
     virtual bool setParams(ParameterList &);
 

@@ -20,7 +20,7 @@ class unpostedPurchaseOrders : public display, public Ui::unpostedPurchaseOrders
     Q_OBJECT
 
 public:
-    unpostedPurchaseOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    unpostedPurchaseOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool checkSitePrivs(int orderid);
 

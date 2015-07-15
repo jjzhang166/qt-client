@@ -22,7 +22,7 @@ class customCommandArgument : public XDialog, public Ui::customCommandArgument
     Q_OBJECT
 
 public:
-    customCommandArgument(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    customCommandArgument(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~customCommandArgument();
 
     virtual SetResponse set( const ParameterList & pParams );

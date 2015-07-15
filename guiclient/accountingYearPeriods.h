@@ -22,7 +22,7 @@ class accountingYearPeriods : public XWidget, public Ui::accountingYearPeriods
     Q_OBJECT
 
 public:
-    accountingYearPeriods(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    accountingYearPeriods(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~accountingYearPeriods();
 
 public slots:
@@ -35,6 +35,7 @@ public slots:
     virtual void sOpenPeriod();
     virtual void sPrint();
     virtual void sFillList();
+    virtual void sCopyPeriod();
 
 protected slots:
     virtual void languageChange();

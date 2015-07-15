@@ -21,7 +21,7 @@
 #include "taxDetail.h"
 #include "currcluster.h"
 
-arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -66,7 +66,7 @@ arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WFlags
 
   _rsnCode->setType(XComboBox::ReasonCodes);
 
-  _journalNumber->setEnabled(FALSE);
+  _journalNumber->setEnabled(false);
 
   _altAccntid->setType(GLCluster::cRevenue | GLCluster::cExpense);
 }
@@ -111,7 +111,7 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
       return UndefinedError;
 //  ToDo - better error return types
 
-    _docType->setEnabled(FALSE);
+    _docType->setEnabled(false);
   }
 
   param = pParams.value("mode", &valid);
@@ -141,36 +141,36 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
     {
       _mode = cEdit;
 
-      _cust->setReadOnly(TRUE);
-      _docDate->setEnabled(FALSE);
-      _docType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _orderNumber->setEnabled(FALSE);
-      _journalNumber->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
-      _useAltPrepaid->setEnabled(FALSE);
-      _altPrepaid->setEnabled(FALSE);
+      _cust->setReadOnly(true);
+      _docDate->setEnabled(false);
+      _docType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _orderNumber->setEnabled(false);
+      _journalNumber->setEnabled(false);
+      _terms->setEnabled(false);
+      _useAltPrepaid->setEnabled(false);
+      _altPrepaid->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _cust->setReadOnly(TRUE);
-      _docDate->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _docType->setEnabled(FALSE);
-      _docNumber->setEnabled(FALSE);
-      _orderNumber->setEnabled(FALSE);
-      _journalNumber->setEnabled(FALSE);
-      _amount->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
+      _cust->setReadOnly(true);
+      _docDate->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _docType->setEnabled(false);
+      _docNumber->setEnabled(false);
+      _orderNumber->setEnabled(false);
+      _journalNumber->setEnabled(false);
+      _amount->setEnabled(false);
+      _terms->setEnabled(false);
       _terms->setType(XComboBox::Terms);
-      _salesrep->setEnabled(FALSE);
-      _commissionDue->setEnabled(FALSE);
-      _rsnCode->setEnabled(FALSE);
-      _useAltPrepaid->setEnabled(FALSE);
-      _altPrepaid->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _salesrep->setEnabled(false);
+      _commissionDue->setEnabled(false);
+      _rsnCode->setEnabled(false);
+      _useAltPrepaid->setEnabled(false);
+      _altPrepaid->setEnabled(false);
+      _notes->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -455,9 +455,9 @@ void arOpenItem::populate()
              "       COALESCE(SUM(taxhist_tax),0) AS tax, "
              "       CASE WHEN (aropen_doctype = 'D' OR "
              "                 (aropen_doctype='C' AND cmhead_id IS NULL)) THEN "
-             "         TRUE "
+             "         true "
              "       ELSE "
-             "         FALSE "
+             "         false "
              "       END AS showTax "
              "FROM aropen "
              "  JOIN custinfo ON (cust_id=aropen_cust_id) "
@@ -503,15 +503,15 @@ void arOpenItem::populate()
 
     if(!arpopulate.value("aropen_accnt_id").isNull() && arpopulate.value("aropen_accnt_id").toInt() != -1)
     {
-      _useAltPrepaid->setChecked(TRUE);
-      _altAccntidSelected->setChecked(TRUE);
+      _useAltPrepaid->setChecked(true);
+      _altAccntidSelected->setChecked(true);
       _altAccntid->setId(arpopulate.value("aropen_accnt_id").toInt());
     }
 
     if(!arpopulate.value("aropen_salescat_id").isNull() && arpopulate.value("aropen_salescat_id").toInt() != -1)
     {
-      _useAltPrepaid->setChecked(TRUE);
-      _altSalescatidSelected->setChecked(TRUE);
+      _useAltPrepaid->setChecked(true);
+      _altSalescatidSelected->setChecked(true);
       _altSalescatid->setId(arpopulate.value("aropen_salescat_id").toInt());
     }
 
@@ -597,7 +597,7 @@ void arOpenItem::populate()
     arpopulate.bindValue(":error", tr("Error"));
     arpopulate.bindValue(":aropen_id", _aropenid);
     arpopulate.exec();
-    _arapply->populate(arpopulate, TRUE);
+    _arapply->populate(arpopulate, true);
     if (arpopulate.lastError().type() != QSqlError::NoError)
 	systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
   }

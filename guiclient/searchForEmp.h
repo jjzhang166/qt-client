@@ -22,7 +22,7 @@ class searchForEmp : public XWidget, public Ui::searchForEmp
     Q_OBJECT
 
 public:
-    searchForEmp(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    searchForEmp(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~searchForEmp();
 
     static bool userHasPriv(const int = cView);

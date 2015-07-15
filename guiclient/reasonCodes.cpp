@@ -16,7 +16,7 @@
 #include <openreports.h>
 #include "reasonCode.h"
 
-reasonCodes::reasonCodes(QWidget* parent, const char* name, Qt::WFlags fl)
+reasonCodes::reasonCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ reasonCodes::reasonCodes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_rsncode, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -64,7 +64,7 @@ void reasonCodes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  reasonCode newdlg(this, "", TRUE);
+  reasonCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -77,7 +77,7 @@ void reasonCodes::sEdit()
   params.append("mode", "edit");
   params.append("rsncode_id", _rsncode->id());
 
-  reasonCode newdlg(this, "", TRUE);
+  reasonCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -90,7 +90,7 @@ void reasonCodes::sView()
   params.append("mode", "view");
   params.append("rsncode_id", _rsncode->id());
 
-  reasonCode newdlg(this, "", TRUE);
+  reasonCode newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

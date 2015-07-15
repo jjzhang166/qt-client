@@ -20,7 +20,7 @@ class checkFormats : public XWidget, public Ui::checkFormats
     Q_OBJECT
 
 public:
-    checkFormats(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    checkFormats(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~checkFormats();
 
 public slots:

@@ -28,7 +28,7 @@ bool shownEncryptedMsg = false;
     @brief   This is the master setup window for configuring the credit card
              subsystem.
  */
-configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   setupUi(this);

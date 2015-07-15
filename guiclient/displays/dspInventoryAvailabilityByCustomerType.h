@@ -21,7 +21,7 @@ class dspInventoryAvailabilityByCustomerType : public display, public Ui::dspInv
     Q_OBJECT
 
 public:
-    dspInventoryAvailabilityByCustomerType(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInventoryAvailabilityByCustomerType(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

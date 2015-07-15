@@ -24,6 +24,7 @@
 #include <QTextDocument>
 #include <QTextEdit>
 #include <QtScript>
+#include <QPrinter>
 
 class QString;
 

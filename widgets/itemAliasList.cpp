@@ -28,7 +28,7 @@
 QString buildItemLineEditQuery(const QString, const QStringList, const QString, const unsigned int, bool);
 QString buildItemLineEditTitle(const unsigned int, const QString);
 
-itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl) :
+itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl) :
   QDialog(parent, fl)
 {
   setObjectName(name ? name : "itemAliasList");
@@ -89,9 +89,9 @@ itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::
   _buttonsLayout->addWidget(_close);
 
   _select = new QPushButton(tr("&Select"), this);
-  _select->setEnabled( FALSE );
-  _select->setAutoDefault( TRUE );
-  _select->setDefault( TRUE );
+  _select->setEnabled( false );
+  _select->setAutoDefault( true );
+  _select->setDefault( true );
   _buttonsLayout->addWidget(_select);
 
   _topLayout->addLayout(_buttonsLayout);
@@ -112,7 +112,7 @@ itemAliasList::itemAliasList(QWidget* parent, const char* name, bool modal, Qt::
   connect( _item, SIGNAL( valid(bool) ), _select, SLOT( setEnabled(bool) ) );
   connect( _close, SIGNAL( clicked() ), this, SLOT( reject() ) );
 
-  _useQuery = FALSE;
+  _useQuery = false;
 
   _item->addColumn(tr("Alias Number"),100, Qt::AlignLeft, true, "itemalias_number");
   _item->addColumn(tr("Item Number"), 100, Qt::AlignLeft, true, "item_number");
@@ -140,7 +140,7 @@ void itemAliasList::set(const ParameterList &pParams)
   if (valid)
     _extraClauses = param.toStringList();
 
-  _showInactive->setChecked(FALSE);
+  _showInactive->setChecked(false);
   _showInactive->setEnabled(!(_itemType & ItemLineEdit::cActive));
 
   param = pParams.value("sql", &valid);
@@ -198,6 +198,6 @@ void itemAliasList::sFillList()
       }
     }
     else
-      _item->populate(alias, TRUE);
+      _item->populate(alias, true);
   }
 }

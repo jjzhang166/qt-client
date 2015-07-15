@@ -22,7 +22,7 @@ class reconcileBankaccount : public XWidget, public Ui::reconcileBankaccount
     Q_OBJECT
 
 public:
-    reconcileBankaccount(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    reconcileBankaccount(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~reconcileBankaccount();
 
     Q_INVOKABLE static void   openReconcileBankaccount( int pBankaccntid, QWidget *parent = 0 );

@@ -19,7 +19,7 @@
 
 #include "terms.h"
 
-termses::termses(QWidget* parent, const char* name, Qt::WFlags fl)
+termses::termses(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -45,7 +45,7 @@ termses::termses(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_terms, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -135,7 +135,7 @@ void termses::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  terms newdlg(this, "", TRUE);
+  terms newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -148,7 +148,7 @@ void termses::sEdit()
   params.append("mode", "edit");
   params.append("terms_id", _terms->id());
 
-  terms newdlg(this, "", TRUE);
+  terms newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -161,7 +161,7 @@ void termses::sView()
   params.append("mode", "view");
   params.append("terms_id", _terms->id());
 
-  terms newdlg(this, "", TRUE);
+  terms newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

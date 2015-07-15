@@ -15,16 +15,20 @@
 #include <QValidator>
 #include <QVariant>
 
+#include <metasql.h>
+#include "mqlutil.h"
+#include "errorReporter.h"
+
 #include "priceList.h"
 #include "taxDetail.h"
 #include "xdoublevalidator.h"
 
-creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _listPrices->setMaximumWidth(25);
 #endif
 
@@ -91,7 +95,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
   XDialog::set(pParams);
   QVariant param;
   bool     valid;
-  bool     vrestrict = FALSE;
+  bool     vrestrict = false;
 
   param = pParams.value("cmhead_id", &valid);
   if (valid)
@@ -110,7 +114,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
       if (! creditet.value("cmhead_invcnumber").toString().isEmpty())
         _invoiceNumber = creditet.value("cmhead_invcnumber").toInt();
       if ( (_invoiceNumber != -1) && (_metrics->boolean("RestrictCreditMemos")) )
-        vrestrict = TRUE;
+        vrestrict = true;
       _taxzoneid = creditet.value("cmhead_taxzone_id").toInt();
       _tax->setId(creditet.value("cmhead_curr_id").toInt());
       _tax->setEffective(creditet.value("cmhead_docdate").toDate());
@@ -159,8 +163,8 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
 
       connect(_discountFromSale, SIGNAL(editingFinished()), this, SLOT(sCalculateFromDiscount()));
       connect(_item, SIGNAL(valid(bool)), _listPrices, SLOT(setEnabled(bool)));
@@ -169,15 +173,15 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qtyReturned->setEnabled(FALSE);
-      _qtyToCredit->setEnabled(FALSE);
-      _netUnitPrice->setEnabled(FALSE);
-      _discountFromSale->setEnabled(FALSE);
-      _comments->setReadOnly(TRUE);
-      _taxType->setEnabled(FALSE);
-      _rsnCode->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qtyReturned->setEnabled(false);
+      _qtyToCredit->setEnabled(false);
+      _netUnitPrice->setEnabled(false);
+      _discountFromSale->setEnabled(false);
+      _comments->setReadOnly(true);
+      _taxType->setEnabled(false);
+      _rsnCode->setEnabled(false);
 
       _save->hide();
       _close->setText(tr("&Close"));
@@ -291,28 +295,36 @@ void creditMemoItem::sSave()
 
 void creditMemoItem::sPopulateItemInfo()
 {
-  XSqlQuery uom;
-  uom.prepare("SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN uom ON (item_inv_uom_id=uom_id)"
-              " WHERE(item_id=:item_id)"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_to_uom_id=uom_id)"
-              " WHERE((itemuomconv_from_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " UNION "
-              "SELECT uom_id, uom_name"
-              "  FROM item"
-              "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
-              "  JOIN uom ON (itemuomconv_from_uom_id=uom_id)"
-              " WHERE((itemuomconv_to_uom_id=item_inv_uom_id)"
-              "   AND (item_id=:item_id))"
-              " ORDER BY uom_name;");
-  uom.bindValue(":item_id", _item->id());
-  uom.exec();
+  // Get list of active, valid Selling UOMs
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+
+  ParameterList params;
+  params.append("uomtype", "Selling");
+  params.append("item_id", _item->id());
+
+  // Also have to factor UOMs previously used on Return now inactive
+  if (_cmitemid != -1)
+  {
+    XSqlQuery cmuom;
+    cmuom.prepare("SELECT cmitem_qty_uom_id, cmitem_price_uom_id "
+                "  FROM cmitem"
+                " WHERE(cmitem_id=:cmitem_id);");
+    cmuom.bindValue(":cmitem_id", _cmitemid);
+    cmuom.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Returns UOMs"),
+                         cmuom, __FILE__, __LINE__))
+      return;
+    else if (cmuom.first())
+    {
+      params.append("uom_id", cmuom.value("cmitem_qty_uom_id"));
+      params.append("uom_id2", cmuom.value("cmitem_price_uom_id"));
+    }
+  }
+  XSqlQuery uom = muom.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
+                         uom, __FILE__, __LINE__))
+    return;
+
   _qtyUOM->populate(uom);
   _pricingUOM->populate(uom);
 
@@ -431,7 +443,7 @@ void creditMemoItem::populate()
                  "       cmhead_taxzone_id, cmhead_curr_id, "
                  "      (SELECT SUM(taxhist_tax * -1) "
 		 "       FROM cmitemtax WHERE (cmitem_id=taxhist_parent_id)) AS tax,"
-                 "       itemsite_costmethod "
+                 "       itemsite_warehous_id, itemsite_costmethod "
                  "FROM cmhead, cmitem "
                  "LEFT OUTER JOIN itemsite ON (cmitem_itemsite_id=itemsite_id)"
                  "WHERE ( (cmitem_cmhead_id=cmhead_id)"
@@ -444,6 +456,7 @@ void creditMemoItem::populate()
     _taxzoneid = cmitem.value("cmhead_taxzone_id").toInt();
     _rsnCode->setId(cmitem.value("cmitem_rsncode_id").toInt());
     _item->setItemsiteid(cmitem.value("cmitem_itemsite_id").toInt());
+    _warehouse->setId(cmitem.value("itemsite_warehous_id").toInt());
     _lineNumber->setText(cmitem.value("cmitem_linenumber").toString());
     _netUnitPrice->setLocalValue(cmitem.value("cmitem_unitprice").toDouble());
     _qtyToCredit->setDouble(cmitem.value("cmitem_qtycredit").toDouble());

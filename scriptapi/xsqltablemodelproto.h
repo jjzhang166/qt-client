@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2012 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -88,7 +88,10 @@ class XSqlTableModelProto : public QObject, public QScriptable
     Q_INVOKABLE bool            setRecord(int row, const QSqlRecord &record);
     Q_INVOKABLE void            setRelation(int column, const QSqlRelation &relation);
     Q_INVOKABLE void            setSort(int column, int order);
+    //setSupportedDragActions deprecated in Qt5
+    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     Q_INVOKABLE void            setSupportedDragActions(int actions);
+    #endif
     Q_INVOKABLE void            setTable(const QString &tableName, int keyColumns);
     Q_INVOKABLE QModelIndex     sibling(int row, int column, const QModelIndex &index) const;
     Q_INVOKABLE void            sort(int column, int order = Qt::AscendingOrder);

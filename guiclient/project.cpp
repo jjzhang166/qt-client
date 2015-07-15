@@ -18,11 +18,11 @@
 #include <openreports.h>
 #include <comment.h>
 #include <metasql.h>
+
 #include "mqlutil.h"
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "task.h"
-#include "characteristicAssignment.h"
 #include "salesOrder.h"
 #include "salesOrderItem.h"
 #include "invoice.h"
@@ -35,7 +35,7 @@
 
 const char *_projectStatuses[] = { "P", "O", "C" };
 
-project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+project::project(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -44,7 +44,6 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
   connect(_buttonBox,     SIGNAL(rejected()),        this, SLOT(sClose()));
   connect(_buttonBox,     SIGNAL(accepted()),        this, SLOT(sSave()));
-  connect(_printTasks,    SIGNAL(clicked()),         this, SLOT(sPrintTasks()));
   connect(_queryTasks,    SIGNAL(clicked()),         this, SLOT(sFillTaskList()));
   connect(_newTask,       SIGNAL(clicked()),         this, SLOT(sNewTask()));
   connect(_editTask,      SIGNAL(clicked()),         this, SLOT(sEditTask()));
@@ -52,18 +51,13 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_deleteTask,    SIGNAL(clicked()),         this, SLOT(sDeleteTask()));
   connect(_number,        SIGNAL(editingFinished()), this, SLOT(sNumberChanged()));
   connect(_crmacct,       SIGNAL(newId(int)),        this, SLOT(sCRMAcctChanged(int)));
-  connect(_newCharacteristic, SIGNAL(clicked()),     this, SLOT(sNew()));
-  connect(_editCharacteristic, SIGNAL(clicked()),    this, SLOT(sEdit()));
-  connect(_deleteCharacteristic, SIGNAL(clicked()),  this, SLOT(sDelete()));
   connect(_prjtask, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*, QTreeWidgetItem*)));
   connect(_showSo, SIGNAL(toggled(bool)), this, SLOT(sFillTaskList()));
   connect(_showPo, SIGNAL(toggled(bool)), this, SLOT(sFillTaskList()));
   connect(_showWo, SIGNAL(toggled(bool)), this, SLOT(sFillTaskList()));
   connect(_showIn, SIGNAL(toggled(bool)), this, SLOT(sFillTaskList()));
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name" );
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value" );
-  _charass->addColumn(tr("Default"),        _ynColumn*2,   Qt::AlignCenter, true, "charass_default" );
+  _charass->setType("PROJ");
 
   _prjtask->addColumn(tr("Name"),        _itemColumn,  Qt::AlignLeft,   true,  "name"   );
   _prjtask->addColumn(tr("Status"),      _orderColumn, Qt::AlignLeft,   true,  "status"   );
@@ -86,11 +80,6 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _prjtask->addColumn(tr("Exp. Budget"),      _priceColumn,   Qt::AlignRight,  true,  "exp_budget"  );
   _prjtask->addColumn(tr("Exp. Actual"),      _priceColumn,   Qt::AlignRight,  true,  "exp_actual"  );
   _prjtask->addColumn(tr("Exp. Balance"),      _priceColumn,   Qt::AlignRight,  true,  "exp_balance"  );
-
-  _showSo->setChecked(true);
-  _showWo->setChecked(true);
-  _showPo->setChecked(true);
-  _showIn->setChecked(true);
 
   _owner->setUsername(omfgThis->username());
   _assignedTo->setUsername(omfgThis->username());
@@ -123,6 +112,11 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   menuItem->setEnabled(_privileges->check("MaintainWorkOrders"));
   _newTask->setMenu(newMenu); 
 
+  QMenu * printMenu = new QMenu;
+  printMenu->addAction(tr("Print Tasks"), this, SLOT(sPrintTasks()));
+  printMenu->addAction(tr("Print Orders"), this, SLOT(sPrintOrders()));
+  _print->setMenu(printMenu);
+
   populate();
 }
 
@@ -152,6 +146,7 @@ enum SetResponse project::set(const ParameterList &pParams)
   {
     _prjid = param.toInt();
     populate();
+    _charass->setId(_prjid);
   }
 
   param = pParams.value("crmacct_id", &valid);
@@ -179,8 +174,6 @@ enum SetResponse project::set(const ParameterList &pParams)
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(itemSelected(int)), _editTask, SLOT(animateClick()));
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
 
       projectet.exec("SELECT NEXTVAL('prj_prj_id_seq') AS prj_id;");
       if (projectet.first())
@@ -193,48 +186,47 @@ enum SetResponse project::set(const ParameterList &pParams)
 
       _comments->setId(_prjid);
       _documents->setId(_prjid);
+      _charass->setId(_prjid);
       _recurring->setParent(_prjid, "J");
     }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
 
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(itemSelected(int)), _editTask, SLOT(animateClick()));
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
       
-      _owner->setEnabled(FALSE);
-      _number->setEnabled(FALSE);
-      _status->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _so->setEnabled(FALSE);
-      _wo->setEnabled(FALSE);
-      _po->setEnabled(FALSE);
-      _assignedTo->setEnabled(FALSE);
+      _owner->setEnabled(false);
+      _number->setEnabled(false);
+      _status->setEnabled(false);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _so->setEnabled(false);
+      _wo->setEnabled(false);
+      _po->setEnabled(false);
+      _assignedTo->setEnabled(false);
       _crmacct->setEnabled(false);
       _cntct->setEnabled(false);
-      _newTask->setEnabled(FALSE);
+      _newTask->setEnabled(false);
       connect(_prjtask, SIGNAL(itemSelected(int)), _viewTask, SLOT(animateClick()));
-      _comments->setReadOnly(TRUE);
-      _documents->setReadOnly(TRUE);
-      _started->setEnabled(FALSE);
-      _assigned->setEnabled(FALSE);
-      _due->setEnabled(FALSE);
-      _completed->setEnabled(FALSE);
-      _recurring->setEnabled(FALSE);
-      _projectType->setEnabled(FALSE);
-      _newCharacteristic->setEnabled(FALSE);
+      _comments->setReadOnly(true);
+      _charass->setReadOnly(true);
+      _documents->setReadOnly(true);
+      _started->setEnabled(false);
+      _assigned->setEnabled(false);
+      _due->setEnabled(false);
+      _completed->setEnabled(false);
+      _recurring->setEnabled(false);
+      _projectType->setEnabled(false);
       _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Save));
       _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Cancel));
       _buttonBox->addButton(QDialogButtonBox::Close);
@@ -438,7 +430,6 @@ void project::populate()
   }
 
   sFillTaskList();
-  sFillCharList();
   _comments->setId(_prjid);
   _documents->setId(_prjid);
   emit populated(_prjid);
@@ -601,6 +592,59 @@ void project::sPrintTasks()
     report.reportError(this);
 }
 
+void project::sPrintOrders()
+{
+  ParameterList params;
+
+  params.append("prj_id", _prjid);
+
+  params.append("so", tr("Sales Order"));
+  params.append("wo", tr("Work Order"));
+  params.append("po", tr("Purchase Order"));
+  params.append("pr", tr("Purchase Request"));
+  params.append("sos", tr("Sales Orders"));
+  params.append("wos", tr("Work Orders"));
+  params.append("pos", tr("Purchase Orders"));
+  params.append("prs", tr("Purchase Requests"));
+  params.append("quote", tr("Quote"));
+  params.append("quotes", tr("Quotes"));
+  params.append("invoice", tr("Invoice"));
+  params.append("invoices", tr("Invoices"));
+
+  params.append("open", tr("Open"));
+  params.append("closed", tr("Closed"));
+  params.append("converted", tr("Converted"));
+  params.append("canceled", tr("Canceled"));
+  params.append("expired", tr("Expired"));
+  params.append("unposted", tr("Unposted"));
+  params.append("posted", tr("Posted"));
+  params.append("exploded", tr("Exploded"));
+  params.append("released", tr("Released"));
+  params.append("planning", tr("Concept"));
+  params.append("inprocess", tr("In Process"));
+  params.append("complete", tr("Complete"));
+  params.append("unreleased", tr("Unreleased"));
+  params.append("total", tr("Total"));
+
+  if(_showSo->isChecked())
+    params.append("showSo");
+
+  if(_showWo->isChecked())
+    params.append("showWo");
+
+  if(_showPo->isChecked())
+    params.append("showPo");
+
+  if (! _privileges->check("ViewAllProjects") && ! _privileges->check("MaintainAllProjects"))
+    params.append("owner_username", omfgThis->username());
+
+  orReport report("OrderActivityByProject", params);
+  if(report.isValid())
+    report.print();
+  else
+    report.reportError(this);
+}
+
 void project::sNewTask()
 {
   if (!_saved)
@@ -619,7 +663,7 @@ void project::sNewTask()
   params.append("prj_assigned_date", _assigned->date());
   params.append("prj_completed_date", _completed->date());
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillTaskList();
@@ -634,7 +678,7 @@ void project::sEditTask()
   params.append("mode", "edit");
   params.append("prjtask_id", _prjtask->id());
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillTaskList();
@@ -649,7 +693,7 @@ void project::sViewTask()
   params.append("mode", "view");
   params.append("prjtask_id", _prjtask->id());
 
-  task newdlg(this, "", TRUE);
+  task newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -690,63 +734,6 @@ void project::sDeleteTask()
   }
   emit deletedTask();
   sFillTaskList();
-}
-
-void project::sNew()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("prj_id", _prjid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharList();
-}
-
-void project::sEdit()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharList();
-}
-
-void project::sDelete()
-{
-  XSqlQuery taskDelete;
-  taskDelete.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  taskDelete.bindValue(":charass_id", _charass->id());
-  taskDelete.exec();
-
-  sFillCharList();
-}
-
-void project::sFillCharList()
-{
-  XSqlQuery taskFillList;
-  taskFillList.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value, "
-             " charass_default "
-             "FROM charass, char "
-             "WHERE ( (charass_target_type='PROJ')"
-             " AND (charass_char_id=char_id)"
-             " AND (charass_target_id=:prj_id) ) "
-             "ORDER BY char_order, char_name;" );
-  taskFillList.bindValue(":prj_id", _prjid);
-  taskFillList.exec();
-  _charass->populate(taskFillList);
 }
 
 void project::sFillTaskList()
@@ -847,14 +834,14 @@ void project::sNumberChanged()
     projectNumberChanged.exec();
     if(projectNumberChanged.first())
     {
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
       _prjid = projectNumberChanged.value("prj_id").toInt();
       _mode = cEdit;
       populate();
     }
     else
     {
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
       _mode = cNew;
     }
   }
@@ -1024,7 +1011,7 @@ void project::sViewOrder()
     params.append("mode", "view");
     params.append("prjtask_id", _prjtask->id());
 
-    task newdlg(this, "", TRUE);
+    task newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }

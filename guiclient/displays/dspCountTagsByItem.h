@@ -18,7 +18,7 @@ class dspCountTagsByItem : public dspCountTagsBase
     Q_OBJECT
 
 public:
-    dspCountTagsByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCountTagsByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 };
 

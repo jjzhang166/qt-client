@@ -16,7 +16,7 @@
 #include "sale.h"
 #include "guiclient.h"
 
-sales::sales(QWidget* parent, const char* name, Qt::WFlags fl)
+sales::sales(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -54,7 +54,7 @@ void sales::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  sale newdlg(this, "", TRUE);
+  sale newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)
@@ -67,7 +67,7 @@ void sales::sEdit()
   params.append("mode", "edit");
   params.append("sale_id", _sale->id());
 
-  sale newdlg(this, "", TRUE);
+  sale newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)

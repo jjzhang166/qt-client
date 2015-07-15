@@ -22,7 +22,7 @@ class enterPoitemReturn : public XDialog, public Ui::enterPoitemReturn
     Q_OBJECT
 
 public:
-    enterPoitemReturn(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    enterPoitemReturn(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~enterPoitemReturn();
 
 public slots:

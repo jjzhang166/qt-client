@@ -38,7 +38,7 @@ const char *_statusTypes[] = { "U", "O", "C" };
 #define cCanceled     0x08
 #define cUnreleased   0x16
 
-transferOrder::transferOrder(QWidget* parent, const char* name, Qt::WFlags fl)
+transferOrder::transferOrder(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl),
       _cachedTabIndex(0),
       _captive(false),
@@ -131,21 +131,9 @@ void transferOrder::setToheadid(const int pId)
   _documents->setId(_toheadid);
        
   if (_mode == cEdit
-      && ! _lock.acquire("tohead", _toheadid))
+      && ! _lock.acquire("tohead", _toheadid, AppLock::Interactive))
   {
-    if (_lock.isLockedOut())
-    {
-      QMessageBox::critical(this, tr("Record Currently Being Edited"),
-                            tr("<p>The record you are trying to edit is "
-                               "currently being edited by another user. "
-                               "Continue in View Mode."));
-      setViewMode();
-    }
-    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
-                                  _lock.lastError(), __FILE__, __LINE__))
-    {
-      setViewMode();
-    }
+    setViewMode();
   }
 }
 
@@ -261,8 +249,8 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
           _mode = cEdit;
 
           setToheadid(transferet.value("tohead_id").toInt());
-          _orderNumber->setEnabled(FALSE);
-          _orderDate->setEnabled(FALSE);
+          _orderNumber->setEnabled(false);
+          _orderDate->setEnabled(false);
           populate();
         }
         else
@@ -291,7 +279,7 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
       newItemParams.append("taxzone_id",	_taxzone->id());
       newItemParams.append("curr_id",	_freightCurrency->id());
       newItemParams.append("item_id", itemid);
-      newItemParams.append("captive", TRUE);
+      newItemParams.append("captive", true);
 
       if (qty > 0.0)
         newItemParams.append("qty", qty);
@@ -299,13 +287,13 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
       if (!dueDate.isNull())
         newItemParams.append("dueDate", dueDate);
 
-      transferOrderItem toItem(this, "", TRUE);
+      transferOrderItem toItem(this, "", true);
       toItem.set(newItemParams);
 // TODO
 //      if (toItem.exec() != XDialog::Rejected)
       if (toItem.exec() == XDialog::Rejected)
       {
-        transferet.prepare("SELECT deletePlannedOrder(:planord_id, FALSE) AS _result;");
+        transferet.prepare("SELECT deletePlannedOrder(:planord_id, false) AS _result;");
         transferet.bindValue(":planord_id", _planordid);
         transferet.exec();
 // TODO
@@ -352,16 +340,16 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
     getWhsInfo(_srcWhs->id(), _srcWhs);
     getWhsInfo(_dstWhs->id(), _dstWhs);
 
-    _captive = FALSE;
-    _edit->setEnabled(FALSE);
-    _action->setEnabled(FALSE);
-    _delete->setEnabled(FALSE);
+    _captive = false;
+    _edit->setEnabled(false);
+    _action->setEnabled(false);
+    _delete->setEnabled(false);
     _close->setText("&Cancel");
   }
   else if (cEdit == _mode)
   {
-    _captive = TRUE;
-    _orderNumber->setEnabled(FALSE);
+    _captive = true;
+    _orderNumber->setEnabled(false);
   }
 
   if( !_metrics->boolean("EnableTOShipping"))
@@ -400,8 +388,8 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
   }
   else
   {
-    _orderDate->setEnabled(FALSE);
-    _packDate->setEnabled(FALSE);
+    _orderDate->setEnabled(false);
+    _packDate->setEnabled(false);
   }
 
   param = pParams.value("captive", &valid);
@@ -432,9 +420,9 @@ bool transferOrder::insertPlaceholder()
     return false;
   }
 
-  _ignoreSignals = TRUE;
+  _ignoreSignals = true;
   populateOrderNumber();
-  _ignoreSignals = FALSE;
+  _ignoreSignals = false;
 
   transferinsertPlaceholder.prepare("INSERT INTO tohead ("
         "          tohead_number, tohead_src_warehous_id,"
@@ -547,10 +535,10 @@ bool transferOrder::save(bool partial)
   // save contact and address info in case someone wants to use 'em again later
   // but don't make any global changes to the data and ignore errors
   // TODO: put in real checking - perhaps the address of the warehouse is wrong
-  _ignoreSignals = TRUE;
+  _ignoreSignals = true;
   _srcAddr->save(AddressCluster::CHANGEONE);
   _dstAddr->save(AddressCluster::CHANGEONE);
-  _ignoreSignals = FALSE;
+  _ignoreSignals = false;
 
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
@@ -671,7 +659,7 @@ bool transferOrder::save(bool partial)
 
   // TODO: should this be done before saving the t/o?
   if ((cNew == _mode) && (!_saved)
-      && ! _lock.acquire("tohead", _toheadid))
+      && ! _lock.acquire("tohead", _toheadid, AppLock::Silent))
   {
     rollback.exec();
     (void)ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
@@ -726,7 +714,7 @@ bool transferOrder::save(bool partial)
 
   emit saved(_toheadid);
 
-  return TRUE;
+  return true;
 }
 
 void transferOrder::sPopulateMenu(QMenu *pMenu)
@@ -783,7 +771,7 @@ void transferOrder::populateOrderNumber()
         _orderNumberGen = transferpopulateOrderNumber.value("tonumber").toInt();
 
         if (_metrics->value("TONumberGeneration") == "A")
-          _orderNumber->setEnabled(FALSE);
+          _orderNumber->setEnabled(false);
       }
       else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Number"),
                                     transferpopulateOrderNumber, __FILE__, __LINE__))
@@ -792,12 +780,12 @@ void transferOrder::populateOrderNumber()
     _new->setEnabled(! _orderNumber->text().isEmpty());
   }
 
-  _userEnteredOrderNumber = FALSE;
+  _userEnteredOrderNumber = false;
 }
 
 void transferOrder::sSetUserEnteredOrderNumber()
 {
-  _userEnteredOrderNumber = TRUE;
+  _userEnteredOrderNumber = true;
 }
     
 void transferOrder::sHandleOrderNumber()
@@ -842,7 +830,7 @@ void transferOrder::sHandleOrderNumber()
         _mode = cEdit;
         setToheadid(query.value("tohead_id").toInt());
         populate();
-        _orderNumber->setEnabled(FALSE);
+        _orderNumber->setEnabled(false);
       }
       else
       {
@@ -864,8 +852,8 @@ void transferOrder::sHandleOrderNumber()
 	  return;
 
         _orderNumber->setText(orderNumber);
-        _userEnteredOrderNumber = FALSE;
-        _orderNumber->setEnabled(FALSE);
+        _userEnteredOrderNumber = false;
+        _orderNumber->setEnabled(false);
       }
     }
 
@@ -895,7 +883,7 @@ void transferOrder::sNew()
   if ((_mode == cNew) || (_mode == cEdit))
     params.append("mode", "new");
 
-  transferOrderItem newdlg(this, "", TRUE);
+  transferOrderItem newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() == XDialog::Accepted)
     sFillItemList();
@@ -911,7 +899,7 @@ void transferOrder::sEdit()
   else if ((_mode == cNew) || (_mode == cEdit))
     params.append("mode", "edit");
 
-  transferOrderItem newdlg(this, "", TRUE);
+  transferOrderItem newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() == XDialog::Accepted &&
       ((_mode == cNew) || (_mode == cEdit)) )
@@ -937,7 +925,7 @@ void transferOrder::sHandleButtons()
 
     if(_numSelected == 1)
     {
-      _edit->setEnabled(TRUE);
+      _edit->setEnabled(true);
       int lineMode = selected->altId();
 
       if (lineMode == 1)
@@ -945,66 +933,66 @@ void transferOrder::sHandleButtons()
         _lineMode = cClosed;
 
         _action->setText(tr("Open"));
-        _action->setEnabled(TRUE);
-        _delete->setEnabled(FALSE);
+        _action->setEnabled(true);
+        _delete->setEnabled(false);
       }
       else if (lineMode == 2)
       {
         _lineMode = cActiveOpen;
 
         _action->setText(tr("Close"));
-        _action->setEnabled(TRUE);
-        _delete->setEnabled(FALSE);
+        _action->setEnabled(true);
+        _delete->setEnabled(false);
       }
       else if (lineMode == 3)
       {
         _lineMode = cInactiveOpen;
 
         _action->setText(tr("Close"));
-        _action->setEnabled(TRUE);
-        _delete->setEnabled(TRUE);
+        _action->setEnabled(true);
+        _delete->setEnabled(true);
       }
       else if (lineMode == 4)
       {
         _lineMode = cCanceled;
 
-        _action->setEnabled(FALSE);
-        _delete->setEnabled(FALSE);
+        _action->setEnabled(false);
+        _delete->setEnabled(false);
       }
       else if (lineMode == 5)
       {
         _lineMode = cUnreleased;
 
         _action->setText(tr("Close"));
-        _action->setEnabled(FALSE);
-        _delete->setEnabled(TRUE);
+        _action->setEnabled(false);
+        _delete->setEnabled(true);
       }
       else
       {
-        _action->setEnabled(FALSE);
-        _delete->setEnabled(FALSE);
+        _action->setEnabled(false);
+        _delete->setEnabled(false);
       }
 
       if(1 == lineMode || 4 == lineMode || 5 == lineMode)
       {
-        _issueStock->setEnabled(FALSE);
-        _issueLineBalance->setEnabled(FALSE);
+        _issueStock->setEnabled(false);
+        _issueLineBalance->setEnabled(false);
       }
     }
     else
     {
-      _edit->setEnabled(FALSE);
-      _action->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
+      _edit->setEnabled(false);
+      _action->setEnabled(false);
+      _delete->setEnabled(false);
     }
   }
   else
   {
-    _edit->setEnabled(FALSE);
-    _action->setEnabled(FALSE);
-    _delete->setEnabled(FALSE);
-    _issueStock->setEnabled(FALSE);
-    _issueLineBalance->setEnabled(FALSE);
+    _edit->setEnabled(false);
+    _action->setEnabled(false);
+    _delete->setEnabled(false);
+    _issueStock->setEnabled(false);
+    _issueLineBalance->setEnabled(false);
   }
 }
 
@@ -1130,7 +1118,7 @@ void transferOrder::populate()
     if (to.first())
     {
       _orderNumber->setText(to.value("tohead_number"));
-      _orderNumber->setEnabled(FALSE);
+      _orderNumber->setEnabled(false);
       _orderDate->setDate(to.value("tohead_orderdate").toDate(), true);
 
       if (to.value("tohead_status").toString() == "U")
@@ -1453,7 +1441,7 @@ void transferOrder::clear()
 
   _tabs->setCurrentIndex(0);
 
-  _orderNumber->setEnabled(TRUE);
+  _orderNumber->setEnabled(true);
   _orderNumberGen = 0;
   _orderNumber->clear();
 
@@ -1540,7 +1528,7 @@ void transferOrder::closeEvent(QCloseEvent *pEvent)
 void transferOrder::sHandleShipchrg(int pShipchrgid)
 {
   if (_mode == cView)
-    _freight->setEnabled(FALSE);
+    _freight->setEnabled(false);
   else
   {
     XSqlQuery query;
@@ -1552,10 +1540,10 @@ void transferOrder::sHandleShipchrg(int pShipchrgid)
     if (query.first())
     {
       if (query.value("shipchrg_custfreight").toBool())
-        _freight->setEnabled(TRUE);
+        _freight->setEnabled(true);
       else
       {
-        _freight->setEnabled(FALSE);
+        _freight->setEnabled(false);
         _freight->clear();
       }
     }
@@ -1593,7 +1581,7 @@ void transferOrder::sTaxDetail()
   params.append("order_type", "TO");
   params.append("mode", "view"); // because tohead has no fields to hold changes
 
-  taxBreakdown newdlg(this, "", TRUE);
+  taxBreakdown newdlg(this, "", true);
   if (newdlg.set(params) == NoError)
   {
     newdlg.exec();
@@ -1615,26 +1603,26 @@ void transferOrder::setViewMode()
   _mode = cView;
   setObjectName(QString("transferOrder view %1").arg(_toheadid));
 
-  _orderNumber->setEnabled(FALSE);
-  _status->setEnabled(FALSE);
-  _packDate->setEnabled(FALSE);
-  _srcWhs->setEnabled(FALSE);
-  _dstWhs->setEnabled(FALSE);
-  _trnsWhs->setEnabled(FALSE);
-  _agent->setEnabled(FALSE);
-  _taxzone->setEnabled(FALSE);
-  _shipVia->setEnabled(FALSE);
-  _shippingForm->setEnabled(FALSE);
-  _freight->setEnabled(FALSE);
-  _orderComments->setEnabled(FALSE);
-  _shippingComments->setEnabled(FALSE);
-  _qeitemView->setEnabled(FALSE);
-  _qesave->setEnabled(FALSE);
-  _qedelete->setEnabled(FALSE);
-  _qecurrency->setEnabled(FALSE);
-  _freightCurrency->setEnabled(FALSE);
-  _srcContact->setEnabled(FALSE);
-  _dstContact->setEnabled(FALSE);
+  _orderNumber->setEnabled(false);
+  _status->setEnabled(false);
+  _packDate->setEnabled(false);
+  _srcWhs->setEnabled(false);
+  _dstWhs->setEnabled(false);
+  _trnsWhs->setEnabled(false);
+  _agent->setEnabled(false);
+  _taxzone->setEnabled(false);
+  _shipVia->setEnabled(false);
+  _shippingForm->setEnabled(false);
+  _freight->setEnabled(false);
+  _orderComments->setEnabled(false);
+  _shippingComments->setEnabled(false);
+  _qeitemView->setEnabled(false);
+  _qesave->setEnabled(false);
+  _qedelete->setEnabled(false);
+  _qecurrency->setEnabled(false);
+  _freightCurrency->setEnabled(false);
+  _srcContact->setEnabled(false);
+  _dstContact->setEnabled(false);
 
   _edit->setText(tr("View"));
   _comments->setReadOnly(true);
@@ -1656,7 +1644,7 @@ void transferOrder::setViewMode()
 
 void transferOrder::keyPressEvent( QKeyEvent * e )
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   if(e->key() == Qt::Key_N && (e->modifiers() & Qt::ControlModifier))
   {
     _new->animateClick();
@@ -1820,7 +1808,7 @@ void transferOrder::sReturnStock()
 
 void transferOrder::sIssueStock()
 {
-  bool update  = FALSE;
+  bool update  = false;
   QList<XTreeWidgetItem*> selected = _toitem->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
@@ -1834,10 +1822,10 @@ void transferOrder::sIssueStock()
       if(_requireInventory->isChecked())
         params.append("requireInventory");
 
-      issueLineToShipping newdlg(this, "", TRUE);
+      issueLineToShipping newdlg(this, "", true);
       newdlg.set(params);
       if (newdlg.exec() != XDialog::Rejected)
-        update = TRUE;
+        update = true;
     }
   }
 

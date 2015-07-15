@@ -22,7 +22,7 @@ class location : public XDialog, public Ui::location
     Q_OBJECT
 
 public:
-    location(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    location(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~location();
 
     virtual void populate();

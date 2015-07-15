@@ -17,14 +17,14 @@
 GraphicsTextButtonItem::GraphicsTextButtonItem(QGraphicsItem * parent)
   : QGraphicsSimpleTextItem(parent)
 {
-  setAcceptsHoverEvents(true);
+  setAcceptHoverEvents(true);
   _receiver = 0;
 }
 
 GraphicsTextButtonItem::GraphicsTextButtonItem(const QString & text, QGraphicsItem * parent)
   : QGraphicsSimpleTextItem(text, parent)
 {
-  setAcceptsHoverEvents(true);
+  setAcceptHoverEvents(true);
   _receiver = 0;
 }
 

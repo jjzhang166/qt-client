@@ -20,7 +20,7 @@ class itemSources : public display
     Q_INVOKABLE virtual bool setParams(ParameterList &);
 
 public:
-    itemSources(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    itemSources(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual void sPopulateMenu(QMenu * menuThis, QTreeWidgetItem*, int);

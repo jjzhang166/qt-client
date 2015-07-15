@@ -19,7 +19,7 @@
 #include "currdisplay.h"
 #include "mqlutil.h"
 
-dspTaxHistory::dspTaxHistory(QWidget* parent, const char* name, Qt::WFlags fl)
+dspTaxHistory::dspTaxHistory(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

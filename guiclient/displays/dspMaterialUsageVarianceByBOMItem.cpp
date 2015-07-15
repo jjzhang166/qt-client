@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-dspMaterialUsageVarianceByBOMItem::dspMaterialUsageVarianceByBOMItem(QWidget* parent, const char* name, Qt::WFlags fl)
+dspMaterialUsageVarianceByBOMItem::dspMaterialUsageVarianceByBOMItem(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, "dspMaterialUsageVarianceByBOMItem", fl)
 {
   if (name)

@@ -681,55 +681,7 @@ to be bound by its terms.</comment>
       </attribute>
       <layout class="QHBoxLayout">
        <item>
-        <widget class="XTreeWidget" name="_charass">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout">
-         <item>
-          <widget class="QPushButton" name="_newCharass">
-           <property name="text">
-            <string>New</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_editCharass">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Edit</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_deleteCharass">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="CharacteristicsWidget" name="_charass"/>
        </item>
       </layout>
      </widget>
@@ -806,6 +758,11 @@ to be bound by its terms.</comment>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
+  <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
   <customwidget>
    <class>Comments</class>
    <extends>QWidget</extends>
@@ -904,9 +861,6 @@ to be bound by its terms.</comment>
   <tabstop>_perExt</tabstop>
   <tabstop>_notes</tabstop>
   <tabstop>_charass</tabstop>
-  <tabstop>_newCharass</tabstop>
-  <tabstop>_editCharass</tabstop>
-  <tabstop>_deleteCharass</tabstop>
   <tabstop>_groups</tabstop>
   <tabstop>_editGroup</tabstop>
   <tabstop>_viewGroup</tabstop>

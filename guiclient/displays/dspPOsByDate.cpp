@@ -15,7 +15,7 @@
 #include "guiclient.h"
 #include "purchaseOrder.h"
 
-dspPOsByDate::dspPOsByDate(QWidget* parent, const char*, Qt::WFlags fl)
+dspPOsByDate::dspPOsByDate(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPOsByDate", fl)
 {
   setupUi(optionsWidget());

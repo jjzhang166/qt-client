@@ -22,7 +22,7 @@ class closePurchaseOrder : public XDialog, public Ui::closePurchaseOrder
     Q_OBJECT
 
 public:
-    closePurchaseOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    closePurchaseOrder(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~closePurchaseOrder();
 
     virtual bool checkSitePrivs(int orderid);

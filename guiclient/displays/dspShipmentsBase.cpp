@@ -24,7 +24,7 @@
 #include "inputManager.h"
 #include "printShippingForm.h"
 
-dspShipmentsBase::dspShipmentsBase(QWidget* parent, const char* name, Qt::WFlags fl)
+dspShipmentsBase::dspShipmentsBase(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, name, fl)
 {
   setupUi(optionsWidget());
@@ -268,6 +268,13 @@ void dspShipmentsBase::sFillURL()
 
      url += _partial;
     }
+
+   //add USPS Tracking
+   if (shipvia.startsWith("USPS"))
+   {
+     url = QString("https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=")
+         + tracknum;
+   }
 
    if (shipvia.startsWith("R & L") || shipvia.startsWith("R&L"))
    {

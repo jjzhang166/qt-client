@@ -18,7 +18,7 @@
 #include "inputManager.h"
 #include "distributeInventory.h"
 
-issueWoMaterialItem::issueWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+issueWoMaterialItem::issueWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ issueWoMaterialItem::issueWoMaterialItem(QWidget* parent, const char* name, bool
   connect(_qtyToIssue, SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQOH()));
   connect(_issue, SIGNAL(clicked()), this, SLOT(sIssue()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
 
@@ -67,7 +67,7 @@ enum SetResponse issueWoMaterialItem::set(const ParameterList &pParams)
   param = pParams.value("wo_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _wo->setId(param.toInt());
     _wo->setEnabled(false);
@@ -174,7 +174,7 @@ void issueWoMaterialItem::sIssue()
   rollback.prepare("ROLLBACK;");
 
   issueIssue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-  issueIssue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, TRUE, :date) AS result;");
+  issueIssue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, true, :date) AS result;");
   issueIssue.bindValue(":womatl_id", _womatl->id());
   issueIssue.bindValue(":qty", _qtyToIssue->toDouble());
   issueIssue.bindValue(":date",  _transDate->date());

@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QValidator>
 
-configureMS::configureMS(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureMS::configureMS(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureMS;

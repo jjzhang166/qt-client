@@ -16,7 +16,6 @@
 #include <metasql.h>
 #include <mqlutil.h>
 
-#include "characteristicAssignment.h"
 #include "contactcluster.h"
 #include "crmaccount.h"
 #include "customer.h"
@@ -200,7 +199,7 @@ class contactPrivate
     };
 };
 
-contact::contact(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+contact::contact(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -214,11 +213,8 @@ contact::contact(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_buttonBox,            SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_buttonBox,            SIGNAL(rejected()), this, SLOT(sClose()));
   connect(_crmAccount,           SIGNAL(newId(int)), _contact, SLOT(setSearchAcct(int)));
-  connect(_deleteCharacteristic, SIGNAL(clicked()), this, SLOT(sDeleteCharass()));
   connect(_detachUse,            SIGNAL(clicked()), this, SLOT(sDetachUse()));
-  connect(_editCharacteristic,   SIGNAL(clicked()), this, SLOT(sEditCharass()));
   connect(_editUse,              SIGNAL(clicked()), this, SLOT(sEditUse()));
-  connect(_newCharacteristic,    SIGNAL(clicked()), this, SLOT(sNewCharass()));
   connect(_showOrders,       SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_uses,               SIGNAL(valid(bool)), this, SLOT(sHandleValidUse(bool)));
   connect(_uses, SIGNAL(populateMenu(QMenu*, XTreeWidgetItem*)), this, SLOT(sPopulateUsesMenu(QMenu*)));
@@ -234,8 +230,7 @@ contact::contact(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(omfgThis,                SIGNAL(vendorsUpdated()), this, SLOT(sFillList()));
   connect(omfgThis,             SIGNAL(warehousesUpdated()), this, SLOT(sFillList()));
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name");
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value");
+  _charass->setType("CNTCT");
 
   _uses->addColumn(tr("Used by"),         100, Qt::AlignLeft, true, "type");
   _uses->addColumn(tr("Number"), _orderColumn, Qt::AlignLeft, true, "number");
@@ -279,6 +274,7 @@ enum SetResponse contact::set(const ParameterList &pParams)
     _contact->setId(param.toInt());
     _comments->setId(_contact->id());
     _documents->setId(_contact->id());
+    _charass->setId(_contact->id());
     sPopulate();
   }
 
@@ -340,17 +336,13 @@ enum SetResponse contact::set(const ParameterList &pParams)
       }
       _comments->setId(_contact->id());
       _documents->setId(_contact->id());
+      _charass->setId(_contact->id());
       _contact->setFirst("");
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
       _contact->setOwnerUsername(omfgThis->username());
     }
     else if (param.toString() == "edit")
     {
       _data->_mode = cEdit;
-
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
     }
     else if (param.toString() == "view")
     {
@@ -358,14 +350,11 @@ enum SetResponse contact::set(const ParameterList &pParams)
 
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
 
-      _contact->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _contact->setEnabled(false);
+      _notes->setEnabled(false);
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
-      _newCharacteristic->setEnabled(FALSE);
-      _editCharacteristic->setEnabled(FALSE);
-      _deleteCharacteristic->setEnabled(FALSE);
-      _charass->setEnabled(FALSE);
+      _charass->setReadOnly(true);
     }
   }
 
@@ -598,65 +587,9 @@ void contact::sPopulate()
   sFillList();
 }
 
-void contact::sNewCharass()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("cntct_id", _contact->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void contact::sEditCharass()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void contact::sDeleteCharass()
-{
-  XSqlQuery delq;
-  delq.prepare("DELETE FROM charass WHERE (charass_id=:charass_id);");
-  delq.bindValue(":charass_id", _charass->id());
-  delq.exec();
-  if (ErrorReporter::error(QtCriticalMsg, this, tr("Deleting Characteristic"),
-                          delq, __FILE__, __LINE__))
-    return;
-
-  sFillList();
-}
-
 void contact::sFillList()
 {
-  XSqlQuery charq;
-  charq.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value "
-             "FROM charass, char "
-             "WHERE ((charass_target_type='CNTCT')"
-             " AND   (charass_char_id=char_id)"
-             " AND   (charass_target_id=:cntct_id) ) "
-             "ORDER BY char_order, char_name;" );
-  charq.bindValue(":cntct_id", _contact->id());
-  charq.exec();
-  _charass->populate(charq);
-  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Characteristics"),
-                           charq, __FILE__, __LINE__))
-    return;
+  _charass->setId(_contact->id());
 
   QString errmsg;
   bool    ok = false;

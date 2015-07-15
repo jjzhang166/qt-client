@@ -26,7 +26,7 @@
 #include <tarfile.h>
 #include <xtHelp.h>
 
-dictionaries::dictionaries(QWidget* parent, const char* name, Qt::WFlags fl)
+dictionaries::dictionaries(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -66,10 +66,17 @@ void dictionaries::finished(QNetworkReply * nwrep)
       QByteArray ba = nwrep->readAll();
       if(!ba.isEmpty())
       {
+        #if QT_VERSION >= 0x050000
+        QDir dir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+        if(!dir.exists())
+          dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/spell." + langext + ".tar.gz");
+        #else
         QDir dir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
         if(!dir.exists())
-          dir.mkpath(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+           dir.mkpath(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
         QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/spell." + langext + ".tar.gz");
+        #endif
         if(file.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
           file.write(ba);
@@ -86,7 +93,11 @@ void dictionaries::finished(QNetworkReply * nwrep)
               {
                 i.next();
                 //cout << i.key() << ": " << i.value() << endl;
+                #if QT_VERSION >= 0x050000
+                QFile ff(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/" + i.key());
+                #else
                 QFile ff(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + i.key());
+                #endif
                 if(ff.open(QIODevice::WriteOnly | QIODevice::Truncate))
                 {
                   ff.write(i.value());

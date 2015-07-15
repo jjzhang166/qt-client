@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-subAccntType::subAccntType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+subAccntType::subAccntType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,9 +61,9 @@ enum SetResponse subAccntType::set( const ParameterList & pParams )
     {
       _mode = cView;
 
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _type->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _type->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -182,7 +182,7 @@ void subAccntType::sCheck()
       _mode = cEdit;
       populate();
 
-//      _code->setEnabled(FALSE);
+//      _code->setEnabled(false);
     }
   }
 }

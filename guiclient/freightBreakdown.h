@@ -21,7 +21,7 @@ class freightBreakdown : public XDialog, public Ui::freightBreakdown
   Q_OBJECT
 
   public:
-    freightBreakdown(QWidget* = 0, const char* = 0, bool = 0, Qt::WFlags = 0);
+    freightBreakdown(QWidget* = 0, const char* = 0, bool = 0, Qt::WindowFlags = 0);
     ~freightBreakdown();
 
   public slots:

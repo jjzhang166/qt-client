@@ -22,7 +22,7 @@
 
 #define DEBUG false
 
-// TODO: XDialog should have a default implementation that returns FALSE
+// TODO: XDialog should have a default implementation that returns false
 bool package::userHasPriv(const int pMode)
 {
   bool retval = false;
@@ -74,7 +74,7 @@ void package::setVisible(bool visible)
     XDialog::setVisible(true);
 }
 
-package::package(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+package::package(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

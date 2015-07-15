@@ -22,7 +22,7 @@ class arOpenItem : public XDialog, public Ui::arOpenItem
     Q_OBJECT
 
 public:
-    arOpenItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    arOpenItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~arOpenItem();
 
     virtual void populate();

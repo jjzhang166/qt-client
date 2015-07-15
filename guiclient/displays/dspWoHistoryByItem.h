@@ -20,7 +20,7 @@ class dspWoHistoryByItem : public display, public Ui::dspWoHistoryByItem
     Q_OBJECT
 
 public:
-    dspWoHistoryByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspWoHistoryByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

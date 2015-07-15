@@ -85,7 +85,7 @@ QuoteLineEdit::QuoteLineEdit(QWidget* pParent, const char* pName) :
                      "FROM quhead"
                      "     LEFT OUTER JOIN custinfo ON (quhead_cust_id=cust_id)"
                      "     LEFT OUTER JOIN prospect ON (quhead_cust_id=prospect_id) "
-                     "WHERE TRUE ");
+                     "WHERE true ");
     _recip_id = 0;
     _recip_type = QString::null;
 }

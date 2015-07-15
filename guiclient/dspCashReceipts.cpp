@@ -21,7 +21,7 @@
 #include "cashReceipt.h"
 #include "storedProcErrorLookup.h"
 
-dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WFlags fl)
+dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspCashReceipts", fl)
 {
   setupUi(optionsWidget());
@@ -58,9 +58,9 @@ dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WFlags fl)
 
   connect(_applications, SIGNAL(toggled(bool)), list(), SLOT(clear()));
 
-  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
   _dates->setStartDate(QDate().currentDate().addDays(-90));
-  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
   
   list()->addColumn(tr("Number"),      _orderColumn,    Qt::AlignLeft, true,  "cashrcpt_number" );
   list()->addColumn(tr("Source"),      _itemColumn,     Qt::AlignLeft,   true,  "source" );
@@ -210,7 +210,7 @@ void dspCashReceipts::sEditAropen()
   ParameterList params;
   params.append("mode", "edit");
   params.append("aropen_id", list()->currentItem()->id("target"));
-  arOpenItem newdlg(this, "", TRUE);
+  arOpenItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -222,7 +222,7 @@ void dspCashReceipts::sViewAropen()
   ParameterList params;
   params.append("mode", "view");
   params.append("aropen_id", list()->currentItem()->id("target"));
-  arOpenItem newdlg(this, "", TRUE);
+  arOpenItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -305,7 +305,7 @@ void dspCashReceipts::sPostCashrcpt()
   }
     
   tx.exec("COMMIT;");
-  omfgThis->sCashReceiptsUpdated(list()->currentItem()->id("source"), TRUE);
+  omfgThis->sCashReceiptsUpdated(list()->currentItem()->id("source"), true);
   sFillList();
 }
 

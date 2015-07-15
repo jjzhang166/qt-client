@@ -21,7 +21,7 @@ class pricingScheduleAssignment : public XDialog, public Ui::pricingScheduleAssi
     Q_OBJECT
 
 public:
-    pricingScheduleAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    pricingScheduleAssignment(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~pricingScheduleAssignment();
 
     virtual SetResponse set( const ParameterList & pParams );

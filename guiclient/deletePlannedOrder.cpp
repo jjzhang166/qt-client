@@ -14,7 +14,7 @@
 
 #include "plCluster.h"
 
-deletePlannedOrder::deletePlannedOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+deletePlannedOrder::deletePlannedOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -22,7 +22,7 @@ deletePlannedOrder::deletePlannedOrder(QWidget* parent, const char* name, bool m
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_planord, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-  _captive = FALSE;
+  _captive = false;
 }
 
 deletePlannedOrder::~deletePlannedOrder()
@@ -38,7 +38,7 @@ void deletePlannedOrder::languageChange()
 enum SetResponse deletePlannedOrder::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -47,7 +47,7 @@ enum SetResponse deletePlannedOrder::set(const ParameterList &pParams)
   if (valid)
   {
     _planord->setId(param.toInt());
-    _planord->setReadOnly(TRUE);
+    _planord->setReadOnly(true);
   }
 
   return NoError;

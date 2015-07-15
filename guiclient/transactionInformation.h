@@ -21,7 +21,7 @@ class transactionInformation : public XDialog, public Ui::transactionInformation
     Q_OBJECT
 
 public:
-    transactionInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    transactionInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~transactionInformation();
 
 public slots:
@@ -32,8 +32,9 @@ protected slots:
     virtual void languageChange();
 
 private:
-    int _mode;
-    int _invhistid;
+    int  _mode;
+    int  _invhistid;
+    bool _analyzeInit;
 
 };
 

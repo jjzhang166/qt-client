@@ -19,7 +19,7 @@
 #include "guiclient.h"
 #include "mqlutil.h"
 
-configureCRM::configureCRM(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureCRM::configureCRM(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureCRM;

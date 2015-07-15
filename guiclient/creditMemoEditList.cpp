@@ -26,7 +26,7 @@
 #include "creditMemoItem.h"
 #include "mqlutil.h"
 
-creditMemoEditList::creditMemoEditList(QWidget* parent, const char* name, Qt::WFlags fl)
+creditMemoEditList::creditMemoEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -82,7 +82,7 @@ void creditMemoEditList::sEditCreditMemoItem()
   params.append("mode", "edit");
   params.append("cmitem_id", _cmhead->altId());
 
-  creditMemoItem newdlg(this, "", TRUE);
+  creditMemoItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

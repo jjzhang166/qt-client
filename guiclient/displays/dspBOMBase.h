@@ -22,7 +22,7 @@ class dspBOMBase : public display, public Ui::dspBOMBase
     Q_OBJECT
 
 public:
-    dspBOMBase(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspBOMBase(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &params);
 

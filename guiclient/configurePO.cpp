@@ -13,7 +13,7 @@
 #include <QValidator>
 #include <QVariant>
 
-configurePO::configurePO(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configurePO::configurePO(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
@@ -30,15 +30,15 @@ configurePO::configurePO(QWidget* parent, const char* name, bool /*modal*/, Qt::
   else
   {
     configq.prepare("SELECT pohead_id FROM pohead "
-                    "WHERE ( (pohead_dropship = 'TRUE') "
+                    "WHERE ( (pohead_dropship = 'true') "
                     "  AND (pohead_status = 'O') )");
     configq.exec();
     if (configq.first())
     {
-      _enableDropShip->setChecked(TRUE);
-      _enableDropShip->setEnabled(FALSE);
+      _enableDropShip->setChecked(true);
+      _enableDropShip->setEnabled(false);
       _billDropShip->setChecked(_metrics->boolean("BillDropShip"));
-      _billDropShip->setEnabled(FALSE);
+      _billDropShip->setEnabled(false);
 
     }
     else

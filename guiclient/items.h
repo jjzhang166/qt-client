@@ -19,7 +19,7 @@ class items : public display
     Q_OBJECT
 
 public:
-    items(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    items(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);

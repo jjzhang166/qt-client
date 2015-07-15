@@ -19,7 +19,7 @@
 
 #include "guiclient.h"
 
-printPurchaseOrdersByAgent::printPurchaseOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printPurchaseOrdersByAgent::printPurchaseOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,13 +33,13 @@ printPurchaseOrdersByAgent::printPurchaseOrdersByAgent(QWidget* parent, const ch
 
   if (_metrics->value("POInternal").toInt() > 0)
   {
-    _internalCopy->setChecked(TRUE);
+    _internalCopy->setChecked(true);
     _numOfCopies->setValue(_metrics->value("POInternal").toInt());
   }
   else
   {
-    _internalCopy->setChecked(FALSE);
-    _numOfCopies->setEnabled(FALSE);
+    _internalCopy->setChecked(false);
+    _numOfCopies->setEnabled(false);
   }
 }
 
@@ -71,7 +71,7 @@ void printPurchaseOrdersByAgent::sPrint()
   if (pohead.first())
   {
     QPrinter  *printer = new QPrinter(QPrinter::HighResolution);
-    bool      setupPrinter = TRUE;
+    bool      setupPrinter = true;
 
     bool userCanceled = false;
     if (orReport::beginMultiPrint(printer, userCanceled) == false)
@@ -91,7 +91,7 @@ void printPurchaseOrdersByAgent::sPrint()
 
         orReport report("PurchaseOrder", params);
         if (report.isValid() && report.print(printer, setupPrinter))
-	  setupPrinter = FALSE;
+	  setupPrinter = false;
 	else
 	{
           report.reportError(this);
@@ -110,7 +110,7 @@ void printPurchaseOrdersByAgent::sPrint()
 
           orReport report("PurchaseOrder", params);
           if (report.isValid() && report.print(printer, setupPrinter))
-	    setupPrinter = FALSE;
+	    setupPrinter = false;
 	  else
 	  {
             report.reportError(this);

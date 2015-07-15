@@ -15,7 +15,7 @@
 
 #include <openreports.h>
 
-postVouchers::postVouchers(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postVouchers::postVouchers(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -48,7 +48,7 @@ void postVouchers::sPost()
     return;
   }
 
-  postPost.prepare("SELECT postVouchers(FALSE) AS result;");
+  postPost.prepare("SELECT postVouchers(false) AS result;");
   postPost.exec();
   if (postPost.first())
   {

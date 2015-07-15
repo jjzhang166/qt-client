@@ -175,10 +175,10 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     XTreeWidget(QWidget *);
     ~XTreeWidget();
 
-    Q_INVOKABLE void  populate(XSqlQuery, bool = FALSE, PopulateStyle = Replace);
-    Q_INVOKABLE void  populate(XSqlQuery, int, bool = FALSE, PopulateStyle = Replace);
-    void    populate(const QString&, bool = FALSE);
-    void    populate(const QString&, int, bool = FALSE);
+    Q_INVOKABLE void  populate(XSqlQuery, bool = false, PopulateStyle = Replace);
+    Q_INVOKABLE void  populate(XSqlQuery, int, bool = false, PopulateStyle = Replace);
+    void    populate(const QString&, bool = false);
+    void    populate(const QString&, int, bool = false);
 
     QString dragString() const;
     void    setDragString(QString);

@@ -21,7 +21,7 @@ class databaseInformation : public XAbstractConfigure, public Ui::databaseInform
   Q_OBJECT
 
   public:
-    databaseInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    databaseInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~databaseInformation();
 
   protected slots:

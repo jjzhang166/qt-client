@@ -22,7 +22,7 @@
 #include "dspGLSeries.h"
 #include "errorReporter.h"
 
-dspVendorAPHistory::dspVendorAPHistory(QWidget* parent, const char*, Qt::WFlags fl)
+dspVendorAPHistory::dspVendorAPHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspVendorAPHistory", fl)
 {
   setupUi(optionsWidget());

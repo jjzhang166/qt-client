@@ -39,7 +39,7 @@ void setupQPrinterProto(QScriptEngine *engine)
   // enum QPrinter::OutputFormat
   constructor.setProperty("NativeFormat",    QScriptValue(engine, QPrinter::NativeFormat),    QScriptValue::ReadOnly | QScriptValue::Undeletable);
   constructor.setProperty("PdfFormat",       QScriptValue(engine, QPrinter::PdfFormat),       QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  constructor.setProperty("PostScriptFormat",QScriptValue(engine, QPrinter::PostScriptFormat),QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  //constructor.setProperty("PostScriptFormat",QScriptValue(engine, QPrinter::PostScriptFormat),QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   // enum QPrinter::PageOrder
   constructor.setProperty("FirstPageFirst",QScriptValue(engine, QPrinter::FirstPageFirst),QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -296,7 +296,7 @@ int QPrinterProto::numColors() const
 {
   QPrinter *item = qscriptvalue_cast<QPrinter*>(thisObject());
   if (item)
-    return item->numColors();
+    return item->colorCount();
   return 0;
 }
 
@@ -460,7 +460,7 @@ QString QPrinterProto::printerName() const
   return QString();
 }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 QString QPrinterProto::printerSelectionOption() const
 {
   QPrinter *item = qscriptvalue_cast<QPrinter*>(thisObject());
@@ -642,7 +642,7 @@ void QPrinterProto::setPrinterName(const QString & name)
     item->setPrinterName(name);
 }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 void QPrinterProto::setPrinterSelectionOption(const QString & option)
 {
   QPrinter *item = qscriptvalue_cast<QPrinter*>(thisObject());
@@ -658,7 +658,7 @@ void QPrinterProto::setResolution(int dpi)
     item->setResolution(dpi);
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void QPrinterProto::setWinPageSize(int pageSize)
 {
   QPrinter *item = qscriptvalue_cast<QPrinter*>(thisObject());
@@ -707,7 +707,7 @@ int QPrinterProto::widthMM() const
   return 0;
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 int QPrinterProto::winPageSize() const
 {
   QPrinter *item = qscriptvalue_cast<QPrinter*>(thisObject());

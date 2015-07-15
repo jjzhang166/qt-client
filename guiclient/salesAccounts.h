@@ -19,7 +19,7 @@ class salesAccounts : public XWidget, public Ui::salesAccounts
     Q_OBJECT
 
 public:
-    salesAccounts(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    salesAccounts(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~salesAccounts();
 
 public slots:

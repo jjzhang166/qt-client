@@ -61,7 +61,7 @@ class printSinglecopyDocumentPrivate : public Ui::printSinglecopyDocument
 printSinglecopyDocument::printSinglecopyDocument(QWidget    *parent,
                                                const char *name,
                                                bool        modal,
-                                               Qt::WFlags  fl)
+                                               Qt::WindowFlags  fl)
   : XDialog(parent, name, modal, fl)
 {
   _data = new printSinglecopyDocumentPrivate(this);
@@ -116,7 +116,7 @@ enum SetResponse printSinglecopyDocument::set(const ParameterList &pParams)
 
   if (pParams.inList("persistentPrint"))
   {
-    _data->_alert = FALSE;
+    _data->_alert = false;
 
     if (isSetup())
     {

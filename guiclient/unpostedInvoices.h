@@ -20,7 +20,7 @@ class unpostedInvoices : public display, public Ui::unpostedInvoices
     Q_OBJECT
 
 public:
-    unpostedInvoices(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    unpostedInvoices(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     virtual bool checkSitePrivs(int invcid);
 
 public slots:

@@ -392,45 +392,9 @@ const struct {
                               "a Credit Card and the card has already been "
                               "charged."),                              0, "" },
   { "deleteCharacteristic",
-			-1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Items assigned to "
-			       "it. You must remove these assignments before "
-			       "you may delete the selected Characteristic."),
-			       					 0, "" },
-  { "deleteCharacteristic",
-			-2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Customers assigned to "
-			       "it. You must remove these assignments before "
-			       "you may delete the selected Characteristic."),
-			       					 0, "" },
-  { "deleteCharacteristic",
-			-3, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Addresses assigned to "
-			       "it. You must remove these assignments before "
-			       "you may delete the selected Characteristic."),
-			       					 0, "" },
-  { "deleteCharacteristic",
-			-4, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Contacts assigned to "
-			       "it. You must remove these assignments before "
-			       "you may delete the selected Characteristic."),
-			       					 0, "" },
-  { "deleteCharacteristic",
-			-5, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Accounts assigned to "
-			       "it. You must remove these assignments before "
-			       "you may delete the selected Characteristic."),
-			       					 0, "" },
-  { "deleteCharacteristic",
-                      -6, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-                             "because there are Incidents assigned to "
-                             "it. You must remove these assignments before "
-                             "you may delete the selected Characteristic."),
-                                                               0, "" },
-  { "deleteCharacteristic",
-			-7, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
-			       "because there are Employees assigned to "
-			       "it. You must remove these assignments before "
+			-99, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Characteristic cannot be deleted "
+			       "because it has been assigned to other documents."
+			       "You must remove these assignments before "
 			       "you may delete the selected Characteristic."),
 			       					 0, "" },
 
@@ -1354,6 +1318,16 @@ const struct {
 			       "bill for less than the quantity shipped."),
 								0, "" },
 
+  { "selectPayment",	-1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Document cannot be approved because it "
+                                            "cannot be found or is the wrong document type."),
+    0, "" },
+  { "selectPayment",	-2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Document cannot be approved because the "
+                                            "balance is less than the amount plus discount."),
+    0, "" },
+  { "selectPayment",	-3, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Bank account company does not match "
+                                            "the voucher distribution account company."),
+    0, "" },
+  
   { "shipShipment",  -1, "",	 -1, "postInvTrans"		},
   { "shipShipment",  -3, "",	 -3, "insertGLTransaction"	},
   { "shipShipment",  -4, "",	 -4, "insertGLTransaction"	},

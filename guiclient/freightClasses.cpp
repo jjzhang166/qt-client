@@ -20,7 +20,7 @@
 #include "freightClass.h"
 #include "storedProcErrorLookup.h"
 
-freightClasses::freightClasses(QWidget* parent, const char* name, Qt::WFlags fl)
+freightClasses::freightClasses(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -42,8 +42,8 @@ freightClasses::freightClasses(QWidget* parent, const char* name, Qt::WFlags fl)
   {
     connect(_freightClass, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    _new->setEnabled(FALSE);
-    _deleteUnused->setEnabled(FALSE);
+    _new->setEnabled(false);
+    _deleteUnused->setEnabled(false);
   }
 
   _freightClass->addColumn(tr("Code"),           70, Qt::AlignLeft, true, "freightclass_code");
@@ -67,7 +67,7 @@ void freightClasses::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  freightClass newdlg(this, "", TRUE);
+  freightClass newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -81,7 +81,7 @@ void freightClasses::sEdit()
   params.append("mode", "edit");
   params.append("freightclass_id", _freightClass->id());
 
-  freightClass newdlg(this, "", TRUE);
+  freightClass newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -95,7 +95,7 @@ void freightClasses::sView()
   params.append("mode", "view");
   params.append("freightclass_id", _freightClass->id());
 
-  freightClass newdlg(this, "", TRUE);
+  freightClass newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

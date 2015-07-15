@@ -30,7 +30,7 @@
 #include "issueToShipping.h"
 #include "storedProcErrorLookup.h"
 
-maintainShipping::maintainShipping(QWidget* parent, const char* name, Qt::WFlags fl)
+maintainShipping::maintainShipping(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ maintainShipping::maintainShipping(QWidget* parent, const char* name, Qt::WFlags
   connect(_query, SIGNAL(clicked()), this, SLOT(sFillList()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
 
-  _ship->setRootIsDecorated(TRUE);
+  _ship->setRootIsDecorated(true);
 
   if (_metrics->boolean("EnableSOReservationsByLocation"))
   {
@@ -151,7 +151,7 @@ void maintainShipping::sShippingInformation()
   ParameterList params;
   params.append("shiphead_id", _ship->id());
   
-  shippingInformation newdlg(this, "", TRUE);
+  shippingInformation newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -163,7 +163,7 @@ void maintainShipping::sShipOrder()
   ParameterList params;
   params.append("shiphead_id", _ship->id());
   
-  shipOrder newdlg(this, "", TRUE);
+  shipOrder newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)

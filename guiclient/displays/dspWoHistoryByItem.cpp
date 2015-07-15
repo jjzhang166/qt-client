@@ -18,7 +18,7 @@
 #include "guiclient.h"
 #include "workOrder.h"
 
-dspWoHistoryByItem::dspWoHistoryByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspWoHistoryByItem::dspWoHistoryByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoHistoryByItem", fl)
 {
   setupUi(optionsWidget());

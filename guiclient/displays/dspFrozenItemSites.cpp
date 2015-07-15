@@ -16,7 +16,7 @@
 #include "errorReporter.h"
 #include "xtreewidget.h"
 
-dspFrozenItemSites::dspFrozenItemSites(QWidget* parent, const char*, Qt::WFlags fl)
+dspFrozenItemSites::dspFrozenItemSites(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspFrozenItemSites", fl)
 {
   setupUi(optionsWidget());

@@ -16,7 +16,7 @@
 
 #include "salesOrder.h"
 
-dspQuotesByItem::dspQuotesByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspQuotesByItem::dspQuotesByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspQuotesByItem", fl)
 {
   setupUi(optionsWidget());

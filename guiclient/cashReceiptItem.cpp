@@ -22,7 +22,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  true to construct a modal dialog.
  */
-cashReceiptItem::cashReceiptItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+cashReceiptItem::cashReceiptItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,7 +33,7 @@ cashReceiptItem::cashReceiptItem(QWidget* parent, const char* name, bool modal, 
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_discount, SIGNAL(clicked()),      this, SLOT(sDiscount()));
 
-  _cust->setReadOnly(TRUE);
+  _cust->setReadOnly(true);
   adjustSize();
 }
 
@@ -238,7 +238,7 @@ void cashReceiptItem::sDiscount()
   if(_discountAmount->localValue() != 0.0)
     params.append("amount", _discountAmount->localValue());
 
-  applyARDiscount newdlg(this, "", TRUE);
+  applyARDiscount newdlg(this, "", true);
   newdlg.set(params);
 
   if(newdlg.exec() != XDialog::Rejected)

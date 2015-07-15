@@ -22,7 +22,7 @@ class printOptions : public XDialog, public Ui::printOptions
     Q_OBJECT
 
 public:
-    printOptions(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printOptions(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printOptions();
 
 public slots:

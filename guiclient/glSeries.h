@@ -24,7 +24,7 @@ class glSeries : public XDialog, public Ui::glSeries
     Q_OBJECT
 
 public:
-    glSeries(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    glSeries(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~glSeries();
 
 public slots:

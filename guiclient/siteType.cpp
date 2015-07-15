@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-siteType::siteType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+siteType::siteType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -63,8 +63,8 @@ enum SetResponse siteType::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -92,7 +92,7 @@ void siteType::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }

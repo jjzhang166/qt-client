@@ -22,7 +22,7 @@ class woMaterialItem : public XDialog, public Ui::woMaterialItem
     Q_OBJECT
 
 public:
-    woMaterialItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    woMaterialItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~woMaterialItem();
 
 public slots:

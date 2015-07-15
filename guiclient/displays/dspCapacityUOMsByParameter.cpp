@@ -16,7 +16,7 @@
 
 #include "item.h"
 
-dspCapacityUOMsByParameter::dspCapacityUOMsByParameter(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCapacityUOMsByParameter::dspCapacityUOMsByParameter(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, name, fl)
 {
   setupUi(optionsWidget());

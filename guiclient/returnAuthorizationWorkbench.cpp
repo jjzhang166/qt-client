@@ -26,7 +26,7 @@
 #include "returnAuthCheck.h"
 #include "storedProcErrorLookup.h"
 
-returnAuthorizationWorkbench::returnAuthorizationWorkbench(QWidget* parent, const char* name, Qt::WFlags fl)
+returnAuthorizationWorkbench::returnAuthorizationWorkbench(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -270,7 +270,7 @@ void returnAuthorizationWorkbench::sProcess()
 		if (_post)
 		  params.append("posted");
 
-		printCreditMemo newdlg(this, "", TRUE);
+		printCreditMemo newdlg(this, "", true);
 		newdlg.set(params);
 		newdlg.exec();
 	  }
@@ -279,7 +279,7 @@ void returnAuthorizationWorkbench::sProcess()
         ParameterList params;
         params.append("cmhead_id", cmheadid);
 
-        returnAuthCheck newdlg(this, "", TRUE);
+        returnAuthCheck newdlg(this, "", true);
         newdlg.set(params);
         if (newdlg.exec() != XDialog::Rejected)
           sFillListDue();
@@ -463,7 +463,7 @@ void returnAuthorizationWorkbench::sFillListDue()
     setParams(params);
 
     XSqlQuery radue = mql.toQuery(params);
-    _radue->populate(radue,TRUE);
+    _radue->populate(radue,true);
     if (radue.lastError().type() != QSqlError::NoError)
     {
       systemError(this, radue.lastError().databaseText(), __FILE__, __LINE__);

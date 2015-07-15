@@ -30,7 +30,7 @@ class menuSystem : public QObject
     const char*		slot;
     QMenu*		menu;
     QString		priv;
-    QPixmap		pixmap;
+    QPixmap*		pixmap;
     QToolBar*		toolBar;
     bool		visible;
   };
@@ -76,14 +76,10 @@ class menuSystem : public QObject
     void sReferenceGuide();
 
     void sCommunityHome();
-    void sCommunityEditAccount();
+    void sCommunityxTupleU();
     void sCommunityForums();
-    void sCommunityBlogs();
     void sCommunityIssues();
-    void sCommunityWiki();
-    void sCommunityDownloads();
-    void sCommunitySupport();
-    void sCommunityTranslation();
+    void sCommunityBlogs();
     void sCommunityXchange();
 
 

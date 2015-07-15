@@ -22,7 +22,7 @@ class expenseCategory : public XDialog, public Ui::expenseCategory
     Q_OBJECT
 
 public:
-    expenseCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    expenseCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~expenseCategory();
 
 public slots:

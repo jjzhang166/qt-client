@@ -21,7 +21,7 @@ class voucherMiscDistrib : public XDialog, public Ui::voucherMiscDistrib
     Q_OBJECT
 
 public:
-    voucherMiscDistrib(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    voucherMiscDistrib(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~voucherMiscDistrib();
 
 public slots:

@@ -18,7 +18,7 @@
 #include "transferOrder.h"
 #include "workOrder.h"
 
-dspAllocations::dspAllocations(QWidget* parent, const char*, Qt::WFlags fl)
+dspAllocations::dspAllocations(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAllocations", fl)
 {
   setupUi(optionsWidget());

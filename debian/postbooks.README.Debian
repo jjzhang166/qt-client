@@ -1,0 +1,118 @@
+
+=== IMPORTANT INFORMATION ABOUT POSTGRESQL VERSION SUPPORT ===
+
+PostBooks versions 4.0.x and 4.1.x are NOT supported with
+PostgreSQL v9.3 and later.  Users trying to connect to a recent
+version of PostgreSQL will typically see an error like this:
+
+  ERROR:  column "procpid" does not exist
+
+The Debian package maintainers have tested with the PostgreSQL 9.1
+server from Debian 7 (wheezy).  http://bugs.debian.org/724305
+
+xTuple maintain a compatibility matrix on their web site:
+
+  http://www.xtuple.org/compatibility-matrix
+
+=== IMPORTANT INFORMATION ABOUT DATABASE UPGRADES ===
+
+PostBooks is a client/server solution, however, there is no actual
+PostBooks server.  PostgreSQL is used as the server.
+
+The PostBooks client code (Debian package "postbooks") can be used to
+connect to a PostgreSQL instance on the same machine or on a network.
+Consequently,
+
+- The postgresql package and the database schema are not automatically
+  installed with the GUI package
+
+- Upgrading the client GUI package does not upgrade the database.  It is
+  the administrator's responsibility to manage the database upgrade.
+  There is another package, "postbooks-updater", that allows the
+  administrator to manage the database schema and apply updates
+  from any PC with access to the database.
+
+The database schema includes information about the schema version.
+The client GUI checks the database version when you connect and will warn
+if there is a mismatch.  Using a mismatched client with a different
+database version is strongly discouraged and risks data corruption.
+
+On the host where you want to run the PostgreSQL server, please
+try installing one of the postbooks-schema packages, for example:
+
+  # apt-get install postbooks-schema-quickstart \
+       postgresql postgresql-contrib
+
+to automatically install PostgreSQL itself, the required modules,
+database and schema creation.
+
+When you want to upgrade the database (for example, when upgrading
+from the 4.1 client to the 4.2 client), install the postbooks-updater
+package and look in /usr/share/doc/postbooks-updater/ for details.
+
+=== QUICKSTART ===
+
+Use one of the postbooks-schema-* packages or download from
+the PostBooks web site, there are three to choose from:
+
+  postbooks-schema-empty
+   - empty database, no chart of accounts, just tables
+
+  postbooks-schema-quickstart
+   - quickstart database, basic chart of accounts
+
+  postbooks-schema-demo
+   - demo database, has some customers in it
+
+On the machine where you want to run the PostgreSQL server:
+
+  # apt-get install postgresql postgresql-contrib
+
+Now use the following script code at the shell on your
+PostgreSQL server machine:
+
+cat > /tmp/init.sql << EOF
+CREATE GROUP xtrole;
+CREATE USER admin WITH PASSWORD 'crm'
+                       CREATEDB CREATEUSER
+                       IN GROUP xtrole;
+EOF
+
+su - postgres
+psql -U postgres -f /tmp/init.sql postgres
+createdb -U admin -W -h localhost pb_demo
+wget -O quickstart.backup http://<insert URL of database you want>
+pg_restore -U admin -W -h localhost -d pb_demo quickstart.backup -v
+
+where "quickstart.backup" should be replaced with the filename
+of the schema you want, for example, the packaged schema may
+be in a location like this:
+  /usr/share/postbooks-schema/postbooks_empty-4.0.2.backup
+
+If your GUI is not on the same host as the PostgreSQL server, you
+may have to edit /etc/postgresql/9.1/main/pg_hba.conf to
+add your host or IP range to the ACL, eg. add something like this:
+
+host  pb_demo    all   192.168.1.0/24   md5
+
+and then
+
+  service postgresql reload
+
+Finally, start the GUI with the command "postbooks" and login
+using your database credentials.
+
+=== PRODUCT NAME: xTuple OR PostBooks? ===
+
+Upstream seems to use the names "xTuple" and "PostBooks" interchangeably
+to refer to their product.
+
+The tarball is named xtuple and the git repository is xtuple/qt-client
+
+The name xTuple appears to be used in this way with several products
+from the same upstream, some of them distributed as commercially
+licensed non-free software.  The PostBooks name has been designated
+by upstream for the free version of the product.  Consequently,
+the Debian packaging refers to the source package and the binary
+using the name "postbooks".
+

@@ -21,7 +21,7 @@ class incidentCategory : public XDialog, public Ui::incidentCategory
     Q_OBJECT
 
 public:
-    incidentCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    incidentCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~incidentCategory();
 
 public slots:

@@ -13,14 +13,14 @@
 #include <QMessageBox>
 #include <QVariant>
 
-closePurchaseOrder::closePurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+closePurchaseOrder::closePurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_closePo, SIGNAL(clicked()), this, SLOT(sClosePo()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _po->addColumn(tr("Number"),      _orderColumn,   Qt::AlignRight,  true,  "pohead_number"  );
   _po->addColumn(tr("Vendor"),      -1,             Qt::AlignLeft,   true,  "vend_name"   );
@@ -44,7 +44,7 @@ void closePurchaseOrder::languageChange()
 enum SetResponse closePurchaseOrder::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;

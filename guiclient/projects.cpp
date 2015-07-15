@@ -20,7 +20,6 @@
 
 #include <parameter.h>
 
-#include "characteristic.h"
 #include "parameterwidget.h"
 #include "project.h"
 #include "task.h"
@@ -36,7 +35,7 @@
 
 #define DEBUG true
 
-projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
+projects::projects(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "projects", fl)
 {
   setupUi(optionsWidget());
@@ -69,7 +68,7 @@ projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
   if (!_privileges->check("MaintainAllProjects") && !_privileges->check("MaintainPersonalProjects"))
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
 
   _salesOrders->setChecked(false);
   _workOrders->setChecked(false);
@@ -115,7 +114,7 @@ projects::projects(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Completed Start Date"), "completedStartDate", ParameterWidget::Date, QDate::currentDate());
   parameterWidget()->append(tr("Completed End Date"), "completedEndDate", ParameterWidget::Date, QDate::currentDate());
 
-  setupCharacteristics(characteristic::Projects);
+  setupCharacteristics("J");
           
   _statuses << "None" << "C" << "P" << "O";
 
@@ -192,7 +191,7 @@ void projects::sBuildList()
     list()->addColumn(tr("Budget Exp."),   _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_budget");
     list()->addColumn(tr("Actual Exp."),   _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_actual");
     list()->addColumn(tr("Balance Exp."),  _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_balance");
-    setupCharacteristics(characteristic::Projects);
+    setupCharacteristics("J");
     _showHierarchy->setEnabled(false);
   }
 
@@ -204,7 +203,7 @@ void projects::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  project newdlg(this, "", TRUE);
+  project newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -371,7 +370,7 @@ void projects::sEdit()
     params.append("prj_id", list()->id());
     params.append("mode", "edit");
  
-    project newdlg(this, "", TRUE);
+    project newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Rejected)
       sFillList();
@@ -382,7 +381,7 @@ void projects::sEdit()
     params.append("mode", "edit");
     params.append("prjtask_id", list()->id());
 
-    task newdlg(this, "", TRUE);
+    task newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Rejected)
      sFillList();
@@ -485,7 +484,7 @@ void projects::sView()
     params.append("prj_id", list()->id());
     params.append("mode", "view");
  
-    project newdlg(this, "", TRUE);
+    project newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Rejected)
       sFillList();
@@ -495,7 +494,7 @@ void projects::sView()
     params.append("mode", "view");
     params.append("prjtask_id", list()->id());
 
-    task newdlg(this, "", TRUE);
+    task newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
@@ -658,7 +657,7 @@ void projects::sCopy()
   ParameterList params;
   params.append("prj_id", list()->id());
   
-  projectCopy newdlg(parentWidget(), "", TRUE);
+  projectCopy newdlg(parentWidget(), "", true);
   newdlg.set(params);
   newdlg.exec();
 

@@ -20,7 +20,7 @@ class assessFinanceCharges : public XWidget, public Ui::assessFinanceCharges
   Q_OBJECT
   
 public:
-  assessFinanceCharges(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+  assessFinanceCharges(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
   ~assessFinanceCharges();
   
 public slots:

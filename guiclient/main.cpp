@@ -97,7 +97,9 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QTranslator>
+#if QT_VERSION < 0x050000
 #include <QHttp>
+#endif
 #include <QUrl>
 
 #include <dbtools.h>
@@ -131,8 +133,11 @@ QString __password;
 
 #define DEBUG false
 
+#if QT_VERSION >= 0x050000
+extern void xTupleMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+#else
 extern void xTupleMessageOutput(QtMsgType type, const char *msg);
-
+#endif
 // helps determine which edition we're running & what splash screen to present
 struct editionDesc {
   editionDesc(QString ed, QString splash, bool check, QString query)
@@ -156,15 +161,18 @@ int main(int argc, char *argv[])
   QString username;
   QString databaseURL;
   QString passwd;
-  bool    haveUsername    = FALSE;
-  bool    haveDatabaseURL = FALSE;
-  bool    loggedIn        = FALSE;
+  bool    haveUsername    = false;
+  bool    haveDatabaseURL = false;
+  bool    loggedIn        = false;
   bool    haveEnhancedAuth= false;
   bool    _enhancedAuth   = false;
   bool    havePasswd      = false;
   bool    forceWelcomeStub= false;
-
+#if QT_VERSION >= 0x050000
+  qInstallMessageHandler(xTupleMessageOutput);
+#else
   qInstallMsgHandler(xTupleMessageOutput);
+#endif
   QApplication app(argc, argv);
   app.setOrganizationDomain("xTuple.com");
   app.setOrganizationName("xTuple");
@@ -178,7 +186,7 @@ int main(int argc, char *argv[])
   QCoreApplication::addLibraryPath(QString("."));
 #endif
 
-#ifndef Q_WS_MACX
+#ifndef Q_OS_MAC
   QApplication::setWindowIcon(QIcon(":/images/icon32x32.png"));
 #endif
 
@@ -192,23 +200,23 @@ int main(int argc, char *argv[])
 
       if (argument.contains("-databaseURL=", Qt::CaseInsensitive))
       {
-        haveDatabaseURL = TRUE;
+        haveDatabaseURL = true;
         databaseURL = argument.right(argument.length() - 13);
       }
       else if (argument.contains("-username=", Qt::CaseInsensitive))
       {
-        haveUsername = TRUE;
+        haveUsername = true;
         username = argument.right(argument.length() - 10);
       }
       else if (argument.contains("-passwd=", Qt::CaseInsensitive))
       {
-        havePasswd = TRUE;
+        havePasswd = true;
         passwd     = argument.right(argument.length() - 8);
       }
       else if (argument.contains("-noAuth", Qt::CaseInsensitive))
       {
-        haveUsername = TRUE;
-        havePasswd   = TRUE;
+        haveUsername = true;
+        havePasswd   = true;
       } 
       else if (argument.contains("-enhancedAuth", Qt::CaseInsensitive))
       {
@@ -246,7 +254,7 @@ int main(int argc, char *argv[])
   _splash = new QSplashScreen();
   _splash->setPixmap(QPixmap(":/images/splashEmpty.png"));
 
-  _evaluation = FALSE;
+  _evaluation = false;
 
   if (!loggedIn)
   {
@@ -254,6 +262,7 @@ int main(int argc, char *argv[])
     params.append("copyright", _Copyright);
     params.append("version",   _Version);
     params.append("build",     _Build.arg(__DATE__).arg(__TIME__));
+    params.append("applicationName", _ConnAppName);
     params.append("setSearchPath", true);
 
     if (haveUsername)
@@ -274,7 +283,7 @@ int main(int argc, char *argv[])
     if ( (haveDatabaseURL) && (haveUsername) && (havePasswd) )
       params.append("login");
 
-    login2 newdlg(0, "", TRUE);
+    login2 newdlg(0, "", true);
     newdlg.set(params, _splash);
 
     if(newdlg.result() != QDialog::Accepted)
@@ -289,6 +298,10 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+  _splash->showMessage(QObject::tr("Loading Database Metrics"), SplashTextAlignment, SplashTextColor);
+  qApp->processEvents();
+  _metrics = new Metrics();
 
   // TODO: can/should we compose the splash screen on the fly from parts?
   QList<editionDesc> edition;
@@ -324,65 +337,37 @@ int main(int argc, char *argv[])
   {
     _splash->showMessage(QObject::tr("Checking License Key"), SplashTextAlignment, SplashTextColor);
     qApp->processEvents();
-	
-	// PostgreSQL changed the column "procpid" to just "pid" in 9.2.0+ Incident #21852
-	XSqlQuery checkVersion(QString("select compareversion('9.2.0');"));
 
-    if(checkVersion.first())
-    {
-      if(checkVersion.value("compareversion").toInt() > 0)
-      {
-	   metric.exec("SELECT count(*) AS registered, (SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()) AS total"
-			"  FROM pg_stat_activity, pg_locks"
-			" WHERE((database=datid)"
-			"   AND (classid=datid)"
-			"   AND (objsubid=2)"
-			"   AND (procpid = pg_backend_pid()));");
-      }
-	  else
-	  {
-	   metric.exec("SELECT count(*) AS registered, (SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()) AS total"
-			"  FROM pg_stat_activity, pg_locks"
-			" WHERE((database=datid)"
-			"   AND (classid=datid)"
-			"   AND (objsubid=2)"
-			"   AND (pg_stat_activity.pid = pg_backend_pid()));");
-      }
-    }
-	
     int cnt = 50000;
     int tot = 50000;
+
+    metric.prepare("SELECT numOfDatabaseUsers(:appName) AS xt_client_count,"
+                   "       numOfServerUsers() as total_client_count;");
+    metric.bindValue(":appName", _ConnAppName);
+    metric.exec();
     if(metric.first())
+    {        
+      cnt = metric.value("xt_client_count").toInt();
+      tot = metric.value("total_client_count").toInt();
+    }
+    else
     {
-      cnt = metric.value("registered").toInt();
-      tot = metric.value("total").toInt();
+      ErrorReporter::error(QtCriticalMsg, 0, QObject::tr("Error Counting Users"),
+                           metric, __FILE__, __LINE__);
     }
     metric.exec("SELECT packageIsEnabled('drupaluserinfo') AS result;");
     bool xtweb = false;
     if(metric.first())
       xtweb = metric.value("result").toBool();
-    metric.exec("SELECT fetchMetricBool('ForceLicenseLimit') as metric_value;");
-    bool forceLimit = false;
+    bool forceLimit = _metrics->boolean("ForceLicenseLimit");
     bool forced = false;
-    if(metric.first())
-      forceLimit = metric.value("metric_value").toBool();
-    metric.exec("SELECT metric_value"
-                "  FROM metric"
-                " WHERE(metric_name = 'RegistrationKey');");
     bool checkPass = true;
     bool checkLock = false;
     bool expired   = false;
     QString checkPassReason;
-    QString rkey = "";
-    if(metric.first())
-      rkey = metric.value("metric_value").toString();
+    QString rkey = _metrics->value("RegistrationKey");
     XTupleProductKey pkey(rkey);
-    QString application;
-    metric.exec("SELECT fetchMetricText('Application') as app;");
-     if(metric.first())
-     {
-         application = metric.value("app").toString();
-     }
+    QString application = _metrics->value("Application");
     if(pkey.valid() && (pkey.version() == 1 || pkey.version() == 2 || pkey.version() == 3))
     {
       if(pkey.expiration() < QDate::currentDate())
@@ -399,7 +384,7 @@ int main(int argc, char *argv[])
             checkPassReason = QObject::tr("<p>Your xTuple license expired over 30 days ago, and this software will no longer function. Please contact xTuple immediately to reinstate your software.");
           }
           else
-            checkPassReason = QObject::tr("<p>Attention:  Your xTuple license has expired, and in %1 days this software will cease to function.  Please make arrangements for immediate payment").arg(30 - daysTo);
+            checkPassReason = QObject::tr("<p>Attention:  Your xTuple license has expired, and in %1 days this software will cease to function.  Please contact xTuple to arrange for license renewal.").arg(30 - daysTo);
         }
         else
           expired = true;
@@ -415,8 +400,13 @@ int main(int argc, char *argv[])
       }
       else if(pkey.users() != 0 && (pkey.users() < cnt || (!xtweb && (pkey.users() * 2 < tot))))
       {
+        if (pkey.users() < cnt) {
+            checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent xTuple users for your license.</p>");
+        } else {
+            checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent database connections for your license.</p>");
+        }
+
         checkPass = false;
-        checkPassReason = QObject::tr("<p>You have exceeded the number of allowed concurrent users for your license.");
         checkLock = forced = forceLimit;
       }
       else
@@ -439,7 +429,7 @@ int main(int argc, char *argv[])
       _splash->hide();
       if (expired)
       {
-        registrationKeyDialog newdlg(0, "", TRUE);
+        registrationKeyDialog newdlg(0, "", true);
         if(newdlg.exec() == -1)
         {
           QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
@@ -461,19 +451,16 @@ int main(int argc, char *argv[])
       if(forced)
         checkPassReason.append(" FORCED!");
 
-      metric.exec("SELECT current_database() AS db,"
-                  "       fetchMetricText('DatabaseName') AS dbname,"
-                  "       fetchMetricText('remitto_name') AS name;");
+      metric.exec("SELECT current_database() AS db;");
       QString db = "";
-      QString dbname = "";
-      QString name = "";
+      QString dbname = _metrics->value("DatabaseName");
+      QString name   = _metrics->value("remitto_name");
       if(metric.first())
       {
         db = metric.value("db").toString();
-        dbname = metric.value("dbname").toString();
-        name = metric.value("name").toString();
       }
 
+#if QT_VERSION < 0x050000  // below removed in qt5, needs to be ported
       QHttp *http = new QHttp();
       
       QUrl url;
@@ -489,7 +476,7 @@ int main(int argc, char *argv[])
 
       http->setHost("www.xtuple.org");
       http->get(url.toString());
-
+#endif
       if(forced)
         return 0;
 
@@ -497,58 +484,34 @@ int main(int argc, char *argv[])
     }
   }
 
-  bool disallowMismatch = false;
-  bool shouldCheckForUpdates = false;
-  metric.exec("SELECT metric_value"
-              " FROM metric"
-              " WHERE (metric_name = 'ServerVersion')");
-  if (!metric.first() || (metric.value("metric_value").toString() != _dbVersion)) {
-
+  QString _serverVersion = _metrics->value("ServerVersion");
+  if (_serverVersion != _dbVersion) {
+    bool shouldCheckForUpdates = _metrics->boolean("CheckForUpdates");
+    bool disallowMismatch      = _metrics->boolean("DisallowMismatchClientVersion");
     int result = 0;
-
-    metric.exec("SELECT metric_value FROM metric WHERE (metric_name = 'DisallowMismatchClientVersion')");
-    if (metric.first() && (metric.value("metric_value").toString() == "t")) {
-      disallowMismatch = true;
-    }
-
-    metric.exec("SELECT metric_value FROM metric WHERE (metric_name = 'CheckForUpdates')");
-    if (metric.first()) {
-		 shouldCheckForUpdates = (metric.value("metric_value").toString() == "t" ? true : false);
-	 }
-
-	if (shouldCheckForUpdates) {
-
+    if (shouldCheckForUpdates) {
       _splash->hide();
-
-      checkForUpdates newdlg(0,"", TRUE);
-
+      checkForUpdates newdlg(0,"", true);
       result = newdlg.exec();
       if (result == QDialog::Rejected) {
-          return 0;
-	  }
+        return 0;
+      }
     }
     else if (!shouldCheckForUpdates && disallowMismatch) {
       _splash->hide();
       result = QMessageBox::warning( 0, QObject::tr("Version Mismatch"),
-      QObject::tr("<p>The version of the database you are connecting to is "
-                  "not the version this client was designed to work against. "
-                  "This client was designed to work against the database "
-                  "version %1. The system has been configured to disallow "
-                  "access in this case.<p>Please contact your systems "
-                  "administrator.").arg(_Version),
+      QObject::tr("<p>The %1 client cannot connect to a %2 database. Please use a %3 client.").arg(_Version, _serverVersion, _serverVersion),
                   QMessageBox::Ok | QMessageBox::Escape | QMessageBox::Default );
       return 0;
     }
     else {
      _splash->hide();
      result = QMessageBox::warning( 0, QObject::tr("Version Mismatch"),
-     QObject::tr("<p>The version of the database you are connecting to is "
-                 "not the version this client was designed to work against. "
-                 "This client was designed to work against the database "
-                 "version %1. If you continue some or all functionality may "
+     QObject::tr("<p>This client was designed to work against database version %1 "
+                 "and your database is currently at version %2. If you continue some functionality may "
                  "not work properly or at all. You may also cause other "
                  "problems on the database.<p>Do you want to continue "
-                 "anyway?").arg(_Version), QMessageBox::Yes,
+                 "anyway?").arg(_Version, _serverVersion), QMessageBox::Yes,
                  QMessageBox::No | QMessageBox::Escape | QMessageBox::Default );
       if (result != QMessageBox::Yes) {
         return 0;
@@ -558,10 +521,6 @@ int main(int argc, char *argv[])
       }
     }
   }
-
-  _splash->showMessage(QObject::tr("Loading Database Metrics"), SplashTextAlignment, SplashTextColor);
-  qApp->processEvents();
-  _metrics = new Metrics();
 
   _splash->showMessage(QObject::tr("Loading User Preferences"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
@@ -621,11 +580,11 @@ int main(int argc, char *argv[])
       for (QStringList::Iterator fit = files.begin(); fit != files.end(); ++fit)
       {
         if (DEBUG)
-          qDebug("looking for %s", (*fit).toAscii().data());
+          qDebug("looking for %s", (*fit).toLatin1().data());
         if (translator->load(translationFile(langext, *fit)))
         {
           app.installTranslator(translator);
-          qDebug("installed %s", (*fit).toAscii().data());
+          qDebug("installed %s", (*fit).toLatin1().data());
           translator = new QTranslator(&app);
         }
         else
@@ -664,8 +623,8 @@ int main(int argc, char *argv[])
       QLocale::setDefault(QLocale::system());
 
     qDebug("Locale set to language %s and country %s",
-           QLocale().languageToString(QLocale().language()).toAscii().data(),
-           QLocale().countryToString(QLocale().country()).toAscii().data());
+           QLocale().languageToString(QLocale().language()).toLatin1().data(),
+           QLocale().countryToString(QLocale().country()).toLatin1().data());
 
   }
   else
@@ -682,11 +641,11 @@ int main(int argc, char *argv[])
   QString keyname;
   QString keytogether;
   
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   keypath = _metrics->value("CCWinEncKey");
-#elif defined Q_WS_MACX
+#elif defined Q_OS_MAC
   keypath = _metrics->value("CCMacEncKey");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   keypath = _metrics->value("CCLinEncKey");
 #endif
   
@@ -708,7 +667,7 @@ int main(int argc, char *argv[])
   
   keytogether = keypath + keyname;
   
-  // qDebug("keytogether: %s", keytogether.toAscii().data());
+  // qDebug("keytogether: %s", keytogether.toLatin1().data());
   QFile keyFile(keytogether);
 
   if(keyFile.exists())
@@ -793,7 +752,7 @@ int main(int argc, char *argv[])
   {
     if(baseCurrency.value("count").toInt() != 1)
     {
-      currenciesDialog newdlg(0, "", TRUE);
+      currenciesDialog newdlg(0, "", true);
       newdlg.exec();
       baseCurrency.exec();
       if(baseCurrency.first())
@@ -838,6 +797,33 @@ int main(int argc, char *argv[])
                     "Configure Modules | Configure G/L...' before posting any "
                     "transactions in the system.") );
   }
+
+//  Check for valid current Fiscal period
+  XSqlQuery periodCheck;
+  periodCheck.prepare("SELECT EXISTS(SELECT * FROM period "
+            "     WHERE ((current_date BETWEEN period_start AND period_end) "
+            "       AND (NOT period_closed))) AS result; ");
+  periodCheck.exec();
+  if(periodCheck.first() && periodCheck.value("result").toBool() != true)
+    QMessageBox::warning( omfgThis, QObject::tr("Additional Configuration Required"),
+      QObject::tr("<p>Your system does not have a valid or open Accounting period "
+                  "for the current date. "
+                  "You should define the Accounting periods in 'Accounting | "
+                  "Fiscal Calendar | Accounting Periods...' before posting any "
+                  "transactions in the system.") );
+
+//  Check for valid current exchange rates
+  XSqlQuery xrateCheck("SELECT curr_abbr"
+	          "  FROM curr_symbol s JOIN curr_rate r ON s.curr_id = r.curr_id"
+	          "  GROUP BY curr_abbr"
+	          "  HAVING NOT BOOL_OR(current_date BETWEEN curr_effective AND curr_expires);");
+  if (xrateCheck.first())
+    QMessageBox::warning( omfgThis, QObject::tr("Additional Configuration Required"),
+      QObject::tr("<p>Your system has alternate currencies without exchange rates "
+                  "entered for the current date. "
+                  "You should define the exchange rates for these currencies in 'System | "
+                  "Setup | Exchange Rates...' before posting any "
+                  "transactions in the system.") );
 
   app.exec();
 

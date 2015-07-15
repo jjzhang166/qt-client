@@ -21,7 +21,7 @@ class taxDetail : public XDialog, public Ui::taxDetail
     Q_OBJECT
 
 public:
-    taxDetail(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    taxDetail(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~taxDetail();
 
 	virtual int    taxtype()	const;

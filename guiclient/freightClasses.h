@@ -20,7 +20,7 @@ class freightClasses : public XWidget, public Ui::freightClasses
     Q_OBJECT
 
 public:
-    freightClasses(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    freightClasses(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~freightClasses();
 
 public slots:

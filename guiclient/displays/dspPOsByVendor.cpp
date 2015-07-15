@@ -13,7 +13,7 @@
 #include "guiclient.h"
 #include "purchaseOrder.h"
 
-dspPOsByVendor::dspPOsByVendor(QWidget* parent, const char*, Qt::WFlags fl)
+dspPOsByVendor::dspPOsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPOsByVendor", fl)
 {
   setupUi(optionsWidget());

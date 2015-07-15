@@ -17,7 +17,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-checkFormat::checkFormat(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+checkFormat::checkFormat(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -65,8 +65,8 @@ enum SetResponse checkFormat::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _report->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _report->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }

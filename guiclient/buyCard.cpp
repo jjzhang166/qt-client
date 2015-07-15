@@ -19,7 +19,7 @@
 
 #include "guiclient.h"
 
-buyCard::buyCard(QWidget* parent, const char* name, Qt::WFlags fl)
+buyCard::buyCard(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -32,7 +32,7 @@ buyCard::buyCard(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_vendor, SIGNAL(newId(int)), this, SLOT(sHandleVendor(int)));
   connect(_itemSource, SIGNAL(newID(int)), this, SLOT(sHandleItemSource(int)));
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
   _poitem->addColumn(tr("P/O #"),     _orderColumn,  Qt::AlignRight, true, "pohead_number");
   _poitem->addColumn(tr("Line"),      _whsColumn,    Qt::AlignCenter,true, "poitem_linenumber");
@@ -70,9 +70,9 @@ enum SetResponse buyCard::set(const ParameterList &pParams)
     vendid.exec();
     if (vendid.first())
     {      
-      _vendor->setReadOnly(TRUE);
-      _item->setReadOnly(TRUE);
-      _itemSource->setEnabled(FALSE);
+      _vendor->setReadOnly(true);
+      _item->setReadOnly(true);
+      _itemSource->setEnabled(false);
       
       _vendor->setId(vendid.value("itemsrc_vend_id").toInt());
       _itemSource->setId(param.toInt());

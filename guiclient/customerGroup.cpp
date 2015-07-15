@@ -17,7 +17,7 @@
 #include "crmacctcluster.h"
 #include "customerGroup.h"
 
-customerGroup::customerGroup(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customerGroup::customerGroup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -86,9 +86,9 @@ enum SetResponse customerGroup::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _new->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
 
@@ -116,7 +116,7 @@ void customerGroup::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
     else if (customerCheck.lastError().type() != QSqlError::NoError)
     {

@@ -17,7 +17,7 @@
 
 #include "dspInventoryHistory.h"
 
-dspIndentedWhereUsed::dspIndentedWhereUsed(QWidget* parent, const char*, Qt::WFlags fl)
+dspIndentedWhereUsed::dspIndentedWhereUsed(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspIndentedWhereUsed", fl)
 {
   setupUi(optionsWidget());
@@ -30,9 +30,9 @@ dspIndentedWhereUsed::dspIndentedWhereUsed(QWidget* parent, const char*, Qt::WFl
   _worksetid = 0;
 
   if (_metrics->boolean("AllowInactiveBomItems"))
-    _item->setType(ItemLineEdit::cGeneralComponents);
+    _item->setType(ItemLineEdit::cUsedOnBom);
   else
-    _item->setType(ItemLineEdit::cGeneralComponents | ItemLineEdit::cActive);
+    _item->setType(ItemLineEdit::cUsedOnBom | ItemLineEdit::cActive);
 
   list()->setRootIsDecorated(true);
   list()->addColumn(tr("Seq. #"),               80, Qt::AlignRight, true, "bomwork_seqnumber");

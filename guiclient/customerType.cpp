@@ -9,13 +9,12 @@
  */
 
 #include "customerType.h"
-#include "characteristicAssignment.h"
 
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 
-customerType::customerType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customerType::customerType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,14 +23,9 @@ customerType::customerType(QWidget* parent, const char* name, bool modal, Qt::WF
 
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(close()));
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
   connect(_code, SIGNAL(editingFinished()), this, SLOT(sCheck()));
   
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft,  true, "char_name");
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft,  true, "charass_value");
-  _charass->addColumn(tr("Default"),        _ynColumn,   Qt::AlignCenter,true, "charass_default");
+  _charass->setType("CT");
 }
 
 customerType::~customerType()
@@ -67,7 +61,10 @@ enum SetResponse customerType::set(const ParameterList &pParams)
       
       customeret.exec("SELECT NEXTVAL('custtype_custtype_id_seq') AS custtype_id;");
       if (customeret.first())
+      {
         _custtypeid = customeret.value("custtype_id").toInt();
+        _charass->setId(_custtypeid);
+      }
       else
       {
         systemError(this, tr("A System Error occurred at %1::%2.")
@@ -82,8 +79,9 @@ enum SetResponse customerType::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _charass->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -111,69 +109,8 @@ void customerType::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
-  }
-}
-
-void customerType::sNew()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("custtype_id", _custtypeid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void customerType::sEdit()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void customerType::sDelete()
-{
-  XSqlQuery customerDelete;
-  customerDelete.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  customerDelete.bindValue(":charass_id", _charass->id());
-  customerDelete.exec();
-  if (customerDelete.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, customerDelete.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-
-  sFillList();
-}
-
-void customerType::sFillList()
-{
-  XSqlQuery customerFillList;
-  customerFillList.prepare( "SELECT charass_id, char_name, charass_value, charass_default "
-             "FROM charass, char "
-             "WHERE ( (charass_target_type='CT')"
-             " AND (charass_char_id=char_id)"
-             " AND (charass_target_id=:custtype_id) ) "
-             "ORDER BY char_order, char_name;" );
-  customerFillList.bindValue(":custtype_id", _custtypeid);
-  customerFillList.exec();
-  _charass->populate(customerFillList);
-  if (customerFillList.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, customerFillList.lastError().databaseText(), __FILE__, __LINE__);
-    return;
   }
 }
 
@@ -245,11 +182,11 @@ void customerType::populate()
     _code->setText(customerpopulate.value("custtype_code").toString());
     _description->setText(customerpopulate.value("custtype_descrip").toString());
     _characteristicGroup->setChecked(customerpopulate.value("custtype_char").toBool());
+    _charass->setId(_custtypeid);
   }
   else if (customerpopulate.lastError().type() != QSqlError::NoError)
   {
     systemError(this, customerpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-  sFillList();
 }

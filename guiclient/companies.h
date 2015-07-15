@@ -21,7 +21,7 @@ class companies : public XWidget, public Ui::companies
     Q_OBJECT
 
 public:
-    companies(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    companies(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~companies();
 
 public slots:

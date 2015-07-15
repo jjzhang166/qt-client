@@ -20,7 +20,7 @@ class uoms : public XWidget, public Ui::uoms
     Q_OBJECT
 
 public:
-    uoms(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    uoms(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~uoms();
 
 public slots:

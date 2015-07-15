@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-vendorType::vendorType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+vendorType::vendorType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -60,8 +60,8 @@ enum SetResponse vendorType::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -87,7 +87,7 @@ void vendorType::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }

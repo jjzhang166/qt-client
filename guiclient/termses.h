@@ -21,7 +21,7 @@ class termses : public XWidget, public Ui::termses
     Q_OBJECT
 
 public:
-    termses(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    termses(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~termses();
 
 public slots:

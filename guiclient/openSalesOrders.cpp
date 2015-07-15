@@ -26,7 +26,7 @@
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
 
-openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WFlags fl)
+openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "openSalesOrders", fl)
 {
   setupUi(optionsWidget());
@@ -41,9 +41,9 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WFlags fl)
   _custid = -1;
   optionsWidget()->hide();
 
-  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
+  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
   _dates->setStartDate(QDate().currentDate().addDays(-90));
-  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
@@ -52,8 +52,10 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesRepsActive);
+  parameterWidget()->appendComboBox(tr("Sale Type"), "saletype_id", XComboBox::SaleTypes);
 
   list()->addColumn(tr("Order #"),          _orderColumn,    Qt::AlignLeft,  true,  "cohead_number");
+  list()->addColumn(tr("Sale Type"),        _orderColumn,    Qt::AlignLeft,  true,  "saletype_descr");
   list()->addColumn(tr("Cust. #"),          _orderColumn,    Qt::AlignLeft,  true,  "cust_number");
   list()->addColumn(tr("Customer"),         _itemColumn,     Qt::AlignLeft,  true,  "cohead_billtoname");
   list()->addColumn(tr("Ship-To"),          _itemColumn,     Qt::AlignLeft,  false, "cohead_shiptoname");
@@ -69,7 +71,7 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Status"),           _statusColumn,   Qt::AlignCenter,false, "status");
   list()->addColumn(tr("Notes"),            -1,              Qt::AlignLeft,  false, "notes");
   
-  setupCharacteristics(characteristic::SalesOrders);
+  setupCharacteristics("SO");
   parameterWidget()->applyDefaultFilterSet();
   
   if (_privileges->check("MaintainSalesOrders"))
@@ -154,7 +156,7 @@ void openSalesOrders::sCopy()
   ParameterList params;
   params.append("sohead_id", list()->id());
       
-  copySalesOrder newdlg(this, "", TRUE);
+  copySalesOrder newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -172,7 +174,7 @@ void openSalesOrders::sPrintPackingList()
   ParameterList params;
   params.append("sohead_id", list()->id());
 
-  printPackingList newdlg(this, "", TRUE);
+  printPackingList newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -246,7 +248,7 @@ void openSalesOrders::sPrintForms()
   ParameterList params;
   params.append("sohead_id", list()->id());
 
-  printSoForm newdlg(this, "", TRUE);
+  printSoForm newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -15,7 +15,7 @@
 
 #include "inputManager.h"
 
-dspMaterialUsageVarianceByWorkOrder::dspMaterialUsageVarianceByWorkOrder(QWidget* parent, const char*, Qt::WFlags fl)
+dspMaterialUsageVarianceByWorkOrder::dspMaterialUsageVarianceByWorkOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspMaterialUsageVarianceByWorkOrder", fl)
 {
   setupUi(optionsWidget());

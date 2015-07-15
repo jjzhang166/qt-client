@@ -18,7 +18,7 @@
 #include <glcluster.h>
 #include <openreports.h>
 
-maintainBudget::maintainBudget(QWidget* parent, const char* name, Qt::WFlags fl)
+maintainBudget::maintainBudget(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   XSqlQuery maintainmaintainBudget;

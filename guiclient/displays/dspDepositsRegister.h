@@ -21,7 +21,7 @@ class dspDepositsRegister : public display, public Ui::dspDepositsRegister
     Q_OBJECT
 
 public:
-    dspDepositsRegister(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspDepositsRegister(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

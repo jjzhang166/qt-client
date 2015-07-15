@@ -22,7 +22,7 @@ class glSeriesItem : public XDialog, public Ui::glSeriesItem
     Q_OBJECT
 
 public:
-    glSeriesItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    glSeriesItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~glSeriesItem();
 
     virtual void populate();

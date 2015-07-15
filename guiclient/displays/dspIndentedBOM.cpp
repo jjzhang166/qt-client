@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-dspIndentedBOM::dspIndentedBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspIndentedBOM::dspIndentedBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspBOMBase(parent, "dspIndentedBOM", fl)
 {
   setWindowTitle(tr("Indented Bill of Materials"));

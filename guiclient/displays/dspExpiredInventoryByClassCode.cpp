@@ -29,7 +29,7 @@
 #define VALUE_COL	7
 #define METHOD_COL 8
 
-dspExpiredInventoryByClassCode::dspExpiredInventoryByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspExpiredInventoryByClassCode::dspExpiredInventoryByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspExpiredInventoryByClassCode", fl)
 {
   setupUi(optionsWidget());

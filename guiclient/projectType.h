@@ -21,7 +21,7 @@ class projectType : public XDialog, public Ui::projectType
     Q_OBJECT
 
 public:
-    projectType(QWidget* parent = 0, const char* name = 0, bool modal = true, Qt::WFlags fl = 0);
+    projectType(QWidget* parent = 0, const char* name = 0, bool modal = true, Qt::WindowFlags fl = 0);
     ~projectType();
 
 public slots:

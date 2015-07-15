@@ -21,7 +21,7 @@ class postProduction : public XDialog, public Ui::postProduction
     Q_OBJECT
 
 public:
-    postProduction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    postProduction(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~postProduction();
 
     Q_INVOKABLE bool    captive() { return _captive; }

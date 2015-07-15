@@ -22,7 +22,7 @@ class opportunityList : public display, public Ui::opportunityList
   Q_OBJECT
 
   public:
-    opportunityList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    opportunityList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     Q_INVOKABLE virtual bool setParams(ParameterList &);
 

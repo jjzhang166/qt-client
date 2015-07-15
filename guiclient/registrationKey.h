@@ -20,7 +20,7 @@ class registrationKey : public XAbstractConfigure, public Ui::registrationKey
     Q_OBJECT
 
 public:
-    registrationKey(QWidget* parent = 0, const char * = 0, Qt::WFlags fl = Qt::Window);
+    registrationKey(QWidget* parent = 0, const char * = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual bool sSave();

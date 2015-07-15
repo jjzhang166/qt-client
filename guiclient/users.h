@@ -20,7 +20,7 @@ class users : public XWidget, public Ui::users
     Q_OBJECT
 
 public:
-    users(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    users(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~users();
 
 protected slots:

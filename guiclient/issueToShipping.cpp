@@ -25,7 +25,7 @@
 #include "shipOrder.h"
 #include "storedProcErrorLookup.h"
 
-issueToShipping::issueToShipping(QWidget* parent, const char* name, Qt::WFlags fl)
+issueToShipping::issueToShipping(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl),
       _captive(false)
 {
@@ -90,7 +90,7 @@ issueToShipping::issueToShipping(QWidget* parent, const char* name, Qt::WFlags f
 
   _soitem->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-  _order->setFromSitePrivsEnforced(TRUE);
+  _order->setFromSitePrivsEnforced(true);
   _order->setFocus();
 
   _bcQty->setValidator(omfgThis->qtyVal());
@@ -310,7 +310,7 @@ void issueToShipping::sPopulateMenu(QMenu *pMenu)
 
 void issueToShipping::sIssueStock()
 {
-  bool update  = FALSE;
+  bool update  = false;
   QList<XTreeWidgetItem*> selected = _soitem->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
@@ -322,9 +322,9 @@ void issueToShipping::sIssueStock()
     if(_requireInventory->isChecked())
       params.append("requireInventory");
     
-    issueLineToShipping newdlg(this, "", TRUE);
+    issueLineToShipping newdlg(this, "", true);
     if (newdlg.set(params) == NoError && newdlg.exec() != XDialog::Rejected)
-      update = TRUE;
+      update = true;
   }
 
   if (update)
@@ -470,29 +470,39 @@ bool issueToShipping::sIssueLineBalance(int id, int altId)
                     __FILE__, __LINE__);
         return false;
       }
-      else if (distributeInventory::SeriesAdjust(itemlocSeries, this) == XDialog::Rejected)
+      
+      if (itemlocSeries > 0)
       {
-        rollback.exec();
-        QMessageBox::information( this, tr("Issue to Shipping"), tr("Issue Canceled") );
-        return false;
+        if (distributeInventory::SeriesAdjust(itemlocSeries, this) == XDialog::Rejected)
+        {
+          rollback.exec();
+          QMessageBox::information( this, tr("Issue to Shipping"), tr("Issue Canceled") );
+          return false;
+        }
+        
+        // Need to get the inventory history id so we can auto reverse the distribution when issuing
+        prod.prepare("SELECT invhist_id "
+                     "FROM invhist "
+                     "WHERE ((invhist_series = :itemlocseries) "
+                     " AND (invhist_transtype = 'RM')); ");
+        prod.bindValue(":itemlocseries" , itemlocSeries);
+        prod.exec();
+        if (prod.first())
+          invhistid = prod.value("invhist_id").toInt();
+        else
+        {
+          rollback.exec();
+          systemError(this, tr("Inventory history not found"),
+                      __FILE__, __LINE__);
+          return false;
+        }
       }
-
-      // Need to get the inventory history id so we can auto reverse the distribution when issuing
-      prod.prepare("SELECT invhist_id "
-                   "FROM invhist "
-                   "WHERE ((invhist_series = :itemlocseries) "
-                   " AND (invhist_transtype = 'RM')); ");
-      prod.bindValue(":itemlocseries" , itemlocSeries);
-      prod.exec();
-      if (prod.first())
-        invhistid = prod.value("invhist_id").toInt();
-      else
-      {
-        rollback.exec();
-        systemError(this, tr("Inventory history not found"),
-                    __FILE__, __LINE__);
-        return false;
-      }
+    }
+    else if (prod.lastError().type() != QSqlError::NoError)
+    {
+      rollback.exec();
+      systemError(this, prod.lastError().databaseText(), __FILE__, __LINE__);
+      return false;
     }
   }
 
@@ -529,9 +539,11 @@ bool issueToShipping::sIssueLineBalance(int id, int altId)
       XSqlQuery lsdetail;
       lsdetail.prepare("INSERT INTO lsdetail "
 	                   "            (lsdetail_itemsite_id, lsdetail_created, lsdetail_source_type, "
-	  				   "             lsdetail_source_id, lsdetail_source_number, lsdetail_ls_id, lsdetail_qtytoassign) "
+	  				   "             lsdetail_source_id, lsdetail_source_number, lsdetail_ls_id, lsdetail_qtytoassign, "
+                                           "             lsdetail_expiration, lsdetail_warrpurc ) "
 					   "SELECT invhist_itemsite_id, NOW(), 'TR', "
-					   "       :orderitemid, invhist_ordnumber, invdetail_ls_id, (invdetail_qty * -1.0) "
+					   "       :orderitemid, invhist_ordnumber, invdetail_ls_id, (invdetail_qty * -1.0), "
+                                           "       invdetail_expiration, invdetail_warrpurc "
 					   "FROM invhist JOIN invdetail ON (invdetail_invhist_id=invhist_id) "
 					   "WHERE (invhist_series=:itemlocseries);");
       lsdetail.bindValue(":orderitemid", id);
@@ -643,7 +655,7 @@ void issueToShipping::sShip()
     ParameterList params;
     params.append("shiphead_id", issueShip.value("shiphead_id").toInt());
 
-    shipOrder newdlg(this, "", TRUE);
+    shipOrder newdlg(this, "", true);
     if (newdlg.set(params) == NoError && newdlg.exec() != XDialog::Rejected)
     {
       //_transDate->setDate(omfgThis->dbDate());
@@ -926,7 +938,7 @@ void issueToShipping::sBcFind()
   params.append("issue");
   params.append("snooze");
 
-  issueLineToShipping newdlg(this, "", TRUE);
+  issueLineToShipping newdlg(this, "", true);
   if (newdlg.set(params) != NoError)
     return;
   sFillList();

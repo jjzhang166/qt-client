@@ -18,7 +18,7 @@
 #include "purchaseOrderList.h"
 #include "storedProcErrorLookup.h"
 
-copyPurchaseOrder::copyPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copyPurchaseOrder::copyPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

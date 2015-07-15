@@ -22,7 +22,7 @@ class xsltMap : public XDialog, public Ui::xsltMap
     Q_OBJECT
 
   public:
-    xsltMap(QWidget* parent = 0, const char * = 0, Qt::WFlags fl = 0);
+    xsltMap(QWidget* parent = 0, const char * = 0, Qt::WindowFlags fl = 0);
     ~xsltMap();
 
     static bool userHasPriv();

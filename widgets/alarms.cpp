@@ -203,7 +203,7 @@ void Alarms::sNew()
   params.append("cntctId2", _cntctId2);
   params.append("cntctId3", _cntctId3);
 
-  alarmMaint newdlg(this, "", TRUE);
+  alarmMaint newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)
@@ -216,7 +216,7 @@ void Alarms::sEdit()
   params.append("mode", "edit");
   params.append("alarm_id", _alarms->id());
 
-  alarmMaint newdlg(this, "", TRUE);
+  alarmMaint newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != QDialog::Rejected)
@@ -229,7 +229,7 @@ void Alarms::sView()
   params.append("mode", "view");
   params.append("alarm_id", _alarms->id());
 
-  alarmMaint newdlg(this, "", TRUE);
+  alarmMaint newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

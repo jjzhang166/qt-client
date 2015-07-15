@@ -19,7 +19,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-countSlip::countSlip(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+countSlip::countSlip(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -34,13 +34,13 @@ countSlip::countSlip(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   connect(_item, SIGNAL(newId(int)), this, SLOT(sPopulateItemSiteInfo()));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateItemSiteInfo()));
 
-  _captive = FALSE;
+  _captive = false;
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _countTagList->setMaximumWidth(25);
 #endif
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
   _qty->setValidator(omfgThis->qtyVal());
   _expiration->setAllowNullDate(true);
   _expiration->setAllowNullDate(false);
@@ -80,7 +80,7 @@ enum SetResponse countSlip::set(const ParameterList &pParams)
   param = pParams.value("cnttag_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _cnttagid = param.toInt();
     populateTagInfo();
@@ -89,7 +89,7 @@ enum SetResponse countSlip::set(const ParameterList &pParams)
   param = pParams.value("cntslip_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _cntslipid = param.toInt();
     populate();
@@ -107,7 +107,7 @@ enum SetResponse countSlip::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _captive = TRUE;
+      _captive = true;
 
       countet.prepare( "SELECT cntslip_posted "
                  "FROM cntslip "
@@ -124,16 +124,16 @@ enum SetResponse countSlip::set(const ParameterList &pParams)
       }
 
       _countTagList->hide();
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
       _countTagList->hide();
-      _number->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _qty->setEnabled(false);
+      _comments->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -141,15 +141,15 @@ enum SetResponse countSlip::set(const ParameterList &pParams)
     {
       _mode = cPost;
 
-      _location->setEnabled(FALSE);
-      _lotSerial->setEnabled(FALSE);
+      _location->setEnabled(false);
+      _lotSerial->setEnabled(false);
       _countTagList->hide();
-      _number->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _qty->setEnabled(false);
+      _comments->setEnabled(false);
       _save->setText(tr("&Post"));
-      _expiration->setEnabled(FALSE);
-      _warranty->setEnabled(FALSE);
+      _expiration->setEnabled(false);
+      _warranty->setEnabled(false);
     }
   }
 
@@ -320,7 +320,7 @@ void countSlip::sSave()
                "  cntslip_lotserial_warrpurc,"
                "  cntslip_comments ) "
                "SELECT :cntslip_id, :cnttag_id,"
-               "       getEffectiveXtUser(), CURRENT_TIMESTAMP, FALSE,"
+               "       getEffectiveXtUser(), CURRENT_TIMESTAMP, false,"
                "       :cntslip_number, :cntslip_qty,"
                "       :cntslip_location_id, :cntslip_lotserial,"
                "       :cntslip_lotserial_expiration,"
@@ -374,9 +374,9 @@ void countSlip::sSave()
     _qty->clear();
     _comments->clear();
     _location->clear();
-    _location->setEnabled(FALSE);
+    _location->setEnabled(false);
     _lotSerial->clear();
-    _lotSerial->setEnabled(FALSE);
+    _lotSerial->setEnabled(false);
     _close->setText(tr("&Close"));
 
     _countTagList->setFocus();
@@ -389,7 +389,7 @@ void countSlip::sCountTagList()
   params.append("cnttag_id", _cnttagid);
   params.append("tagType", cUnpostedCounts);
 
-  countTagList newdlg(this, "", TRUE);
+  countTagList newdlg(this, "", true);
   newdlg.set(params);
   _cnttagid = newdlg.exec();
 
@@ -464,29 +464,29 @@ void countSlip::sPopulateItemSiteInfo()
 
       _location->populate(location);
       _location->setId(countPopulateItemSiteInfo.value("itemsite_location_id").toInt());
-      _location->setEnabled(TRUE);
+      _location->setEnabled(true);
     }
     else
     {
       _location->clear();
-      _location->setEnabled(FALSE);
+      _location->setEnabled(false);
     }
 
     if (controlMethod == "L")
     {
-      _lotSerial->setEnabled(TRUE);
-      _qty->setEnabled(TRUE);
+      _lotSerial->setEnabled(true);
+      _qty->setEnabled(true);
     }
     else if (controlMethod == "S")
     {
-      _lotSerial->setEnabled(TRUE);
+      _lotSerial->setEnabled(true);
       _qty->setText("1.0");
-      _qty->setEnabled(FALSE);
+      _qty->setEnabled(false);
     }
     else
     {
-      _lotSerial->setEnabled(FALSE);
-      _qty->setEnabled(TRUE);
+      _lotSerial->setEnabled(false);
+      _qty->setEnabled(true);
     }
   }
 }

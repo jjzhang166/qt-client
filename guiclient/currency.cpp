@@ -16,7 +16,7 @@
 
 #include "currencySelect.h"
 
-currency::currency(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+currency::currency(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -30,7 +30,7 @@ currency::currency(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
 
     // avoid sConfirmBaseFlag() when calling populate for editing base currency
     // baseOrig gets set in set() for cNew and in populate() for cEdit and cView
-    baseOrig = TRUE;
+    baseOrig = true;
 }
 
 currency::~currency()
@@ -49,7 +49,7 @@ bool currency::isBaseSet()
     int numSet = 0;
     
     currencyisBaseSet.prepare("SELECT count(*) AS numSet "
-              "FROM curr_symbol WHERE curr_base = TRUE");
+              "FROM curr_symbol WHERE curr_base = true");
     currencyisBaseSet.exec();
     if (currencyisBaseSet.first())
     {
@@ -75,7 +75,7 @@ enum SetResponse currency::set(const ParameterList &pParams)
     populate();
   }
   else
-    baseOrig = FALSE; // see comments in constructor
+    baseOrig = false; // see comments in constructor
 
    
   param = pParams.value("mode", &valid);
@@ -95,10 +95,10 @@ enum SetResponse currency::set(const ParameterList &pParams)
     {
       _mode = cView;
       
-      _currName->setEnabled(FALSE);
-      _currSymbol->setEnabled(FALSE);
-      _currAbbr->setEnabled(FALSE);
-      _currBase->setEnabled(FALSE);
+      _currName->setEnabled(false);
+      _currSymbol->setEnabled(false);
+      _currAbbr->setEnabled(false);
+      _currBase->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -215,7 +215,7 @@ void currency::sConfirmBaseFlag()
 				QMessageBox::No | QMessageBox::Default);
 	if (response != QMessageBox::Yes)
 	{
-	    _currBase->setChecked(FALSE);
+	    _currBase->setChecked(false);
 	}
     }
 }

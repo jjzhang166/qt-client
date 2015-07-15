@@ -22,7 +22,7 @@ class massExpireComponent : public XWidget, public Ui::massExpireComponent
     Q_OBJECT
 
 public:
-    massExpireComponent(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    massExpireComponent(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~massExpireComponent();
 
 public slots:

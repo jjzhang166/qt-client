@@ -18,7 +18,7 @@
 #include "shippingZone.h"
 #include "guiclient.h"
 
-shippingZones::shippingZones(QWidget* parent, const char* name, Qt::WFlags fl)
+shippingZones::shippingZones(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -44,7 +44,7 @@ shippingZones::shippingZones(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_shipzone, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -90,7 +90,7 @@ void shippingZones::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  shippingZone newdlg(this, "", TRUE);
+  shippingZone newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -102,7 +102,7 @@ void shippingZones::sEdit()
   params.append("mode", "edit");
   params.append("shipzone_id", _shipzone->id());
 
-  shippingZone newdlg(this, "", TRUE);
+  shippingZone newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -114,7 +114,7 @@ void shippingZones::sView()
   params.append("mode", "view");
   params.append("shipzone_id", _shipzone->id());
 
-  shippingZone newdlg(this, "", TRUE);
+  shippingZone newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

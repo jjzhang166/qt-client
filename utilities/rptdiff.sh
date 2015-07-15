@@ -1,4 +1,4 @@
-#
+#!/bin/bash
 # This file is part of the xTuple ERP: PostBooks Edition, a free and
 # open source Enterprise Resource Planning software suite,
 # Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -9,7 +9,9 @@
 #
 PROG=`basename $0`
 OLDDIR=
+OLDVER=
 NEWDIR=
+NEWVER=
 TMPDIR="${TMPDIR:-/tmp}/${PROG}_`date +%Y_%m_%d`"
 RUNEXTRACT=true	#undocumented feature
 XSLT=xsltproc
@@ -17,81 +19,142 @@ XSLT=xsltproc
 XSLTFILE=$TMPDIR/rptdiff.xslt
 
 usage () {
-  echo "$PROG -h"
-  echo "$PROG [ -o oldversiondir -n newversiondir ] [ -t temporarydir ]"
-  echo
-  echo "-h	print this usage message"
-  echo "-o	directory to search for the old versions of the reports"
-  echo "-n	directory to search for the new versions of the reports"
-  echo "-t	directory in which to store extracted queries [$TMPDIR]"
+  cat > /dev/stderr <<-EOF
+	$PROG -h
+	$PROG [ -o oldversiondir -n newversiondir ] [ -t temporarydir ]
+	$PROG [ -o oldtag -n newtag ] [ -t temporarydir ] reports-subdirs
+
+	-h	print this usage message
+	-t	directory in which to store extracted queries [$TMPDIR]
+
+        directory-based comparison (default):
+	-o	directory to search for the old versions of the reports
+	-n	directory to search for the new versions of the reports
+
+        tag-based comparison (tags should look like vX.Y.Z[optional-suffix]):
+	-o	git tag for checking out the old versions of the reports
+	-n	git tag for checking out the new versions of the reports
+EOF
+}
+
+log () {
+  echo "$*" > /dev/stderr
 }
 
 # x is an undocumented option
-set -- `getopt ho:n:t:x $*`
 
-while [ $1 != -- ] ; do
-  case "$1" in
-    -h)
-      usage
-      exit 0
-      ;;
-    -o)
-      OLDDIR=$2
-      shift
-      ;;
-    -n)
-      NEWDIR=$2
-      shift
-      ;;
-    -t)
-      TMPDIR=$2
-      XSLTFILE=$TMPDIR/rptdiff.xslt
-      shift
-      ;;
-    -x)
-      RUNEXTRACT=false	#undocumented feature
-      ;;
+while getopts ho:n:t:x OPTION ; do
+  case $OPTION in
+    h)  usage
+        exit 0
+        ;;
+    o)  if [ -d "$OPTARG" ] ; then
+          OLDDIR="$OPTARG"
+        elif [[ "$OPTARG" =~ ^v[1-9]+\.[0-9]+\.[0-9]+ ]] ; then
+          OLDVER=$OPTARG
+        else
+          OLDVER=$OPTARG
+          log "$PROG: cannot find directory $OPTARG so guessing this is a git commit-ish"
+        fi
+        ;;
+    n)  if [ -d "$OPTARG" ] ; then
+          NEWDIR="$OPTARG"
+        elif [[ "$OPTARG" =~ ^v[1-9]+\.[0-9]+\.[0-9]+ ]] ; then
+          NEWVER=$OPTARG
+        else
+          NEWVER=$OPTARG
+          log "$PROG: cannot find directory $OPTARG so guessing this is a git commit-ish"
+        fi
+        ;;
+    t)  TMPDIR=$2
+        XSLTFILE=$TMPDIR/rptdiff.xslt
+        shift
+        ;;
+    x)  RUNEXTRACT=false	#undocumented feature
+        ;;
   esac
-  shift
 done
-shift #past the --
-
-if [ -z "$OLDDIR" ] ; then
-  echo "$PROG: no oldversiondir given"
-  usage
-  exit 1
-elif [ ! -d "$OLDDIR" ] ; then
-  echo "$PROG: oldversiondir is not a directory"
-  usage
-  exit 1
-elif [ `ls $OLDDIR/*.xml | wc -l` -le 0 ] ; then
-  echo "$PROG: $OLDDIR doesn't seem to have any xml files in it"
-  exit 1
-fi
-
-if [ -z "$NEWDIR" ] ; then
-  echo "$PROG: no newversiondir given"
-  usage
-  exit 1
-elif [ ! -d "$NEWDIR" ] ; then
-  echo "$PROG: newversiondir is not a directory"
-  usage
-  exit 1
-elif [ `ls $NEWDIR/*.xml | wc -l` -le 0 ] ; then
-  echo "$PROG: $NEWDIR doesn't seem to have any xml files in it"
-  exit 1
-fi
+shift $[$OPTIND - 1]
 
 if [ -z "$TMPDIR" ] ; then
-  echo "$PROG: no temporarydir given"
+  log "$PROG: no temporarydir given"
   usage
   exit 1
 elif [ -e "$TMPDIR" -a ! -d "$TMPDIR" ] ; then
-  echo "$PROG: temporarydir is not a directory"
+  log "$PROG: temporarydir is not a directory"
   usage
   exit 1
 elif ! mkdir -p $TMPDIR/old || ! mkdir -p $TMPDIR/new ; then
   exit 2
+fi
+
+if [ -n "$OLDDIR" -a -n "$NEWVER" ] ; then
+  log "$PROG: please don't mix directories and tags"
+  usage
+  exit 1
+elif [ -n "$OLDVER" -a -n "$NEWDIR" ] ; then
+  log "$PROG: please don't mix directories and tags"
+  usage
+  exit 1
+elif [ -n "$OLDDIR" -a -z "$NEWDIR" ] ; then
+  log "$PROG: please give two directories"
+  usage
+  exit 1
+elif [ -z "$OLDDIR" -a -n "$NEWDIR" ] ; then
+  log "$PROG: please give two directories"
+  usage
+  exit 1
+elif [ -n "$OLDVER" -a -z "$NEWVER" ] ; then
+  log "$PROG: please give two version tags"
+  usage
+  exit 1
+elif [ -z "$OLDVER" -a -n "$NEWVER" ] ; then
+  log "$PROG: please give two version tags"
+  usage
+  exit 1
+elif [ -z "$OLDVER" -a -z "$NEWVER" -a -z "$OLDDIR" -a -z "$NEWDIR" ] ; then
+  log "$PROG: please give two directories or two version tags"
+  usage
+  exit 1
+fi
+
+# convert tag-based to directory-based:
+#       check out the code & copy the reports
+if [ -n "$OLDVER" ] ; then
+  if [ "$OLDVER" = "$NEWVER" ] ; then
+    log "$PROG: old version equals new version so doing nothing"
+    exit 1
+  fi
+  if [ $# -lt 1 ] ; then
+    log "$PROG: tag-based comparison needs at least one report subdirectory"
+    exit 1
+  fi
+  for VER in $OLDVER $NEWVER ; do
+    git checkout $VER                                  || exit 1
+    rm -rf $TMPDIR/$VER
+    mkdir $TMPDIR/$VER
+    for DIR in $* ; do
+      if [ `ls $DIR/*.xml | wc -l` -le 0 ] ; then
+        log "$PROG: $DIR doesn't seem to have any xml files in it"
+      else
+        cp $DIR/*.xml $TMPDIR/$VER
+      fi
+    done
+  done
+
+  OLDDIR=$TMPDIR/$OLDVER
+  NEWDIR=$TMPDIR/$NEWVER
+fi
+
+
+
+if [ `ls $OLDDIR/*.xml | wc -l` -le 0 ] ; then
+  log "$PROG: $OLDDIR doesn't seem to have any xml files in it"
+  exit 1
+fi
+if [ `ls $NEWDIR/*.xml | wc -l` -le 0 ] ; then
+  log "$PROG: $NEWDIR doesn't seem to have any xml files in it"
+  exit 1
 fi
 
 cat > $XSLTFILE <<EOF
@@ -127,7 +190,7 @@ for DIR in $OLDDIR $NEWDIR ; do
   elif [ "$DIR" = "$NEWDIR" ] ; then
     DESTDIR="$TMPDIR/new"
   else
-    echo "$PROG: I'm confused and don't know where to write my output"
+    log "$PROG: I'm confused and don't know where to write my output"
     exit 3
   fi
   if ! rm -f "$DESTDIR/*" ; then
@@ -136,14 +199,14 @@ for DIR in $OLDDIR $NEWDIR ; do
 
   FILELIST=`ls $DIR/*.xml`
   if [ -z "$FILELIST" ] ; then
-    echo no .xml files in $DIR
+    log no .xml files in $DIR
     exit 2
   fi
 
   for FILE in $FILELIST ; do
     INPUTFILE=$FILE
     OUTPUTFILE=$DESTDIR/`basename $INPUTFILE`
-    echo processing $INPUTFILE > /dev/stderr
+    log processing $INPUTFILE > /dev/stderr
 
     if [ "$XSLT" = Xalan ] ; then
       "$XSLT" "$INPUTFILE" "$XSLTFILE" > "$OUTPUTFILE"
@@ -173,15 +236,12 @@ for FILE in `ls $TMPDIR/old/* $TMPDIR/new/* | xargs -J X -n 1 basename X | sort 
   elif [ ! -f $TMPDIR/old/$FILE -a -f $TMPDIR/new/$FILE ] ; then
     REPORTNAME="`head -3 $TMPDIR/new/$FILE | tail -1 | cut -f2 -d:`"
     NEWLIST="$NEWLIST $REPORTNAME"
-  else
-    cmp -s $TMPDIR/old/$FILE $TMPDIR/new/$FILE
-    EXITCODE=$?
-    if [ $EXITCODE -eq 1 ]; then
-      REPORTNAME="`head -3 $TMPDIR/new/$FILE | tail -1 | cut -f2 -d:`"
-      CHANGEDLIST="$CHANGEDLIST $REPORTNAME"
-      diff -E -b -i -U `wc -l $TMPDIR/new/$FILE | 
-                        awk '{print $1}'` $TMPDIR/old/$FILE $TMPDIR/new/$FILE | tail -n +4 >> $TMPDIR/diffs
-    fi
+  elif ! cmp -s $TMPDIR/old/$FILE $TMPDIR/new/$FILE ; then
+    REPORTNAME="`head -3 $TMPDIR/new/$FILE | tail -1 | cut -f2 -d:`"
+    CHANGEDLIST="$CHANGEDLIST $REPORTNAME"
+    diff -w --unchanged-line-format='   %L' \
+                  --old-line-format='-  %L' \
+                  --new-line-format='+  %L' $TMPDIR/{old,new}/$FILE >> $TMPDIR/diffs
   fi
 done
 

@@ -15,7 +15,7 @@
 #include <QValidator>
 #include <QVariant>
 
-incidentCategory::incidentCategory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+incidentCategory::incidentCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -72,9 +72,9 @@ enum SetResponse incidentCategory::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _order->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _order->setEnabled(false);
+      _descrip->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -100,7 +100,7 @@ void incidentCategory::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

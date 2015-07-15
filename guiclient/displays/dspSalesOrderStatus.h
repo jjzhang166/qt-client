@@ -21,7 +21,7 @@ class dspSalesOrderStatus : public display, public Ui::dspSalesOrderStatus
     Q_OBJECT
 
 public:
-    dspSalesOrderStatus(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSalesOrderStatus(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

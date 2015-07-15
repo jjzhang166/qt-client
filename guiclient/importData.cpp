@@ -75,11 +75,11 @@ importData::importData(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _file->addColumn(tr("Status"), _ynColumn, Qt::AlignCenter,true,  "status");
 
   _defaultDir = _metrics->value(
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
                                       "XMLDefaultDirMac"
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
                                       "XMLDefaultDirWindows"
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
                                       "XMLDefaultDirLinux"
 #endif
       );

@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-shippingZone::shippingZone(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shippingZone::shippingZone(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -62,8 +62,8 @@ enum SetResponse shippingZone::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -147,7 +147,7 @@ void shippingZone::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

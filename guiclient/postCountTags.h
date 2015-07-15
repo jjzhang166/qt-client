@@ -20,7 +20,7 @@ class postCountTags : public XDialog, public Ui::postCountTags
     Q_OBJECT
 
 public:
-    postCountTags(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    postCountTags(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~postCountTags();
 
     Q_INVOKABLE virtual bool setParams(ParameterList &params);

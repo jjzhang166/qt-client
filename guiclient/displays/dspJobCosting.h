@@ -21,7 +21,7 @@ class dspJobCosting : public display, public Ui::dspJobCosting
     Q_OBJECT
 
 public:
-    dspJobCosting(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspJobCosting(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

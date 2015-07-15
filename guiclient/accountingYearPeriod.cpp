@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-accountingYearPeriod::accountingYearPeriod(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+accountingYearPeriod::accountingYearPeriod(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);
@@ -82,9 +82,9 @@ enum SetResponse accountingYearPeriod::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _startDate->setEnabled(FALSE);
-      _endDate->setEnabled(FALSE);
-      _closed->setEnabled(FALSE);
+      _startDate->setEnabled(false);
+      _endDate->setEnabled(false);
+      _closed->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }

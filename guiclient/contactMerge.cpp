@@ -17,7 +17,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 
-contactMerge::contactMerge(QWidget* parent, const char* name, Qt::WFlags fl)
+contactMerge::contactMerge(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -114,7 +114,7 @@ void contactMerge::sCntctEdit()
   params.append("mode", "edit");
   params.append("cntct_id", _cntct->id());
 
-  contact newdlg(this, "", TRUE);
+  contact newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -126,7 +126,7 @@ void contactMerge::sCntctView()
   params.append("mode", "view");
   params.append("cntct_id", _cntct->id());
 
-  contact newdlg(this, "", TRUE);
+  contact newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -561,7 +561,7 @@ void contactMerge::sSrcCntctEdit()
   params.append("mode", "edit");
   params.append("cntct_id", _srccntct->id());
 
-  contact newdlg(this, "", TRUE);
+  contact newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -573,7 +573,7 @@ void contactMerge::sSrcCntctView()
   params.append("mode", "view");
   params.append("cntct_id", _srccntct->id());
 
-  contact newdlg(this, "", TRUE);
+  contact newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();

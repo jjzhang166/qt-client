@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-createPlannedOrdersByItem::createPlannedOrdersByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createPlannedOrdersByItem::createPlannedOrdersByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -32,7 +32,7 @@ createPlannedOrdersByItem::createPlannedOrdersByItem(QWidget* parent, const char
     _warehouse->hide();
   }
 
-  _captive = FALSE;
+  _captive = false;
 }
 
 createPlannedOrdersByItem::~createPlannedOrdersByItem()
@@ -54,7 +54,7 @@ enum SetResponse createPlannedOrdersByItem::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
   }
@@ -76,7 +76,7 @@ void createPlannedOrdersByItem::sCreate()
 
   if(!_explodeChildren->isChecked())
   {
-    createCreate.prepare( "SELECT createPlannedOrders(itemsite_id, :cutOffDate, :deleteFirmed, FALSE) "
+    createCreate.prepare( "SELECT createPlannedOrders(itemsite_id, :cutOffDate, :deleteFirmed, false) "
                "FROM itemsite "
                "WHERE ( (itemsite_item_id=:item_id)"
                " AND (itemsite_active)"

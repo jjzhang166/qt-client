@@ -20,7 +20,7 @@
 #include "guiclient.h"
 #include "mqlutil.h"
 
-dspBankrecHistory::dspBankrecHistory(QWidget* parent, const char* name, Qt::WFlags fl)
+dspBankrecHistory::dspBankrecHistory(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

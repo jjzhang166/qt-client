@@ -27,7 +27,7 @@
 #define cIncludeLotSerial   0x01
 #define cNoIncludeLotSerial 0x02
 
-distributeInventory::distributeInventory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+distributeInventory::distributeInventory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -41,10 +41,11 @@ distributeInventory::distributeInventory(QWidget* parent, const char* name, bool
   connect(_taggedOnly,  SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_bc,   SIGNAL(textChanged(QString)), this, SLOT(sBcChanged(QString)));
   connect(_qtyOnly,     SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_zone, SIGNAL(currentIndexChanged(int)), this, SLOT(sFillList()));
 
   omfgThis->inputManager()->notify(cBCLotSerialNumber, this, this, SLOT(sCatchLotSerialNumber(QString)));
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
   _qtyToDistribute->setPrecision(omfgThis->qtyVal());
   _qtyTagged->setPrecision(omfgThis->qtyVal());
   _qtyRemaining->setPrecision(omfgThis->qtyVal());
@@ -65,7 +66,10 @@ distributeInventory::distributeInventory(QWidget* parent, const char* name, bool
     _warehouseLit->hide();
     _warehouse->hide();
   }
-  
+
+// Populate Zone filter dropdown
+  updateZoneList();  
+
   //If not lot serial control, hide info
   if (!_metrics->boolean("LotSerialControl"))
   {
@@ -115,12 +119,12 @@ int distributeInventory::SeriesAdjust(int pItemlocSeries, QWidget *pParent, cons
                      "            ELSE 'O'"
                      "       END AS trans_type,"
                      "       CASE WHEN (invhist_transtype IN ('RM','RP','RR','RX')"
-                     "                  AND itemsite_recvlocation_dist) THEN TRUE"
+                     "                  AND itemsite_recvlocation_dist) THEN true"
                      "            WHEN (invhist_transtype = 'IM'"
-                     "                  AND itemsite_issuelocation_dist) THEN TRUE"
+                     "                  AND itemsite_issuelocation_dist) THEN true"
                      "            WHEN (invhist_transtype NOT IN ('RM','RP','RR','RX','IM')"
-                     "                  AND itemsite_location_dist) THEN TRUE"
-                     "            ELSE FALSE"
+                     "                  AND itemsite_location_dist) THEN true"
+                     "            ELSE false"
                      "       END AS auto_dist "
                      "FROM itemlocdist JOIN itemsite ON (itemlocdist_itemsite_id=itemsite_id) "
                      "                 LEFT OUTER JOIN invhist ON (itemlocdist_invhist_id=invhist_id) "
@@ -229,7 +233,7 @@ int distributeInventory::SeriesAdjust(int pItemlocSeries, QWidget *pParent, cons
             }
           }
 
-          assignLotSerial newdlg(pParent, "", TRUE);
+          assignLotSerial newdlg(pParent, "", true);
           newdlg.set(params);
           itemlocSeries = newdlg.exec();
           if (itemlocSeries == XDialog::Rejected)
@@ -249,7 +253,7 @@ int distributeInventory::SeriesAdjust(int pItemlocSeries, QWidget *pParent, cons
             ParameterList params;
             params.append("itemlocdist_id", query.value("itemlocdist_id").toInt());
             params.append("trans_type", itemloc.value("trans_type").toString());
-            distributeInventory newdlg(pParent, "", TRUE);
+            distributeInventory newdlg(pParent, "", true);
             newdlg.set(params);
             if (itemloc.value("auto_dist").toBool())
             {
@@ -295,7 +299,7 @@ int distributeInventory::SeriesAdjust(int pItemlocSeries, QWidget *pParent, cons
         if (itemloc.value("itemlocdist_distlotserial").toBool())
           params.append("includeLotSerialDetail");
 
-        distributeInventory newdlg(pParent, "", TRUE);
+        distributeInventory newdlg(pParent, "", true);
         newdlg.set(params);
         if (itemloc.value("auto_dist").toBool())
         {
@@ -454,7 +458,7 @@ void distributeInventory::sSelectLocation()
   else if (_itemloc->altId() == cItemloc)
     params.append("itemlocdist_id", _itemloc->id());
 
-  distributeToLocation newdlg(this, "", TRUE);
+  distributeToLocation newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() == XDialog::Accepted)
@@ -605,13 +609,13 @@ void distributeInventory::sFillList()
     if ( (distributeFillList.value("itemsite_location_id").toInt() != -1) &&
          ( (_mode == cNoIncludeLotSerial) || ( (_mode == cIncludeLotSerial) && (!distributeFillList.value("lscontrol").toBool()) ) ) )
     {
-      _default->setEnabled(TRUE);
-      _defaultAndPost->setEnabled(TRUE);
+      _default->setEnabled(true);
+      _defaultAndPost->setEnabled(true);
     }
     else
     {
-      _default->setEnabled(FALSE);
-      _defaultAndPost->setEnabled(FALSE);
+      _default->setEnabled(false);
+      _defaultAndPost->setEnabled(false);
     }
 
     ParameterList params;
@@ -636,6 +640,9 @@ void distributeInventory::sFillList()
     params.append("itemlocdist_id", _itemlocdistid);
     params.append("itemsite_id",    distributeFillList.value("itemsite_id").toInt());
     params.append("transtype",      _transtype);
+
+    if (_zone->id() > 0)
+      params.append("zone",         _zone->id());
 
     MetaSQLQuery mql = mqlLoad("distributeInventory", "locations");
     distributeFillList = mql.toQuery(params);
@@ -701,7 +708,7 @@ void distributeInventory::sBcDistribute()
   params.append("qty",                   _bcQty->text());
   params.append("distribute");
 
-  distributeToLocation newdlg(this, "", TRUE);
+  distributeToLocation newdlg(this, "", true);
   if (newdlg.set(params) != NoError)
     return;
 
@@ -819,4 +826,19 @@ void distributeInventory::sChangeDefaultLocation()
         systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
+}
+
+void distributeInventory::updateZoneList()
+{
+  XSqlQuery zoneFillList;
+  QString zoneSql( "SELECT whsezone_id, whsezone_name||'-'||whsezone_descrip "
+             " FROM whsezone  "
+             " WHERE (whsezone_warehous_id=:warehous_id)"
+             " ORDER BY whsezone_name;");
+
+  zoneFillList.prepare(zoneSql);
+  zoneFillList.bindValue(":warehous_id", _warehouse->id());
+  zoneFillList.exec();
+  _zone->populate(zoneFillList);
+  
 }

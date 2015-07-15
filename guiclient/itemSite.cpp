@@ -23,7 +23,7 @@
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
 
-itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -74,7 +74,7 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   }
 
   if (_metrics->boolean("EnableDropShipments"))
-	_dropShip->setEnabled(FALSE);
+	_dropShip->setEnabled(false);
   else
 	_dropShip->hide();
 
@@ -85,8 +85,8 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _qohCache = 0;
   _costcatid = -1;
 
-  _captive = FALSE;
-  _updates = TRUE;
+  _captive = false;
+  _updates = true;
     
   _reorderLevel->setValidator(omfgThis->qtyVal());
   _orderUpToQty->setValidator(omfgThis->qtyVal());
@@ -108,7 +108,7 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   }
   else
   {
-    _warehouse->setAllowNull(TRUE);
+    _warehouse->setAllowNull(true);
     _warehouse->setNull();
   }
 
@@ -158,11 +158,11 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _itemsiteid = param.toInt();
     emit newId(_itemsiteid);
 	
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
 
     populate();
   }
@@ -170,23 +170,23 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
   param = pParams.value("item_id", &valid);
   if (valid)
   {
-    check = TRUE;
+    check = true;
 	
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
   else
-    check = FALSE;
+    check = false;
     
   param = pParams.value("warehous_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _warehouse->setId(param.toInt());
-    _warehouse->setEnabled(FALSE);
+    _warehouse->setEnabled(false);
   }
   else if (check)
-    check = FALSE;
+    check = false;
     
   param = pParams.value("mode", &valid);
   if (valid)
@@ -211,8 +211,8 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
           emit newId(_itemsiteid);
           populate();
           
-          _item->setReadOnly(TRUE);
-          _warehouse->setEnabled(FALSE);
+          _item->setReadOnly(true);
+          _warehouse->setEnabled(false);
         }
         else
         {
@@ -226,7 +226,7 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
           _cycleCountFreq->setValue(0);
           _leadTime->setValue(0);
           _eventFence->setValue(_metrics->value("DefaultEventFence").toInt());
-          _tab->setTabEnabled(_tab->indexOf(_expirationTab),FALSE);
+          _tab->setTabEnabled(_tab->indexOf(_expirationTab),false);
         } 
       }
       else
@@ -241,7 +241,7 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
         _cycleCountFreq->setValue(0);
         _leadTime->setValue(0);
         _eventFence->setValue(_metrics->value("DefaultEventFence").toInt());
-        _tab->setTabEnabled(_tab->indexOf(_expirationTab),FALSE);
+        _tab->setTabEnabled(_tab->indexOf(_expirationTab),false);
       }
       if (_mode == cNew)
       {
@@ -260,67 +260,67 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
       
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _useParameters->setEnabled(FALSE);
-      _useParametersOnManual->setEnabled(FALSE);
-      _reorderLevel->setEnabled(FALSE);
-      _orderUpToQty->setEnabled(FALSE);
-      _minimumOrder->setEnabled(FALSE);
-      _maximumOrder->setEnabled(FALSE);
-      _orderMultiple->setEnabled(FALSE);
-      _safetyStock->setEnabled(FALSE);
-      _abcClass->setEnabled(FALSE);
-      _autoUpdateABCClass->setEnabled(FALSE);
-      _cycleCountFreq->setEnabled(FALSE);
-      _leadTime->setEnabled(FALSE);
-      _eventFence->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _poSupply->setEnabled(FALSE);
-      _woSupply->setEnabled(FALSE);
-      _createPr->setEnabled(FALSE);
-      _createSoPr->setEnabled(FALSE);
-      _createPo->setEnabled(FALSE);
-      _dropShip->setEnabled(FALSE);
-      _createWo->setEnabled(FALSE);
-      _sold->setEnabled(FALSE);
-      _soldRanking->setEnabled(FALSE);
-      _stocked->setEnabled(FALSE);
-      _controlMethod->setEnabled(FALSE);
-      _perishable->setEnabled(FALSE);
-      _locationControl->setEnabled(FALSE);
-      _disallowBlankWIP->setEnabled(FALSE);
-      _useDefaultLocation->setEnabled(FALSE);
-      _location->setEnabled(FALSE);
-      _locations->setEnabled(FALSE);
-      _recvlocations->setEnabled(FALSE);
-      _issuelocations->setEnabled(FALSE);
-      _locations_dist->setEnabled(FALSE);
-      _recvlocations_dist->setEnabled(FALSE);
-      _issuelocations_dist->setEnabled(FALSE);
-      _miscLocation->setEnabled(FALSE);
-      _miscLocationName->setEnabled(FALSE);
-      _locationComments->setEnabled(FALSE);
-      _plannerCode->setEnabled(FALSE);
-      _costcat->setEnabled(FALSE);
-      _eventFence->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
-      _orderGroup->setEnabled(FALSE);
-      _orderGroupFirst->setEnabled(FALSE);
-      _mpsTimeFence->setEnabled(FALSE);
-      _planningType->setEnabled(FALSE);
-      _createPlannedTransfers->setEnabled(FALSE);
-      _woCostGroup->setEnabled(FALSE);
-      _costing->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _useParameters->setEnabled(false);
+      _useParametersOnManual->setEnabled(false);
+      _reorderLevel->setEnabled(false);
+      _orderUpToQty->setEnabled(false);
+      _minimumOrder->setEnabled(false);
+      _maximumOrder->setEnabled(false);
+      _orderMultiple->setEnabled(false);
+      _safetyStock->setEnabled(false);
+      _abcClass->setEnabled(false);
+      _autoUpdateABCClass->setEnabled(false);
+      _cycleCountFreq->setEnabled(false);
+      _leadTime->setEnabled(false);
+      _eventFence->setEnabled(false);
+      _active->setEnabled(false);
+      _poSupply->setEnabled(false);
+      _woSupply->setEnabled(false);
+      _createPr->setEnabled(false);
+      _createSoPr->setEnabled(false);
+      _createPo->setEnabled(false);
+      _dropShip->setEnabled(false);
+      _createWo->setEnabled(false);
+      _sold->setEnabled(false);
+      _soldRanking->setEnabled(false);
+      _stocked->setEnabled(false);
+      _controlMethod->setEnabled(false);
+      _perishable->setEnabled(false);
+      _locationControl->setEnabled(false);
+      _disallowBlankWIP->setEnabled(false);
+      _useDefaultLocation->setEnabled(false);
+      _location->setEnabled(false);
+      _locations->setEnabled(false);
+      _recvlocations->setEnabled(false);
+      _issuelocations->setEnabled(false);
+      _locations_dist->setEnabled(false);
+      _recvlocations_dist->setEnabled(false);
+      _issuelocations_dist->setEnabled(false);
+      _miscLocation->setEnabled(false);
+      _miscLocationName->setEnabled(false);
+      _locationComments->setEnabled(false);
+      _plannerCode->setEnabled(false);
+      _costcat->setEnabled(false);
+      _eventFence->setEnabled(false);
+      _notes->setReadOnly(true);
+      _orderGroup->setEnabled(false);
+      _orderGroupFirst->setEnabled(false);
+      _mpsTimeFence->setEnabled(false);
+      _planningType->setEnabled(false);
+      _createPlannedTransfers->setEnabled(false);
+      _woCostGroup->setEnabled(false);
+      _costing->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
-      _comments->setReadOnly(TRUE);
+      _comments->setReadOnly(true);
     }
     emit newMode(_mode);
   }
@@ -573,7 +573,7 @@ bool itemSite::sSave()
                          "  :itemsite_location_dist, :itemsite_recvlocation_dist, :itemsite_issuelocation_dist,"
                          "  :itemsite_location_comments, :itemsite_notes,"
                          "  :itemsite_abcclass, :itemsite_autoabcclass,"
-                         "  FALSE, startOfTime(), :itemsite_ordergroup, :itemsite_ordergroup_first,"
+                         "  false, startOfTime(), :itemsite_ordergroup, :itemsite_ordergroup_first,"
                          "  :itemsite_mps_timefence,"
                          "  :itemsite_disallowblankwip, "
                          "  :itemsite_costmethod, 0, :itemsite_cosdefault, "
@@ -809,7 +809,7 @@ void itemSite::sCheckItemsite()
        (_updates) &&
        (_warehouse->id() != -1) )
   {
-    _updates = FALSE;
+    _updates = false;
 	
     XSqlQuery query;
     query.prepare( "SELECT itemsite_id "
@@ -844,7 +844,7 @@ void itemSite::sCheckItemsite()
 
     _active->setFocus();
 
-    _updates = TRUE;
+    _updates = true;
   }
 }
 
@@ -917,21 +917,21 @@ void itemSite::sHandlePlanningType()
 {
   if (_planningType->code() == "M" || _planningType->code() == "S")
   {
-    _createPlannedTransfers->setEnabled(TRUE);
-    _orderGroup->setEnabled(TRUE);
-    _orderGroupFirst->setEnabled(TRUE);
+    _createPlannedTransfers->setEnabled(true);
+    _orderGroup->setEnabled(true);
+    _orderGroupFirst->setEnabled(true);
 
     if (_planningType->code() == "S")
-      _mpsTimeFence->setEnabled(TRUE);
+      _mpsTimeFence->setEnabled(true);
     else
-      _mpsTimeFence->setEnabled(FALSE);
+      _mpsTimeFence->setEnabled(false);
   }
   else
   {
-    _createPlannedTransfers->setEnabled(FALSE);
-    _orderGroup->setEnabled(FALSE);
-    _orderGroupFirst->setEnabled(FALSE);
-    _mpsTimeFence->setEnabled(FALSE);
+    _createPlannedTransfers->setEnabled(false);
+    _orderGroup->setEnabled(false);
+    _orderGroupFirst->setEnabled(false);
+    _mpsTimeFence->setEnabled(false);
   }
 
 } 
@@ -941,19 +941,19 @@ void itemSite::sHandlePOSupplied(bool pSupplied)
   if ( (pSupplied) &&
        ( (_itemType == 'P') || (_itemType == 'O') ) )
   {
-    _createPr->setEnabled(TRUE);
-	_createSoPr->setEnabled(TRUE);
-	_createPo->setEnabled(TRUE);
+    _createPr->setEnabled(true);
+	_createSoPr->setEnabled(true);
+	_createPo->setEnabled(true);
   }
   else
   {
-    _createPr->setEnabled(FALSE);
-    _createPr->setChecked(FALSE);
-	_createSoPr->setEnabled(FALSE);
-    _createSoPr->setChecked(FALSE);
-	_createPo->setEnabled(FALSE);
-    _createPo->setChecked(FALSE);
-	_dropShip->setChecked(FALSE);
+    _createPr->setEnabled(false);
+    _createPr->setChecked(false);
+	_createSoPr->setEnabled(false);
+    _createSoPr->setChecked(false);
+	_createPo->setEnabled(false);
+    _createPo->setChecked(false);
+	_dropShip->setChecked(false);
   }
 }
 
@@ -961,8 +961,8 @@ void itemSite::sHandleCreatePO(bool pCreate)
 {
   if (pCreate)
   {
-    _dropShip->setEnabled(TRUE);
-	_createSoPr->setChecked(FALSE);
+    _dropShip->setEnabled(true);
+	_createSoPr->setChecked(false);
 	
 	XSqlQuery source;
     source.prepare("SELECT * FROM itemsrc "
@@ -980,14 +980,14 @@ void itemSite::sHandleCreatePO(bool pCreate)
            "Purchase Orders for it.") );
   }
   else
-	_dropShip->setChecked(FALSE);
+	_dropShip->setChecked(false);
 }
 
 void itemSite::sHandleCreateSOPR(bool pCreate)
 {
   if (pCreate)
   {
-  	_createPo->setChecked(FALSE);
+  	_createPo->setChecked(false);
 
 	XSqlQuery source;
     source.prepare("SELECT * FROM itemsrc "
@@ -1031,11 +1031,11 @@ void itemSite::sHandleWOSupplied(bool pSupplied)
 {
   if ( (pSupplied) &&
        ( (_itemType == 'M') ) )
-    _createWo->setEnabled(TRUE);
+    _createWo->setEnabled(true);
   else
   {
-    _createWo->setEnabled(FALSE);
-    _createWo->setChecked(FALSE);
+    _createWo->setEnabled(false);
+    _createWo->setChecked(false);
   }
 } 
 
@@ -1076,14 +1076,14 @@ void itemSite::sHandleControlMethod()
        (_controlMethod->currentIndex() == 3) )  
   {
     _autoNumberGroup->setEnabled(true);
-    _perishable->setEnabled(TRUE);
-    _tab->setTabEnabled(_tab->indexOf(_expirationTab),TRUE);
+    _perishable->setEnabled(true);
+    _tab->setTabEnabled(_tab->indexOf(_expirationTab),true);
   }
   else
   {
     _autoNumberGroup->setEnabled(false);
-    _perishable->setEnabled(FALSE);
-    _tab->setTabEnabled(_tab->indexOf(_expirationTab),FALSE);
+    _perishable->setEnabled(false);
+    _tab->setTabEnabled(_tab->indexOf(_expirationTab),false);
   }
   if (_costJob->isChecked())
     sHandleJobCost();
@@ -1091,7 +1091,7 @@ void itemSite::sHandleControlMethod()
 
 void itemSite::sCacheItemType(const QString &pItemType)
 {
-    _itemType = pItemType[0].toAscii();
+    _itemType = pItemType[0].toLatin1();
     sCacheItemType(_itemType);
 }
 
@@ -1102,17 +1102,17 @@ void itemSite::sCacheItemType(char pItemType)
   if (_itemType == 'L')
   {
     _planningType->setCurrentIndex(1);
-    _planningType->setEnabled(FALSE);
+    _planningType->setEnabled(false);
   }
   else if (_itemType != 'P' && _itemType != 'M' && _itemType != 'F' && _itemType != 'B' &&
            _itemType != 'C' && _itemType != 'Y' && _itemType != 'O' && _itemType != 'A')
   {
     _planningType->setCurrentIndex(0);
-    _planningType->setEnabled(FALSE);
+    _planningType->setEnabled(false);
   }
   else
   {
-    _planningType->setEnabled(TRUE);
+    _planningType->setEnabled(true);
   }
 
   if (_controlMethod->currentIndex() == 0 || _itemType == 'R' || _itemType == 'K')
@@ -1138,72 +1138,72 @@ void itemSite::sCacheItemType(char pItemType)
   if ( (_itemType == 'B') || (_itemType == 'F') || (_itemType == 'R') ||
            (_itemType == 'L') || (_itemType == 'K'))
   {  
-    _safetyStock->setEnabled(FALSE);
-    _abcClass->setEnabled(FALSE);
-    _autoUpdateABCClass->setEnabled(FALSE);
-    _cycleCountFreq->setEnabled(FALSE);
+    _safetyStock->setEnabled(false);
+    _abcClass->setEnabled(false);
+    _autoUpdateABCClass->setEnabled(false);
+    _cycleCountFreq->setEnabled(false);
 
     if(_itemType=='L')
     {
-      _orderGroup->setEnabled(TRUE);
-      _orderGroupFirst->setEnabled(TRUE);
-      _mpsTimeFence->setEnabled(TRUE);
+      _orderGroup->setEnabled(true);
+      _orderGroupFirst->setEnabled(true);
+      _mpsTimeFence->setEnabled(true);
     }
     else
     {
-      _orderGroup->setEnabled(FALSE);
-      _orderGroupFirst->setEnabled(FALSE);
-      _mpsTimeFence->setEnabled(FALSE);
+      _orderGroup->setEnabled(false);
+      _orderGroupFirst->setEnabled(false);
+      _mpsTimeFence->setEnabled(false);
     }
 
     _poSupply->setChecked((_itemType!='L') && (_itemType!='K'));
-    _poSupply->setEnabled(FALSE);
+    _poSupply->setEnabled(false);
     _woSupply->setChecked((_itemType!='L') && (_itemType!='K'));
-    _woSupply->setEnabled(FALSE);
-    _createPr->setChecked(FALSE);
-    _createPr->setEnabled(FALSE);
-    _createSoPr->setChecked(FALSE);
-    _createSoPr->setEnabled(FALSE);
-    _createPo->setChecked(FALSE);
-    _createPo->setEnabled(FALSE);
-    _createWo->setEnabled(FALSE);
+    _woSupply->setEnabled(false);
+    _createPr->setChecked(false);
+    _createPr->setEnabled(false);
+    _createSoPr->setChecked(false);
+    _createSoPr->setEnabled(false);
+    _createPo->setChecked(false);
+    _createPo->setEnabled(false);
+    _createWo->setEnabled(false);
 
     if((_itemType == 'R') || (_itemType == 'K'))
     {
-      _sold->setEnabled(TRUE);
+      _sold->setEnabled(true);
       _controlMethod->setCurrentIndex(0);
     }
     else
     {
-      _sold->setChecked(FALSE);
-      _sold->setEnabled(FALSE);
+      _sold->setChecked(false);
+      _sold->setEnabled(false);
       _controlMethod->setCurrentIndex(1);
     }
 	
-    _stocked->setChecked(FALSE);
-    _stocked->setEnabled(FALSE);
+    _stocked->setChecked(false);
+    _stocked->setEnabled(false);
 	
-    _useDefaultLocation->setChecked(FALSE);
-    _useDefaultLocation->setEnabled(FALSE);
+    _useDefaultLocation->setChecked(false);
+    _useDefaultLocation->setEnabled(false);
 	
-    _locationControl->setChecked(FALSE);
-    _locationControl->setEnabled(FALSE);
+    _locationControl->setChecked(false);
+    _locationControl->setEnabled(false);
 	
-    _controlMethod->setEnabled(FALSE);
+    _controlMethod->setEnabled(false);
   }
   else
   {
-    _safetyStock->setEnabled(TRUE);
-    _abcClass->setEnabled(TRUE);
-    _autoUpdateABCClass->setEnabled(TRUE);
-    _cycleCountFreq->setEnabled(TRUE);
-    _leadTime->setEnabled(TRUE);
-    _orderGroup->setEnabled(TRUE);
-    _orderGroupFirst->setEnabled(TRUE);
-    _mpsTimeFence->setEnabled(TRUE);
+    _safetyStock->setEnabled(true);
+    _abcClass->setEnabled(true);
+    _autoUpdateABCClass->setEnabled(true);
+    _cycleCountFreq->setEnabled(true);
+    _leadTime->setEnabled(true);
+    _orderGroup->setEnabled(true);
+    _orderGroupFirst->setEnabled(true);
+    _mpsTimeFence->setEnabled(true);
 	
-    _poSupply->setEnabled(TRUE);
-    _woSupply->setEnabled(TRUE);
+    _poSupply->setEnabled(true);
+    _woSupply->setEnabled(true);
  
     if ( (_itemType == 'O') || (_itemType == 'P') )
     {
@@ -1213,27 +1213,27 @@ void itemSite::sCacheItemType(char pItemType)
     }
     else
     {
-      _createPr->setChecked(FALSE);
-      _createPr->setEnabled(FALSE);
-	  _createSoPr->setChecked(FALSE);
-      _createSoPr->setEnabled(FALSE);
-	  _createPo->setChecked(FALSE);
-      _createPo->setEnabled(FALSE);
+      _createPr->setChecked(false);
+      _createPr->setEnabled(false);
+	  _createSoPr->setChecked(false);
+      _createSoPr->setEnabled(false);
+	  _createPo->setChecked(false);
+      _createPo->setEnabled(false);
     }
 
     if ( (_itemType == 'M') )
       _createWo->setEnabled(_woSupply->isChecked());
     else
     {
-      _createWo->setChecked(FALSE);
-      _createWo->setEnabled(FALSE);
+      _createWo->setChecked(false);
+      _createWo->setEnabled(false);
     }
     
-    _sold->setEnabled(TRUE);
-    _stocked->setEnabled(TRUE);
-    _useDefaultLocation->setEnabled(TRUE);
-    _locationControl->setEnabled(TRUE);
-    _controlMethod->setEnabled(TRUE);
+    _sold->setEnabled(true);
+    _stocked->setEnabled(true);
+    _useDefaultLocation->setEnabled(true);
+    _locationControl->setEnabled(true);
+    _controlMethod->setEnabled(true);
   }
 
   if ( (_itemType == 'B') || (_itemType == 'F') || (_itemType == 'R') ||
@@ -1283,7 +1283,7 @@ void itemSite::populate()
   itemsite.exec();
   if (itemsite.first())
   {
-    _updates = FALSE;
+    _updates = false;
 
     _item->setId(itemsite.value("itemsite_item_id").toInt());
     _warehouse->setId(itemsite.value("itemsite_warehous_id").toInt());
@@ -1317,33 +1317,33 @@ void itemSite::populate()
     if (itemsite.value("itemsite_controlmethod").toString() == "N")
     {
       _controlMethod->setCurrentIndex(0);
-      _wasLotSerial = FALSE;
+      _wasLotSerial = false;
     }
     else if (itemsite.value("itemsite_controlmethod").toString() == "R")
     {
       _controlMethod->setCurrentIndex(1);
-      _wasLotSerial = FALSE;
+      _wasLotSerial = false;
     }
     else if (itemsite.value("itemsite_controlmethod").toString() == "L")
     {
       _controlMethod->setCurrentIndex(2);
-      _wasLotSerial = TRUE;
+      _wasLotSerial = true;
     }
     else if (itemsite.value("itemsite_controlmethod").toString() == "S")
     {
       _controlMethod->setCurrentIndex(3);
-      _wasLotSerial = TRUE;
+      _wasLotSerial = true;
     }
 
     if ( (_controlMethod->currentIndex() == 2) ||
          (_controlMethod->currentIndex() == 3) )
     {
-      _perishable->setEnabled(TRUE);
+      _perishable->setEnabled(true);
       _perishable->setChecked(itemsite.value("itemsite_perishable").toBool());
       _sequence->setId(itemsite.value("itemsite_lsseq_id").toInt());
     }
     else
-      _perishable->setEnabled(FALSE);
+      _perishable->setEnabled(false);
 
     if(itemsite.value("itemsite_costmethod").toString() == "N")
       _costNone->setChecked(true);
@@ -1369,10 +1369,10 @@ void itemSite::populate()
     if (!itemsite.value("supplywarehousid").isNull())
     {
       _suppliedFromSite->setId(itemsite.value("supplywarehousid").toInt());
-      _createPlannedTransfers->setChecked(TRUE);
+      _createPlannedTransfers->setChecked(true);
     }
     else
-      _createPlannedTransfers->setChecked(FALSE);
+      _createPlannedTransfers->setChecked(false);
 
     _poSupply->setChecked(itemsite.value("itemsite_poSupply").toBool());
     _woSupply->setChecked(itemsite.value("itemsite_woSupply").toBool());
@@ -1391,21 +1391,21 @@ void itemSite::populate()
     }
     else
     {
-      _createPr->setEnabled(FALSE);
-      _createSoPr->setEnabled(FALSE);
-      _createPo->setEnabled(FALSE);
-      _dropShip->setEnabled(FALSE);
+      _createPr->setEnabled(false);
+      _createSoPr->setEnabled(false);
+      _createPo->setEnabled(false);
+      _dropShip->setEnabled(false);
     }
 
     if ( (itemsite.value("item_type").toString() == "M") )
       _createWo->setChecked(itemsite.value("itemsite_createwo").toBool());
     else
-      _createWo->setEnabled(FALSE);
+      _createWo->setEnabled(false);
 
     if (itemsite.value("itemsite_loccntrl").toBool())
-      _locationControl->setChecked(TRUE);
+      _locationControl->setChecked(true);
     else
-      _locationControl->setChecked(FALSE);
+      _locationControl->setChecked(false);
     _wasLocationControl = itemsite.value("itemsite_loccntrl").toBool();
     _disallowBlankWIP->setChecked(itemsite.value("itemsite_disallowblankwip").toBool());
 
@@ -1415,20 +1415,20 @@ void itemSite::populate()
       {
         if (itemsite.value("itemsite_location").toString().length())
         {
-          _useDefaultLocation->setChecked(TRUE);
-          _miscLocation->setChecked(TRUE);
+          _useDefaultLocation->setChecked(true);
+          _miscLocation->setChecked(true);
           _miscLocationName->setText(itemsite.value("itemsite_location").toString());
         }
         else
-          _useDefaultLocation->setChecked(FALSE);
+          _useDefaultLocation->setChecked(false);
       }
       else
-        _useDefaultLocation->setChecked(FALSE);
+        _useDefaultLocation->setChecked(false);
     }
     else
     {
-      _useDefaultLocation->setChecked(TRUE);
-      _location->setChecked(TRUE);
+      _useDefaultLocation->setChecked(true);
+      _location->setChecked(true);
       _locations->setId(itemsite.value("itemsite_location_id").toInt());
       _recvlocations->setId(itemsite.value("itemsite_recvlocation_id").toInt());
       _issuelocations->setId(itemsite.value("itemsite_issuelocation_id").toInt());
@@ -1455,18 +1455,18 @@ void itemSite::populate()
 
     if (itemsite.value("itemsite_cosdefault").toString() == "D")
     {
-      _woCostGroup->setChecked(TRUE);
-      _todate->setChecked(TRUE);
-      _proportional->setChecked(FALSE);
+      _woCostGroup->setChecked(true);
+      _todate->setChecked(true);
+      _proportional->setChecked(false);
     }
     else if (itemsite.value("itemsite_cosdefault").toString() == "P")
     {
-      _woCostGroup->setChecked(TRUE);
-      _todate->setChecked(FALSE);
-      _proportional->setChecked(TRUE);
+      _woCostGroup->setChecked(true);
+      _todate->setChecked(false);
+      _proportional->setChecked(true);
     }
 
-    _updates = TRUE;
+    _updates = true;
   }
   else if (itemsite.lastError().type() != QSqlError::NoError)
   {
@@ -1493,9 +1493,9 @@ void itemSite::clear()
   else
     _active->setFocus();
     
-  _active->setChecked(TRUE);
-  _useParameters->setChecked(FALSE);
-  _useParametersOnManual->setChecked(FALSE);
+  _active->setChecked(true);
+  _useParameters->setChecked(false);
+  _useParametersOnManual->setChecked(false);
   _reorderLevel->setText("0.00");
   _orderUpToQty->setText("0.00");
   _minimumOrder->setText("0.00");
@@ -1508,21 +1508,21 @@ void itemSite::clear()
   _eventFence->setValue(_metrics->value("DefaultEventFence").toInt());
 
   _orderGroup->setValue(1);
-  _orderGroupFirst->setChecked(FALSE);
+  _orderGroupFirst->setChecked(false);
   _mpsTimeFence->setValue(0);
     
   sCacheItemType(_itemType);
     
-  _locationControl->setChecked(FALSE);
-  _useDefaultLocation->setChecked(FALSE);
+  _locationControl->setChecked(false);
+  _useDefaultLocation->setChecked(false);
   _miscLocationName->clear();
   _locationComments->clear();
     
   _costcat->setId(-1);
   
-  _purchWarranty->setChecked(FALSE);
-  _autoRegister->setChecked(FALSE);
-  _tab->setTabEnabled(_tab->indexOf(_expirationTab),FALSE);
+  _purchWarranty->setChecked(false);
+  _autoRegister->setChecked(false);
+  _tab->setTabEnabled(_tab->indexOf(_expirationTab),false);
     
   populateLocations();
 }
@@ -1684,7 +1684,7 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
 			      QMessageBox::Yes | QMessageBox::Default,
 			      QMessageBox::No) == QMessageBox::Yes)
       {
-	isq.prepare("UPDATE itemsite SET itemsite_active = TRUE "
+	isq.prepare("UPDATE itemsite SET itemsite_active = true "
 		  "WHERE itemsite_id=:itemsiteid;");
 	isq.bindValue(":itemsiteid", itemsiteid);
 	isq.exec();
@@ -1742,8 +1742,8 @@ void itemSite::sDefaultLocChanged()
   }
   else
   {
-    _miscLocation->setEnabled(FALSE);
-    _miscLocationName->setEnabled(FALSE);
+    _miscLocation->setEnabled(false);
+    _miscLocationName->setEnabled(false);
   }
 }
 

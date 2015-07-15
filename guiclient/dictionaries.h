@@ -28,7 +28,7 @@ class dictionaries : public XWidget, public Ui::dictionaries
       Busy
     };
 public:
-    dictionaries(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dictionaries(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dictionaries();
 
 public slots:

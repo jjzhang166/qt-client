@@ -15,7 +15,7 @@
 
 #include "guiclient.h"
 
-configureWO::configureWO(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureWO::configureWO(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureWO;
@@ -46,21 +46,21 @@ configureWO::configureWO(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _woNumGeneration->setCode(_metrics->value("WONumberGeneration"));
 
   if (_metrics->value("ExplodeWOEffective") == "E")
-    _explodeDateEffective->setChecked(TRUE);
+    _explodeDateEffective->setChecked(true);
   else
-    _startDateEffective->setChecked(TRUE);
+    _startDateEffective->setChecked(true);
 
   if (_metrics->value("WOExplosionLevel") == "S")
-    _singleLevel->setChecked(TRUE);
+    _singleLevel->setChecked(true);
   else if (_metrics->value("WOExplosionLevel") == "M")
-    _multiLevel->setChecked(TRUE);
+    _multiLevel->setChecked(true);
 
   _materialVariances->setChecked(_metrics->boolean("PostMaterialVariances"));
   
   if (_metrics->value("JobItemCosDefault") == "P")
-    _proportional->setChecked(TRUE);
+    _proportional->setChecked(true);
   else
-    _todate->setChecked(TRUE);
+    _todate->setChecked(true);
     
   this->setWindowTitle("Manufacture Configuration");
 }

@@ -34,7 +34,7 @@ class XTUPLEWIDGETS_EXPORT AddressList : public VirtualList
     friend class AddressSearch;
 
     public:
-	AddressList(QWidget*, const char* = 0, bool = false, Qt::WFlags = 0);
+	AddressList(QWidget*, const char* = 0, bool = false, Qt::WindowFlags = 0);
 
     public slots:
 	virtual void sFillList();

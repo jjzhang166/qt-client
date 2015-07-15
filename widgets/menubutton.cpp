@@ -34,7 +34,7 @@ MenuButton::MenuButton(QWidget *pParent) :
   _button->setIconSize(QSize(48,48));
   _button->setIcon(QIcon(QPixmap(":/widgets/images/folder_zoom_64.png")));
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   QFont font = _label->font();
   font.setPointSize(11);
   _label->setFont(font);

@@ -15,7 +15,7 @@
 #include "mqlutil.h"
 #include "errorReporter.h"
 
-printStatementsByCustomerType::printStatementsByCustomerType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printStatementsByCustomerType::printStatementsByCustomerType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printSinglecopyDocument(parent, name, modal, fl)
 {
   setupUi(optionsWidget());

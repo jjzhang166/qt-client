@@ -18,7 +18,7 @@ class dspItemsWithoutItemSources : public display
     Q_OBJECT
 
 public:
-    dspItemsWithoutItemSources(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspItemsWithoutItemSources(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

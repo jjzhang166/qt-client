@@ -11,7 +11,7 @@
 #ifndef __XTHELP_H__
 #define __XTHELP_H__
 
-#include <QHelpEngine>
+#include <QtHelp/QHelpEngine>
 #include <QNetworkRequest>
 
 class QByteArray;

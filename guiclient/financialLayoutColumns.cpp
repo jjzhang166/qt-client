@@ -13,12 +13,12 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-#include <QWorkspace>
+//#include <QWorkspace>
 
 #include <openreports.h>
 #include <reporthandler.h>
 
-financialLayoutColumns::financialLayoutColumns(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+financialLayoutColumns::financialLayoutColumns(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -80,15 +80,15 @@ enum SetResponse financialLayoutColumns::set(const ParameterList &pParams)
     }
     else if (param.toString() == "view")
     {
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
-      _report->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
+      _report->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
-      _selected->setEnabled(FALSE);
-      _prior->setEnabled(FALSE);
-      _budget->setEnabled(FALSE);
-      _showdb->setEnabled(FALSE);
+      _selected->setEnabled(false);
+      _prior->setEnabled(false);
+      _budget->setEnabled(false);
+      _showdb->setEnabled(false);
     }
   }
   
@@ -97,21 +97,21 @@ enum SetResponse financialLayoutColumns::set(const ParameterList &pParams)
   {
     if (param.toString() == "balance")
     {
-      _month->setChecked(TRUE);
-      _month->setEnabled(FALSE);
-      _fullmonth->setEnabled(TRUE);
-      _fullquarter->setEnabled(TRUE);
-      _fullyear->setEnabled(TRUE);
-      _yeartodate->setEnabled(TRUE);
-      _quarter->setHidden(TRUE);
-      _year->setHidden(TRUE);
-      _yeartodate->setHidden(TRUE);
+      _month->setChecked(true);
+      _month->setEnabled(false);
+      _fullmonth->setEnabled(true);
+      _fullquarter->setEnabled(true);
+      _fullyear->setEnabled(true);
+      _yeartodate->setEnabled(true);
+      _quarter->setHidden(true);
+      _year->setHidden(true);
+      _yeartodate->setHidden(true);
       _fullmonth->setText(tr("Month End"));
       _fullquarter->setText(tr("Quarter End"));
       _fullyear->setText(tr("Year End"));
     }
     if (param.toString() != "cash")
-      _showdb->setHidden(TRUE);
+      _showdb->setHidden(true);
   }
   
   return NoError;
@@ -280,37 +280,37 @@ void financialLayoutColumns::sToggleMonth()
 {
   if (!_month->isChecked())
   {
-    _fullmonth->setChecked(FALSE);
-    _fullmonth->setEnabled(FALSE);
+    _fullmonth->setChecked(false);
+    _fullmonth->setEnabled(false);
   }
   else
-    _fullmonth->setEnabled(TRUE);
+    _fullmonth->setEnabled(true);
 }
 
 void financialLayoutColumns::sToggleQuarter()
 {
   if (!_quarter->isChecked())
   {
-    _fullquarter->setChecked(FALSE);
-    _fullquarter->setEnabled(FALSE);
+    _fullquarter->setChecked(false);
+    _fullquarter->setEnabled(false);
   }
   else
-    _fullquarter->setEnabled(TRUE);
+    _fullquarter->setEnabled(true);
 }
 
 void financialLayoutColumns::sToggleYear()
 {
   if (!_year->isChecked())
   {
-    _fullyear->setChecked(FALSE);
-    _yeartodate->setChecked(FALSE);
-    _fullyear->setEnabled(FALSE);
-    _yeartodate->setEnabled(FALSE);
+    _fullyear->setChecked(false);
+    _yeartodate->setChecked(false);
+    _fullyear->setEnabled(false);
+    _yeartodate->setEnabled(false);
   }
   else
   {
-    _fullyear->setEnabled(TRUE);
-    _yeartodate->setEnabled(TRUE);
+    _fullyear->setEnabled(true);
+    _yeartodate->setEnabled(true);
   }
 }
 
@@ -318,18 +318,18 @@ void financialLayoutColumns::sTogglePrior()
 {
   if ((_fullmonth->isChecked()) || (_fullquarter->isChecked()) || (_fullyear->isChecked()) || (_yeartodate->isChecked()))
   {
-    _priorprcnt->setEnabled(TRUE);
-    _priordiff->setEnabled(TRUE);
-    _priordiffprcnt->setEnabled(TRUE);
+    _priorprcnt->setEnabled(true);
+    _priordiff->setEnabled(true);
+    _priordiffprcnt->setEnabled(true);
   }
   else
   {
-    _priorprcnt->setChecked(FALSE);
-    _priordiff->setChecked(FALSE);
-    _priordiffprcnt->setChecked(FALSE);  
-    _priorprcnt->setEnabled(FALSE);
-    _priordiff->setEnabled(FALSE);
-    _priordiffprcnt->setEnabled(FALSE);    
+    _priorprcnt->setChecked(false);
+    _priordiff->setChecked(false);
+    _priordiffprcnt->setChecked(false);  
+    _priorprcnt->setEnabled(false);
+    _priordiff->setEnabled(false);
+    _priordiffprcnt->setEnabled(false);    
   }
 }
 

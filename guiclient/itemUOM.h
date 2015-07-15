@@ -21,7 +21,7 @@ class itemUOM : public XDialog, public Ui::itemUOM
     Q_OBJECT
 
 public:
-    itemUOM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    itemUOM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~itemUOM();
 
 public slots:

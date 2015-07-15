@@ -17,7 +17,7 @@
 #include "metasql.h"
 #include "parameter.h"
 
-taxAssignment::taxAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxAssignment::taxAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

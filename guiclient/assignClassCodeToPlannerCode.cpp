@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-assignClassCodeToPlannerCode::assignClassCodeToPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+assignClassCodeToPlannerCode::assignClassCodeToPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ assignClassCodeToPlannerCode::assignClassCodeToPlannerCode(QWidget* parent, cons
 
   _classCode->setType(ParameterGroup::ClassCode);
 
-  _planCode->setAllowNull(TRUE);
+  _planCode->setAllowNull(true);
   _planCode->setType(XComboBox::PlannerCodes);
 }
 

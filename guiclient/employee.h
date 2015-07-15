@@ -36,14 +36,10 @@ class employee : public XDialog, public Ui::employee
     virtual void languageChange();
     virtual void sAttachGroup();
     virtual void sCrmAccount();
-    virtual void sDeleteCharass();
     virtual void sDetachGroup();
-    virtual void sEditCharass();
     virtual void sEditGroup();
-    virtual void sFillCharassList();
     virtual void sFillGroupsList();
     virtual void sHandleButtons();
-    virtual void sNewCharass();
     virtual void sViewGroup();
     virtual void sReleaseNumber();
 

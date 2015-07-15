@@ -27,7 +27,7 @@
 #include "workOrder.h"
 #include "mqlutil.h"
 
-dspMRPDetail::dspMRPDetail(QWidget* parent, const char* name, Qt::WFlags fl)
+dspMRPDetail::dspMRPDetail(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -186,7 +186,7 @@ void dspMRPDetail::sIssuePR()
   params.append("mode", "new");
   params.append("itemsite_id", _itemsite->id());
 
-  purchaseRequest newdlg(this, "", TRUE);
+  purchaseRequest newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

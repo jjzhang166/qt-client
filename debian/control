@@ -1,0 +1,57 @@
+Source: postbooks
+Section: misc
+Priority: optional
+Maintainer: Debian xTuple Maintainers <pkg-xtuple-maintainers@lists.alioth.debian.org>
+Uploaders:
+ Andrew Shadura <andrewsh@debian.org>,
+ Daniel Pocock <daniel@pocock.pro>
+Build-Depends: debhelper (>= 9), dpkg-dev (>= 1.16.1~), libqt4-dev (>= 4.5.0), libdmtx-dev, libopenrpt-dev (>= 3.3.7), libcsvimp-dev (>= 0.5.0), libqtassistantclient-dev, libqt4-webkit, libz-dev, libqtwebkit-dev, libsqlite3-dev
+Standards-Version: 3.9.6
+Homepage: http://www.xtuple.com/postbooks
+Vcs-Git: https://github.com/xtuple/qt-client
+Vcs-Browser: https://github.com/xtuple/qt-client
+
+Package: libxtuplecommon1
+Section: libs
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: multi-user accounting / CRM / ERP suite (shared libraries)
+ A full-featured, fully-integrated business management system, the core of
+ the award winning xTuple ERP Suite. Built with the open source PostgreSQL
+ database and the open source Qt framework for C++, it provides the
+ ultimate in power and flexibility for a range of businesses and
+ industries of any size.
+ .
+ This package contains shared libraries used by PostBooks and related code
+ including the PostBooks Updater utility for managing the schema.
+
+Package: libxtuplecommon-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libxtuplecommon1 (= ${binary:Version})
+Description: multi-user accounting / CRM / ERP suite (development package)
+ A full-featured, fully-integrated business management system, the core of
+ the award winning xTuple ERP Suite. Built with the open source PostgreSQL
+ database and the open source Qt framework for C++, it provides the
+ ultimate in power and flexibility for a range of businesses and
+ industries of any size.
+ .
+ This package contains development files needed to build related packages,
+ including the PostBooks Updater utility for managing the schema.
+
+Package: postbooks
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-sql-psql, qt-assistant-compat
+Suggests: postbooks-schema-quickstart, postbooks-schema-empty, postbooks-schema-demo, postbooks-updater
+Description: multi-user accounting / CRM / ERP suite (GUI)
+ A full-featured, fully-integrated business management system, the core of
+ the award winning xTuple ERP Suite. Built with the open source PostgreSQL
+ database and the open source Qt framework for C++, it provides the
+ ultimate in power and flexibility for a range of businesses and
+ industries of any size.
+ .
+ This package contains the GUI.  Install it on any workstation that
+ needs access to the PostBooks database.  There is no server component
+ other than an instance of PostgreSQL itself.
+

@@ -25,6 +25,7 @@
 #include <QVariant>
 
 #include "dbtools.h"
+#include "errorReporter.h"
 #include "login2Options.h"
 #include "qmd5.h"
 #include "storedProcErrorLookup.h"
@@ -36,7 +37,7 @@
 /* TODO: rename _nonxTupleDB to _isxTupleDB internally and
          set it based on db contents, not command line parameter input
  */
-login2::login2(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+login2::login2(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, modal ? (fl | Qt::Dialog) : fl)
 {
   setObjectName(name);
@@ -110,19 +111,19 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   {
     _username->setText(param.toString());
     _password->setFocus();
-    _captive = TRUE;
+    _captive = true;
   }
   else
   {
     _username->setFocus();
-    _captive = FALSE;
+    _captive = false;
   }
 
   param = pParams.value("password", &valid);
   if (valid)
   {
     _password->setText(param.toString());
-    _captive = TRUE;
+    _captive = true;
   }
 
   param = pParams.value("copyright", &valid);
@@ -170,6 +171,13 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
   param = pParams.value("setSearchPath", &valid);
   if (valid)
     _setSearchPath = true;
+
+  param = pParams.value("applicationName", &valid);
+  if (valid) {
+    _connAppName = param.toString().trimmed();
+  } else {
+    _connAppName = "xTuple ERP (unknown)";
+  }
 
   if(pParams.inList("login"))
     sLogin();
@@ -329,10 +337,60 @@ void login2::sLogin()
   int methodidx; // not declared in for () because we'll need it later
   for (methodidx = 0; methodidx < method.size(); methodidx++)
   {
-    db.setConnectOptions(method.at(methodidx).first);
+    db.setConnectOptions(QString("application_name='%1';%2").arg(_connAppName).arg(method.at(methodidx).first));
     db.setPassword(method.at(methodidx).second);
     if (db.open())
       break;  // break instead of for-loop condition to preserve methodidx
+  }
+
+  if (db.isOpen())
+  {
+    QString earliest = "8.4.0",
+            latest   = "9.4.0";
+    XSqlQuery checkVersion;
+    checkVersion.prepare("SELECT compareVersion(:earliest) <= 0"
+                         "   AND compareVersion(:latest)   >= 0 AS ok,"
+                         "       version() AS version;");
+    checkVersion.bindValue(":earliest", earliest);
+    checkVersion.bindValue(":latest",   latest);
+    checkVersion.exec();
+    if (checkVersion.first() && ! checkVersion.value("ok").toBool() &&
+        QMessageBox::question(this, tr("Unsupported Database Server Version"),
+                              tr("<p>The database server is at version %1 "
+                                 "but xTuple ERP only supports %2 to %3.</p>"
+                                 "<p>Continue anyway?</p>")
+                                .arg(checkVersion.value("version").toString(),
+                                     earliest, latest),
+                              QMessageBox::Yes,
+                              QMessageBox::No | QMessageBox::Default) == QMessageBox::No) {
+      if (_splash) {
+        _splash->hide();
+      }
+      setCursor(QCursor(Qt::ArrowCursor));
+      db.close();
+      if (! _captive) {
+        _username->setText("");
+        _username->setFocus();
+      } else
+        _password->setFocus();
+
+      _password->setText("");
+      return;
+    } else if (ErrorReporter::error(QtCriticalMsg, this,
+                                    tr("Cannot Connect to xTuple ERP Server"),
+                                    checkVersion, __FILE__, __LINE__)) {
+      if (_splash)
+        _splash->hide();
+      db.close();
+      if (! _captive) {
+        _username->setText("");
+        _username->setFocus();
+      } else
+        _password->setFocus();
+
+      _password->setText("");
+      return;
+    }
   }
 
    // if connected using OpenMFG enhanced auth, remangle the password
@@ -390,6 +448,36 @@ void login2::sLogin()
   
   if(!_nonxTupleDB)
   {
+    // check that the connected database at least looks like a valid xTuple database.
+    XSqlQuery checkSchema(
+                "SELECT EXISTS ("
+                "   SELECT 1"
+                "   FROM pg_catalog.pg_class AS c"
+                "   JOIN  pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace"
+                "   WHERE n.nspname = 'public'"
+                "   AND c.relname = 'metric'"
+                ") AS has_metric"
+              );
+
+    if (!(checkSchema.first() ? checkSchema.value("has_metric").toBool() : false))
+    {
+        setCursor(QCursor(Qt::ArrowCursor));
+
+        if (_splash) {
+          _splash->hide();
+        }
+
+        QString msg = QObject::tr(
+           "<p>The database \"%1\" does not appear to be a valid xTuple database.</p>"
+           "<p>Please check the database name and try again.</p>"
+        ).arg(dbName);
+
+        QMessageBox::critical(this, tr("Invalid Database"), msg, QMessageBox::Ok | QMessageBox::Escape | QMessageBox::Default);
+
+        return;
+    }
+
+
     QString loginqry = "";
     if (_setSearchPath)
       loginqry="SELECT login(true) AS result, CURRENT_USER AS user;";
@@ -458,7 +546,7 @@ void login2::sOptions()
   if (_multipleConnections)
     params.append("dontSaveSettings");
 
-  login2Options newdlg(this, "", TRUE);
+  login2Options newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != QDialog::Rejected)
   {

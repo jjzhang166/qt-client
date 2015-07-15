@@ -21,7 +21,7 @@ class dspVendorAPHistory : public display, public Ui::dspVendorAPHistory
     Q_OBJECT
 
 public:
-    dspVendorAPHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspVendorAPHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

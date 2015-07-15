@@ -10,7 +10,7 @@
 
 #include "dspCountTagsByClassCode.h"
 
-dspCountTagsByClassCode::dspCountTagsByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspCountTagsByClassCode::dspCountTagsByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspCountTagsBase(parent, "dspCountTagsByClassCode", fl)
 {
   setWindowTitle(tr("Count Tags by Class Code"));

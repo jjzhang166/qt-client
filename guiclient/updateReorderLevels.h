@@ -20,7 +20,7 @@ class updateReorderLevels : public XDialog, public Ui::updateReorderLevels
     Q_OBJECT
 
 public:
-    updateReorderLevels(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    updateReorderLevels(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~updateReorderLevels();
   
     virtual bool setParams(ParameterList &);

@@ -2,504 +2,6 @@
 <!DOCTYPE TS >
 <TS version="2.0">
   <context>
-    <name>AccountingPeriodsMasterList</name>
-    <message>
-      <width>100</width>
-      <source>Start</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>End</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Closed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Frozen</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Accounting Periods Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>End</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Frozen</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Closed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>AccountingYearPeriodsMasterList</name>
-    <message>
-      <width>80</width>
-      <source>Closed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>End</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>329</width>
-      <source>Fiscal Years Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Closed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>End</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>AccountNumberMasterList</name>
-    <message>
-      <width>95</width>
-      <source>Profit Center</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Sub</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Chart of Accounts Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Company</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Profit Center</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Sub</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Company</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>AddressesMasterList</name>
-    <message>
-      <width>95</width>
-      <source>First Name / Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Phone</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Line 2</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Use of Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Last Name / Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Country</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Line 1</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>City</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Addresses Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>State/Province</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Line 3</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Email Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>CRM Account</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Fax</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Postal Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Line 3</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Phone</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>CRM Account</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Use of Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>State/Province</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Country</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>First Name / Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Email Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Last Name / Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>City</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Line 2</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Fax</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Postal Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Line 1</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>AdjustmentTypes</name>
-    <message>
-      <width>465</width>
-      <source>Adjustment Types</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Adj. Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Debit/Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Debit/Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Adj. Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>Alignment</name>
-    <message>
-      <width>100</width>
-      <source>800</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>600</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>200</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>600</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>700</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>300</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>700</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>400</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>300</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>900</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>1100</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>200</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>400</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>800</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>100</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>500</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>500</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>1000</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>100</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>APAging</name>
     <message>
       <width>365</width>
@@ -649,6 +151,89 @@
     <message>
       <width>95</width>
       <source>Report Totals:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Page: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Page: </source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>APAgingSummary</name>
+    <message>
+      <width>450</width>
+      <source>Accounts Payable Aging Summary Report</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>As of:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>0+30 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>90+ Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Current</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>61+90 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>31+60 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Discount</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Total Amt.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Vendor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>475</width>
+      <source>All amounts are in base currency as of the document date.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Note:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Total For All Vendors</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -1193,6 +778,89 @@
     </message>
   </context>
   <context>
+    <name>ARAgingSummary</name>
+    <message>
+      <width>50</width>
+      <source>As of:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>420</width>
+      <source>Accounts Receivable Aging Report Summary</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>31-60 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>0-30 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>61-90 Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>0+Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>90+ Days</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>Customer Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Total Amt.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Total For All Customers</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Page: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>440</width>
+      <source>All amounts are in base currency as of the document date.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>41</width>
+      <source>Note:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Page: </source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>ARApplications</name>
     <message>
       <width>100</width>
@@ -1292,6 +960,119 @@
     <message>
       <width>150</width>
       <source>Total Applications (base):</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>AROpenItem</name>
+    <message>
+      <width>126.032</width>
+      <source>Customer:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>142</width>
+      <source>Order Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95.8</width>
+      <source>Sales Rep.:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>66.5</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>82</width>
+      <source>Balance:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>152</width>
+      <source>Document Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>143.191</width>
+      <source>Document Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>146</width>
+      <source>Reason Code:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>131</width>
+      <source>Commission Due:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>133</width>
+      <source>Document Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>86.4</width>
+      <source>Amount:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>52.6</width>
+      <source>Paid:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>132</width>
+      <source>Commission Paid:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>166</width>
+      <source>Journal Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Doc Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>110</width>
+      <source>Doc Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Apply Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Amount</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Currency</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Base Amount</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -1429,115 +1210,500 @@
     </message>
   </context>
   <context>
-    <name>AROpenItem</name>
+    <name>AccountNumberMasterList</name>
     <message>
-      <width>126.032</width>
-      <source>Customer:</source>
+      <width>95</width>
+      <source>Profit Center</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>142</width>
-      <source>Order Number:</source>
+      <width>95</width>
+      <source>Sub</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Chart of Accounts Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Company</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Profit Center</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Sub</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Company</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>AccountingPeriodsMasterList</name>
+    <message>
+      <width>100</width>
+      <source>Start</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Due Date:</source>
+      <source>End</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>85.8</width>
-      <source>Sales Rep.:</source>
+      <width>80</width>
+      <source>Closed</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>51.5</width>
-      <source>Terms:</source>
+      <width>80</width>
+      <source>Frozen</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>67</width>
-      <source>Balance:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>152</width>
-      <source>Document Number:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>143.191</width>
-      <source>Document Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>146</width>
-      <source>Reason Code:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>131</width>
-      <source>Commission Due:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>133</width>
-      <source>Document Type:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>61.4</width>
-      <source>Amount:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>42.6</width>
-      <source>Paid:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>132</width>
-      <source>Commission Paid:</source>
+      <width>450</width>
+      <source>Accounting Periods Master List</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Notes:</source>
+      <source>End</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>166</width>
-      <source>Journal Number:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Doc Type</source>
+      <width>80</width>
+      <source>Frozen</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Doc Number</source>
+      <source>Start</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Closed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>AccountingYearPeriodsMasterList</name>
+    <message>
+      <width>80</width>
+      <source>Closed</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Apply Date</source>
+      <source>Start</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Amount</source>
+      <source>End</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>329</width>
+      <source>Fiscal Years Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Closed</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Currency</source>
+      <source>End</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Base Amount</source>
+      <source>Start</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>AddressesMasterList</name>
+    <message>
+      <width>95</width>
+      <source>First Name / Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Phone</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Line 2</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Use of Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Last Name / Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Country</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Line 1</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>City</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Addresses Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>State/Province</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Line 3</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Email Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Fax</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Postal Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Line 3</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Phone</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Use of Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>State/Province</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Country</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>First Name / Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Email Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Last Name / Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>City</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Line 2</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Fax</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Postal Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Line 1</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>AdjustmentTypes</name>
+    <message>
+      <width>465</width>
+      <source>Adjustment Types</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Adj. Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Debit/Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Debit/Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Adj. Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>Alignment</name>
+    <message>
+      <width>100</width>
+      <source>800</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>600</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>200</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>600</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>700</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>300</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>700</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>400</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>300</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>900</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>1100</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>200</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>400</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>800</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>100</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>500</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>500</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>1000</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>100</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -1884,7 +2050,7 @@
     </message>
     <message>
       <width>162</width>
-      <source>Add: Checks in Circulation:</source>
+      <source>Checks in Circulation:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -1894,7 +2060,7 @@
     </message>
     <message>
       <width>163</width>
-      <source>Deduct: Deposits in Circulation:</source>
+      <source>Deposits in Circulation:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -1914,59 +2080,11 @@
     </message>
     <message>
       <width>177</width>
-      <source>Add: Adjustments in Circulation:</source>
+      <source>Adjustments in Circulation:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>75</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>BillingSelections</name>
-    <message>
-      <width>100</width>
-      <source>Cust. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>465</width>
-      <source>Billing Selections</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Cust Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Cust Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Cust. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
       <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
@@ -2005,7 +2123,7 @@
     </message>
     <message>
       <width>305</width>
-      <source>Bill of Operations</source>
+      <source>Routing</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -2076,6 +2194,54 @@
     <message>
       <width>80</width>
       <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>BillingSelections</name>
+    <message>
+      <width>100</width>
+      <source>Cust. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>465</width>
+      <source>Billing Selections</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -2683,7 +2849,7 @@
     </message>
     <message>
       <width>80</width>
-      <source>Ship Date</source>
+      <source>Invc. Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -2698,12 +2864,42 @@
     </message>
     <message>
       <width>80</width>
-      <source>Total</source>
+      <source>Total Price</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
       <source>Ord. Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust. Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Cust. Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Total Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Margin</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Margin %</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -2744,64 +2940,6 @@
     <message>
       <width>80</width>
       <source>Total:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>BudgetsMasterList</name>
-    <message>
-      <width>95</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>End Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Budgets Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>End Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -2860,6 +2998,64 @@
     <message>
       <width>95</width>
       <source>Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>BudgetsMasterList</name>
+    <message>
+      <width>95</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>End Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Budgets Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>End Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -2978,6 +3174,197 @@
     <message>
       <width>100</width>
       <source>Comments:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>CCReceipt</name>
+    <message>
+      <width>150</width>
+      <source>Printed:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Credit Card Receipt</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Approval Code:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Card Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Order:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Customer Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Amount:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Transaction Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Transaction Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Cardholder:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>CRMAccountMasterList</name>
+    <message>
+      <width>95</width>
+      <source>Account Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Competitor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Tax Auth</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Partner</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Accounts</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Prospect</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Vendor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Contact Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Phone</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Email</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Account #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Partner</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Account Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Prospect</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Tax Auth</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Vendor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Competitor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Contact Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Phone</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Email</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -3341,84 +3728,6 @@
     </message>
   </context>
   <context>
-    <name>CashReceiptsEditList</name>
-    <message>
-      <width>125</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Amount Applied</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Amount</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
-      <source>Document/Account Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Doc. Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Payment Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Cust #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>465</width>
-      <source>Cash Receipts Edit List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Dist. Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Reference #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Bank Account</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Applications:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Total Receipts:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>CashReceipts</name>
     <message>
       <width>80</width>
@@ -3532,65 +3841,80 @@
     </message>
   </context>
   <context>
-    <name>CCReceipt</name>
-    <message>
-      <width>150</width>
-      <source>Printed:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Credit Card Receipt</source>
-      <translation type="unfinished"/>
-    </message>
+    <name>CashReceiptsEditList</name>
     <message>
       <width>125</width>
-      <source>Approval Code:</source>
+      <source>Customer</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Card Number:</source>
+      <width>80</width>
+      <source>Amount Applied</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Status:</source>
+      <width>80</width>
+      <source>Amount</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Order:</source>
+      <width>155</width>
+      <source>Document/Account Number</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Customer Name:</source>
+      <width>75</width>
+      <source>Doc. Type</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Amount:</source>
+      <width>80</width>
+      <source>Payment Type</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Transaction Date:</source>
+      <width>60</width>
+      <source>Cust #</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Transaction Type:</source>
+      <width>465</width>
+      <source>Cash Receipts Edit List</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>By:</source>
+      <width>60</width>
+      <source>Dist. Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Cardholder:</source>
+      <width>70</width>
+      <source>Reference #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Bank Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Applications:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Total Receipts:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -3774,7 +4098,7 @@
     <name>CheckRegister</name>
     <message>
       <width>90</width>
-      <source>Check Date</source>
+      <source>Payment Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3794,7 +4118,7 @@
     </message>
     <message>
       <width>100</width>
-      <source>Check. #</source>
+      <source>Payment #</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3829,7 +4153,7 @@
     </message>
     <message>
       <width>475</width>
-      <source>Check Register</source>
+      <source>Payment Register</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3839,7 +4163,7 @@
     </message>
     <message>
       <width>90</width>
-      <source>Check Date</source>
+      <source>Payment Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3854,7 +4178,7 @@
     </message>
     <message>
       <width>100</width>
-      <source>Check. #</source>
+      <source>Payment #</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -5631,10 +5955,138 @@
     </message>
   </context>
   <context>
+    <name>CreditMemo</name>
+    <message>
+      <width>120</width>
+      <source>P.O. Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ext. Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>195</width>
+      <source>Return Currency</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Document Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Unit Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Return #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Qty. Returned</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Apply To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>104</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>175</width>
+      <source>Return</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Qty. Credited</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Subtotal:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Comments</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Sales Tax:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Freight:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Total Credit:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Misc. Comments:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Misc:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>CreditMemoEditList</name>
     <message>
       <width>465</width>
-      <source>Credit Memo Edit List</source>
+      <source>Return Edit List</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -5749,262 +6201,6 @@
     </message>
   </context>
   <context>
-    <name>CreditMemo</name>
-    <message>
-      <width>120</width>
-      <source>P.O. Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ext. Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>195</width>
-      <source>Credit Memo Currency</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Document Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Unit Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Credit Memo #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Qty. Returned</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Apply To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>104</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>175</width>
-      <source>Credit Memo</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Qty. Credited</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Subtotal:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Comments</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Sales Tax:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Freight:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Total Credit:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Misc. Comments:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Misc:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>CRMAccountMasterList</name>
-    <message>
-      <width>95</width>
-      <source>Account Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Competitor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Tax Auth</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Partner</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>CRM Accounts</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Prospect</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Vendor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Contact Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Phone</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Email</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Account #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Partner</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Account Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Prospect</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Tax Auth</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Vendor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Competitor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Contact Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Phone</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Email</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>CurrencyConversionList</name>
     <message>
       <width>575</width>
@@ -6044,6 +6240,124 @@
     <message>
       <width>80</width>
       <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>CustOrderAcknowledgement</name>
+    <message>
+      <width>140</width>
+      <source>PO Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>406</width>
+      <source>Sales Order Acknowledgement</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>67</width>
+      <source>Balance</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>SHIP TO:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>57</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>57</width>
+      <source>Terms</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ship Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Amount</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>BILL TO:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>FOB</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165.637</width>
+      <source>CUSTOMER ADDRESS:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>MISCELLANEOUS</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Balance Due:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>FREIGHT</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>SUBTOTAL</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>TAX</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>TOTAL</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>CREDITS</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -6362,6 +6676,44 @@
     </message>
   </context>
   <context>
+    <name>CustomerTypesMasterList</name>
+    <message>
+      <width>95</width>
+      <source>Type Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Customer Types Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Type Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>Customers</name>
     <message>
       <width>40</width>
@@ -6441,162 +6793,6 @@
     <message>
       <width>100</width>
       <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>CustomerTypesMasterList</name>
-    <message>
-      <width>95</width>
-      <source>Type Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Customer Types Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Type Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>CustOrderAcknowledgement</name>
-    <message>
-      <width>140</width>
-      <source>PO Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>406</width>
-      <source>Sales Order Acknowledgement</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>67</width>
-      <source>Balance</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>SHIP TO:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>57</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>57</width>
-      <source>Terms</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Ship Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Amount</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>BILL TO:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>FOB</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165.637</width>
-      <source>CUSTOMER ADDRESS:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>MISCELLANEOUS</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>170</width>
-      <source>Balance Due:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>FREIGHT</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>SUBTOTAL</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>TAX</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>TOTAL</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>CREDITS</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -7281,175 +7477,120 @@
     </message>
   </context>
   <context>
-    <name>DetailedInventoryHistoryByLotSerial</name>
+    <name>EDIProfilesMasterList</name>
     <message>
-      <width>72</width>
-      <source>QOH Before</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Lot/Serial #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>505</width>
-      <source>Detailed Inventory History by Lot/Serial #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Time</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>32</width>
-      <source>Level</source>
+      <width>200</width>
+      <source>EDI Profiles</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>45</width>
-      <source>UOM</source>
+      <source>From:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>102</width>
-      <source>Lot/Serial #:</source>
+      <width>45</width>
+      <source>To:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>72</width>
-      <source>Trans-Qty</source>
+      <width>45</width>
+      <source>CC:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>102</width>
-      <source>End Date:</source>
+      <width>30</width>
+      <source>BCC:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>102</width>
-      <source>Start Date:</source>
+      <width>45</width>
+      <source>Subject:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>100</width>
-      <source>Username</source>
+      <width>50</width>
+      <source>Reply To: </source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Item Number</source>
+      <width>55</width>
+      <source>Review:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>72</width>
-      <source>QOH After</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Location:</source>
+      <width>40</width>
+      <source>HTML:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>32</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>32</width>
-      <source>Type</source>
+      <source>Document Type:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Location:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>72</width>
-      <source>QOH Before</source>
+      <source>Output Format:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Time</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>32</width>
-      <source>Level</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>72</width>
-      <source>QOH After</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>72</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>72</width>
-      <source>Trans-Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>32</width>
-      <source>Type</source>
+      <source>Output File:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Lot/Serial #</source>
+      <source>Options Query:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>32</width>
-      <source>Whs.</source>
+      <width>50</width>
+      <source>Host:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Password:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Directory:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Login: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Review:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>15</width>
+      <source>...</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Username</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>152</width>
-      <source>Item Description</source>
+      <source>Output Format:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Order Number</source>
+      <source>Output File:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>85</width>
-      <source>Report Date:</source>
+      <width>100</width>
+      <source>Document Type:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>85</width>
-      <source>Page:</source>
+      <width>100</width>
+      <source>Options Query:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -7680,109 +7821,6 @@
     </message>
   </context>
   <context>
-    <name>ExpediteExceptionsByPlannerCode</name>
-    <message>
-      <width>114</width>
-      <source>Planner Code(s):</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Order Type/#</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Exception</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Site:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start/Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>To Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Look Ahead Days:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>Expedite Exceptions by Planner Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>From Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Order Type/#</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start/Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>To Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Exception</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>From Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>ExpenseCategoriesMasterList</name>
     <message>
       <width>80</width>
@@ -7965,6 +8003,162 @@
     <message>
       <width>85</width>
       <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>FinancialReport</name>
+    <message>
+      <width>80</width>
+      <source>Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>350</width>
+      <source>Financial Report</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Period:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>%</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>FinancialReportMonth</name>
+    <message>
+      <width>70</width>
+      <source>% of Group</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>380</width>
+      <source>Financial Report</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>% of Group</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -8272,54 +8466,6 @@
     </message>
   </context>
   <context>
-    <name>FinancialReportMonth</name>
-    <message>
-      <width>70</width>
-      <source>% of Group</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>380</width>
-      <source>Financial Report</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Type:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>% of Group</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>FinancialReportMonthYear</name>
     <message>
       <width>70</width>
@@ -8359,6 +8505,54 @@
     <message>
       <width>70</width>
       <source>% of Group</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>% of Group</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>FinancialReportQuarter</name>
+    <message>
+      <width>70</width>
+      <source>% of Group</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>380</width>
+      <source>Financial Report</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -8484,15 +8678,20 @@
     </message>
   </context>
   <context>
-    <name>FinancialReportQuarter</name>
+    <name>FinancialReportYear</name>
     <message>
-      <width>70</width>
+      <width>80</width>
       <source>% of Group</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
       <source>Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Name</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -8501,28 +8700,18 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
       <width>80</width>
       <source>Type:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
+      <width>80</width>
       <source>% of Group</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>85</width>
-      <source>Report Date:</source>
+      <width>55</width>
+      <source>Name</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -8530,112 +8719,9 @@
       <source>Page:</source>
       <translation type="unfinished"/>
     </message>
-  </context>
-  <context>
-    <name>FinancialReport</name>
-    <message>
-      <width>80</width>
-      <source>Name:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>350</width>
-      <source>Financial Report</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Period:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>%</source>
-      <translation type="unfinished"/>
-    </message>
     <message>
       <width>85</width>
       <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -8717,54 +8803,6 @@
     <message>
       <width>380</width>
       <source>Financial Report</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>FinancialReportYear</name>
-    <message>
-      <width>80</width>
-      <source>% of Group</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>380</width>
-      <source>Financial Report</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Type:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>% of Group</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -8928,139 +8966,6 @@
     </message>
   </context>
   <context>
-    <name>FreightPricesByCustomerType</name>
-    <message>
-      <width>100</width>
-      <source>Schedule</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Qty. Break</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Freight Class</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
-      <source>Show Expired Prices:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>To</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>From</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>405</width>
-      <source>Freight Prices by Customer Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
-      <source>Show Future Prices:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>104</width>
-      <source>Customer Type:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Currency</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Source</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>From</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Qty. Break</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>To</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Source</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Currency</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Freight Class</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Schedule</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>FreightPricesByCustomer</name>
     <message>
       <width>80</width>
@@ -9180,6 +9085,139 @@
     <message>
       <width>80</width>
       <source>Currency</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>FreightPricesByCustomerType</name>
+    <message>
+      <width>100</width>
+      <source>Schedule</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Qty. Break</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Freight Class</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Show Expired Prices:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>To</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>From</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>405</width>
+      <source>Freight Prices by Customer Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Show Future Prices:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>104</width>
+      <source>Customer Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Currency</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>From</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Qty. Break</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>To</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Currency</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Freight Class</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Schedule</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -9727,6 +9765,11 @@
       <translation type="unfinished"/>
     </message>
     <message>
+      <width>40</width>
+      <source>Deleted</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
       <width>85</width>
       <source>Report Date:</source>
       <translation type="unfinished"/>
@@ -9748,6 +9791,144 @@
     </message>
   </context>
   <context>
+    <name>GrossMarginCommissions</name>
+    <message>
+      <width>450</width>
+      <source>Gross Margin Commissions</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>103</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>103</width>
+      <source>End Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Invc. Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Commision</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>S/O #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Cust./ShipTo</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ext. Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ext. Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Gross Margin</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>103</width>
+      <source>Outside Rep:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Totals:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ext. Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>105</width>
+      <source>Cust./ShipTo</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Invc. Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>S/O #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Outside/Inside</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>103</width>
+      <source>Inside Rep:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ext. Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Gross Margin</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Commision</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>Image</name>
     <message>
       <width>95</width>
@@ -9762,6 +9943,114 @@
     <message>
       <width>95</width>
       <source>Image Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>Incident</name>
+    <message>
+      <width>104</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>98</width>
+      <source>Contact Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>112</width>
+      <source>Severity :</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>112</width>
+      <source>Contact Job Title:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>131</width>
+      <source>INCIDENT</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>66.8</width>
+      <source>Owner:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>79.8</width>
+      <source>Assigned to:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Contact Email:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>79.8</width>
+      <source>Category:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>79.8</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>112</width>
+      <source>CRM Acnt Name :</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>66.8</width>
+      <source>Priority:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>114</width>
+      <source>Incident Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Contact Phone:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Contact Phone:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>114</width>
+      <source>Comments:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>114</width>
+      <source>Documents:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Title</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>URL</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -10006,7 +10295,7 @@
     </message>
     <message>
       <width>110</width>
-      <source>CRM Account</source>
+      <source>Account</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -10036,7 +10325,7 @@
     </message>
     <message>
       <width>110</width>
-      <source>CRM Account</source>
+      <source>Account</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -10052,114 +10341,6 @@
     <message>
       <width>50</width>
       <source>Status</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>Incident</name>
-    <message>
-      <width>104</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>98</width>
-      <source>Contact Name:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>112</width>
-      <source>Severity :</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>112</width>
-      <source>Contact Job Title:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>131</width>
-      <source>INCIDENT</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>66.8</width>
-      <source>Owner:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>79.8</width>
-      <source>Assigned to:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Contact Email:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>79.8</width>
-      <source>Category:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>79.8</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>112</width>
-      <source>CRM Acnt Name :</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>66.8</width>
-      <source>Priority:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>114</width>
-      <source>Incident Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Contact Phone:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Contact Phone:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>114</width>
-      <source>Comments:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>114</width>
-      <source>Documents:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Title</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>URL</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -10431,6 +10612,134 @@
     <message>
       <width>85</width>
       <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>InventoryAvailability</name>
+    <message>
+      <width>100</width>
+      <source>Unallocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Reorder Level</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Inventory Availability</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>130</width>
+      <source>Availability as of: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>LT</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Allocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>On Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>PO Requests</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Unallocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>LT</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Reorder Level</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Allocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>On Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -10904,134 +11213,6 @@
     </message>
   </context>
   <context>
-    <name>InventoryAvailability</name>
-    <message>
-      <width>100</width>
-      <source>Unallocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Reorder Level</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Inventory Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Availability as of: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>LT</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Allocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>On Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>PO Requests</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Unallocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>LT</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Reorder Level</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Allocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>On Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>InventoryBufferStatusByParameterList</name>
     <message>
       <width>80</width>
@@ -11373,6 +11554,234 @@
     </message>
   </context>
   <context>
+    <name>Invoice</name>
+    <message>
+      <width>247</width>
+      <source>Invoice</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>F.O.B.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>P.O. Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Order Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>110</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Invoice #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>121</width>
+      <source>Invoice Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>121</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>121</width>
+      <source>Discount Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Tracking #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>240</width>
+      <source>Shipment Details</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Ship Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Carrier</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Invoice Currency:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Unit Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Qty. Shipped</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ext. Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Serial #/Lot Information:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70.3</width>
+      <source>Spec Sheet:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Doc #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Total Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Allocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>240</width>
+      <source>Pre-Allocated Credits</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>140</width>
+      <source>Allocated</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Prev. Applied</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Balance</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>240</width>
+      <source>Total Allocated:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Freight:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Subtotal:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>140</width>
+      <source>Pre-Allocated Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Misc. Charge:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Sales Tax:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Total Due:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>25</width>
+      <source>of</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>25</width>
+      <source>of</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>InvoiceInformation</name>
     <message>
       <width>150</width>
@@ -11580,219 +11989,6 @@
     <message>
       <width>80</width>
       <source>Total:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>Invoice</name>
-    <message>
-      <width>247</width>
-      <source>Invoice</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>F.O.B.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>P.O. Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Order Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>110</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Invoice #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Invoice Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Due Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Discount Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Tracking #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>240</width>
-      <source>Shipment Details</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Ship Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Carrier</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Invoice Currency:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Unit Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Qty. Shipped</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ext. Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Serial #/Lot Information:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Doc #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Total Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Allocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>240</width>
-      <source>Pre-Allocated Credits</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>140</width>
-      <source>Allocated</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Prev. Applied</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Balance</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>240</width>
-      <source>Total Allocated:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Freight:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Subtotal:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>140</width>
-      <source>Pre-Allocated Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Misc. Charge:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Sales Tax:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Total Due:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -12008,89 +12204,6 @@
     </message>
   </context>
   <context>
-    <name>ItemCostsByClassCode</name>
-    <message>
-      <width>104</width>
-      <source>Class Code(s):</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Class Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>380</width>
-      <source>Item Costs by Class Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Actual Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Standard Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Actual Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Standard Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Class Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>ItemCostSummary</name>
     <message>
       <width>350</width>
@@ -12175,6 +12288,89 @@
     <message>
       <width>100</width>
       <source>Totals:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>ItemCostsByClassCode</name>
+    <message>
+      <width>104</width>
+      <source>Class Code(s):</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Class Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>380</width>
+      <source>Item Costs by Class Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Actual Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Standard Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Actual Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Standard Cost</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Class Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -12739,234 +12935,6 @@
     <message>
       <width>106</width>
       <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>Items</name>
-    <message>
-      <width>100</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Configured</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Item Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Packaging Weight</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Sold</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipping UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Price UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>66</width>
-      <source>Class Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Pick List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Alt. Capacity/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Shipping/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Inventory UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description 2</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Alt. Capacity UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Capacity/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Capacity UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Exclusive</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Active</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Product Weight</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description 1</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Price/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>356</width>
-      <source>Items</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Configured</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description 1</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Capacity/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description 2</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Inventory UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Price UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Active</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Capacity UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Exclusive</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Price/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Alt. Capacity UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Shipping/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Packaging Weight</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Alt. Capacity/Inventory Ratio</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Product Weight</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>66</width>
-      <source>Class Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Item Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Pick List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Sold</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipping UOM</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -13789,89 +13757,6 @@
     </message>
   </context>
   <context>
-    <name>ListOpenReturnAuthorizations</name>
-    <message>
-      <width>85</width>
-      <source>Cust. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>475</width>
-      <source>List Open Return Authorizations</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Expires</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Created</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>R/A #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Disposition</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Cust. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Disposition</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>R/A #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Created</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Expires</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>ListOpenSalesOrders</name>
     <message>
       <width>50</width>
@@ -14081,90 +13966,125 @@
     </message>
   </context>
   <context>
-    <name>LocationLotSerialNumberDetail</name>
+    <name>MPSDetail</name>
     <message>
-      <width>80</width>
-      <source>Netable</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Whs.</source>
+      <width>85</width>
+      <source>Safety Stock:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Lot/Serial #</source>
+      <source>Orders</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Projected QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Orders</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>180</width>
+      <source>Period</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Availability</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>484</width>
+      <source>MPS Detail</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>To Promise</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Whs.:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>105</width>
       <source>Item:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Qty.</source>
+      <source>Allocations</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Warehouse:</source>
+      <source>Forecast</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>350</width>
-      <source>Location/Lot/Serial # Detail</source>
+      <source>Planned</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Expiration</source>
+      <source>Allocations</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>150</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Expiration</source>
+      <width>180</width>
+      <source>Period</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Qty.</source>
+      <source>To Promise</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Location</source>
+      <source>Forecast</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Lot/Serial #</source>
+      <source>Orders</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Netable</source>
+      <source>Availability</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Planned</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Projected QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Orders</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -14179,7 +14099,177 @@
     </message>
   </context>
   <context>
-    <name>LotSerialLabel</name>
+    <name>MRPException</name>
+    <message>
+      <width>375</width>
+      <source>MRP Exceptions</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>30</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Demand Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Site: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Demand date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Inv. UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Supply Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Demand Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Supply Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Supply Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Exception</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Item #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Minimum Days: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>169</width>
+      <source>Minimum Unallocated: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Message</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Suggested Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Suggested Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Item #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>30</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Inv. UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Demand Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Demand date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Demand Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Supply Order</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Supply Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Supply Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Exception</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Message</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Suggested Qty</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Suggested Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
   </context>
   <context>
     <name>MaterialUsageVarianceByBOMItem</name>
@@ -14955,410 +15045,6 @@
     </message>
   </context>
   <context>
-    <name>MPSDetail</name>
-    <message>
-      <width>85</width>
-      <source>Safety Stock:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Projected QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>180</width>
-      <source>Period</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>MPS Detail</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>To Promise</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Whs.:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Allocations</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Forecast</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Planned</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Allocations</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>180</width>
-      <source>Period</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>To Promise</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Forecast</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Planned</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Projected QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>MRPDetail</name>
-    <message>
-      <width>80</width>
-      <source>Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Projected QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Firmed Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>MRP Detail</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Period</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Whs.:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Allocations</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Firmed Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Firmed Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Allocations</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Projected QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Period</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Firmed Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>MRPException</name>
-    <message>
-      <width>375</width>
-      <source>MRP Exceptions</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>30</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Demand Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Site: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Demand date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Inv. UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Supply Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Demand Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Supply Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Supply Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Exception</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Item #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Minimum Days: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>169</width>
-      <source>Minimum Unallocated: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Message</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Suggested Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Suggested Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Item #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>30</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Inv. UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Demand Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Demand date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Demand Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Supply Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Supply Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Supply Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Exception</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Message</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Suggested Qty</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Suggested Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>OpenWorkOrdersWithClosedParentSalesOrders</name>
     <message>
       <width>75</width>
@@ -15940,2180 +15626,6 @@
     <message>
       <width>140</width>
       <source>Section Total:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PackageMasterList</name>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Package Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Package</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Version</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Enabled</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Package</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Version</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Enabled</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PackingListBatchEditList</name>
-    <message>
-      <width>50</width>
-      <source>Hold Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipment #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Customer Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Packing List Batch Edit List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Customer #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Printed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Printed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Customer #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Shipment #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Customer Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Hold Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PackingList-Shipment</name>
-    <message>
-      <width>355</width>
-      <source>Shipment Packing List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Shipment #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Verified</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer P/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Sched. Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Order Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Attention:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Order Line</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Shipped</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>61</width>
-      <source>Print Date: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Completed By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Checked By:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PackingList</name>
-    <message>
-      <width>150</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer P/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Packed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Attention:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>300</width>
-      <source>PACKING List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Shipment #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Sched. Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Order Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Verified</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>180</width>
-      <source>Lot / Serial Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Quantity</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>200</width>
-      <source>Lot Detail Information:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>61</width>
-      <source>Print Date: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Completed By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Checked By:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PartiallyShippedOrders</name>
-    <message>
-      <width>100</width>
-      <source>End Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Site:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Scheduled</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>356</width>
-      <source>Partially Shipped Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Hold Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>S/O #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Pack Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Hold Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Scheduled</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Pack Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Customer</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>S/O #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PendingBOMChanges</name>
-    <message>
-      <width>80</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty. Required</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>405</width>
-      <source>Pending Bill of Materials Changes</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Cutoff Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Revision Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Component Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Create W/O</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Revision:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Seq. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Document #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Scrap</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Action</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty. Per</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Issue Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Fxd. Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Create W/O</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty. Required</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Scrap</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Action</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Issue Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Seq. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Component Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty. Per</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Fxd. Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PendingWOMaterialAvailability</name>
-    <message>
-      <width>450</width>
-      <source>Pending W/O Material Availability</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>104</width>
-      <source>Site:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Seq. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Total Alloc.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>104</width>
-      <source>Item Number:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Pend. Alloc.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>104</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Level</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Pend. Alloc.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Available</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Seq. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Total Alloc.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Level</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PickingListSOClosedLines</name>
-    <message>
-      <width>100</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>At Shipping</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipped</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>102</width>
-      <source>S/O Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Packed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>S/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Sched. Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>122</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Balance</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer P/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>330</width>
-      <source>Picking List (SO)</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Attention:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>102</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>47</width>
-      <source>Carton:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>47</width>
-      <source>Qty:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Batch #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>62</width>
-      <source>Print Date: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Sales Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Checked By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Completed By:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PickingListSOLocsNoClosedLines</name>
-    <message>
-      <width>75</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipped</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Attention:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer P/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>122</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>S/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>330</width>
-      <source>Sales Order Pick List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>S/O Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Balance</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Packed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>At Shipping</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>To Pick</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Sched. Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Expiration</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>48</width>
-      <source>Qty:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>205</width>
-      <source>QtyAtLocn   QtyReserved   UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Location:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>145</width>
-      <source>Lot / Serial</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>48</width>
-      <source>Carton:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>135</width>
-      <source>Qty Picked</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>135</width>
-      <source>Loc / Lot</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>48</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>145</width>
-      <source>Total, All Lot/Ser/Loc:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Sales Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>62</width>
-      <source>Print Date: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Completed By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Order Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Checked By:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PickingListSONoClosedLines</name>
-    <message>
-      <width>100</width>
-      <source>At Shipping</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Sched. Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>122</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ordered</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>330</width>
-      <source>Picking List (SO)</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>102</width>
-      <source>Ship Via:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Terms:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Attention:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipped</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>S/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Customer P/O #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Packed</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Balance</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>102</width>
-      <source>S/O Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>48</width>
-      <source>Carton:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Batch #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>48</width>
-      <source>Qty:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>37</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Sales Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>62</width>
-      <source>Print Date: </source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Completed By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Checked By:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PickListWOShowLocations</name>
-    <message>
-      <width>154</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Site:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Work Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Due Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Qty. Ordered:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Qty. Received:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>204</width>
-      <source>WO Pick List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Issued</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. To Pick</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Required</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Total Qty. Picked</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Lot</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Location Coment;</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Expiration</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>300</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Qty / UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>140</width>
-      <source>Loc / Lot Qty Picked</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Total All Lot/Locations:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>194</width>
-      <source>Production Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PickList</name>
-    <message>
-      <width>300</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Work Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. To Pick</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Due Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Site:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Qty. Received:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>204</width>
-      <source>Pick List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Picked</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Required</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Qty. Ordered:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Issued</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>154</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>300</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Issue Method</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Picked</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Issued</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. Required</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>300</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty. To Pick</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>139</width>
-      <source>Production Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannedOrdersByItem</name>
-    <message>
-      <width>75</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Comments</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>350</width>
-      <source>Planned Orders By Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Comments</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannedOrdersByPlannerCode</name>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Planner Code(s):</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>Planned Orders by Planner Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannedOrders</name>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>Planned Orders</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannedRevenueExpensesByPlannerCode</name>
-    <message>
-      <width>80</width>
-      <source>Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Sales Price:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>680</width>
-      <source>Planned Revenue/Expenses by Planner Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Revenue</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Costs:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>End Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Gr. Profit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>105</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Planner Code(s):</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Qty.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Revenue</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Cost</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Firm</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Gr. Profit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Order Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>106</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Totals:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannedSchedulesMasterList</name>
-    <message>
-      <width>392</width>
-      <source>Planning Schedules Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Created On</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Schedule Type:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Status</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Schedule Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>End Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>170</width>
-      <source>Created On:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>170</width>
-      <source>Created By:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Quantity</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>170</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>170</width>
-      <source>Schedule Number:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Created By</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PlannerCodeMasterList</name>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Planner Code Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -18954,85 +16466,1925 @@
     </message>
   </context>
   <context>
-    <name>PricesByCustomerType</name>
+    <name>PackageMasterList</name>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Package Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Package</source>
+      <translation type="unfinished"/>
+    </message>
     <message>
       <width>100</width>
-      <source>Source</source>
+      <source>Version</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Enabled</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Package</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Qty. Break</source>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Version</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Enabled</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PackingList-Shipment</name>
+    <message>
+      <width>355</width>
+      <source>Shipment Packing List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Shipment #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Verified</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer P/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Sched. Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Order Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Attention:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Order Line</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Shipped</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>61</width>
+      <source>Print Date: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Completed By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Checked By:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PackingList</name>
+    <message>
+      <width>150</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer P/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Packed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Attention:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>300</width>
+      <source>PACKING List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Shipment #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Sched. Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Order Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Verified</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>180</width>
+      <source>Lot / Serial Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Quantity</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>200</width>
+      <source>Lot Detail Information:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>61</width>
+      <source>Print Date: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Completed By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Checked By:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PackingListBatchEditList</name>
+    <message>
+      <width>50</width>
+      <source>Hold Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipment #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Customer Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Packing List Batch Edit List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Customer #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Printed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Printed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Customer #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Shipment #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Customer Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Hold Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Ship Via</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PartiallyShippedOrders</name>
+    <message>
+      <width>100</width>
+      <source>End Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Scheduled</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>356</width>
+      <source>Partially Shipped Orders</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Hold Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>S/O #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Pack Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Hold Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Scheduled</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Pack Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>S/O #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PendingBOMChanges</name>
+    <message>
+      <width>80</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty. Required</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>405</width>
+      <source>Pending Bill of Materials Changes</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Cutoff Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Revision Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Component Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Create W/O</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Revision:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Seq. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Document #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Scrap</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Action</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty. Per</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Issue Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Fxd. Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Create W/O</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty. Required</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Scrap</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Action</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Issue Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Seq. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Component Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty. Per</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Fxd. Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PendingWOMaterialAvailability</name>
+    <message>
+      <width>450</width>
+      <source>Pending W/O Material Availability</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>104</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Seq. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Total Alloc.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>104</width>
+      <source>Item Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Pend. Alloc.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>104</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Level</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Pend. Alloc.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Available</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Seq. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Total Alloc.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Level</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PickList</name>
+    <message>
+      <width>300</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Work Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. To Pick</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Qty. Received:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>204</width>
+      <source>Pick List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Picked</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Required</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Qty. Ordered:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Issued</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>300</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Picked</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Issued</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Required</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>300</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. To Pick</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>139</width>
+      <source>Production Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PickListWOShowLocations</name>
+    <message>
+      <width>154</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Work Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>154</width>
+      <source>Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Qty. Ordered:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Qty. Received:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>204</width>
+      <source>WO Pick List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue Method</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Issued</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. To Pick</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty. Required</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Total Qty. Picked</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Lot</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Location Coment;</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Expiration</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>300</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Issue UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Qty / UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>140</width>
+      <source>Loc / Lot Qty Picked</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Total All Lot/Locations:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>194</width>
+      <source>Production Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PickingListSOClosedLines</name>
+    <message>
+      <width>100</width>
+      <source>Reserved</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>At Shipping</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipped</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>S/O Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Packed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>S/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>121</width>
+      <source>Sched. Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>122</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Balance</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer P/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>330</width>
+      <source>Picking List (SO)</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Attention:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>47</width>
+      <source>Carton:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>47</width>
+      <source>Qty:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Batch #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Print Date: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Sales Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Checked By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Completed By:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PickingListSOLocsNoClosedLines</name>
+    <message>
+      <width>75</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipped</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Attention:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer P/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>122</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>S/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Reserved</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>330</width>
+      <source>Sales Order Pick List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>S/O Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Balance</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Packed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>At Shipping</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>To Pick</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>125</width>
+      <source>Sched. Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Expiration</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>48</width>
+      <source>Qty:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>205</width>
+      <source>QtyAtLocn   QtyReserved   UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Location:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>145</width>
+      <source>Lot / Serial</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>48</width>
+      <source>Carton:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>135</width>
+      <source>Qty Picked</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>135</width>
+      <source>Loc / Lot</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>48</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>145</width>
+      <source>Total, All Lot/Ser/Loc:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Sales Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Print Date: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Completed By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Order Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Checked By:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PickingListSONoClosedLines</name>
+    <message>
+      <width>100</width>
+      <source>At Shipping</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Bill To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Ship To:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>121</width>
+      <source>Sched. Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>122</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Reserved</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>270</width>
+      <source>Picking List (SO)</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>Ship Via:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Terms:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Attention:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipped</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>S/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Customer P/O #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Packed</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Balance</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>S/O Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>122</width>
+      <source>Site:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>48</width>
+      <source>Carton:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Batch #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>48</width>
+      <source>Qty:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>37</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Sales Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Print Date: </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Completed By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Checked By:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PlannedOrdersByItem</name>
+    <message>
+      <width>75</width>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Comments</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Item:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>350</width>
-      <source>Prices by Customer Type</source>
+      <source>Planned Orders By Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Firm</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Whs.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Warehouse:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Order #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Whs.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Firm</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Comments</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PlannedOrdersByPlannerCode</name>
+    <message>
+      <width>35</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Firm</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Planner Code(s):</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Item Number</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>105</width>
-      <source>Customer Type:</source>
+      <source>Warehouse:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>155</width>
-      <source>Show Future Prices:</source>
+      <width>484</width>
+      <source>Planned Orders by Planner Code</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>100</width>
-      <source>Schedule</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
+      <width>106</width>
       <source>Description</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>155</width>
-      <source>Item Number</source>
+      <width>35</width>
+      <source>Whs.</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
-      <source>Show Expired Prices:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Qty. Break</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>155</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Price</source>
+      <source>Order Number</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Schedule</source>
+      <source>Start Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>155</width>
+      <width>40</width>
+      <source>Firm</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
       <source>Description</source>
       <translation type="unfinished"/>
     </message>
     <message>
+      <width>35</width>
+      <source>Whs.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Order Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>106</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
       <width>100</width>
-      <source>Source</source>
+      <source>Qty.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PlannedSchedulesMasterList</name>
+    <message>
+      <width>392</width>
+      <source>Planning Schedules Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Created On</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>130</width>
+      <source>Schedule Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Schedule Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>End Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Warehouse:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Created On:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Created By:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Quantity</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>170</width>
+      <source>Schedule Number:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Created By</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PlannerCodeMasterList</name>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Planner Code Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -19136,6 +18488,99 @@
     <message>
       <width>85</width>
       <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PricesByCustomerType</name>
+    <message>
+      <width>100</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Qty. Break</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>350</width>
+      <source>Prices by Customer Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>105</width>
+      <source>Customer Type:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Show Future Prices:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Schedule</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Show Expired Prices:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Qty. Break</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Price</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Schedule</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -19324,6 +18769,69 @@
     </message>
   </context>
   <context>
+    <name>ProjectTaskList</name>
+    <message>
+      <width>50</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Project:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Project Task List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Completed:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Assigned:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>ProjectsList</name>
     <message>
       <width>350</width>
@@ -19388,107 +18896,6 @@
     <message>
       <width>85</width>
       <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>ProjectTaskList</name>
-    <message>
-      <width>50</width>
-      <source>Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Project:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Project Task List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Completed:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Due Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>60</width>
-      <source>Assigned:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>PurchaseOrderTypes</name>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Purchase Order Types</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -19605,11 +19012,6 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>30</width>
-      <source>REL #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
       <width>60</width>
       <source>SUB TOTAL</source>
       <translation type="unfinished"/>
@@ -19632,6 +19034,44 @@
     <message>
       <width>37</width>
       <source/>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>PurchaseOrderTypes</name>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Purchase Order Types</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -20246,6 +19686,99 @@
     </message>
   </context>
   <context>
+    <name>QOH</name>
+    <message>
+      <width>35</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Non-Netable</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Reorder Lvl.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Default Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>240</width>
+      <source>Quantity On Hand</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>QOH</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>229</width>
+      <source>Item Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>35</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Reorder Lvl.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Non-Netable</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Default Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Totals</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>QOHByLocation</name>
     <message>
       <width>80</width>
@@ -20354,113 +19887,15 @@
     </message>
   </context>
   <context>
-    <name>QOH</name>
-    <message>
-      <width>35</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Non-Netable</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Reorder Lvl.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Default Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>240</width>
-      <source>Quantity On Hand</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>QOH</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>229</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>35</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Reorder Lvl.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Non-Netable</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Default Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Totals</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>Quote</name>
-    <message>
-      <width>103</width>
-      <source>Pack Date:</source>
-      <translation type="unfinished"/>
-    </message>
     <message>
       <width>103</width>
       <source>Terms:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>126</width>
-      <source>Quote</source>
+      <width>68</width>
+      <source>Quote #:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20474,18 +19909,13 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>103</width>
-      <source>Ship-To #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>103</width>
+      <width>68</width>
       <source>Ship Via:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>112</width>
-      <source>Qty Ordered, UOM</source>
+      <source>Qty Ordered / UOM</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20494,8 +19924,8 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>103</width>
-      <source>Order Date:</source>
+      <width>41.2</width>
+      <source>Date:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20505,21 +19935,16 @@
     </message>
     <message>
       <width>52</width>
-      <source>Fax:</source>
+      <source>Email:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>103</width>
-      <source>Customer PO #:</source>
+      <source>Price / UOM</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>103</width>
-      <source>Price, UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>103</width>
+      <width>90.9</width>
       <source>Customer #:</source>
       <translation type="unfinished"/>
     </message>
@@ -20529,18 +19954,8 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>103</width>
-      <source>Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>56</width>
+      <width>61</width>
       <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>103</width>
-      <source>Sale Type:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20549,38 +19964,69 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>50</width>
-      <source>Site</source>
+      <width>373</width>
+      <source>We are pleased to submit the following quotation:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Name:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>398.667</width>
+      <source>&lt;Please see our website for complete Terms &amp; Conditions of Sale&gt;</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>230</width>
+      <source>1530 N. LAFOX (ROUTE 31)
+  </source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>275</width>
+      <source>SOUTH ELGIN, IL 60177</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>PHONE:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>FAX:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>103</width>
-      <source>Sales Rep.:</source>
+      <source>Kit Components:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>103</width>
-      <source>F.O.B.:</source>
+      <width>140</width>
+      <source>Item Notes:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>125</width>
-      <source>Option Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Options:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Additional Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85.6497</width>
+      <width>141</width>
       <source>Customer P/N:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80.3333</width>
+      <source>Spec Sheet:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>93</width>
+      <source>Product Weight:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>81</width>
+      <source>Total Weight:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20609,18 +20055,48 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>208</width>
-      <source>Note, this quotation is priced in:</source>
+      <width>202</width>
+      <source>Misc Charge Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>93</width>
+      <source>Weight Totals:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>225.481</width>
+      <source>&lt;Weights do not include packaging material&gt;</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>405.864</width>
+      <source>Thank you for the opportunity to earn your business!</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Quoted by</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Email</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Sales Phone:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Sales FAX:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>132</width>
-      <source>Order Comments:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>132</width>
-      <source>Shipping Comments:</source>
+      <source>Comments:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -20631,6 +20107,11 @@
     <message>
       <width>103</width>
       <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>371</width>
+      <source>ELECTRICAL / INDUSTRIAL SUPPLIES</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -21027,7 +20508,7 @@
     </message>
   </context>
   <context>
-    <name>ReceivingLabelOrder</name>
+    <name>ReceivingLabel</name>
     <message>
       <width>25</width>
       <source>Date:</source>
@@ -21035,7 +20516,7 @@
     </message>
   </context>
   <context>
-    <name>ReceivingLabel</name>
+    <name>ReceivingLabelOrder</name>
     <message>
       <width>25</width>
       <source>Date:</source>
@@ -21330,104 +20811,6 @@
     </message>
   </context>
   <context>
-    <name>ReturnAuthorizationForm</name>
-    <message>
-      <width>75</width>
-      <source>Unit Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>297</width>
-      <source>Return Authorization</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Auth #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ship To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Qty. Authorized</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>121</width>
-      <source>Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Item Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Ext. Price</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Bill To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Disposition</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Notes:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Sales Tax:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Misc. Charge:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Freight:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Total Credit:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Subtotal:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>ReturnAuthorizationWorkbenchDueCredit</name>
     <message>
       <width>75</width>
@@ -21446,6 +20829,11 @@
     </message>
     <message>
       <width>75</width>
+      <source>Authorized</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
       <source>Customer</source>
       <translation type="unfinished"/>
     </message>
@@ -21456,12 +20844,17 @@
     </message>
     <message>
       <width>75</width>
-      <source>Authorized</source>
+      <source>Eligible</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>100</width>
-      <source>Credit By</source>
+      <source>Credited By</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Authorized</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -21480,13 +20873,13 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>100</width>
-      <source>Credit By</source>
+      <width>75</width>
+      <source>Eligible</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>75</width>
-      <source>Authorized</source>
+      <width>100</width>
+      <source>Credited By</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -21533,8 +20926,8 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>165</width>
-      <source>Customer/Cust Type:</source>
+      <width>173</width>
+      <source>Customer/Cust Type/Group:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -21693,174 +21086,6 @@
     <message>
       <width>200</width>
       <source>Resource</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>RoutingAndPickList</name>
-    <message>
-      <width>115</width>
-      <source>Qty. Received:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Qty. Ordered:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Due Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Warehouse:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Status:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>51</width>
-      <source>Image:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Start Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Work Order #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>UOM:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>102</width>
-      <source>Routing</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Value</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Characterisitc</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>UOM:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Qty Issued:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>147</width>
-      <source>Item Not Linked To Operation:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty Required:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Work Center:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>160</width>
-      <source>Items Consumed At This Operation:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Seq. #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>62</width>
-      <source>Run Time:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Setup:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Setup Remain</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>47</width>
-      <source>Tooling:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>62</width>
-      <source>Instructions:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Run Remain</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Operation Image:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>UOM:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>55</width>
-      <source>Qty Issued:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Qty Required:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -22043,6 +21268,174 @@
     </message>
   </context>
   <context>
+    <name>RoutingAndPickList</name>
+    <message>
+      <width>115</width>
+      <source>Qty. Received:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Qty. Ordered:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Due Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Warehouse:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Status:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>51</width>
+      <source>Image:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Start Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Work Order #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>102</width>
+      <source>Routing</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Value</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>115</width>
+      <source>Characterisitc</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Qty Issued:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>147</width>
+      <source>Item Not Linked To Operation:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty Required:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Work Center:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>160</width>
+      <source>Items Consumed At This Operation:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Seq. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Run Time:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Setup:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Setup Remain</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>47</width>
+      <source>Tooling:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>62</width>
+      <source>Instructions:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Run Remain</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Operation Image:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>55</width>
+      <source>Qty Issued:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Qty Required:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>RunningAvailability</name>
     <message>
       <width>80</width>
@@ -22166,6 +21559,54 @@
     </message>
     <message>
       <width>100</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>SaleTypesMasterList</name>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Sale Types Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>30</width>
+      <source>Active</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>30</width>
+      <source>Active</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
       <source>Page:</source>
       <translation type="unfinished"/>
     </message>
@@ -22562,6 +22003,11 @@
       <translation type="unfinished"/>
     </message>
     <message>
+      <width>70.3</width>
+      <source>Spec Sheet:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
       <width>37</width>
       <source>Page:</source>
       <translation type="unfinished"/>
@@ -22804,40 +22250,95 @@
     </message>
   </context>
   <context>
-    <name>SaleTypesMasterList</name>
+    <name>SelectPaymentsList</name>
     <message>
       <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Sale Types Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Code</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>30</width>
-      <source>Active</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Code</source>
+      <source>Voucher #</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>80</width>
-      <source>Description</source>
+      <source>P/O #</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>30</width>
-      <source>Active</source>
+      <width>100</width>
+      <source>Approved</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Late</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Doc. Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Vendor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Amount</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>530</width>
+      <source>Approve Payments List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>65</width>
+      <source>Late</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>P/O #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Approved</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Doc. Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Vendor</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Voucher #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Amount</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -22916,109 +22417,6 @@
     <message>
       <width>85</width>
       <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>SelectPaymentsList</name>
-    <message>
-      <width>80</width>
-      <source>Voucher #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>P/O #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Selected</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Late</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Doc. Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Vendor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Amount</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>530</width>
-      <source>Select Payments List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Status</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Late</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>P/O #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Selected</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Doc. Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Vendor</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Voucher #</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Amount</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -23195,6 +22593,69 @@
     <message>
       <width>200</width>
       <source>Shift Name</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>ShipToMasterList</name>
+    <message>
+      <width>120</width>
+      <source>Customer #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>City, State, Zip</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>400</width>
+      <source>Ship-To Addresses</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>City, State, Zip</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -23775,69 +23236,6 @@
     </message>
     <message>
       <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>ShipToMasterList</name>
-    <message>
-      <width>120</width>
-      <source>Customer #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>City, State, Zip</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>400</width>
-      <source>Ship-To Addresses</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>City, State, Zip</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
       <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
@@ -25015,6 +24413,89 @@
     </message>
   </context>
   <context>
+    <name>SummarizedBOM</name>
+    <message>
+      <width>50</width>
+      <source>UOM:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>350</width>
+      <source>Summarized Bill of Materials</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Revision:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Revision Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Document #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Item:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Ext. Qty. Req.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>165</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>228</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Ext. Qty. Req.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>SummarizedBacklogByWarehouse</name>
     <message>
       <width>104</width>
@@ -25212,89 +24693,6 @@
     <message>
       <width>90</width>
       <source>End Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>SummarizedBOM</name>
-    <message>
-      <width>50</width>
-      <source>UOM:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>350</width>
-      <source>Summarized Bill of Materials</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Revision:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Revision Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Document #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Item:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Ext. Qty. Req.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>165</width>
-      <source>Item Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>228</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Ext. Qty. Req.</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -25921,132 +25319,6 @@
     <message>
       <width>85</width>
       <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>TimeAttendDetail</name>
-    <message>
-      <width>540</width>
-      <source>Time and Attendance Employee Detail</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Date From:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Date To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Employee:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Clock In</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Clock Out</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>65</width>
-      <source>Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>W/O Hours</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>O/H Hours</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>O/T Hours</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Total Hours:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>TimeAttendSummary</name>
-    <message>
-      <width>425</width>
-      <source>Time and Attendance Summary</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Date From:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Date To:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Department:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Total Hours For</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shift:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Employee</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>115</width>
-      <source>Work Order</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Overhead</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Overtime</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>UnPosted</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Hours</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>125</width>
-      <source>Total Hours:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -27453,6 +26725,44 @@
     </message>
   </context>
   <context>
+    <name>UOMs</name>
+    <message>
+      <width>95</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Units of Measure</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>UnappliedAPCreditMemos</name>
     <message>
       <width>100</width>
@@ -28283,104 +27593,6 @@
     </message>
   </context>
   <context>
-    <name>UnpostedGlSeries</name>
-    <message>
-      <width>90</width>
-      <source>Distribution Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Reference</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Debit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Unposted G/L Series Transactions</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Doc. Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Doc. Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Account</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Source</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Debit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>90</width>
-      <source>Distribution Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Doc. Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>130</width>
-      <source>Account</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Credit</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Source</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>45</width>
-      <source>Doc. Type</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Reference</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>UnpostedGLTransactions</name>
     <message>
       <width>60</width>
@@ -28500,6 +27712,104 @@
     <message>
       <width>85</width>
       <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>UnpostedGlSeries</name>
+    <message>
+      <width>90</width>
+      <source>Distribution Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Reference</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Debit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Unposted G/L Series Transactions</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Doc. Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Doc. Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>130</width>
+      <source>Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Debit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Distribution Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Doc. Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>130</width>
+      <source>Account</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Credit</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Source</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>45</width>
+      <source>Doc. Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Reference</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -28851,44 +28161,6 @@
     </message>
   </context>
   <context>
-    <name>UOMs</name>
-    <message>
-      <width>95</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Units of Measure</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>UsageStatistics</name>
     <message>
       <width>75</width>
@@ -28997,10 +28269,68 @@
     </message>
   </context>
   <context>
+    <name>UserPrivileges</name>
+    <message>
+      <width>540</width>
+      <source>User Privileges</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Username:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>155</width>
+      <source>Role Assigned:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Privilege:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Module:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Username:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Role:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>UsersMasterList</name>
     <message>
       <width>450</width>
-      <source>Users Master List</source>
+      <source>User Accounts Master List</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -29163,69 +28493,6 @@
     </message>
   </context>
   <context>
-    <name>VendorAddressList</name>
-    <message>
-      <width>100</width>
-      <source>City, State, Zip</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>400</width>
-      <source>Vendor Address List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>120</width>
-      <source>Vendor #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>City, State, Zip</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Address</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Name</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
     <name>VendorAPHistory</name>
     <message>
       <width>50</width>
@@ -29335,6 +28602,69 @@
     <message>
       <width>100</width>
       <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>VendorAddressList</name>
+    <message>
+      <width>100</width>
+      <source>City, State, Zip</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>400</width>
+      <source>Vendor Address List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>120</width>
+      <source>Vendor #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>City, State, Zip</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Address</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Name</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Page:</source>
       <translation type="unfinished"/>
     </message>
   </context>
@@ -29556,12 +28886,12 @@
     </message>
     <message>
       <width>100</width>
-      <source>Check Date</source>
+      <source>Payment Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>125</width>
-      <source>Check #</source>
+      <source>Payment #</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -29581,7 +28911,7 @@
     </message>
     <message>
       <width>465</width>
-      <source>A/P Check Run Edit List</source>
+      <source>A/P Payment Run Edit List</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -29601,7 +28931,7 @@
     </message>
     <message>
       <width>125</width>
-      <source>Check/Voucher #</source>
+      <source>Payment/Voucher #</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -29616,7 +28946,7 @@
     </message>
     <message>
       <width>100</width>
-      <source>Check Date</source>
+      <source>Payment Date</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -29760,185 +29090,6 @@
     <message>
       <width>80</width>
       <source>Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>WarehouseCalendarExceptionsMasterList</name>
-    <message>
-      <width>670</width>
-      <source>Warehouse Calendar Exceptions Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Warehouse</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Description</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>95</width>
-      <source>Warehouse</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>WarehouseLocationMasterList</name>
-    <message>
-      <width>50</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Restricted Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Restricted</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>450</width>
-      <source>Warehouse Location Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Netable</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Restricted Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Netable</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>70</width>
-      <source>Restricted</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Location</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Whs.</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Report Date:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Page:</source>
-      <translation type="unfinished"/>
-    </message>
-  </context>
-  <context>
-    <name>WarehouseMasterList</name>
-    <message>
-      <width>450</width>
-      <source>Warehouse Master List</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>150</width>
-      <source>Force the use of Count Slips:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>110</width>
-      <source>Next Bill of Lading #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>110</width>
-      <source>Next Count Tag #:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Description:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Active:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>85</width>
-      <source>Default F.O.B.:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>75</width>
-      <source>Address:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Code:</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Shipping Whs.:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -31420,6 +30571,293 @@
     </message>
   </context>
   <context>
+    <name>WOSchedule</name>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>W/O Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Received</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>484</width>
+      <source>Work Order Schedule</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Start Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>W/O Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Received</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>40</width>
+      <source>Site</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Due Date</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Ordered</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>WarehouseCalendarExceptionsMasterList</name>
+    <message>
+      <width>670</width>
+      <source>Warehouse Calendar Exceptions Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Warehouse</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Description</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>95</width>
+      <source>Warehouse</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>WarehouseLocationMasterList</name>
+    <message>
+      <width>50</width>
+      <source>Whs.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Restricted Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Restricted</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>450</width>
+      <source>Warehouse Location Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Netable</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Restricted Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Netable</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>70</width>
+      <source>Restricted</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Location</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Whs.</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>WarehouseMasterList</name>
+    <message>
+      <width>450</width>
+      <source>Warehouse Master List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Force the use of Count Slips:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>110</width>
+      <source>Next Bill of Lading #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>110</width>
+      <source>Next Count Tag #:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Description:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Active:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Default F.O.B.:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Address:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Code:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipping Whs.:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>WorkCentersMasterList</name>
     <message>
       <width>350</width>
@@ -31806,109 +31244,257 @@
     </message>
   </context>
   <context>
-    <name>WOSchedule</name>
+    <name>Email</name>
     <message>
-      <width>80</width>
-      <source>Ordered</source>
+      <width>50</width>
+      <source>From:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>100</width>
-      <source>Item</source>
+      <width>50</width>
+      <source>Sent:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>40</width>
-      <source>Site</source>
+      <width>50</width>
+      <source>To:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>80</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>W/O Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Received</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>484</width>
-      <source>Work Order Schedule</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Status</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Start Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Status</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>100</width>
-      <source>Item</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>W/O Number</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Received</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>UOM</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>40</width>
-      <source>Site</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Due Date</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>80</width>
-      <source>Ordered</source>
+      <width>50</width>
+      <source>Subject:</source>
       <translation type="unfinished"/>
     </message>
     <message>
       <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
+    <name>Items</name>
+    <message>
+      <width>100</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Configured</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Packaging Weight</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Sold</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipping UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Price UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>66</width>
+      <source>Class Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Pick List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Alt. Capacity/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Shipping/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Inventory UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description 2</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Alt. Capacity UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Capacity/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Capacity UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Exclusive</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Active</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Product Weight</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description 1</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Price/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>356</width>
+      <source>Items</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Configured</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description 1</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Capacity/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Description 2</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Inventory UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Price UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>50</width>
+      <source>Active</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Capacity UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item Number</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Exclusive</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Price/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Alt. Capacity UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Shipping/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Packaging Weight</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>150</width>
+      <source>Alt. Capacity/Inventory Ratio</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Product Weight</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>66</width>
+      <source>Class Code</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item Type</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Pick List</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>60</width>
+      <source>Sold</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Shipping UOM</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
       <source>Report Date:</source>
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>85</width>
+      <width>75</width>
       <source>Page:</source>
       <translation type="unfinished"/>
     </message>

@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-sale::sale(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+sale::sale(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -66,10 +66,10 @@ enum SetResponse sale::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _dates->setEnabled(FALSE);
-      _ipshead->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _dates->setEnabled(false);
+      _ipshead->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

@@ -23,7 +23,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-vendorTypes::vendorTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+vendorTypes::vendorTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -48,7 +48,7 @@ vendorTypes::vendorTypes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   _vendtype->addColumn(tr("Code"),        70, Qt::AlignLeft,   true,  "vendtype_code" );
@@ -113,7 +113,7 @@ void vendorTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  vendorType newdlg(this, "", TRUE);
+  vendorType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -126,7 +126,7 @@ void vendorTypes::sEdit()
   params.append("mode", "edit");
   params.append("vendtype_id", _vendtype->id());
 
-  vendorType newdlg(this, "", TRUE);
+  vendorType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -139,7 +139,7 @@ void vendorTypes::sView()
   params.append("mode", "view");
   params.append("vendtype_id", _vendtype->id());
 
-  vendorType newdlg(this, "", TRUE);
+  vendorType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

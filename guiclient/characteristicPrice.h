@@ -22,7 +22,7 @@ class characteristicPrice : public XDialog, public Ui::characteristicPrice
     Q_OBJECT
 
 public:
-    characteristicPrice(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    characteristicPrice(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~characteristicPrice();
 
 public slots:

@@ -24,7 +24,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-uoms::uoms(QWidget* parent, const char* name, Qt::WFlags fl)
+uoms::uoms(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -48,7 +48,7 @@ uoms::uoms(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_uoms, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -89,7 +89,7 @@ void uoms::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  uom newdlg(this, "", TRUE);
+  uom newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -102,7 +102,7 @@ void uoms::sEdit()
   params.append("mode", "edit");
   params.append("uom_id", _uoms->id());
 
-  uom newdlg(this, "", TRUE);
+  uom newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -115,7 +115,7 @@ void uoms::sView()
   params.append("mode", "view");
   params.append("uom_id", _uoms->id());
 
-  uom newdlg(this, "", TRUE);
+  uom newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

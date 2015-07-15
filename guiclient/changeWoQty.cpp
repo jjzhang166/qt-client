@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-changeWoQty::changeWoQty(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+changeWoQty::changeWoQty(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -26,7 +26,7 @@ changeWoQty::changeWoQty(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_newQtyOrdered, SIGNAL(textChanged(const QString&)), this, SLOT(sQtyChanged(const QString&)));
 
-  _captive = FALSE;
+  _captive = false;
 
   _wo->setType(cWoOpen | cWoExploded | cWoIssued);
   _newQtyOrdered->setValidator(omfgThis->qtyVal());
@@ -53,7 +53,7 @@ void changeWoQty::languageChange()
 enum SetResponse changeWoQty::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -62,7 +62,7 @@ enum SetResponse changeWoQty::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   param = pParams.value("newQty", &valid);
@@ -94,7 +94,7 @@ void changeWoQty::sChangeQty()
 
   if (newQty > 0.0)
   {
-    changeChangeQty.prepare( "SELECT validateOrderQty(wo_itemsite_id, :qty, TRUE) AS qty "
+    changeChangeQty.prepare( "SELECT validateOrderQty(wo_itemsite_id, :qty, true) AS qty "
                "FROM wo "
                "WHERE (wo_id=:wo_id);" );
     changeChangeQty.bindValue(":wo_id", _wo->id());
@@ -128,7 +128,7 @@ void changeWoQty::sChangeQty()
     }
   }
 
-  changeChangeQty.prepare("SELECT changeWoQty(:wo_id, :qty, TRUE);");
+  changeChangeQty.prepare("SELECT changeWoQty(:wo_id, :qty, true);");
   changeChangeQty.bindValue(":wo_id", _wo->id());
   changeChangeQty.bindValue(":qty", newQty);
   changeChangeQty.exec();
@@ -157,7 +157,7 @@ void changeWoQty::sChangeQty()
     }
   }
 
-  omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+  omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
   accept();
 }

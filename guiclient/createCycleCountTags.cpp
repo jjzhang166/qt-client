@@ -15,7 +15,7 @@
 
 #include "storedProcErrorLookup.h"
 
-createCycleCountTags::createCycleCountTags(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createCycleCountTags::createCycleCountTags(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);

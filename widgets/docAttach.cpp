@@ -8,20 +8,111 @@
  * to be bound by its terms.
  */
 
-#include <QVariant>
+#include "docAttach.h"
+
+#include <QDebug>
 #include <QDialog>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QFormLayout>
 #include <QMessageBox>
 #include <QString>
+#include <QUiLoader>
 #include <QUrl>
-#include <QFileInfo>
+#include <QVariant>
 
 #include "documents.h"
-#include "docAttach.h"
+#include "errorReporter.h"
 #include "../common/shortcuts.h"
 #include "imageview.h"
 
-/*
+#define DEBUG true
+
+class StackDescriptor
+{
+  public:
+    StackDescriptor(QWidget *page, QWidget *doc)
+      : stackPage(page),
+        docWidget(doc)
+    {
+    }
+
+    QWidget *stackPage;
+    QWidget *docWidget;
+};
+
+class docAttachPrivate {
+  public:
+    docAttachPrivate(docAttach *parent)
+      : p(parent)
+    {
+      // url and file match _docType->populate below, at least for now
+      map.insert(-3,                           new StackDescriptor(p->_urlPage,     p->_url));
+      map.insert(-2,                           new StackDescriptor(p->_filePage,    p->_file));
+      map.insert(Documents::Contact,           new StackDescriptor(p->_cntctPage,   p->_cntct));
+      map.insert(Documents::CRMAccount,        new StackDescriptor(p->_crmacctPage, p->_crmacct));
+      map.insert(Documents::Customer,          new StackDescriptor(p->_custPage,    p->_cust));
+      map.insert(Documents::Employee,          new StackDescriptor(p->_empPage,     p->_emp));
+      map.insert(Documents::Uninitialized,     new StackDescriptor(p->_filePage,    p->_file));
+      map.insert(Documents::Uninitialized,     new StackDescriptor(p->_imagePage,   p->_img));
+      map.insert(Documents::Incident,          new StackDescriptor(p->_incdtPage,   p->_incdt));
+      map.insert(Documents::Invoice,           new StackDescriptor(p->_invoicePage, p->_invoice));
+      map.insert(Documents::Item,              new StackDescriptor(p->_itemPage,    p->_item));
+      map.insert(Documents::Opportunity,       new StackDescriptor(p->_oppPage,     p->_opp));
+      map.insert(Documents::Project,           new StackDescriptor(p->_projPage,    p->_proj));
+      map.insert(Documents::PurchaseOrder,     new StackDescriptor(p->_poPage,      p->_po));
+      map.insert(Documents::SalesOrder,        new StackDescriptor(p->_soPage,      p->_so));
+      map.insert(Documents::Vendor,            new StackDescriptor(p->_vendPage,    p->_vend));
+      map.insert(Documents::Uninitialized,     new StackDescriptor(p->_urlPage,     p->_url));
+      map.insert(Documents::WorkOrder,         new StackDescriptor(p->_woPage,      p->_wo));
+
+      if (! _x_privileges) return; // Qt Designer doesn't connect to the database
+
+      XSqlQuery q("SELECT * FROM source"
+                  " WHERE source_widget NOT IN ('', 'core');");
+      QUiLoader uil(p);
+      while (q.next())
+      {
+        QWidget *w = 0;
+        QString  description = q.value("source_widget").toString();
+        if (DEBUG)
+          qDebug() << "checking" << q.value("source_name") << description;
+        if (description.startsWith("SELECT", Qt::CaseInsensitive))
+        {
+          XComboBox *c = new XComboBox();
+          c->populate(description);
+          w = c;
+        }
+        else if (description.contains("Cluster"))
+        {
+          w = uil.createWidget(description, p,
+                               "_" + q.value("source_name").toString());
+        }
+        if (w) {
+          QString litValue = q.value("source_descrip").toString();
+          QWidget     *page = new QWidget();
+          QFormLayout *lyt  = new QFormLayout(p);
+          QLabel      *lit  = new QLabel(QT_TRANSLATE_NOOP("docAttach", litValue));
+          page->setLayout(lyt);
+          lyt->addRow(lit, w);
+          p->_documentsStack->addWidget(page);
+          map.insert(q.value("source_docass_num").toInt(), new StackDescriptor(page, w));
+          if (DEBUG) qDebug() << "created a widget for" << description;
+        }
+        else
+        {
+          qDebug() << "Could not create a widget for" << description;
+        }
+      }
+      ErrorReporter::error(QtCriticalMsg, 0, "Error Getting Document Types",
+                           q, __FILE__, __LINE__);
+    }
+
+    docAttach *p;
+    QMap<int, StackDescriptor*> map;
+};
+
+/**
  *  Constructs a docAttach as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
  *
@@ -34,21 +125,23 @@
  *  the screen will return a docass_id to the calling screen.
  */
 
-docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : QDialog(parent, fl)
 {
   setupUi(this);
   setObjectName(name ? name : "docAttach");
   setModal(modal);
 
-  // signals and slots connections
+  _p = new docAttachPrivate(this);
+
   _save = _buttonBox->button(QDialogButtonBox::Save);
   _save->setEnabled(false);
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  connect(_docType, SIGNAL(currentIndexChanged(int)), this, SLOT(sHandleButtons()));
-  connect(_fileList, SIGNAL(clicked()), this, SLOT(sFileList()));
+  connect(_docType,   SIGNAL(newID(int)), this, SLOT(sHandleButtons()));
+  connect(_fileList,  SIGNAL(clicked()),  this, SLOT(sFileList()));
+  connect(_save,      SIGNAL(clicked()),  this, SLOT(sSave()));
 
-  _source = -1;
+  _sourcetype = "";
   _sourceid = -1;
   _targetid = -1;
   _urlid = -1;
@@ -57,7 +150,15 @@ docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   _po->setAllowedTypes(OrderLineEdit::Purchase);
   _so->setAllowedTypes(OrderLineEdit::Sales);
 
-#ifndef Q_WS_MAC
+  _docType->populate("SELECT * FROM"
+                     "(SELECT source_docass_num, source_descrip, source_name"
+                     "  FROM source"
+                     " WHERE source_widget != ''"
+                     " UNION SELECT -2, 'File',     'FILE'"
+                     " UNION SELECT -3, 'Web Site', 'URL') data"
+                     " ORDER BY source_name;");
+
+#ifndef Q_OS_MAC
     _fileList->setMaximumWidth(25);
 #else
     _fileList->setMinimumWidth(60);
@@ -68,19 +169,11 @@ docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WFlags f
     adjustSize();
 }
 
-/*
- *  Destroys the object and frees any allocated resources
- */
-
 docAttach::~docAttach()
 {
   // no need to delete child widgets, Qt does it all for us
 }
 
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void docAttach::languageChange()
 {
   retranslateUi(this);
@@ -94,7 +187,7 @@ void docAttach::set(const ParameterList &pParams)
   //source type from document widget
   param = pParams.value("sourceType", &valid);
   if (valid)
-    _source = (enum Documents::DocumentSources)param.toInt();
+    _sourcetype = param.toString();
 
   //source id from document widget
   param = pParams.value("source_id", &valid);
@@ -122,7 +215,7 @@ void docAttach::set(const ParameterList &pParams)
       _url->setText(url.toString());
       if (url.scheme() == "file")
       {
-        _docType->setCurrentIndex(5);
+        _docType->setId(-3);
         _filetitle->setText(qry.value("url_title").toString());
         _file->setText(url.toString());
         if (qry.value("url_stream").toString().length())
@@ -134,111 +227,77 @@ void docAttach::set(const ParameterList &pParams)
       }
       else
       {
-        _docType->setCurrentIndex(15);
+        _docType->setId(-2);
         _urltitle->setText(qry.value("url_title").toString());
         _url->setText(url.toString());
       }
       _mode = "edit";
       _docType->setEnabled(false);
     }
+    ErrorReporter::error(QtCriticalMsg, 0, tr("Error URL"),
+                         qry, __FILE__, __LINE__);
   }
+}
+
+void docAttach::sHandleNewId(int id)
+{
+  _save->setEnabled(id != -1);
 }
 
 void docAttach::sHandleButtons()
 {
-  _save->disconnect();
+  if (_docType->id() == -1) {
+    return;
+  }
   _docAttachPurpose->setEnabled(true);
 
-  if (_docType->currentIndex() == 1)
+  StackDescriptor*pageDesc   = _p->map.value(_docType->id());
+  QWidget        *pageWidget = qobject_cast<QWidget *>(pageDesc->stackPage);
+  VirtualCluster *docCluster = qobject_cast<VirtualCluster *>(pageDesc->docWidget);
+  XComboBox      *docCombo   = qobject_cast<XComboBox *>(pageDesc->docWidget);
+  WoCluster      *wocluster  = qobject_cast<WoCluster *>(pageDesc->docWidget);
+
+  if (! pageWidget)
   {
-    connect(_cntct, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_cntct->isValid());
+    _save->setEnabled(false);
+    return;
   }
-  else if (_docType->currentIndex() == 2)
+  _documentsStack->setCurrentWidget(pageWidget);
+
+  if (docCluster)
   {
-    connect(_crmacct, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_crmacct->isValid());
+    connect(docCluster, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
+    connect(docCluster, SIGNAL(newId(int)),   this, SLOT(sHandleNewId(int)));
+    _save->setEnabled(docCluster->isValid());
   }
-  else if (_docType->currentIndex() == 3)
+  else if (docCombo)
   {
-    connect(_cust, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_cust->isValid());
+    connect(docCombo, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
+    _save->setEnabled(docCombo->isValid());
   }
-  else if (_docType->currentIndex() == 4)
+  else if (wocluster)
   {
-    connect(_emp, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_emp->isValid());
-  }
-  else if (_docType->currentIndex() == 5)
-  {
-    _docAttachPurpose->setEnabled(false);
-    _docAttachPurpose->setCurrentIndex(0);
-    _save->setEnabled(true);
-  }
-  else if (_docType->currentIndex() == 6)
-  {
-    connect(_img, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_img->isValid());
-  }
-  else if (_docType->currentIndex() == 7)
-  {
-    connect(_incdt, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_incdt->isValid());
-  }
-  else if (_docType->currentIndex() == 8)
-  {
-    connect(_invoice, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_invoice->isValid());
-  }
-  else if (_docType->currentIndex() == 9)
-  {
-    connect(_item, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_item->isValid());
-  }
-  else if (_docType->currentIndex() == 10)
-  {
-    connect(_opp, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_opp->isValid());
-  }
-  else if (_docType->currentIndex() == 11)
-  {
-    connect(_proj, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_proj->isValid());
-  }
-  else if (_docType->currentIndex() == 12)
-  {
-    connect(_po, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_po->isValid());
-  }
-  else if (_docType->currentIndex() == 13)
-  {
-    connect(_so, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_so->isValid());
-  }
-  else if (_docType->currentIndex() == 14)
-  {
-    connect(_vend, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_vend->isValid());
-  }
-  else if (_docType->currentIndex() == 15)
-  {
-    _docAttachPurpose->setEnabled(false);
-    _docAttachPurpose->setCurrentIndex(0);
-    _save->setEnabled(true);
-  }
-  else if (_docType->currentIndex() == 16)
-  {
-    connect(_wo, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
-    _save->setEnabled(_wo->isValid());
+    connect(wocluster, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
+    connect(wocluster, SIGNAL(newId(int)),   this, SLOT(sHandleNewId(int)));
+    _save->setEnabled(wocluster->isValid());
   }
   else
-    return;
-
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  {
+    qDebug() << pageDesc->docWidget->objectName() << "is a"
+             << pageDesc->docWidget->metaObject()->className();
+    _docAttachPurpose->setEnabled(false);
+    _docAttachPurpose->setCurrentIndex(0);
+    _save->setEnabled(true); // presumably we're on the file or url stack page
+  }
 }
 
 void docAttach::sSave()
 {  
+  if (_docType->id() == -1) {
+    return;
+  }
+
+  _docAttachPurpose->setEnabled(true);
   XSqlQuery newDocass;
   QString title;
   QUrl url;
@@ -253,28 +312,25 @@ void docAttach::sSave()
   else if (_docAttachPurpose->currentIndex() == 3)
     _purpose = "D";
 
-  //if then series, type derived from the stack index. e.g.
-  if (_docType->currentIndex() == 1)
+  StackDescriptor*pageDesc   = _p->map.value(_docType->id());
+  VirtualCluster *docCluster = qobject_cast<VirtualCluster *>(pageDesc->docWidget);
+  XComboBox      *docCombo   = qobject_cast<XComboBox *>(pageDesc->docWidget);
+  WoCluster      *wocluster  = qobject_cast<WoCluster *>(pageDesc->docWidget);
+
+  _targettype = _docType->code();
+  if (docCluster)
   {
-    _targettype = "T";
-    _targetid = _cntct->id();
+    _targetid = docCluster->id();
   }
-  else if (_docType->currentIndex() == 2)
+  else if (docCombo)
   {
-    _targettype = "CRMA";
-    _targetid = _crmacct->id();
+    _targetid = docCombo->id();
   }
-  else if (_docType->currentIndex() == 3)
+  else if (wocluster)
   {
-    _targettype = "C";
-    _targetid = _cust->id();
+    _targetid = wocluster->id();
   }
-  else if (_docType->currentIndex() == 4)
-  {
-    _targettype = "EMP";
-    _targetid = _emp->id();
-  }
-  else if (_docType->currentIndex() == 5)
+  else if (_documentsStack->currentWidget() == _filePage)
   {
     if(_file->text().trimmed().isEmpty())
     {
@@ -289,52 +345,7 @@ void docAttach::sSave()
      if (url.scheme().isEmpty())
        url.setScheme("file");
   }
-  else if (_docType->currentIndex() == 6)
-  {
-     _targettype = "IMG";
-     _targetid = _img->id();
-  }
-  else if (_docType->currentIndex() == 7)
-  {
-    _targettype = "INCDT";
-    _targetid = _incdt->id();
-  }
-  else if (_docType->currentIndex() == 8)
-  {
-    _targettype = "INV";
-    _targetid = _invoice->id();
-  }
-  else if (_docType->currentIndex() == 9)
-  {
-    _targettype = "I";
-    _targetid = _item->id();
-  }
-  else if (_docType->currentIndex() == 10)
-  {
-    _targettype = "OPP";
-    _targetid = _opp->id();
-  }
-  else if (_docType->currentIndex() == 11)
-  {
-    _targettype = "J";
-    _targetid = _proj->id();
-  }
-  else if (_docType->currentIndex() == 12)
-  {
-    _targettype = "P";
-    _targetid = _po->id();
-  }
-  else if (_docType->currentIndex() == 13)
-  {
-    _targettype = "S";
-    _targetid = _so->id();
-  }
-  else if (_docType->currentIndex() == 14)
-  {
-    _targettype = "V";
-    _targetid = _vend->id();
-  }
-  else if (_docType->currentIndex() == 15)
+  else if (_documentsStack->currentWidget() == _urlPage)
   {
     if(_url->text().trimmed().isEmpty())
     {
@@ -348,11 +359,6 @@ void docAttach::sSave()
     url = QUrl(_url->text());
     if (url.scheme().isEmpty())
       url.setScheme("http");
-  }
-  else if (_docType->currentIndex() == 16)
-  {
-    _targettype = "W";
-    _targetid = _wo->id();
   }
 
   if (_targettype == "IMG")
@@ -428,7 +434,7 @@ void docAttach::sSave()
       newDocass.prepare( "INSERT INTO url "
                          "( url_source, url_source_id, url_title, url_url, url_stream ) "
                          "VALUES "
-                         "( :docass_source_type, :docass_source_id, :title, :url, E:stream );" );
+                         "( :docass_source_type, :docass_source_id, :title, :url, :stream );" );
     else
       newDocass.prepare( "UPDATE url SET "
                          "  url_title = :title, "
@@ -448,7 +454,7 @@ void docAttach::sSave()
     newDocass.bindValue(":docass_target_type", _targettype);
   }
 
-  if (_targettype == Documents::_documentMap[_source].ident &&
+  if (_targettype == _sourcetype &&
       _targetid == _sourceid)
   {
     QMessageBox::critical(this,tr("Invalid Selection"),
@@ -456,7 +462,7 @@ void docAttach::sSave()
     return;
   }
 
-  newDocass.bindValue(":docass_source_type", Documents::_documentMap[_source].ident);
+  newDocass.bindValue(":docass_source_type", _sourcetype);
   newDocass.bindValue(":docass_source_id", _sourceid);
   newDocass.bindValue(":docass_target_id", _targetid);
   newDocass.bindValue(":docass_purpose", _purpose);
@@ -464,6 +470,7 @@ void docAttach::sSave()
   newDocass.exec();
 
   accept();
+  return;
 }
 
 void docAttach::sFileList()

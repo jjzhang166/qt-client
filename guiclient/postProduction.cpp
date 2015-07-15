@@ -22,7 +22,7 @@
 
 #define DEBUG false
 
-postProduction::postProduction(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postProduction::postProduction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -76,7 +76,7 @@ void postProduction::languageChange()
 enum SetResponse postProduction::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -85,7 +85,7 @@ enum SetResponse postProduction::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   param = pParams.value("backflush", &valid);
@@ -120,8 +120,8 @@ void postProduction::sHandleWoid(int pWoid)
   {
     _qtyOrderedLit->setText(tr("Qty. to Disassemble:"));
     _qtyReceivedLit->setText(tr("Qty. Disassembled:"));
-    _backflush->setEnabled(FALSE);
-    _backflush->setChecked(FALSE);
+    _backflush->setEnabled(false);
+    _backflush->setChecked(false);
   }
   else
   {
@@ -137,18 +137,18 @@ void postProduction::sHandleWoid(int pWoid)
     {
       if (postHandleWoid.findFirst("womatl_issuemethod", "L") != -1)
       {
-        _backflush->setEnabled(FALSE);
-        _backflush->setChecked(TRUE);
+        _backflush->setEnabled(false);
+        _backflush->setChecked(true);
       }
       else if (postHandleWoid.findFirst("womatl_issuemethod", "M") != -1)
       {
-        _backflush->setEnabled(TRUE);
-        _backflush->setChecked(TRUE);
+        _backflush->setEnabled(true);
+        _backflush->setChecked(true);
       }
       else
       {
-        _backflush->setEnabled(FALSE);
-        _backflush->setChecked(FALSE);
+        _backflush->setEnabled(false);
+        _backflush->setChecked(false);
       }
     }
   }
@@ -165,7 +165,7 @@ void postProduction::sScrap()
   params.append("wo_id", _wo->id());
   params.append("transDate", _transDate->date());
 
-  scrapWoMaterialFromWIP newdlg(this, "", TRUE);
+  scrapWoMaterialFromWIP newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -439,7 +439,7 @@ void postProduction::sPost()
 
     postPost.exec("COMMIT;");
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
     if (_closeWo->isChecked())
     {
@@ -447,7 +447,7 @@ void postProduction::sPost()
       params.append("wo_id", _wo->id());
       params.append("transDate", _transDate->date());
 
-      closeWo newdlg(this, "", TRUE);
+      closeWo newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
     }
@@ -479,8 +479,8 @@ void postProduction::clear()
   _wo->setId(-1);
   _qty->clear();
   _productionNotes->clear();
-  _immediateTransfer->setChecked(FALSE);
-  _closeWo->setChecked(FALSE);
+  _immediateTransfer->setChecked(false);
+  _closeWo->setChecked(false);
   _close->setText(tr("&Close"));
 
   _wo->setFocus();

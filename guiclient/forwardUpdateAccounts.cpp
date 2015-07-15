@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include "guiclient.h"
 
-forwardUpdateAccounts::forwardUpdateAccounts(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+forwardUpdateAccounts::forwardUpdateAccounts(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

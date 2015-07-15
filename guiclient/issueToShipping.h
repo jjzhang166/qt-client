@@ -24,7 +24,7 @@ class issueToShipping : public XWidget, public Ui::issueToShipping
     Q_OBJECT
 
 public:
-    issueToShipping(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    issueToShipping(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~issueToShipping();
 
 public slots:

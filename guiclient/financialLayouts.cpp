@@ -22,7 +22,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-financialLayouts::financialLayouts(QWidget* parent, const char* name, Qt::WFlags fl)
+financialLayouts::financialLayouts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -73,7 +73,7 @@ void financialLayouts::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  financialLayout newdlg(this, "", TRUE);
+  financialLayout newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -100,7 +100,7 @@ void financialLayouts::sEdit()
     params.append("mode", "edit");
   params.append("flhead_id", _flhead->id());
 
-  financialLayout newdlg(this, "", TRUE);
+  financialLayout newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

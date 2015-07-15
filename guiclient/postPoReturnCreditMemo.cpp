@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <openreports.h>
 
-postPoReturnCreditMemo::postPoReturnCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postPoReturnCreditMemo::postPoReturnCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -63,7 +63,7 @@ enum SetResponse postPoReturnCreditMemo::set(const ParameterList & pParams)
     {
       _item->setText(postet.value("itemNumber").toString());
       _qty->setDouble(postet.value("poreject_qty").toDouble());
-      _amount->set(postet.value("itemAmount").toDouble(), postet.value("pohead_curr_id").toInt(), QDate::currentDate(), FALSE);
+      _amount->set(postet.value("itemAmount").toDouble(), postet.value("pohead_curr_id").toInt(), QDate::currentDate(), false);
     }
   }
 

@@ -169,7 +169,7 @@ class XTUPLEWIDGETS_EXPORT WoCluster : public QWidget
     Q_INVOKABLE inline int currentWarehouse() const { return _woNumber->currentWarehouse(); }
     Q_INVOKABLE inline int id() const          { return _woNumber->_id;                  }
     Q_INVOKABLE inline bool isValid() const    { return _woNumber->_valid;               }
-    Q_INVOKABLE inline char status() const     { return _woNumber->_status.toAscii();    }
+    Q_INVOKABLE inline char status() const     { return _woNumber->_status.toLatin1();    }
     Q_INVOKABLE inline QString method() const     { return _woNumber->method();          }
     Q_INVOKABLE inline double qtyOrdered() const { return _woNumber->_qtyOrdered;        }
     Q_INVOKABLE inline double qtyReceived() const { return _woNumber->_qtyReceived;      }

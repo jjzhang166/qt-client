@@ -22,7 +22,7 @@
 #include "dspItemCostSummary.h"
 #include "maintainItemCosts.h"
 
-dspCostedBOMBase::dspCostedBOMBase(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCostedBOMBase::dspCostedBOMBase(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, name, fl)
 {
   setupUi(optionsWidget());

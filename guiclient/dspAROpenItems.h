@@ -21,7 +21,7 @@ class dspAROpenItems : public display, public Ui::dspAROpenItems
     Q_OBJECT
 
 public:
-    dspAROpenItems(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspAROpenItems(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     
     Q_INVOKABLE bool checkInvoiceSitePrivs(int);
     Q_INVOKABLE bool checkCreditMemoSitePrivs(int);

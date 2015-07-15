@@ -16,7 +16,7 @@
 #define cItemSub    0x01
 #define cBOMItemSub 0x02
 
-itemSubstitute::itemSubstitute(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemSubstitute::itemSubstitute(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -59,7 +59,7 @@ enum SetResponse itemSubstitute::set(const ParameterList &pParams)
     if (itemet.first())
     {
       _item->setId(itemet.value("bomitem_item_id").toInt());
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
     }
   }
 
@@ -68,7 +68,7 @@ enum SetResponse itemSubstitute::set(const ParameterList &pParams)
   {
     _type = cBOMItemSub;
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   param = pParams.value("item_id", &valid);
@@ -76,7 +76,7 @@ enum SetResponse itemSubstitute::set(const ParameterList &pParams)
   {
     _type = cItemSub;
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   param = pParams.value("itemsub_id", &valid);
@@ -93,7 +93,7 @@ enum SetResponse itemSubstitute::set(const ParameterList &pParams)
     _type = cBOMItemSub;
     _itemsubid = param.toInt();
 
-    _item->setEnabled(FALSE);
+    _item->setEnabled(false);
 
     populate();
   }
@@ -113,10 +113,10 @@ enum SetResponse itemSubstitute::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _substitute->setReadOnly(TRUE);
-      _uomRatio->setEnabled(FALSE);
-      _ranking->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _substitute->setReadOnly(true);
+      _uomRatio->setEnabled(false);
+      _ranking->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

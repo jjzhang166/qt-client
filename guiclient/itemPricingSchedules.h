@@ -20,7 +20,7 @@ class itemPricingSchedules : public XWidget, public Ui::itemPricingSchedules
     Q_OBJECT
 
 public:
-    itemPricingSchedules(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    itemPricingSchedules(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~itemPricingSchedules();
 
 public slots:

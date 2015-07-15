@@ -19,7 +19,7 @@ class opportunitySources : public XWidget, public Ui::opportunitySources
     Q_OBJECT
 
 public:
-    opportunitySources(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    opportunitySources(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~opportunitySources();
 
 public slots:

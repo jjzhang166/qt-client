@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-releasePlannedOrdersByPlannerCode::releasePlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+releasePlannedOrdersByPlannerCode::releasePlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ releasePlannedOrdersByPlannerCode::releasePlannedOrdersByPlannerCode(QWidget* pa
   
 // TODO Always append to existing unreleased Transfer Orders
   _appendTransferOrder->hide();
-  _appendTransferOrder->setChecked(TRUE);
+  _appendTransferOrder->setChecked(true);
 }
 
 releasePlannedOrdersByPlannerCode::~releasePlannedOrdersByPlannerCode()
@@ -48,7 +48,7 @@ void releasePlannedOrdersByPlannerCode::sRelease()
     return;
   }
 
-  QString sql( "SELECT releasePlannedOrder(planord_id, TRUE, :appendTransferOrder) "
+  QString sql( "SELECT releasePlannedOrder(planord_id, true, :appendTransferOrder) "
                "FROM planord, itemsite "
                "WHERE ( (planord_itemsite_id=itemsite_id)"
                " AND (planord_startdate<=:cutOffDate)" );

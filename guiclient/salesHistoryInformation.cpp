@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-salesHistoryInformation::salesHistoryInformation(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+salesHistoryInformation::salesHistoryInformation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -87,32 +87,32 @@ enum SetResponse salesHistoryInformation::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _orderNumber->setEnabled(FALSE);
-      _invoiceNumber->setEnabled(FALSE);
-      _orderDate->setEnabled(FALSE);
-      _invoiceDate->setEnabled(FALSE);
-      _billtoName->setEnabled(FALSE);
-      _billtoAddress1->setEnabled(FALSE);
-      _billtoAddress2->setEnabled(FALSE);
-      _billtoAddress3->setEnabled(FALSE);
-      _billtoCity->setEnabled(FALSE);
-      _billtoState->setEnabled(FALSE);
-      _billtoZip->setEnabled(FALSE);
-      _shiptoName->setEnabled(FALSE);
-      _shiptoAddress1->setEnabled(FALSE);
-      _shiptoAddress2->setEnabled(FALSE);
-      _shiptoAddress3->setEnabled(FALSE);
-      _shiptoCity->setEnabled(FALSE);
-      _shiptoState->setEnabled(FALSE);
-      _shiptoZip->setEnabled(FALSE);
-      _shipped->setEnabled(FALSE);
-      _unitPrice->setEnabled(FALSE);
-      _unitCost->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _salesrep->setEnabled(FALSE);
-      _commission->setEnabled(FALSE);
-      _commissionPaid->setEnabled(FALSE);
+      _orderNumber->setEnabled(false);
+      _invoiceNumber->setEnabled(false);
+      _orderDate->setEnabled(false);
+      _invoiceDate->setEnabled(false);
+      _billtoName->setEnabled(false);
+      _billtoAddress1->setEnabled(false);
+      _billtoAddress2->setEnabled(false);
+      _billtoAddress3->setEnabled(false);
+      _billtoCity->setEnabled(false);
+      _billtoState->setEnabled(false);
+      _billtoZip->setEnabled(false);
+      _shiptoName->setEnabled(false);
+      _shiptoAddress1->setEnabled(false);
+      _shiptoAddress2->setEnabled(false);
+      _shiptoAddress3->setEnabled(false);
+      _shiptoCity->setEnabled(false);
+      _shiptoState->setEnabled(false);
+      _shiptoZip->setEnabled(false);
+      _shipped->setEnabled(false);
+      _unitPrice->setEnabled(false);
+      _unitCost->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _salesrep->setEnabled(false);
+      _commission->setEnabled(false);
+      _commissionPaid->setEnabled(false);
       _close->setText(tr("&Close"));
       _save->hide();
     }

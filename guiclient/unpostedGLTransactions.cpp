@@ -23,7 +23,7 @@
 #include "purchaseOrder.h"
 #include "glTransactionDetail.h"
 
-unpostedGLTransactions::unpostedGLTransactions(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+unpostedGLTransactions::unpostedGLTransactions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -158,7 +158,7 @@ void unpostedGLTransactions::sViewTrans()
 
   params.append("gltrans_id", _gltrans->id());
 
-  glTransactionDetail newdlg(this, "", TRUE);
+  glTransactionDetail newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

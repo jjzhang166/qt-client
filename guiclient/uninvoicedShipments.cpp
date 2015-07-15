@@ -23,7 +23,7 @@
 #include "mqlutil.h"
 #include "selectOrderForBilling.h"
 
-uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::WFlags fl)
+uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -34,7 +34,7 @@ uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::
   connect(_shipitem, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
   connect(_warehouse, SIGNAL(updated()), this, SLOT(sFillList()));
 
-  _shipitem->setRootIsDecorated(TRUE);
+  _shipitem->setRootIsDecorated(true);
   _shipitem->addColumn(tr("Order/Line #"),           _itemColumn, Qt::AlignRight,  true,  "orderline" );
   _shipitem->addColumn(tr("Cust./Item Number"),      _itemColumn, Qt::AlignLeft,   true,  "custitem"  );
   _shipitem->addColumn(tr("Cust. Name/Description"), -1,          Qt::AlignLeft,   true,  "custdescrip"  );

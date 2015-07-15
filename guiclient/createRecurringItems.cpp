@@ -142,7 +142,7 @@ void createRecurringItems::sSubmit()
         params.append("action_name", "CreateRecurringTodos");
       params.append("type", list[i].arg);
 
-      submitAction newdlg(this, "", TRUE);
+      submitAction newdlg(this, "", true);
       newdlg.set(params);
 
       if(! newdlg.exec() == XDialog::Accepted)

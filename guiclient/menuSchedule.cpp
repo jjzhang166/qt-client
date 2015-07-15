@@ -69,7 +69,7 @@ menuSchedule::menuSchedule(GUIClient *Pparent) :
  
     // Schedule | Schedule | MRP
     { "menu",	tr("Run &MRP"), (char*)plannedOrdersMrpMenu,	plannedOrdersMenu,	"true",	NULL, NULL, true	, NULL },
-    { "ms.runMRPByPlannerCode", tr("by &Planner Code..."), SLOT(sCreatePlannedReplenOrdersByPlannerCode()), plannedOrdersMrpMenu, "CreatePlannedOrders", QPixmap(":/images/runMrpByPlannerCode.png"), toolBar, true , tr("Run MRP by Planner Code") },
+    { "ms.runMRPByPlannerCode", tr("by &Planner Code..."), SLOT(sCreatePlannedReplenOrdersByPlannerCode()), plannedOrdersMrpMenu, "CreatePlannedOrders", new QPixmap(":/images/runMrpByPlannerCode.png"), toolBar, true , tr("Run MRP by Planner Code") },
     { "ms.runMRPByItem", tr("by &Item..."), SLOT(sCreatePlannedReplenOrdersByItem()), plannedOrdersMrpMenu, "CreatePlannedOrders", NULL, NULL, true , NULL },
     
     { "separator", NULL, NULL, plannedOrdersMenu, "true", NULL, NULL, true , NULL },
@@ -84,7 +84,7 @@ menuSchedule::menuSchedule(GUIClient *Pparent) :
     { "menu",	tr("&Reports"), (char*)reportsMenu, mainMenu, "true", NULL, NULL, true , NULL },
   
     // Schedule | Report | Planned Orders
-    { "ms.dspPlannedOrders", tr("Planned &Orders..."), SLOT(sDspPlannedOrders()), reportsMenu, "ViewPlannedOrders", QPixmap(":/images/dspPlannedOrdersByPlannerCode.png"), toolBar, true , tr("Planned Orders") },
+    { "ms.dspPlannedOrders", tr("Planned &Orders..."), SLOT(sDspPlannedOrders()), reportsMenu, "ViewPlannedOrders", new QPixmap(":/images/dspPlannedOrdersByPlannerCode.png"), toolBar, true , tr("Planned Orders") },
 
     { "separator", NULL, NULL, reportsMenu, "true", NULL, NULL, true , NULL },
     { "ms.dspRunningAvailability", tr("&Running Availability..."), SLOT(sDspRunningAvailability()), reportsMenu, "ViewInventoryAvailability", NULL, NULL, true , NULL },
@@ -169,39 +169,39 @@ void menuSchedule::sCreatePlannedOrder()
   ParameterList params;
   params.append("mode", "new");
 
-  plannedOrder newdlg(parent, "", TRUE);
+  plannedOrder newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
 
 void menuSchedule::sCreatePlannedReplenOrdersByItem()
 {
-  createPlannedOrdersByItem(parent, "", TRUE).exec();
+  createPlannedOrdersByItem(parent, "", true).exec();
 }
 
 void menuSchedule::sCreatePlannedReplenOrdersByPlannerCode()
 {
-  createPlannedOrdersByPlannerCode(parent, "", TRUE).exec();
+  createPlannedOrdersByPlannerCode(parent, "", true).exec();
 }
 
 void menuSchedule::sDeletePlannedOrder()
 {
-  deletePlannedOrder(parent, "", TRUE).exec();
+  deletePlannedOrder(parent, "", true).exec();
 }
 
 void menuSchedule::sDeletePlannedOrdersByPlannerCode()
 {
-  deletePlannedOrdersByPlannerCode(parent, "", TRUE).exec();
+  deletePlannedOrdersByPlannerCode(parent, "", true).exec();
 }
 
 void menuSchedule::sFirmPlannedOrdersByPlannerCode()
 {
-  firmPlannedOrdersByPlannerCode(parent, "", TRUE).exec();
+  firmPlannedOrdersByPlannerCode(parent, "", true).exec();
 }
 
 void menuSchedule::sReleasePlannedOrdersByPlannerCode()
 {
-  releasePlannedOrdersByPlannerCode(parent, "", TRUE).exec();
+  releasePlannedOrdersByPlannerCode(parent, "", true).exec();
 }
 
 void menuSchedule::sDspPlannedOrders()

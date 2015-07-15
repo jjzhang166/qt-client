@@ -31,7 +31,7 @@ class vendorWorkBench : public XWidget, public Ui::vendorWorkBench
     Q_OBJECT
 
   public:
-    vendorWorkBench(QWidget* parent = 0, const char *name = 0, Qt::WFlags f = 0);
+    vendorWorkBench(QWidget* parent = 0, const char *name = 0, Qt::WindowFlags f = 0);
     ~vendorWorkBench();
 
     virtual SetResponse set(const ParameterList &);

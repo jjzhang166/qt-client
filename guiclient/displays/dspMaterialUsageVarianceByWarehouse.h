@@ -20,7 +20,7 @@ class dspMaterialUsageVarianceByWarehouse : public display, public Ui::dspMateri
     Q_OBJECT
 
 public:
-    dspMaterialUsageVarianceByWarehouse(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspMaterialUsageVarianceByWarehouse(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

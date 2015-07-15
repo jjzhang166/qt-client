@@ -15,8 +15,11 @@
 #include <QVariant>
 
 #include "applyDiscount.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
+#include "storedProcErrorLookup.h"
 
-selectPayment::selectPayment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+selectPayment::selectPayment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -25,10 +28,10 @@ selectPayment::selectPayment(QWidget* parent, const char* name, bool modal, Qt::
   connect(_save,     SIGNAL(clicked()),      this, SLOT(sSave()));
   connect(_selected, SIGNAL(idChanged(int)), this, SLOT(sPriceGroup()));
 
-  _bankaccnt->setAllowNull(TRUE);
+  _bankaccnt->setAllowNull(true);
   _bankaccnt->setType(XComboBox::APBankAccounts);
 
-  _vendor->setReadOnly(TRUE);
+  _vendor->setReadOnly(true);
   sPriceGroup();
 }
 
@@ -89,55 +92,44 @@ enum SetResponse selectPayment::set(const ParameterList &pParams)
 void selectPayment::sSave()
 {
   XSqlQuery selectSave;
-  if (_selected->isZero())
-  {
-    QMessageBox::warning( this, tr("Cannot Approve for Payment"),
-      tr("<p>You must specify an amount greater than zero. "
-         "If you want to clear this approval you may do so "
-         "from the screen you selected this payment from.") );
-    return;
-  }
-  else if ((_selected->localValue() + _discountAmount->localValue()) > (_amount->localValue() + 0.0000001))
-  {
-    QMessageBox::warning( this, tr("Cannot Approve for Payment"),
-      tr("You must specify an amount smaller than or equal to the Balance.") );
-    _selected->setFocus();
-    return;
-  }
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(_selected->isZero(), _selected,
+                          tr("<p>You must specify an amount greater than zero. "
+                             "If you want to clear this approval you may do so "
+                             "from the screen you selected this payment from.") )
+         << GuiErrorCheck((_selected->localValue() + _discountAmount->localValue()) > (_amount->localValue() + 0.0000001), _selected,
+                          tr("You must specify an amount smaller than or equal to the Balance.") )
+         << GuiErrorCheck(_bankaccnt->id() == -1, _bankaccnt,
+                          tr("<p>You must select a Bank Account from which this Payment is to be paid.") )
+  ;
 
-  if (_bankaccnt->id() == -1)
-  {
-    QMessageBox::warning( this, tr("Cannot Approve for Payment"),
-                          tr("<p>You must select a Bank Account from which "
-			     "this Payment is to be paid.") );
-    _bankaccnt->setFocus();
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Approve for Payment"), errors))
     return;
-  }
-
+  
   selectSave.prepare("SELECT bankaccnt_curr_id, currConcat(bankaccnt_curr_id) AS currAbbr "
-	    "FROM bankaccnt "
-	    "WHERE bankaccnt_id = :accntid;");
+                     "FROM bankaccnt "
+                     "WHERE bankaccnt_id = :accntid;");
   selectSave.bindValue(":accntid", _bankaccnt->id());
   selectSave.exec();
   if (selectSave.first())
   {
     if (selectSave.value("bankaccnt_curr_id").toInt() != _selected->id())
     {
-	int response = QMessageBox::question(this,
-			     tr("Currencies Do Not Match"),
-			     tr("<p>The currency selected for this payment "
-				 "(%1) is not the same as the currency for the "
-				 "Bank Account (%2). Would you like to use "
-				 "this Bank Account anyway?")
-			       .arg(_selected->currAbbr())
-			       .arg(selectSave.value("currAbbr").toString()),
-			      QMessageBox::Yes,
-			      QMessageBox::No | QMessageBox::Default);
-	if (response == QMessageBox::No)
-	{
-	    _bankaccnt->setFocus();
-	    return;
-	}
+      int response = QMessageBox::question(this,
+                                           tr("Currencies Do Not Match"),
+                                           tr("<p>The currency selected for this payment "
+                                              "(%1) is not the same as the currency for the "
+                                              "Bank Account (%2). Would you like to use "
+                                              "this Bank Account anyway?")
+                                           .arg(_selected->currAbbr())
+                                           .arg(selectSave.value("currAbbr").toString()),
+                                           QMessageBox::Yes,
+                                           QMessageBox::No | QMessageBox::Default);
+      if (response == QMessageBox::No)
+      {
+        _bankaccnt->setFocus();
+        return;
+      }
     }
   }
   else
@@ -146,50 +138,34 @@ void selectPayment::sSave()
     return;
   }
 
-  if (_mode == cNew)
+  selectSave.prepare("SELECT selectPayment(:apopen_id, :bankaccnt_id,"
+                     "                     :docdate, :curr_id,"
+                     "                     :amount, :discount ) AS result;");
+  selectSave.bindValue(":apopen_id", _apopenid);
+  selectSave.bindValue(":amount", _selected->localValue());
+  selectSave.bindValue(":bankaccnt_id", _bankaccnt->id());
+  selectSave.bindValue(":curr_id", _selected->id());
+  selectSave.bindValue(":docdate", _docDate->date());
+  selectSave.bindValue(":discount", _discountAmount->localValue());
+  selectSave.exec();
+  if (selectSave.first())
   {
-    selectSave.exec("SELECT NEXTVAL('apselect_apselect_id_seq') AS apselect_id;");
-    if (selectSave.first())
-      _apselectid = selectSave.value("apselect_id").toInt();
-    else if (selectSave.lastError().type() != QSqlError::NoError)
+    int result = selectSave.value("result").toInt();
+    if (result < 0)
     {
-      systemError(this, selectSave.lastError().databaseText(), __FILE__, __LINE__);
+      systemError(this, storedProcErrorLookup("selectPayment", result),
+                  __FILE__, __LINE__);
       return;
     }
-
-    selectSave.prepare( "INSERT INTO apselect "
-               "( apselect_id, apselect_apopen_id,"
-               "  apselect_amount, apselect_bankaccnt_id, "
-	       "  apselect_curr_id, apselect_date, apselect_discount ) "
-               "VALUES "
-               "( :apselect_id, :apselect_apopen_id,"
-               "  :apselect_amount, :apselect_bankaccnt_id, "
-	       "  :apselect_curr_id, :apselect_docdate, :apselect_discount );" );
-    selectSave.bindValue(":apselect_apopen_id", _apopenid);
   }
-  else if (_mode == cEdit)
-    selectSave.prepare( "UPDATE apselect "
-               "SET apselect_amount=:apselect_amount, "
-	       " apselect_bankaccnt_id=:apselect_bankaccnt_id, "
-	       " apselect_curr_id=:apselect_curr_id, "
-	       " apselect_date=:apselect_docdate,"
-               " apselect_discount=:apselect_discount "
-               "WHERE (apselect_id=:apselect_id);" );
-
-  selectSave.bindValue(":apselect_id", _apselectid);
-  selectSave.bindValue(":apselect_amount", _selected->localValue());
-  selectSave.bindValue(":apselect_bankaccnt_id", _bankaccnt->id());
-  selectSave.bindValue(":apselect_curr_id", _selected->id());
-  selectSave.bindValue(":apselect_docdate", _docDate->date());
-  selectSave.bindValue(":apselect_discount", _discountAmount->localValue());
-  selectSave.exec();
-  if (selectSave.lastError().type() != QSqlError::NoError)
+  else
   {
-    systemError(this, selectSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Select Payment"),
+                         selectSave, __FILE__, __LINE__);
     return;
   }
 
-  omfgThis->sPaymentsUpdated(_bankaccnt->id(), _apselectid, TRUE);
+  omfgThis->sPaymentsUpdated(_bankaccnt->id(), _apselectid, true);
 
   done (_apselectid);
 }
@@ -260,7 +236,7 @@ void selectPayment::sDiscount()
   if(_discountAmount->localValue() != 0.0)
     params.append("amount", _discountAmount->localValue());
 
-  applyDiscount newdlg(this, "", TRUE);
+  applyDiscount newdlg(this, "", true);
   newdlg.set(params);
 
   if(newdlg.exec() != XDialog::Rejected)

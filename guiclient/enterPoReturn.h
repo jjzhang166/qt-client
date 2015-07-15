@@ -23,7 +23,7 @@ class enterPoReturn : public XWidget, public Ui::enterPoReturn
     Q_OBJECT
 
   public:
-    enterPoReturn(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    enterPoReturn(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~enterPoReturn();
 
   public slots:

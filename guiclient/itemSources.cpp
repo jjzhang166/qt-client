@@ -22,7 +22,7 @@
 #include "guiclient.h"
 #include "parameterwidget.h"
 
-itemSources::itemSources(QWidget* parent, const char*, Qt::WFlags fl)
+itemSources::itemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "itemSources", fl)
 {
   setWindowTitle(tr("Item Sources"));
@@ -41,6 +41,7 @@ itemSources::itemSources(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->append(tr("Show Expired"), "showExpired", ParameterWidget::Exists);
   parameterWidget()->append(tr("Show Future"), "showFuture", ParameterWidget::Exists);
 
+  list()->addColumn(tr("Vendor #"),             -1,        Qt::AlignLeft,   true,  "vend_number"   );
   list()->addColumn(tr("Vendor"),             -1,          Qt::AlignLeft,   true,  "vend_name"   );
   list()->addColumn(tr("Contract #"),         _itemColumn, Qt::AlignLeft,   true,  "contrct_number"   );
   list()->addColumn(tr("Effective"),          _dateColumn, Qt::AlignCenter, true,  "itemsrc_effective"   );
@@ -99,7 +100,7 @@ void itemSources::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -112,7 +113,7 @@ void itemSources::sEdit()
   params.append("mode", "edit");
   params.append("itemsrc_id", list()->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -125,7 +126,7 @@ void itemSources::sView()
   params.append("mode", "view");
   params.append("itemsrc_id", list()->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -136,7 +137,7 @@ void itemSources::sCopy()
   params.append("mode", "copy");
   params.append("itemsrc_id", list()->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

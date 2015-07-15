@@ -22,7 +22,7 @@
 
 #define DEBUG false
 
-glSeries::glSeries(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+glSeries::glSeries(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -157,8 +157,8 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
       
       _doctype->setCurrentIndex(_doctype->findText("ST"));
       _doctype->setEnabled(false);
-      _date->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _date->setEnabled(false);
+      _notes->setEnabled(false);
 
       glet.prepare( "SELECT DISTINCT glseries_docnumber, stdjrnl_notes "
                  "  FROM glseries, stdjrnl "
@@ -216,7 +216,7 @@ void glSeries::sNew()
   if (_mode == cPostStandardJournal)
     params.append("postStandardJournal");
 
-  glSeriesItem newdlg(this, "", TRUE);
+  glSeriesItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -245,7 +245,7 @@ void glSeries::sEdit()
   if (_mode == cPostStandardJournal)
     params.append("postStandardJournal");
 
-  glSeriesItem newdlg(this, "", TRUE);
+  glSeriesItem newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

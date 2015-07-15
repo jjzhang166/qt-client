@@ -14,7 +14,7 @@
 
 #include <QVariant>
 
-apAccountAssignment::apAccountAssignment(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+apAccountAssignment::apAccountAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -69,10 +69,10 @@ enum SetResponse apAccountAssignment::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _vendorTypeGroup->setEnabled(FALSE);
-      _ap->setReadOnly(TRUE);
-      _prepaid->setReadOnly(TRUE);
-      _discount->setReadOnly(TRUE);
+      _vendorTypeGroup->setEnabled(false);
+      _ap->setReadOnly(true);
+      _prepaid->setReadOnly(true);
+      _discount->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -197,16 +197,16 @@ void apAccountAssignment::populate()
     if (populateAssign.value("apaccnt_vendtype_id").toInt() == -1)
     {
       if (populateAssign.value("apaccnt_vendtype").toString() == ".*")
-        _allVendorTypes->setChecked(TRUE);
+        _allVendorTypes->setChecked(true);
       else
       {
-        _vendorTypePattern->setChecked(TRUE);
+        _vendorTypePattern->setChecked(true);
         _vendorType->setText(populateAssign.value("apaccnt_vendtype").toString());
       }
     }
     else
     {
-      _selectedVendorType->setChecked(TRUE);
+      _selectedVendorType->setChecked(true);
       _vendorTypes->setId(populateAssign.value("apaccnt_vendtype_id").toInt());
     }
 

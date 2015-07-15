@@ -20,7 +20,7 @@
 #include "storedProcErrorLookup.h"
 #include "warehouseCluster.h"
 
-transferTrans::transferTrans(QWidget* parent, const char* name, Qt::WFlags fl)
+transferTrans::transferTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -33,7 +33,7 @@ transferTrans::transferTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_qty,  SIGNAL(textChanged(const QString&)), this, SLOT(sUpdateQty(const QString&)));
   connect(_toWarehouse, SIGNAL(newID(int)), this, SLOT(sPopulateToQty(int)));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _fromWarehouse->setType(WComboBox::AllActiveInventory);
@@ -71,20 +71,20 @@ enum SetResponse transferTrans::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _fromWarehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _fromWarehouse->setEnabled(false);
   }
 
   param = pParams.value("qty", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _qty->setText(formatQty(param.toDouble()));
-    _qty->setEnabled(FALSE);
+    _qty->setEnabled(false);
   }
 
   param = pParams.value("invhist_id", &valid);
@@ -106,13 +106,13 @@ enum SetResponse transferTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setEnabled(FALSE);
-      _toWarehouse->setEnabled(FALSE);
-      _fromWarehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _transDate->setEnabled(false);
+      _item->setEnabled(false);
+      _toWarehouse->setEnabled(false);
+      _fromWarehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _documentNum->setEnabled(false);
+      _notes->setReadOnly(true);
       _close->setText(tr("&Close"));
       _post->hide();
 

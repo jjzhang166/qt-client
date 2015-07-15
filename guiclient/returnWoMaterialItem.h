@@ -21,7 +21,7 @@ class returnWoMaterialItem : public XDialog, public Ui::returnWoMaterialItem
     Q_OBJECT
 
 public:
-    returnWoMaterialItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    returnWoMaterialItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~returnWoMaterialItem();
 
 public slots:

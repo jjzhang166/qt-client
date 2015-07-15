@@ -28,7 +28,7 @@
 #include "storedProcErrorLookup.h"
 #include "voucher.h"
 
-selectPayments::selectPayments(QWidget* parent, const char* name, Qt::WFlags fl, bool pAutoFill)
+selectPayments::selectPayments(QWidget* parent, const char* name, Qt::WindowFlags fl, bool pAutoFill)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -127,30 +127,14 @@ void selectPayments::sSelectDue()
   int bankaccntid = _bankaccnt->id();
   if(bankaccntid == -1)
   {
-    selectBankAccount newdlg(this, "", TRUE);
+    selectBankAccount newdlg(this, "", true);
     newdlg.set(params);
     bankaccntid = newdlg.exec();
   }
 
   if (bankaccntid >= 0)
   {
-    MetaSQLQuery mql("SELECT selectDueItemsForPayment("
-                     "    <? if exists(\"vend_id\") ?> <? value(\"vend_id\") ?>"
-                     "    <? else ?> vend_id <? endif ?>,"
-                     "    <? value(\"bankaccnt_id\") ?>) AS result "
-                     "<? if exists(\"vend_id\") ?>"
-                     ";"
-                     "<? elseif exists(\"vendtype_id\") ?>"
-                     "FROM vendinfo "
-                     "WHERE (vend_vendtype_id=<? value(\"vendtype_id\") ?>);"
-                     "<? elseif exists(\"vendtype_pattern\") ?>"
-                     "FROM vendinfo "
-                     "WHERE (vend_vendtype_id IN (SELECT vendtype_id"
-                     "                            FROM vendtype"
-                     "                            WHERE (vendtype_code ~ <? value(\"vendtype_pattern\") ?>)));"
-                     "<? else ?>"
-                     "FROM vendinfo;"
-                     "<? endif ?>");
+    MetaSQLQuery mql = mqlLoad("selectPayments", "dueitems");
     ParameterList params;
     if (! setParams(params))
         return;
@@ -161,18 +145,19 @@ void selectPayments::sSelectDue()
       int result = selectSelectDue.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("selectDueItemsForPayment", result),
+        systemError(this, storedProcErrorLookup("selectPayment", result),
                     __FILE__, __LINE__);
         return;
       }
     }
-    else if (selectSelectDue.lastError().type() != QSqlError::NoError)
+    else
     {
-      systemError(this, selectSelectDue.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Select Due"),
+                           selectSelectDue, __FILE__, __LINE__);
       return;
     }
 
-    omfgThis->sPaymentsUpdated(-1, -1, TRUE);
+    omfgThis->sPaymentsUpdated(-1, -1, true);
   }
 }
 
@@ -185,30 +170,14 @@ void selectPayments::sSelectDiscount()
   int bankaccntid = _bankaccnt->id();
   if(bankaccntid == -1)
   {
-    selectBankAccount newdlg(this, "", TRUE);
+    selectBankAccount newdlg(this, "", true);
     newdlg.set(params);
     bankaccntid = newdlg.exec();
   }
 
   if (bankaccntid >= 0)
   {
-    MetaSQLQuery mql("SELECT selectDiscountItemsForPayment("
-                     "    <? if exists(\"vend_id\") ?> <? value(\"vend_id\") ?>"
-                     "    <? else ?> vend_id <? endif ?>,"
-                     "    <? value(\"bankaccnt_id\") ?>) AS result "
-                     "<? if exists(\"vend_id\") ?>"
-                     ";"
-                     "<? elseif exists(\"vendtype_id\") ?>"
-                     "FROM vendinfo "
-                     "WHERE (vend_vendtype_id=<? value(\"vendtype_id\") ?>);"
-                     "<? elseif exists(\"vendtype_pattern\") ?>"
-                     "FROM vendinfo "
-                     "WHERE (vend_vendtype_id IN (SELECT vendtype_id"
-                     "                            FROM vendtype"
-                     "                            WHERE (vendtype_code ~ <? value(\"vendtype_pattern\") ?>)));"
-                     "<? else ?>"
-                     "FROM vendinfo;"
-                     "<? endif ?>");
+    MetaSQLQuery mql = mqlLoad("selectPayments", "discountitems");
     ParameterList params;
     if (! setParams(params))
         return;
@@ -219,52 +188,30 @@ void selectPayments::sSelectDiscount()
       int result = selectSelectDiscount.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("selectDiscountItemsForPayment", result),
+        systemError(this, storedProcErrorLookup("selectPayment", result),
                     __FILE__, __LINE__);
         return;
       }
     }
-    else if (selectSelectDiscount.lastError().type() != QSqlError::NoError)
+    else
     {
-      systemError(this, selectSelectDiscount.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Select Discount"),
+                           selectSelectDiscount, __FILE__, __LINE__);
       return;
     }
-    omfgThis->sPaymentsUpdated(-1, -1, TRUE);
+
+    omfgThis->sPaymentsUpdated(-1, -1, true);
   }
 }
 
 void selectPayments::sClearAll()
 {
   XSqlQuery selectClearAll;
-  switch (_vendorgroup->state())
-  {
-    case VendorGroup::All:
-      selectClearAll.prepare( "SELECT clearPayment(apselect_id) AS result "
-                 "FROM apselect;" );
-        break;
-    case VendorGroup::Selected:
-      selectClearAll.prepare( "SELECT clearPayment(apselect_id) AS result "
-                 "FROM apopen JOIN apselect ON (apselect_apopen_id=apopen_id) "
-                 "WHERE (apopen_vend_id=:vend_id);" );
-      break;
-    case VendorGroup::SelectedType:
-      selectClearAll.prepare( "SELECT clearPayment(apselect_id) AS result "
-                 "FROM vendinfo JOIN apopen ON (apopen_vend_id=vend_id) "
-                 "              JOIN apselect ON (apselect_apopen_id=apopen_id) "
-                 "WHERE (vend_vendtype_id=:vendtype_id) ;" );
-      break;
-    case VendorGroup::TypePattern:
-      selectClearAll.prepare( "SELECT clearPayment(apselect_id) AS result "
-                 "FROM vendinfo JOIN apopen ON (apopen_vend_id=vend_id) "
-                 "              JOIN apselect ON (apselect_apopen_id=apopen_id) "
-                 "WHERE (vend_vendtype_id IN (SELECT vendtype_id"
-                 "                            FROM vendtype"
-                 "                            WHERE (vendtype_code ~ :vendtype_pattern)));" );
-        break;
-    }
-
-  _vendorgroup->bindValue(selectClearAll);
-  selectClearAll.exec();
+  MetaSQLQuery mql = mqlLoad("selectPayments", "clearall");
+  ParameterList params;
+  if (! setParams(params))
+    return;
+  selectClearAll = mql.toQuery(params);
   if (selectClearAll.first())
   {
     int result = selectClearAll.value("result").toInt();
@@ -281,7 +228,7 @@ void selectPayments::sClearAll()
     return;
   }
 
-  omfgThis->sPaymentsUpdated(-1, -1, TRUE);
+  omfgThis->sPaymentsUpdated(-1, -1, true);
 }
 
 void selectPayments::sSelect()
@@ -312,7 +259,7 @@ void selectPayments::sSelect()
         if(_bankaccnt->id() != -1)
           params.append("bankaccnt_id", _bankaccnt->id());
 
-        selectPayment newdlg(this, "", TRUE);
+        selectPayment newdlg(this, "", true);
         newdlg.set(params);
         if(newdlg.exec() != XDialog::Rejected)
           update = true;
@@ -337,14 +284,14 @@ void selectPayments::sSelectLine()
   int bankaccntid = _bankaccnt->id();
   if(bankaccntid == -1)
   {
-    selectBankAccount newdlg(this, "", TRUE);
+    selectBankAccount newdlg(this, "", true);
     newdlg.set(params);
     bankaccntid = newdlg.exec();
   }
 
   if (bankaccntid != -1)
   {
-    bool update = FALSE;
+    bool update = false;
     QList<XTreeWidgetItem*> list = _apopen->selectedItems();
     XTreeWidgetItem * cursor = 0;
     selectSelectLine.prepare("SELECT selectPayment(:apopen_id, :bankaccnt_id) AS result;");
@@ -379,18 +326,18 @@ void selectPayments::sSelectLine()
         return;
       }
                 }
-      update = TRUE;
+      update = true;
     }
     }
     if(update)
-      omfgThis->sPaymentsUpdated(-1, -1, TRUE);
+      omfgThis->sPaymentsUpdated(-1, -1, true);
   }
 }
 
 void selectPayments::sClear()
 {
   XSqlQuery selectClear;
-  bool update = FALSE;
+  bool update = false;
   QList<XTreeWidgetItem*> list = _apopen->selectedItems();
   XTreeWidgetItem * cursor = 0;
   selectClear.prepare("SELECT clearPayment(:apopen_id) AS result;");
@@ -415,11 +362,11 @@ void selectPayments::sClear()
       systemError(this, selectClear.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
-    update = TRUE;
+    update = true;
   }
 
   if(update)
-    omfgThis->sPaymentsUpdated(-1, -1, TRUE);
+    omfgThis->sPaymentsUpdated(-1, -1, true);
 }
 
 void selectPayments::sApplyAllCredits()
@@ -655,7 +602,7 @@ void selectPayments::sViewVoucher()
 
 void selectPayments::sVoidVoucher()
 {
-  bool update = FALSE;
+  bool update = false;
   QList<XTreeWidgetItem*> list = _apopen->selectedItems();
   XTreeWidgetItem * cursor = 0;
   XSqlQuery dspVoidVoucher;
@@ -685,7 +632,7 @@ void selectPayments::sVoidVoucher()
                              dspVoidVoucher, __FILE__, __LINE__);
         return;
       }
-      update = TRUE;
+      update = true;
     }
   }
   if(update)

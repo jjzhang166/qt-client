@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WFlags fl)
+miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -31,7 +31,7 @@ miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_vendRB,    SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_cust,      SIGNAL(valid(bool)),   this, SLOT(sCustomerSelected()));
 
-  _captive = FALSE;
+  _captive = false;
   _raheadid = -1;
   _aropenamt = 0;
 
@@ -51,7 +51,7 @@ void miscCheck::languageChange()
 enum SetResponse miscCheck::set(const ParameterList &pParams)
 {
   XWidget::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -84,7 +84,7 @@ enum SetResponse miscCheck::set(const ParameterList &pParams)
   {
     _mode = cEdit;
 
-    _bankaccnt->setEnabled(FALSE);
+    _bankaccnt->setEnabled(false);
   }
 
   return NoError;
@@ -143,7 +143,7 @@ void miscCheck::sSave()
   {
     check.prepare("SELECT createCheck(:bankaccnt_id, :reciptype, :recipid,"
 	      "                   :checkDate, :amount, :curr_id, :expcat_id,"
-		  "                   NULL, :for, :notes, TRUE, :cmhead_id) AS result;" );
+		  "                   NULL, :for, :notes, true, :cmhead_id) AS result;" );
     check.bindValue(":bankaccnt_id", _bankaccnt->id());
   }
   else if (_mode == cEdit)
@@ -223,7 +223,7 @@ void miscCheck::sSave()
     return;
   }
 
-  omfgThis->sChecksUpdated(_bankaccnt->id(), _checkid, TRUE);
+  omfgThis->sChecksUpdated(_bankaccnt->id(), _checkid, true);
 
   if (_captive)
     close();
@@ -299,24 +299,24 @@ void miscCheck::populate()
 
     if (!miscpopulate.value("checkhead_cmhead_id").isNull())
     {
-      _applytocm->setChecked(TRUE);
+      _applytocm->setChecked(true);
       _cmCluster->setId(miscpopulate.value("checkhead_cmhead_id").toInt());
     }
     else if (miscpopulate.value("checkhead_expcat_id").isNull() ||
 	miscpopulate.value("checkhead_expcat_id").toInt() == -1)
-      _memo->setChecked(TRUE);
+      _memo->setChecked(true);
     else
     {
-      _expense->setChecked(TRUE);
+      _expense->setChecked(true);
       _expcat->setId(miscpopulate.value("checkhead_expcat_id").toInt());
     }
 
     if (!miscpopulate.value("checkhead_cmhead_id").isNull())
     {
-      _recipGroup->setEnabled(FALSE);
-      _chargeToGroup->setEnabled(FALSE);
-      _amount->setEnabled(FALSE);
-      _for->setEnabled(FALSE);
+      _recipGroup->setEnabled(false);
+      _chargeToGroup->setEnabled(false);
+      _amount->setEnabled(false);
+      _for->setEnabled(false);
     }
   }
 }

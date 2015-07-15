@@ -20,7 +20,7 @@ class allocateReservations : public XDialog, public Ui::allocateReservations
     Q_OBJECT
 
 public:
-    allocateReservations(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    allocateReservations(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~allocateReservations();
 
 public slots:

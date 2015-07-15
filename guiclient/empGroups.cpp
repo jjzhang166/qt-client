@@ -18,7 +18,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 
-empGroups::empGroups(QWidget* parent, const char* name, Qt::WFlags fl)
+empGroups::empGroups(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ empGroups::empGroups(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_empgrp, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -86,7 +86,7 @@ void empGroups::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  empGroup newdlg(this, "", TRUE);
+  empGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -98,7 +98,7 @@ void empGroups::sEdit()
   params.append("mode", "edit");
   params.append("empgrp_id", _empgrp->id());
 
-  empGroup newdlg(this, "", TRUE);
+  empGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillList();
@@ -110,7 +110,7 @@ void empGroups::sView()
   params.append("mode", "view");
   params.append("empgrp_id", _empgrp->id());
 
-  empGroup newdlg(this, "", TRUE);
+  empGroup newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

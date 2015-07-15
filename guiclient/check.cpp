@@ -17,7 +17,7 @@
 
 #include "errorReporter.h"
 
-check::check(QWidget* parent, const char* name, Qt::WFlags fl)
+check::check(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

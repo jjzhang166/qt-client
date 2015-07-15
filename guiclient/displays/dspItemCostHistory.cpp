@@ -12,7 +12,7 @@
 
 #include <QMessageBox>
 
-dspItemCostHistory::dspItemCostHistory(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemCostHistory::dspItemCostHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspItemCostHistory", fl)
 {
   setupUi(optionsWidget());

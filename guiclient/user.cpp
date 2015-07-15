@@ -55,10 +55,14 @@ user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   connect(_revokeSite, SIGNAL(clicked()), this, SLOT(sRevokeSite()));
 
   _available->addColumn("Available Privileges", -1, Qt::AlignLeft);
+  _available->addColumn("Description", -1, Qt::AlignLeft);
   _granted->addColumn("Granted Privileges", -1, Qt::AlignLeft);
+  _granted->addColumn("Description", -1, Qt::AlignLeft);
 
   _availableGroup->addColumn("Available Roles", -1, Qt::AlignLeft);
+  _availableGroup->addColumn("Description", -1, Qt::AlignLeft);
   _grantedGroup->addColumn("Granted Roles", -1, Qt::AlignLeft);
+  _grantedGroup->addColumn("Description", -1, Qt::AlignLeft);
 
   _availableSite->addColumn("Available Sites", -1, Qt::AlignLeft);
   _grantedSite->addColumn("Granted Sites",      -1, Qt::AlignLeft);
@@ -133,7 +137,7 @@ enum SetResponse user::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _username->setEnabled(FALSE);
+      _username->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
@@ -351,7 +355,7 @@ void user::sModuleSelected(const QString &pModule)
   _availableGroup->clear();
   _grantedGroup->clear();
   XSqlQuery groups;
-  groups.prepare("SELECT grp_id, grp_name, usrgrp_id"
+  groups.prepare("SELECT grp_id, grp_name, grp_descrip, usrgrp_id"
                  "  FROM grp LEFT OUTER JOIN usrgrp"
                  "    ON (usrgrp_grp_id=grp_id AND usrgrp_username=:username);");
   groups.bindValue(":username", _cUsername);
@@ -359,9 +363,9 @@ void user::sModuleSelected(const QString &pModule)
   while(groups.next())
   {
     if (groups.value("usrgrp_id").toInt() == 0)
-      available = new XTreeWidgetItem(_availableGroup, available, groups.value("grp_id").toInt(), groups.value("grp_name"));
+      available = new XTreeWidgetItem(_availableGroup, available, groups.value("grp_id").toInt(), groups.value("grp_name"), groups.value("grp_descrip"));
     else
-      granted = new XTreeWidgetItem(_grantedGroup, granted, groups.value("grp_id").toInt(), groups.value("grp_name"));
+      granted = new XTreeWidgetItem(_grantedGroup, granted, groups.value("grp_id").toInt(), groups.value("grp_name"), groups.value("grp_descrip"));
   }
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Groups"),
                            groups, __FILE__, __LINE__))
@@ -371,7 +375,7 @@ void user::sModuleSelected(const QString &pModule)
   _granted->clear();
 
   XSqlQuery privs;
-  privs.prepare( "SELECT priv_id, priv_name "
+  privs.prepare( "SELECT priv_id, priv_name, priv_descrip "
                  "FROM priv "
                  "WHERE (priv_module=:priv_module) "
                  "ORDER BY priv_name;" );
@@ -407,10 +411,10 @@ void user::sModuleSelected(const QString &pModule)
     do
     {
       if (usrpriv.findFirst("priv_id", privs.value("priv_id").toInt()) == -1 && grppriv.findFirst("priv_id", privs.value("priv_id").toInt()) == -1)
-        available = new XTreeWidgetItem(_available, available, privs.value("priv_id").toInt(), privs.value("priv_name"));
+        available = new XTreeWidgetItem(_available, available, privs.value("priv_id").toInt(), privs.value("priv_name"), privs.value("priv_descrip"));
       else
       {
-        granted = new XTreeWidgetItem(_granted, granted, privs.value("priv_id").toInt(), privs.value("priv_name"));
+        granted = new XTreeWidgetItem(_granted, granted, privs.value("priv_id").toInt(), privs.value("priv_name"), privs.value("priv_descrip"));
         if(usrpriv.findFirst("priv_id", privs.value("priv_id").toInt()) == -1)
           granted->setTextColor(Qt::gray);
       }
@@ -576,7 +580,7 @@ void user::sCheck()
     {
       sPopulate();
       _mode = cEdit;
-      _username->setEnabled(FALSE);
+      _username->setEnabled(false);
       _properName->setFocus();
     }
     else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting User Account"),
@@ -632,9 +636,9 @@ bool user::sPopulate()
                  "          FROM locale"
                  "         WHERE locale_code='Default') AS usr_locale_id,"
                  "       NULL  AS usr_passwd,  cntct_initials AS usr_initials,"
-                 "       FALSE AS usr_agent,   crmacct_active AS usr_active,"
+                 "       false AS usr_agent,   crmacct_active AS usr_active,"
                  "       NULL  AS usr_window,  cntct_email AS usr_email,"
-                 "       FALSE AS createusers,"
+                 "       false AS createusers,"
                  "       userCanCreateUsers(getEffectiveXtUser()) AS enablecreateusers,"
                  "       crmacct_id, crmacct_emp_id, crmacct_owner_username"
                  "  FROM crmacct"
@@ -687,7 +691,7 @@ bool user::sPopulate()
     if(usrq.first())
       _exportContents->setChecked(usrq.value("usrpref_value").toString()=="t");
     else
-      _exportContents->setChecked(FALSE);
+      _exportContents->setChecked(false);
 
     usrq.prepare( "SELECT usrpref_value "
                "  FROM usrpref "
@@ -731,7 +735,7 @@ bool user::sPopulate()
   usrq.bindValue(":username", _cUsername);
   usrq.exec();
   if(usrq.first())
-    _selectedSites->setChecked(TRUE);
+    _selectedSites->setChecked(true);
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting User Sites"),
                                 usrq, __FILE__, __LINE__))
     return false;

@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -26,7 +26,7 @@ copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _source->setType(ItemLineEdit::cGeneralManufactured | ItemLineEdit::cGeneralPurchased |
                    ItemLineEdit::cPhantom | ItemLineEdit::cKit |
@@ -49,7 +49,7 @@ void copyBOM::languageChange()
 enum SetResponse copyBOM::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -58,7 +58,7 @@ enum SetResponse copyBOM::set(const ParameterList &pParams)
   if (valid)
   {
     _source->setId(param.toInt());
-    _source->setEnabled(FALSE);
+    _source->setEnabled(false);
   }
 
   return NoError;
@@ -97,7 +97,7 @@ void copyBOM::sCopy()
       systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-  omfgThis->sBOMsUpdated(_target->id(), TRUE);
+  omfgThis->sBOMsUpdated(_target->id(), true);
   if (_captive)
     close();
   else

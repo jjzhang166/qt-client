@@ -16,7 +16,7 @@
 
 #include "copyPurchaseOrder.h"
 
-dspPoHistory::dspPoHistory(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoHistory::dspPoHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoHistory", fl)
 {
   setupUi(optionsWidget());

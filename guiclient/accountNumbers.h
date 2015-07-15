@@ -22,7 +22,7 @@ class accountNumbers : public XWidget, public Ui::accountNumbers
     Q_OBJECT
 
   public:
-    accountNumbers(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    accountNumbers(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~accountNumbers();
 
   public slots:
@@ -38,6 +38,7 @@ class accountNumbers : public XWidget, public Ui::accountNumbers
     virtual void sEdit();
     virtual void sPrint();
     virtual void sFillList();
+    virtual void populateSubTypes();
 
   private:
     int _externalCol;

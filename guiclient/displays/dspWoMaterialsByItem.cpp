@@ -16,7 +16,7 @@
 #include "guiclient.h"
 #include "inputManager.h"
 
-dspWoMaterialsByItem::dspWoMaterialsByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspWoMaterialsByItem::dspWoMaterialsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoMaterialsByItem", fl)
 {
   setupUi(optionsWidget());

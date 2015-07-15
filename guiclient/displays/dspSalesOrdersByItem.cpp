@@ -16,12 +16,13 @@
 #include <QVariant>
 
 #include "guiclient.h"
+#include "copySalesOrder.h"
 #include "dspSalesOrderStatus.h"
 #include "dspShipmentsBySalesOrder.h"
 #include "returnAuthorization.h"
 #include "salesOrder.h"
 
-dspSalesOrdersByItem::dspSalesOrdersByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspSalesOrdersByItem::dspSalesOrdersByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSalesOrdersByItem", fl)
 {
   setupUi(optionsWidget());
@@ -79,6 +80,11 @@ void dspSalesOrdersByItem::sPopulateMenu(QMenu *menuThis, QTreeWidgetItem*, int)
   if(_privileges->check("MaintainSalesOrders"))
     menuThis->addAction(tr("Edit..."), this, SLOT(sEditOrder()));
   menuThis->addAction(tr("View..."), this, SLOT(sViewOrder()));
+  if(_privileges->check("MaintainSalesOrders"))
+  {
+    menuThis->addSeparator();
+    menuThis->addAction(tr("Copy..."), this, SLOT(sCopyOrder()));
+  }
   menuThis->addSeparator();
   menuThis->addAction(tr("Shipment Status..."), this, SLOT(sDspShipmentStatus()));
   menuThis->addAction(tr("Shipments.."), this, SLOT(sDspShipments()));
@@ -104,6 +110,19 @@ void dspSalesOrdersByItem::sViewOrder()
     return;
     
   salesOrder::viewSalesOrder(list()->id());
+}
+
+void dspSalesOrdersByItem::sCopyOrder()
+{
+  if (!checkSitePrivs(list()->id()))
+    return;
+    
+  ParameterList params;
+  params.append("sohead_id", list()->id());
+      
+  copySalesOrder newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
 }
 
 void dspSalesOrdersByItem::sCreateRA()

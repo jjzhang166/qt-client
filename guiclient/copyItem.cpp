@@ -22,7 +22,7 @@
 #include "itemSite.h"
 #include "storedProcErrorLookup.h"
 
-copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -56,8 +56,8 @@ copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   _listCost->setValidator(omfgThis->costVal());
 
   _newitemid = -1;
-  _inTransaction = FALSE;
-  _captive = FALSE;
+  _inTransaction = false;
+  _captive = false;
 }
 
 copyItem::~copyItem()
@@ -73,7 +73,7 @@ void copyItem::languageChange()
 enum SetResponse copyItem::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -82,7 +82,7 @@ enum SetResponse copyItem::set(const ParameterList &pParams)
   if (valid)
   {
     _source->setId(param.toInt());
-    _source->setEnabled(FALSE);
+    _source->setEnabled(false);
   }
 
   return NoError;
@@ -157,7 +157,7 @@ void copyItem::sCopyBom()
   if (_copyBOM->isChecked())
   {
     XSqlQuery bomitemq;
-    bomitemq.prepare("SELECT copyBom(:sourceitemid, :targetitemid, TRUE) AS result;");
+    bomitemq.prepare("SELECT copyBom(:sourceitemid, :targetitemid, true) AS result;");
     bomitemq.bindValue(":sourceitemid", _source->id());
     bomitemq.bindValue(":targetitemid", _newitemid);
     bomitemq.exec();
@@ -232,11 +232,11 @@ void copyItem::sAddBomitem()
                    "   :targetitemid, (MAX(bomitem_seqnumber) + 10),"
                    "   :bomitemid, :qtyper, 0.0,"
                    "   NULL, startOfTime(), endOfTime(),"
-                   "   FALSE, 'M', TRUE,"
+                   "   false, 'M', true,"
                    "   NULL, CURRENT_DATE, 'I',"
                    "   :uomid, -1, -1,"
                    "   NULL, NULL, NULL,"
-                   "   NULL, 0.0, FALSE "
+                   "   NULL, 0.0, false "
                    " FROM bomitem "
                    " WHERE (bomitem_parent_item_id=:targetitemid);" );
   bomitemq.bindValue(":targetitemid", _newitemid);
@@ -263,7 +263,7 @@ void copyItem::sEditBomitem()
   params.append("mode", "edit");
   params.append("bomitem_id", _addedbomitems->id());
   
-  bomItem newdlg(this, "", TRUE);
+  bomItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   
@@ -298,9 +298,10 @@ void copyItem::sFillItem()
   XSqlQuery bomitemq;
   bomitemq.prepare("SELECT item_id, item_number, itemalias_number, item_descrip1 "
                    "FROM item LEFT OUTER JOIN itemalias ON (itemalias_item_id=item_id) "
-                   "WHERE (item_number ~* :searchfor)"
-                   "   OR (itemalias_number ~* :searchfor)"
-                   "   OR (item_descrip1 ~* :searchfor);");
+                   "WHERE ( (item_number ~* :searchfor) OR"
+                   "        (itemalias_number ~* :searchfor) OR"
+                   "        (item_descrip1 ~* :searchfor) )"
+                   "  AND (item_active OR fetchMetricBool('AllowInactiveBomItems'));");
   bomitemq.bindValue(":searchfor", _searchForBOM->text());
   bomitemq.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Filling Bomitem"),
@@ -412,7 +413,7 @@ void copyItem::sAddItemsite()
     params.append("mode", "edit");
     params.append("itemsite_id", result);
     
-    itemSite newdlg(this, "", TRUE);
+    itemSite newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Accepted)
     {
@@ -449,7 +450,7 @@ void copyItem::sEditItemsite()
   params.append("mode", "edit");
   params.append("itemsite_id", _addeditemsites->id());
   
-  itemSite newdlg(this, "", TRUE);
+  itemSite newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -546,7 +547,7 @@ void copyItem::sCopy()
     return;
   }
 
-  copyCopy.prepare("SELECT doUpdateCosts(:item_id, TRUE, :lowMaterial, :dirLabor, "
+  copyCopy.prepare("SELECT doUpdateCosts(:item_id, true, :lowMaterial, :dirLabor, "
                    "         :lowDirLabor, :overhead, :lowOverhead, :machOverhead, "
                    "         :lowMachOverhead, :lowUser, :rollUp, :updateActual)");
   copyCopy.bindValue(":item_id",         _newitemid);
@@ -587,7 +588,7 @@ void copyItem::sCopy()
     return;
   }
 
-  copyCopy.prepare( "SELECT doPostCosts(:item_id, TRUE, "
+  copyCopy.prepare( "SELECT doPostCosts(:item_id, true, "
                     "         :material, :lowMaterial, :labor, :lowLabor, "
                     "         :overhead, :lowOverhead, :machOverhead, :lowMachOverhead, "
                     "         :user, :lowUser, :rollUp)" );
@@ -633,10 +634,10 @@ void copyItem::sCopy()
   copyCopy.exec("COMMIT;");
   _inTransaction = false;
 
-  omfgThis->sItemsUpdated(_newitemid, TRUE);
+  omfgThis->sItemsUpdated(_newitemid, true);
 
   if (_copyBOM->isChecked())
-    omfgThis->sBOMsUpdated(_newitemid, TRUE);
+    omfgThis->sBOMsUpdated(_newitemid, true);
 
   if (_captive)
     done(_newitemid);

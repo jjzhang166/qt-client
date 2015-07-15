@@ -19,7 +19,7 @@
 #include <parameter.h>
 
 //#include "purchaseOrder.h"
-openPurchaseOrder::openPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+openPurchaseOrder::openPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -96,7 +96,7 @@ void openPurchaseOrder::sFillList()
   openFillList.bindValue(":cohead_id", sohead_id);
   openFillList.bindValue(":dropship", dropship);
   openFillList.exec();
-  _po->populate(openFillList,TRUE);
+  _po->populate(openFillList,true);
   if (openFillList.lastError().type() != QSqlError::NoError)
   {
     systemError(this, openFillList.lastError().databaseText(), __FILE__, __LINE__);

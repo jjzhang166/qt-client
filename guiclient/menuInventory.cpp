@@ -248,7 +248,7 @@ menuInventory::menuInventory(GUIClient *Pparent) :
     //  Inventory | Receiving
     { "menu",            tr("R&eceiving"),                 (char*)receivingMenu,  mainMenu,      "true",          NULL, NULL, true, NULL },
     { "sr.enterReceipt", tr("&New Receipt..."),            SLOT(sEnterReceipt()), receivingMenu, "EnterReceipts", NULL, NULL, true, NULL },
-    { "sr.postReceipts", tr("&List Unposted Receipts..."), SLOT(sPostReceipts()), receivingMenu, "EnterReceipts", QPixmap(":/images/postReceipts.png"), toolBar,  true, tr("List Unposted Receipts") },
+    { "sr.postReceipts", tr("&List Unposted Receipts..."), SLOT(sPostReceipts()), receivingMenu, "EnterReceipts", new QPixmap(":/images/postReceipts.png"), toolBar,  true, tr("List Unposted Receipts") },
     { "separator",       NULL,                             NULL,                  receivingMenu, "true",          NULL, NULL, true, NULL },
     { "sr.enterReturn",  tr("Purchase Order &Return..."),  SLOT(sEnterReturn()),  receivingMenu, "EnterReturns",  NULL, NULL, true, NULL },
     { "separator",       NULL,                             NULL,                  receivingMenu, "true",          NULL, NULL, true, NULL },
@@ -259,7 +259,7 @@ menuInventory::menuInventory(GUIClient *Pparent) :
 
     //  Inventory | Shipping
     { "menu",                        tr("&Shipping"),                      (char*)shippingMenu,           mainMenu,     "true",                 NULL, NULL, true, NULL },
-    { "sr.issueToShipping",          tr("&Issue to Shipping..."),          SLOT(sIssueStockToShipping()), shippingMenu, "IssueStockToShipping", QPixmap(":/images/issueStockToShipping.png"), toolBar,  true, tr("Issue to Shipping") },
+    { "sr.issueToShipping",          tr("&Issue to Shipping..."),          SLOT(sIssueStockToShipping()), shippingMenu, "IssueStockToShipping", new QPixmap(":/images/issueStockToShipping.png"), toolBar,  true, tr("Issue to Shipping") },
     { "sr.maintainShippingContents", tr("&Maintain Shipping Contents..."), SLOT(sDspShippingContents()),  shippingMenu, "ViewShipping",         NULL, NULL, true, NULL },
     { "separator",                   NULL,                                 NULL,                          shippingMenu, "true",                 NULL, NULL, true, NULL },
     { "sr.shipOrder",                tr("&Ship Order..."),                 SLOT(sShipOrders()),           shippingMenu, "ShipOrders",           NULL, NULL, true, NULL },
@@ -333,7 +333,7 @@ menuInventory::menuInventory(GUIClient *Pparent) :
     {  "separator",                   NULL,                                  NULL,                                      reportsMenu,    "true",         NULL, NULL, true, NULL },
 
     //  Inventory| Reports | Inventory Availability
-    { "im.dspInventoryAvailability",       tr("Inventory &Availability..."), SLOT(sDspInventoryAvailability()), reportsMenu, "ViewInventoryAvailability", QPixmap(":/images/dspInventoryAvailabilityByPlannerCode.png"), toolBar, true, tr("Inventory Availability by Planner Code") },
+    { "im.dspInventoryAvailability",       tr("Inventory &Availability..."), SLOT(sDspInventoryAvailability()), reportsMenu, "ViewInventoryAvailability", new QPixmap(":/images/dspInventoryAvailabilityByPlannerCode.png"), toolBar, true, tr("Inventory Availability by Planner Code") },
     { "im.dspSubstituteAvailabilityByRootItem",         tr("&Substitute Availability..."),       SLOT(sDspSubstituteAvailabilityByRootItem()), reportsMenu, "ViewInventoryAvailability",        NULL, NULL, true, NULL },
     {  "separator",                   NULL,                                  NULL,                                      reportsMenu,    "true",         NULL, NULL, true, NULL },
 
@@ -355,9 +355,9 @@ menuInventory::menuInventory(GUIClient *Pparent) :
     // Inventory | Item Site
     { "menu",                           tr("&Item Site"),       (char*)itemSitesMenu,   mainMenu,       "true",              NULL, NULL, true, NULL },
     { "im.newItemSite",                 tr("&New..."),          SLOT(sNewItemSite()),   itemSitesMenu,  "MaintainItemSites", NULL, NULL, true, NULL },
-    { "im.listItemSites",               tr("&List..."),         SLOT(sItemSites()),     itemSitesMenu,  "MaintainItemSites ViewItemSites", QPixmap(":/images/itemSites.png"), toolBar, true, tr("List Item Sites") },                                                  
+    { "im.listItemSites",               tr("&List..."),         SLOT(sItemSites()),     itemSitesMenu,  "MaintainItemSites ViewItemSites", new QPixmap(":/images/itemSites.png"), toolBar, true, tr("List Item Sites") },
     { "separator", NULL, NULL, itemSitesMenu,   "true", NULL, NULL, true, NULL },
-    { "im.itemAvailabilityWorkbench",   tr("&Workbench..."),    SLOT(sDspItemAvailabilityWorkbench()),  itemSitesMenu, "ViewItemAvailabilityWorkbench", QPixmap(":/images/itemAvailabilityWorkbench.png"), toolBar, true, tr("Item Availability Workbench") },
+    { "im.itemAvailabilityWorkbench",   tr("&Workbench..."),    SLOT(sDspItemAvailabilityWorkbench()),  itemSitesMenu, "ViewItemAvailabilityWorkbench", new QPixmap(":/images/itemAvailabilityWorkbench.png"), toolBar, true, tr("Item Availability Workbench") },
 
     //  Inventory | Lot/Serial Control
     { "menu",                           tr("&Lot/Serial Control"),      (char*)lotSerialControlMenu,    mainMenu, "true",       NULL, NULL, _metrics->boolean("LotSerialControl") , NULL },
@@ -484,7 +484,7 @@ void menuInventory::sNewItemSite()
   ParameterList params;
   params.append("mode", "new");
 
-  itemSite newdlg(parent, "", TRUE);
+  itemSite newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -581,25 +581,25 @@ void menuInventory::sExpenseTrans()
 
 void menuInventory::sResetQOHBalances()
 {
-  resetQOHBalances(parent, "", TRUE).exec();
+  resetQOHBalances(parent, "", true).exec();
 }
 
 void menuInventory::sRelocateInventory()
 {
-  relocateInventory(parent, "", TRUE).exec();
+  relocateInventory(parent, "", true).exec();
 }
 
 
 //  Lot/Serial Control
 void menuInventory::sReassignLotSerialNumber()
 {
-  reassignLotSerial newdlg(parent, "", TRUE);
+  reassignLotSerial newdlg(parent, "", true);
   newdlg.exec();
 }
 
 void menuInventory::sQuickRelocateLot()
 {
-    quickRelocateLot newdlg(parent, "", TRUE);
+    quickRelocateLot newdlg(parent, "", true);
     newdlg.exec();
 }
 
@@ -609,7 +609,7 @@ void menuInventory::sCreateCountTagsByClassCode()
   ParameterList params;
   params.append("classcode");
 
-  createCountTagsByParameterList newdlg(parent, "", TRUE);
+  createCountTagsByParameterList newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -619,19 +619,19 @@ void menuInventory::sCreateCountTagsByPlannerCode()
   ParameterList params;
   params.append("plancode");
 
-  createCountTagsByParameterList newdlg(parent, "", TRUE);
+  createCountTagsByParameterList newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
 
 void menuInventory::sCreateCountTagsByItem()
 {
-  createCountTagsByItem(parent, "", TRUE).exec();
+  createCountTagsByItem(parent, "", true).exec();
 }
 
 void menuInventory::sCreateCycleCountTags()
 {
-  createCycleCountTags(parent, "", TRUE).exec();
+  createCycleCountTags(parent, "", true).exec();
 }
 
 void menuInventory::sEnterCountSlip()
@@ -639,7 +639,7 @@ void menuInventory::sEnterCountSlip()
   ParameterList params;
   params.append("mode", "new");
 
-  countSlip newdlg(parent, "", TRUE);
+  countSlip newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -649,44 +649,44 @@ void menuInventory::sEnterCountTags()
   ParameterList params;
   params.append("mode", "new");
 
-  countTag newdlg(parent, "", TRUE);
+  countTag newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
 
 void menuInventory::sEnterMiscCount()
 {
-  enterMiscCount(parent, "", TRUE).exec();
+  enterMiscCount(parent, "", true).exec();
 }
 
 void menuInventory::sZeroUncountedTagsByWarehouse()
 {
-  zeroUncountedCountTagsByWarehouse(parent, "", TRUE).exec();
+  zeroUncountedCountTagsByWarehouse(parent, "", true).exec();
 }
 
 void menuInventory::sThawItemSitesByClassCode()
 {
-  thawItemSitesByClassCode(parent, "", TRUE).exec();
+  thawItemSitesByClassCode(parent, "", true).exec();
 }
 
 void menuInventory::sPostCountSlipsByWarehouse()
 {
-  postCountSlips(parent, "", TRUE).exec();
+  postCountSlips(parent, "", true).exec();
 }
 
 void menuInventory::sPostCountTags()
 {
-  postCountTags(parent, "", TRUE).exec();
+  postCountTags(parent, "", true).exec();
 }
 
 void menuInventory::sPurgePostedCountSlips()
 {
-  purgePostedCountSlips(parent, "", TRUE).exec();
+  purgePostedCountSlips(parent, "", true).exec();
 }
 
 void menuInventory::sPurgePostedCountTags()
 {
-  purgePostedCounts(parent, "", TRUE).exec();
+  purgePostedCounts(parent, "", true).exec();
 }
 
 
@@ -707,12 +707,12 @@ void menuInventory::sIssueStockToShipping()
 
 void menuInventory::sPrintPackingLists()
 {
-  printPackingList(parent, "", TRUE).exec();
+  printPackingList(parent, "", true).exec();
 }
 
 void menuInventory::sPrintPackingListBatchByShipvia()
 {
-  printPackingListBatchByShipvia(parent, "", TRUE).exec();
+  printPackingListBatchByShipvia(parent, "", true).exec();
 }
 
 void menuInventory::sPrintShippingForm()
@@ -722,33 +722,33 @@ void menuInventory::sPrintShippingForm()
 
 void menuInventory::sPrintShippingForms()
 {
-  printShippingForms(parent, "", TRUE).exec();
+  printShippingForms(parent, "", true).exec();
 }
 
 void menuInventory::sPrintShippingLabelsBySo()
 {
-  printLabelsBySo(parent, "", TRUE).exec();
+  printLabelsBySo(parent, "", true).exec();
 }
 
 void menuInventory::sPrintShippingLabelsByTo()
 {
-  printLabelsByTo(parent, "", TRUE).exec();
+  printLabelsByTo(parent, "", true).exec();
 }
 
 void menuInventory::sPrintShippingLabelsByInvoice()
 {
-  printLabelsByInvoice(parent, "", TRUE).exec();
+  printLabelsByInvoice(parent, "", true).exec();
 }
 
 void menuInventory::sPrintReceivingLabelsByPo()
 {
-  printLabelsByOrder(parent, "", TRUE).exec();
+  printLabelsByOrder(parent, "", true).exec();
 }
 
 
 void menuInventory::sShipOrders()
 {
-  shipOrder(parent, "", TRUE).exec();
+  shipOrder(parent, "", true).exec();
 }
 
 void menuInventory::sRecallOrders()
@@ -926,7 +926,7 @@ void menuInventory::sDspTimePhasedUsageStatisticsByItem()
 
 void menuInventory::sPrintItemLabelsByClassCode()
 {
-  printItemLabelsByClassCode(parent, "", TRUE).exec();
+  printItemLabelsByClassCode(parent, "", true).exec();
 }
 
 
@@ -969,17 +969,17 @@ void menuInventory::sDspUnbalancedQOHByClassCode()
 
 void menuInventory::sUpdateABCClass()
 {
-  updateABCClass(parent, "", TRUE).exec();
+  updateABCClass(parent, "", true).exec();
 }
 
 void menuInventory::sUpdateCycleCountFreq()
 {
-  updateCycleCountFrequency(parent, "", TRUE).exec();
+  updateCycleCountFrequency(parent, "", true).exec();
 }
 
 void menuInventory::sUpdateItemSiteLeadTimes()
 {
-  updateItemSiteLeadTimes(parent, "", TRUE).exec();
+  updateItemSiteLeadTimes(parent, "", true).exec();
 }
 
 void menuInventory::sUpdateReorderLevelByItem()
@@ -1014,27 +1014,27 @@ void menuInventory::sUpdateReorderLevelsByClassCode()
 
 void menuInventory::sUpdateOUTLevelByItem()
 {
-  updateOUTLevelByItem(parent, "", TRUE).exec();
+  updateOUTLevelByItem(parent, "", true).exec();
 }
 
 void menuInventory::sUpdateOUTLevelsByPlannerCode()
 {
-  updateOUTLevels(parent, "", TRUE).exec();
+  updateOUTLevels(parent, "", true).exec();
 }
 
 void menuInventory::sUpdateOUTLevelsByClassCode()
 {
-  updateOUTLevelsByClassCode(parent, "", TRUE).exec();
+  updateOUTLevelsByClassCode(parent, "", true).exec();
 }
 
 void menuInventory::sSummarizeInvTransByClassCode()
 {
-  summarizeInvTransByClassCode(parent, "", TRUE).exec();
+  summarizeInvTransByClassCode(parent, "", true).exec();
 }
 
 void menuInventory::sCreateItemSitesByClassCode()
 {
-  createItemSitesByClassCode(parent, "", TRUE).exec();
+  createItemSitesByClassCode(parent, "", true).exec();
 }
 
 //  inputManager SIGNAL handlers
@@ -1055,7 +1055,7 @@ void menuInventory::sCatchCountTag(int pCnttagid)
   params.append("cnttag_id", pCnttagid);
   params.append("mode", "edit");
 
-  countTag newdlg(parent, "", TRUE);
+  countTag newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

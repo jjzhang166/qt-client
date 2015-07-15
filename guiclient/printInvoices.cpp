@@ -18,7 +18,7 @@
 
 #include "errorReporter.h"
 
-printInvoices::printInvoices(QWidget *parent, const char *name, bool modal, Qt::WFlags fl)
+printInvoices::printInvoices(QWidget *parent, const char *name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("InvoiceCopies",     "InvoiceWatermark",
                              "InvoiceShowPrices", "PostMiscInvoices",
                              parent, name, modal, fl)
@@ -47,7 +47,7 @@ printInvoices::printInvoices(QWidget *parent, const char *name, bool modal, Qt::
                          errmsg, __FILE__, __LINE__);
 
   _markAllPrintedQry = "UPDATE invchead"
-                       "   SET invchead_printed=TRUE "
+                       "   SET invchead_printed=true "
                        " WHERE invchead_id IN ("
                        "<? foreach('printedDocs') ?>"
                        "  <? if not isfirst('printedDocs') ?>, <? endif ?>"
@@ -125,6 +125,6 @@ void printInvoices::sHandleAboutToStart(XSqlQuery *qry)
 
 void printInvoices::sHandleFinishedWithAll()
 {
-  omfgThis->sInvoicesUpdated(-1, TRUE);
+  omfgThis->sInvoicesUpdated(-1, true);
 }
 

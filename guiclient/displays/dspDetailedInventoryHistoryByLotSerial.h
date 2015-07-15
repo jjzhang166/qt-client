@@ -20,7 +20,7 @@ class dspDetailedInventoryHistoryByLotSerial : public display, public Ui::dspDet
     Q_OBJECT
 
 public:
-    dspDetailedInventoryHistoryByLotSerial(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspDetailedInventoryHistoryByLotSerial(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

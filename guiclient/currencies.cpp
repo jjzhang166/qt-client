@@ -20,7 +20,7 @@
 #include "currency.h"
 #include "errorReporter.h"
 
-currencies::currencies(QWidget* parent, const char* name, Qt::WFlags fl)
+currencies::currencies(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ currencies::currencies(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_curr, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
     
@@ -69,7 +69,7 @@ void currencies::sNew()
   ParameterList params;
   params.append("mode", "new");
     
-  currency *newdlg = new currency(this, "", TRUE);
+  currency *newdlg = new currency(this, "", true);
   newdlg->set(params);
   newdlg->exec();
   sFillList();
@@ -106,7 +106,7 @@ void currencies::sEdit()
   params.append("curr_id", _curr->id());
   params.append("mode", "edit");
     
-  currency *newdlg = new currency(this, "", TRUE);
+  currency *newdlg = new currency(this, "", true);
   newdlg->set(params);
   newdlg->exec();
   sFillList();
@@ -118,7 +118,7 @@ void currencies::sView()
   params.append("curr_id", _curr->id());
   params.append("mode", "view");
     
-  currency *newdlg = new currency(this, "", TRUE);
+  currency *newdlg = new currency(this, "", true);
   newdlg->set(params);
   newdlg->exec();
 }

@@ -23,7 +23,7 @@ class check : public XWidget, public Ui::check
     Q_OBJECT
 
   public:
-    check(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    check(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~check();
 
     enum SetResponse set(const ParameterList &);

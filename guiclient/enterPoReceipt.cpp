@@ -27,7 +27,7 @@
 #include "printLabelsByOrder.h"
 #include "storedProcErrorLookup.h"
 
-enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
+enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -58,7 +58,7 @@ enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   omfgThis->inputManager()->notify(cBCTransferOrderLineItem, this, this, SLOT(sCatchToitemid(int)));
 
   if (_metrics->boolean("EnableDropShipments"))
-    _dropShip->setEnabled(FALSE);
+    _dropShip->setEnabled(false);
   else
     _dropShip->hide();
 
@@ -69,7 +69,7 @@ enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
                        "  WHERE ((raitem_rahead_id=orderhead_id)"
                        "     AND (orderhead_type = 'RA'))) "
                        " AND "
-                       "(SELECT TRUE "
+                       "(SELECT true "
                        " FROM raitem"
                        " WHERE ((raitem_rahead_id=orderhead_id)"
                        "   AND  (raitem_disposition IN ('R','P','V')) "
@@ -97,7 +97,7 @@ enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WFlags fl)
   _orderitem->addColumn(tr("Returned"),     _qtyColumn,  Qt::AlignRight   , true,  "qty_returned");
   _orderitem->addColumn(tr("To Receive"),   _qtyColumn,  Qt::AlignRight   , true,  "qty_toreceive");
 
-  _captive = FALSE;
+  _captive = false;
   _soheadid = -1;
   
   _bcQty->setValidator(omfgThis->qtyVal());
@@ -126,21 +126,21 @@ enum SetResponse enterPoReceipt::set(const ParameterList &pParams)
   param = pParams.value("pohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _order->setId(param.toInt(), "PO");
   }
 
   param = pParams.value("tohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _order->setId(param.toInt(), "TO");
   }
 
   param = pParams.value("rahead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _order->setId(param.toInt(), "RA");
   }
 
@@ -174,7 +174,7 @@ void enterPoReceipt::sPrint()
   ParameterList params;
   setParams(params);
 
-  printLabelsByOrder newdlg(this, "", TRUE);
+  printLabelsByOrder newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -273,7 +273,7 @@ void enterPoReceipt::sPost()
   {
     if(_singleLot->isChecked() && !gotlot && qi.value("itemsite_controlmethod").toString() == "L")
     {
-      getLotInfo newdlg(this, "", TRUE);
+      getLotInfo newdlg(this, "", true);
       newdlg.enableExpiration(qi.value("itemsite_perishable").toBool());
       newdlg.enableWarranty(qi.value("itemsite_warrpurc").toBool());
 
@@ -502,7 +502,7 @@ void enterPoReceipt::sEnter()
   params.append("order_type", _order->type());
   params.append("mode", "new");
 
-  enterPoitemReceipt newdlg(this, "", TRUE);
+  enterPoitemReceipt newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -552,9 +552,9 @@ void enterPoReceipt::sFillList()
   if(dropship.first())
   {
     if(dropship.value("pohead_dropship").toBool())
-	  _dropShip->setChecked(TRUE);
+	  _dropShip->setChecked(true);
 	else
-	  _dropShip->setChecked(FALSE);
+	  _dropShip->setChecked(false);
   }
 
   disconnect(_order,	SIGNAL(valid(bool)),	this, SLOT(sFillList()));
@@ -625,7 +625,7 @@ void enterPoReceipt::sReceiveAll()
   ParameterList params;
   setParams(params);
   if (_metrics->boolean("EnableReturnAuth"))
-    params.append("EnableReturnAuth", TRUE);
+    params.append("EnableReturnAuth", true);
   MetaSQLQuery recvm = mqlLoad("receipt", "receiveAll");
   enterReceiveAll = recvm.toQuery(params);
 
@@ -711,7 +711,7 @@ void enterPoReceipt::sBcFind()
   params.append("receive");
   params.append("snooze");
 
-  enterPoitemReceipt newdlg(this, "", TRUE);
+  enterPoitemReceipt newdlg(this, "", true);
   if (newdlg.set(params) != NoError)
     return;
 	

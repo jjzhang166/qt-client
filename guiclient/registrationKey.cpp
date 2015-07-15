@@ -14,7 +14,7 @@
 
 #include "xtupleproductkey.h"
 
-registrationKey::registrationKey(QWidget* parent, const char * name, Qt::WFlags fl)
+registrationKey::registrationKey(QWidget* parent, const char * name, Qt::WindowFlags fl)
   : XAbstractConfigure(parent, fl)
 {
   setupUi(this);

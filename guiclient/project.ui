@@ -101,9 +101,6 @@ to be bound by its terms.</comment>
          <property name="allowNull">
           <bool>true</bool>
          </property>
-         <property name="nullStr">
-          <string>Undefined</string>
-         </property>
         </widget>
        </item>
       </layout>
@@ -348,42 +345,30 @@ to be bound by its terms.</comment>
              <number>12</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="_showSo">
+             <widget class="XCheckBox" name="_showSo">
               <property name="text">
                <string>Sales Orders</string>
               </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_showWo">
+             <widget class="XCheckBox" name="_showWo">
               <property name="text">
                <string>Work Orders</string>
               </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_showPo">
+             <widget class="XCheckBox" name="_showPo">
               <property name="text">
                <string>Purchase Orders</string>
               </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="_showIn">
+             <widget class="XCheckBox" name="_showIn">
               <property name="text">
                <string>Incidents</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -433,7 +418,7 @@ to be bound by its terms.</comment>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_printTasks">
+            <widget class="QPushButton" name="_print">
              <property name="text">
               <string>Print</string>
              </property>
@@ -767,61 +752,7 @@ to be bound by its terms.</comment>
       </attribute>
       <layout class="QGridLayout">
        <item row="0" column="0">
-        <widget class="XTreeWidget" name="_charass">
-         <property name="focusPolicy">
-          <enum>Qt::ClickFocus</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <layout class="QVBoxLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="_newCharacteristic">
-           <property name="text">
-            <string>&amp;New</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_editCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>&amp;Edit</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_deleteCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>&amp;Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="CharacteristicsWidget" name="_charass"/>
        </item>
       </layout>
      </widget>
@@ -876,6 +807,11 @@ to be bound by its terms.</comment>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
   <customwidget>
    <class>Comments</class>
    <extends>QWidget</extends>

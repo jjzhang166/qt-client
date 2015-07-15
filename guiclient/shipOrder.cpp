@@ -23,7 +23,7 @@
 #include "printPackingList.h"
 #include "storedProcErrorLookup.h"
 
-shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   connect(_tracknum, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(sFillFreight()));
   connect(_tracknum, SIGNAL(highlighted(const QString&)), this, SLOT(sFillFreight()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _coitem->addColumn( tr("#"),           _whsColumn,  Qt::AlignCenter , true, "linenumber");
   _coitem->addColumn( tr("Item Number"), _itemColumn, Qt::AlignLeft   , true, "item_number");
@@ -60,7 +60,7 @@ shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   _order->setAllowedStatuses(OrderLineEdit::Open);
   _order->setAllowedTypes(OrderLineEdit::Sales |
                           OrderLineEdit::Transfer);
-  _order->setFromSitePrivsEnforced(TRUE);
+  _order->setFromSitePrivsEnforced(true);
   _order->setFocus();
 
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
@@ -251,7 +251,7 @@ void shipOrder::sShip()
     params.append("shiphead_id", _shipment->id());
     params.append("print");
 
-    printPackingList newdlg(this, "", TRUE);
+    printPackingList newdlg(this, "", true);
     newdlg.set(params);
   }
 
@@ -295,11 +295,11 @@ void shipOrder::sShip()
 	  ParameterList params;
 	  params.append("invchead_id", result);
 
-	  printInvoice newdlg(this, "", TRUE);
+	  printInvoice newdlg(this, "", true);
 	  newdlg.set(params);
 	  newdlg.exec();
 
-	  omfgThis->sInvoicesUpdated(result, TRUE);
+	  omfgThis->sInvoicesUpdated(result, true);
 	  omfgThis->sSalesOrdersUpdated(_order->id());
 	}
 	else if (shipq.lastError().type() != QSqlError::NoError)
@@ -314,7 +314,7 @@ void shipOrder::sShip()
 	  return;
 	}
 
-	omfgThis->sBillingSelectionUpdated(_order->id(), TRUE);
+	omfgThis->sBillingSelectionUpdated(_order->id(), true);
       }
     }
     else if (shipq.lastError().type() != QSqlError::NoError)
@@ -397,7 +397,7 @@ void shipOrder::sShip()
     _billToName->clear();
     _shipToName->clear();
     _shipToAddr1->clear();
-    _freight->setEnabled(TRUE);
+    _freight->setEnabled(true);
     _freight->reset();
     _shipVia->clear();
     _shipment->clear();
@@ -700,7 +700,7 @@ void shipOrder::sFillList()
     XSqlQuery shipq;
     shipq.prepare("SELECT shiphead_order_id, shiphead_shipvia, shiphead_order_type,"
                   "       shiphead_tracknum, shiphead_freight, shiphead_freight_curr_id,"
-                  "       COALESCE(shipchrg_custfreight, TRUE) AS custfreight,"
+                  "       COALESCE(shipchrg_custfreight, true) AS custfreight,"
                   "       COALESCE(shiphead_shipdate,CURRENT_DATE) AS effective "
                   "FROM shiphead LEFT OUTER JOIN "
                   "     shipchrg ON (shiphead_shipchrg_id=shipchrg_id) "
@@ -717,14 +717,14 @@ void shipOrder::sFillList()
 
       if (shipq.value("custfreight").toBool())
       {
-	_freight->setEnabled(TRUE);
+	_freight->setEnabled(true);
 	_freight->set(shipq.value("shiphead_freight").toDouble(),
 		      shipq.value("shiphead_freight_curr_id").toInt(),
 		      shipq.value("effective").toDate(), false);
       }
       else
       {
-	_freight->setEnabled(FALSE);
+	_freight->setEnabled(false);
 	_freight->set(0,
 		      shipq.value("shiphead_freight_curr_id").toInt(),
 		      shipq.value("effective").toDate());
@@ -827,7 +827,7 @@ void shipOrder::sFillList()
     _billToName->clear();
     _shipToName->clear();
     _shipToAddr1->clear();
-    _freight->setEnabled(TRUE);
+    _freight->setEnabled(true);
     _freight->reset();
     _shipVia->clear();
     _tracknum->clear();
@@ -871,7 +871,7 @@ void shipOrder::sFillFreight()
     shipdataQ.exec();
     if (shipdataQ.first())
     {
-      _freight->setEnabled(TRUE);
+      _freight->setEnabled(true);
       _freight->setLocalValue(shipdataQ.value("shipdatasum_base_freight").toDouble());
       _shipVia->setText(shipdataQ.value("shipper_data").toString());
     }

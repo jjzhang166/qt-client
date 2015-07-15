@@ -20,7 +20,7 @@
 #include "classCode.h"
 #include "storedProcErrorLookup.h"
 
-classCodes::classCodes(QWidget* parent, const char* name, Qt::WFlags fl)
+classCodes::classCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -42,8 +42,8 @@ classCodes::classCodes(QWidget* parent, const char* name, Qt::WFlags fl)
   {
     connect(_classcode, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    _new->setEnabled(FALSE);
-    _deleteUnused->setEnabled(FALSE);
+    _new->setEnabled(false);
+    _deleteUnused->setEnabled(false);
   }
 
   _classcode->addColumn(tr("Class Code"),  70, Qt::AlignLeft, true, "classcode_code");
@@ -67,7 +67,7 @@ void classCodes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  classCode newdlg(this, "", TRUE);
+  classCode newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -81,7 +81,7 @@ void classCodes::sEdit()
   params.append("mode", "edit");
   params.append("classcode_id", _classcode->id());
 
-  classCode newdlg(this, "", TRUE);
+  classCode newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -95,7 +95,7 @@ void classCodes::sView()
   params.append("mode", "view");
   params.append("classcode_id", _classcode->id());
 
-  classCode newdlg(this, "", TRUE);
+  classCode newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

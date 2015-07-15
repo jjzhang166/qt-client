@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-taxRegistration::taxRegistration(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxRegistration::taxRegistration(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -31,8 +31,8 @@ taxRegistration::taxRegistration(QWidget* parent, const char* name, bool modal, 
   _relid    = -1;
   _mode     = cNew;
 
-  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), TRUE); 
-  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), TRUE); 
+  _dates->setStartNull(tr("Always"), omfgThis->startOfTime(), true); 
+  _dates->setEndNull(tr("Never"), omfgThis->endOfTime(), true); 
 
 }
 

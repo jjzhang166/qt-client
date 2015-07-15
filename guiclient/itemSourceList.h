@@ -22,7 +22,7 @@ class itemSourceList : public XDialog, public Ui::itemSourceList
     Q_OBJECT
 
 public:
-    itemSourceList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    itemSourceList(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~itemSourceList();
 
 public slots:

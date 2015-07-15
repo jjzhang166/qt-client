@@ -17,7 +17,7 @@
 #include <metasql.h>
 #include <parameter.h>
 
-accountNumber::accountNumber(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+accountNumber::accountNumber(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -32,7 +32,7 @@ accountNumber::accountNumber(QWidget* parent, const char* name, bool modal, Qt::
   _currencyLit->hide();
   _currency->hide();
   
-  _subType->setAllowNull(TRUE);
+  _subType->setAllowNull(true);
   populateSubTypes();
   
   if (_metrics->value("GLCompanySize").toInt() == 0)
@@ -93,24 +93,24 @@ enum SetResponse accountNumber::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _company->setEnabled(FALSE);
-      _profit->setEnabled(FALSE);
-      _number->setEnabled(FALSE);
-      _sub->setEnabled(FALSE);
+      _company->setEnabled(false);
+      _profit->setEnabled(false);
+      _number->setEnabled(false);
+      _sub->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _company->setEnabled(FALSE);
-      _profit->setEnabled(FALSE);
-      _number->setEnabled(FALSE);
-      _sub->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _extReference->setEnabled(FALSE);
-      _forwardUpdate->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _comments->setEnabled(FALSE);
+      _company->setEnabled(false);
+      _profit->setEnabled(false);
+      _number->setEnabled(false);
+      _sub->setEnabled(false);
+      _description->setEnabled(false);
+      _extReference->setEnabled(false);
+      _forwardUpdate->setEnabled(false);
+      _active->setEnabled(false);
+      _comments->setEnabled(false);
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
   }

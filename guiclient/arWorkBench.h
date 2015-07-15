@@ -28,7 +28,7 @@ class arWorkBench : public XWidget, public Ui::arWorkBench
     Q_OBJECT
 
 public:
-    arWorkBench(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    arWorkBench(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~arWorkBench();
 
     virtual SetResponse set( const ParameterList & pParams );

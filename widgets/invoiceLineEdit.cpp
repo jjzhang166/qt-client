@@ -42,7 +42,7 @@ void InvoiceLineEdit::setInvoiceNumber(QString pInvoiceNumber)
     _coheadid = query.value("cohead_id").toInt();
     _invoiceNumber = pInvoiceNumber;
     _id = query.value("invchead_id").toInt();
-    _valid = TRUE;
+    _valid = true;
 
     setText(_invoiceNumber);
   }
@@ -52,7 +52,7 @@ void InvoiceLineEdit::setInvoiceNumber(QString pInvoiceNumber)
     _coheadid = -1;
     _invoiceNumber = "";
     _id = -1;
-    _valid = FALSE;
+    _valid = false;
 
     setText("");
   }
@@ -78,7 +78,7 @@ void InvoiceLineEdit::setId(const int pId)
     _coheadid = query.value("cohead_id").toInt();
     _invoiceNumber = query.value("invchead_invcnumber").toString();
     _id = pId;
-    _valid = TRUE;
+    _valid = true;
 
     setText(_invoiceNumber);
   }
@@ -88,7 +88,7 @@ void InvoiceLineEdit::setId(const int pId)
     _coheadid = -1;
     _invoiceNumber = "";
     _id = -1;
-    _valid = FALSE;
+    _valid = false;
 
     setText("");
   }

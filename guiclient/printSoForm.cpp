@@ -14,7 +14,7 @@
 
 #include "errorReporter.h"
 
-printSoForm::printSoForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printSoForm::printSoForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printSinglecopyDocument(parent, name, modal, fl)
 {
   setupUi(optionsWidget());

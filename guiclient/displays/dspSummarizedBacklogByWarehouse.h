@@ -20,7 +20,7 @@ class dspSummarizedBacklogByWarehouse : public display, public Ui::dspSummarized
     Q_OBJECT
 
 public:
-    dspSummarizedBacklogByWarehouse(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSummarizedBacklogByWarehouse(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

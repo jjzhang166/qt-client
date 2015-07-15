@@ -14,7 +14,7 @@
 #include "itemGroup.h"
 #include "guiclient.h"
 
-itemGroups::itemGroups(QWidget* parent, const char* name, Qt::WFlags fl)
+itemGroups::itemGroups(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -38,11 +38,11 @@ itemGroups::itemGroups(QWidget* parent, const char* name, Qt::WFlags fl)
 
   if (_privileges->check("MaintainItemGroups"))
   {
-    _new->setEnabled(TRUE);
+    _new->setEnabled(true);
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
   
   connect(omfgThis, SIGNAL(itemGroupsUpdated(int, bool)), this, SLOT(sFillList(int)));
@@ -139,23 +139,23 @@ void itemGroups::sHandleButtons()
 {
   if (_itemgrp->id() > 0)
   {
-    _view->setEnabled(TRUE);
+    _view->setEnabled(true);
     if (_privileges->check("MaintainItemGroups"))
     {
-      _edit->setEnabled(TRUE);
-      _delete->setEnabled(TRUE);
+      _edit->setEnabled(true);
+      _delete->setEnabled(true);
     }
     else
     {
-      _edit->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
+      _edit->setEnabled(false);
+      _delete->setEnabled(false);
     }
   }
   else
   {
-    _view->setEnabled(FALSE);
-    _edit->setEnabled(FALSE);
-    _delete->setEnabled(FALSE);
+    _view->setEnabled(false);
+    _edit->setEnabled(false);
+    _delete->setEnabled(false);
   }
 }
 

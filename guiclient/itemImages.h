@@ -22,7 +22,7 @@ class itemImages : public XWidget, public Ui::itemImages
     Q_OBJECT
 
 public:
-    itemImages(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    itemImages(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~itemImages();
 
 public slots:

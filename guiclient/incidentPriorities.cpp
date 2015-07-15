@@ -20,7 +20,7 @@
 
 #include "incidentPriority.h"
 
-incidentPriorities::incidentPriorities(QWidget* parent, const char* name, Qt::WFlags fl)
+incidentPriorities::incidentPriorities(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ incidentPriorities::incidentPriorities(QWidget* parent, const char* name, Qt::WF
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_incidentPriorities, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -100,7 +100,7 @@ void incidentPriorities::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  incidentPriority newdlg(this, "", TRUE);
+  incidentPriority newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -113,7 +113,7 @@ void incidentPriorities::sEdit()
   params.append("mode", "edit");
   params.append("incdtpriority_id", _incidentPriorities->id());
 
-  incidentPriority newdlg(this, "", TRUE);
+  incidentPriority newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -126,7 +126,7 @@ void incidentPriorities::sView()
   params.append("mode", "view");
   params.append("incdtpriority_id", _incidentPriorities->id());
 
-  incidentPriority newdlg(this, "", TRUE);
+  incidentPriority newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

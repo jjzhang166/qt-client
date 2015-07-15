@@ -22,7 +22,7 @@
 #include "openReturnAuthorizations.h"
 #include "printRaForm.h"
 
-openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* name, Qt::WFlags fl)
+openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ openReturnAuthorizations::openReturnAuthorizations(QWidget* parent, const char* 
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_ra, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -251,7 +251,7 @@ void openReturnAuthorizations::sPrintForms()
   ParameterList params;
   params.append("rahead_id", _ra->id());
 
-  printRaForm newdlg(this, "", TRUE);
+  printRaForm newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

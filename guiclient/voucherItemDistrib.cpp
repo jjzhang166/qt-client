@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-voucherItemDistrib::voucherItemDistrib(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+voucherItemDistrib::voucherItemDistrib(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -133,7 +133,7 @@ bool voucherItemDistrib::sCheck()
       _mode = cEdit;
       populate();
 
-      _costelem->setEnabled(FALSE);
+      _costelem->setEnabled(false);
       return false;
     }
   }

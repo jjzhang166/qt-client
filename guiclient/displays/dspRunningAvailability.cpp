@@ -24,7 +24,7 @@
 #include "workOrder.h"
 #include "purchaseOrder.h"
 
-dspRunningAvailability::dspRunningAvailability(QWidget* parent, const char*, Qt::WFlags fl)
+dspRunningAvailability::dspRunningAvailability(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspRunningAvailability", fl)
 {
   setupUi(optionsWidget());

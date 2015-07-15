@@ -21,7 +21,7 @@ class dspReservations : public display, public Ui::dspReservations
     Q_OBJECT
 
 public:
-    dspReservations(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspReservations(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

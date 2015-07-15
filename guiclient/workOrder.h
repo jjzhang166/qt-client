@@ -22,9 +22,12 @@ class workOrder : public XWidget, public Ui::workOrder
     Q_OBJECT
 
 public:
-    workOrder(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    workOrder(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~workOrder();
 
+    Q_INVOKABLE virtual int id()   const;
+    Q_INVOKABLE virtual int mode() const;
+  
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void sCreate();
@@ -74,7 +77,11 @@ protected slots:
     virtual void languageChange();
 
 signals:
+    void populated();
+    void newId(int);
+    void newMode(int);
     void saved(int);
+  
 
 private:
     bool _captive;

@@ -19,7 +19,7 @@
 #include <openreports.h>
 #include "incidentSeverity.h"
 
-incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WFlags fl)
+incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WF
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_incidentSeverities, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -100,7 +100,7 @@ void incidentSeverities::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  incidentSeverity newdlg(this, "", TRUE);
+  incidentSeverity newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -113,7 +113,7 @@ void incidentSeverities::sEdit()
   params.append("mode", "edit");
   params.append("incdtseverity_id", _incidentSeverities->id());
 
-  incidentSeverity newdlg(this, "", TRUE);
+  incidentSeverity newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -126,7 +126,7 @@ void incidentSeverities::sView()
   params.append("mode", "view");
   params.append("incdtseverity_id", _incidentSeverities->id());
 
-  incidentSeverity newdlg(this, "", TRUE);
+  incidentSeverity newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

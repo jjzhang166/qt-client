@@ -19,7 +19,7 @@ class shippingZones : public XWidget, public Ui::shippingZones
     Q_OBJECT
 
 public:
-    shippingZones(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    shippingZones(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~shippingZones();
 
 public slots:

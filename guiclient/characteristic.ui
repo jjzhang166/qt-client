@@ -125,127 +125,7 @@ to be bound by its terms.</comment>
      <property name="title">
       <string>May be used on:</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="_quotes">
-        <property name="text">
-         <string>Quote</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="_items">
-        <property name="text">
-         <string>Item</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="_contacts">
-        <property name="text">
-         <string>Contact</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QCheckBox" name="_incidents">
-        <property name="text">
-         <string>Incident</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QCheckBox" name="_opportunity">
-        <property name="text">
-         <string>Opportunity</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="_employees">
-        <property name="text">
-         <string>Employee</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="_addresses">
-        <property name="text">
-         <string>Address</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QCheckBox" name="_salesorders">
-        <property name="text">
-         <string>Sales Order</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QCheckBox" name="_invoices">
-        <property name="text">
-         <string>Invoice</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QCheckBox" name="_lotSerial">
-        <property name="text">
-         <string>Lot/Serial</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QCheckBox" name="_customers">
-        <property name="text">
-         <string>Customer</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="_crmaccounts">
-        <property name="text">
-         <string>Account</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="_vendors">
-        <property name="text">
-         <string>Vendor</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QCheckBox" name="_purchaseorders">
-        <property name="text">
-         <string>Purchase Order</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QCheckBox" name="_vouchers">
-        <property name="text">
-         <string>Voucher</string>
-        </property>
-       </widget>
-      </item>     
-      <item row="6" column="0">
-       <widget class="QCheckBox" name="_projects">
-        <property name="text">
-         <string>Projects</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QCheckBox" name="_tasks">
-        <property name="text">
-         <string>Project Tasks</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QGridLayout" name="gridLayout_2"/>
     </widget>
    </item>
    <item row="2" column="0">
@@ -484,15 +364,6 @@ to be bound by its terms.</comment>
   <tabstop>_name</tabstop>
   <tabstop>_type</tabstop>
   <tabstop>_order</tabstop>
-  <tabstop>_addresses</tabstop>
-  <tabstop>_contacts</tabstop>
-  <tabstop>_customers</tabstop>
-  <tabstop>_crmaccounts</tabstop>
-  <tabstop>_employees</tabstop>
-  <tabstop>_incidents</tabstop>
-  <tabstop>_items</tabstop>
-  <tabstop>_lotSerial</tabstop>
-  <tabstop>_opportunity</tabstop>
   <tabstop>_tab</tabstop>
   <tabstop>_mask</tabstop>
   <tabstop>_validator</tabstop>

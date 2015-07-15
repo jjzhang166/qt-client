@@ -12,12 +12,11 @@
 
 #include <QSqlError>
 
-#include "characteristic.h"
 #include "guiclient.h"
 #include "incident.h"
 #include "parameterwidget.h"
 
-incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WFlags fl)
+incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "incidentWorkbench", fl)
 {
   setWindowTitle(tr("Incidents"));
@@ -79,7 +78,7 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WFlags fl
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
   if (!_privileges->check("MaintainAllIncidents") && !_privileges->check("MaintainPersonalIncidents"))
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
 
   list()->addColumn(tr("Number"),      _orderColumn,Qt::AlignLeft, true, "incdt_number" );
   list()->addColumn(tr("Created"),     _dateColumn, Qt::AlignLeft, true, "incdt_timestamp" );
@@ -99,7 +98,7 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WFlags fl
   list()->addColumn(tr("Item Number"),  _itemColumn, Qt::AlignLeft, false, "item_number");
   list()->addColumn(tr("Lot/Serial"),   _itemColumn, Qt::AlignLeft, false, "ls_number");
 
-  setupCharacteristics(characteristic::Incidents);
+  setupCharacteristics("INCDT");
   parameterWidget()->applyDefaultFilterSet();
 }
 

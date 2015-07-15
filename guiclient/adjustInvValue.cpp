@@ -33,7 +33,7 @@ adjustInvValue::adjustInvValue(QWidget* parent, const char * name, Qt::WindowFla
   connect(_item,                           SIGNAL(newId(int)), this, SLOT(sPopulate()));
   connect(_newValue,                       SIGNAL(textChanged(QString)), this, SLOT(sUpdateCost()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cActive);
   _item->addExtraClause( QString("(itemsite_active)") );  // ItemLineEdit::cActive doesn't compare against the itemsite record
@@ -72,11 +72,11 @@ enum SetResponse adjustInvValue::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _site->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _site->setEnabled(false);
   }
 
   param = pParams.value("mode", &valid);
@@ -90,8 +90,8 @@ enum SetResponse adjustInvValue::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _item->setReadOnly(TRUE);
-      _site->setEnabled(FALSE);
+      _item->setReadOnly(true);
+      _site->setEnabled(false);
       _post->hide();
       _close->setText(tr("&Close"));
     }

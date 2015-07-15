@@ -22,7 +22,7 @@ class dspCountSlipEditList : public XWidget, public Ui::dspCountSlipEditList
     Q_OBJECT
 
 public:
-    dspCountSlipEditList(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCountSlipEditList(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspCountSlipEditList();
 
     virtual void populate();

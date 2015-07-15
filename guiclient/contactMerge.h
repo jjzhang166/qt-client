@@ -22,7 +22,7 @@ class contactMerge : public XWidget, public Ui::contactMerge
     Q_OBJECT
 
 public:
-    contactMerge(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    contactMerge(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~contactMerge();
 
 protected slots:

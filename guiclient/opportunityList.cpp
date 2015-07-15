@@ -18,13 +18,12 @@
 #include <QToolBar>
 #include <QVariant>
 
-#include "characteristic.h"
 #include "guiclient.h"
 #include "opportunity.h"
 #include "parameterwidget.h"
 #include "storedProcErrorLookup.h"
 
-opportunityList::opportunityList(QWidget* parent, const char*, Qt::WFlags fl)
+opportunityList::opportunityList(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "opportunityList", fl)
 {
   setupUi(optionsWidget());
@@ -57,7 +56,7 @@ opportunityList::opportunityList(QWidget* parent, const char*, Qt::WFlags fl)
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
   if (!_privileges->check("MaintainAllOpportunities") && !_privileges->check("MaintainPersonalOpportunities"))
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
 
   parameterWidget()->append(tr("User"), "username", ParameterWidget::User, omfgThis->username());
   parameterWidget()->append(tr("Owner"), "owner_username", ParameterWidget::User);
@@ -72,7 +71,7 @@ opportunityList::opportunityList(QWidget* parent, const char*, Qt::WFlags fl)
   parameterWidget()->appendComboBox(tr("Stage"), "opstage_id", XComboBox::OpportunityStages);
   parameterWidget()->append(tr("Stage Pattern"), "opstage_pattern",    ParameterWidget::Text);
 
-  setupCharacteristics(characteristic::Opportunities);
+  setupCharacteristics("OPP");
   parameterWidget()->applyDefaultFilterSet();
 }
 
@@ -136,7 +135,7 @@ void opportunityList::sNew()
   setParams(params);
   params.append("mode","new");
 
-  opportunity newdlg(this, "", TRUE);
+  opportunity newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -149,7 +148,7 @@ void opportunityList::sEdit()
   params.append("mode", "edit");
   params.append("ophead_id", list()->id());
 
-  opportunity newdlg(this, "", TRUE);
+  opportunity newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -162,7 +161,7 @@ void opportunityList::sView()
   params.append("mode", "view");
   params.append("ophead_id", list()->id());
 
-  opportunity newdlg(this, "", TRUE);
+  opportunity newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();

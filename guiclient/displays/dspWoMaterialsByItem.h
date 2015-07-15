@@ -20,7 +20,7 @@ class dspWoMaterialsByItem : public display, public Ui::dspWoMaterialsByItem
     Q_OBJECT
 
 public:
-    dspWoMaterialsByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspWoMaterialsByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

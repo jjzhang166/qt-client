@@ -14,6 +14,7 @@
 #include "guiclient.h"
 #include "xwidget.h"
 
+#include "applock.h"
 #include "contacts.h"
 #include "todoList.h"
 #include "quotes.h"
@@ -33,7 +34,7 @@ class customer : public XWidget, public Ui::customer
     Q_OBJECT
 
 public:
-    customer(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    customer(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~customer();
 
     Q_INVOKABLE virtual int id()   const;
@@ -72,6 +73,7 @@ public slots:
     virtual void sPrintShipto();
     virtual bool sSave();
     virtual void sSaveClicked();
+    virtual void setViewMode();
     virtual void sViewCreditCard();
     virtual void sViewShipto();
     virtual void sViewTaxreg();
@@ -112,6 +114,7 @@ private:
     int _NumberGen;
     QString _cachedNumber;
     QString key;
+    AppLock _lock;
     bool _notice;
     bool _autoSaved;
     bool _captive;

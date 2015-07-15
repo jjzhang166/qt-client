@@ -17,25 +17,22 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
-#include "characteristicAssignment.h"
 
-lotSerialRegistration::lotSerialRegistration(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+lotSerialRegistration::lotSerialRegistration(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   _lsregid = -1;
 
-  connect(_buttonBox,	SIGNAL(accepted()),              this, SLOT(sSave()));
-  connect(_soldDate,    SIGNAL(newDate(const QDate&)),  this, SLOT(sDateUpdated()));
-  connect(_crmacct,     SIGNAL(newId(int)),             this, SLOT(sSetSoCustId()));
-  connect(_so,          SIGNAL(newId(int,QString)),     this, SLOT(sSetSoId()));
-  connect(_deleteChar,  SIGNAL(clicked()),              this, SLOT(sDeleteCharass()));
-  connect(_editChar,    SIGNAL(clicked()),              this, SLOT(sEditCharass()));
-  connect(_newChar,     SIGNAL(clicked()),              this, SLOT(sNewCharass()));
+  connect(_buttonBox, SIGNAL(accepted()),            this, SLOT(sSave()));
+  connect(_soldDate,  SIGNAL(newDate(const QDate&)), this, SLOT(sDateUpdated()));
+  connect(_crmacct,   SIGNAL(newId(int)),            this, SLOT(sSetSoCustId()));
+  connect(_so,        SIGNAL(newId(int,QString)),    this, SLOT(sSetSoId()));
+  connect(_lotSerial, SIGNAL(newId(int)),        _charass, SLOT(setId(int)));
   
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name" );
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value" );
+  _charass->setType("LS"); // use LSR??? for now read from LS and disallow edits
+  _charass->setReadOnly(true);
  
   _lotSerial->setStrict(true);
   _shipment->setStrict(true);
@@ -74,11 +71,16 @@ enum SetResponse lotSerialRegistration::set(const ParameterList &pParams)
   
   param = pParams.value("ls_id", &valid);
   if (valid)
+  {
     _lotSerial->setId(param.toInt());
+    _charass->setId(_lotSerial->id());
+  }
   
   param = pParams.value("lsreg_id", &valid);
   if (valid)
+  {
     _lsregid=param.toInt();
+  }
 
   param = pParams.value("mode", &valid);
   if (valid)
@@ -98,7 +100,9 @@ enum SetResponse lotSerialRegistration::set(const ParameterList &pParams)
       }
       lotet.exec("SELECT NEXTVAL('lsreg_lsreg_id_seq') AS _lsreg_id;");
       if (lotet.first())
+      {
         _lsregid = lotet.value("_lsreg_id").toInt();
+      }
       else if (lotet.lastError().type() != QSqlError::NoError)
       {
         systemError(this, lotet.lastError().databaseText(), __FILE__, __LINE__);
@@ -123,9 +127,7 @@ enum SetResponse lotSerialRegistration::set(const ParameterList &pParams)
       _type->setEnabled(false);
       _item->setReadOnly(true);
       _lotSerial->setEnabled(false);
-      _newChar->setEnabled(false);
-      _editChar->setEnabled(false);
-      _deleteChar->setEnabled(false);
+      _charass->setReadOnly(true);
       _notes->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
@@ -156,68 +158,6 @@ void lotSerialRegistration::closeEvent(QCloseEvent *pEvent)
   pEvent->accept();
 }
 
-void lotSerialRegistration::sNewCharass()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("lsreg_id", _lsregid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void lotSerialRegistration::sEditCharass()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillList();
-}
-
-void lotSerialRegistration::sDeleteCharass()
-{
-  XSqlQuery lotDeleteCharass;
-  lotDeleteCharass.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  lotDeleteCharass.bindValue(":charass_id", _charass->id());
-  lotDeleteCharass.exec();
-  if (lotDeleteCharass.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, lotDeleteCharass.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-
-  sFillList();
-}
-
-void lotSerialRegistration::sFillList()
-{
-  XSqlQuery lotFillList;
-  lotFillList.prepare( "SELECT charass_id, char_name, charass_value "
-             "FROM charass, char "
-             "WHERE ((charass_target_type='LSR')"
-             " AND   (charass_char_id=char_id)"
-             " AND   (charass_target_id=:lsreg_id) ) "
-             "ORDER BY char_name;" );
-  lotFillList.bindValue(":lsreg_id", _lsregid);
-  lotFillList.exec();
-  _charass->clear();
-  _charass->populate(lotFillList);
-  if (lotFillList.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, lotFillList.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-}
-
 void lotSerialRegistration::populate()
 {
   XSqlQuery lotpopulate;
@@ -244,7 +184,7 @@ void lotSerialRegistration::populate()
       _so->setId(lotpopulate.value("lsreg_cohead_id").toInt());
     if(!lotpopulate.value("lsreg_shiphead_id").isNull())
       _shipment->setId(lotpopulate.value("lsreg_shiphead_id").toInt());
-    sFillList();
+    _charass->setId(lotpopulate.value("lsreg_ls_id").toInt());
   }
   else if(lotpopulate.lastError().type() != QSqlError::NoError)
   {

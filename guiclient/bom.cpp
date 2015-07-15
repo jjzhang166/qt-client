@@ -25,7 +25,7 @@
 
 #include "bomItem.h"
 
-BOM::BOM(QWidget* parent, const char* name, Qt::WFlags fl)
+BOM::BOM(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -118,7 +118,7 @@ enum SetResponse BOM::set(const ParameterList &pParams)
     if (param.toString() == "new")
     {
       _mode = cNew;
-      _new->setEnabled(FALSE);
+      _new->setEnabled(false);
       _revision->setId(-1);
 
       bomet.exec("SELECT NEXTVAL('bomhead_bomhead_id_seq') AS bomhead_id");
@@ -126,6 +126,7 @@ enum SetResponse BOM::set(const ParameterList &pParams)
       {
         _bomheadid = bomet.value("bomhead_id").toInt();
         _documents->setId(_bomheadid);
+        _comments->setId(_bomheadid);
       }
       else if (bomet.lastError().type() != QSqlError::NoError)
       {
@@ -139,23 +140,23 @@ enum SetResponse BOM::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _item->setReadOnly(TRUE);
+      _item->setReadOnly(true);
       
       emit newMode(_mode);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _new->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _documentNum->setEnabled(FALSE);
-//      _revision->setEnabled(FALSE);
-      _revisionDate->setEnabled(FALSE);
-      _batchSize->setEnabled(FALSE);
-      _doRequireQtyPer->setEnabled(FALSE);
-      _requiredQtyPer->setEnabled(FALSE);
-      _documents->setReadOnly(TRUE);
-      _save->setEnabled(FALSE);
+      _new->setEnabled(false);
+      _item->setReadOnly(true);
+      _documentNum->setEnabled(false);
+//      _revision->setEnabled(false);
+      _revisionDate->setEnabled(false);
+      _batchSize->setEnabled(false);
+      _doRequireQtyPer->setEnabled(false);
+      _requiredQtyPer->setEnabled(false);
+      _documents->setReadOnly(true);
+      _save->setEnabled(false);
       
       connect(_bomitem, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
       
@@ -355,7 +356,7 @@ void BOM::sNew()
   params.append("item_id", _item->id());
   params.append("revision_id", _revision->id());
   
-  bomItem newdlg(this, "", TRUE);
+  bomItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -366,7 +367,7 @@ void BOM::sEdit()
   params.append("mode", "edit");
   params.append("bomitem_id", _bomitem->id());
   
-  bomItem newdlg(this, "", TRUE);
+  bomItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -377,7 +378,7 @@ void BOM::sView()
   params.append("mode", "view");
   params.append("bomitem_id", _bomitem->id());
   
-  bomItem newdlg(this, "", TRUE);
+  bomItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -391,7 +392,7 @@ void BOM::sExpire()
   BExpire.bindValue(":bomitem_id", _bomitem->id());
   BExpire.exec();
   
-  omfgThis->sBOMsUpdated(_item->id(), TRUE);
+  omfgThis->sBOMsUpdated(_item->id(), true);
 }
 
 void BOM::sDelete()
@@ -408,7 +409,7 @@ void BOM::sDelete()
     BDelete.bindValue(":bomitem_id", _bomitem->id());
     BDelete.exec();
 
-    omfgThis->sBOMsUpdated(_item->id(), TRUE);
+    omfgThis->sBOMsUpdated(_item->id(), true);
   }
 }
 
@@ -419,7 +420,7 @@ void BOM::sReplace()
   params.append("bomitem_id", _bomitem->id());
   params.append("revision_id", _revision->id());
   
-  bomItem newdlg(this, "", TRUE);
+  bomItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -431,7 +432,7 @@ void BOM::sMoveUp()
   BMoveUp.bindValue(":bomitem_id", _bomitem->id());
   BMoveUp.exec();
   
-  omfgThis->sBOMsUpdated(_item->id(), TRUE);
+  omfgThis->sBOMsUpdated(_item->id(), true);
 }
 
 void BOM::sMoveDown()
@@ -441,13 +442,13 @@ void BOM::sMoveDown()
   BMoveDown.bindValue(":bomitem_id", _bomitem->id());
   BMoveDown.exec();
   
-  omfgThis->sBOMsUpdated(_item->id(), TRUE);
+  omfgThis->sBOMsUpdated(_item->id(), true);
 }
 
 void BOM::sFillList()
 {
   XSqlQuery BFillList;
-  sFillList(_item->id(), TRUE);
+  sFillList(_item->id(), true);
 }
 
 void BOM::sFillList(int pItemid, bool)
@@ -471,6 +472,7 @@ void BOM::sFillList(int pItemid, bool)
         emit newMode(_mode);
         emit newId(_bomheadid);
       }
+      _comments->setId(_bomheadid);
       _documents->setId(_bomheadid);
       _documentNum->setText(BFillList.value("bomhead_docnum"));
       _revisionDate->setDate(BFillList.value("bomhead_revisiondate").toDate());
@@ -483,15 +485,15 @@ void BOM::sFillList(int pItemid, bool)
       _revision->setNumber(BFillList.value("bomhead_revision").toString());
       if ( (_revision->description() == "Inactive") || (_mode == cView) )
       {
-        _save->setEnabled(FALSE);
-        _documentNum->setEnabled(FALSE);
-        _revisionDate->setEnabled(FALSE);
-        _batchSize->setEnabled(FALSE);
-        _new->setEnabled(FALSE);
-        _edit->setEnabled(FALSE);
-        _expire->setEnabled(FALSE);
-        _moveUp->setEnabled(FALSE);
-        _moveDown->setEnabled(FALSE);
+        _save->setEnabled(false);
+        _documentNum->setEnabled(false);
+        _revisionDate->setEnabled(false);
+        _batchSize->setEnabled(false);
+        _new->setEnabled(false);
+        _edit->setEnabled(false);
+        _expire->setEnabled(false);
+        _moveUp->setEnabled(false);
+        _moveDown->setEnabled(false);
         disconnect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
         disconnect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
         disconnect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
@@ -500,15 +502,15 @@ void BOM::sFillList(int pItemid, bool)
       }
       else
       {
-        _save->setEnabled(TRUE);
-        _documentNum->setEnabled(TRUE);
-        _revisionDate->setEnabled(TRUE);
-        _batchSize->setEnabled(TRUE);
-        _new->setEnabled(TRUE);
-        _edit->setEnabled(FALSE);
-        _expire->setEnabled(FALSE);
-        _moveUp->setEnabled(FALSE);
-        _moveDown->setEnabled(FALSE);
+        _save->setEnabled(true);
+        _documentNum->setEnabled(true);
+        _revisionDate->setEnabled(true);
+        _batchSize->setEnabled(true);
+        _new->setEnabled(true);
+        _edit->setEnabled(false);
+        _expire->setEnabled(false);
+        _moveUp->setEnabled(false);
+        _moveDown->setEnabled(false);
         connect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
         connect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
         connect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
@@ -520,15 +522,15 @@ void BOM::sFillList(int pItemid, bool)
     {
       if (_mode != cView)
       {
-        _save->setEnabled(TRUE);
-        _documentNum->setEnabled(TRUE);
-        _revisionDate->setEnabled(TRUE);
-        _batchSize->setEnabled(TRUE);
-        _new->setEnabled(TRUE);
-        _edit->setEnabled(FALSE);
-        _expire->setEnabled(FALSE);
-        _moveUp->setEnabled(FALSE);
-        _moveDown->setEnabled(FALSE);
+        _save->setEnabled(true);
+        _documentNum->setEnabled(true);
+        _revisionDate->setEnabled(true);
+        _batchSize->setEnabled(true);
+        _new->setEnabled(true);
+        _edit->setEnabled(false);
+        _expire->setEnabled(false);
+        _moveUp->setEnabled(false);
+        _moveDown->setEnabled(false);
         connect(_bomitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
         connect(_bomitem, SIGNAL(valid(bool)), _expire, SLOT(setEnabled(bool)));
         connect(_bomitem, SIGNAL(valid(bool)), _moveUp, SLOT(setEnabled(bool)));
@@ -568,8 +570,8 @@ void BOM::sFillList(int pItemid, bool)
           "GROUP BY item_picklist;");
     BFillList = picklistmql.toQuery(params);
     
-    bool   foundPick    = FALSE;
-    bool   foundNonPick = FALSE;
+    bool   foundPick    = false;
+    bool   foundNonPick = false;
     int    totalNumber  = 0;
     double totalQtyPer  = 0.0;
     while (BFillList.next())
@@ -579,13 +581,13 @@ void BOM::sFillList(int pItemid, bool)
       
       if (BFillList.value("item_picklist").toBool())
       {
-        foundPick = TRUE;
+        foundPick = true;
         _pickNumber->setDouble(BFillList.value("total").toDouble());
         _pickQtyPer->setDouble(BFillList.value("qtyper").toDouble());
       }
       else
       {
-        foundNonPick = TRUE;
+        foundNonPick = true;
         _nonPickNumber->setDouble(BFillList.value("total").toDouble());
         _nonPickQtyPer->setDouble(BFillList.value("qtyper").toDouble());
       }

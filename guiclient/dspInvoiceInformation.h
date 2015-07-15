@@ -22,7 +22,7 @@ class dspInvoiceInformation : public XWidget, public Ui::dspInvoiceInformation
     Q_OBJECT
 
 public:
-    dspInvoiceInformation(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInvoiceInformation(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspInvoiceInformation();
     virtual bool setParams(ParameterList &);
 

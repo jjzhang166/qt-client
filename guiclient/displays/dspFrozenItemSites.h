@@ -20,7 +20,7 @@ class dspFrozenItemSites : public display, public Ui::dspFrozenItemSites
     Q_OBJECT
 
 public:
-    dspFrozenItemSites(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspFrozenItemSites(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

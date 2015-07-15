@@ -20,7 +20,7 @@ class customerTypes : public XWidget, public Ui::customerTypes
     Q_OBJECT
 
 public:
-    customerTypes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    customerTypes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~customerTypes();
 
 public slots:

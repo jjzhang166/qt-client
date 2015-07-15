@@ -20,7 +20,7 @@ class selectedPayments : public XWidget, public Ui::selectedPayments
     Q_OBJECT
 
 public:
-    selectedPayments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    selectedPayments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~selectedPayments();
 
     virtual bool setParams(ParameterList&);

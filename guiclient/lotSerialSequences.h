@@ -19,7 +19,7 @@ class lotSerialSequences : public XWidget, public Ui::lotSerialSequences
     Q_OBJECT
 
 public:
-    lotSerialSequences(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    lotSerialSequences(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~lotSerialSequences();
 
 public slots:

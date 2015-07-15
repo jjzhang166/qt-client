@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-rejectCode::rejectCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+rejectCode::rejectCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -60,8 +60,8 @@ enum SetResponse rejectCode::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -144,11 +144,11 @@ bool rejectCode::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
-      return TRUE;
+      _code->setEnabled(false);
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 
 void rejectCode::populate()

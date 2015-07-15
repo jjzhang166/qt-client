@@ -179,7 +179,7 @@ void XComboBox::init()
 
   connect(this, SIGNAL(activated(int)), this, SLOT(sHandleNewIndex(int)));
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   QFont f = font();
   f.setPointSize(f.pointSize() - 2);
   setFont(f);
@@ -458,7 +458,7 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case UOMs:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT uom_id, uom_name, uom_name "
                   "FROM uom "
                   "ORDER BY uom_name;" );
@@ -532,8 +532,8 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case ShipVias:
-      setAllowNull(TRUE);
-      setEditable(TRUE);
+      setAllowNull(true);
+      setEditable(true);
       query.exec( "SELECT shipvia_id, (shipvia_code || '-' || shipvia_descrip), shipvia_code "
                   "FROM shipvia "
                   "ORDER BY shipvia_code;" );
@@ -548,7 +548,7 @@ void XComboBox::setType(XComboBoxTypes pType)
     case SaleTypes:
       query.exec( "SELECT saletype_id, (saletype_code || '-' || saletype_descr), saletype_code "
                   "FROM saletype "
-                  "ORDER BY saletype_code;" );
+                  "ORDER BY saletype_default DESC, saletype_code;" );
       break;
 
     case ShippingCharges:
@@ -622,7 +622,7 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case SoProjects:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT prj_id, (prj_number || '-' || prj_name), prj_number "
                   "FROM prj "
                   "WHERE (prj_so) "
@@ -630,7 +630,7 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case WoProjects:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT prj_id, (prj_number || '-' || prj_name), prj_number "
                   "FROM prj "
                   "WHERE (prj_wo) "
@@ -638,7 +638,7 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case PoProjects:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT prj_id, (prj_number || '-' || prj_name), prj_number "
                   "FROM prj "
                   "WHERE (prj_po) "
@@ -654,7 +654,7 @@ void XComboBox::setType(XComboBoxTypes pType)
     case CurrenciesNotBase:
       query.exec( "SELECT curr_id, currConcat(curr_abbr, curr_symbol), curr_abbr"
                   " FROM curr_symbol "
-                  " WHERE curr_base = FALSE "
+                  " WHERE curr_base = false "
                   "ORDER BY curr_abbr;" );
       break;
 
@@ -1042,14 +1042,14 @@ void XComboBox::setType(XComboBoxTypes pType)
       break;
 
     case CRMAccounts:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT crmacct_id, (crmacct_number || '-' || crmacct_name), crmacct_number"
                   "  FROM crmacct "
                   "ORDER BY crmacct_number;" );
       break;
 
     case Honorifics:
-      setAllowNull(TRUE);
+      setAllowNull(true);
       query.exec( "SELECT hnfc_id, hnfc_code, hnfc_code"
                   "  FROM hnfc "
                   "ORDER BY hnfc_code;" );
@@ -1184,6 +1184,10 @@ void XComboBox::setType(XComboBoxTypes pType)
 
   populate(query);
 
+  // Resize combobox _selection_view_ to fit retrieved contents
+  int _width = this->minimumSizeHint().width();
+  view()->setMinimumWidth(_width);
+
   switch (pType)
   {
     case SoProjects:
@@ -1232,8 +1236,8 @@ void XComboBox::setCode(const QString &pString)
 {
   if (DEBUG)
     qDebug("%s::setCode(%d %d %s) with _codes.count %d and _ids.count %d",
-           objectName().toAscii().data(), pString.isNull(), pString.isEmpty(),
-           pString.toAscii().data(), _data->_codes.count(), _data->_ids.count());
+           objectName().toLatin1().data(), pString.isNull(), pString.isEmpty(),
+           pString.toLatin1().data(), _data->_codes.count(), _data->_ids.count());
 
   if (pString.isEmpty())
   {
@@ -1248,7 +1252,7 @@ void XComboBox::setCode(const QString &pString)
       {
         if (DEBUG)
           qDebug("%s::setCode(%s) found at %d with _ids.count %d & _lastId %d",
-                 objectName().toAscii().data(), pString.toAscii().data(),
+                 objectName().toLatin1().data(), pString.toLatin1().data(),
                  counter, _data->_ids.count(), _data->_lastId);
         setCurrentIndex(counter);
 
@@ -1268,13 +1272,13 @@ void XComboBox::setCode(const QString &pString)
     setCurrentIndex(findText(pString));
     if (DEBUG)
       qDebug("%s::setCode(%s) set current item to %d using findData()",
-             objectName().toAscii().data(), pString.toAscii().data(),
+             objectName().toLatin1().data(), pString.toLatin1().data(),
              currentIndex());
     if (_data->_ids.count() > currentIndex())
       setId(_data->_ids.at(currentIndex()));
     if (DEBUG)
       qDebug("%s::setCode(%s) current item is %d after setId",
-             objectName().toAscii().data(), pString.toAscii().data(),
+             objectName().toLatin1().data(), pString.toLatin1().data(),
              currentIndex());
   }
 
@@ -1312,10 +1316,10 @@ void XComboBox::setId(int pTarget)
             _data->_lastId = id;
             updateMapperData();
             emit newID(pTarget);
-            emit valid(TRUE);
+            emit valid(true);
 
             if (allowNull())
-              emit notNull(TRUE);
+              emit notNull(true);
           }
 
           return;
@@ -1336,10 +1340,10 @@ void XComboBox::setId(int pTarget)
           _data->_lastId = pTarget;
           updateMapperData();
           emit newID(pTarget);
-          emit valid(TRUE);
+          emit valid(true);
 
           if (allowNull())
-            emit notNull(TRUE);
+            emit notNull(true);
         }
 
         return;
@@ -1403,8 +1407,8 @@ void XComboBox::setNull()
     setCurrentIndex(0);
     updateMapperData();
     emit newID(-1);
-    emit valid(FALSE);
-    emit notNull(FALSE);
+    emit valid(false);
+    emit notNull(false);
   }
 }
 
@@ -1527,7 +1531,7 @@ QString XComboBox::code() const
 {
   if (DEBUG)
     qDebug("%s::code() with currentIndex %d, allowNull %d, and _codes.count %d",
-           objectName().toAscii().data(), currentIndex(), allowNull(),
+           objectName().toLatin1().data(), currentIndex(), allowNull(),
            _data->_codes.count());
 
   QString returnValue;
@@ -1543,22 +1547,22 @@ QString XComboBox::code() const
 
   if (DEBUG)
     qDebug("%s::code() returning %s",
-           objectName().toAscii().data(), returnValue.toAscii().data());
+           objectName().toLatin1().data(), returnValue.toLatin1().data());
   return returnValue;
 }
 
 bool XComboBox::isValid() const
 {
   if ((allowNull()) && (id() == -1))
-    return FALSE;
+    return false;
   else
-    return TRUE;
+    return true;
 }
 
 void XComboBox::sHandleNewIndex(int pIndex)
 {
   if (DEBUG)
-    qDebug("%s::sHandleNewIndex(%d)",objectName().toAscii().data(), pIndex);
+    qDebug("%s::sHandleNewIndex(%d)",objectName().toLatin1().data(), pIndex);
 
   if ((pIndex >= 0) && (pIndex < _data->_ids.count()) &&
       (_data->_ids.at(pIndex) != _data->_lastId))
@@ -1569,7 +1573,7 @@ void XComboBox::sHandleNewIndex(int pIndex)
 
     if (DEBUG)
       qDebug("%s::sHandleNewIndex() emitted %d",
-             objectName().toAscii().data(), _data->_lastId);
+             objectName().toLatin1().data(), _data->_lastId);
 
     if (allowNull())
     {
@@ -1580,7 +1584,7 @@ void XComboBox::sHandleNewIndex(int pIndex)
 
   if (DEBUG)
     qDebug("%s::sHandleNewIndex() returning",
-           objectName().toAscii().data());
+           objectName().toLatin1().data());
 }
 
 void XComboBox::mousePressEvent(QMouseEvent *event)
@@ -1604,7 +1608,7 @@ void XComboBox::showPopup()
 QSize XComboBox::sizeHint() const
 {
   QSize s = QComboBox::sizeHint();
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   s.setWidth(s.width() + 12);
 #endif
   return s;
@@ -1687,7 +1691,7 @@ QScriptValue constructXComboBox(QScriptContext *context,
            qscriptvalue_cast<QWidget*>(context->argument(0)) &&
            context->argument(1).isString())
     cbox = new XComboBox(qscriptvalue_cast<QWidget*>(context->argument(0)),
-                         context->argument(1).toString().toAscii().data());
+                         context->argument(1).toString().toLatin1().data());
 
   else if (context->argumentCount() >= 3  &&
            context->argument(0).isBool() &&
@@ -1695,7 +1699,7 @@ QScriptValue constructXComboBox(QScriptContext *context,
   {
     cbox = new XComboBox(context->argument(0).toBool(),
                          qscriptvalue_cast<QWidget*>(context->argument(1)),
-                         context->argument(2).toString().toAscii().data());
+                         context->argument(2).toString().toLatin1().data());
   }
 
   else

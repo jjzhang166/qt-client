@@ -25,13 +25,13 @@
 #include "itemSourceList.h"
 #include "vendorPriceList.h"
 
-purchaseOrderItem::purchaseOrderItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+purchaseOrderItem::purchaseOrderItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery purchasepurchaseOrderItem;
   setupUi(this);
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _vendorItemNumberList->setMaximumWidth(25);
 #else
   _listPrices->setMinimumWidth(60);
@@ -136,8 +136,8 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
   XDialog::set(pParams);
   QVariant param;
   bool     valid;
-  bool     haveQty  = FALSE;
-  bool     haveDate = FALSE;
+  bool     haveQty  = false;
+  bool     haveDate = false;
 
 
 
@@ -324,34 +324,34 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
       _bomRevision->setEnabled(_privileges->boolean("UseInactiveRevisions"));
       _booRevision->setEnabled(_privileges->boolean("UseInactiveRevisions"));
       _comments->setId(_poitemid);
-      _tab->setTabEnabled(_tab->indexOf(_demandTab), FALSE);
+      _tab->setTabEnabled(_tab->indexOf(_demandTab), false);
     }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
 
-      _typeGroup->setEnabled(FALSE);
+      _typeGroup->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _typeGroup->setEnabled(FALSE);
-      _vendorItemNumber->setEnabled(FALSE);
-      _vendorItemNumberList->setEnabled(FALSE);
-      _vendorDescrip->setEnabled(FALSE);
-      _warehouse->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
-      _ordered->setEnabled(FALSE);
-      _unitPrice->setEnabled(FALSE);
-      _freight->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
-      _comments->setReadOnly(TRUE);
-      _project->setEnabled(FALSE);
-      _taxtype->setEnabled(FALSE);
-      _taxRecoverable->setEnabled(FALSE);
-      _bomRevision->setEnabled(FALSE);
-      _booRevision->setEnabled(FALSE);
+      _typeGroup->setEnabled(false);
+      _vendorItemNumber->setEnabled(false);
+      _vendorItemNumberList->setEnabled(false);
+      _vendorDescrip->setEnabled(false);
+      _warehouse->setEnabled(false);
+      _dueDate->setEnabled(false);
+      _ordered->setEnabled(false);
+      _unitPrice->setEnabled(false);
+      _freight->setEnabled(false);
+      _notes->setReadOnly(true);
+      _comments->setReadOnly(true);
+      _project->setEnabled(false);
+      _taxtype->setEnabled(false);
+      _taxRecoverable->setEnabled(false);
+      _bomRevision->setEnabled(false);
+      _booRevision->setEnabled(false);
 
       _close->setText(tr("&Close"));
       _save->hide();
@@ -362,8 +362,8 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
   
   param = pParams.value("itemsrc_id", &valid);
@@ -378,14 +378,14 @@ enum SetResponse purchaseOrderItem::set(const ParameterList &pParams)
     if (_item->isValid())
       sDeterminePrice();
 
-    haveQty = TRUE;
+    haveQty = true;
   }
 
   param = pParams.value("dueDate", &valid);
   if (valid)
   {
     _dueDate->setDate(param.toDate());
-    haveDate = TRUE;
+    haveDate = true;
   }
 
   param = pParams.value("prj_id", &valid);
@@ -457,18 +457,18 @@ void purchaseOrderItem::populate()
 
     if(purchasepopulate.value("poitem_order_id") != -1)
     {
-      _ordered->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
+      _ordered->setEnabled(false);
+      _dueDate->setEnabled(false);
       _soLit->setText(purchasepopulate.value("demand_type").toString());
       _so->setText(purchasepopulate.value("order_number").toString());
 //      _soLine->setText(purchasepopulate.value("orderline_number").toString());
     }
     else
-      _tab->setTabEnabled(_tab->indexOf(_demandTab), FALSE);
+      _tab->setTabEnabled(_tab->indexOf(_demandTab), false);
 
     if (purchasepopulate.value("poitem_itemsite_id").toInt() == -1)
     {
-      _nonInventoryItem->setChecked(TRUE);
+      _nonInventoryItem->setChecked(true);
       _expcat->setId(purchasepopulate.value("poitem_expcat_id").toInt());
       sPopulateItemSourceInfo(-1);
 
@@ -479,7 +479,7 @@ void purchaseOrderItem::populate()
     }
     else
     {
-      _inventoryItem->setChecked(TRUE);
+      _inventoryItem->setChecked(true);
       _item->setItemsiteid(purchasepopulate.value("poitem_itemsite_id").toInt());
       sPopulateItemSourceInfo(purchasepopulate.value("poitem_itemsrc_id").toInt());
       if (_metrics->boolean("RevControl"))
@@ -511,10 +511,10 @@ void purchaseOrderItem::populate()
 
     if (_itemsrcid != -1)
     {
-      _vendorUOM->setEnabled(FALSE);
-      _manufName->setEnabled(FALSE);
-      _manufItemNumber->setEnabled(FALSE);
-      _manufItemDescrip->setEnabled(FALSE);
+      _vendorUOM->setEnabled(false);
+      _manufName->setEnabled(false);
+      _manufItemNumber->setEnabled(false);
+      _manufItemDescrip->setEnabled(false);
 
       if(_vendorItemNumber->text().isEmpty())
         _vendorItemNumber->setText(purchasepopulate.value("itemsrc_vend_item_number").toString());
@@ -622,7 +622,7 @@ void purchaseOrderItem::clear()
   _orderQtyCache = -1;
   _overriddenUnitPrice = false;
   _itemchar->removeRows(0, _itemchar->rowCount());
-  _itemcharView->setEnabled(TRUE);
+  _itemcharView->setEnabled(true);
   _itemsrcid = -1;
   _vendorItemNumber->clear();
   _vendorDescrip->clear();
@@ -705,7 +705,7 @@ void purchaseOrderItem::sSave()
     }
   }
 
-  if (_unitPrice->baseValue() > _maxCost && _maxCost > 0.0)
+  if ((_unitPrice->baseValue() / _invVendUOMRatio) > _maxCost && _maxCost > 0.0)
   {
     if (QMessageBox::critical( this, tr("Invalid Unit Price"),
                                tr( "<p>The Unit Price is above the Maximum Desired Cost for this Item."
@@ -1187,12 +1187,12 @@ void purchaseOrderItem::sVendorItemNumberSearch()
     int itemsrcid = newdlg.itemsrcId();
     if(itemsrcid != -1)
     {
-      _inventoryItem->setChecked(TRUE);
+      _inventoryItem->setChecked(true);
       sPopulateItemSourceInfo(itemsrcid);
     }
     else
     {
-      _nonInventoryItem->setChecked(TRUE);
+      _nonInventoryItem->setChecked(true);
       _expcat->setId(newdlg.expcatId());
       _vendorItemNumber->setText(newdlg.vendItemNumber());
       _vendorDescrip->setText(newdlg.vendItemDescrip());
@@ -1214,7 +1214,7 @@ void purchaseOrderItem::sVendorItemNumberList()
   int itemsrcid = newdlg.exec();
   if(itemsrcid > 0)
   {
-    _inventoryItem->setChecked(TRUE);
+    _inventoryItem->setChecked(true);
     sPopulateItemSourceInfo(itemsrcid);
   }
 }
@@ -1232,7 +1232,7 @@ void purchaseOrderItem::sVendorListPrices()
   ParameterList params;
   params.append("itemsrc_id", _itemsrcid);
   params.append("qty", _ordered->toDouble());
-  vendorPriceList newdlg(this, "", TRUE);
+  vendorPriceList newdlg(this, "", true);
   newdlg.set(params);
   if ( (newdlg.exec() == XDialog::Accepted))
   {

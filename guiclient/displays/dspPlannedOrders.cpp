@@ -26,7 +26,7 @@
 #include "workOrder.h"
 #include "parameterwidget.h"
 
-dspPlannedOrders::dspPlannedOrders(QWidget* parent, const char*, Qt::WFlags fl)
+dspPlannedOrders::dspPlannedOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPlannedOrders", fl)
 {
   setWindowTitle(tr("Planned Orders"));

@@ -22,7 +22,7 @@ class correctProductionPosting : public XDialog, public Ui::correctProductionPos
     Q_OBJECT
 
 public:
-    correctProductionPosting(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    correctProductionPosting(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~correctProductionPosting();
 
     Q_INVOKABLE virtual bool captive() const { return _captive; }

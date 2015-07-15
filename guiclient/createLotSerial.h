@@ -23,11 +23,12 @@ class createLotSerial : public XDialog, public Ui::createLotSerial
     Q_OBJECT
 
 public:
-    createLotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    createLotSerial(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~createLotSerial();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );
+    virtual void clearCharacteristics();
     virtual void sAssign();
     virtual void sHandleLotSerial();
     virtual void sHandleCharacteristics();

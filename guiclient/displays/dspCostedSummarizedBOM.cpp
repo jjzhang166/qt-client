@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-dspCostedSummarizedBOM::dspCostedSummarizedBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspCostedSummarizedBOM::dspCostedSummarizedBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspCostedSummarizedBOM", fl)
 {
   setupUi(optionsWidget());

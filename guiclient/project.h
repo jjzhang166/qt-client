@@ -21,7 +21,7 @@ class project : public XDialog, public Ui::project
     Q_OBJECT
 
 public:
-    project(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    project(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~project();
 
 public slots:
@@ -34,6 +34,7 @@ public slots:
     virtual void sClose();
     virtual bool sSave(bool partial = false);
     virtual void sPrintTasks();
+    virtual void sPrintOrders();
     virtual void sNewTask();
     virtual void sEditTask();
     virtual void sViewTask();
@@ -47,10 +48,6 @@ public slots:
     virtual void sNewPurchaseOrder();
     virtual void sNewWorkOrder();
     virtual void sNumberChanged();
-    virtual void sNew();
-    virtual void sEdit();
-    virtual void sDelete();
-    virtual void sFillCharList();
     virtual void sHandleButtons(bool valid = false);
 
 protected slots:

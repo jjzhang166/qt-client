@@ -163,7 +163,7 @@ bool CrmaccountMergePickDataPage::validatePage()
     return false;
 
   XSqlQuery mrgq;
-  mrgq.prepare("SELECT mergecrmaccts(:destid, FALSE) AS result;");
+  mrgq.prepare("SELECT mergecrmaccts(:destid, false) AS result;");
   mrgq.bindValue(":destid", _data->_destid);
   mrgq.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Merging"),

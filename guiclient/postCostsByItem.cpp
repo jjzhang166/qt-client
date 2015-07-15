@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-postCostsByItem::postCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postCostsByItem::postCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -35,13 +35,13 @@ postCostsByItem::postCostsByItem(QWidget* parent, const char* name, bool modal, 
   }
   else if (_metrics->value("TrackMachineOverhead") != "M")
   {
-    _machOverhead->setEnabled(FALSE);
-    _machOverhead->setChecked(TRUE);
-    _lowerMachOverhead->setEnabled(FALSE);
-    _lowerMachOverhead->setChecked(TRUE);
+    _machOverhead->setEnabled(false);
+    _machOverhead->setChecked(true);
+    _lowerMachOverhead->setEnabled(false);
+    _lowerMachOverhead->setChecked(true);
   }
 
-  _captive = FALSE;
+  _captive = false;
 }
 
 postCostsByItem::~postCostsByItem()
@@ -57,7 +57,7 @@ void postCostsByItem::languageChange()
 enum SetResponse postCostsByItem::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -66,7 +66,7 @@ enum SetResponse postCostsByItem::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   return NoError;
@@ -74,20 +74,20 @@ enum SetResponse postCostsByItem::set(const ParameterList &pParams)
 
 void postCostsByItem::sSelectAll()
 {
-  _material->setChecked(TRUE);
-  _lowerMaterial->setChecked(TRUE);
-  _user->setChecked(TRUE);
-  _lowerUser->setChecked(TRUE);
+  _material->setChecked(true);
+  _lowerMaterial->setChecked(true);
+  _user->setChecked(true);
+  _lowerUser->setChecked(true);
   if (_metrics->boolean("Routings"))
   {
-    _directLabor->setChecked(TRUE);
-    _lowerDirectLabor->setChecked(TRUE);
-    _overhead->setChecked(TRUE);
-    _lowerOverhead->setChecked(TRUE);
+    _directLabor->setChecked(true);
+    _lowerDirectLabor->setChecked(true);
+    _overhead->setChecked(true);
+    _lowerOverhead->setChecked(true);
     if (_metrics->value("TrackMachineOverhead") == "M")
     {
-      _machOverhead->setChecked(TRUE);
-      _lowerMachOverhead->setChecked(TRUE);
+      _machOverhead->setChecked(true);
+      _lowerMachOverhead->setChecked(true);
     }
   }
 }
@@ -95,7 +95,7 @@ void postCostsByItem::sSelectAll()
 void postCostsByItem::sPost()
 {
   XSqlQuery sql;
-  sql.prepare( "SELECT doPostCosts(:item_id, TRUE, "
+  sql.prepare( "SELECT doPostCosts(:item_id, true, "
                "         :material, :lowMaterial, :labor, :lowLabor, "
                "         :overhead, :lowOverhead, :machOverhead, :lowMachOverhead, "
                "         :user, :lowUser, :rollUp)" );

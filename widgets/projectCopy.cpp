@@ -25,7 +25,7 @@
 #include <xsqlquery.h>
 #include "datecluster.h"
 
-projectCopy::projectCopy(QWidget* parent, const char* name, bool modal, Qt::WFlags fl) :
+projectCopy::projectCopy(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl) :
   QDialog(parent, fl)
 {
   setObjectName(name ? name : "projectCopy");
@@ -84,9 +84,9 @@ projectCopy::projectCopy(QWidget* parent, const char* name, bool modal, Qt::WFla
   _buttonsLayout->addWidget(_close);
 
   _copy = new QPushButton(tr("&Copy"), this);
-  _copy->setEnabled( FALSE );
-  _copy->setAutoDefault( TRUE );
-  _copy->setDefault( TRUE );
+  _copy->setEnabled( false );
+  _copy->setAutoDefault( true );
+  _copy->setDefault( true );
   _buttonsLayout->addWidget(_copy);
   QSpacerItem* spacer2 = new QSpacerItem( 20, 100, QSizePolicy::Minimum );
   _buttonsLayout->addItem( spacer2 );

@@ -21,7 +21,7 @@ class taxAssignment : public XDialog, public Ui::taxAssignment
   Q_OBJECT
 
   public:
-    taxAssignment(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    taxAssignment(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~taxAssignment();
 
   public slots:

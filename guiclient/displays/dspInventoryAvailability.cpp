@@ -30,7 +30,7 @@
 #include "workOrder.h"
 #include "parameterwidget.h"
 
-dspInventoryAvailability::dspInventoryAvailability(QWidget* parent, const char*, Qt::WFlags fl)
+dspInventoryAvailability::dspInventoryAvailability(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspInventoryAvailability", fl)
 {
   setupUi(optionsWidget());

@@ -17,7 +17,7 @@
 #include "customCommand.h"
 #include "guiclient.h"
 
-customCommands::customCommands(QWidget* parent, const char* name, Qt::WFlags fl)
+customCommands::customCommands(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -50,7 +50,7 @@ void customCommands::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  customCommand newdlg(this, "", TRUE);
+  customCommand newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();
@@ -62,7 +62,7 @@ void customCommands::sEdit()
   params.append("mode", "edit");
   params.append("cmd_id", _commands->id());
 
-  customCommand newdlg(this, "", TRUE);
+  customCommand newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();

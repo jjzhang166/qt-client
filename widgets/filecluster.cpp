@@ -28,7 +28,7 @@ FileCluster::FileCluster(QWidget* pParent, const char* pName) :
   _list = new QPushButton(tr("..."), this);
   _list->setObjectName("_list");
   _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _list->setMaximumWidth(25);
 #endif
 
@@ -54,7 +54,7 @@ void FileCluster::sEllipses()
   {
     QStringList filters;
     filters << _filter << tr("Any Files (*)");
-    newdlg.setFilters(filters);
+    newdlg.setNameFilters(filters);
   }
   if (newdlg.exec())
   {

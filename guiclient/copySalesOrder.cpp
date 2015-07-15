@@ -16,7 +16,7 @@
 #include "inputManager.h"
 #include "salesOrderList.h"
 
-copySalesOrder::copySalesOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copySalesOrder::copySalesOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ copySalesOrder::copySalesOrder(QWidget* parent, const char* name, bool modal, Qt
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sCopy()));
 
-  _captive = FALSE;
+  _captive = false;
 
   omfgThis->inputManager()->notify(cBCSalesOrder, this, _so, SLOT(setId(int)));
 
@@ -59,9 +59,9 @@ enum SetResponse copySalesOrder::set(const ParameterList &pParams)
   param = pParams.value("sohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _so->setId(param.toInt());
-    _so->setEnabled(FALSE);
+    _so->setEnabled(false);
   }
 
   return NoError;
@@ -132,8 +132,11 @@ void copySalesOrder::sPopulateSoInfo(int)
 void copySalesOrder::sCopy()
 {
   XSqlQuery copyCopy;
-  copyCopy.prepare("SELECT copySo(:sohead_id, :scheddate) AS sohead_id;");
+  copyCopy.prepare("SELECT copySo(:sohead_id, :customer, :scheddate) AS sohead_id;");
   copyCopy.bindValue(":sohead_id", _so->id());
+
+  if (_useNewCust->isChecked())
+    copyCopy.bindValue(":customer", _cust->id());
 
   if (_reschedule->isChecked())
     copyCopy.bindValue(":scheddate", _scheduleDate->date());

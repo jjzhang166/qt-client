@@ -2184,7 +2184,7 @@ to be bound by its terms.</comment>
                 <item row="1" column="0">
                  <widget class="QLabel" name="_doumentNumberLit">
                   <property name="text">
-                   <string>Check/Document #:</string>
+                   <string>Payment/Document #:</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -2345,7 +2345,7 @@ to be bound by its terms.</comment>
                 <item row="2" column="0">
                  <widget class="QLabel" name="_doumentDateLit">
                   <property name="text">
-                   <string>Check/Document Date:</string>
+                   <string>Payment/Document Date:</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

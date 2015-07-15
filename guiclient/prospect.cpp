@@ -26,7 +26,7 @@
 #include "salesOrder.h"
 #include "storedProcErrorLookup.h"
 
-prospect::prospect(QWidget* parent, const char* name, Qt::WFlags fl)
+prospect::prospect(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);

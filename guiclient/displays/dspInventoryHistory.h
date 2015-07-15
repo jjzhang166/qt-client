@@ -20,7 +20,7 @@ class dspInventoryHistory : public display
     Q_OBJECT
 
 public:
-    dspInventoryHistory(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInventoryHistory(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList & params);
     Q_INVOKABLE virtual void setItemId(int itemId);

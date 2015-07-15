@@ -18,7 +18,7 @@
 #define COST_COL	6
 #define MARGIN_COL	7
 
-dspPricesByItem::dspPricesByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspPricesByItem::dspPricesByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPricesByItem", fl)
 {
   setupUi(optionsWidget());

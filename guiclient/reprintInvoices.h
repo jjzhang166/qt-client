@@ -20,7 +20,7 @@ class reprintInvoices : public reprintMulticopyDocument,
     Q_OBJECT
 
   public:
-    reprintInvoices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    reprintInvoices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~reprintInvoices();
 
     Q_INVOKABLE ParameterList getParamsDocList();

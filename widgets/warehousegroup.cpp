@@ -45,7 +45,7 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
 	 
   if (!_selectedOnly)
   {
-    _all->setChecked(TRUE);
+    _all->setChecked(true);
     buttonGroup->addButton(_all);
     buttonGroup->addButton(_selected);
   }
@@ -82,7 +82,7 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
   connect(_warehouses, SIGNAL(newID(int)), this, SIGNAL(updated()));
 
   if (((_x_preferences) ? _x_preferences->value("PreferredWarehouse").toInt() : -1) != -1)
-    _selected->setChecked(TRUE);
+    _selected->setChecked(true);
 
   setTabOrder(_all, _selected);
   setTabOrder(_selected, _warehouses);
@@ -101,7 +101,7 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
 
 void WarehouseGroup::setAll()
 {
-  _all->setChecked(TRUE);
+  _all->setChecked(true);
 }
 
 void WarehouseGroup::setFixedSize(bool pFixed)
@@ -153,14 +153,14 @@ void WarehouseGroup::setFixedSize(bool pFixed)
     QGridLayout *siteLayout = new QGridLayout(this);
     siteLayout->addLayout(vLayout,0,0);
   }
-  _warehouses->setEnabled(FALSE);
+  _warehouses->setEnabled(false);
   
   _fixed = pFixed;
 }
 
 void WarehouseGroup::setId(int pId)
 {
-  _selected->setChecked(TRUE);
+  _selected->setChecked(true);
   _warehouses->setId(pId);
 }
 

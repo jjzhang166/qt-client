@@ -22,7 +22,7 @@ class closeWo : public XDialog, public Ui::closeWo
     Q_OBJECT
 
 public:
-    closeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    closeWo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~closeWo();
 
     Q_INVOKABLE virtual bool okToSave();

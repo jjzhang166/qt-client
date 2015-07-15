@@ -19,7 +19,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  true to construct a modal dialog.
  */
-purgeClosedWorkOrders::purgeClosedWorkOrders(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+purgeClosedWorkOrders::purgeClosedWorkOrders(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -55,12 +55,12 @@ void purgeClosedWorkOrders::sPurge()
   if (_cutOffDate->isValid())
   {
     if (_warehouse->isAll())
-      purgePurge.prepare("SELECT MIN(deleteWo(wo_id, false)) AS result"
+      purgePurge.prepare("SELECT MIN(deleteWo(wo_id, false, true)) AS result"
                 "  FROM wo"
                 " WHERE ((wo_status = 'C')"
                 "   AND  (wo_duedate <= :cutoffDate))");
     else
-      purgePurge.prepare("SELECT MIN(deleteWo(wo_id, false)) AS result"
+      purgePurge.prepare("SELECT MIN(deleteWo(wo_id, false, true)) AS result"
                 "  FROM wo, itemsite"
                 " WHERE ((wo_status = 'C')"
                 "   AND  (wo_duedate <= :cutoffDate)"

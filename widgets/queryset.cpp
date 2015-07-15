@@ -143,7 +143,7 @@ void QuerySet::sFillList()
   XSqlQuery itemq;
   itemq.prepare("SELECT qryitem_id, qryitem_name, qryitem_order, qryitem_src,"
                 "       qryitem_group,"
-                "       REGEXP_REPLACE(qryitem_detail, E'\\n.*', '...')"
+                "       REGEXP_REPLACE(qryitem_detail, '\n.*', '...')"
                 "         AS qryitem_detail,"
                 "       qryitem_detail AS qryitem_detail_qttooltiprole"
                 "  FROM qryitem"

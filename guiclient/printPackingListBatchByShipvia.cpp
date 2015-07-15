@@ -20,7 +20,7 @@
 
 #include "mqlutil.h"
 
-printPackingListBatchByShipvia::printPackingListBatchByShipvia(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printPackingListBatchByShipvia::printPackingListBatchByShipvia(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,8 +28,8 @@ printPackingListBatchByShipvia::printPackingListBatchByShipvia(QWidget* parent, 
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_warehouse, SIGNAL(updated()), this, SLOT(sPopulateShipVia()));
 
-  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+  _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+  _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
   sPopulateShipVia();
 }
@@ -47,7 +47,7 @@ void printPackingListBatchByShipvia::languageChange()
 void printPackingListBatchByShipvia::sPrint()
 {
   QPrinter printer(QPrinter::HighResolution);
-  bool     setupPrinter = TRUE;
+  bool     setupPrinter = true;
 
   if (!_dates->allValid())
   {
@@ -58,7 +58,7 @@ void printPackingListBatchByShipvia::sPrint()
   }
 
   XSqlQuery prtd;
-  QString prts("UPDATE pack SET pack_printed=TRUE"
+  QString prts("UPDATE pack SET pack_printed=true"
                " WHERE ((pack_head_id=<? value('head_id') ?>) "
 	       "   AND  (pack_head_type=<? value('head_type') ?>)"
 	       "<? if exists('shiphead_id') ?>"
@@ -123,7 +123,7 @@ void printPackingListBatchByShipvia::sPrint()
       {
         if (report.print(&printer, setupPrinter))
         {
-          setupPrinter = FALSE;
+          setupPrinter = false;
           emit finishedPrinting(packq.value("pack_head_id").toInt(),
                                 packq.value("pack_head_type").toString(),
                                 packq.value("pack_shiphead_id").toInt());

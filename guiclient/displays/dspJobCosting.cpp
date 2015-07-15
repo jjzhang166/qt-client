@@ -13,7 +13,7 @@
 #include <QMessageBox>
 #include <QVariant>
 
-dspJobCosting::dspJobCosting(QWidget* parent, const char*, Qt::WFlags fl)
+dspJobCosting::dspJobCosting(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspJobCosting", fl)
 {
   setupUi(optionsWidget());

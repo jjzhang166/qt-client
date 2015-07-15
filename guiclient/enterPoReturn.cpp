@@ -23,7 +23,7 @@
 #include "storedProcErrorLookup.h"
 #include "postPoReturnCreditMemo.h"
 
-enterPoReturn::enterPoReturn(QWidget* parent, const char* name, Qt::WFlags fl)
+enterPoReturn::enterPoReturn(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -52,7 +52,7 @@ enterPoReturn::enterPoReturn(QWidget* parent, const char* name, Qt::WFlags fl)
   _po->setLockSelected(true);
 
   if (_metrics->boolean("EnableDropShipments"))
-    _dropShip->setEnabled(FALSE);
+    _dropShip->setEnabled(false);
   else
     _dropShip->hide();
 }
@@ -76,7 +76,7 @@ enum SetResponse enterPoReturn::set(const ParameterList &pParams)
   param = pParams.value("pohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _po->setId(param.toInt());
   }
 
@@ -212,7 +212,7 @@ void enterPoReturn::sPost()
       ParameterList params;
       params.append("poreject_id", reject.value("poreject_id").toInt());
 
-      postPoReturnCreditMemo newdlg(this, "", TRUE);
+      postPoReturnCreditMemo newdlg(this, "", true);
       newdlg.set(params);
 
       newdlg.exec();
@@ -239,7 +239,7 @@ void enterPoReturn::sEnter()
                                   "by the original receipt. Shipment transactions should "
                                   "be reversed separately if necessary."));
 
-  enterPoitemReturn newdlg(this, "", TRUE);
+  enterPoitemReturn newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec())

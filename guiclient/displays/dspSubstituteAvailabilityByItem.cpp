@@ -21,7 +21,7 @@
 #include "dspAllocations.h"
 #include "dspOrders.h"
 
-dspSubstituteAvailabilityByItem::dspSubstituteAvailabilityByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspSubstituteAvailabilityByItem::dspSubstituteAvailabilityByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSubstituteAvailabilityByItem", fl)
 {
   setupUi(optionsWidget());

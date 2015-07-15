@@ -21,7 +21,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-expenseCategories::expenseCategories(QWidget* parent, const char* name, Qt::WFlags fl)
+expenseCategories::expenseCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -52,7 +52,7 @@ expenseCategories::expenseCategories(QWidget* parent, const char* name, Qt::WFla
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_expcat, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -97,7 +97,7 @@ void expenseCategories::sDelete()
       if (result == 0)
       {
         expenseDelete.prepare( "UPDATE expcat "
-                   "SET expcat_active=FALSE "
+                   "SET expcat_active=false "
                    "WHERE (expcat_id=:expcat_id);" );
         expenseDelete.bindValue(":expcat_id", _expcat->id());
         expenseDelete.exec();
@@ -138,7 +138,7 @@ void expenseCategories::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  expenseCategory newdlg(this, "", TRUE);
+  expenseCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -151,7 +151,7 @@ void expenseCategories::sEdit()
   params.append("mode", "edit");
   params.append("expcat_id", _expcat->id());
 
-  expenseCategory newdlg(this, "", TRUE);
+  expenseCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -164,7 +164,7 @@ void expenseCategories::sCopy()
   params.append("mode", "copy");
   params.append("expcat_id", _expcat->id());
 
-  expenseCategory newdlg(this, "", TRUE);
+  expenseCategory newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -177,7 +177,7 @@ void expenseCategories::sView()
   params.append("mode", "view");
   params.append("expcat_id", _expcat->id());
 
-  expenseCategory newdlg(this, "", TRUE);
+  expenseCategory newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -128,7 +128,7 @@ void WoLineEdit::silentSetId(const int pId)
         static_cast<QSqlQueryModel* >(_completer->model())->setQuery(QSqlQuery());
 
       _id    = pId;
-      _valid = TRUE;
+      _valid = true;
 
       setText(wo.value("number").toString());
 
@@ -152,13 +152,13 @@ void WoLineEdit::silentSetId(const int pId)
       emit qtyBalanceChanged(wo.value("balance").toDouble());
       emit statusChanged(wo.value("wo_status").toString());
       emit methodChanged(wo.value("wo_method").toString());
-      emit valid(TRUE);
+      emit valid(true);
     }
   }
   else
   {
     _id    = -1;
-    _valid = FALSE;
+    _valid = false;
     _currentWarehouseid = -1;
 
     XLineEdit::clear();
@@ -177,13 +177,13 @@ void WoLineEdit::silentSetId(const int pId)
     emit qtyBalanceChanged(0);
     emit statusChanged("");
     emit methodChanged("");
-    emit valid(FALSE);
+    emit valid(false);
       
     _qtyOrdered  = 0;
     _qtyReceived = 0;
   }
 
-  _parsed = TRUE;
+  _parsed = true;
   emit parsed();
 }
 
@@ -476,9 +476,9 @@ void WoCluster::constructor()
 void WoCluster::setReadOnly(bool pReadOnly)
 {
   if (pReadOnly)
-    _woNumber->setEnabled(FALSE);
+    _woNumber->setEnabled(false);
   else
-    _woNumber->setEnabled(TRUE);
+    _woNumber->setEnabled(true);
 }
 
 void WoCluster::setDataWidgetMap(XDataWidgetMapper* m)
@@ -579,7 +579,7 @@ void WomatlCluster::constructor()
 {
   setupUi(this);
 
-  _valid  = FALSE;
+  _valid  = false;
   _id     = -1;
   _woid   = -1;
   _type   = (Push | Pull | Mixed);
@@ -618,7 +618,7 @@ void WomatlCluster::setWooperid(int pWooperid)
   _source = Wooper;
   _sourceId = pWooperid;
 
-  bool qual = FALSE;
+  bool qual = false;
   QString sql( "SELECT womatl_id AS womatlid, item_number,"
                "       wo_id, uom_name, item_descrip1, item_descrip2,"
                "       womatl_qtyfxd AS _qtyfxd, womatl_qtyreq AS _qtyreq, womatl_qtyiss AS _qtyiss,"
@@ -639,7 +639,7 @@ void WomatlCluster::setWooperid(int pWooperid)
   if (_type & Push)
   {
     sql += "'S'";
-    qual = TRUE;
+    qual = true;
   }
 
   if (_type & Pull)
@@ -647,7 +647,7 @@ void WomatlCluster::setWooperid(int pWooperid)
     if (qual)
       sql += ",";
     else
-      qual = TRUE;
+      qual = true;
 
     sql += "'L'";
   }
@@ -677,7 +677,7 @@ void WomatlCluster::setWooperid(int pWooperid)
   {
     _id = -1;
     _woid = -1;
-    _valid = FALSE;
+    _valid = false;
     _required = 0.0;
     _issued  = 0.0;
     
@@ -695,7 +695,7 @@ void WomatlCluster::setWoid(int pWoid)
   _source = WorkOrder;
   _sourceId = pWoid;
 
-  bool qual = FALSE;
+  bool qual = false;
   QString sql( "SELECT womatl_id AS womatlid, item_number,"
                "       wo_id, wo_qtyord, uom_name, item_descrip1, item_descrip2,"
                "       womatl_qtyreq AS _qtyreq, womatl_qtyiss AS _qtyiss,"
@@ -715,7 +715,7 @@ void WomatlCluster::setWoid(int pWoid)
   if (_type & Push)
   {
     sql += "'S'";
-    qual = TRUE;
+    qual = true;
   }
 
   if (_type & Pull)
@@ -723,7 +723,7 @@ void WomatlCluster::setWoid(int pWoid)
     if (qual)
       sql += ",";
     else
-      qual = TRUE;
+      qual = true;
 
     sql += "'L'";
   }
@@ -761,7 +761,7 @@ void WomatlCluster::setWoid(int pWoid)
   {
     _id = -1;
     _woid = -1;
-    _valid = FALSE;
+    _valid = false;
     _required = 0.0;
     _issued  = 0.0;
     
@@ -784,7 +784,7 @@ void WomatlCluster::setId(int pWomatlid)
 
   else
   {
-    bool qual = FALSE;
+    bool qual = false;
     QString sql( "SELECT list.womatl_id AS womatlid, item_number, "
                  "       wo_id, uom_name, item_descrip1, item_descrip2,"
                  "       ABS(list.womatl_qtyreq) AS _qtyreq, "
@@ -807,7 +807,7 @@ void WomatlCluster::setId(int pWomatlid)
     if (_type & Push)
     {
       sql += "'S'";
-      qual = TRUE;
+      qual = true;
     }
 
     if (_type & Pull)
@@ -815,7 +815,7 @@ void WomatlCluster::setId(int pWomatlid)
       if (qual)
         sql += ",";
       else
-        qual = TRUE;
+        qual = true;
 
       sql += "'L'";
     }
@@ -842,7 +842,7 @@ void WomatlCluster::setId(int pWomatlid)
 
       emit newId(pWomatlid);
 
-      _valid = TRUE;
+      _valid = true;
       _id = pWomatlid;
 
       _itemNumber->populate(query);
@@ -850,12 +850,12 @@ void WomatlCluster::setId(int pWomatlid)
     }
     else
     {
-      _valid = FALSE;
+      _valid = false;
       _woid = -1;
       _id = -1;
 
       emit newId(-1);
-      emit valid(FALSE);
+      emit valid(false);
 
       _itemNumber->clear();
     }
@@ -893,13 +893,13 @@ void WomatlCluster::sPopulateInfo(int pWomatlid)
     _qtyIssued->setText("");
 
     _id = -1;
-    _valid = FALSE;
+    _valid = false;
     _required = 0;
     _issued = 0;
 
     emit newId(-1);
     emit newQtyScrappedFromWIP(0.0);
-    emit valid(FALSE);
+    emit valid(false);
   }
   else if (_womatl.findFirst("womatlid", pWomatlid) != -1)
   {
@@ -913,13 +913,13 @@ void WomatlCluster::sPopulateInfo(int pWomatlid)
     _qtyIssued->setDouble(_womatl.value("qtyiss").toDouble());
 
     _id = pWomatlid;
-    _valid = TRUE;
+    _valid = true;
     _required = _womatl.value("_qtyreq").toDouble();
     _issued = _womatl.value("_qtyiss").toDouble();
 
     emit newId(_id);
     emit newQtyScrappedFromWIP(_womatl.value("qtywipscrap").toDouble());
-    emit valid(TRUE);
+    emit valid(true);
   }
 }
 

@@ -24,7 +24,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-opportunityTypes::opportunityTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+opportunityTypes::opportunityTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -54,7 +54,7 @@ opportunityTypes::opportunityTypes(QWidget* parent, const char* name, Qt::WFlags
   else
   {
     connect(_oplist, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
    sFillList();
@@ -107,7 +107,7 @@ void opportunityTypes::sEdit()
   params.append("mode", "edit");
   params.append("optype_id", _oplist->id());
 
-  opportunityType newdlg(this, "", TRUE);
+  opportunityType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -120,7 +120,7 @@ void opportunityTypes::sView()
   params.append("mode", "view");
   params.append("optype_id", _oplist->id());
 
-  opportunityType newdlg(this, "", TRUE);
+  opportunityType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -137,7 +137,7 @@ void opportunityTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  opportunityType newdlg(this, "", TRUE);
+  opportunityType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)

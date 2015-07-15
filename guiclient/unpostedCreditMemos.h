@@ -20,7 +20,7 @@ class unpostedCreditMemos : public XWidget, public Ui::unpostedCreditMemos
     Q_OBJECT
 
 public:
-    unpostedCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    unpostedCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~unpostedCreditMemos();
     virtual bool checkSitePrivs(int orderid);
 

@@ -52,7 +52,7 @@ static QString _listAndSearchQueryString(
       "<? elseif exists('taxauth') ?>"
       "    SELECT taxauth_id AS id,     taxauth_code AS number,"
       "           taxauth_name AS name, NULL AS cntct_id,"
-      "           TRUE AS active,       taxauth_addr_id AS addr_id"
+      "           true AS active,       taxauth_addr_id AS addr_id"
       "      FROM taxauth"
       "<? elseif exists('user') ?>"
       "    SELECT usr_id AS id,           usr_username AS number,"
@@ -62,7 +62,7 @@ static QString _listAndSearchQueryString(
       "<? elseif exists('vendor') ?>"
       "    SELECT vend_id AS id,         vend_number AS number,"
       "           vend_name AS name,     vend_cntct1_id AS cntct_id,"
-      "           vend_active AS active, cntct_addr_id AS addr_id,"
+      "           vend_active AS active, COALESCE(cntct_addr_id, vend_addr_id) AS addr_id,"
       "           vendtype_code AS type"
       "      FROM vendinfo"
       "      JOIN vendtype ON (vend_vendtype_id=vendtype_id)"
@@ -193,7 +193,7 @@ CRMAcctLineEdit::CRMAcctSubtype CRMAcctLineEdit::subtype() const
 
 ///////////////////////////////////////////////////////////////////////
 
-CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WFlags pFlags) :
+CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags pFlags) :
   VirtualList(pParent, pFlags)
 {
   _parent = pParent;

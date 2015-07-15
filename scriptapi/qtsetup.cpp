@@ -29,9 +29,11 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("AlignHorizontal_Mask", QScriptValue(engine, Qt::AlignHorizontal_Mask), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("AlignVertical_Mask", QScriptValue(engine, Qt::AlignVertical_Mask), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
+  /*
   qScriptRegisterMetaType(engine, AnchorAttributetoScriptValue,	AnchorAttributefromScriptValue);
   widget.setProperty("AnchorName", QScriptValue(engine, Qt::AnchorName), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("AnchorHref", QScriptValue(engine, Qt::AnchorHref), QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  */
 
   qScriptRegisterMetaType(engine, ApplicationAttributetoScriptValue,	ApplicationAttributefromScriptValue);
   widget.setProperty("AA_ImmediateWidgetCreation", QScriptValue(engine, Qt::AA_ImmediateWidgetCreation), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -96,7 +98,7 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("NoClip", QScriptValue(engine, Qt::NoClip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("ReplaceClip", QScriptValue(engine, Qt::ReplaceClip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("IntersectClip", QScriptValue(engine, Qt::IntersectClip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("UniteClip", QScriptValue(engine, Qt::UniteClip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  //widget.setProperty("UniteClip", QScriptValue(engine, Qt::UniteClip), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   qScriptRegisterMetaType(engine, ConnectionTypetoScriptValue,	ConnectionTypefromScriptValue);
   widget.setProperty("DirectConnection", QScriptValue(engine, Qt::DirectConnection), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -725,7 +727,7 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("PlainText", QScriptValue(engine, Qt::PlainText), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("RichText", QScriptValue(engine, Qt::RichText), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("AutoText", QScriptValue(engine, Qt::AutoText), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("LogText", QScriptValue(engine, Qt::LogText), QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  //widget.setProperty("LogText", QScriptValue(engine, Qt::LogText), QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   qScriptRegisterMetaType(engine, TextInteractionFlagtoScriptValue,	TextInteractionFlagfromScriptValue);
   widget.setProperty("NoTextInteraction", QScriptValue(engine, Qt::NoTextInteraction), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -812,7 +814,7 @@ void setupQt(QScriptEngine *engine)
   widget.setProperty("WA_OpaquePaintEvent", QScriptValue(engine, Qt::WA_OpaquePaintEvent), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WA_OutsideWSRange", QScriptValue(engine, Qt::WA_OutsideWSRange), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WA_PaintOnScreen", QScriptValue(engine, Qt::WA_PaintOnScreen), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WA_PaintOutsidePaintEvent", QScriptValue(engine, Qt::WA_PaintOutsidePaintEvent), QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  //widget.setProperty("WA_PaintOutsidePaintEvent", QScriptValue(engine, Qt::WA_PaintOutsidePaintEvent), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WA_PaintUnclipped", QScriptValue(engine, Qt::WA_PaintUnclipped), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WA_PendingMoveEvent", QScriptValue(engine, Qt::WA_PendingMoveEvent), QScriptValue::ReadOnly | QScriptValue::Undeletable);
   widget.setProperty("WA_PendingResizeEvent", QScriptValue(engine, Qt::WA_PendingResizeEvent), QScriptValue::ReadOnly | QScriptValue::Undeletable);
@@ -913,7 +915,7 @@ void setupQt(QScriptEngine *engine)
 }
 
 Q_DECLARE_METATYPE(enum Qt::AlignmentFlag);
-Q_DECLARE_METATYPE(enum Qt::AnchorAttribute);
+//Q_DECLARE_METATYPE(enum Qt::AnchorAttribute);
 Q_DECLARE_METATYPE(enum Qt::ApplicationAttribute);
 Q_DECLARE_METATYPE(enum Qt::ArrowType);
 Q_DECLARE_METATYPE(enum Qt::AspectRatioMode);
@@ -979,10 +981,10 @@ QScriptValue AlignmentFlagtoScriptValue(QScriptEngine *engine, const enum Qt::Al
   return QScriptValue(engine, (int)p);
 }
 
-QScriptValue AnchorAttributetoScriptValue(QScriptEngine *engine, const enum Qt::AnchorAttribute &p)
+/*QScriptValue AnchorAttributetoScriptValue(QScriptEngine *engine, const enum Qt::AnchorAttribute &p)
 {
   return QScriptValue(engine, (int)p);
-}
+}*/
 
 QScriptValue ApplicationAttributetoScriptValue(QScriptEngine *engine, const enum Qt::ApplicationAttribute &p)
 {
@@ -1291,10 +1293,10 @@ void AlignmentFlagfromScriptValue(const QScriptValue &obj, enum Qt::AlignmentFla
   p = (enum Qt::AlignmentFlag)obj.toInt32();
 }
 
-void AnchorAttributefromScriptValue(const QScriptValue &obj, enum Qt::AnchorAttribute &p)
+/*void AnchorAttributefromScriptValue(const QScriptValue &obj, enum Qt::AnchorAttribute &p)
 {
   p = (enum Qt::AnchorAttribute)obj.toInt32();
-}
+}*/
 
 void ApplicationAttributefromScriptValue(const QScriptValue &obj, enum Qt::ApplicationAttribute &p)
 {

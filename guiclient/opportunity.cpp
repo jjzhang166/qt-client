@@ -26,9 +26,8 @@
 #include "quoteList.h"
 #include "printQuote.h"
 #include "printSoForm.h"
-#include "characteristicAssignment.h"
 
-opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -54,10 +53,6 @@ opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_salesList, SIGNAL(valid(bool)), this, SLOT(sHandleSalesPrivs()));
   connect(omfgThis,	SIGNAL(quotesUpdated(int, bool)), this, SLOT(sFillSalesList()));
   connect(omfgThis,	SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillSalesList()));
-  connect(_charass, SIGNAL(itemSelected(int)), _editCharacteristic, SLOT(animateClick()));
-  connect(_newCharacteristic, SIGNAL(clicked()), this, SLOT(sNewCharacteristic()));
-  connect(_editCharacteristic, SIGNAL(clicked()), this, SLOT(sEditCharacteristic()));
-  connect(_deleteCharacteristic, SIGNAL(clicked()), this, SLOT(sDeleteCharacteristic()));
   connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sHandleAssigned()));
 
   _probability->setValidator(new QIntValidator(this));
@@ -80,9 +75,7 @@ opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WFla
   _salesList->addColumn(tr("Date"),         _dateColumn, Qt::AlignLeft,  true, "sale_date" );
   _salesList->addColumn(tr("Ext. Price"),  _priceColumn, Qt::AlignRight, true, "sale_extprice");
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft,  true, "char_name" );
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft,  true, "charass_value" );
-  _charass->addColumn(tr("Default"),        _ynColumn,   Qt::AlignCenter,true, "charass_default" );
+  _charass->setType("OPP");
 
   _owner->setUsername(omfgThis->username());
   _owner->setType(UsernameLineEdit::UsersActive);
@@ -130,11 +123,9 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
     {
       _mode = cNew;
 
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
-
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
+      _charass->setReadOnly(true);
       
       param = pParams.value("crmacct_id", &valid);
       if (valid)
@@ -146,6 +137,7 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
       if (opportunityet.first())
       {
         _opheadid = opportunityet.value("result").toInt();
+        _charass->setId(_opheadid);
       }
       else if(opportunityet.lastError().type() != QSqlError::NoError)
       {
@@ -165,9 +157,6 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
 
       _crmacct->setEnabled(true);
       _buttonBox->setFocus();
@@ -195,12 +184,12 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
       _printSale->setEnabled(false);
       _newSale->setEnabled(false);
       _attachSale->setEnabled(false);
-      _newCharacteristic->setEnabled(FALSE);
 
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
       _cntct->setReadOnly(true);
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
+      _charass->setReadOnly(true);
     }
   }
 
@@ -461,12 +450,12 @@ void opportunity::populate()
 
     _comments->setId(_opheadid);
     _documents->setId(_opheadid);
+    _charass->setId(_opheadid);
 
     _cntct->setId(opportunitypopulate.value("ophead_cntct_id").toInt());
 
     sFillTodoList();
     sFillSalesList();
-    sFillCharList();
   }
 }
 
@@ -826,7 +815,7 @@ void opportunity::sAttachQuote()
   params.append("cust_id", _custid);
   params.append("openOnly", true);
   
-  quoteList newdlg(this, "", TRUE);
+  quoteList newdlg(this, "", true);
   newdlg.set(params);
 
   int id = newdlg.exec();
@@ -916,7 +905,7 @@ void opportunity::sPrintSalesOrder()
   ParameterList params;
   params.append("sohead_id", _salesList->id());
 
-  printSoForm newdlg(this, "", TRUE);
+  printSoForm newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -945,7 +934,7 @@ void opportunity::sAttachSalesOrder()
   params.append("soType", (cSoOpen | cSoCustomer));
   params.append("cust_id", _custid);
   
-  salesOrderList newdlg(this, "", TRUE);
+  salesOrderList newdlg(this, "", true);
   newdlg.set(params);
 
   int id = newdlg.exec();
@@ -1128,66 +1117,6 @@ void opportunity::sHandleSalesPrivs()
     disconnect(_salesList,SIGNAL(itemSelected(int)),_editSale, SLOT(animateClick()));
     connect(_salesList,	SIGNAL(itemSelected(int)), _viewSale, SLOT(animateClick()));
   }
-}
-
-void opportunity::sNewCharacteristic()
-{
-  if (! save(true))
-    return;
-
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("ophead_id", _opheadid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharList();
-}
-
-void opportunity::sEditCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharList();
-}
-
-void opportunity::sDeleteCharacteristic()
-{
-  XSqlQuery opportunityDeleteCharacteristic;
-  opportunityDeleteCharacteristic.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  opportunityDeleteCharacteristic.bindValue(":charass_id", _charass->id());
-  opportunityDeleteCharacteristic.exec();
-
-  sFillCharList();
-}
-
-void opportunity::sFillCharList()
-{
-  XSqlQuery opportunityFillCharList;
-  opportunityFillCharList.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value, "
-             "charass_default "
-             "FROM charass, char "
-             "WHERE ( (charass_target_type='OPP')"
-             " AND (charass_char_id=char_id)"
-             " AND (charass_target_id=:ophead_id) ) "
-             "ORDER BY char_order, char_name;" );
-  opportunityFillCharList.bindValue(":ophead_id", _opheadid);
-  opportunityFillCharList.exec();
-  _charass->populate(opportunityFillCharList);
 }
 
 void opportunity::sHandleCrmacct(int pCrmacctid)

@@ -22,7 +22,7 @@ class shipTo : public XDialog, public Ui::shipTo
     Q_OBJECT
 
 public:
-    shipTo(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    shipTo(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~shipTo();
 
     Q_INVOKABLE virtual int id() const;

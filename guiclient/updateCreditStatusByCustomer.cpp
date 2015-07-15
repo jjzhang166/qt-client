@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-updateCreditStatusByCustomer::updateCreditStatusByCustomer(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateCreditStatusByCustomer::updateCreditStatusByCustomer(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -66,18 +66,18 @@ void updateCreditStatusByCustomer::sPopulate( int /*pCustid*/ )
     QString stylesheet;
     if (updatePopulate.value("cust_creditstatus").toString() == "G")
     {
-      _inGoodStanding->setChecked(TRUE);
+      _inGoodStanding->setChecked(true);
       _currentStatus->setText(tr("In Good Standing"));
     }
     else if (updatePopulate.value("cust_creditstatus").toString() == "W")
     {
-      _onCreditWarning->setChecked(TRUE);
+      _onCreditWarning->setChecked(true);
       _currentStatus->setText(tr("On Credit Warning"));
       stylesheet = QString("* { color: %1; }").arg(namedColor("warning").name());
     }
     else if (updatePopulate.value("cust_creditstatus").toString() == "H")
     {
-      _onCreditHold->setChecked(TRUE);
+      _onCreditHold->setChecked(true);
       _currentStatus->setText(tr("On Credit Hold"));
       stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
     }

@@ -15,7 +15,7 @@
 
 #define cAcknowledge 0x80
 
-systemMessage::systemMessage(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+systemMessage::systemMessage(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -25,11 +25,11 @@ systemMessage::systemMessage(QWidget* parent, const char* name, bool modal, Qt::
 
   _scheduledDate->setNullString(tr("ASAP"));
   _scheduledDate->setNullDate(omfgThis->startOfTime());
-  _scheduledDate->setAllowNullDate(TRUE);
+  _scheduledDate->setAllowNullDate(true);
 
   _expiresDate->setNullString(tr("Never"));
   _expiresDate->setNullDate(omfgThis->endOfTime());
-  _expiresDate->setAllowNullDate(TRUE);
+  _expiresDate->setAllowNullDate(true);
   _expiresDate->setNull();
 }
 
@@ -67,11 +67,11 @@ enum SetResponse systemMessage::set(const ParameterList &pParams)
     {
       _mode = cAcknowledge;
 
-      _scheduledDate->setEnabled(FALSE);
-      _scheduledTime->setEnabled(FALSE);
-      _expiresDate->setEnabled(FALSE);
-      _expiresTime->setEnabled(FALSE);
-      _message->setReadOnly(TRUE);
+      _scheduledDate->setEnabled(false);
+      _scheduledTime->setEnabled(false);
+      _expiresDate->setEnabled(false);
+      _expiresTime->setEnabled(false);
+      _message->setReadOnly(true);
       _close->setText("&Acknowlege");
       _save->setText("&Snooze");
     }

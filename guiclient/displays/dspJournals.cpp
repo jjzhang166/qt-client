@@ -30,7 +30,7 @@
 #include "parameterwidget.h"
 #include "creditMemo.h"
 
-dspJournals::dspJournals(QWidget* parent, const char*, Qt::WFlags fl)
+dspJournals::dspJournals(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspJournals", fl)
 {
   setWindowTitle(tr("Journals"));

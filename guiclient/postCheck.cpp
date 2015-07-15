@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-postCheck::postCheck(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postCheck::postCheck(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,11 +24,12 @@ postCheck::postCheck(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   connect(_post, SIGNAL(clicked()), this, SLOT(sPost()));
   connect(_bankaccnt, SIGNAL(newID(int)), this, SLOT(sHandleBankAccount(int)));
 
-  _captive = FALSE;
+  _captive = false;
 
-  _check->setAllowNull(TRUE);
+  _check->setAllowNull(true);
 
   _bankaccnt->setType(XComboBox::APBankAccounts);
+  sHandleBankAccount(_bankaccnt->id());
 }
 
 postCheck::~postCheck()
@@ -44,7 +45,7 @@ void postCheck::languageChange()
 enum SetResponse postCheck::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -53,8 +54,8 @@ enum SetResponse postCheck::set(const ParameterList &pParams)
   if (valid)
   {
     populate(param.toInt());
-    _bankaccnt->setEnabled(FALSE);
-    _check->setEnabled(FALSE);
+    _bankaccnt->setEnabled(false);
+    _check->setEnabled(false);
   }
 
   return NoError;
@@ -79,7 +80,7 @@ void postCheck::sPost()
 		  __FILE__, __LINE__);
       return;
     }
-    omfgThis->sChecksUpdated(postPost.value("checkhead_bankaccnt_id").toInt(), _check->id(), TRUE);
+    omfgThis->sChecksUpdated(postPost.value("checkhead_bankaccnt_id").toInt(), _check->id(), true);
 
     if (_captive)
       accept();
@@ -100,14 +101,15 @@ void postCheck::sHandleBankAccount(int pBankaccntid)
 {
   XSqlQuery postHandleBankAccount;
   postHandleBankAccount.prepare( "SELECT checkhead_id,"
-	     "       (TEXT(checkhead_number) || '-' || checkrecip_name) "
+	     "     (CASE WHEN(checkhead_number=-1) THEN TEXT('Unspecified')"
+             "           ELSE TEXT(checkhead_number) "
+             "      END || '-' || checkrecip_name) "
              "FROM checkhead LEFT OUTER JOIN"
 	     "     checkrecip ON ((checkhead_recip_id=checkrecip_id)"
 	     "                AND (checkhead_recip_type=checkrecip_type))"
              "     JOIN bankaccnt ON (checkhead_bankaccnt_id=bankaccnt_id)  "
              " WHERE ((NOT checkhead_void)"
              "  AND  (NOT checkhead_posted)"
-             "  AND  CASE WHEN (bankaccnt_prnt_check) THEN checkhead_printed ELSE 1=1 END" 
              "  AND  (checkhead_bankaccnt_id=:bankaccnt_id) ) "
              "ORDER BY checkhead_number;" );
   postHandleBankAccount.bindValue(":bankaccnt_id", pBankaccntid);

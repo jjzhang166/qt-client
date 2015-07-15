@@ -20,7 +20,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  true to construct a modal dialog.
  */
-hotkeys::hotkeys(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+hotkeys::hotkeys(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -34,7 +34,7 @@ hotkeys::hotkeys(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_hotkey, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
   connect(_hotkey, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
 
-  _dirty = FALSE;
+  _dirty = false;
 
   _hotkey->addColumn(tr("Keystroke"), _itemColumn, Qt::AlignLeft );
   _hotkey->addColumn(tr("Action"),    -1,          Qt::AlignLeft );
@@ -63,14 +63,14 @@ enum SetResponse hotkeys::set(const ParameterList &pParams)
   if (valid)
   {
     _username->setText(param.toString());
-    _currentUser = FALSE;
+    _currentUser = false;
   }
 
   param = pParams.value("currentUser", &valid);
   if (valid)
   {
     _username->setText(omfgThis->username());
-    _currentUser = TRUE;
+    _currentUser = true;
   }
 
   sFillList();
@@ -153,12 +153,12 @@ void hotkeys::sNew()
   else
     params.append("username", _username->text());
 
-  hotkey newdlg(this, "", TRUE);
+  hotkey newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != QDialog::Rejected)
   {
-    _dirty = TRUE;
+    _dirty = true;
     sFillList();
   }
 }
@@ -174,12 +174,12 @@ void hotkeys::sEdit()
   else
     params.append("username", _username->text());
 
-  hotkey newdlg(this, "", TRUE);
+  hotkey newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != QDialog::Rejected)
   {
-    _dirty = TRUE;
+    _dirty = true;
     sFillList();
   }
 }
@@ -200,7 +200,7 @@ void hotkeys::sDelete()
     hotkeysDelete.exec();
   }
 
-  _dirty = TRUE;
+  _dirty = true;
   sFillList();
 }
 

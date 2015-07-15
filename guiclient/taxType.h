@@ -21,7 +21,7 @@ class taxType : public XDialog, public Ui::taxType
     Q_OBJECT
 
 public:
-    taxType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    taxType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~taxType();
 
 public slots:

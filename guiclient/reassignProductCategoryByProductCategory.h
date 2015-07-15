@@ -20,7 +20,7 @@ class reassignProductCategoryByProductCategory : public XDialog, public Ui::reas
     Q_OBJECT
 
 public:
-    reassignProductCategoryByProductCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    reassignProductCategoryByProductCategory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~reassignProductCategoryByProductCategory();
 
 public slots:

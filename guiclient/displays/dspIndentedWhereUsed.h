@@ -22,7 +22,7 @@ class dspIndentedWhereUsed : public display, public Ui::dspIndentedWhereUsed
     Q_OBJECT
 
 public:
-    dspIndentedWhereUsed(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspIndentedWhereUsed(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

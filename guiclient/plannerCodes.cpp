@@ -24,7 +24,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-plannerCodes::plannerCodes(QWidget* parent, const char* name, Qt::WFlags fl)
+plannerCodes::plannerCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ plannerCodes::plannerCodes(QWidget* parent, const char* name, Qt::WFlags fl)
   else
   {
     connect(_plancode, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
    sFillList();
@@ -106,7 +106,7 @@ void plannerCodes::sEdit()
   params.append("mode", "edit");
   params.append("plancode_id", _plancode->id());
 
-  plannerCode newdlg(this, "", TRUE);
+  plannerCode newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -119,7 +119,7 @@ void plannerCodes::sView()
   params.append("mode", "view");
   params.append("plancode_id", _plancode->id());
 
-  plannerCode newdlg(this, "", TRUE);
+  plannerCode newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -136,7 +136,7 @@ void plannerCodes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  plannerCode newdlg(this, "", TRUE);
+  plannerCode newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)

@@ -21,7 +21,7 @@ class configurePO : public XAbstractConfigure, public Ui::configurePO
     Q_OBJECT
 
 public:
-    configurePO(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configurePO(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configurePO();
 
 public slots:

@@ -16,7 +16,7 @@
 #include <openreports.h>
 #include "rejectCode.h"
 
-rejectCodes::rejectCodes(QWidget* parent, const char* name, Qt::WFlags fl)
+rejectCodes::rejectCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ rejectCodes::rejectCodes(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_rjctcode, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -64,7 +64,7 @@ void rejectCodes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  rejectCode newdlg(this, "", TRUE);
+  rejectCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -77,7 +77,7 @@ void rejectCodes::sEdit()
   params.append("mode", "edit");
   params.append("rjctcode_id", _rjctcode->id());
 
-  rejectCode newdlg(this, "", TRUE);
+  rejectCode newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -90,7 +90,7 @@ void rejectCodes::sView()
   params.append("mode", "view");
   params.append("rjctcode_id", _rjctcode->id());
 
-  rejectCode newdlg(this, "", TRUE);
+  rejectCode newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QValidator>
 
-terms::terms(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+terms::terms(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -66,16 +66,16 @@ enum SetResponse terms::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _typeGroup->setEnabled(FALSE);
-      _ap->setEnabled(FALSE);
-      _ar->setEnabled(FALSE);
-      _fincharg->setEnabled(FALSE);
-      _dueDays->setEnabled(FALSE);
-      _discountDays->setEnabled(FALSE);
-      _discountPercent->setEnabled(FALSE);
-      _cutOffDay->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _typeGroup->setEnabled(false);
+      _ap->setEnabled(false);
+      _ar->setEnabled(false);
+      _fincharg->setEnabled(false);
+      _dueDays->setEnabled(false);
+      _discountDays->setEnabled(false);
+      _discountPercent->setEnabled(false);
+      _cutOffDay->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -101,11 +101,11 @@ bool terms::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
-      return TRUE;
+      _code->setEnabled(false);
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 
 void terms::sSave()
@@ -241,13 +241,13 @@ void terms::populate()
 
     if (termspopulate.value("terms_type").toString() == "D")
     {
-      _days->setChecked(TRUE);
+      _days->setChecked(true);
       if (_mode == cEdit)
-        _cutOffDay->setEnabled(FALSE);
+        _cutOffDay->setEnabled(false);
     }
     else if (termspopulate.value("terms_type").toString() == "P")
     {
-      _proximo->setChecked(TRUE);
+      _proximo->setChecked(true);
       _cutOffDay->setValue(termspopulate.value("terms_cutoffday").toInt());
     }
   }

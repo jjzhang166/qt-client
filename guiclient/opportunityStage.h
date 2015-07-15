@@ -21,7 +21,7 @@ class opportunityStage : public XDialog, public Ui::opportunityStage
     Q_OBJECT
 
 public:
-    opportunityStage(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    opportunityStage(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~opportunityStage();
 
     virtual void populate();

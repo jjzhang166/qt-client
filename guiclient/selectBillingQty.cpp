@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-selectBillingQty::selectBillingQty(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+selectBillingQty::selectBillingQty(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,7 +61,7 @@ enum SetResponse selectBillingQty::set(const ParameterList &pParams)
   {
     _soitemid = param.toInt();
 
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
 
     XSqlQuery soitem;
     soitem.prepare( "SELECT itemsite_item_id, cust_partialship,"

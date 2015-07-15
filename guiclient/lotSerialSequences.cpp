@@ -23,7 +23,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-lotSerialSequences::lotSerialSequences(QWidget* parent, const char* name, Qt::WFlags fl)
+lotSerialSequences::lotSerialSequences(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ lotSerialSequences::lotSerialSequences(QWidget* parent, const char* name, Qt::WF
   else
   {
     connect(_lsseq, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
    sFillList();
@@ -99,7 +99,7 @@ void lotSerialSequences::sEdit()
   params.append("mode", "edit");
   params.append("lsseq_id", _lsseq->id());
 
-  lotSerialSequence newdlg(this, "", TRUE);
+  lotSerialSequence newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -112,7 +112,7 @@ void lotSerialSequences::sView()
   params.append("mode", "view");
   params.append("lsseq_id", _lsseq->id());
 
-  lotSerialSequence newdlg(this, "", TRUE);
+  lotSerialSequence newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -129,7 +129,7 @@ void lotSerialSequences::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  lotSerialSequence newdlg(this, "", TRUE);
+  lotSerialSequence newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)

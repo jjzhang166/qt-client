@@ -21,7 +21,7 @@ class configureMS : public XAbstractConfigure, public Ui::configureMS
     Q_OBJECT
 
 public:
-    configureMS(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureMS(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureMS();
 
 public slots:

@@ -20,7 +20,7 @@ class printInvoices : public printMulticopyDocument,
     Q_OBJECT
 
   public:
-    printInvoices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printInvoices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printInvoices();
 
     Q_INVOKABLE virtual ParameterList getParamsDocList();

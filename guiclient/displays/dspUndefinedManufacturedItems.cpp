@@ -18,7 +18,7 @@
 #include "bom.h"
 #include "item.h"
 
-dspUndefinedManufacturedItems::dspUndefinedManufacturedItems(QWidget* parent, const char*, Qt::WFlags fl)
+dspUndefinedManufacturedItems::dspUndefinedManufacturedItems(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspUndefinedManufacturedItems", fl)
 {
   setupUi(optionsWidget());

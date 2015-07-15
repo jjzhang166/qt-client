@@ -19,7 +19,7 @@
 #include <QScrollArea>
 #include <quuencode.h>
 
-image::image(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+image::image(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,7 +28,7 @@ image::image(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _fileList->setMaximumWidth(25);
 #endif
 
@@ -86,8 +86,8 @@ enum SetResponse image::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _descrip->setEnabled(false);
       _filenameLit->hide();
       _fileName->hide();
       _fileList->hide();
@@ -179,8 +179,8 @@ void image::sSave()
 
 void image::sFileList()
 {
-  bool first = TRUE;
-  bool havejpg = FALSE;
+  bool first = true;
+  bool havejpg = false;
   QString frmtList = QString(tr("Images ("));
   QString ext = QString::null;
   QList<QByteArray> list = QImageReader::supportedImageFormats();
@@ -197,9 +197,9 @@ void image::sFileList()
       frmtList += QString(tr("*.")) + ext;
 
     if (ext == "jpg")
-      havejpg = TRUE;
+      havejpg = true;
 
-    first = FALSE;
+    first = false;
   }
 
   frmtList += QString(tr(")"));

@@ -15,7 +15,7 @@
 
 static const char *offsetTypes[] = { "D", "W", "M", "Y" };
 
-relativeCalendarItem::relativeCalendarItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+relativeCalendarItem::relativeCalendarItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

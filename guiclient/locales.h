@@ -21,7 +21,7 @@ class locales : public XWidget, public Ui::locales
     Q_OBJECT
 
 public:
-    locales(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    locales(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~locales();
 
 public slots:

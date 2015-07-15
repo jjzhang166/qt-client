@@ -34,7 +34,7 @@
 #include "dspShipmentsBySalesOrder.h"
 #include "dspSalesOrderStatus.h"
 
-returnAuthorization::returnAuthorization(QWidget* parent, const char* name, Qt::WFlags fl)
+returnAuthorization::returnAuthorization(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -89,10 +89,10 @@ returnAuthorization::returnAuthorization(QWidget* parent, const char* name, Qt::
   _ignoreShiptoSignals = false;
   _ignoreSoSignals = false;
   _ignoreWhsSignals = false;
-  _ffBillto = TRUE;
-  _ffShipto = TRUE;
-  _custEmail = FALSE;
-  _saved = FALSE;
+  _ffBillto = true;
+  _ffShipto = true;
+  _custEmail = false;
+  _saved = false;
   _calcfreight = false;
   _freightCache = 0;
 
@@ -259,7 +259,7 @@ enum SetResponse returnAuthorization::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _authNumber->setEnabled(FALSE);
+      _authNumber->setEnabled(false);
       _cancel->setText("&Close");
 
       connect(_authNumber, SIGNAL(editingFinished()), this, SLOT(sCheckAuthorizationNumber()));
@@ -294,44 +294,44 @@ enum SetResponse returnAuthorization::set(const ParameterList &pParams)
 
   if (_mode == cView)
   {
-      _authNumber->setEnabled(FALSE);
-      _authDate->setEnabled(FALSE);
-      _expireDate->setEnabled(FALSE);
-      _salesRep->setEnabled(FALSE);
-      _commission->setEnabled(FALSE);
-      _taxzone->setEnabled(FALSE);
-      _rsnCode->setEnabled(FALSE);
-      _disposition->setEnabled(FALSE);
-      _timing->setEnabled(FALSE);
-      _creditBy->setEnabled(FALSE);
+      _authNumber->setEnabled(false);
+      _authDate->setEnabled(false);
+      _expireDate->setEnabled(false);
+      _salesRep->setEnabled(false);
+      _commission->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _rsnCode->setEnabled(false);
+      _disposition->setEnabled(false);
+      _timing->setEnabled(false);
+      _creditBy->setEnabled(false);
 
-      _origso->setEnabled(FALSE);
-      _newso->setEnabled(FALSE);
-      _incident->setEnabled(FALSE);
-      _project->setEnabled(FALSE);
+      _origso->setEnabled(false);
+      _newso->setEnabled(false);
+      _incident->setEnabled(false);
+      _project->setEnabled(false);
 
-      _cust->setReadOnly(TRUE);
-      _billToName->setEnabled(FALSE);
-      _billToAddr->setEnabled(FALSE);
+      _cust->setReadOnly(true);
+      _billToName->setEnabled(false);
+      _billToAddr->setEnabled(false);
 
-      _customerPO->setEnabled(FALSE);
+      _customerPO->setEnabled(false);
 
-      _miscCharge->setEnabled(FALSE);
-      _miscChargeDescription->setEnabled(FALSE);
-      _miscChargeAccount->setReadOnly(TRUE);
-      _freight->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _miscCharge->setEnabled(false);
+      _miscChargeDescription->setEnabled(false);
+      _miscChargeAccount->setReadOnly(true);
+      _freight->setEnabled(false);
+      _notes->setEnabled(false);
       _comments->setReadOnly(true);
       _documents->setReadOnly(true);
-      _copyToShipto->setEnabled(FALSE);
-      _shipTo->setEnabled(FALSE);
-      _shipToName->setEnabled(FALSE);
-      _shipToAddr->setEnabled(FALSE);
-      _currency->setEnabled(FALSE);
-      _warehouse->setEnabled(FALSE);
-      _shipWhs->setEnabled(FALSE);
-      _shippingZone->setEnabled(FALSE);
-      _saleType->setEnabled(FALSE);
+      _copyToShipto->setEnabled(false);
+      _shipTo->setEnabled(false);
+      _shipToName->setEnabled(false);
+      _shipToAddr->setEnabled(false);
+      _currency->setEnabled(false);
+      _warehouse->setEnabled(false);
+      _shipWhs->setEnabled(false);
+      _shippingZone->setEnabled(false);
+      _saleType->setEnabled(false);
       _save->hide();
       _new->hide();
       _delete->hide();
@@ -373,7 +373,7 @@ void returnAuthorization::setNumber()
       _authNumber->setText(returnetNumber.value("ranumber").toString());
 
       if (_metrics->value("RANumberGeneration") == "A")
-        _authNumber->setEnabled(FALSE);
+        _authNumber->setEnabled(false);
     }
     else if (returnetNumber.lastError().type() != QSqlError::NoError)
     {
@@ -531,7 +531,7 @@ bool returnAuthorization::sSave(bool partial)
 
   omfgThis->sReturnAuthorizationsUpdated();
   omfgThis->sProjectsUpdated(_project->id());
-  _saved = TRUE;
+  _saved = true;
   _comments->setId(_raheadid);
 
   connect(_authNumber, SIGNAL(editingFinished()), this, SLOT(sCheckAuthorizationNumber()));
@@ -677,7 +677,7 @@ void returnAuthorization::sOrigSoChanged()
         _shippingZone->setId(sohead.value("cohead_shipzone_id").toInt());
         _saleType->setId(sohead.value("cohead_saletype_id").toInt());
 
-        _cust->setEnabled(FALSE);
+        _cust->setEnabled(false);
 
         _cust->setId(sohead.value("cohead_cust_id").toInt());
         _custType->setText(sohead.value("custtype_code").toString());
@@ -692,7 +692,7 @@ void returnAuthorization::sOrigSoChanged()
         if ( (_mode == cNew) || (_mode == cEdit) )
           _ffBillto = sohead.value("cust_ffbillto").toBool();
         else
-          _ffBillto = FALSE;
+          _ffBillto = false;
         _billToName->setEnabled(_ffBillto);
         _billToAddr->setEnabled(_ffBillto);
 
@@ -709,11 +709,11 @@ void returnAuthorization::sOrigSoChanged()
         if ( (_mode == cNew) || (_mode == cEdit) )
           _ffShipto = sohead.value("cust_ffshipto").toBool();
         else
-          _ffShipto = FALSE;
+          _ffShipto = false;
         _copyToShipto->setEnabled(_ffShipto);
         _shipToName->setEnabled(_ffShipto);
         _shipToAddr->setEnabled(_ffShipto);
-        _ignoreShiptoSignals = FALSE;
+        _ignoreShiptoSignals = false;
 
         sSave(true);
         sFillList();
@@ -803,14 +803,14 @@ void returnAuthorization::sPopulateCustomerInfo()
         if ( (_mode == cNew) || (_mode == cEdit) )
           _ffBillto = query.value("cust_ffbillto").toBool();
         else
-          _ffBillto = FALSE;
+          _ffBillto = false;
         _billToName->setEnabled(_ffBillto);
         _billToAddr->setEnabled(_ffBillto);
 
         if ( (_mode == cNew) || (_mode == cEdit) )
           _ffShipto = query.value("cust_ffshipto").toBool();
         else
-          _ffShipto = FALSE;
+          _ffShipto = false;
         _copyToShipto->setEnabled(_ffShipto);
         _shipToName->setEnabled(_ffShipto);
         _shipToAddr->setEnabled(_ffShipto);
@@ -829,13 +829,13 @@ void returnAuthorization::sPopulateCustomerInfo()
       _salesRep->setCurrentIndex(-1);
       _taxzone->setId(-1);
       _custtaxzoneid = -1;
-      _billToName->setEnabled(TRUE);
-      _billToAddr->setEnabled(TRUE);
+      _billToName->setEnabled(true);
+      _billToAddr->setEnabled(true);
       _billToName->clear();
       _billToAddr->clear();
-      _shipTo->setEnabled(TRUE);
-      _shipToName->setEnabled(TRUE);
-      _shipToAddr->setEnabled(TRUE);
+      _shipTo->setEnabled(true);
+      _shipToName->setEnabled(true);
+      _shipToAddr->setEnabled(true);
       _shipTo->setId(-1);
       _shipToName->clear();
       _shipToAddr->clear();
@@ -848,7 +848,7 @@ void returnAuthorization::sCheckAuthorizationNumber()
        ( (_metrics->value("RANumberGeneration") == "O") ||
          (_metrics->value("RANumberGeneration") == "M")   ) )
   {
-    _authNumber->setEnabled(FALSE);
+    _authNumber->setEnabled(false);
 
     XSqlQuery query;
     query.prepare( "SELECT rahead_id "
@@ -864,7 +864,7 @@ void returnAuthorization::sCheckAuthorizationNumber()
       _raheadid = query.value("rahead_id").toInt();
 
       if (_cust->id() > 0)
-        _cust->setReadOnly(TRUE);
+        _cust->setReadOnly(true);
 
       populate();
 
@@ -923,7 +923,7 @@ void returnAuthorization::sNew()
     if (_shipWhs->isValid())
       params.append("shipwarehous_id", _shipWhs->id());
 
-    returnAuthorizationItem newdlg(this, "", TRUE);
+    returnAuthorizationItem newdlg(this, "", true);
     newdlg.set(params);
 
     if (newdlg.exec() != XDialog::Rejected)
@@ -938,7 +938,7 @@ void returnAuthorization::sEdit()
   if (sSave(true))
   {
     bool fill;
-    fill = FALSE;
+    fill = false;
     QList<XTreeWidgetItem*> selected = _raitem->selectedItems();
     for (int i = 0; i < selected.size(); i++)
     {
@@ -954,11 +954,11 @@ void returnAuthorization::sEdit()
       else
         params.append("mode", "edit");
 
-      returnAuthorizationItem newdlg(this, "", TRUE);
+      returnAuthorizationItem newdlg(this, "", true);
       newdlg.set(params);
 
       if (newdlg.exec() != XDialog::Rejected)
-        fill = TRUE;
+        fill = true;
     }
     if (fill)
     {
@@ -978,7 +978,7 @@ void returnAuthorization::sView()
     params.append("orig_cohead_id", _origso->id());
     params.append("mode", "view");
 
-    returnAuthorizationItem newdlg(this, "", TRUE);
+    returnAuthorizationItem newdlg(this, "", true);
     newdlg.set(params);
 
     newdlg.exec();
@@ -1055,7 +1055,9 @@ void returnAuthorization::sFillList()
              "            ELSE -1 END AS disposition_code,"
              "       formatRaLineNumber(raitem_id) AS f_linenumber, raitem_subnumber,"
              "       item_number, uom_name, item_type,"
-             "       (item_descrip1 || ' ' || item_descrip2) AS item_descrip, warehous_code,"
+             "       (item_descrip1 || ' ' || item_descrip2) AS item_descrip,"
+             "       (SELECT warehous_code FROM whsinfo JOIN itemsite ON itemsite_warehous_id=warehous_id" 
+             "            WHERE itemsite_id = COALESCE(raitem_coitem_itemsite_id, raitem_itemsite_id)) AS warehous_code,"
              "       raitem_status, "
              "       CASE WHEN (raitem_disposition='C') THEN :credit "
              "            WHEN (raitem_disposition='R') THEN :return "
@@ -1100,10 +1102,9 @@ void returnAuthorization::sFillList()
              " LEFT OUTER JOIN cohead och ON (och.cohead_id=oc.coitem_cohead_id) "
              " LEFT OUTER JOIN coitem nc ON (raitem_new_coitem_id=nc.coitem_id) "
              " LEFT OUTER JOIN cohead nch ON (nch.cohead_id=nc.coitem_cohead_id),"
-             " itemsite, item, whsinfo, uom "
+             " itemsite, item, uom "
              "WHERE ( (raitem_itemsite_id=itemsite_id)"
              " AND (itemsite_item_id=item_id)"
-             " AND (itemsite_warehous_id=warehous_id)"
              " AND (raitem_rahead_id=:rahead_id) "
              " AND (raitem_qty_uom_id=uom_id) ) "
              "ORDER BY raitem_linenumber, raitem_subnumber;" );
@@ -1288,10 +1289,10 @@ void returnAuthorization::populate()
     else if (rahead.value("rahead_creditmethod").toString() == "C")
       _creditBy->setCurrentIndex(3);
 
-    _ignoreSoSignals = TRUE;
+    _ignoreSoSignals = true;
     _origso->setId(rahead.value("rahead_orig_cohead_id").toInt());
     _newso->setId(rahead.value("rahead_new_cohead_id").toInt(),"SO");
-    _ignoreSoSignals = FALSE;
+    _ignoreSoSignals = false;
     _incident->setId(rahead.value("rahead_incdt_id").toInt());
     _project->setId(rahead.value("rahead_prj_id").toInt());
 
@@ -1339,10 +1340,10 @@ void returnAuthorization::populate()
     }
 
 
-    _ignoreWhsSignals = TRUE;
+    _ignoreWhsSignals = true;
     _warehouse->setId(rahead.value("rahead_warehous_id").toInt());
     _shipWhs->setId(rahead.value("rahead_cohead_warehous_id").toInt());
-    _ignoreWhsSignals = FALSE;
+    _ignoreWhsSignals = false;
 
     _miscCharge->setLocalValue(rahead.value("rahead_misc").toDouble());
     _miscChargeDescription->setText(rahead.value("rahead_misc_descrip"));
@@ -1355,13 +1356,13 @@ void returnAuthorization::populate()
 
     if (rahead.value("rahead_headcredited").toBool())
     {
-      _freight->setEnabled(FALSE);
-      _miscCharge->setEnabled(FALSE);
-      _miscChargeDescription->setEnabled(FALSE);
-      _miscChargeAccount->setEnabled(FALSE);
+      _freight->setEnabled(false);
+      _miscCharge->setEnabled(false);
+      _miscChargeDescription->setEnabled(false);
+      _miscChargeAccount->setEnabled(false);
     }
 
-    _ignoreSoSignals = TRUE;
+    _ignoreSoSignals = true;
     if (rahead.value("rahead_disposition").toString() == "C")
       sDispositionChanged();
     else if (rahead.value("rahead_disposition").toString() == "R")
@@ -1372,8 +1373,8 @@ void returnAuthorization::populate()
       _disposition->setCurrentIndex(3);
     else if (rahead.value("rahead_disposition").toString() == "M")
       _disposition->setCurrentIndex(4);
-    _ignoreSoSignals = FALSE;
-    _saved = TRUE;
+    _ignoreSoSignals = false;
+    _saved = true;
     sFillList();
   }
   else if (rahead.lastError().type() != QSqlError::NoError)
@@ -1435,7 +1436,7 @@ void returnAuthorization::sTaxDetail()
   if (_mode == cView)
     params.append("mode", "view");
 
-  taxBreakdown newdlg(this, "", TRUE);
+  taxBreakdown newdlg(this, "", true);
   if (newdlg.set(params) == NoError && newdlg.exec() == XDialog::Accepted)
     populate();
 
@@ -1524,12 +1525,12 @@ void returnAuthorization::sDispositionChanged()
   if (_disposition->currentIndex() == 0)
   {
     _timing->setCurrentIndex(0);
-    _timing->setEnabled(FALSE);
+    _timing->setEnabled(false);
     if (_creditBy->currentIndex() == 0)
       _creditBy->setCurrentIndex(1);
   }
   else
-    _timing->setEnabled(TRUE);
+    _timing->setEnabled(true);
 
   _refund->setEnabled(_creditBy->currentIndex() == 3);
 
@@ -1666,7 +1667,7 @@ void returnAuthorization::sEnterReceipt()
     params.append("mode", "new");
   }
 
-  enterPoitemReceipt newdlg(this, "", TRUE);
+  enterPoitemReceipt newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1681,7 +1682,7 @@ void returnAuthorization::sReceiveAll()
   params.append("ordertype", "RA");
   params.append("nonInventory", tr("Non-Inventory"));
   params.append("na",           tr("N/A"));
-  params.append("EnableReturnAuth", TRUE);
+  params.append("EnableReturnAuth", true);
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
   MetaSQLQuery recvm = mqlLoad("receipt", "receiveAll");
@@ -1723,17 +1724,17 @@ void returnAuthorization::sHandleAction()
   if (selected.size() > 1)
   {
     _action->setText("Close");
-    _action->setEnabled(FALSE);
+    _action->setEnabled(false);
   }
   else if (_raitem->altId() == -1)
   {
     _action->setText("Open");
-    _edit->setEnabled(FALSE);
+    _edit->setEnabled(false);
   }
   else
   {
     _action->setText("Close");
-    _edit->setEnabled(TRUE);
+    _edit->setEnabled(true);
   }
 }
 
@@ -2027,8 +2028,8 @@ void returnAuthorization::sCheckNumber()
     _mode = cEdit;
     _raheadid = returnCheckNumber.value("rahead_id").toInt();
     populate();
-    _authNumber->setEnabled(FALSE);
-    _cust->setReadOnly(TRUE);
+    _authNumber->setEnabled(false);
+    _cust->setReadOnly(true);
   }
   else if (returnCheckNumber.lastError().type() != QSqlError::NoError)
   {
@@ -2108,7 +2109,7 @@ void returnAuthorization::sFreightDetail()
   // mode => view since there are no fields to hold modified freight data
   params.append("mode", "view");
 
-  freightBreakdown newdlg(this, "", TRUE);
+  freightBreakdown newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

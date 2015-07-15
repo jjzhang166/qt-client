@@ -20,7 +20,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 
-voidChecks::voidChecks(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+voidChecks::voidChecks(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -74,7 +74,7 @@ void voidChecks::sVoid()
         rplc.exec();
       }
     }
-    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, TRUE);
+    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
   }
   if (voidVoid.lastError().type() != QSqlError::NoError)
   {

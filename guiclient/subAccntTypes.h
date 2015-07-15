@@ -21,7 +21,7 @@ class subAccntTypes : public XWidget, public Ui::subAccntTypes
     Q_OBJECT
 
 public:
-    subAccntTypes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    subAccntTypes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~subAccntTypes();
 
 protected slots:

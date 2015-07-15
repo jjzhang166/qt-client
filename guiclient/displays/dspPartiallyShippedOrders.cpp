@@ -22,7 +22,7 @@
 #define AMOUNT_CURR_COL	8
 #define BASEAMOUNT_COL	9
 
-dspPartiallyShippedOrders::dspPartiallyShippedOrders(QWidget* parent, const char*, Qt::WFlags fl)
+dspPartiallyShippedOrders::dspPartiallyShippedOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPartiallyShippedOrders", fl)
 {
   setupUi(optionsWidget());
@@ -38,6 +38,7 @@ dspPartiallyShippedOrders::dspPartiallyShippedOrders(QWidget* parent, const char
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
   list()->addColumn(tr("Hold"),        0,           Qt::AlignCenter,true, "cohead_holdtype");
+  list()->addColumn(tr("Sale Type"),  _orderColumn, Qt::AlignLeft,  true,  "saletype_descr");
   list()->addColumn(tr("S/O #"),      _orderColumn, Qt::AlignRight, true, "cohead_number");
   list()->addColumn(tr("Customer"),    -1,          Qt::AlignLeft,  true, "cust_name");
   list()->addColumn(tr("Hold Type"),   _dateColumn, Qt::AlignCenter,true, "f_holdtype");

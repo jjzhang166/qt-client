@@ -20,7 +20,7 @@ class configureCRM : public XAbstractConfigure, public Ui::configureCRM
     Q_OBJECT
 
 public:
-    configureCRM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureCRM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureCRM();
 
 public slots:

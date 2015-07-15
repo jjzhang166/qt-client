@@ -22,7 +22,7 @@ class miscVoucher : public XWidget, public Ui::miscVoucher
     Q_OBJECT
 
 public:
-    miscVoucher(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    miscVoucher(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~miscVoucher();
 
     Q_INVOKABLE virtual int id()   const;
@@ -33,10 +33,6 @@ public slots:
     virtual void sSave();
     virtual void sHandleVoucherNumber();
     virtual void sPopulateVendorInfo( int pVendid );
-    virtual void sNewCharacteristic();
-    virtual void sEditCharacteristic();
-    virtual void sDeleteCharacteristic();
-    virtual void sFillCharacteristic();
     virtual void sNewMiscDistribution();
     virtual void sEditMiscDistribution();
     virtual void sDeleteMiscDistribution();
@@ -45,6 +41,7 @@ public slots:
     virtual void sPopulateBalanceDue();
     virtual void populateNumber();
     virtual void populate();
+    virtual void postVoucher();
     virtual void closeEvent( QCloseEvent * pEvent );
     virtual void sPopulateDistDate();
     virtual void sPopulateDueDate();

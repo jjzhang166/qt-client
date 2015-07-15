@@ -27,7 +27,7 @@ class checkForUpdates : public QDialog, public Ui::checkForUpdates
     Q_OBJECT
 
 public:
-    checkForUpdates(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    checkForUpdates(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~checkForUpdates();
 
     QPushButton* _ok;

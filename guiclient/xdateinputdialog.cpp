@@ -14,7 +14,7 @@
 #include <QValidator>
 #include <QVariant>
 
-XDateInputDialog::XDateInputDialog(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+XDateInputDialog::XDateInputDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);

@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-shippingForm::shippingForm(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shippingForm::shippingForm(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -62,8 +62,8 @@ enum SetResponse shippingForm::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _report->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _report->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -91,7 +91,7 @@ void shippingForm::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
     else if (shippingCheck.lastError().type() != QSqlError::NoError)
     {

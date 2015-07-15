@@ -52,7 +52,7 @@ void XURLLabel::mouseReleaseEvent(QMouseEvent * e)
 void XURLLabel::setFont(const QFont & f)
 {
   QFont newFont = f;
-  newFont.setUnderline(TRUE);
+  newFont.setUnderline(true);
 
   QLabel::setFont(newFont);
 }

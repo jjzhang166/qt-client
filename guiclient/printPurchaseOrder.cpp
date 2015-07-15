@@ -16,7 +16,7 @@
 
 #include "errorReporter.h"
 
-printPurchaseOrder::printPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printPurchaseOrder::printPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("POCopies",     "POWatermark",
                              "POShowPrices", "",
                              parent, name, modal, fl)
@@ -38,7 +38,7 @@ printPurchaseOrder::printPurchaseOrder(QWidget* parent, const char* name, bool m
          " WHERE (pohead_id=<? value('docid') ?>);" ;
 
   _markOnePrintedQry = "UPDATE pohead"
-                       "   SET pohead_printed=TRUE "
+                       "   SET pohead_printed=true "
                        " WHERE (pohead_id=<? value('docid') ?>);" ;
 
   connect(_po,  SIGNAL(newId(int, QString)),   this, SLOT(setId(int)));

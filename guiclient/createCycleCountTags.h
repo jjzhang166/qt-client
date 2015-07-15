@@ -22,7 +22,7 @@ class createCycleCountTags : public XDialog, public Ui::createCycleCountTags
     Q_OBJECT
 
 public:
-    createCycleCountTags(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    createCycleCountTags(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~createCycleCountTags();
 
 public slots:

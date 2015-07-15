@@ -19,7 +19,7 @@ class budgets : public XWidget, public Ui::budgets
     Q_OBJECT
 
 public:
-    budgets(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    budgets(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~budgets();
 
 public slots:

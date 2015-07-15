@@ -22,7 +22,7 @@ class company : public XDialog, public Ui::company
     Q_OBJECT
 
 public:
-    company(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    company(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~company();
 
 public slots:

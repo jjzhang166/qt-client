@@ -22,7 +22,7 @@ class address : public XDialog, public Ui::address
     Q_OBJECT
 
 public:
-    address(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    address(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~address();
 
 public slots:
@@ -32,16 +32,12 @@ protected slots:
     virtual void languageChange();
 
     virtual void reject();
-    virtual void sDeleteCharacteristic();
     virtual void sEdit();
-    virtual void sEditCharacteristic();
     virtual void sEditContact();
     virtual void sEditShipto();
     virtual void sEditVendor();
     virtual void sEditVendorAddress();
     virtual void sEditWarehouse();
-    virtual void sGetCharacteristics();
-    virtual void sNewCharacteristic();
     virtual void sPopulate();
     virtual void sPopulateMenu(QMenu *);
     virtual void sSave();

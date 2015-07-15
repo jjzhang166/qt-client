@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-userCostingElement::userCostingElement(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+userCostingElement::userCostingElement(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -65,10 +65,10 @@ enum SetResponse userCostingElement::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _acceptPO->setEnabled(FALSE);
-      _expense->setEnabled((FALSE));
+      _name->setEnabled(false);
+      _active->setEnabled(false);
+      _acceptPO->setEnabled(false);
+      _expense->setEnabled((false));
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -114,7 +114,7 @@ void userCostingElement::sSave()
                "  costelem_sys, costelem_po, costelem_cost_item_id, costelem_exp_accnt_id ) "
                "VALUES "
                "( :costelem_id, :costelem_type, :costelem_active,"
-               "  FALSE, :costelem_po, :costelem_cost_item_id, :costelem_exp_accnt_id );" );
+               "  false, :costelem_po, :costelem_cost_item_id, :costelem_exp_accnt_id );" );
   }
   else if (_mode == cEdit)
   {
@@ -175,12 +175,12 @@ void userCostingElement::populate()
     _active->setChecked(userpopulate.value("costelem_active").toBool());
 
     if (userpopulate.value("costelem_po").toBool())
-      _acceptPO->setChecked(TRUE);
+      _acceptPO->setChecked(true);
     else
     {
       if (userpopulate.value("costelem_cost_item_id").toInt() != -1)
       {
-        _useCostItem->setChecked(TRUE);
+        _useCostItem->setChecked(true);
         _item->setId(userpopulate.value("costelem_cost_item_id").toInt());
       }
     }
@@ -203,9 +203,9 @@ bool userCostingElement::sCheck()
       _costelemid = userCheck.value("costelem_id").toInt();
       _mode = cEdit;
       populate();
-      return TRUE;
+      return true;
     }
   }
-  return FALSE;
+  return false;
 }
 

@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-dspSummarizedBOM::dspSummarizedBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspSummarizedBOM::dspSummarizedBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspBOMBase(parent, "dspSummarizedBOM", fl)
 {
   setWindowTitle(tr("Summarized Bill of Materials"));

@@ -24,7 +24,7 @@
 #include "storedProcErrorLookup.h"
 #include "xtreewidget.h"
 
-arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
+arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -112,7 +112,7 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _newCashrcpt->setEnabled(FALSE);
+    _newCashrcpt->setEnabled(false);
     connect(_cashrcpt, SIGNAL(itemSelected(int)), _viewCashrcpt, SLOT(animateClick()));
   }
   
@@ -172,12 +172,12 @@ void arWorkBench::sFillList()
 { 
   if (_selectDate->currentIndex()==0)
   {
-    _aritems->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
-    _aritems->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"), omfgThis->endOfTime(), TRUE);
+    _aritems->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _aritems->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
   }
   else if (_selectDate->currentIndex()==1)
   {
-    _aritems->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), TRUE);
+    _aritems->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
     _aritems->findChild<DateCluster*>("_dates")->setEndDate(_onOrBeforeDate->date());
   }
   else
@@ -288,7 +288,7 @@ void arWorkBench::sPostCashrcpt()
   
   if (_privileges->check("ChangeCashRecvPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Distribution Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {

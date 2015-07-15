@@ -18,7 +18,7 @@
 
 #include <QDebug>
 
-#include "characteristicAssignment.h"
+#include "distributeInventory.h"
 #include "invoiceItem.h"
 #include "storedProcErrorLookup.h"
 #include "taxBreakdown.h"
@@ -26,7 +26,7 @@
 
 #define cViewQuote (0x20 | cView)
 
-invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
+invoice::invoice(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, fl)
 {
   if(name)
@@ -71,9 +71,6 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_cust,                SIGNAL(newCrmacctId(int)),               _billToAddr,  SLOT(setSearchAcct(int)));
   connect(_cust,                SIGNAL(newCrmacctId(int)),               _shipToAddr,  SLOT(setSearchAcct(int)));
   connect(_invoiceNumber,       SIGNAL(editingFinished()),               this,         SLOT(sCheckInvoiceNumber()));
-  connect(_newCharacteristic,   SIGNAL(clicked()),                       this,         SLOT(sNewCharacteristic()));
-  connect(_editCharacteristic,  SIGNAL(clicked()),                       this,         SLOT(sEditCharacteristic()));
-  connect(_deleteCharacteristic,SIGNAL(clicked()),                       this,         SLOT(sDeleteCharacteristic()));
 
   setFreeFormShipto(false);
 
@@ -104,8 +101,7 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   _invcitem->addColumn(tr("Margin"),        _priceColumn,    Qt::AlignRight,  false, "margin");
   _invcitem->addColumn(tr("Margin %"),      _prcntColumn,    Qt::AlignRight,  false, "marginpercent");
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn,     Qt::AlignLeft,   true,  "char_name" );
-  _charass->addColumn(tr("Value"),          -1,              Qt::AlignLeft,   true,  "charass_value" );
+  _charass->setType("INV");
   
   _custCurrency->setLabel(_custCurrencyLit);
 
@@ -124,6 +120,8 @@ invoice::invoice(QWidget* parent, const char* name, Qt::WFlags fl)
   _recurring->setParent(-1, "I");
 
   _miscChargeAccount->setType(GLCluster::cRevenue | GLCluster::cExpense);
+
+  _postInvoice->setEnabled(_privileges->check("PostMiscInvoices"));
 }
 
 invoice::~invoice()
@@ -157,8 +155,7 @@ enum SetResponse invoice::set(const ParameterList &pParams)
         _invcheadid = invoiceet.value("invchead_id").toInt();
         _recurring->setParent(_invcheadid, "I");
         _documents->setId(_invcheadid);
-        connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-        connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
+        _charass->setId(_invcheadid);
       }
       else if (invoiceet.lastError().type() != QSqlError::NoError)
       {
@@ -223,64 +220,64 @@ enum SetResponse invoice::set(const ParameterList &pParams)
 
       param = pParams.value("invchead_id", &valid);
       if(valid)
+      {
         _invcheadid = param.toInt();
+        _charass->setId(_invcheadid);
+      }
 
       setObjectName(QString("invoice edit %1").arg(_invcheadid));
       _mode = cEdit;
 
-      _new->setEnabled(TRUE);
-      _cust->setReadOnly(TRUE);
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
-
+      _new->setEnabled(true);
+      _cust->setReadOnly(true);
     }
     else if (param.toString() == "view")
     {
       setObjectName(QString("invoice view %1").arg(_invcheadid));
       _mode = cView;
 
-      _invoiceNumber->setEnabled(FALSE);
-      _orderNumber->setEnabled(FALSE);
-      _invoiceDate->setEnabled(FALSE);
-      _shipDate->setEnabled(FALSE);
-      _orderDate->setEnabled(FALSE);
-      _poNumber->setEnabled(FALSE);
-      _cust->setReadOnly(TRUE);
-      _salesrep->setEnabled(FALSE);
-      _commission->setEnabled(FALSE);
-      _taxzone->setEnabled(FALSE);
-      _terms->setEnabled(FALSE);
+      _invoiceNumber->setEnabled(false);
+      _orderNumber->setEnabled(false);
+      _invoiceDate->setEnabled(false);
+      _shipDate->setEnabled(false);
+      _orderDate->setEnabled(false);
+      _poNumber->setEnabled(false);
+      _cust->setReadOnly(true);
+      _salesrep->setEnabled(false);
+      _commission->setEnabled(false);
+      _taxzone->setEnabled(false);
+      _terms->setEnabled(false);
       _terms->setType(XComboBox::Terms);
-      _fob->setEnabled(FALSE);
-      _shipVia->setEnabled(FALSE);
-      _billToName->setEnabled(FALSE);
-      _billToAddr->setEnabled(FALSE);
-      _billToPhone->setEnabled(FALSE);
-      _shipTo->setEnabled(FALSE);
-      _shipToName->setEnabled(FALSE);
-      _shipToAddr->setEnabled(FALSE);
-      _shipToPhone->setEnabled(FALSE);
-      _miscAmount->setEnabled(FALSE);
-      _miscChargeDescription->setEnabled(FALSE);
-      _miscChargeAccount->setReadOnly(TRUE);
-      _freight->setEnabled(FALSE);
-      _payment->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _fob->setEnabled(false);
+      _shipVia->setEnabled(false);
+      _billToName->setEnabled(false);
+      _billToAddr->setEnabled(false);
+      _billToPhone->setEnabled(false);
+      _shipTo->setEnabled(false);
+      _shipToName->setEnabled(false);
+      _shipToAddr->setEnabled(false);
+      _shipToPhone->setEnabled(false);
+      _miscAmount->setEnabled(false);
+      _miscChargeDescription->setEnabled(false);
+      _miscChargeAccount->setReadOnly(true);
+      _freight->setEnabled(false);
+      _payment->setEnabled(false);
+      _notes->setReadOnly(true);
       _edit->hide();
       _save->hide();
       _delete->hide();
       _project->setEnabled(false);
-      _shipChrgs->setEnabled(FALSE);
-      _shippingZone->setEnabled(FALSE);
-      _saleType->setEnabled(FALSE);
-//      _documents->setReadOnly(TRUE);
-      _newCharacteristic->setEnabled(FALSE);
+      _shipChrgs->setEnabled(false);
+      _shippingZone->setEnabled(false);
+      _saleType->setEnabled(false);
+//      _documents->setReadOnly(true);
+      _charass->setReadOnly(true);
+      _postInvoice->setVisible(false);
 
       disconnect(_invcitem, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
       disconnect(_invcitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
       disconnect(_invcitem, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
       connect(_invcitem, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-
     }
   }
 
@@ -293,6 +290,7 @@ enum SetResponse invoice::set(const ParameterList &pParams)
   {
     _invcheadid = param.toInt();
     _documents->setId(_invcheadid);
+    _charass->setId(_invcheadid);
     populate();
     populateCMInfo();
     populateCCInfo();
@@ -597,7 +595,11 @@ void invoice::sSave()
   if (!save())
     return;
 
-  omfgThis->sInvoicesUpdated(_invcheadid, TRUE);
+  // post the Invoice if user desires
+  if (_postInvoice->isChecked())
+    postInvoice();
+
+  omfgThis->sInvoicesUpdated(_invcheadid, true);
 
   _invcheadid = -1;
   close();
@@ -728,6 +730,104 @@ bool invoice::save()
   return true;
 }
 
+void invoice::postInvoice()
+{
+  XSqlQuery unpostedPost;
+  int journal = -1;
+  unpostedPost.exec("SELECT fetchJournalNumber('AR-IN') AS result;");
+  if (unpostedPost.first())
+  {
+    journal = unpostedPost.value("result").toInt();
+    if (journal < 0)
+    {
+      systemError(this, storedProcErrorLookup("fetchJournalNumber", journal), __FILE__, __LINE__);
+      return;
+    }
+  }
+  else if (unpostedPost.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, unpostedPost.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+
+  XSqlQuery xrate;
+  xrate.prepare("SELECT curr_rate "
+		"FROM curr_rate, invchead "
+		"WHERE ((curr_id=invchead_curr_id)"
+		"  AND  (invchead_id=:invchead_id)"
+		"  AND  (invchead_invcdate BETWEEN curr_effective AND curr_expires));");
+  // if SUM becomes dependent on curr_id then move XRATE before it in the loop
+  XSqlQuery sum;
+  sum.prepare("SELECT invoicetotal(:invchead_id) AS subtotal;");
+
+  XSqlQuery rollback;
+  rollback.prepare("ROLLBACK;");
+
+  XSqlQuery post;
+  post.prepare("SELECT postInvoice(:invchead_id, :journal) AS result;");
+
+  sum.bindValue(":invchead_id", _invcheadid);
+  if (sum.exec() && sum.first() && sum.value("subtotal").toDouble() == 0)
+  {
+     if (QMessageBox::question(this, tr("Invoice Has Value 0"),
+	      		  tr("Invoice #%1 has a total value of 0.\n"
+		     	     "Would you like to post it anyway?")
+			    .arg(_invoiceNumber->text()),
+			  QMessageBox::Yes,
+			  QMessageBox::No | QMessageBox::Default)
+	     == QMessageBox::No)
+	       return;
+  }
+  else if (sum.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, sum.lastError().databaseText(), __FILE__, __LINE__);
+  }
+  else if (sum.value("subtotal").toDouble() != 0)
+  {
+     xrate.bindValue(":invchead_id", _invcheadid);
+     xrate.exec();
+     if (xrate.lastError().type() != QSqlError::NoError)
+     {
+       systemError(this, tr("System Error posting Invoice #%1\n%2")
+	            .arg(_invoiceNumber->text())
+	            .arg(xrate.lastError().databaseText()),
+                __FILE__, __LINE__);
+     }
+     else if (!xrate.first() || xrate.value("curr_rate").isNull())
+     {
+       systemError(this, tr("Could not post Invoice #%1 because of a missing exchange rate.")
+				.arg(_invoiceNumber->text()));
+     }
+  }
+
+  unpostedPost.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  post.bindValue(":invchead_id", _invcheadid);
+  post.bindValue(":journal",     journal);
+  post.exec();
+  if (post.first())
+  {
+     int result = post.value("result").toInt();
+     if (result < 0)
+     {
+       rollback.exec();
+       systemError(this, storedProcErrorLookup("postInvoice", result),
+	           __FILE__, __LINE__);
+     }
+     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
+     {
+       rollback.exec();
+       QMessageBox::information( this, tr("Post Invoices"), tr("Transaction Canceled") );
+       return;
+     }
+
+     unpostedPost.exec("COMMIT;");
+   }
+   // contains() string is hard-coded in stored procedure
+   else if (post.lastError().databaseText().contains("post to closed period"))
+     rollback.exec();
+
+}
+
 void invoice::sNew()
 {
   if (!save())
@@ -821,7 +921,7 @@ void invoice::populate()
     _invoiceNumber->setEnabled(false);
     _orderNumber->setText(invoicepopulate.value("invchead_ordernumber").toString());
     if (! _orderNumber->text().isEmpty() && _orderNumber->text().toInt() != 0)
-	_custCurrency->setEnabled(FALSE);
+	_custCurrency->setEnabled(false);
 
     _invoiceDate->setDate(invoicepopulate.value("invchead_invcdate").toDate(), true);
     _orderDate->setDate(invoicepopulate.value("invchead_orderdate").toDate());
@@ -906,11 +1006,11 @@ void invoice::populate()
       _freight->setEnabled(false);
       _shippingZone->setEnabled(false);
       _saleType->setEnabled(false);
+      _postInvoice->setVisible(false);
     }
 
     _loading = false;
 
-    sFillCharacteristic();
     sFillItemList();
   }
   if (invoicepopulate.lastError().type() != QSqlError::NoError)
@@ -918,62 +1018,6 @@ void invoice::populate()
     systemError(this, invoicepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-}
-
-void invoice::sNewCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("invchead_id", _invcheadid);
-  
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-  
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharacteristic();
-}
-
-void invoice::sEditCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-  
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-  
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharacteristic();
-}
-
-void invoice::sDeleteCharacteristic()
-{
-  XSqlQuery itemDelete;
-  itemDelete.prepare( "DELETE FROM charass "
-                     "WHERE (charass_id=:charass_id);" );
-  itemDelete.bindValue(":charass_id", _charass->id());
-  itemDelete.exec();
-  
-  sFillCharacteristic();
-}
-
-void invoice::sFillCharacteristic()
-{
-  XSqlQuery charassq;
-  charassq.prepare( "SELECT charass_id, char_name, "
-                   " CASE WHEN char_type < 2 THEN "
-                   "   charass_value "
-                   " ELSE "
-                   "   formatDate(charass_value::date) "
-                   "END AS charass_value "
-                   "FROM charass JOIN char ON (char_id=charass_char_id) "
-                   "WHERE ( (charass_target_type=:target_type)"
-                   "  AND   (charass_target_id=:target_id) ) "
-                   "ORDER BY char_order, char_name;" );
-  charassq.bindValue(":target_id", _invcheadid);
-  charassq.bindValue(":target_type", "INV");
-  charassq.exec();
-  _charass->populate(charassq);
 }
 
 void invoice::sFillItemList()
@@ -997,9 +1041,9 @@ void invoice::sFillItemList()
              "       COALESCE(coitem_unitcost, itemCost(itemsite_id), 0.0) AS unitcost,"
              "       ROUND((invcitem_billed * invcitem_qty_invuomratio) *"
              "             ((invcitem_price / COALESCE(invcitem_price_invuomratio,1.0)) - "
-             "              COALESCE(coitem_unitcost, itemCost(itemsite_id), 0.0)),2) AS margin,"
+             "              currtolocal(:curr_id, COALESCE(coitem_unitcost, itemCost(itemsite_id), 0.0), :date)),2) AS margin,"
              "       CASE WHEN (invcitem_price = 0.0) THEN 100.0"
-             "            ELSE (((invcitem_price - COALESCE(coitem_unitcost, itemCost(itemsite_id), 0.0)) / invcitem_price) * 100.0)"
+             "            ELSE (((invcitem_price - currtolocal(:curr_id, COALESCE(coitem_unitcost, itemCost(itemsite_id), 0.0), :date)) / invcitem_price) * 100.0)"
              "       END AS marginpercent,"
              "       'qty' AS invcitem_ordered_xtnumericrole,"
              "       'qty' AS invcitem_billed_xtnumericrole,"
@@ -1116,7 +1160,7 @@ void invoice::sTaxDetail()
   else if (_mode == cNew || _mode == cEdit)
     params.append("mode", "edit");
 
-  taxBreakdown newdlg(this, "", TRUE);
+  taxBreakdown newdlg(this, "", true);
   if (newdlg.set(params) == NoError)
   {
     newdlg.exec();
@@ -1170,7 +1214,7 @@ void invoice::sShipToModified()
 
 void invoice::keyPressEvent( QKeyEvent * e )
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   if(e->key() == Qt::Key_N && (e->modifiers() & Qt::ControlModifier))
   {
     _new->animateClick();
@@ -1288,7 +1332,7 @@ void invoice::sCreditAllocate()
   params.append("curr_id",   _total->id());
   params.append("effective", _total->effective());
 
-  allocateARCreditMemo newdlg(this, "", TRUE);
+  allocateARCreditMemo newdlg(this, "", true);
   if (newdlg.set(params) == NoError && newdlg.exec() == XDialog::Accepted)
   {
     populateCMInfo();
@@ -1301,16 +1345,16 @@ void invoice::populateCMInfo()
 
   // Allocated C/M's
   cm.prepare("SELECT COALESCE(SUM(currToCurr(aropenalloc_curr_id, :curr_id,"
-            "                               aropenalloc_amount, :effective)),0) AS amount"
-            "  FROM ( "
-            "  SELECT aropenalloc_curr_id, aropenalloc_amount"
-            "    FROM cohead JOIN aropenalloc ON (aropenalloc_doctype='S' AND aropenalloc_doc_id=cohead_id)"
-            "   WHERE (cohead_number=:cohead_number) "
-            "  UNION ALL"
-            "  SELECT aropenalloc_curr_id, aropenalloc_amount"
-            "    FROM aropenalloc"
-            "   WHERE (aropenalloc_doctype='I' AND aropenalloc_doc_id=:invchead_id)"
-            "       ) AS data;");
+             "                               aropenalloc_amount, :effective)),0) AS amount"
+             "  FROM ( "
+             "  SELECT aropenalloc_curr_id, aropenalloc_amount"
+             "    FROM cohead JOIN aropenalloc ON (aropenalloc_doctype='S' AND aropenalloc_doc_id=cohead_id)"
+             "   WHERE (cohead_number=:cohead_number) "
+             "  UNION ALL"
+             "  SELECT aropenalloc_curr_id, aropenalloc_amount"
+             "    FROM aropenalloc"
+             "   WHERE (aropenalloc_doctype='I' AND aropenalloc_doc_id=:invchead_id)"
+             "       ) AS data;");
   cm.bindValue(":invchead_id", _invcheadid);
   cm.bindValue(":cohead_number", _orderNumber->text());
   cm.bindValue(":curr_id",     _allocatedCM->id());
@@ -1328,15 +1372,14 @@ void invoice::populateCMInfo()
 
   // Unallocated C/M's
   cm.prepare("SELECT SUM(amount) AS amount"
-            "  FROM ( SELECT aropen_id, "
-	    "                currToCurr(aropen_curr_id, :curr_id,"
-            "                           noNeg(aropen_amount - aropen_paid - SUM(COALESCE(aropenalloc_amount,0))),"
-	    "                           :effective) AS amount"
-            "           FROM aropen LEFT OUTER JOIN aropenalloc ON (aropenalloc_aropen_id=aropen_id)"
-            "          WHERE ( (aropen_cust_id=:cust_id)"
-            "            AND   (aropen_doctype IN ('C', 'R'))"
-            "            AND   (aropen_open))"
-            "          GROUP BY aropen_id, aropen_amount, aropen_paid, aropen_curr_id) AS data; ");
+             "  FROM ( SELECT aropen_id, "
+             "                noNeg(currToCurr(aropen_curr_id, :curr_id, (aropen_amount - aropen_paid), :effective) - "
+             "                      SUM(currToCurr(aropenalloc_curr_id, :curr_id, COALESCE(aropenalloc_amount,0), :effective))) AS amount "
+             "           FROM aropen LEFT OUTER JOIN aropenalloc ON (aropenalloc_aropen_id=aropen_id)"
+             "          WHERE ( (aropen_cust_id=:cust_id)"
+             "            AND   (aropen_doctype IN ('C', 'R'))"
+             "            AND   (aropen_open))"
+             "          GROUP BY aropen_id, aropen_amount, aropen_paid, aropen_curr_id) AS data; ");
   cm.bindValue(":cust_id",     _cust->id());
   cm.bindValue(":curr_id",     _outstandingCM->id());
   cm.bindValue(":effective",   _outstandingCM->effective());
@@ -1402,7 +1445,7 @@ void invoice::populateCCInfo()
 void invoice::sHandleShipchrg(int pShipchrgid)
 {
   if ( (_mode == cView) || (_mode == cViewQuote) )
-    _freight->setEnabled(FALSE);
+    _freight->setEnabled(false);
   else
   {
     XSqlQuery query;
@@ -1414,10 +1457,10 @@ void invoice::sHandleShipchrg(int pShipchrgid)
     if (query.first())
     {
       if (query.value("shipchrg_custfreight").toBool())
-        _freight->setEnabled(TRUE);
+        _freight->setEnabled(true);
       else
       {
-        _freight->setEnabled(FALSE);
+        _freight->setEnabled(false);
         _freight->clear();
       }
     }

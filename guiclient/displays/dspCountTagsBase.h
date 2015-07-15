@@ -20,7 +20,7 @@ class dspCountTagsBase : public display, public Ui::dspCountTagsBase
     Q_OBJECT
 
 public:
-    dspCountTagsBase(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCountTagsBase(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

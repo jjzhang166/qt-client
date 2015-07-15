@@ -24,7 +24,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-taxZones::taxZones(QWidget* parent, const char* name, Qt::WFlags fl)
+taxZones::taxZones(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -54,7 +54,7 @@ taxZones::taxZones(QWidget* parent, const char* name, Qt::WFlags fl)
   {
     connect(_taxZone, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
 
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   sFillList(-1);
@@ -106,7 +106,7 @@ void taxZones::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  taxZone newdlg(this, "", TRUE);
+  taxZone newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -120,7 +120,7 @@ void taxZones::sEdit()
   params.append("mode", "edit");
   params.append("taxzone_id", _taxZone->id());
 
-  taxZone newdlg(this, "", TRUE);
+  taxZone newdlg(this, "", true);
   newdlg.set(params);
   
   int result = newdlg.exec();
@@ -134,7 +134,7 @@ void taxZones::sView()
   params.append("mode", "view");
   params.append("taxzone_id", _taxZone->id());
 
-  taxZone newdlg(this, "", TRUE);
+  taxZone newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -17,7 +17,7 @@
 #include "xtreewidget.h"
 #include "xmessagebox.h"
 
-dspSummarizedBankrecHistory::dspSummarizedBankrecHistory(QWidget* parent, const char*, Qt::WFlags fl)
+dspSummarizedBankrecHistory::dspSummarizedBankrecHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedBankrecHistory", fl)
 {
   setupUi(optionsWidget());

@@ -67,7 +67,7 @@ class printMulticopyDocumentPrivate : public Ui::printMulticopyDocument
 printMulticopyDocument::printMulticopyDocument(QWidget    *parent,
                                                const char *name,
                                                bool        modal,
-                                               Qt::WFlags  fl)
+                                               Qt::WindowFlags  fl)
   : XDialog(parent, name, modal, fl)
 {
   _data = new printMulticopyDocumentPrivate(this);
@@ -92,7 +92,7 @@ printMulticopyDocument::printMulticopyDocument(QString numCopiesMetric,
                                                QWidget    *parent,
                                                const char *name,
                                                bool        modal,
-                                               Qt::WFlags  fl)
+                                               Qt::WindowFlags  fl)
   : XDialog(parent, name, modal, fl)
 {
   _data = new printMulticopyDocumentPrivate(this, postPrivilege);
@@ -159,7 +159,7 @@ enum SetResponse printMulticopyDocument::set(const ParameterList &pParams)
 
   if (pParams.inList("persistentPrint"))
   {
-    _data->_alert = FALSE;
+    _data->_alert = false;
 
     if (_data->_mpIsInitialized)
     {
@@ -477,7 +477,7 @@ ParameterList printMulticopyDocument::getParamsOneCopy(int row, XSqlQuery *qry)
 {
   ParameterList params;
   params.append(_data->_reportKey, qry->value("docid"));
-  params.append("showcosts", (_data->_copies->showCosts(row) ? "TRUE" : "FALSE"));
+  params.append("showcosts", (_data->_copies->showCosts(row) ? "true" : "false"));
   params.append("watermark", _data->_copies->watermark(row));
 
   return params;

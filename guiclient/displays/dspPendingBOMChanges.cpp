@@ -18,7 +18,7 @@
 
 #include "bomItem.h"
 
-dspPendingBOMChanges::dspPendingBOMChanges(QWidget* parent, const char*, Qt::WFlags fl)
+dspPendingBOMChanges::dspPendingBOMChanges(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPendingBOMChanges", fl)
 {
   setupUi(optionsWidget());

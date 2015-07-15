@@ -24,7 +24,7 @@
 #include "printInvoices.h"
 #include "createInvoices.h"
 
-dspBillingSelections::dspBillingSelections(QWidget* parent, const char* name, Qt::WFlags fl)
+dspBillingSelections::dspBillingSelections(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -91,7 +91,7 @@ void dspBillingSelections::sFillList()
 
 void dspBillingSelections::sPostAll()
 {
-  createInvoices newdlg(this, "", TRUE);
+  createInvoices newdlg(this, "", true);
   newdlg.exec();
 }
 
@@ -132,9 +132,9 @@ void dspBillingSelections::sPost()
                          .arg(__LINE__)
                          .arg(dspPost.value("result").toInt()) );
 
-    omfgThis->sInvoicesUpdated(result, TRUE);
+    omfgThis->sInvoicesUpdated(result, true);
     omfgThis->sSalesOrdersUpdated(soheadid);
-    omfgThis->sBillingSelectionUpdated(soheadid, TRUE);
+    omfgThis->sBillingSelectionUpdated(soheadid, true);
 
     sFillList();
   }

@@ -19,7 +19,7 @@ class configureIM : public XAbstractConfigure, public Ui::configureIM
     Q_OBJECT
 
   public:
-    configureIM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureIM(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureIM();
 
   public slots:

@@ -20,7 +20,7 @@
 #include "guiErrorCheck.h"
 #include "mqlutil.h"
 
-printShippingForm::printShippingForm(QWidget *parent, const char *name, Qt::WFlags fl)
+printShippingForm::printShippingForm(QWidget *parent, const char *name, Qt::WindowFlags fl)
     : printMulticopyDocument("ShippingFormCopies",     "ShippingFormWatermark",
                              "ShippingFormShowPrices", "",
                              parent, name, false, fl)

@@ -21,7 +21,7 @@ class dspWoHistoryByNumber : public display, public Ui::dspWoHistoryByNumber
     Q_OBJECT
 
 public:
-    dspWoHistoryByNumber(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspWoHistoryByNumber(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

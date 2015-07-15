@@ -10,7 +10,7 @@
 
 #include "dspShipmentsBySalesOrder.h"
 
-dspShipmentsBySalesOrder::dspShipmentsBySalesOrder(QWidget* parent, const char*, Qt::WFlags fl)
+dspShipmentsBySalesOrder::dspShipmentsBySalesOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspShipmentsBase(parent, "dspShipmentsBySalesOrder", fl)
 {
   setWindowTitle(tr("Shipments by Sales Order"));

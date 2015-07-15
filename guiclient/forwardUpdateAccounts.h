@@ -20,7 +20,7 @@ class forwardUpdateAccounts : public XDialog, public Ui::forwardUpdateAccounts
     Q_OBJECT
 
 public:
-    forwardUpdateAccounts(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    forwardUpdateAccounts(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~forwardUpdateAccounts();
 
 public slots:

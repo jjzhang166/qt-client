@@ -117,8 +117,8 @@ menuProducts::menuProducts(GUIClient *Pparent) :
 
   actionProperties acts[] = {
 
-#ifdef Q_WS_MACX
-  { "pd.setup",              tr("&Setup..."),                SLOT(sPreferences()),              mainMenu, "MaintainPreferencesSelf MaintainPreferencesOthers",  NULL,   NULL,   true, NULL },
+#ifdef Q_OS_MAC
+  { "sys.preferences", tr("P&references..."), SLOT(sPreferences()), mainMenu, "MaintainPreferencesSelf MaintainPreferencesOthers", NULL, NULL, true, NULL},
 #endif
 
   // Product | Reports
@@ -150,7 +150,7 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   // Product | Items
   { "menu",	tr("&Item"), (char*)itemsMenu,	mainMenu, "true", NULL, NULL, true , NULL },
   { "pd.enterNewItem", tr("&New..."), SLOT(sNewItem()), itemsMenu, "MaintainItemMasters", NULL, NULL, true , NULL },
-  { "pd.listItems", tr("&List..."), SLOT(sItems()), itemsMenu, "MaintainItemMasters ViewItemMasters", QPixmap(":/images/items.png"), toolBar, true , tr("List Items") },
+  { "pd.listItems", tr("&List..."), SLOT(sItems()), itemsMenu, "MaintainItemMasters ViewItemMasters", new QPixmap(":/images/items.png"), toolBar, true , tr("List Items") },
   { "pd.copyItem", tr("&Copy..."), SLOT(sCopyItem()), itemsMenu, "MaintainItemMasters" , NULL, NULL, true, NULL },
   { "separator", NULL, NULL, itemsMenu,	"true", NULL, NULL, true , NULL },
   { "pd.itemAvailabilityWorkbench", tr("&Workbench..."), SLOT(sDspItemAvailabilityWorkbench()), itemsMenu, "ViewItemAvailabilityWorkbench", NULL, NULL, true , NULL },
@@ -161,7 +161,7 @@ menuProducts::menuProducts(GUIClient *Pparent) :
   // Product | Bill of Materials
   { "menu",	tr("Bill Of Ma&terials"), (char*)bomMenu,	mainMenu, "true", NULL, NULL, true , NULL },
   { "pd.enterNewBOM", tr("&New..."), SLOT(sNewBOM()), bomMenu, "MaintainBOMs", NULL, NULL, true , NULL },
-  { "pd.listBOMs", tr("&List..."), SLOT(sBOMs()), bomMenu, "MaintainBOMs ViewBOMs", QPixmap(":/images/boms.png"), toolBar, true , tr("List Bill of Materials") },
+  { "pd.listBOMs", tr("&List..."), SLOT(sBOMs()), bomMenu, "MaintainBOMs ViewBOMs", new QPixmap(":/images/boms.png"), toolBar, true , tr("List Bill of Materials") },
   { "pd.copyBOM", tr("&Copy..."), SLOT(sCopyBOM()), bomMenu, "MaintainBOMs", NULL, NULL, true , NULL },
   { "separator", NULL, NULL, bomMenu,	"true", NULL, NULL, true , NULL },
   { "pd.massReplaceComponentItem", tr("Mass &Replace..."), SLOT(sMassReplaceComponent()), bomMenu, "MaintainBOMs", NULL, NULL, true , NULL },
@@ -305,7 +305,7 @@ void menuProducts::sItems()
 
 void menuProducts::sCopyItem()
 {
-  copyItem(parent, "", TRUE).exec();
+  copyItem(parent, "", true).exec();
 }
 
 void menuProducts::sItemGroups()
@@ -335,7 +335,7 @@ void menuProducts::sBOMs()
 
 void menuProducts::sCopyBOM()
 {
-  copyBOM(parent, "", TRUE).exec();
+  copyBOM(parent, "", true).exec();
 }
 
 void menuProducts::sMassReplaceComponent()
@@ -359,7 +359,7 @@ void menuProducts::sUpdateActualCostsByItem()
   ParameterList params;
   params.append("costtype", "actual");
 
-  updateActualCostsByItem *newdlg = new updateActualCostsByItem(parent, "", TRUE);
+  updateActualCostsByItem *newdlg = new updateActualCostsByItem(parent, "", true);
   newdlg->set(params);
   newdlg->exec();
 }
@@ -369,19 +369,19 @@ void menuProducts::sUpdateActualCostsByClassCode()
   ParameterList params;
   params.append("costtype", "actual");
 
-  updateActualCostsByClassCode *newdlg = new updateActualCostsByClassCode(parent, "", TRUE);
+  updateActualCostsByClassCode *newdlg = new updateActualCostsByClassCode(parent, "", true);
   newdlg->set(params);
   newdlg->exec();
 }
 
 void menuProducts::sPostActualCostsByItem()
 {
-  postCostsByItem(parent, "", TRUE).exec();
+  postCostsByItem(parent, "", true).exec();
 }
 
 void menuProducts::sPostActualCostsByClassCode()
 {
-  postCostsByClassCode(parent, "", TRUE).exec();
+  postCostsByClassCode(parent, "", true).exec();
 }
 
 void menuProducts::sUpdateStandardCostsByItem()
@@ -389,7 +389,7 @@ void menuProducts::sUpdateStandardCostsByItem()
   ParameterList params;
   params.append("costtype", "standard");
 
-  updateActualCostsByItem *newdlg = new updateActualCostsByItem(parent, "", TRUE);
+  updateActualCostsByItem *newdlg = new updateActualCostsByItem(parent, "", true);
   newdlg->set(params);
   newdlg->exec();
 }
@@ -399,7 +399,7 @@ void menuProducts::sUpdateStandardCostsByClassCode()
   ParameterList params;
   params.append("costtype", "standard");
 
-  updateActualCostsByClassCode *newdlg = new updateActualCostsByClassCode(parent, "", TRUE);
+  updateActualCostsByClassCode *newdlg = new updateActualCostsByClassCode(parent, "", true);
   newdlg->set(params);
   newdlg->exec();
 }
@@ -441,7 +441,7 @@ void menuProducts::sUserCostingElements()
 
 void menuProducts::sLotSerial()
 {
-  lotSerial newdlg(parent, "", TRUE);
+  lotSerial newdlg(parent, "", true);
   newdlg.exec();
 }
 
@@ -509,12 +509,12 @@ void menuProducts::sDspInvalidBillsOfMaterials()
 
 void menuProducts::sReassignClassCodeByClassCode()
 {
-  reassignClassCodeByClassCode(parent, "", TRUE).exec();
+  reassignClassCodeByClassCode(parent, "", true).exec();
 }
 
 void menuProducts::sReassignProductCategoryByProductCategory()
 {
-  reassignProductCategoryByProductCategory(parent, "", TRUE).exec();
+  reassignProductCategoryByProductCategory(parent, "", true).exec();
 }
 
 void menuProducts::sSetup()

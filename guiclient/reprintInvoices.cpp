@@ -17,7 +17,7 @@
 reprintInvoices::reprintInvoices(QWidget    *parent,
                                  const char *name,
                                  bool        modal,
-                                 Qt::WFlags  fl)
+                                 Qt::WindowFlags  fl)
     : reprintMulticopyDocument("InvoiceCopies",     "InvoiceWatermark",
                                "InvoiceShowPrices",
                                parent, name, modal, fl)

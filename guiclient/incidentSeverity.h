@@ -21,7 +21,7 @@ class incidentSeverity : public XDialog, public Ui::incidentSeverity
     Q_OBJECT
 
 public:
-    incidentSeverity(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    incidentSeverity(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~incidentSeverity();
 
 public slots:

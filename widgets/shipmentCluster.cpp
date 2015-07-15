@@ -43,12 +43,12 @@ void ShipmentCluster::limitToOrder(const int head_id)
       case ShipmentClusterLineEdit::Shipped:
         if (!extraClause().isEmpty())
           setExtraClause(extraClause().append(" AND "));
-        setExtraClause(extraClause().append(" (shiphead_shipped = TRUE) "));
+        setExtraClause(extraClause().append(" (shiphead_shipped = true) "));
         break;
       case ShipmentClusterLineEdit::Unshipped:
         if (!extraClause().isEmpty())
           setExtraClause(extraClause().append(" AND "));
-        setExtraClause(extraClause().append(" (shiphead_shipped = FALSE) "));
+        setExtraClause(extraClause().append(" (shiphead_shipped = false) "));
         break;
       case ShipmentClusterLineEdit::AllStatus:
       default:
@@ -186,10 +186,10 @@ void ShipmentClusterLineEdit::setStatus(ShipmentStatus pstatus)
         clearExtraClause();
         break;
       case Shipped:
-        setExtraClause(" (shiphead_shipped = TRUE) ");
+        setExtraClause(" (shiphead_shipped = true) ");
         break;
       case Unshipped:
-        setExtraClause(" (shiphead_shipped = FALSE) ");
+        setExtraClause(" (shiphead_shipped = false) ");
         break;
       default:
         QMessageBox::critical(this, tr("Invalid Shipment Status"),

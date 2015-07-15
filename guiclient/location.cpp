@@ -15,7 +15,7 @@
 #include <QValidator>
 #include "itemcluster.h"
 
-location::location(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+location::location(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -89,23 +89,23 @@ enum SetResponse location::set(const ParameterList &pParams)
     {
       _mode = cEdit;
 
-      _warehouse->setEnabled(FALSE);
+      _warehouse->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _warehouse->setEnabled(FALSE);
-      _whsezone->setEnabled(FALSE);
-      _aisle->setEnabled(FALSE);
-      _rack->setEnabled(FALSE);
-      _bin->setEnabled(FALSE);
-      _location->setEnabled(FALSE);
-      _netable->setEnabled(FALSE);
-      _usable->setEnabled(FALSE);
-      _restricted->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _locitem->setEnabled(FALSE);
+      _warehouse->setEnabled(false);
+      _whsezone->setEnabled(false);
+      _aisle->setEnabled(false);
+      _rack->setEnabled(false);
+      _bin->setEnabled(false);
+      _location->setEnabled(false);
+      _netable->setEnabled(false);
+      _usable->setEnabled(false);
+      _restricted->setEnabled(false);
+      _description->setEnabled(false);
+      _locitem->setEnabled(false);
       _save->hide();
       _new->hide();
       _delete->hide();
@@ -117,7 +117,7 @@ enum SetResponse location::set(const ParameterList &pParams)
   if (valid)
   {
     _warehouse->setId(param.toInt());
-    _warehouse->setEnabled(FALSE);
+    _warehouse->setEnabled(false);
   }
 
   return NoError;
@@ -142,8 +142,8 @@ void location::sCheck()
     {
       _locationid = locationCheck.value("location_id").toInt();
       _mode = cEdit;
-      _warehouse->setEnabled(FALSE);
-      _location->setEnabled(FALSE);
+      _warehouse->setEnabled(false);
+      _location->setEnabled(false);
 
       populate();
     }
@@ -377,7 +377,7 @@ void location::sHandleWarehouse(int pWarehousid)
     locationHandleWarehouse.exec();
     _whsezone->populate(locationHandleWarehouse);
     if (!_whsezone->count())
-      _whsezone->setEnabled(FALSE);
+      _whsezone->setEnabled(false);
   }
 }
 

@@ -17,7 +17,7 @@
 
 #include "arOpenItem.h"
 
-dspCustomerARHistory::dspCustomerARHistory(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCustomerARHistory::dspCustomerARHistory(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, "dspCustomerARHistory", fl)
 {
   Q_UNUSED(name);

@@ -18,7 +18,7 @@
 
 #include "apAccountAssignment.h"
 
-apAccountAssignments::apAccountAssignments(QWidget* parent, const char* name, Qt::WFlags fl)
+apAccountAssignments::apAccountAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -42,7 +42,7 @@ apAccountAssignments::apAccountAssignments(QWidget* parent, const char* name, Qt
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_apaccnt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -73,7 +73,7 @@ void apAccountAssignments::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  apAccountAssignment newdlg(this, "", TRUE);
+  apAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -86,7 +86,7 @@ void apAccountAssignments::sEdit()
   params.append("mode", "edit");
   params.append("apaccnt_id", _apaccnt->id());
 
-  apAccountAssignment newdlg(this, "", TRUE);
+  apAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -99,7 +99,7 @@ void apAccountAssignments::sView()
   params.append("mode", "view");
   params.append("apaccnt_id", _apaccnt->id());
 
-  apAccountAssignment newdlg(this, "", TRUE);
+  apAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -28,7 +28,7 @@
    Shop Foreman in case this ever comes up.
  */
 
-honorifics::honorifics(QWidget* parent, const char* name, Qt::WFlags fl)
+honorifics::honorifics(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -50,7 +50,7 @@ honorifics::honorifics(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_honorifics, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -103,7 +103,7 @@ void honorifics::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  honorific newdlg(this, "", TRUE);
+  honorific newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -116,7 +116,7 @@ void honorifics::sEdit()
   params.append("mode", "edit");
   params.append("hnfc_id", _honorifics->id());
 
-  honorific newdlg(this, "", TRUE);
+  honorific newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -129,7 +129,7 @@ void honorifics::sView()
   params.append("mode", "view");
   params.append("hnfc_id", _honorifics->id());
 
-  honorific newdlg(this, "", TRUE);
+  honorific newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

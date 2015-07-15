@@ -22,7 +22,7 @@
 #include "materialReceiptTrans.h"
 #include "countTag.h"
 
-dspDetailedInventoryHistoryByLocation::dspDetailedInventoryHistoryByLocation(QWidget* parent, const char*, Qt::WFlags fl)
+dspDetailedInventoryHistoryByLocation::dspDetailedInventoryHistoryByLocation(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspDetailedInventoryHistoryByLocation", fl)
 {
   setupUi(optionsWidget());

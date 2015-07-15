@@ -20,7 +20,7 @@ class profitCenters : public XWidget, public Ui::profitCenters
     Q_OBJECT
 
 public:
-    profitCenters(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    profitCenters(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~profitCenters();
 
 public slots:

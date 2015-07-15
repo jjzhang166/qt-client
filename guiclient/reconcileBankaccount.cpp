@@ -26,7 +26,7 @@
 #include "toggleBankrecCleared.h"
 #include "storedProcErrorLookup.h"
 
-reconcileBankaccount::reconcileBankaccount(QWidget* parent, const char* name, Qt::WFlags fl)
+reconcileBankaccount::reconcileBankaccount(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
     setupUi(this);
@@ -336,7 +336,7 @@ void reconcileBankaccount::populate()
   XTreeWidgetItem * parent = 0;
   XTreeWidgetItem * lastChild = 0;
   XTreeWidgetItem * last = 0;
-  bool cleared = TRUE;
+  bool cleared = true;
   double amount = 0.0;
   bool amountNull = true;
   while (rcp.next())
@@ -369,7 +369,7 @@ void reconcileBankaccount::populate()
         formatDate(rcp.value("f_date").toDate()), rcp.value("doc_type"), rcp.value("docnumber"),
         rcp.value("notes"),
         rcp.value("doc_curr"),
-        rcp.value("doc_exchrate").isNull() ? tr("?????") : formatUOMRatio(rcp.value("doc_exchrate").toDouble()),
+        rcp.value("doc_exchrate").isNull() ? tr("?????") : formatNumber(rcp.value("doc_exchrate").toDouble(), 6), // 6 dp to match bankrec-receipts metasql
         rcp.value("base_amount").isNull() ? tr("?????") : formatMoney(rcp.value("base_amount").toDouble()),
         rcp.value("amount").isNull() ? tr("?????") : formatMoney(rcp.value("amount").toDouble()) );
     }
@@ -391,7 +391,7 @@ void reconcileBankaccount::populate()
         formatDate(rcp.value("f_date").toDate()), rcp.value("doc_type"), rcp.value("docnumber"),
         rcp.value("notes"),
         rcp.value("doc_curr"),
-        rcp.value("doc_exchrate").isNull() ? tr("?????") : formatUOMRatio(rcp.value("doc_exchrate").toDouble()),
+        rcp.value("doc_exchrate").isNull() ? tr("?????") : formatNumber(rcp.value("doc_exchrate").toDouble(), 6), // 6 dp to match bankrec-receipts metasql
         rcp.value("base_amount").isNull() ? tr("?????") : formatMoney(rcp.value("base_amount").toDouble()),
         rcp.value("amount").isNull() ? tr("?????") : formatMoney(rcp.value("amount").toDouble()) );
     }
@@ -417,7 +417,7 @@ void reconcileBankaccount::populate()
     systemError(this, chk.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
-  _checks->populate(chk, TRUE);
+  _checks->populate(chk, true);
 
   if(currid != -1)
     _checks->setCurrentItem(_checks->topLevelItem(currid));
@@ -454,7 +454,7 @@ void reconcileBankaccount::populate()
   params.append("effective", _startDate->date());
   params.append("expires",   _endDate->date());
   XSqlQuery bal = mbal.toQuery(params);
-  bool enableRec = FALSE;
+  bool enableRec = false;
   if(bal.first())
   {
     _clearBal->setDouble(bal.value("cleared_amount").toDouble());
@@ -466,7 +466,7 @@ void reconcileBankaccount::populate()
     if(bal.value("diff_value").toDouble() == 0.0)
     {
       if(_startDate->isValid() && _endDate->isValid())
-        enableRec = TRUE;
+        enableRec = true;
     }
     else
       stylesheet = QString("* { color: %1; }").arg(namedColor("error").name());
@@ -552,7 +552,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
             params.append("source", "SL");
           else if(child->altId()==3)
             params.append("source", "AD");
-          toggleBankrecCleared newdlg(this, "", TRUE);
+          toggleBankrecCleared newdlg(this, "", true);
           newdlg.set(params);
           newdlg.exec();
         }
@@ -601,7 +601,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
         params.append("source", "SL");
       else if(item->altId()==3)
         params.append("source", "AD");
-      toggleBankrecCleared newdlg(this, "", TRUE);
+      toggleBankrecCleared newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
       populate();
@@ -633,6 +633,7 @@ void reconcileBankaccount::sReceiptsToggleCleared()
             setto = (setto && (item->child(i)->text(0) == tr("Yes")));
           }
           item->setText(0, (setto ? tr("Yes") : tr("No")));
+          populate();
         }
       }
       else
@@ -659,7 +660,7 @@ void reconcileBankaccount::sChecksToggleCleared()
   _checks->scrollToItem(item);
 
   double rate = item->rawValue("doc_exchrate").toDouble();
-  double amount = item->rawValue("baseamount").toDouble();
+  double amount = item->rawValue("base_amount").toDouble();
   
   if (_allowEdit->isChecked() && item->text(0) != tr("Yes"))
   {
@@ -674,7 +675,7 @@ void reconcileBankaccount::sChecksToggleCleared()
       params.append("source", "SL");
     else if(item->altId()==3)
       params.append("source", "AD");
-    toggleBankrecCleared newdlg(this, "", TRUE);
+    toggleBankrecCleared newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
     populate();
@@ -694,7 +695,10 @@ void reconcileBankaccount::sChecksToggleCleared()
     reconcileChecksToggleCleared.bindValue(":baseamount", amount);
     reconcileChecksToggleCleared.exec();
     if(reconcileChecksToggleCleared.first())
+    {
       item->setText(0, (reconcileChecksToggleCleared.value("cleared").toBool() ? tr("Yes") : tr("No") ));
+      populate();
+    }
     else
     {
       populate();
@@ -825,7 +829,7 @@ void reconcileBankaccount::sBankaccntChanged()
 void reconcileBankaccount::sDateChanged()
 {
   XSqlQuery reconcileDateChanged;
-  reconcileDateChanged.prepare("SELECT TRUE AS reconciled "
+  reconcileDateChanged.prepare("SELECT true AS reconciled "
             "FROM bankrec "
             "WHERE ((bankrec_bankaccnt_id = :bankaccnt_id) "
             "AND (bankrec_posted) "

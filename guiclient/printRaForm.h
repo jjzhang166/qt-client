@@ -21,7 +21,7 @@ class printRaForm : public XDialog, public Ui::printRaForm
     Q_OBJECT
 
 public:
-    printRaForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printRaForm(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printRaForm();
 
 public slots:

@@ -26,7 +26,7 @@
 #include "getGLDistDate.h"
 #include "storedProcErrorLookup.h"
 
-cashReceiptsEditList::cashReceiptsEditList(QWidget* parent, const char* name, Qt::WFlags fl)
+cashReceiptsEditList::cashReceiptsEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -63,7 +63,7 @@ cashReceiptsEditList::cashReceiptsEditList(QWidget* parent, const char* name, Qt
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_cashrcpt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -163,7 +163,7 @@ void cashReceiptsEditList::sPost()
   
   if (_privileges->check("ChangeCashRecvPostDate"))
   {
-    getGLDistDate newdlg(this, "", TRUE);
+    getGLDistDate newdlg(this, "", true);
     newdlg.sSetDefaultLit(tr("Distribution Date"));
     if (newdlg.exec() == XDialog::Accepted)
     {
@@ -236,7 +236,7 @@ void cashReceiptsEditList::sPost()
     }
   }
   tx.exec("COMMIT;");
-  omfgThis->sCashReceiptsUpdated(-1, TRUE);
+  omfgThis->sCashReceiptsUpdated(-1, true);
   sFillList();
 }
 

@@ -256,55 +256,7 @@ to be bound by its terms.</comment>
       </attribute>
       <layout class="QHBoxLayout">
        <item>
-        <widget class="XTreeWidget" name="_charass">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout">
-         <item>
-          <widget class="QPushButton" name="_newCharacteristic">
-           <property name="text">
-            <string>New</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_editCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Edit</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_deleteCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="CharacteristicsWidget" name="_charass"/>
        </item>
       </layout>
      </widget>
@@ -384,6 +336,11 @@ to be bound by its terms.</comment>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>Comments</class>
    <extends>QWidget</extends>
    <header>comments.h</header>
@@ -431,11 +388,8 @@ to be bound by its terms.</comment>
   <tabstop>_crmAccount</tabstop>
   <tabstop>_owner</tabstop>
   <tabstop>_notes</tabstop>
-  <tabstop>_comments</tabstop>
   <tabstop>_charass</tabstop>
-  <tabstop>_newCharacteristic</tabstop>
-  <tabstop>_editCharacteristic</tabstop>
-  <tabstop>_deleteCharacteristic</tabstop>
+  <tabstop>_comments</tabstop>
   <tabstop>_uses</tabstop>
   <tabstop>_editUse</tabstop>
   <tabstop>_viewUse</tabstop>
@@ -443,54 +397,5 @@ to be bound by its terms.</comment>
   <tabstop>_active</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>_charass</sender>
-   <signal>itemSelected(int)</signal>
-   <receiver>_editCharacteristic</receiver>
-   <slot>animateClick()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_deleteCharacteristic</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_charass</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_editCharacteristic</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>604</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -73,10 +73,8 @@ FORMS   += displays/dspAllocations.ui \
            displays/dspReorderExceptionsByPlannerCode.ui \
            displays/dspReservations.ui \
            displays/dspRunningAvailability.ui \
-           displays/dspSalesOrdersByCustomer.ui \
-           displays/dspSalesOrdersByCustomerPO.ui \
+           displays/dspSalesOrders.ui \
            displays/dspSalesOrdersByItem.ui \
-           displays/dspSalesOrdersByParameterList.ui \
            displays/dspSalesOrderStatus.ui \
            displays/dspShipmentsBase.ui \
            displays/dspShipmentsByDate.ui \
@@ -195,10 +193,8 @@ HEADERS += displays/dspAllocations.h \
            displays/dspReservations.h \
            displays/dspRunningAvailability.h \
            displays/dspSalesHistory.h \
-           displays/dspSalesOrdersByCustomer.h \
-           displays/dspSalesOrdersByCustomerPO.h \
+           displays/dspSalesOrders.h \
            displays/dspSalesOrdersByItem.h \
-           displays/dspSalesOrdersByParameterList.h \
            displays/dspSalesOrderStatus.h \
            displays/dspShipmentsBase.h \
            displays/dspShipmentsByDate.h \
@@ -327,10 +323,8 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspReservations.cpp \
            displays/dspRunningAvailability.cpp \
            displays/dspSalesHistory.cpp \
-           displays/dspSalesOrdersByCustomer.cpp \
-           displays/dspSalesOrdersByCustomerPO.cpp \
+           displays/dspSalesOrders.cpp \
            displays/dspSalesOrdersByItem.cpp \
-           displays/dspSalesOrdersByParameterList.cpp \
            displays/dspSalesOrderStatus.cpp \
            displays/dspShipmentsBase.cpp \
            displays/dspShipmentsByDate.cpp \

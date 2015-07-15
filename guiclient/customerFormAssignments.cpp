@@ -18,7 +18,7 @@
 #include <openreports.h>
 #include "customerFormAssignment.h"
 
-customerFormAssignments::customerFormAssignments(QWidget* parent, const char* name, Qt::WFlags fl)
+customerFormAssignments::customerFormAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -44,7 +44,7 @@ customerFormAssignments::customerFormAssignments(QWidget* parent, const char* na
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_custform, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -66,7 +66,7 @@ void customerFormAssignments::sNew()
   ParameterList params;
   params.append("mode", "new");
   
-  customerFormAssignment newdlg(this, "", TRUE);
+  customerFormAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -79,7 +79,7 @@ void customerFormAssignments::sEdit()
   params.append("mode", "edit");
   params.append("custform_id", _custform->id());
   
-  customerFormAssignment newdlg(this, "", TRUE);
+  customerFormAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -92,7 +92,7 @@ void customerFormAssignments::sView()
   params.append("mode", "view");
   params.append("custform_id", _custform->id());
   
-  customerFormAssignment newdlg(this, "", TRUE);
+  customerFormAssignment newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -122,6 +122,8 @@ friend class ItemLineEditDelegate;
        cPlanningAny         = cPlanningMRP | cPlanningMPS | cPlanningNone,
 
       // Misc. Options
+      cHasBom              = 0x01000000,
+      cUsedOnBom           = 0x02000000,
       cItemActive          = 0x04000000,
       cSold                = 0x08000000,
 
@@ -144,8 +146,8 @@ friend class ItemLineEditDelegate;
     Q_INVOKABLE inline unsigned int type() const                   { return _type;                        }
     Q_INVOKABLE inline void setType(unsigned int pType)            { _type = pType; _defaultType = pType; } 
     Q_INVOKABLE inline void setDefaultType(unsigned int pType)     { _defaultType = pType; } 
-    Q_INVOKABLE inline void setQuery(const QString &pSql) { _sql = pSql; _useQuery = TRUE; }
-    Q_INVOKABLE inline void setValidationQuery(const QString &pSql) { _validationSql = pSql; _useValidationQuery = TRUE; }
+    Q_INVOKABLE inline void setQuery(const QString &pSql) { _sql = pSql; _useQuery = true; }
+    Q_INVOKABLE inline void setValidationQuery(const QString &pSql) { _validationSql = pSql; _useValidationQuery = true; }
     Q_INVOKABLE inline int queryUsed() const              { return _useQuery;              }
     Q_INVOKABLE inline int validationQueryUsed() const    { return _useValidationQuery;    }
 

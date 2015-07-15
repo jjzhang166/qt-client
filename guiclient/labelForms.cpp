@@ -18,7 +18,7 @@
 
 #include "labelForm.h"
 
-labelForms::labelForms(QWidget* parent, const char* name, Qt::WFlags fl)
+labelForms::labelForms(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -39,7 +39,7 @@ labelForms::labelForms(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_labelforms, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -61,7 +61,7 @@ void labelForms::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  labelForm newdlg(this, "", TRUE);
+  labelForm newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -74,7 +74,7 @@ void labelForms::sEdit()
   params.append("mode", "edit");
   params.append("labelform_id", _labelforms->id());
 
-  labelForm newdlg(this, "", TRUE);
+  labelForm newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -87,7 +87,7 @@ void labelForms::sView()
   params.append("mode", "view");
   params.append("labelform_id", _labelforms->id());
 
-  labelForm newdlg(this, "", TRUE);
+  labelForm newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

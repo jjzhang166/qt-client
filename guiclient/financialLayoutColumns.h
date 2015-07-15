@@ -22,7 +22,7 @@ class financialLayoutColumns : public XDialog, public Ui::financialLayoutColumns
     Q_OBJECT
 
 public:
-    financialLayoutColumns(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    financialLayoutColumns(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~financialLayoutColumns();
 
     virtual void populate();

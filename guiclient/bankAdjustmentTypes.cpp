@@ -21,7 +21,7 @@
 #include "bankAdjustmentType.h"
 #include "storedProcErrorLookup.h"
 
-bankAdjustmentTypes::bankAdjustmentTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+bankAdjustmentTypes::bankAdjustmentTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -41,7 +41,7 @@ bankAdjustmentTypes::bankAdjustmentTypes(QWidget* parent, const char* name, Qt::
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_bankadjtype, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -66,7 +66,7 @@ void bankAdjustmentTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  bankAdjustmentType newdlg(this, "", TRUE);
+  bankAdjustmentType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -79,7 +79,7 @@ void bankAdjustmentTypes::sEdit()
   params.append("mode", "edit");
   params.append("bankadjtype_id", _bankadjtype->id());
 
-  bankAdjustmentType newdlg(this, "", TRUE);
+  bankAdjustmentType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -92,7 +92,7 @@ void bankAdjustmentTypes::sView()
   params.append("mode", "view");
   params.append("bankadjtype_id", _bankadjtype->id());
 
-  bankAdjustmentType newdlg(this, "", TRUE);
+  bankAdjustmentType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

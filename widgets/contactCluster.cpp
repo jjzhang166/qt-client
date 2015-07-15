@@ -168,6 +168,7 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   _faxLit = new QLabel(tr("Fax:"),this);
   _emailLit = new QLabel(tr("Email:"),this);
   _webaddrLit = new QLabel(tr("Web:"),this);
+  _addrLit = new QLabel(tr("Address:"),this);
 
   _phone = new QLabel(this);
   _phone2 = new QLabel(this);
@@ -182,6 +183,7 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   _faxLit->setObjectName("_faxLit");
   _emailLit->setObjectName("_emailLit");
   _webaddrLit->setObjectName("_webaddrLit");
+  _addrLit->setObjectName("_addrLit");
 
   _phone->setObjectName("_phone");
   _phone2->setObjectName("_phone2");
@@ -191,6 +193,7 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   _addr->setObjectName("_addr");
 
   _phone->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+  _phone->setMinimumWidth(100);
   _description->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
   _addr->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
 
@@ -200,9 +203,11 @@ ContactCluster::ContactCluster(QWidget* pParent, const char* pName) :
   _faxLit->setAlignment(Qt::AlignRight);
   _emailLit->setAlignment(Qt::AlignRight);
   _webaddrLit->setAlignment(Qt::AlignRight);
+  _addrLit->setAlignment(Qt::AlignLeft);
 
   _addrLayout = new QVBoxLayout;
   QSpacerItem* _addrSpacer = new QSpacerItem(20,0,QSizePolicy::Preferred,QSizePolicy::Expanding);
+  _addrLayout->addWidget(_addrLit);
   _addrLayout->addWidget(_addr);
   _addrLayout->addSpacerItem(_addrSpacer);
 
@@ -229,6 +234,7 @@ void ContactCluster::setDescriptionVisible(bool p)
   _webaddrLit->setVisible(p);
   _webaddr->setVisible(p);
   _addr->setVisible(p);
+  _addrLit->setVisible(p);
 }
 
 void ContactCluster::setMinimalLayout(bool isMinimal)
@@ -249,10 +255,12 @@ void ContactCluster::setMinimalLayout(bool isMinimal)
    _grid->removeWidget(_webaddrLit);
    _grid->removeWidget(_webaddr);
    _grid->removeWidget(_addr);
+   _grid->removeWidget(_addrLit);
    _grid->removeItem(_addrLayout);
 
    if (isMinimal) {
     _addr->hide();
+    _addrLit->hide();
     _grid->addWidget(_phoneLit, 2, 0, 1, 1);
     _grid->addWidget(_phone, 2, 1, 1 ,1);
     _grid->addWidget(_titleLit, 2, 2, 1, 1);
@@ -268,6 +276,7 @@ void ContactCluster::setMinimalLayout(bool isMinimal)
   }
   else {
     _addr->show();
+    _addrLit->show();
     _grid->addWidget(_titleLit, 2, 0, 1, 1);
     _grid->addWidget(_description, 2, 1, 1, 2);
     _grid->addWidget(_phoneLit, 3, 0, 1, 1);
@@ -280,7 +289,7 @@ void ContactCluster::setMinimalLayout(bool isMinimal)
     _grid->addWidget(_email, 6, 1, 1, 1);
     _grid->addWidget(_webaddrLit, 7, 0, 1, 1) ;
     _grid->addWidget(_webaddr, 7, 1, 1, 1);
-    _grid->addLayout(_addrLayout, 3, 2, 4, 1);
+    _grid->addLayout(_addrLayout, 3, 2, 5, 1);
   }
   _minLayout = isMinimal;
 }

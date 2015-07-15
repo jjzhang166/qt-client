@@ -10,7 +10,7 @@
 
 #include "dspShipmentsByShipment.h"
 
-dspShipmentsByShipment::dspShipmentsByShipment(QWidget* parent, const char*, Qt::WFlags fl)
+dspShipmentsByShipment::dspShipmentsByShipment(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspShipmentsBase(parent, "dspShipmentsByShipment", fl)
 {
   setWindowTitle(tr("Shipments by Shipment"));

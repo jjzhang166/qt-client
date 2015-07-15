@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Check Register</string>
+   <string>Payment Register</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
    <item row="0" column="0">
@@ -91,7 +91,7 @@ to be bound by its terms.</comment>
               <item row="1" column="0">
                <widget class="QLabel" name="_checkNumberLabel">
                 <property name="text">
-                 <string>Check Number:</string>
+                 <string>Payment Number:</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -151,7 +151,7 @@ to be bound by its terms.</comment>
          <item row="1" column="0">
           <widget class="QGroupBox" name="_recipGroup">
            <property name="title">
-            <string>Show only checks written to:</string>
+            <string>Show only payments written to:</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -440,7 +440,7 @@ to be bound by its terms.</comment>
         <item>
          <widget class="QLabel" name="_checkslit">
           <property name="text">
-           <string>Checks</string>
+           <string>Payments</string>
           </property>
           <property name="buddy">
            <cstring>_check</cstring>

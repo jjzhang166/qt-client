@@ -20,7 +20,7 @@ class reports : public XWidget, public Ui::reports
     Q_OBJECT
 
 public:
-    reports(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    reports(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~reports();
 
 public slots:

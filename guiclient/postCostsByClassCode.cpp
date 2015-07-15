@@ -13,7 +13,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-postCostsByClassCode::postCostsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postCostsByClassCode::postCostsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -36,10 +36,10 @@ postCostsByClassCode::postCostsByClassCode(QWidget* parent, const char* name, bo
   }
   else if (_metrics->value("TrackMachineOverhead") != "M")
   {
-    _machOverhead->setEnabled(FALSE);
-    _machOverhead->setChecked(TRUE);
-    _lowerMachOverhead->setEnabled(FALSE);
-    _lowerMachOverhead->setChecked(TRUE);
+    _machOverhead->setEnabled(false);
+    _machOverhead->setChecked(true);
+    _lowerMachOverhead->setEnabled(false);
+    _lowerMachOverhead->setChecked(true);
   }
 }
 
@@ -55,20 +55,20 @@ void postCostsByClassCode::languageChange()
 
 void postCostsByClassCode::sSelectAll()
 {
-  _material->setChecked(TRUE);
-  _lowerMaterial->setChecked(TRUE);
-  _user->setChecked(TRUE);
-  _lowerUser->setChecked(TRUE);
+  _material->setChecked(true);
+  _lowerMaterial->setChecked(true);
+  _user->setChecked(true);
+  _lowerUser->setChecked(true);
   if (_metrics->boolean("Routings"))
   {
-    _directLabor->setChecked(TRUE);
-    _lowerDirectLabor->setChecked(TRUE);
-    _overhead->setChecked(TRUE);
-    _lowerOverhead->setChecked(TRUE);
+    _directLabor->setChecked(true);
+    _lowerDirectLabor->setChecked(true);
+    _overhead->setChecked(true);
+    _lowerOverhead->setChecked(true);
     if (_metrics->value("TrackMachineOverhead") == "M")
     {
-      _machOverhead->setChecked(TRUE);
-      _lowerMachOverhead->setChecked(TRUE);
+      _machOverhead->setChecked(true);
+      _lowerMachOverhead->setChecked(true);
     }
   }
 }
@@ -76,7 +76,7 @@ void postCostsByClassCode::sSelectAll()
 void postCostsByClassCode::sPost()
 {
   XSqlQuery postPost;
-  QString sql = "SELECT doPostCosts(item_id, TRUE, :material, :lowMaterial, "
+  QString sql = "SELECT doPostCosts(item_id, true, :material, :lowMaterial, "
                 "       :directLabor, :lowDirectLabor, :overhead, :lowOverhead, "
                 "       :machOverhead, :lowMachOverhead, :user, :lowUser, :rollUp) "
                 "  FROM item, classcode "

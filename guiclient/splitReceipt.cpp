@@ -20,7 +20,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-splitReceipt::splitReceipt(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+splitReceipt::splitReceipt(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

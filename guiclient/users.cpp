@@ -17,7 +17,7 @@
 #include "errorReporter.h"
 #include "user.h"
 
-users::users(QWidget* parent, const char* name, Qt::WFlags fl)
+users::users(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   XSqlQuery usersusers;

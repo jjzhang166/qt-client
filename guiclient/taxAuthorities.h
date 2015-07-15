@@ -18,7 +18,7 @@ class taxAuthorities : public display
     Q_OBJECT
 
 public:
-    taxAuthorities(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    taxAuthorities(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual void sDelete();

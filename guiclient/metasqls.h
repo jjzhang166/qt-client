@@ -24,7 +24,7 @@ class metasqls : public XWidget, public Ui::metasqls
     Q_OBJECT
 
 public:
-    metasqls(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    metasqls(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~metasqls();
 
     static bool userHasPriv(const int priv = cView);

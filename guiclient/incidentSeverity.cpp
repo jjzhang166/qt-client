@@ -15,7 +15,7 @@
 #include <QValidator>
 #include <QVariant>
 
-incidentSeverity::incidentSeverity(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+incidentSeverity::incidentSeverity(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -62,9 +62,9 @@ enum SetResponse incidentSeverity::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _order->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _order->setEnabled(false);
+      _descrip->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -90,7 +90,7 @@ void incidentSeverity::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

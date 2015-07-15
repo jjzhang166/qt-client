@@ -19,7 +19,7 @@ class shipVias : public XWidget, public Ui::shipVias
     Q_OBJECT
 
 public:
-    shipVias(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    shipVias(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~shipVias();
 
 public slots:

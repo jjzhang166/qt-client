@@ -56,7 +56,7 @@ class reprintMulticopyDocumentPrivate : public Ui::reprintMulticopyDocument
 reprintMulticopyDocument::reprintMulticopyDocument(QWidget    *parent,
                                                    const char *name,
                                                    bool        modal,
-                                                   Qt::WFlags  fl)
+                                                   Qt::WindowFlags  fl)
   : XDialog(parent, name, modal, fl)
 {
   _data = new reprintMulticopyDocumentPrivate(this);
@@ -75,7 +75,7 @@ reprintMulticopyDocument::reprintMulticopyDocument(QString numCopiesMetric,
                                                    QWidget    *parent,
                                                    const char *name,
                                                    bool        modal,
-                                                   Qt::WFlags  fl)
+                                                   Qt::WindowFlags  fl)
   : XDialog(parent, name, modal, fl)
 {
   _data = new reprintMulticopyDocumentPrivate(this);
@@ -243,7 +243,7 @@ ParameterList reprintMulticopyDocument::getParamsOneCopy(int row,
 {
   ParameterList params;
   params.append(_data->_reportKey,  item->id());
-  params.append("showcosts", (_data->_copies->showCosts(row) ? "TRUE" : "FALSE"));
+  params.append("showcosts", (_data->_copies->showCosts(row) ? "true" : "false"));
   params.append("watermark", _data->_copies->watermark(row));
 
   return params;

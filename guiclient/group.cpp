@@ -20,7 +20,7 @@
 
 #define DEBUG false
 
-group::group(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+group::group(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery groupgroup;
@@ -39,8 +39,10 @@ group::group(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_available, SIGNAL(itemSelected(int)), this, SLOT(sAdd()));
 
 
-  _available->addColumn("Available Privileges", -1, Qt::AlignLeft, true, "priv_name");
-  _granted->addColumn("Granted Privileges", -1, Qt::AlignLeft, true, "priv_name");
+  _available->addColumn(tr("Available Privileges"), -1, Qt::AlignLeft, true, "priv_name");
+  _available->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "priv_descrip");
+  _granted->addColumn(tr("Granted Privileges"), -1, Qt::AlignLeft, true, "priv_name");
+  _granted->addColumn(tr("Description"), -1, Qt::AlignLeft, true, "priv_descrip");
 
   groupgroup.exec( "SELECT DISTINCT priv_module "
           "FROM priv "
@@ -111,16 +113,16 @@ enum SetResponse group::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
       groupet.exec("BEGIN;");
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _addAll->setEnabled(FALSE);
-      _revokeAll->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _addAll->setEnabled(false);
+      _revokeAll->setEnabled(false);
       disconnect(_available, SIGNAL(itemSelected(int)), this, SLOT(sAdd()));
       disconnect(_available, SIGNAL(valid(bool)), _add, SLOT(setEnabled(bool)));
       disconnect(_granted, SIGNAL(itemSelected(int)), this, SLOT(sRevoke()));
@@ -191,7 +193,7 @@ void group::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
@@ -234,7 +236,7 @@ void group::sSave()
 void group::sModuleSelected(const QString &pModule)
 {
   XSqlQuery avail;
-  avail.prepare( "SELECT priv_id, priv_name "
+  avail.prepare( "SELECT priv_id, priv_name, priv_descrip "
                  "FROM priv "
                  "WHERE ((priv_module=:priv_module) "
                  "   AND (priv_id NOT IN (SELECT grppriv_priv_id"
@@ -253,7 +255,7 @@ void group::sModuleSelected(const QString &pModule)
   }
 
   XSqlQuery grppriv;
-  grppriv.prepare( "SELECT priv_id, priv_name "
+  grppriv.prepare( "SELECT priv_id, priv_name, priv_descrip "
                    "FROM priv, grppriv "
                    "WHERE ((grppriv_priv_id=priv_id)"
                    "   AND (grppriv_grp_id=:grp_id)"

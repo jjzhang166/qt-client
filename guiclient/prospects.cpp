@@ -21,7 +21,7 @@
 #include "prospect.h"
 #include "storedProcErrorLookup.h"
 
-prospects::prospects(QWidget* parent, const char*, Qt::WFlags fl)
+prospects::prospects(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "prospects", fl)
 {
   setWindowTitle(tr("Prospects"));
@@ -47,7 +47,7 @@ prospects::prospects(QWidget* parent, const char*, Qt::WFlags fl)
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 

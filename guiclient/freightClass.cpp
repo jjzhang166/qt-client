@@ -15,7 +15,7 @@
 #include <QPushButton>
 #include <QSqlError>
 
-freightClass::freightClass(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+freightClass::freightClass(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -57,7 +57,7 @@ enum SetResponse freightClass::set(const ParameterList &pParams)
     {
       _mode = cNew;
 
-      _buttonBox->button(QDialogButtonBox::Save)->setEnabled(FALSE);
+      _buttonBox->button(QDialogButtonBox::Save)->setEnabled(false);
     }
     else if (param.toString() == "edit")
     {
@@ -67,8 +67,8 @@ enum SetResponse freightClass::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _freightClass->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _freightClass->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -141,11 +141,11 @@ void freightClass::sCheck()
       _mode = cEdit;
       populate();
 
-      _freightClass->setEnabled(FALSE);
+      _freightClass->setEnabled(false);
     }
   }
 
-  _buttonBox->button(QDialogButtonBox::Save)->setEnabled(TRUE);
+  _buttonBox->button(QDialogButtonBox::Save)->setEnabled(true);
 }
 
 void freightClass::populate()

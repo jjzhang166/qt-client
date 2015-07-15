@@ -15,7 +15,7 @@
 #include "subAccntType.h"
 #include <openreports.h>
 
-subAccntTypes::subAccntTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+subAccntTypes::subAccntTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ void subAccntTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  subAccntType newdlg(this, "", TRUE);
+  subAccntType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -75,7 +75,7 @@ void subAccntTypes::sEdit()
   params.append("mode", "edit");
   params.append("subaccnttype_id", _subaccnttypes->id());
 
-  subAccntType newdlg(this, "", TRUE);
+  subAccntType newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

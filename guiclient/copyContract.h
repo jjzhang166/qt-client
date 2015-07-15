@@ -22,7 +22,7 @@ class copyContract : public XDialog, public Ui::copyContract
     Q_OBJECT
 
 public:
-    copyContract(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    copyContract(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~copyContract();
 
 public slots:

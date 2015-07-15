@@ -10,7 +10,7 @@
 
 #include "dspCountTagsByWarehouse.h"
 
-dspCountTagsByWarehouse::dspCountTagsByWarehouse(QWidget* parent, const char*, Qt::WFlags fl)
+dspCountTagsByWarehouse::dspCountTagsByWarehouse(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspCountTagsBase(parent, "dspCountTagsByWarehouse", fl)
 {
   setWindowTitle(tr("Count Tags by Site"));

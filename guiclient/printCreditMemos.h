@@ -20,7 +20,7 @@ class printCreditMemos : public printMulticopyDocument,
     Q_OBJECT
 
   public:
-    printCreditMemos(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    printCreditMemos(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printCreditMemos();
 
   protected slots:

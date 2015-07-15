@@ -18,7 +18,7 @@
 #include "storedProcErrorLookup.h"
 #include "transferOrder.h"
 
-copyTransferOrder::copyTransferOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+copyTransferOrder::copyTransferOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -26,7 +26,7 @@ copyTransferOrder::copyTransferOrder(QWidget* parent, const char* name, bool mod
   connect(_buttonBox,	SIGNAL(accepted()), this, SLOT(sCopy()));
   connect(_to,	       SIGNAL(newId(int)), this, SLOT(populate()));
 
-  _captive = FALSE;
+  _captive = false;
   _to->setAllowedTypes(OrderLineEdit::Transfer);
   _to->setLabel("");
 
@@ -55,10 +55,10 @@ enum SetResponse copyTransferOrder::set(const ParameterList &pParams)
   param = pParams.value("tohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _to->setAllowedType("TO");
     _to->setId(param.toInt());
-    _to->setEnabled(FALSE);
+    _to->setEnabled(false);
     populate();
   }
 

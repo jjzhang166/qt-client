@@ -17,7 +17,7 @@
 #include "storedProcErrorLookup.h"
 #include "uomConv.h"
 
-uom::uom(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+uom::uom(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -74,9 +74,9 @@ enum SetResponse uom::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _weightUom->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _weightUom->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
 
@@ -118,7 +118,7 @@ void uom::sSave()
                                           QMessageBox::Yes | QMessageBox::Escape,
                                           QMessageBox::No | QMessageBox::Default);
       if (response == QMessageBox::Yes)
-        uomSave.exec("UPDATE uom SET uom_item_weight=FALSE;");
+        uomSave.exec("UPDATE uom SET uom_item_weight=false;");
       else
         return;
     }
@@ -174,7 +174,7 @@ void uom::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }
@@ -237,7 +237,7 @@ void uom::sNew()
   params.append("mode", "new");
   params.append("from_uom_id", _uomid);
 
-  uomConv newdlg(this, "", TRUE);
+  uomConv newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();
@@ -252,7 +252,7 @@ void uom::sEdit()
     params.append("mode", "edit");
   params.append("uomconv_id", _uomconv->id());
 
-  uomConv newdlg(this, "", TRUE);
+  uomConv newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();

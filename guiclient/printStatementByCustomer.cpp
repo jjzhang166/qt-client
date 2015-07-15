@@ -17,7 +17,7 @@
 
 #include "errorReporter.h"
 
-printStatementByCustomer::printStatementByCustomer(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printStatementByCustomer::printStatementByCustomer(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : printSinglecopyDocument(parent, name, modal, fl)
 {
   setupUi(optionsWidget());

@@ -17,7 +17,7 @@
 #include <openreports.h>
 #include "commentType.h"
 
-commentTypes::commentTypes(QWidget* parent, const char* name, Qt::WFlags fl)
+commentTypes::commentTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -84,7 +84,7 @@ void commentTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  commentType newdlg(this, "", TRUE);
+  commentType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -97,7 +97,7 @@ void commentTypes::sEdit()
   params.append("mode", "edit");
   params.append("cmnttype_id", _cmnttype->id());
 
-  commentType newdlg(this, "", TRUE);
+  commentType newdlg(this, "", true);
   newdlg.set(params);
   
   if (newdlg.exec() != XDialog::Rejected)
@@ -110,7 +110,7 @@ void commentTypes::sView()
   params.append("mode", "view");
   params.append("cmnttype_id", _cmnttype->id());
 
-  commentType newdlg(this, "", TRUE);
+  commentType newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

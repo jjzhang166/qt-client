@@ -21,7 +21,7 @@
 #include "accountNumber.h"
 #include "storedProcErrorLookup.h"
 
-accountNumbers::accountNumbers(QWidget* parent, const char* name, Qt::WFlags fl)
+accountNumbers::accountNumbers(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -35,8 +35,28 @@ accountNumbers::accountNumbers(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_print,            SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_showExternal, SIGNAL(toggled(bool)), this, SLOT(sBuildList()));
   connect(_showInactive, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
+  connect(_type, SIGNAL(newID(int)), this, SLOT(sFillList()));
+  connect(_type, SIGNAL(activated(int)), this, SLOT(populateSubTypes()));
+  connect(_subType, SIGNAL(newID(int)), this, SLOT(sFillList()));
 
   connect(omfgThis, SIGNAL(configureGLUpdated()), this, SLOT(sBuildList()));
+
+  _type->setAllowNull(true);
+  QString qryType = QString( "SELECT  1, '%1' UNION "
+                             "SELECT  2, '%2' UNION "
+                             "SELECT  3, '%3' UNION "
+                             "SELECT  4, '%4' UNION "
+                             "SELECT  5, '%5' ")
+  .arg(tr("Asset"))
+  .arg(tr("Liability"))
+  .arg(tr("Expense"))
+  .arg(tr("Revenue"))
+  .arg(tr("Equity"));
+
+  _type->populate(qryType);
+
+  _subType->setAllowNull(true);
+  populateSubTypes();
 
   _showExternal->setVisible(_metrics->boolean("MultiCompanyFinancialConsolidation"));
 
@@ -83,7 +103,7 @@ void accountNumbers::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  accountNumber newdlg(this, "", TRUE);
+  accountNumber newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -101,7 +121,7 @@ void accountNumbers::sEdit()
     params.append("mode", "edit");
   params.append("accnt_id", _account->id());
 
-  accountNumber newdlg(this, "", TRUE);
+  accountNumber newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -122,6 +142,20 @@ bool accountNumbers::setParams(ParameterList &pParams)
   pParams.append("equity",    tr("Equity"));
   pParams.append("revenue",   tr("Revenue"));
 
+  if (_type->id() == 1)
+    pParams.append("accnt_type", "A");
+  else if (_type->id() == 2)
+    pParams.append("accnt_type", "L");
+  else if (_type->id() == 3)
+    pParams.append("accnt_type", "E");
+  else if (_type->id() == 4)
+    pParams.append("accnt_type", "R");
+  else if (_type->id() == 5)
+    pParams.append("accnt_type", "Q");
+
+  if (_subType->currentIndex() > 0)
+    pParams.append("subaccnt_type", _subType->id());    
+
   return true;
 }
 
@@ -131,7 +165,7 @@ void accountNumbers::sPrint()
   if (! setParams(params))
     return;
 
-  orReport report("AccountNumberMasterList");
+  orReport report("AccountNumberMasterList", params);
   if (report.isValid())
     report.print();
   else
@@ -223,4 +257,31 @@ void accountNumbers::sHandleButtons()
     _edit->setText(tr("View"));
   else
     _edit->setText(tr("Edit"));
+}
+
+void accountNumbers::populateSubTypes()
+{
+  XSqlQuery sub;
+  sub.prepare("SELECT subaccnttype_id, (subaccnttype_code||'-'||subaccnttype_descrip) "
+              "FROM subaccnttype "
+              "WHERE (subaccnttype_accnt_type=:subaccnttype_accnt_type) "
+              "ORDER BY subaccnttype_code; ");
+  if (_type->id() == 1)
+    sub.bindValue(":subaccnttype_accnt_type", "A");
+  else if (_type->id() == 2)
+    sub.bindValue(":subaccnttype_accnt_type", "L");
+  else if (_type->id() == 3)
+    sub.bindValue(":subaccnttype_accnt_type", "E");
+  else if (_type->id() == 4)
+    sub.bindValue(":subaccnttype_accnt_type", "R");
+  else if (_type->id() == 5)
+    sub.bindValue(":subaccnttype_accnt_type", "Q");
+  sub.exec();
+  _subType->populate(sub);
+  if (sub.lastError().type() != QSqlError::NoError)
+  {
+    systemError(this, sub.lastError().databaseText(), __FILE__, __LINE__);
+    return;
+  }
+  
 }

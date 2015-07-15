@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-dspSingleLevelBOM::dspSingleLevelBOM(QWidget* parent, const char*, Qt::WFlags fl)
+dspSingleLevelBOM::dspSingleLevelBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
   : dspBOMBase(parent, "dspSingleLevelBOM", fl)
 {
   setWindowTitle(tr("Single Level Bill of Materials"));

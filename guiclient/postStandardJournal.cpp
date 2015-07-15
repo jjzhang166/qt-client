@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include "glSeries.h"
 
-postStandardJournal::postStandardJournal(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+postStandardJournal::postStandardJournal(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -28,7 +28,7 @@ postStandardJournal::postStandardJournal(QWidget* parent, const char* name, bool
   _captive = false;
   _doSubmit = false;
 
-  _stdjrnl->setAllowNull(TRUE);
+  _stdjrnl->setAllowNull(true);
   _stdjrnl->populate( "SELECT stdjrnl_id, stdjrnl_name "
                       "FROM stdjrnl "
                       "ORDER BY stdjrnl_name;" );
@@ -47,7 +47,7 @@ void postStandardJournal::languageChange()
 enum SetResponse postStandardJournal::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -87,7 +87,7 @@ void postStandardJournal::sPost()
     if(_doSubmit)
       params.append("submit");
 
-    glSeries newdlg(this, "", TRUE);
+    glSeries newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }

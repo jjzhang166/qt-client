@@ -20,7 +20,7 @@ class purgeCreditMemos : public XDialog, public Ui::purgeCreditMemos
     Q_OBJECT
 
 public:
-    purgeCreditMemos(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    purgeCreditMemos(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~purgeCreditMemos();
 
 public slots:

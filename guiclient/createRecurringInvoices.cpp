@@ -16,7 +16,7 @@
 
 #include "storedProcErrorLookup.h"
 
-createRecurringInvoices::createRecurringInvoices(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createRecurringInvoices::createRecurringInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

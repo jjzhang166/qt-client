@@ -20,7 +20,7 @@ class unappliedARCreditMemos : public XWidget, public Ui::unappliedARCreditMemos
     Q_OBJECT
 
 public:
-    unappliedARCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    unappliedARCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~unappliedARCreditMemos();
 
 public slots:

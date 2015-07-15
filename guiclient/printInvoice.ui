@@ -125,10 +125,7 @@ to be bound by its terms.</comment>
    <header>custcluster.h</header>
   </customwidget>
  </customwidgets>
- <includes>
-  <include location="global">parameter.h</include>
-  <include location="global">qprinter.h</include>
- </includes>
+ <includes/>
  <resources/>
  <connections/>
 </ui>

@@ -18,7 +18,7 @@ class dspPlannedOrders : public display
     Q_OBJECT
 
 public:
-    dspPlannedOrders(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPlannedOrders(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual SetResponse set( const ParameterList & pParams );

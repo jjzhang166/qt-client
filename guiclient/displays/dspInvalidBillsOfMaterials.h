@@ -21,7 +21,7 @@ class dspInvalidBillsOfMaterials : public display, public Ui::dspInvalidBillsOfM
     Q_OBJECT
 
 public:
-    dspInvalidBillsOfMaterials(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspInvalidBillsOfMaterials(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

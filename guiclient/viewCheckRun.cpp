@@ -25,7 +25,7 @@
 #include "printChecks.h"
 #include "storedProcErrorLookup.h"
 
-viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WFlags fl)
+viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);  
@@ -88,7 +88,7 @@ void viewCheckRun::sVoid()
       systemError(this, storedProcErrorLookup("voidCheck", result), __FILE__, __LINE__);
       return;
     }
-    omfgThis->sChecksUpdated(viewVoid.value("checkhead_bankaccnt_id").toInt(), _check->id(), TRUE);
+    omfgThis->sChecksUpdated(viewVoid.value("checkhead_bankaccnt_id").toInt(), _check->id(), true);
   }
   else if (viewVoid.lastError().type() != QSqlError::NoError)
   {
@@ -113,7 +113,7 @@ void viewCheckRun::sDelete()
       systemError(this, storedProcErrorLookup("deleteCheck", result), __FILE__, __LINE__);
       return;
     }
-    omfgThis->sChecksUpdated(viewDelete.value("checkhead_bankaccnt_id").toInt(), _check->id(), TRUE);
+    omfgThis->sChecksUpdated(viewDelete.value("checkhead_bankaccnt_id").toInt(), _check->id(), true);
   }
   else if (viewDelete.lastError().type() != QSqlError::NoError)
   {
@@ -163,7 +163,7 @@ void viewCheckRun::sReplace()
       return;
     }
     omfgThis->sChecksUpdated( viewReplace.value("checkhead_bankaccnt_id").toInt(),
-                                viewReplace.value("result").toInt(), TRUE);
+                                viewReplace.value("result").toInt(), true);
   }
   else if (viewReplace.lastError().type() != QSqlError::NoError)
   {
@@ -186,7 +186,7 @@ void viewCheckRun::sReplaceAll()
       systemError(this, storedProcErrorLookup("replaceAllVoidedChecks", result), __FILE__, __LINE__);
       return;
     }
-    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, TRUE);
+    omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
   }
   else if (viewReplaceAll.lastError().type() != QSqlError::NoError)
   {
@@ -210,7 +210,7 @@ void viewCheckRun::sPost()
   ParameterList params;
   params.append("check_id", _check->id());
 
-  postCheck newdlg(this, "", TRUE);
+  postCheck newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -270,23 +270,23 @@ void viewCheckRun::sHandleItemSelection()
 
   if (! selected)
   {
-    _void->setEnabled(FALSE);
-    _delete->setEnabled(FALSE);
-    _replace->setEnabled(FALSE);
+    _void->setEnabled(false);
+    _delete->setEnabled(false);
+    _replace->setEnabled(false);
     select = true;
 
-    _edit->setEnabled(FALSE);
+    _edit->setEnabled(false);
 
     return;
   }
 
   if (selected->rawValue("checkhead_void").toBool())
   {
-    _void->setEnabled(FALSE);
-    _delete->setEnabled(TRUE);
-    _replace->setEnabled(TRUE);
+    _void->setEnabled(false);
+    _delete->setEnabled(true);
+    _replace->setEnabled(true);
 
-    _edit->setEnabled(FALSE);
+    _edit->setEnabled(false);
   }
   else if (! selected->rawValue("checkhead_void").isNull() &&
            ! selected->rawValue("checkhead_void").toBool())
@@ -296,8 +296,8 @@ void viewCheckRun::sHandleItemSelection()
     // requirement change this is the original line
     //_void->setEnabled(selected->rawValue("checkhead_ach_batch").isNull());
     _void->setEnabled(true);
-    _delete->setEnabled(FALSE);
-    _replace->setEnabled(FALSE);
+    _delete->setEnabled(false);
+    _replace->setEnabled(false);
     select = selected->rawValue("checkhead_ach_batch").isNull();
 
     _edit->setEnabled(selected->rawValue("checkhead_misc").toBool() &&
@@ -398,7 +398,7 @@ void viewCheckRun::sPrintCheckRun()
   ParameterList params;
   params.append("bankaccnt_id", _bankaccnt->id()); 
 
-  printChecks newdlg(this, "", TRUE);
+  printChecks newdlg(this, "", true);
   newdlg.set(params);
   newdlg.setWindowModality(Qt::WindowModal);
   newdlg.exec();
@@ -409,7 +409,7 @@ void viewCheckRun::sPostChecks()
   ParameterList params;
   params.append("bankaccnt_id", _bankaccnt->id()); 
 
-  postChecks newdlg(this, "", TRUE);
+  postChecks newdlg(this, "", true);
   newdlg.set(params);
   newdlg.setWindowModality(Qt::WindowModal);
   newdlg.exec();

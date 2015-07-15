@@ -25,7 +25,7 @@
 #include "purchaseRequest.h"
 #include "purchaseOrder.h"
 
-dspTimePhasedAvailability::dspTimePhasedAvailability(QWidget* parent, const char*, Qt::WFlags fl)
+dspTimePhasedAvailability::dspTimePhasedAvailability(QWidget* parent, const char*, Qt::WindowFlags fl)
     : displayTimePhased(parent, "dspTimePhasedAvailability", fl)
 {
   setupUi(optionsWidget());

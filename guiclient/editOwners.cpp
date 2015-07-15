@@ -17,7 +17,7 @@
 
 #include "storedProcErrorLookup.h"
 
-editOwners::editOwners(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+editOwners::editOwners(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery editeditOwners;

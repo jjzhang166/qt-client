@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-deletePlannedOrdersByPlannerCode::deletePlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+deletePlannedOrdersByPlannerCode::deletePlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -23,7 +23,7 @@ deletePlannedOrdersByPlannerCode::deletePlannedOrdersByPlannerCode(QWidget* pare
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _plannerCode->setType(ParameterGroup::PlannerCode);
 }

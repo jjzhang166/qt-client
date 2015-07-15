@@ -21,7 +21,7 @@ class configureEncryption : public XAbstractConfigure, public Ui::configureEncry
     Q_OBJECT
 
 public:
-    configureEncryption(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configureEncryption(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configureEncryption();
 
 public slots:

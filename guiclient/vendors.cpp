@@ -17,13 +17,12 @@
 
 #include <openreports.h>
 
-#include "characteristic.h"
 #include "errorReporter.h"
 #include "parameterwidget.h"
 #include "storedProcErrorLookup.h"
 #include "vendor.h"
 
-vendors::vendors(QWidget* parent, const char*, Qt::WFlags fl)
+vendors::vendors(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "vendors", fl)
 {
   setWindowTitle(tr("Vendors"));
@@ -49,6 +48,7 @@ vendors::vendors(QWidget* parent, const char*, Qt::WFlags fl)
 
   list()->addColumn(tr("Type"),   _itemColumn, Qt::AlignCenter, true, "vendtype_code");
   list()->addColumn(tr("Number"), _itemColumn, Qt::AlignLeft,   true, "vend_number");
+  list()->addColumn(tr("Active"), _ynColumn,   Qt::AlignCenter, false, "vend_active");
   list()->addColumn(tr("Name"),   -1,          Qt::AlignLeft,   true, "vend_name");
   list()->addColumn(tr("First"),   50, Qt::AlignLeft  , true, "cntct_first_name" );
   list()->addColumn(tr("Last"),    -1, Qt::AlignLeft  , true, "cntct_last_name" );
@@ -60,7 +60,7 @@ vendors::vendors(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Country"), 100, Qt::AlignLeft  , false, "addr_country" );
   list()->addColumn(tr("Postal Code"), 75, Qt::AlignLeft  , false, "addr_postalcode" );
 
-  setupCharacteristics(characteristic::Vendors);
+  setupCharacteristics("V");
 
   connect(omfgThis, SIGNAL(vendorsUpdated()), SLOT(sFillList()));
 
@@ -68,7 +68,7 @@ vendors::vendors(QWidget* parent, const char*, Qt::WFlags fl)
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 }

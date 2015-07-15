@@ -16,7 +16,7 @@
 #include "metasql.h"
 #include "parameter.h"
 
-taxAssignments::taxAssignments(QWidget* parent, const char* name, Qt::WFlags fl)
+taxAssignments::taxAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);

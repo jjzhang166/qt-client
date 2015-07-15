@@ -20,7 +20,7 @@ class dspPoItemsByVendor : public display, public Ui::dspPoItemsByVendor
     Q_OBJECT
 
 public:
-    dspPoItemsByVendor(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPoItemsByVendor(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

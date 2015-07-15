@@ -23,7 +23,7 @@
 #include "errorReporter.h"
 #include "taxCodeRate.h"
 
-taxCode::taxCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxCode::taxCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl),
       _mode(0),
       _taxid(-1)
@@ -103,7 +103,7 @@ void taxCode::sNew()
   ParameterList params;
   params.append("mode", "new");
   params.append("tax_id", _taxid);
-  taxCodeRate newdlg(this, "", TRUE); 
+  taxCodeRate newdlg(this, "", true); 
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -117,7 +117,7 @@ void taxCode::sEdit()
   params.append("tax_id", _taxid); 
   params.append("taxrate_id", _taxitems->id());
 
-  taxCodeRate newdlg(this, "", TRUE);
+  taxCodeRate newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -129,7 +129,7 @@ void taxCode::sView()
   params.append("mode", "view");
   params.append("taxrate_id", _taxitems->id());
 
-  taxCodeRate newdlg(this, "", TRUE);
+  taxCodeRate newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -274,17 +274,17 @@ enum SetResponse taxCode::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _account->setReadOnly(TRUE); 
-      _distaccount->setReadOnly(TRUE);
-      _taxClass->setEnabled(FALSE);
-      _taxauth->setEnabled(FALSE);
-      _basis->setEnabled(FALSE);
-      _new->setEnabled(FALSE);
-      _edit->setEnabled(FALSE);
-      _expire->setEnabled(FALSE);
-      _delete->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
+      _account->setReadOnly(true); 
+      _distaccount->setReadOnly(true);
+      _taxClass->setEnabled(false);
+      _taxauth->setEnabled(false);
+      _basis->setEnabled(false);
+      _new->setEnabled(false);
+      _edit->setEnabled(false);
+      _expire->setEnabled(false);
+      _delete->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -386,7 +386,7 @@ void taxCode::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }

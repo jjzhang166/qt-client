@@ -21,7 +21,7 @@ class reasonCodes : public XWidget, public Ui::reasonCodes
     Q_OBJECT
 
 public:
-    reasonCodes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    reasonCodes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~reasonCodes();
 
 public slots:

@@ -22,17 +22,13 @@ class customerType : public XDialog, public Ui::customerType
     Q_OBJECT
 
 public:
-    customerType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    customerType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~customerType();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );
     virtual void sCheck();
     virtual void sSave();
-    virtual void sNew();
-    virtual void sEdit();
-    virtual void sDelete();
-    virtual void sFillList();
     virtual void populate();
 
 protected slots:

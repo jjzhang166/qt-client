@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-shipVia::shipVia(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shipVia::shipVia(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -63,8 +63,8 @@ enum SetResponse shipVia::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _code->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _code->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -90,7 +90,7 @@ void shipVia::sCheck()
       _mode = cEdit;
       populate();
 
-      _code->setEnabled(FALSE);
+      _code->setEnabled(false);
     }
   }
 }

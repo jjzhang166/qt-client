@@ -20,7 +20,7 @@ class dspPoPriceVariancesByVendor : public display, public Ui::dspPoPriceVarianc
     Q_OBJECT
 
 public:
-    dspPoPriceVariancesByVendor(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspPoPriceVariancesByVendor(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

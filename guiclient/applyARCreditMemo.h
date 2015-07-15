@@ -22,7 +22,7 @@ class applyARCreditMemo : public XDialog, public Ui::applyARCreditMemo
     Q_OBJECT
 
 public:
-    applyARCreditMemo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    applyARCreditMemo(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~applyARCreditMemo();
 
     virtual void populate();

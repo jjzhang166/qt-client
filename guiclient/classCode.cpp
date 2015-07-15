@@ -16,7 +16,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-classCode::classCode(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+classCode::classCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -66,8 +66,8 @@ enum SetResponse classCode::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _classCode->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
+      _classCode->setEnabled(false);
+      _description->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -137,7 +137,7 @@ void classCode::sCheck()
       _mode = cEdit;
       populate();
 
-      _classCode->setEnabled(FALSE);
+      _classCode->setEnabled(false);
     }
   }
 }

@@ -22,7 +22,7 @@ class absoluteCalendarItem : public XDialog, public Ui::absoluteCalendarItem
     Q_OBJECT
 
 public:
-    absoluteCalendarItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    absoluteCalendarItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~absoluteCalendarItem();
 
 public slots:

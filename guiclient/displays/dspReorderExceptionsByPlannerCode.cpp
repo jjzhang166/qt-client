@@ -17,7 +17,7 @@
 #include "dspRunningAvailability.h"
 #include "workOrder.h"
 
-dspReorderExceptionsByPlannerCode::dspReorderExceptionsByPlannerCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspReorderExceptionsByPlannerCode::dspReorderExceptionsByPlannerCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspReorderExceptionsByPlannerCode", fl)
 {
   setupUi(optionsWidget());

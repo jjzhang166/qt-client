@@ -17,7 +17,7 @@
 #include "configureEncryption.h"
 #include "guiclient.h"
 
-configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureGL;
@@ -29,6 +29,7 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _yearend->setType(GLCluster::cEquity);
   _gainLoss->setType(GLCluster::cExpense);
   _discrepancy->setType(GLCluster::cExpense);
+  _unassigned->setType(GLCluster::cLiability);
 
   // AP
   _nextAPMemoNumber->setValidator(omfgThis->orderVal());
@@ -141,15 +142,16 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _externalConsolidation->setVisible(extConsolAllowed);
   if (_metrics->value("GLCompanySize").toInt() == 0)
   {
-    _useCompanySegment->setChecked(FALSE);
-    _externalConsolidation->setChecked(FALSE);
+    _useCompanySegment->setChecked(false);
+    _externalConsolidation->setChecked(false);
     _yearend->setId(_metrics->value("YearEndEquityAccount").toInt());
     _gainLoss->setId(_metrics->value("CurrencyGainLossAccount").toInt());
     _discrepancy->setId(_metrics->value("GLSeriesDiscrepancyAccount").toInt());
+    _unassigned->setId(_metrics->value("UnassignedAccount").toInt());
   }
   else
   {
-    _useCompanySegment->setChecked(TRUE);
+    _useCompanySegment->setChecked(true);
     _companySegmentSize->setValue(_metrics->value("GLCompanySize").toInt());
 
     _externalConsolidation->setChecked(_metrics->boolean("MultiCompanyFinancialConsolidation") &&
@@ -158,12 +160,12 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   if (_metrics->value("GLProfitSize").toInt() == 0)
   {
-    _useProfitCenters->setChecked(FALSE);
+    _useProfitCenters->setChecked(false);
     _cacheuseProfitCenters = false;
   }
   else
   {
-    _useProfitCenters->setChecked(TRUE);
+    _useProfitCenters->setChecked(true);
     _profitCenterSize->setValue(_metrics->value("GLProfitSize").toInt());
     _ffProfitCenters->setChecked(_metrics->boolean("GLFFProfitCenters"));
     _cacheuseProfitCenters = true;
@@ -171,12 +173,12 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   if (_metrics->value("GLSubaccountSize").toInt() == 0)
   {
-    _useSubaccounts->setChecked(FALSE);
+    _useSubaccounts->setChecked(false);
     _cacheuseSubaccounts = false;
   }
   else
   {
-    _useSubaccounts->setChecked(TRUE);
+    _useSubaccounts->setChecked(true);
     _subaccountSize->setValue(_metrics->value("GLSubaccountSize").toInt());
     _ffSubaccounts->setChecked(_metrics->boolean("GLFFSubaccounts"));
     _cacheuseSubaccounts = true;
@@ -185,11 +187,11 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   switch(_metrics->value("CurrencyExchangeSense").toInt())
   {
     case 1:
-      _localToBase->setChecked(TRUE);
+      _localToBase->setChecked(true);
       break;
     case 0:
     default:
-      _baseToLocal->setChecked(TRUE);
+      _baseToLocal->setChecked(true);
   }
 
   _mandatoryNotes->setChecked(_metrics->boolean("MandatoryGLEntryNotes"));
@@ -197,8 +199,8 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   
   _taxauth->setId(_metrics->value("DefaultTaxAuthority").toInt());
   // TODO hide default tax authority, not used?
-  _taxauthLit->setVisible(FALSE);
-  _taxauth->setVisible(FALSE);
+  _taxauthLit->setVisible(false);
+  _taxauth->setVisible(false);
   _cashBasedTax->setChecked(_metrics->boolean("CashBasedTax"));
   _importBankRecon->setChecked(_metrics->boolean("ImportBankReconciliation"));
   _debitBankadjtype->populate("SELECT bankadjtype_id,"
@@ -758,6 +760,7 @@ bool configureGL::sSave()
     _metrics->set("YearEndEquityAccount", _yearend->id());
     _metrics->set("CurrencyGainLossAccount", _gainLoss->id());
     _metrics->set("GLSeriesDiscrepancyAccount", _discrepancy->id());
+    _metrics->set("UnassignedAccount", _unassigned->id());
   }
   if(companyseg)
     companyseg->setEnabled(_useCompanySegment->isChecked());
@@ -772,9 +775,9 @@ bool configureGL::sSave()
   else
   {
     _metrics->set("GLProfitSize", 0);
-    _metrics->set("GLFFProfitCenters", FALSE);
+    _metrics->set("GLFFProfitCenters", false);
     if(profitcenter)
-      profitcenter->setEnabled(FALSE);
+      profitcenter->setEnabled(false);
     XSqlQuery update;
     update.exec("UPDATE accnt SET accnt_profit=NULL,"
                 "                 accnt_sub=CASE WHEN (accnt_sub='') THEN NULL ELSE accnt_sub END;");
@@ -792,9 +795,9 @@ bool configureGL::sSave()
   else
   {
     _metrics->set("GLSubaccountSize", 0);
-    _metrics->set("GLFFSubaccounts", FALSE);
+    _metrics->set("GLFFSubaccounts", false);
     if(subaccounts)
-      subaccounts->setEnabled(FALSE);
+      subaccounts->setEnabled(false);
     XSqlQuery update;
     update.exec("UPDATE accnt SET accnt_sub=NULL,"
                 "                 accnt_profit=CASE WHEN (accnt_profit='') THEN NULL ELSE accnt_profit END;");

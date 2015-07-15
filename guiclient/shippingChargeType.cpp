@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-shippingChargeType::shippingChargeType(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shippingChargeType::shippingChargeType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -63,9 +63,9 @@ enum SetResponse shippingChargeType::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _customerFreight->setEnabled(FALSE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _customerFreight->setEnabled(false);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -91,7 +91,7 @@ void shippingChargeType::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
   }
 }

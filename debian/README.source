@@ -1,0 +1,18 @@
+
+
+Use the script debian/repack-postbooks.sh for repacking the
+upstream tarballs.  They frequently come with binary artifacts
+from the packaging environment.
+
+
+--- Disk space ---
+
+A build of this source package appears to require about 2.5GB
+
+
+--- Icon ---
+
+The icon (xTuple.xpm) was created from guiclient/xTuple.ico by
+using gimp to scale it to 32x32 and save it as an xpm file
+in accordance with Debian menu policy.
+

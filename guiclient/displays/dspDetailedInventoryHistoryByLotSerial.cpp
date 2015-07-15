@@ -22,7 +22,7 @@
 #include "countTag.h"
 #include "parameterwidget.h"
 
-dspDetailedInventoryHistoryByLotSerial::dspDetailedInventoryHistoryByLotSerial(QWidget* parent, const char*, Qt::WFlags fl)
+dspDetailedInventoryHistoryByLotSerial::dspDetailedInventoryHistoryByLotSerial(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspDetailedInventoryHistoryByLotSerial", fl)
 {
   setupUi(optionsWidget());
@@ -71,6 +71,8 @@ dspDetailedInventoryHistoryByLotSerial::dspDetailedInventoryHistoryByLotSerial(Q
   list()->addColumn(tr("Item Number"),  _itemColumn,         Qt::AlignLeft,   true,  "lshist_item_number"   );
   list()->addColumn(tr("Location"),     _dateColumn,         Qt::AlignLeft,   true,  "lshist_locationname"   );
   list()->addColumn(tr("Lot/Serial #"), -1,                  Qt::AlignLeft,   true,  "lshist_lotserial"   );
+  list()->addColumn(tr("Perishable"), -1,                    Qt::AlignLeft,   true,  "lshist_perishable"   );
+  list()->addColumn(tr("Expiration"),   _dateColumn,         Qt::AlignLeft,   true,  "lshist_expiration"   );
   list()->addColumn(tr("UOM"),          _uomColumn,          Qt::AlignCenter, true,  "lshist_invuom" );
   list()->addColumn(tr("Trans-Qty"),    _qtyColumn,          Qt::AlignRight,  true,  "lshist_transqty"  );
   list()->addColumn(tr("Qty. Before"),  _qtyColumn,          Qt::AlignRight,  true,  "lshist_qty_before"  );

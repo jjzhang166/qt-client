@@ -22,7 +22,7 @@ class buyCard : public XWidget, public Ui::buyCard
     Q_OBJECT
 
 public:
-    buyCard(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    buyCard(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~buyCard();
     
     virtual bool setParams(ParameterList &);

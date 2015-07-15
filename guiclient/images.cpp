@@ -18,7 +18,7 @@
 #include "image.h"
 #include "guiclient.h"
 
-images::images(QWidget* parent, const char* name, Qt::WFlags fl)
+images::images(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -57,7 +57,7 @@ void images::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  image newdlg(this, "", TRUE);
+  image newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -70,7 +70,7 @@ void images::sEdit()
   params.append("mode", "edit");
   params.append("image_id", _image->id());
 
-  image newdlg(this, "", TRUE);
+  image newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -83,7 +83,7 @@ void images::sView()
   params.append("mode", "view");
   params.append("image_id", _image->id());
 
-  image newdlg(this, "", TRUE);
+  image newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

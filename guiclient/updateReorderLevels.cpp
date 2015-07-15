@@ -18,7 +18,7 @@
 #include "updateReorderLevels.h"
 #include "mqlutil.h"
 
-updateReorderLevels::updateReorderLevels(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateReorderLevels::updateReorderLevels(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);

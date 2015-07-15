@@ -18,7 +18,7 @@
 #include "item.h"
 #include "itemSource.h"
 
-dspItemsWithoutItemSources::dspItemsWithoutItemSources(QWidget* parent, const char*, Qt::WFlags fl)
+dspItemsWithoutItemSources::dspItemsWithoutItemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspItemsWithoutItemSources", fl)
 {
   setWindowTitle(tr("Items without Item Sources"));

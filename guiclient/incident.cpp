@@ -21,10 +21,10 @@
 #include "returnAuthorization.h"
 #include "storedProcErrorLookup.h"
 #include "todoItem.h"
-#include "characteristicAssignment.h"
+
 #include <openreports.h>
 
-incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+incident::incident(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   _statusCodes << "N" << "F" << "C" << "A" << "R" << "L";
@@ -54,21 +54,13 @@ incident::incident(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
   connect(_todoList,      SIGNAL(valid(bool)),      this, SLOT(sHandleTodoPrivs()));
   connect(_viewAR,        SIGNAL(clicked()),        this, SLOT(sViewAR()));
   connect(_viewTodoItem,  SIGNAL(clicked()),        this,       SLOT(sViewTodoItem()));
-  connect(_deleteCharacteristic,SIGNAL(clicked()), this, SLOT(sDeleteCharacteristic()));
-  connect(_editCharacteristic,	SIGNAL(clicked()), this, SLOT(sEditCharacteristic()));
-  connect(_newCharacteristic,	SIGNAL(clicked()), this, SLOT(sNewCharacteristic()));
-  connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-  connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
-  connect(_charass, SIGNAL(itemSelected(int)), _editCharacteristic, SLOT(animateClick()));
 
+  _charass->setType("INCDT");
   _severity->setType(XComboBox::IncidentSeverity);
   _priority->setType(XComboBox::IncidentPriority);
   _resolution->setType(XComboBox::IncidentResolution);
   _category->setType(XComboBox::IncidentCategory);
   _lotserial->setStrict(false);
-
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name");
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value");
 
   _incdthist->addColumn(tr("Username"),     _userColumn, Qt::AlignLeft, true, "incdthist_username");
   _incdthist->addColumn(tr("Date/Time"),_timeDateColumn, Qt::AlignLeft, true, "incdthist_timestamp");
@@ -125,6 +117,7 @@ enum SetResponse incident::set(const ParameterList &pParams)
     _incdtid = param.toInt();
     populate();
     _lotserial->setItemId(_item->id());
+    _charass->setId(_incdtid);
   }
 
   param = pParams.value("mode", &valid);
@@ -142,6 +135,7 @@ enum SetResponse incident::set(const ParameterList &pParams)
         _number->setText(incidentet.value("number").toString());
         _comments->setId(_incdtid);
         _documents->setId(_incdtid);
+        _charass->setId(_incdtid);
         _alarms->setId(_incdtid);
         _recurring->setParent(_incdtid, "INCDT");
         _print->hide();
@@ -179,10 +173,7 @@ enum SetResponse incident::set(const ParameterList &pParams)
       _deleteTodoItem->setEnabled(false);
       _editTodoItem->setEnabled(false);
       _newTodoItem->setEnabled(false);
-      disconnect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      disconnect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
-      disconnect(_charass, SIGNAL(itemSelected(int)), _editCharacteristic, SLOT(animateClick()));
-      _newCharacteristic->setEnabled(false);
+      _charass->setReadOnly(true);
       _owner->setEnabled(false);
 
       _buttonBox->setStandardButtons(QDialogButtonBox::Close);
@@ -557,6 +548,7 @@ void incident::populate()
 
     _comments->setId(_incdtid);
     _documents->setId(_incdtid);
+    _charass->setId(_incdtid);
     _alarms->setId(_incdtid);
 
     _project->setId(incidentpopulate.value("incdt_prj_id").toInt());
@@ -573,7 +565,6 @@ void incident::populate()
                           _incdtid : incidentpopulate.value("incdt_recurring_incdt_id").toInt(),
                           "INCDT");
 
-    sFillCharacteristicsList();
     sFillHistoryList();
     sFillTodoList();
 
@@ -813,63 +804,4 @@ void incident::sAssigned()
 {
   if (_status->currentIndex() < 3 && !_assignedTo->username().isEmpty())
     _status->setCurrentIndex(3);
-}
-
-void incident::sNewCharacteristic()
-{
-  if (! save(true))
-    return;
-
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("incdt_id", _incdtid);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharacteristicsList();
-}
-
-void incident::sEditCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sFillCharacteristicsList();
-}
-
-void incident::sDeleteCharacteristic()
-{
-  XSqlQuery incidentDeleteCharacteristic;
-  incidentDeleteCharacteristic.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  incidentDeleteCharacteristic.bindValue(":charass_id", _charass->id());
-  incidentDeleteCharacteristic.exec();
-
-  sFillCharacteristicsList();
-}
-
-void incident::sFillCharacteristicsList()
-{
-  XSqlQuery qry;
-  qry.prepare( "SELECT charass_id, char_name, "
-               " CASE WHEN char_type < 2 THEN "
-               "   charass_value "
-               " ELSE "
-               "   formatDate(charass_value::date) "
-               "END AS charass_value "
-               "FROM charass, char "
-               "WHERE ( (charass_target_type='INCDT')"
-               " AND (charass_char_id=char_id)"
-               " AND (charass_target_id=:incdt_id) ) "
-               "ORDER BY char_order, char_name;" );
-  qry.bindValue(":incdt_id", _incdtid);
-  qry.exec();
-  _charass->populate(qry);
 }

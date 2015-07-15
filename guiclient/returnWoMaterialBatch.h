@@ -21,7 +21,7 @@ class returnWoMaterialBatch : public XDialog, public Ui::returnWoMaterialBatch
     Q_OBJECT
 
 public:
-    returnWoMaterialBatch(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    returnWoMaterialBatch(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~returnWoMaterialBatch();
 
 public slots:

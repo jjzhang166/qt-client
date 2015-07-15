@@ -14,7 +14,7 @@
 #include <QValidator>
 #include <QVariant>
 
-firmPlannedOrder::firmPlannedOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+firmPlannedOrder::firmPlannedOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -50,7 +50,7 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
   if (valid)
   {
     _planordid = param.toInt();
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
 
     firmet.prepare( "SELECT planord.*, (planord_duedate - planord_startdate) AS leadtime "
                "FROM planord "
@@ -87,7 +87,7 @@ void firmPlannedOrder::sFirm()
 {
   XSqlQuery firmFirm;
   firmFirm.prepare( "UPDATE planord "
-             "SET planord_firm=TRUE, "
+             "SET planord_firm=true, "
              "    planord_comments=:planord_comments, "
              "    planord_qty=:planord_qty, "
              "    planord_duedate=:planord_dueDate, "

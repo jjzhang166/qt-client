@@ -21,7 +21,7 @@ class dspShipmentsByDate : public display, public Ui::dspShipmentsByDate
     Q_OBJECT
 
 public:
-    dspShipmentsByDate(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspShipmentsByDate(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

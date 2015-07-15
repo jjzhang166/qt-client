@@ -20,7 +20,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-applyARCreditMemo::applyARCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+applyARCreditMemo::applyARCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -36,7 +36,7 @@ applyARCreditMemo::applyARCreditMemo(QWidget* parent, const char* name, bool mod
 
   _buttonBox->button(QDialogButtonBox::Save)->setText(tr("Post"));
 
-  _captive = FALSE;
+  _captive = false;
 
   _aropen->addColumn(tr("Doc. Type"),   _docTypeColumn, Qt::AlignCenter, true, "doctype");
   _aropen->addColumn(tr("Doc. Number"), -1,             Qt::AlignCenter, true, "aropen_docnumber");
@@ -49,7 +49,7 @@ applyARCreditMemo::applyARCreditMemo(QWidget* parent, const char* name, bool mod
   _aropen->addColumn(tr("All Pending"), _moneyColumn,   Qt::AlignRight,  true, "pending");
   _aropen->addColumn(tr("Currency"),	_currencyColumn,Qt::AlignLeft,   !omfgThis->singleCurrency(), "balance_curr");
 
-  _cust->setReadOnly(TRUE);
+  _cust->setReadOnly(true);
 
   if(_metrics->boolean("HideApplyToBalance"))
     _applyToBalance->hide();
@@ -77,7 +77,7 @@ enum SetResponse applyARCreditMemo::set(const ParameterList &pParams)
   param = pParams.value("aropen_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _aropenid = param.toInt();
     populate();
   }
@@ -186,7 +186,7 @@ void applyARCreditMemo::sApply()
   params.append("sourceAropenid", _aropenid);
   params.append("targetAropenid", _aropen->id());
 
-  arCreditMemoApplication newdlg(this, "", TRUE);
+  arCreditMemoApplication newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     populate();

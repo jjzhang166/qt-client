@@ -37,11 +37,12 @@
 #include "itemUOM.h"
 #include "itemtax.h"
 #include "itemSource.h"
+#include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
 const char *_itemTypes[] = { "P", "M", "F", "R", "S", "T", "O", "L", "K", "B", "C", "Y" };
 
-item::item(QWidget* parent, const char* name, Qt::WFlags fl)
+item::item(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   XSqlQuery itemitem;
@@ -105,13 +106,13 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   _prodWeight->setValidator(omfgThis->weightVal());
   _packWeight->setValidator(omfgThis->weightVal());
 
-  _classcode->setAllowNull(TRUE);
+  _classcode->setAllowNull(true);
   _classcode->setType(XComboBox::ClassCodes);
 
-  _freightClass->setAllowNull(TRUE);
+  _freightClass->setAllowNull(true);
   _freightClass->setType(XComboBox::FreightClasses);
 
-  _prodcat->setAllowNull(TRUE);
+  _prodcat->setAllowNull(true);
   _prodcat->setType(XComboBox::ProductCategories);
 
   _inventoryUOM->setType(XComboBox::UOMs);
@@ -162,6 +163,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
   _uomconv->addColumn(tr("Ratio"),      -1, Qt::AlignRight, true, "uomvalue"  );
   _uomconv->addColumn(tr("Global"),     _ynColumn*2,    Qt::AlignCenter, true, "global" );
   _uomconv->addColumn(tr("Fractional"), _ynColumn*2,   Qt::AlignCenter, true, "fractional" );
+  _uomconv->addColumn(tr("Active"),     _ynColumn*2,   Qt::AlignCenter, true, "active" );
   
   _itemsrc->addColumn(tr("Active"),      _dateColumn,   Qt::AlignCenter, true, "itemsrc_active");
   _itemsrc->addColumn(tr("Vendor"),      _itemColumn, Qt::AlignLeft, true, "vend_number" );
@@ -211,7 +213,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
     connect(_itemsrc, SIGNAL(itemSelected(int)), _viewSrc, SLOT(animateClick()));
   }
   else
-    _tab->setTabEnabled(_tab->indexOf(_sourcesTab), FALSE);
+    _tab->setTabEnabled(_tab->indexOf(_sourcesTab), false);
 
   if (!_metrics->boolean("Transforms"))
     _transformationsButton->hide();
@@ -231,7 +233,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
     connect(_itemSite, SIGNAL(itemSelected(int)), _viewItemSite, SLOT(animateClick()));
   }
   else
-    _tab->setTabEnabled(_tab->indexOf(_itemsitesTab), FALSE);
+    _tab->setTabEnabled(_tab->indexOf(_itemsitesTab), false);
 
   itemitem.exec("SELECT uom_name FROM uom WHERE (uom_item_weight);");
   if (itemitem.first())
@@ -241,7 +243,7 @@ item::item(QWidget* parent, const char* name, Qt::WFlags fl)
     _weightGroup->setTitle(title);
   }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   _tab->setUsesScrollButtons(true);
   _tab->setElideMode(Qt::ElideNone);
 #endif
@@ -341,64 +343,82 @@ enum SetResponse item::set(const ParameterList &pParams)
       if (_privileges->check("DeleteItemSites"))
         connect(_itemSite, SIGNAL(valid(bool)), _deleteItemSite, SLOT(setEnabled(bool)));
 
-      _itemNumber->setEnabled(FALSE);
+      _itemNumber->setEnabled(false);
       
       emit newMode(_mode);
     }
     else if (param.toString() == "view")
     {
-      _tab->setEnabled(true);
-
-      setObjectName(QString("item view %1").arg(_itemid));
-      _mode = cView;
-
-      _itemNumber->setEnabled(FALSE);
-      _active->setEnabled(FALSE);
-      _description1->setEnabled(FALSE);
-      _description2->setEnabled(FALSE);
-      _maximumDesiredCost->setEnabled(FALSE);
-      _itemtype->setEnabled(FALSE);
-      _sold->setEnabled(FALSE);
-      _pickListItem->setEnabled(FALSE);
-      _fractional->setEnabled(FALSE);
-      _classcode->setEnabled(FALSE);
-      _freightClass->setEnabled(FALSE);
-      _inventoryUOM->setEnabled(FALSE);
-      _prodWeight->setEnabled(FALSE);
-      _packWeight->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
-      _comments->setReadOnly(TRUE);
-      _documents->setReadOnly(TRUE);
-      _extDescription->setReadOnly(TRUE);
-      _newCharacteristic->setEnabled(FALSE);
-      _newAlias->setEnabled(FALSE);
-      _newSubstitute->setEnabled(FALSE);
-      _newTransform->setEnabled(FALSE);
-      _taxRecoverable->setEnabled(FALSE);
-      _itemtaxNew->setEnabled(FALSE);
-      _close->setText(tr("&Close"));
-      _newSrc->setEnabled(false);
-      _newUOM->setEnabled(false);
-      _upcCode->setEnabled(false);
-      _newItemSite->setEnabled(FALSE);
-      _bom->findChild<QWidget*>("_new")->hide();
-      _elements->findChild<QWidget*>("_new")->hide();
-
-      disconnect(_itemalias, SIGNAL(valid(bool)), _editAlias, SLOT(setEnabled(bool)));
-      disconnect(_itemalias, SIGNAL(valid(bool)), _deleteAlias, SLOT(setEnabled(bool)));
-      disconnect(_itemsub, SIGNAL(valid(bool)), _editSubstitute, SLOT(setEnabled(bool)));
-      disconnect(_itemsub, SIGNAL(valid(bool)), _deleteSubstitute, SLOT(setEnabled(bool)));
-      disconnect(_itemtrans, SIGNAL(valid(bool)), _deleteTransform, SLOT(setEnabled(bool)));
-
-      _save->hide();
-      
-      emit newMode(_mode);
+      setViewMode();
     }
+  }
+
+  if (_mode == cEdit && !_lock.acquire("item", _itemid, AppLock::Interactive))
+  {
+    setViewMode();
   }
 
   sHandleRightButtons();
 
   return NoError;
+}
+
+void item::setViewMode()
+{
+  _tab->setEnabled(true);
+
+  setObjectName(QString("item view %1").arg(_itemid));
+  _mode = cView;
+
+  _itemNumber->setEnabled(false);
+  _active->setEnabled(false);
+  _description1->setEnabled(false);
+  _description2->setEnabled(false);
+  _maximumDesiredCost->setEnabled(false);
+  _itemtype->setEnabled(false);
+  _sold->setEnabled(false);
+  _pickListItem->setEnabled(false);
+  _fractional->setEnabled(false);
+  _classcode->setEnabled(false);
+  _freightClass->setEnabled(false);
+  _inventoryUOM->setEnabled(false);
+  _prodWeight->setEnabled(false);
+  _packWeight->setEnabled(false);
+  _notes->setEnabled(false);
+  _comments->setReadOnly(true);
+  _documents->setReadOnly(true);
+  _extDescription->setReadOnly(true);
+  _newCharacteristic->setEnabled(false);
+  _newAlias->setEnabled(false);
+  _newSubstitute->setEnabled(false);
+  _newTransform->setEnabled(false);
+  _taxRecoverable->setEnabled(false);
+  _itemtaxNew->setEnabled(false);
+  _close->setText(tr("&Close"));
+  _newSrc->setEnabled(false);
+  _newUOM->setEnabled(false);
+  _upcCode->setEnabled(false);
+  _newItemSite->setEnabled(false);
+  _deleteItemSite->setEnabled(false);
+  _bom->findChild<QWidget*>("_new")->hide();
+  _elements->findChild<QWidget*>("_new")->hide();
+
+  disconnect(_itemalias, SIGNAL(valid(bool)), _editAlias, SLOT(setEnabled(bool)));
+  disconnect(_itemalias, SIGNAL(valid(bool)), _deleteAlias, SLOT(setEnabled(bool)));
+  disconnect(_itemsub, SIGNAL(valid(bool)), _editSubstitute, SLOT(setEnabled(bool)));
+  disconnect(_itemsub, SIGNAL(valid(bool)), _deleteSubstitute, SLOT(setEnabled(bool)));
+  disconnect(_itemtrans, SIGNAL(valid(bool)), _deleteTransform, SLOT(setEnabled(bool)));
+
+  disconnect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
+  disconnect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
+  disconnect(_uomconv, SIGNAL(valid(bool)), _editUOM, SLOT(setEnabled(bool)));
+  disconnect(_uomconv, SIGNAL(valid(bool)), _deleteUOM, SLOT(setEnabled(bool)));
+  disconnect(_itemtax, SIGNAL(valid(bool)), _itemtaxEdit, SLOT(setEnabled(bool)));
+  disconnect(_itemtax, SIGNAL(valid(bool)), _itemtaxDelete, SLOT(setEnabled(bool)));
+
+  _save->hide();
+      
+  emit newMode(_mode);
 }
 
 void item::saveCore()
@@ -852,7 +872,7 @@ void item::sSave()
     _inTransaction = false;
   }
 
-  omfgThis->sItemsUpdated(_itemid, TRUE);
+  omfgThis->sItemsUpdated(_itemid, true);
 
   if ((!fActive) &&
      ( (_mode == cNew) || (_mode == cCopy) ) &&
@@ -870,7 +890,7 @@ void item::sSave()
       params.append("mode", "new");
       params.append("item_id", _itemid);
 
-      itemSite newdlg(this, "", TRUE);
+      itemSite newdlg(this, "", true);
       newdlg.set(params);
       newdlg.exec();
     }
@@ -890,9 +910,9 @@ void item::sNew()
   params.append("mode", "new");
   params.append("item_id", _itemid);
   if (_configured->isChecked())
-    params.append("showPrices", TRUE);
+    params.append("showPrices", true);
 
-  characteristicAssignment newdlg(this, "", TRUE);
+  characteristicAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -906,9 +926,9 @@ void item::sEdit()
   params.append("mode", "edit");
   params.append("charass_id", _charass->id());
   if (_configured->isChecked())
-    params.append("showPrices", TRUE);
+    params.append("showPrices", true);
 
-  characteristicAssignment newdlg(this, "", TRUE);
+  characteristicAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -987,7 +1007,7 @@ void item::sFormatItemNumber()
     }
     else
     {
-      _itemNumber->setEnabled(FALSE);
+      _itemNumber->setEnabled(false);
       _mode = cNew;
       emit newMode(_mode);
     }
@@ -1095,11 +1115,11 @@ void item::clear()
   _listprice->clear();
   _listcost->clear();
 
-  _active->setChecked(TRUE);
-  _pickListItem->setChecked(TRUE);
-  _sold->setChecked(FALSE);
+  _active->setChecked(true);
+  _pickListItem->setChecked(true);
+  _sold->setChecked(false);
   _exclusive->setChecked(_metrics->boolean("DefaultSoldItemsExclusive"));
-  _fractional->setChecked(FALSE);
+  _fractional->setChecked(false);
 
   _itemtype->setCurrentIndex(0);
   _classcode->setNull();
@@ -1134,110 +1154,110 @@ void item::sPopulateUOMs()
 void item::sHandleItemtype()
 {
   QString itemType = QString(*(_itemTypes + _itemtype->currentIndex()));
-  bool pickList  = FALSE;
-  bool sold      = FALSE;
-  bool weight    = FALSE;
-  bool config    = FALSE;
-  bool shipUOM   = FALSE;
-  bool capUOM    = FALSE;
-  bool planType  = FALSE;
-  bool purchased = FALSE;
-  bool freight   = FALSE;
+  bool pickList  = false;
+  bool sold      = false;
+  bool weight    = false;
+  bool config    = false;
+  bool shipUOM   = false;
+  bool capUOM    = false;
+  bool planType  = false;
+  bool purchased = false;
+  bool freight   = false;
   
-  _configured->setEnabled(FALSE);
+  _configured->setEnabled(false);
 
   if (itemType == "P")
   {
-    pickList = TRUE;
-    sold     = TRUE;
-    weight   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    planType = TRUE;
-    purchased = TRUE;
-    freight  = TRUE;
+    pickList = true;
+    sold     = true;
+    weight   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    planType = true;
+    purchased = true;
+    freight  = true;
   }
 
   if (itemType == "M")
   {
-    pickList = TRUE;
-    sold     = TRUE;
-    weight   = TRUE;
-    config   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    planType = TRUE;
-    purchased = TRUE;
-    freight  = TRUE;
+    pickList = true;
+    sold     = true;
+    weight   = true;
+    config   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    planType = true;
+    purchased = true;
+    freight  = true;
   }
 
   if (itemType == "F")
-    planType = TRUE;
+    planType = true;
 
   if (itemType == "B")
   {
-    capUOM   = TRUE;
-    planType = TRUE;
-    purchased = TRUE;
-    freight  = TRUE;
+    capUOM   = true;
+    planType = true;
+    purchased = true;
+    freight  = true;
   }
 
   if (itemType == "C")
   {
-    pickList = TRUE;
-    sold     = TRUE;
-    weight   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    planType = TRUE;
-    freight  = TRUE;
+    pickList = true;
+    sold     = true;
+    weight   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    planType = true;
+    freight  = true;
   }
 
   if (itemType == "Y")
   {
-    pickList = TRUE;
-    sold     = TRUE;
-    weight   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    planType = TRUE;
-    freight  = TRUE;
+    pickList = true;
+    sold     = true;
+    weight   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    planType = true;
+    freight  = true;
   }
 
   if (itemType == "R")
   {
-    sold     = TRUE;
-    weight   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    freight  = TRUE;
-    config   = TRUE;
+    sold     = true;
+    weight   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    freight  = true;
+    config   = true;
   }
 
   if (itemType == "T")
   {
-    pickList = TRUE;
-    weight   = TRUE;
-    capUOM   = TRUE;
-    shipUOM  = TRUE;
-    freight  = TRUE;
-    purchased = TRUE;
-    sold = TRUE;
+    pickList = true;
+    weight   = true;
+    capUOM   = true;
+    shipUOM  = true;
+    freight  = true;
+    purchased = true;
+    sold = true;
   }
 
   if (itemType == "O")
   {
-    capUOM   = TRUE;
-    planType = TRUE;
-    purchased = TRUE;
-    freight  = TRUE;
+    capUOM   = true;
+    planType = true;
+    purchased = true;
+    freight  = true;
   }
 
   if (itemType == "A")
   {
-    sold     = TRUE;
-    planType = TRUE;
-    freight  = TRUE;
+    sold     = true;
+    planType = true;
+    freight  = true;
   }
 
   if (itemType == "K")
@@ -1281,7 +1301,7 @@ void item::sNewAlias()
   params.append("item_id", _itemid);
   params.append("item_number", _itemNumber->text());
 
-  itemAlias newdlg(this, "", TRUE);
+  itemAlias newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1296,7 +1316,7 @@ void item::sEditAlias()
   params.append("itemalias_id", _itemalias->id());
   params.append("item_number", _itemNumber->text());
 
-  itemAlias newdlg(this, "", TRUE);
+  itemAlias newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1334,7 +1354,7 @@ void item::sNewSubstitute()
   params.append("mode", "new");
   params.append("item_id", _itemid);
 
-  itemSubstitute newdlg(this, "", TRUE);
+  itemSubstitute newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1347,7 +1367,7 @@ void item::sEditSubstitute()
   params.append("mode", "edit");
   params.append("itemsub_id", _itemsub->id());
 
-  itemSubstitute newdlg(this, "", TRUE);
+  itemSubstitute newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1585,7 +1605,7 @@ void item::sNewItemSite()
   params.append("mode", "new");
   params.append("item_id", _itemid);
 
-  itemSite newdlg(this, "", TRUE);
+  itemSite newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -1639,7 +1659,7 @@ void item::sEditItemSite()
       params.append("itemsite_id", _itemSite->id());
   }
 
-  itemSite newdlg(this, "", TRUE);
+  itemSite newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -1653,7 +1673,7 @@ void item::sViewItemSite()
   params.append("mode", "view");
   params.append("itemsite_id", _itemSite->id());
 
-  itemSite newdlg(this, "", TRUE);
+  itemSite newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -1750,7 +1770,7 @@ void item::sNewItemtax()
   params.append("mode", "new");
   params.append("item_id", _itemid);
 
-  itemtax newdlg(this, "", TRUE);
+  itemtax newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillListItemtax();
@@ -1762,7 +1782,7 @@ void item::sEditItemtax()
   params.append("mode", "edit");
   params.append("itemtax_id", _itemtax->id());
 
-  itemtax newdlg(this, "", TRUE);
+  itemtax newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
   sFillListItemtax();
@@ -1804,7 +1824,7 @@ void item::sNewUOM()
   params.append("item_id", _itemid);
   params.append("inventoryUOM", _inventoryUOM->id());
 
-  itemUOM newdlg(this, "", TRUE);
+  itemUOM newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1817,7 +1837,7 @@ void item::sEditUOM()
   params.append("mode", "edit");
   params.append("itemuomconv_id", _uomconv->id());
 
-  itemUOM newdlg(this, "", TRUE);
+  itemUOM newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -1857,7 +1877,8 @@ void item::sFillUOMList()
             "       (nuom.uom_name||'/'||duom.uom_name) AS uomname,"
             "       (formatUOMRatio(itemuomconv_from_value)||'/'||formatUOMRatio(itemuomconv_to_value)) AS uomvalue,"
             "       (uomconv_id IS NOT NULL) AS global,"
-            "       itemuomconv_fractional AS fractional"
+            "       itemuomconv_fractional AS fractional, "
+            "       itemuomconv_active AS active "
             "  FROM item"
             "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
             "  JOIN uom AS nuom ON (itemuomconv_from_uom_id=nuom.uom_id)"
@@ -1871,7 +1892,8 @@ void item::sFillUOMList()
             "        uomtype_name AS uomname,"
             "       '' AS uomvalue,"
             "       NULL AS global,"
-            "       NULL AS fractional"
+            "       NULL AS fractional, "
+            "       NULL AS active "
             "  FROM item"
             "  JOIN itemuomconv ON (itemuomconv_item_id=item_id)"
             "  JOIN uom AS nuom ON (itemuomconv_from_uom_id=nuom.uom_id)"
@@ -1883,7 +1905,7 @@ void item::sFillUOMList()
             " ORDER BY itemuomconv_id, xtindentrole, uomname;");
   itemFillUOMList.bindValue(":item_id", _itemid);
   itemFillUOMList.exec();
-  _uomconv->populate(itemFillUOMList,TRUE);
+  _uomconv->populate(itemFillUOMList,true);
   _uomconv->expandAll();
 
   itemFillUOMList.prepare("SELECT itemInventoryUOMInUse(:item_id) AS result;");
@@ -1896,39 +1918,18 @@ void item::sFillUOMList()
 
 void item::sPopulatePriceUOMs()
 {
-  XSqlQuery itemPopulatePriceUOMs;
-  int pid = _priceUOM->id();
-  itemPopulatePriceUOMs.prepare("SELECT uom_id, uom_name, uom_name"
-            "  FROM uom"
-            " WHERE(uom_id=:uom_id)"
-            " UNION "
-            "SELECT uom_id, uom_name, uom_name"
-            "  FROM uom"
-            "  JOIN itemuomconv ON (itemuomconv_to_uom_id=uom_id)"
-            "  JOIN item ON (itemuomconv_from_uom_id=item_inv_uom_id)"
-            "  JOIN itemuom ON (itemuom_itemuomconv_id=itemuomconv_id)"
-            "  JOIN uomtype ON (itemuom_uomtype_id=uomtype_id)"
-            " WHERE((itemuomconv_item_id=:item_id)"
-            "   AND (uomtype_name='Selling'))"
-            " UNION "
-            "SELECT uom_id, uom_name, uom_name"
-            "  FROM uom"
-            "  JOIN itemuomconv ON (itemuomconv_from_uom_id=uom_id)"
-            "  JOIN item ON (itemuomconv_to_uom_id=item_inv_uom_id)"
-            "  JOIN itemuom ON (itemuom_itemuomconv_id=itemuomconv_id)"
-            "  JOIN uomtype ON (itemuom_uomtype_id=uomtype_id)"
-            " WHERE((itemuomconv_item_id=:item_id)"
-            "   AND (uomtype_name='Selling'))"
-            " ORDER BY 2;");
-  itemPopulatePriceUOMs.bindValue(":item_id", _itemid);
-  itemPopulatePriceUOMs.bindValue(":uom_id", _inventoryUOM->id());
-  itemPopulatePriceUOMs.exec();
-  _priceUOM->populate(itemPopulatePriceUOMs, pid);
-  if (itemPopulatePriceUOMs.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, itemPopulatePriceUOMs.lastError().databaseText(), __FILE__, __LINE__);
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+
+  ParameterList params;
+  params.append("uomtype", "Selling");
+  params.append("item_id", _itemid);
+  params.append("uom_id", _priceUOM->id());
+
+  XSqlQuery puom = muom.toQuery(params);
+  _priceUOM->populate(puom);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Price UOMs"),
+                           puom, __FILE__, __LINE__))
     return;
-  }
 }
 
 void item::closeEvent(QCloseEvent *pEvent)
@@ -2089,7 +2090,7 @@ void item::sFillSourceList()
                "       vend_name, itemsrc_vend_item_number, "
 	       "       itemsrc_active, itemsrc_manuf_name, "
                "       itemsrc_manuf_item_number, "
-			   "       CASE WHEN itemsrc_default = 'TRUE' THEN 'Yes' "
+			   "       CASE WHEN itemsrc_default = 'true' THEN 'Yes' "
 			   "       ELSE 'No' "
 			   "       END AS default "
                "FROM item, vendinfo, itemsrc "
@@ -2111,7 +2112,7 @@ void item::sNewSource()
   params.append("mode", "new");
   params.append("item_id", _itemid);
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -2124,7 +2125,7 @@ void item::sEditSource()
   params.append("mode", "edit");
   params.append("itemsrc_id", _itemsrc->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -2137,7 +2138,7 @@ void item::sViewSource()
   params.append("mode", "view");
   params.append("itemsrc_id", _itemsrc->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -2148,7 +2149,7 @@ void item::sCopySource()
   params.append("mode", "copy");
   params.append("itemsrc_id", _itemsrc->id());
 
-  itemSource newdlg(this, "", TRUE);
+  itemSource newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

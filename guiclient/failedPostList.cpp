@@ -10,7 +10,7 @@
 
 #include "failedPostList.h"
 
-failedPostList::failedPostList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+failedPostList::failedPostList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
     setupUi(this);

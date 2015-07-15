@@ -21,7 +21,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WFlags fl)
+expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -30,7 +30,7 @@ expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_qty,SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
   connect(_warehouse,           SIGNAL(newID(int)), this, SLOT(sPopulateQOH(int)));
 
-  _captive = FALSE;
+  _captive = false;
   _prjid = -1;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
@@ -88,14 +88,14 @@ enum SetResponse expenseTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _transDate->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _documentNum->setEnabled(false);
+      _notes->setEnabled(false);
       _post->hide();
-      _expcat->setEnabled(FALSE);
+      _expcat->setEnabled(false);
       _close->setText(tr("&Close"));
 
       XSqlQuery histq;

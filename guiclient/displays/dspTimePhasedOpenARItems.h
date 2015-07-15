@@ -22,7 +22,7 @@ class dspTimePhasedOpenARItems : public display, public Ui::dspTimePhasedOpenARI
     Q_OBJECT
 
 public:
-    dspTimePhasedOpenARItems(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspTimePhasedOpenARItems(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~dspTimePhasedOpenARItems();
 
     virtual bool setParams(ParameterList &);
@@ -35,6 +35,7 @@ public slots:
     virtual void sFillStd();
     virtual void sFillCustom();
     virtual void sToggleCustom();
+    virtual void sToggleReport();
 
 private:
     int _column;

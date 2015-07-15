@@ -21,7 +21,7 @@ class assignItemToPlannerCode : public XDialog, public Ui::assignItemToPlannerCo
     Q_OBJECT
 
 public:
-    assignItemToPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    assignItemToPlannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~assignItemToPlannerCode();
 
 public slots:

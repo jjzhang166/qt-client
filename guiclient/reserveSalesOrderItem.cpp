@@ -25,7 +25,7 @@
 #include "xmessagebox.h"
 #include "storedProcErrorLookup.h"
 
-reserveSalesOrderItem::reserveSalesOrderItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+reserveSalesOrderItem::reserveSalesOrderItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,7 +33,7 @@ reserveSalesOrderItem::reserveSalesOrderItem(QWidget* parent, const char* name, 
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
 
   _qtyToReserve->setValidator(omfgThis->qtyVal());
 
@@ -329,7 +329,7 @@ void reserveSalesOrderItem::sReserveLocation()
     return;
   
   XSqlQuery reserveq;
-  reserveq.prepare("SELECT reserveSoLineQty(:lineitem_id, TRUE, :qty, :itemloc_id) AS result;");
+  reserveq.prepare("SELECT reserveSoLineQty(:lineitem_id, true, :qty, :itemloc_id) AS result;");
   reserveq.bindValue(":lineitem_id", _soitemid);
   reserveq.bindValue(":qty", locreserve);
   reserveq.bindValue(":itemloc_id", _itemloc->id());
@@ -429,7 +429,7 @@ void reserveSalesOrderItem::sBcReserve()
   }
   
   XSqlQuery reserveq;
-  reserveq.prepare("SELECT reserveSoLineQty(:lineitem_id, TRUE, :qty, :itemloc_id) AS result;");
+  reserveq.prepare("SELECT reserveSoLineQty(:lineitem_id, true, :qty, :itemloc_id) AS result;");
   reserveq.bindValue(":lineitem_id", _soitemid);
   reserveq.bindValue(":qty", _bcQty->text().toDouble());
   reserveq.bindValue(":itemloc_id", reserveBc.value("itemloc_id").toInt());

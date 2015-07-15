@@ -21,7 +21,7 @@
 #include "creditMemo.h"
 #include "dspInvoiceInformation.h"
 
-dspARApplications::dspARApplications(QWidget* parent, const char*, Qt::WFlags fl)
+dspARApplications::dspARApplications(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspARApplications", fl)
 {
   setupUi(optionsWidget());

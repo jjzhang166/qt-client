@@ -21,7 +21,7 @@
 #include "dspInventoryLocator.h"
 #include "parameterwidget.h"
 
-dspQOH::dspQOH(QWidget* parent, const char*, Qt::WFlags fl)
+dspQOH::dspQOH(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspQOH", fl)
 {
   setupUi(optionsWidget());

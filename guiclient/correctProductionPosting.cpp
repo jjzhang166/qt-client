@@ -19,7 +19,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-correctProductionPosting::correctProductionPosting(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+correctProductionPosting::correctProductionPosting(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -27,7 +27,7 @@ correctProductionPosting::correctProductionPosting(QWidget* parent, const char* 
   connect(_correct, SIGNAL(clicked()), this, SLOT(sCorrect()));
   connect(_wo,     SIGNAL(newId(int)), this, SLOT(populate()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setEnabled(_privileges->check("AlterTransactionDates"));
   _transDate->setDate(omfgThis->dbDate(), true);
   _qtyReceivedCache = 0.0;
@@ -70,10 +70,10 @@ enum SetResponse correctProductionPosting::set(const ParameterList &pParams)
   param = pParams.value("wo_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   return NoError;
@@ -167,7 +167,7 @@ void correctProductionPosting::sCorrect()
     }
 
     correctCorrect.exec("COMMIT;");
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
   }
   else if (correctCorrect.lastError().type() != QSqlError::NoError)
   {

@@ -6,13 +6,11 @@ CONFIG += qt \
     staticlib
 DBFILE = scriptapi.db
 LANGUAGE = C++
-INCLUDEPATH += ../common \
-               ../widgets ../widgets/tmp/lib \
-               ../../xtuple-build-desktop/common \
-               ../../xtuple-build-desktop/widgets \
-               ../../xtuple-build-desktop/widgets/tmp/lib \
-               . \
-               ../../xtuple-build-desktop/scriptapi
+INCLUDEPATH += $${XTUPLE_DIR}/common          $${XTUPLE_BLD}/common \
+               $${XTUPLE_DIR}/widgets         $${XTUPLE_BLD}/widgets \
+               $${XTUPLE_DIR}/widgets/tmp/lib $${XTUPLE_BLD}/widgets/tmp/lib \
+               $${XTUPLE_DIR}/scriptapi       $${XTUPLE_BLD}/scriptapi \
+	       
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
 DEPENDPATH += $${INCLUDEPATH}
@@ -28,6 +26,7 @@ HEADERS += setupscriptapi.h \
     orreportproto.h \
     parameterlistsetup.h \
     qactionproto.h \
+    qapplicationproto.h \
     qboxlayoutproto.h \
     qbytearrayproto.h \
     qdialogbuttonboxproto.h \
@@ -118,8 +117,7 @@ HEADERS += setupscriptapi.h \
     wcomboboxsetup.h \
     womatlclustersetup.h \
     xdateeditsetup.h \
-    xsqltablenodeproto.h \
-    xt.h \
+    ../widgets/xt.h \
     xvariantsetup.h
 
 SOURCES += setupscriptapi.cpp \
@@ -128,6 +126,7 @@ SOURCES += setupscriptapi.cpp \
     orreportproto.cpp \
     parameterlistsetup.cpp \
     qactionproto.cpp \
+    qapplicationproto.cpp \
     qboxlayoutproto.cpp \
     qbytearrayproto.cpp \
     qdialogbuttonboxproto.cpp \
@@ -218,12 +217,15 @@ SOURCES += setupscriptapi.cpp \
     wcomboboxsetup.cpp \
     womatlclustersetup.cpp \
     xdateeditsetup.cpp \
-    xsqltablnodeproto.cpp \
-    xt.cpp \
+    ../widgets/xt.cpp \
     xvariantsetup.cpp
 
-QT += sql \
+QT += core \
+    sql \
     xml \
     script \
     network \
-    webkit
+    webkit \
+    webkitwidgets \
+    widgets \
+    printsupport 

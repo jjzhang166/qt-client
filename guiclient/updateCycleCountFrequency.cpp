@@ -12,7 +12,7 @@
 
 #include <QVariant>
 
-updateCycleCountFrequency::updateCycleCountFrequency(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updateCycleCountFrequency::updateCycleCountFrequency(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

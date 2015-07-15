@@ -20,7 +20,7 @@ class dspTimePhasedSales : public displayTimePhased, public Ui::dspTimePhasedBoo
     Q_OBJECT
 
 public:
-    dspTimePhasedSales(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspTimePhasedSales(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParamsTP(ParameterList &);
 

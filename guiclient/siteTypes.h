@@ -22,7 +22,7 @@ class siteTypes : public XWidget, public Ui::siteTypes
     Q_OBJECT
 
 public:
-    siteTypes(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    siteTypes(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~siteTypes();
 
 public slots:

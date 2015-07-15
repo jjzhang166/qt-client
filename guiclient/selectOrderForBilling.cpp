@@ -23,7 +23,7 @@
 #include "storedProcErrorLookup.h"
 #include "taxBreakdown.h"
 
-selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, Qt::WFlags fl)
+selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -49,8 +49,8 @@ selectOrderForBilling::selectOrderForBilling(QWidget* parent, const char* name, 
   
   _cobmiscid = -1;
   _taxzoneidCache = -1;
-  _captive = FALSE;
-  _updated = FALSE;
+  _captive = false;
+  _updated = false;
   _freightCache = 0;
 
   _custCurrency->setLabel(_custCurrencyLit);
@@ -112,7 +112,7 @@ SetResponse selectOrderForBilling::set(const ParameterList &pParams)
   param = pParams.value("sohead_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _so->setId(param.toInt());
   }
@@ -232,7 +232,7 @@ void selectOrderForBilling::sSave()
     }
   }
 
-  omfgThis->sBillingSelectionUpdated(_so->id(), TRUE);
+  omfgThis->sBillingSelectionUpdated(_so->id(), true);
 
   if (_captive)
     close();
@@ -253,7 +253,7 @@ void selectOrderForBilling::sSoList()
   else
     params.append("soType", cSoOpen);
 
-  salesOrderList newdlg(this, "", TRUE);
+  salesOrderList newdlg(this, "", true);
   newdlg.set(params);
 
   int id = newdlg.exec();
@@ -297,7 +297,7 @@ void selectOrderForBilling::sPopulate(int pSoheadid)
                      "       cohead_number, cohead_shipto_id,"
                      "       cohead_custponumber,"
                      "       cohead_billtoname, cohead_shiptoname,"
-                     "       CASE WHEN (shipchrg_custfreight IS NULL) THEN TRUE"
+                     "       CASE WHEN (shipchrg_custfreight IS NULL) THEN true"
                      "            ELSE shipchrg_custfreight"
                      "       END AS custfreight "
                      "FROM cobmisc , cohead "
@@ -335,12 +335,12 @@ void selectOrderForBilling::sPopulate(int pSoheadid)
       _freightCache = cobmisc.value("freight").toDouble();
       if (cobmisc.value("custfreight").toBool())
       {
-        _freight->setEnabled(TRUE);
+        _freight->setEnabled(true);
         _freight->setLocalValue(cobmisc.value("freight").toDouble());
       }
       else
       {
-        _freight->setEnabled(FALSE);
+        _freight->setEnabled(false);
         _freight->clear();
       }
     }
@@ -369,13 +369,13 @@ void selectOrderForBilling::sEditSelection()
   params.append("soitem_id", _soitem->id());
   params.append("taxzone_id", _taxZone->id());
 
-  selectBillingQty newdlg(this, "", TRUE);
+  selectBillingQty newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
   {
     sFillList();
-    _updated = TRUE;
+    _updated = true;
   }
 }
 
@@ -483,7 +483,7 @@ void selectOrderForBilling::sFillList()
                  "                        AND (cobill_coitem_id=coitem_id)"
                  "                        AND (NOT cobmisc_posted))"
                  "                       ORDER BY cobill_toclose DESC"
-                 "                       LIMIT 1),FALSE) AS toclose, "
+                 "                       LIMIT 1),false) AS toclose, "
                  "       'qty' AS coitem_qtyord_xtnumericrole, "
                  "       'qty' AS coitem_qtyshipped_xtnumericrole, "
                  "       'qty' AS coitem_qtyreturned_xtnumericrole, "
@@ -539,10 +539,10 @@ void selectOrderForBilling::sHandleShipchrg(int pShipchrgid)
   if (query.first())
   {
     if (query.value("shipchrg_custfreight").toBool())
-      _freight->setEnabled(TRUE);
+      _freight->setEnabled(true);
     else
     {
-      _freight->setEnabled(FALSE);
+      _freight->setEnabled(false);
       _freight->clear();
     }
   }
@@ -577,7 +577,7 @@ void selectOrderForBilling::sTaxDetail()
   params.append("order_type",	"B");
   params.append("mode",		"edit");
 
-  taxBreakdown newdlg(this, "", TRUE);
+  taxBreakdown newdlg(this, "", true);
   if (newdlg.set(params) == NoError)
   {
     newdlg.exec();

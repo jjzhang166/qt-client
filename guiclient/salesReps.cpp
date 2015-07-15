@@ -25,7 +25,7 @@
 #include "salesRep.h"
 #include "storedProcErrorLookup.h"
 
-salesReps::salesReps(QWidget* parent, const char* name, Qt::WFlags fl)
+salesReps::salesReps(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -47,7 +47,7 @@ salesReps::salesReps(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_salesrep, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -93,7 +93,7 @@ void salesReps::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  salesRep newdlg(this, "", TRUE);
+  salesRep newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -104,7 +104,7 @@ void salesReps::sEdit()
   params.append("mode", "edit");
   params.append("salesrep_id", _salesrep->id());
 
-  salesRep newdlg(this, "", TRUE);
+  salesRep newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -115,7 +115,7 @@ void salesReps::sView()
   params.append("mode", "view");
   params.append("salesrep_id", _salesrep->id());
 
-  salesRep newdlg(this, "", TRUE);
+  salesRep newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -146,15 +146,15 @@ void salesReps::sPopulateMenu( QMenu * menu )
 
   menuItem = menu->addAction(tr("Edit Sales Rep..."), this, SLOT(sEdit()));
   if (!_privileges->check("MaintainSalesReps"))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 
   menuItem = menu->addAction(tr("View Sales Rep..."), this, SLOT(sView()));
   if ((!_privileges->check("MaintainSalesReps")) && (!_privileges->check("ViewSalesReps")))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 
   menuItem = menu->addAction(tr("Delete Sales Rep..."), this, SLOT(sDelete()));
   if (!_privileges->check("MaintainSalesReps"))
-    menuItem->setEnabled(FALSE);
+    menuItem->setEnabled(false);
 }
 
 void salesReps::sPrint()

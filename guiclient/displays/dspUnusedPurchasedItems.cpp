@@ -14,7 +14,7 @@
 
 #include "xtreewidget.h"
 
-dspUnusedPurchasedItems::dspUnusedPurchasedItems(QWidget* parent, const char* name, Qt::WFlags fl)
+dspUnusedPurchasedItems::dspUnusedPurchasedItems(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : display(parent, name, fl)
 {
   setupUi(optionsWidget());

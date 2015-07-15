@@ -21,7 +21,7 @@ class saleType : public XDialog, public Ui::saleType
     Q_OBJECT
 
 public:
-    saleType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    saleType(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~saleType();
 
 public slots:
@@ -33,6 +33,7 @@ protected slots:
 
     virtual void sSave();
     virtual void sCheck();
+    virtual void sDefaultChecked();
 
 
 private:

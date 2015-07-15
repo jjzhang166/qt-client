@@ -45,6 +45,13 @@ to be bound by its terms.</comment>
      <item>
       <layout class="QHBoxLayout">
        <item>
+        <widget class="XCheckBox" name="_postInvoice">
+         <property name="text">
+          <string>Post on Save</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="_save">
          <property name="text">
           <string>&amp;Save</string>
@@ -1250,61 +1257,7 @@ to be bound by its terms.</comment>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="XTreeWidget" name="_charass">
-         <property name="focusPolicy">
-          <enum>Qt::ClickFocus</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="_9">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="_newCharacteristic">
-           <property name="text">
-            <string>&amp;New</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_editCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>&amp;Edit</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="_deleteCharacteristic">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>&amp;Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="CharacteristicsWidget" name="_charass"/>
        </item>
       </layout>
      </widget>
@@ -1388,6 +1341,11 @@ to be bound by its terms.</comment>
    <header>addresscluster.h</header>
   </customwidget>
   <customwidget>
+   <class>CharacteristicsWidget</class>
+   <extends>QWidget</extends>
+   <header>characteristicswidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
@@ -1434,6 +1392,11 @@ to be bound by its terms.</comment>
    <header>shiptocluster.h</header>
   </customwidget>
   <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
@@ -1462,6 +1425,8 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_cust</tabstop>
+  <tabstop>_copyToShipto</tabstop>
   <tabstop>_tabWidget</tabstop>
   <tabstop>_invoiceNumber</tabstop>
   <tabstop>_invoiceDate</tabstop>
@@ -1472,8 +1437,6 @@ to be bound by its terms.</comment>
   <tabstop>_salesrep</tabstop>
   <tabstop>_commission</tabstop>
   <tabstop>_taxzone</tabstop>
-  <tabstop>_cust</tabstop>
-  <tabstop>_copyToShipto</tabstop>
   <tabstop>_billToName</tabstop>
   <tabstop>_billToPhone</tabstop>
   <tabstop>_billToAddr</tabstop>
@@ -1498,6 +1461,7 @@ to be bound by its terms.</comment>
   <tabstop>_miscAmount</tabstop>
   <tabstop>_freight</tabstop>
   <tabstop>_payment</tabstop>
+  <tabstop>_postInvoice</tabstop>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>

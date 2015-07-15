@@ -20,7 +20,7 @@
 
 #include "country.h"
 
-countries::countries(QWidget* parent, const char* name, Qt::WFlags fl)
+countries::countries(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -41,7 +41,7 @@ countries::countries(QWidget* parent, const char* name, Qt::WFlags fl)
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_countries, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
     
@@ -69,7 +69,7 @@ void countries::sNew()
   ParameterList params;
   params.append("mode", "new");
     
-  country *newdlg = new country(this, "", TRUE);
+  country *newdlg = new country(this, "", true);
   newdlg->set(params);
   newdlg->exec();
   sFillList();
@@ -81,7 +81,7 @@ void countries::sEdit()
   params.append("country_id", _countries->id());
   params.append("mode", "edit");
     
-  country *newdlg = new country(this, "", TRUE);
+  country *newdlg = new country(this, "", true);
   newdlg->set(params);
   newdlg->exec();
   sFillList();
@@ -93,7 +93,7 @@ void countries::sView()
   params.append("country_id", _countries->id());
   params.append("mode", "view");
     
-  country *newdlg = new country(this, "", TRUE);
+  country *newdlg = new country(this, "", true);
   newdlg->set(params);
   newdlg->exec();
 }

@@ -17,13 +17,12 @@
 #include <QVariant>
 #include <metasql.h>
 
-#include "characteristic.h"
 #include "copyItem.h"
 #include "item.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
 
-items::items(QWidget* parent, const char*, Qt::WFlags fl)
+items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "items", fl)
 {
   setWindowTitle(tr("Items"));
@@ -86,14 +85,14 @@ items::items(QWidget* parent, const char*, Qt::WFlags fl)
   list()->addColumn(tr("Product Category"),  _itemColumn, Qt::AlignLeft , false, "prodcat_code");
   list()->addColumn(tr("Freight Class"),  _itemColumn, Qt::AlignLeft , false, "freightclass_code");
   
-  setupCharacteristics(characteristic::Items);
+  setupCharacteristics("I");
   parameterWidget()->applyDefaultFilterSet();
 
   if (_privileges->check("MaintainItemMasters"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
   else
   {
-    newAction()->setEnabled(FALSE);
+    newAction()->setEnabled(false);
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sView()));
   }
 

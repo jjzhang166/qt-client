@@ -25,7 +25,7 @@
 #include "substituteList.h"
 #include "woMaterialItem.h"
 
-workOrderMaterials::workOrderMaterials(QWidget* parent, const char* name, Qt::WFlags fl)
+workOrderMaterials::workOrderMaterials(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -74,7 +74,7 @@ workOrderMaterials::workOrderMaterials(QWidget* parent, const char* name, Qt::WF
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_womatl, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -145,7 +145,7 @@ void workOrderMaterials::sNew()
   params.append("mode", "new");
   params.append("wo_id", _wo->id());
 
-  woMaterialItem newdlg(this, "", TRUE);
+  woMaterialItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -156,7 +156,7 @@ void workOrderMaterials::sEdit()
   params.append("mode", "edit");
   params.append("womatl_id", _womatl->id());
 
-  woMaterialItem newdlg(this, "", TRUE);
+  woMaterialItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -167,7 +167,7 @@ void workOrderMaterials::sView()
   params.append("mode", "view");
   params.append("womatl_id", _womatl->id());
 
-  woMaterialItem newdlg(this, "", TRUE);
+  woMaterialItem newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -193,7 +193,7 @@ void workOrderMaterials::sDelete()
         ParameterList params;
         params.append("womatl_id", womatlid);
 
-        returnWoMaterialItem newdlg(omfgThis, "", TRUE);
+        returnWoMaterialItem newdlg(omfgThis, "", true);
         newdlg.set(params);
 
         newdlg.exec();
@@ -239,7 +239,7 @@ void workOrderMaterials::sDelete()
     return;
   }
 
-  omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatl->id(), TRUE);
+  omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatl->id(), true);
 }
 
 void workOrderMaterials::sViewAvailability()
@@ -314,7 +314,7 @@ void workOrderMaterials::sSubstitute()
     params.append("byDate", sub.value("womatl_duedate"));
     params.append("run");
 
-    substituteList substitute(this, "", TRUE);
+    substituteList substitute(this, "", true);
     substitute.set(params);
     int result = substitute.exec();
     if (result != XDialog::Rejected)
@@ -338,7 +338,7 @@ void workOrderMaterials::sSubstitute()
       else if (sub.value("womatl_issuemethod").toString() == "M")
         params.append("issueMethod", "mixed");
 
-      woMaterialItem newdlg(this, "", TRUE);
+      woMaterialItem newdlg(this, "", true);
       newdlg.set(params);
       if (newdlg.exec() != XDialog::Rejected)
       {
@@ -347,7 +347,7 @@ void workOrderMaterials::sSubstitute()
         workSubstitute.bindValue(":womatl_id", womatlid);
         workSubstitute.exec();
 
-        omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatl->id(), TRUE);
+        omfgThis->sWorkOrderMaterialsUpdated(_wo->id(), _womatl->id(), true);
       }
     }
   }
@@ -419,8 +419,8 @@ void workOrderMaterials::sFillList()
                "GROUP BY item_picklist;" );
     workFillList.bindValue(":wo_id", _wo->id());
     workFillList.exec();
-    bool   foundPick    = FALSE;
-    bool   foundNonPick = FALSE;
+    bool   foundPick    = false;
+    bool   foundNonPick = false;
     int    totalNumber  = 0;
     double totalQtyPer  = 0.0;
     while (workFillList.next())
@@ -430,13 +430,13 @@ void workOrderMaterials::sFillList()
 
       if (workFillList.value("item_picklist").toBool())
       {
-        foundPick = TRUE;
+        foundPick = true;
         _pickNumber->setText(workFillList.value("total").toDouble());
         _pickQtyPer->setText(formatQtyPer(workFillList.value("qtyper").toDouble()));
       }
       else
       {
-        foundNonPick = TRUE;
+        foundNonPick = true;
         _nonPickNumber->setText(workFillList.value("total").toDouble());
         _nonPickQtyPer->setText(formatQtyPer(workFillList.value("qtyper").toDouble()));
       }

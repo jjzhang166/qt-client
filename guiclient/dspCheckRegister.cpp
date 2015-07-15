@@ -25,7 +25,7 @@
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
-dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WFlags fl)
+dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -45,7 +45,7 @@ dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WFlags
   _check->addColumn(tr("Posted"),      _ynColumn,       Qt::AlignCenter, true,  "checkhead_posted" );
   _check->addColumn(tr("Chk./Vchr."),  _itemColumn,     Qt::AlignCenter, true,  "number" );
   _check->addColumn(tr("Recipient"),   -1,              Qt::AlignLeft,   true,  "description"   );
-  _check->addColumn(tr("Check Date") , _dateColumn,     Qt::AlignCenter, true,  "checkdate" );
+  _check->addColumn(tr("Paymt. Date") , _dateColumn,    Qt::AlignCenter, true,  "checkdate" );
   _check->addColumn(tr("Amount"),      _moneyColumn,    Qt::AlignRight,  true,  "amount"  );
   _check->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignRight,  true,  "currAbbr"  );
   _check->addColumn(tr("Base Amount"), _bigMoneyColumn, Qt::AlignRight,  true,  "base_amount"  );
@@ -206,12 +206,12 @@ void dspCheckRegister::sPopulateMenu( QMenu * pMenu )
 {
   QAction *menuItem;
 
-  menuItem = pMenu->addAction(tr("View Check..."), this, SLOT(sView()));
+  menuItem = pMenu->addAction(tr("View Payment..."), this, SLOT(sView()));
   menuItem->setEnabled(true);
 
   if(_check->altId() == 1)
   {
-    menuItem = pMenu->addAction(tr("Void Posted Check..."), this, SLOT(sVoidPosted()));
+    menuItem = pMenu->addAction(tr("Void Posted Payment..."), this, SLOT(sVoidPosted()));
     menuItem->setEnabled(_privileges->check("VoidPostedAPCheck"));
   }
 }
@@ -231,7 +231,7 @@ void dspCheckRegister::sVoidPosted()
   XSqlQuery dspVoidPosted;
   ParameterList params;
 
-  XDateInputDialog newdlg(this, "", TRUE);
+  XDateInputDialog newdlg(this, "", true);
   params.append("label", tr("On what date did you void this check?"));
   newdlg.set(params);
   int returnVal = newdlg.exec();

@@ -21,7 +21,7 @@ class taxRegistration : public XDialog, public Ui::taxRegistration
   Q_OBJECT
 
   public:
-    taxRegistration(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    taxRegistration(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~taxRegistration();
 
     QPushButton* _save;

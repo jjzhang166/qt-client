@@ -20,7 +20,7 @@ class taxZones : public XWidget, public Ui::taxZones
     Q_OBJECT
 
 public:
-    taxZones(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    taxZones(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~taxZones();
 
 public slots:

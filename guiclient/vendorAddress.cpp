@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <vendorcluster.h>
 
-vendorAddress::vendorAddress(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+vendorAddress::vendorAddress(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -84,11 +84,11 @@ enum SetResponse vendorAddress::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _number->setEnabled(FALSE);
-      _name->setEnabled(FALSE);
-      _contact->setEnabled(FALSE);
-      _address->setEnabled(FALSE);
-      _notes->setReadOnly(TRUE);
+      _number->setEnabled(false);
+      _name->setEnabled(false);
+      _contact->setEnabled(false);
+      _address->setEnabled(false);
+      _notes->setReadOnly(true);
       _close->setText(tr("&Close"));
       _save->hide();
     }
@@ -204,7 +204,7 @@ void vendorAddress::sCheck()
       _mode = cEdit;
       populate();
 
-      _number->setEnabled(FALSE);
+      _number->setEnabled(false);
     }
   }
 }

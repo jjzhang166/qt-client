@@ -28,7 +28,7 @@ void AddressCluster::init()
     _list->setObjectName("_list");
     _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     _list->setMaximumWidth(25);
 #else
     _list->setMinimumWidth(60);
@@ -115,7 +115,7 @@ void AddressCluster::init()
     _grid->setColumnStretch(4, 0);
     _grid->setColumnStretch(5, 2);
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
     setMinimumSize(_grid->columnCount() * 60, 132);
 #endif
 
@@ -337,7 +337,7 @@ void AddressCluster::silentSetId(const int pId)
         return;
   }
 
-    // _parsed = TRUE;
+    // _parsed = true;
 }
 
 void AddressCluster::setState(const QString &p)
@@ -509,7 +509,7 @@ int AddressCluster::save(enum SaveFlags flag)
     if (datamodQ.value("result").toInt() > 0)
     {
       _id=datamodQ.value("result").toInt();
-      _selected = FALSE;
+      _selected = false;
       _valid = true;
       silentSetId(id());
       return id();
@@ -665,7 +665,7 @@ void AddressCluster::setAddrChange(QString p)
 
 ///////////////////////////////////////////////////////////////////////////
 
-AddressList::AddressList(QWidget* pParent, const char* pName, bool, Qt::WFlags)
+AddressList::AddressList(QWidget* pParent, const char* pName, bool, Qt::WindowFlags)
   : VirtualList(pParent, 0)
 {
     _parent = (AddressCluster*)(pParent);

@@ -17,7 +17,7 @@
 
 #include "customCommandArgument.h"
 
-customCommand::customCommand(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+customCommand::customCommand(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -245,7 +245,7 @@ void customCommand::sNew()
   params.append("mode", "new");
   params.append("cmd_id", _cmdid);
 
-  customCommandArgument newdlg(this, "", TRUE);
+  customCommandArgument newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();
@@ -257,7 +257,7 @@ void customCommand::sEdit()
   params.append("mode", "edit");
   params.append("cmdarg_id", _arguments->id());
 
-  customCommandArgument newdlg(this, "", TRUE);
+  customCommandArgument newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() == XDialog::Accepted)
     sFillList();

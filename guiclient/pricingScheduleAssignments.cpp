@@ -22,7 +22,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-pricingScheduleAssignments::pricingScheduleAssignments(QWidget* parent, const char* name, Qt::WFlags fl)
+pricingScheduleAssignments::pricingScheduleAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -54,7 +54,7 @@ pricingScheduleAssignments::pricingScheduleAssignments(QWidget* parent, const ch
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_ipsass, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -92,7 +92,7 @@ void pricingScheduleAssignments::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  pricingScheduleAssignment newdlg(this, "", TRUE);
+  pricingScheduleAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -105,7 +105,7 @@ void pricingScheduleAssignments::sEdit()
   params.append("mode", "edit");
   params.append("ipsass_id", _ipsass->id());
 
-  pricingScheduleAssignment newdlg(this, "", TRUE);
+  pricingScheduleAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -118,7 +118,7 @@ void pricingScheduleAssignments::sView()
   params.append("mode", "view");
   params.append("ipsass_id", _ipsass->id());
 
-  pricingScheduleAssignment newdlg(this, "", TRUE);
+  pricingScheduleAssignment newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

@@ -14,10 +14,10 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <parameter.h>
-#include <QWorkspace>
+//#include <QWorkspace>
 #include "taxRegistration.h"
 
-taxRegistrations::taxRegistrations(QWidget* parent, const char* name, Qt::WFlags fl)
+taxRegistrations::taxRegistrations(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -36,7 +36,7 @@ taxRegistrations::taxRegistrations(QWidget* parent, const char* name, Qt::WFlags
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_taxreg, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -64,7 +64,7 @@ void taxRegistrations::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -76,7 +76,7 @@ void taxRegistrations::sEdit()
   params.append("taxreg_id", _taxreg->id());
   params.append("mode", "edit");
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   newdlg.set(params);
   if(newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -88,7 +88,7 @@ void taxRegistrations::sView()
   params.append("taxreg_id", _taxreg->id());
   params.append("mode", "view");
 
-  taxRegistration newdlg(this, "", TRUE);
+  taxRegistration newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

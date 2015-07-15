@@ -20,7 +20,7 @@ class confirmAchOK : public XDialog, public Ui::confirmAchOK
     Q_OBJECT
 
 public:
-    confirmAchOK(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0);
+    confirmAchOK(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = 0);
     ~confirmAchOK();
 
     static bool askOK(QWidget *parent, QFile &);

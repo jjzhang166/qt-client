@@ -26,7 +26,7 @@
 #include "createCountTagsByItem.h"
 #include "mqlutil.h"
 
-dspSlowMovingInventoryByClassCode::dspSlowMovingInventoryByClassCode(QWidget* parent, const char*, Qt::WFlags fl)
+dspSlowMovingInventoryByClassCode::dspSlowMovingInventoryByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspSlowMovingInventoryByClassCode", fl)
 {
   setupUi(optionsWidget());

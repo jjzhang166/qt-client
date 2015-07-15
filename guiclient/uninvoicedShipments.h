@@ -21,7 +21,7 @@ class uninvoicedShipments : public XWidget, public Ui::uninvoicedShipments
     Q_OBJECT
 
 public:
-    uninvoicedShipments(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    uninvoicedShipments(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~uninvoicedShipments();
 
 public slots:

@@ -22,7 +22,7 @@
 #include "splitReceipt.h"
 #include "taxDetail.h"
 
-voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery voucherItem;
@@ -39,7 +39,7 @@ voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WFla
   connect(_taxtype,	  SIGNAL(newID(int)), this, SLOT(sCalculateTax()));
   connect(_taxLit, SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
 
-  _item->setReadOnly(TRUE);
+  _item->setReadOnly(true);
   
   _unitPrice->setPrecision(omfgThis->priceVal());
   _extPrice->setPrecision(omfgThis->moneyVal());
@@ -66,7 +66,7 @@ voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WFla
   _rejectedMsg = tr("The application has encountered an error and must "
                     "stop editing this Voucher Item.\n%1");
 
-  _inTransaction = TRUE;
+  _inTransaction = true;
   voucherItem.exec("BEGIN;"); //Lot's of things can happen in here that can cause problems if cancelled out.  Let's make it easy to roll it back.
 }
 
@@ -221,7 +221,7 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
     else
     {
       _voitemid = -1;
-      _closePoitem->setChecked(FALSE);
+      _closePoitem->setChecked(false);
       _qtyToVoucher->clear();
       _amtToVoucher->clear();
       _freightToVoucher->clear();
@@ -249,7 +249,7 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
   }
 
   sFillList();
-  _saved = TRUE;
+  _saved = true;
   return NoError;
 }
 
@@ -355,7 +355,7 @@ void voucherItem::sSave()
   }
   voucherSave.exec("COMMIT;");
   
-  _inTransaction = FALSE;
+  _inTransaction = false;
   accept();
 }
 
@@ -388,7 +388,7 @@ void voucherItem::sNew()
   else
     params.append("amount", _amtToVoucher->toDouble());
 
-  voucherItemDistrib newdlg(this, "", TRUE);
+  voucherItemDistrib newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -403,7 +403,7 @@ void voucherItem::sEdit()
   params.append("curr_id", _freightToVoucher->id());
   params.append("effective", _freightToVoucher->effective());
 
-  voucherItemDistrib newdlg(this, "", TRUE);
+  voucherItemDistrib newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -457,7 +457,9 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
     {
       vch = vch + qty;
       amt = amt + (qty * pp);
-
+    }
+    else
+    {
       if (item->text(0) == "Receiving")
       {
         rcv = rcv + qty;
@@ -631,7 +633,7 @@ void voucherItem::sSplitReceipt()
   ParameterList params;
   params.append("recv_id", _uninvoiced->id());
 
-  splitReceipt newdlg(this, "", TRUE);
+  splitReceipt newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -676,7 +678,7 @@ void voucherItem::closeEvent(QCloseEvent * event)
 
 void voucherItem::sCalculateTax()
 {
-  _saved = FALSE;
+  _saved = false;
   XSqlQuery calcq;
   calcq.prepare( "SELECT SUM(COALESCE(tax, 0.00)) AS totaltax "
                  "FROM (SELECT calculateTax(vohead_taxzone_id, :taxtype_id, "
@@ -729,7 +731,7 @@ void voucherItem::sTaxDetail()
   if(cView == _mode)
     params.append("readOnly");
   
-  if(_saved == TRUE)
+  if(_saved == true)
   {
 	params.append("order_id", _voitemid);
     params.append("order_type", "VI");

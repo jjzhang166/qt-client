@@ -23,7 +23,7 @@ class bankAccount : public XDialog, public Ui::bankAccount
     Q_OBJECT
 
 public:
-    bankAccount(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    bankAccount(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~bankAccount();
 
 public slots:

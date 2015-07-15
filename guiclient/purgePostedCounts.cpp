@@ -10,7 +10,7 @@
 
 #include "purgePostedCounts.h"
 
-purgePostedCounts::purgePostedCounts(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+purgePostedCounts::purgePostedCounts(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

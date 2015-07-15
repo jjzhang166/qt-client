@@ -22,7 +22,7 @@ class hotkey : public XDialog, public Ui::hotkey
     Q_OBJECT
 
 public:
-    hotkey(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    hotkey(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~hotkey();
 
 public slots:

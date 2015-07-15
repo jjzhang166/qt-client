@@ -22,7 +22,7 @@ class transferOrderItem : public XDialog, public Ui::transferOrderItem
     Q_OBJECT
 
 public:
-    transferOrderItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    transferOrderItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~transferOrderItem();
 
     virtual void prepare();

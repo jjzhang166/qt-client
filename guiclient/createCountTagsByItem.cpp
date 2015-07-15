@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-createCountTagsByItem::createCountTagsByItem(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+createCountTagsByItem::createCountTagsByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -33,7 +33,7 @@ createCountTagsByItem::createCountTagsByItem(QWidget* parent, const char* name, 
                  | ItemLineEdit::cOutsideProcess
                  | ItemLineEdit::cActive);
 
-  _captive = FALSE;
+  _captive = false;
   
   if (!_metrics->boolean("MultiWhs"))
   {
@@ -63,11 +63,11 @@ enum SetResponse createCountTagsByItem::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setReadOnly(TRUE);
-    _warehouse->setEnabled(FALSE);
+    _item->setReadOnly(true);
+    _warehouse->setEnabled(false);
   }
 
   return NoError;

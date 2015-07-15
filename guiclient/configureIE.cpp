@@ -24,7 +24,7 @@ bool configureIE::userHasPriv()
   return _privileges->check("ConfigureImportExport");
 }
 
-configureIE::configureIE(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureIE::configureIE(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   setupUi(this);
@@ -60,10 +60,10 @@ configureIE::configureIE(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _internal->setVisible(false);
   _external->setVisible(false);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   _os->setCurrentIndex(1);
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   _os->setCurrentIndex(2);
 #endif
 
@@ -165,7 +165,7 @@ void configureIE::sPopulate()
   _xsltWindowsDir->setText(_metrics->value("XSLTDefaultDirWindows"));
 
   //  TODO: start using Qt's XSLT processor
-  _external->setChecked(TRUE);
+  _external->setChecked(true);
 
   _linuxCmd->setText(_metrics->value("XSLTProcessorLinux"));
   _macCmd->setText(_metrics->value("XSLTProcessorMac"));
@@ -264,11 +264,11 @@ void configureIE::sEditAtlasMap()
   ParameterList params;
   params.append("mode",        "edit");
   params.append("atlasmap_id", _atlasMap->id());
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   params.append("defaultDir",  _atlasMacDir->text());
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   params.append("defaultDir",  _atlasWindowsDir->text());
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   params.append("defaultDir",  _atlasLinuxDir->text());
 #endif
 
@@ -282,11 +282,11 @@ void configureIE::sEditMap()
   ParameterList params;
   params.append("mode",       "edit");
   params.append("xsltmap_id", _map->id());
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   params.append("defaultDir", _atlasMacDir->text());
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   params.append("defaultDir", _atlasWindowsDir->text());
-#elif defined Q_WS_X11
+#elif defined Q_OS_X11
   params.append("defaultDir", _atlasLinuxDir->text());
 #endif
 
@@ -299,11 +299,11 @@ void configureIE::sNewAtlasMap()
 {
   ParameterList params;
   params.append("mode",       "new");
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   params.append("defaultDir", _atlasMacDir->text());
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   params.append("defaultDir", _atlasWindowsDir->text());
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   params.append("defaultDir", _atlasLinuxDir->text());
 #endif
 
@@ -316,11 +316,11 @@ void configureIE::sNewMap()
 {
   ParameterList params;
   params.append("mode",       "new");
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   params.append("defaultDir", _atlasMacDir->text());
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   params.append("defaultDir", _atlasWindowsDir->text());
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   params.append("defaultDir", _atlasLinuxDir->text());
 #endif
 

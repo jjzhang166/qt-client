@@ -13,7 +13,7 @@
 #include <QSqlRecord>
 #include <QVariant>
 
-printInvoice::printInvoice(QWidget *parent, const char *name, bool modal, Qt::WFlags fl)
+printInvoice::printInvoice(QWidget *parent, const char *name, bool modal, Qt::WindowFlags fl)
     : printMulticopyDocument("InvoiceCopies",     "InvoiceWatermark",
                              "InvoiceShowPrices", "PostMiscInvoices",
                              parent, name, modal, fl)
@@ -49,7 +49,7 @@ printInvoice::printInvoice(QWidget *parent, const char *name, bool modal, Qt::WF
           tr("Could not post Invoice %1 because of a missing exchange rate.");
 
   _markOnePrintedQry = "UPDATE invchead"
-                       "   SET invchead_printed=TRUE"
+                       "   SET invchead_printed=true"
                        " WHERE (invchead_id=<? value('docid') ?>);" ;
 
   _postFunction = "postInvoice";
@@ -79,5 +79,5 @@ void printInvoice::sHandlePopulated(XSqlQuery *qry)
 
 void printInvoice::sHandleDocUpdated(int docid)
 {
-  omfgThis->sInvoicesUpdated(docid, TRUE);
+  omfgThis->sInvoicesUpdated(docid, true);
 }

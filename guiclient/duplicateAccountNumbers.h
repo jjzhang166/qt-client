@@ -21,7 +21,7 @@ class duplicateAccountNumbers : public XWidget, public Ui::duplicateAccountNumbe
     Q_OBJECT
 
 public:
-    duplicateAccountNumbers(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    duplicateAccountNumbers(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~duplicateAccountNumbers();
 
 public slots:

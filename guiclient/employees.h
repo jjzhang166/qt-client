@@ -19,7 +19,7 @@ class employees : public display
     Q_OBJECT
 
 public:
-    employees(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    employees(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
 public slots:
     virtual void sDelete();

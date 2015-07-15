@@ -29,7 +29,7 @@ class XTUPLEWIDGETS_EXPORT itemAliasList : public QDialog
     Q_OBJECT
 
   public:
-    itemAliasList(QWidget * = 0, const char * = 0, bool = FALSE, Qt::WFlags = 0 );
+    itemAliasList(QWidget * = 0, const char * = 0, bool = false, Qt::WindowFlags = 0 );
 
     QLineEdit* _alias;
     QCheckBox* _showInactive;

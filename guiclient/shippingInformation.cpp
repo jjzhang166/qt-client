@@ -22,7 +22,7 @@
 #include "storedProcErrorLookup.h"
 #include "transferOrderItem.h"
 
-shippingInformation::shippingInformation(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+shippingInformation::shippingInformation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -31,7 +31,7 @@ shippingInformation::shippingInformation(QWidget* parent, const char* name, bool
   connect(_order, SIGNAL(newId(int, QString)), this, SLOT(sFillList()));
   connect(_buttonBox,	SIGNAL(accepted()), this, SLOT(sSave()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _shippingForm->setCurrentIndex(-1);
 
@@ -79,7 +79,7 @@ enum SetResponse shippingInformation::set(const ParameterList &pParams)
     shippinget.exec();
     if (shippinget.first())
     {
-      _captive = TRUE;
+      _captive = true;
 
       _order->setId(shippinget.value("shiphead_order_id").toInt(),
                     shippinget.value("shiphead_order_type").toString());
@@ -129,7 +129,7 @@ void shippingInformation::sSave()
                "( :shiphead_order_id, :shiphead_order_type, :shiphead_freight,"
 	       "  :shiphead_freight_curr_id, :shiphead_notes,"
                "  :shiphead_shipdate, :shiphead_shipvia, fetchShipmentNumber(),"
-               "  :shiphead_shipchrg_id, :shiphead_shipform_id, FALSE );" );
+               "  :shiphead_shipchrg_id, :shiphead_shipform_id, false );" );
 
   shippingSave.bindValue(":shiphead_order_id",		_order->id());
   shippingSave.bindValue(":shiphead_order_type",           _order->type());
@@ -217,7 +217,7 @@ void shippingInformation::sViewLine()
   {
     params.append("toitem_id", _item->id());
 
-    transferOrderItem newdlg(this, "", TRUE);
+    transferOrderItem newdlg(this, "", true);
     newdlg.set(params);
     newdlg.exec();
   }
@@ -230,8 +230,8 @@ void shippingInformation::sFillList()
                "       shiphead_shipchrg_id, shiphead_shipform_id,"
                "       shiphead_freight, shiphead_freight_curr_id,"
                "       shiphead_shipdate,"
-               "       CASE WHEN (shiphead_shipdate IS NULL) THEN FALSE"
-               "            ELSE TRUE"
+               "       CASE WHEN (shiphead_shipdate IS NULL) THEN false"
+               "            ELSE true"
                "       END AS validdata "
                "FROM shiphead "
                "WHERE ((NOT shiphead_shipped)"
@@ -259,13 +259,13 @@ void shippingInformation::sFillList()
 
   MetaSQLQuery shm(shs);
   shippingFillList = shm.toQuery(shp);
-  bool fetchFromHead = TRUE;
+  bool fetchFromHead = true;
 
   if (shippingFillList.first())
   {
     if (shippingFillList.value("validdata").toBool())
     {
-      fetchFromHead = FALSE;
+      fetchFromHead = false;
 
       _shipDate->setDate(shippingFillList.value("shiphead_shipdate").toDate());
       _shipVia->setText(shippingFillList.value("shiphead_shipvia").toString());

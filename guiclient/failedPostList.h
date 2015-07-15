@@ -22,7 +22,7 @@ class failedPostList : public XDialog, public Ui::failedPostList
     Q_OBJECT
 
 public:
-    failedPostList(QWidget* = 0, const char* = 0, bool = false, Qt::WFlags = 0);
+    failedPostList(QWidget* = 0, const char* = 0, bool = false, Qt::WindowFlags = 0);
     ~failedPostList();
 
 public slots:

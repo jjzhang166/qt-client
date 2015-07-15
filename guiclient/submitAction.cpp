@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-submitAction::submitAction(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+submitAction::submitAction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

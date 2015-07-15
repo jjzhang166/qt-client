@@ -15,7 +15,7 @@
 
 #include "guiclient.h"
 
-dspPoPriceVariancesByItem::dspPoPriceVariancesByItem(QWidget* parent, const char*, Qt::WFlags fl)
+dspPoPriceVariancesByItem::dspPoPriceVariancesByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoPriceVariancesByItem", fl)
 {
   setupUi(optionsWidget());

@@ -18,18 +18,20 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QTextStream>
-#include <QtDesigner/QDesignerComponents>
-#include <QtDesigner/QDesignerIntegrationInterface>
+#include <QDesignerComponents>
+#include <QDesignerIntegrationInterface>
 #include <QtDesigner>
-#include <QtDesigner/QDesignerFormWindowInterface>
-#include <QtDesigner/QDesignerFormEditorInterface>
-#include <QtDesigner/QDesignerFormWindowManagerInterface>
-#include <QtDesigner/QDesignerPropertyEditorInterface>
-#include <QtDesigner/QDesignerWidgetDataBaseInterface>
+#include <QDesignerFormWindowInterface>
+#include <QDesignerFormEditorInterface>
+#include <QDesignerFormWindowManagerInterface>
+#include <QDesignerPropertyEditorInterface>
+#include <QDesignerWidgetDataBaseInterface>
 
 // TODO: can we live without this?
 // copied from .../qt-mac-commercial-src-4.4.3/tools/designer/src/lib/shared/qdesigner_integration_p.h
+#if QT_VERSION < 0x050000
 #include "qdesigner_integration_p.h"
+#endif
 
 // TODO: (re)move the following when the UI gets sorted out
 #include <QHBoxLayout>
@@ -126,7 +128,7 @@ SignalSlotEditorWindow::SignalSlotEditorWindow(xTupleDesigner *parent)
   setWindowTitle(xTupleDesigner::tr("Signal/Slot Editor"));
 }
 
-xTupleDesigner::xTupleDesigner(QWidget* parent, const char* name, Qt::WFlags fl)
+xTupleDesigner::xTupleDesigner(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XMainWindow(parent, name, fl)
 {
   _formEnabled = true;
@@ -201,7 +203,7 @@ xTupleDesigner::xTupleDesigner(QWidget* parent, const char* name, Qt::WFlags fl)
   _toolmenu->addAction(_slotedwindow->action());
 
   _formeditor->setTopLevel(_widgetwindow);
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
   _widgetwindow->setMenuBar(_menubar);
   _widgetwindow->action()->setVisible(false);
 #endif
@@ -228,8 +230,11 @@ xTupleDesigner::xTupleDesigner(QWidget* parent, const char* name, Qt::WFlags fl)
 
   // resource editor;
   // action editor;
-
+#if QT_VERSION >= 0x050000
+  _integration = new QDesignerIntegration(_formeditor, this);
+#else
   _integration = new qdesigner_internal::QDesignerIntegration(_formeditor, this);
+#endif
   _formeditor->setIntegration(_integration);
 
   // toolbar creation

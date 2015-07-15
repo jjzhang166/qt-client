@@ -18,7 +18,7 @@
 #include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
-configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigureIM;
@@ -37,7 +37,7 @@ configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::
 	   "FROM whsinfo");
     if (configureconfigureIM.size() > 1)
     {
-      _multiWhs->setCheckable(FALSE);
+      _multiWhs->setCheckable(false);
       _multiWhs->setTitle("Multiple Sites");
     }
     else
@@ -68,36 +68,36 @@ configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _warehouseChangeLog->setChecked(_metrics->boolean("WarehouseChangeLog"));
   
   if (_metrics->boolean("PostCountTagToDefault"))
-    _postToDefault->setChecked(TRUE);
+    _postToDefault->setChecked(true);
   else
-    _doNotPost->setChecked(TRUE);
+    _doNotPost->setChecked(true);
 
   _defaultTransWhs->setId(_metrics->value("DefaultTransitWarehouse").toInt());
 
   QString countSlipAuditing = _metrics->value("CountSlipAuditing");
   if (countSlipAuditing == "N")
-    _noSlipChecks->setChecked(TRUE);
+    _noSlipChecks->setChecked(true);
   else if (countSlipAuditing == "W")
-    _checkOnUnpostedWarehouse->setChecked(TRUE);
+    _checkOnUnpostedWarehouse->setChecked(true);
   else if (countSlipAuditing == "A")
-    _checkOnUnposted->setChecked(TRUE);
+    _checkOnUnposted->setChecked(true);
   else if (countSlipAuditing == "X")
-    _checkOnAllWarehouse->setChecked(TRUE);
+    _checkOnAllWarehouse->setChecked(true);
   else if (countSlipAuditing == "B")
-    _checkOnAll->setChecked(TRUE);
+    _checkOnAll->setChecked(true);
     
   QString avgCostingMethod = _metrics->value("CountAvgCostMethod");
   if (avgCostingMethod == "STD")
-    _useStdCost->setChecked(TRUE);
+    _useStdCost->setChecked(true);
   else if (avgCostingMethod == "ACT")
   {
-    _useAvgCost->setChecked(TRUE);
-    _useActCost->setChecked(TRUE);
+    _useAvgCost->setChecked(true);
+    _useActCost->setChecked(true);
   }
   else if (avgCostingMethod == "AVG")
-    _useAvgCost->setChecked(TRUE);
+    _useAvgCost->setChecked(true);
   else
-    _useStdCost->setChecked(TRUE);
+    _useStdCost->setChecked(true);
     
   if(_metrics->value("Application") != "PostBooks")
   {
@@ -106,8 +106,8 @@ configureIM::configureIM(QWidget* parent, const char* name, bool /*modal*/, Qt::
 	      "WHERE (itemsite_controlmethod IN ('L','S'));");
     if (configureconfigureIM.first())
     {
-      _lotSerial->setChecked(TRUE);
-      _lotSerial->setEnabled(FALSE);
+      _lotSerial->setChecked(true);
+      _lotSerial->setEnabled(false);
     }
     else
       _lotSerial->setChecked(_metrics->boolean("LotSerialControl"));

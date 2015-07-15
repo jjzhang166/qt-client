@@ -15,7 +15,7 @@
 #include <QValidator>
 #include <QVariant>
 
-bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -38,7 +38,7 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WFla
   _currency->setType(XComboBox::Currencies);
   _currency->setLabel(_currencyLit);
 
-  _form->setAllowNull(TRUE);
+  _form->setAllowNull(true);
   _form->populate( "SELECT form_id, form_name, form_name "
                    "FROM form "
                    "WHERE form_key='Chck' "
@@ -104,24 +104,24 @@ enum SetResponse bankAccount::set(const ParameterList &pParams)
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-      _currency->setEnabled(FALSE);
+      _currency->setEnabled(false);
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
 
-      _name->setEnabled(FALSE);
-      _description->setEnabled(FALSE);
-      _bankName->setEnabled(FALSE);
-      _accountNumber->setEnabled(FALSE);
-      _type->setEnabled(FALSE);
-      _currency->setEnabled(FALSE);
-      _ap->setEnabled(FALSE);
-      _nextCheckNum->setEnabled(FALSE);
-      _printCheck->setEnabled(FALSE);
-      _form->setEnabled(FALSE);
-      _ar->setEnabled(FALSE);
-      _assetAccount->setReadOnly(TRUE);
+      _name->setEnabled(false);
+      _description->setEnabled(false);
+      _bankName->setEnabled(false);
+      _accountNumber->setEnabled(false);
+      _type->setEnabled(false);
+      _currency->setEnabled(false);
+      _ap->setEnabled(false);
+      _nextCheckNum->setEnabled(false);
+      _printCheck->setEnabled(false);
+      _form->setEnabled(false);
+      _ar->setEnabled(false);
+      _assetAccount->setReadOnly(true);
       _buttonBox->clear();
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
@@ -147,7 +147,7 @@ void bankAccount::sCheck()
       _mode = cEdit;
       populate();
 
-      _name->setEnabled(FALSE);
+      _name->setEnabled(false);
     }
     else if (bankCheck.lastError().type() != QSqlError::NoError)
     {

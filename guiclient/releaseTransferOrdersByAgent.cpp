@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-releaseTransferOrdersByAgent::releaseTransferOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+releaseTransferOrdersByAgent::releaseTransferOrdersByAgent(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -48,7 +48,7 @@ void releaseTransferOrdersByAgent::sRelease()
               "            AND   (toitem_status='U') ) ) AS data "
 // TODO: site priv checking for TO's?
 //              " WHERE ( (checkTOSitePrivs(tohead_id))");
-              " WHERE ( TRUE");
+              " WHERE ( true");
   if(_selectedAgent->isChecked())
     sql +=    "   AND   (tohead_agent_username=:username)";
   sql += ")";

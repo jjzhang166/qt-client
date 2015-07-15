@@ -39,7 +39,7 @@ class printPackingListPrivate
     int          _shipformid;
 };
 
-printPackingList::printPackingList(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printPackingList::printPackingList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : printSinglecopyDocument(parent, name, modal, fl)
 {
   setupUi(optionsWidget());
@@ -61,7 +61,7 @@ printPackingList::printPackingList(QWidget* parent, const char* name, bool modal
 
   _order->setAllowedStatuses(OrderLineEdit::Open);
   _order->setAllowedTypes(OrderLineEdit::Sales | OrderLineEdit::Transfer);
-  _order->setFromSitePrivsEnforced(TRUE);
+  _order->setFromSitePrivsEnforced(true);
   _shipment->setStatus(ShipmentClusterLineEdit::Unshipped);
 
   _orderDate->setEnabled(false);

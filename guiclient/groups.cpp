@@ -24,7 +24,7 @@
  *  name 'name' and widget flags set to 'f'.
  *
  */
-groups::groups(QWidget* parent, const char* name, Qt::WFlags fl)
+groups::groups(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -54,7 +54,7 @@ groups::groups(QWidget* parent, const char* name, Qt::WFlags fl)
   else
   {
     connect(_list, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
    sFillList();
@@ -108,7 +108,7 @@ void groups::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  group newdlg(this, "", TRUE);
+  group newdlg(this, "", true);
   newdlg.set(params);
   
   newdlg.exec();
@@ -121,7 +121,7 @@ void groups::sEdit()
   params.append("mode", "edit");
   params.append("grp_id", _list->id());
 
-  group newdlg(this, "", TRUE);
+  group newdlg(this, "", true);
   newdlg.set(params);
   
   newdlg.exec();
@@ -134,7 +134,7 @@ void groups::sView()
   params.append("mode", "view");
   params.append("grp_id", _list->id());
 
-  group newdlg(this, "", TRUE);
+  group newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

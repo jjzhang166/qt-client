@@ -18,7 +18,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
-plannedOrder::plannedOrder(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+plannedOrder::plannedOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl),
       _captive(false)
 {
@@ -62,17 +62,17 @@ enum SetResponse plannedOrder::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setReadOnly(TRUE);
-    _warehouse->setEnabled(FALSE);
+    _item->setReadOnly(true);
+    _warehouse->setEnabled(false);
   }
 
   param = pParams.value("planord_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
     _planordid = param.toInt();
   }
 
@@ -94,13 +94,13 @@ enum SetResponse plannedOrder::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _number->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _typeGroup->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _startDate->setEnabled(FALSE);
-      _dueDate->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _typeGroup->setEnabled(false);
+      _qty->setEnabled(false);
+      _startDate->setEnabled(false);
+      _dueDate->setEnabled(false);
       _leadTimeLit->hide();
       _leadTime->hide();
       _daysLit->hide();
@@ -285,7 +285,7 @@ void plannedOrder::sCreate()
   {
     populateFoNumber();
     _item->setId(-1);
-    _typeGroup->setEnabled(FALSE);
+    _typeGroup->setEnabled(false);
     _qty->clear();
     _dueDate->setNull();
     _leadTime->setValue(0);
@@ -317,12 +317,12 @@ void plannedOrder::populate()
     _startDate->setDate(planord.value("planord_startdate").toDate());
     _notes->setText(planord.value("planord_comments").toString());
     if (planord.value("planord_type").toString() == "P")
-      _poButton->setChecked(TRUE);
+      _poButton->setChecked(true);
     else if (planord.value("planord_type").toString() == "W")
-      _woButton->setChecked(TRUE);
+      _woButton->setChecked(true);
     else
     {
-      _toButton->setChecked(TRUE);
+      _toButton->setChecked(true);
       _fromWarehouse->setId(planord.value("supplywarehousid").toInt());
     }
   }
@@ -390,30 +390,30 @@ void plannedOrder::sHandleItemsite(int pWarehousid)
        plannedHandleItemsite.value("item_type").toString() == "O" ||
        plannedHandleItemsite.value("item_type").toString() == "T" ||
        plannedHandleItemsite.value("item_type").toString() == "M") )
-    _poButton->setEnabled(TRUE);
+    _poButton->setEnabled(true);
   else
-    _poButton->setEnabled(FALSE);
+    _poButton->setEnabled(false);
   if ( plannedHandleItemsite.value("itemsite_wosupply").toBool() &&
       (plannedHandleItemsite.value("item_type").toString() == "P" ||
        plannedHandleItemsite.value("item_type").toString() == "T" ||
        plannedHandleItemsite.value("item_type").toString() == "M") )
-    _woButton->setEnabled(TRUE);
+    _woButton->setEnabled(true);
   else
-    _woButton->setEnabled(FALSE);
+    _woButton->setEnabled(false);
   if ( plannedHandleItemsite.value("itemsite_wosupply").toBool() && plannedHandleItemsite.value("itemsite_posupply").toBool() && plannedHandleItemsite.value("item_type").toString() == "P" )
   {
-    _poButton->setChecked(TRUE);
-    _woButton->setChecked(FALSE);
+    _poButton->setChecked(true);
+    _woButton->setChecked(false);
   }
   else if ( plannedHandleItemsite.value("itemsite_wosupply").toBool() )
   {
-    _poButton->setChecked(FALSE);
-    _woButton->setChecked(TRUE);
+    _poButton->setChecked(false);
+    _woButton->setChecked(true);
   }
   else
   {
-    _poButton->setChecked(TRUE);
-    _woButton->setChecked(FALSE);
+    _poButton->setChecked(true);
+    _woButton->setChecked(false);
   }
 
   plannedHandleItemsite.prepare( "SELECT COALESCE(COUNT(*), 0) AS supplysites "
@@ -430,9 +430,9 @@ void plannedOrder::sHandleItemsite(int pWarehousid)
   }
 
   if (plannedHandleItemsite.value("supplysites").toInt() > 0)
-    _toButton->setEnabled(TRUE);
+    _toButton->setEnabled(true);
   else
-    _toButton->setEnabled(FALSE);
+    _toButton->setEnabled(false);
 
   plannedHandleItemsite.prepare( "SELECT COALESCE(supply.itemsite_id, -1) AS supplyitemsiteid,"
              "       COALESCE(supply.itemsite_warehous_id, -1) AS supplywarehousid "
@@ -450,7 +450,7 @@ void plannedOrder::sHandleItemsite(int pWarehousid)
 
   if (plannedHandleItemsite.value("supplyitemsiteid").toInt() != -1)
   {
-    _toButton->setChecked(TRUE);
+    _toButton->setChecked(true);
     _fromWarehouse->setId(plannedHandleItemsite.value("supplywarehousid").toInt());
   }
   else

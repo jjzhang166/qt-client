@@ -19,7 +19,7 @@ class updatePrices : public XDialog, public Ui::updatePrices
   Q_OBJECT
 
 public:
-  updatePrices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+  updatePrices(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
   ~updatePrices();
 
 public slots:

@@ -21,7 +21,7 @@ class relocateInventory : public XDialog, public Ui::relocateInventory
     Q_OBJECT
 
 public:
-    relocateInventory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    relocateInventory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~relocateInventory();
 
 public slots:

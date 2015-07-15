@@ -17,7 +17,6 @@
 
 #include <metasql.h>
 
-#include "characteristicAssignment.h"
 #include "customer.h"
 #include "employee.h"
 #include "errorReporter.h"
@@ -36,7 +35,7 @@
 
 #define DEBUG false
 
-crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WFlags fl)
+crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -69,12 +68,9 @@ crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_close,               SIGNAL(clicked()), this, SLOT(sClose()));
   connect(_competitor,          SIGNAL(clicked()), this, SLOT(sCompetitor()));
   connect(_customerButton,      SIGNAL(clicked()), this, SLOT(sCustomer()));
-  connect(_deleteCharacteristic,SIGNAL(clicked()), this, SLOT(sDeleteCharacteristic()));
   connect(_deleteReg,           SIGNAL(clicked()), this, SLOT(sDeleteReg()));
-  connect(_editCharacteristic,  SIGNAL(clicked()), this, SLOT(sEditCharacteristic()));
   connect(_editReg,             SIGNAL(clicked()), this, SLOT(sEditReg()));
   connect(_employeeButton,      SIGNAL(clicked()), this, SLOT(sEmployee()));
-  connect(_newCharacteristic,   SIGNAL(clicked()), this, SLOT(sNewCharacteristic()));
   connect(_newReg,              SIGNAL(clicked()), this, SLOT(sNewReg()));
   connect(_partner,             SIGNAL(clicked()), this, SLOT(sPartner()));
   connect(_prospectButton,      SIGNAL(clicked()), this, SLOT(sProspect()));
@@ -99,8 +95,7 @@ crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_allButton, SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_contacts, SIGNAL(cntctDetached(int)), this, SLOT(sHandleCntctDetach(int)));
 
-  _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name");
-  _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value");
+  _charass->setType("CRMACCT");
 
   _reg->addColumn(tr("Lot/Serial")  ,  _itemColumn,  Qt::AlignLeft, true, "ls_number" );
   _reg->addColumn(tr("Item")        ,  _itemColumn,  Qt::AlignLeft, true, "item_number" );
@@ -127,6 +122,7 @@ crmaccount::crmaccount(QWidget* parent, const char* name, Qt::WFlags fl)
   _vendId       = -1;
   _comments->setId(-1);
   _documents->setId(-1);
+  _charass->setId(-1);
   _modal        = parent && (parent->inherits("customer") ||
                              parent->inherits("employee") ||
                              parent->inherits("prospect") ||
@@ -211,29 +207,15 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
         return UndefinedError;
 
       _mode = cNew;
-
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
     }
     else if (param.toString() == "edit")
     {
       _mode = cEdit;
-
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
     }
     else if (param.toString() == "view")
     {
       _mode = cView;
-
-      _save->hide();
-      disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(setEnabled(bool)));
-      disconnect(_reg, SIGNAL(valid(bool)), _deleteReg, SLOT(setEnabled(bool)));
-      disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(animateClick()));
-
-      ParameterList params;
-      params.append("mode", "view");
-      _contacts->set(params);
+      setViewMode();
     }
   }
 
@@ -249,13 +231,26 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
   if(pParams.inList("scripted"))
     _tab->setCurrentIndex(_tab->indexOf(_todoListTab));
 
+  if (_mode == cEdit && !_lock.acquire("crmacct", _crmacctId, AppLock::Interactive))
+  {
+    _mode = cView;
+    setViewMode();
+  }
+
+  sHandleChildButtons();
+
+  return NoError;
+}
+
+void crmaccount::setViewMode()
+{
   bool canEdit = (_mode == cNew || _mode == cEdit);
 
   _active->setEnabled(canEdit);
   _comments->setReadOnly(! canEdit);
   _documents->setReadOnly(! canEdit);
+  _charass->setReadOnly(! canEdit);
   _name->setEnabled(canEdit);
-  _newCharacteristic->setEnabled(canEdit);
   _newReg->setEnabled(canEdit);
   _notes->setEnabled(canEdit);
   _number->setEnabled(canEdit && _metrics->value("CRMAccountNumberGeneration") != "A");
@@ -265,9 +260,17 @@ enum SetResponse crmaccount::set(const ParameterList &pParams)
   _secondary->setEnabled(canEdit);
   _typeBox->setEnabled(canEdit);
 
-  sHandleChildButtons();
+  if (_mode == cView)
+  {
+    _save->hide();
+    disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(setEnabled(bool)));
+    disconnect(_reg, SIGNAL(valid(bool)), _deleteReg, SLOT(setEnabled(bool)));
+    disconnect(_reg, SIGNAL(valid(bool)), _editReg, SLOT(animateClick()));
 
-  return NoError;
+    ParameterList params;
+    params.append("mode", "view");
+    _contacts->set(params);
+  }
 }
 
 void crmaccount::sClose()
@@ -515,7 +518,7 @@ void crmaccount::sSave()
   }
 
   omfgThis->sCrmAccountsUpdated(_crmacctId);
-  omfgThis->sCustomersUpdated(-1, TRUE);
+  omfgThis->sCustomersUpdated(-1, true);
   omfgThis->sEmployeeUpdated(-1);
   omfgThis->sProspectsUpdated();
   omfgThis->sTaxAuthsUpdated(-1);
@@ -595,71 +598,6 @@ QSqlError crmaccount::saveNoErrorCheck(bool pInTxn)
   return updateq.lastError();
 }
 
-void crmaccount::sNewCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "new");
-  params.append("crmacct_id", _crmacctId);
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sGetCharacteristics();
-}
-
-void crmaccount::sEditCharacteristic()
-{
-  ParameterList params;
-  params.append("mode", "edit");
-  params.append("charass_id", _charass->id());
-
-  characteristicAssignment newdlg(this, "", TRUE);
-  newdlg.set(params);
-
-  if (newdlg.exec() != XDialog::Rejected)
-    sGetCharacteristics();
-}
-
-void crmaccount::sDeleteCharacteristic()
-{
-  XSqlQuery delcaq;
-  delcaq.prepare( "DELETE FROM charass "
-             "WHERE (charass_id=:charass_id);" );
-  delcaq.bindValue(":charass_id", _charass->id());
-  delcaq.exec();
-  if (ErrorReporter::error(QtCriticalMsg, this,
-                           tr("Error deleting Characteristic Assignment"),
-                           delcaq, __FILE__, __LINE__))
-    return;
-
-  sGetCharacteristics();
-}
-
-void crmaccount::sGetCharacteristics()
-{
-  XSqlQuery getcaq;
-  getcaq.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value "
-             "FROM charass, char "
-             "WHERE ( (charass_target_type='CRMACCT')"
-             " AND (charass_char_id=char_id)"
-             " AND (charass_target_id=:crmacct_id) ) "
-             "ORDER BY char_order, char_name;" );
-  getcaq.bindValue(":crmacct_id", _crmacctId);
-  getcaq.exec();
-  _charass->populate(getcaq);
-
-  if (ErrorReporter::error(QtCriticalMsg, this,
-                           tr("Error getting Characteristic Assignments"),
-                           getcaq, __FILE__, __LINE__))
-    return;
-}
-
 int crmaccount::id()
 {
   return _crmacctId;
@@ -670,6 +608,7 @@ void crmaccount::setId(int id)
   _crmacctId = id;
   _todoList->parameterWidget()->setDefault(tr("Account"), _crmacctId, true);
   _contacts->setCrmacctid(_crmacctId);
+  _charass->setId(_crmacctId);
   sPopulate();
 
   if (cView != _mode)
@@ -718,6 +657,7 @@ void crmaccount::sPopulate()
     _parentCrmacct->setId(getq.value("crmacct_parent_id").toInt());
     _comments->setId(_crmacctId);
     _documents->setId(_crmacctId);
+    _charass->setId(_crmacctId);
     _primary->setSearchAcct(_crmacctId);
     _secondary->setSearchAcct(_crmacctId);
     _owner->setUsername(getq.value("crmacct_owner_username").toString());
@@ -746,12 +686,12 @@ void crmaccount::sPopulate()
     _vendId       = -1;
     _comments->setId(-1);
     _documents->setId(-1);
+    _charass->setId(-1);
     _canCreateUsers = false;
 
     sHandleChildButtons();
   }
 
-  sGetCharacteristics();
   sPopulateRegistrations();
   _contacts->sFillList();
   _todoList->sFillList();
@@ -1050,13 +990,13 @@ void crmaccount::sVendorInfo()
 void crmaccount::sCustomerToggled()
 {
   if (_customer->isChecked())
-    _prospect->setChecked(FALSE);
+    _prospect->setChecked(false);
 }
 
 void crmaccount::sProspectToggled()
 {
   if (_prospect->isChecked())
-    _customer->setChecked(FALSE);
+    _customer->setChecked(false);
 }
 
 void crmaccount::sPopulateRegistrations()
@@ -1091,7 +1031,7 @@ void crmaccount::sNewReg()
   params.append("mode", "new");
   params.append("crmacct_id", _crmacctId);
 
-  lotSerialRegistration newdlg(this, "", TRUE);
+  lotSerialRegistration newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();
@@ -1104,7 +1044,7 @@ void crmaccount::sEditReg()
   params.append("mode", "edit");
   params.append("lsreg_id", _reg->id());
 
-  lotSerialRegistration newdlg(this, "", TRUE);
+  lotSerialRegistration newdlg(this, "", true);
   newdlg.set(params);
 
   newdlg.exec();
@@ -1164,12 +1104,20 @@ void crmaccount::sCheckNumber()
                                query, __FILE__, __LINE__))
         return;
 
+      if (! _lock.release())
+        ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
+                           _lock.lastError(), __FILE__, __LINE__);
+
       setId(newq.value("crmacct_id").toInt());
       sPopulate();
 
-      connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
-      connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
-      _number->setEnabled(FALSE);
+      if (_mode == cEdit && !_lock.acquire("crmacct", _crmacctId, AppLock::Interactive))
+      {
+        _mode = cView;
+        setViewMode();
+      }
+
+      _number->setEnabled(false);
     }
     else if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
                                   newq, __FILE__, __LINE__))

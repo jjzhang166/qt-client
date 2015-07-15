@@ -215,7 +215,7 @@ int PaymentechProcessor::buildCommon(QString &pordernum, const int pccardid, con
   _extraHeaders.append(qMakePair(QString("Content-Length"), QString("%1").arg(prequest.size())));
 
   if (DEBUG)
-    qDebug("Paymentech:buildCommon built %s\n", prequest.toAscii().data());
+    qDebug("Paymentech:buildCommon built %s\n", prequest.toLatin1().data());
   return 0;
 }
 
@@ -224,7 +224,7 @@ int  PaymentechProcessor::doAuthorize(const int pccardid, const QString &pcvv, d
   if (DEBUG)
     qDebug("Paymentech:doAuthorize(%d, pcvv, %f, %f, %d, %f, %f, %d, %s, %s, %d)",
 	   pccardid, pamount, ptax, ptaxexempt,  pfreight,  pduty, pcurrid,
-	   pneworder.toAscii().data(), preforder.toAscii().data(), pccpayid);
+	   pneworder.toLatin1().data(), preforder.toLatin1().data(), pccpayid);
 
   int    returnValue = 0;
   double amount  = pamount;
@@ -448,9 +448,9 @@ int PaymentechProcessor::handleResponse(const QString &presponse, const int pcca
 {
   if (DEBUG)
     qDebug("Paymentech::handleResponse(%s, %d, %s, %f, %d, %s, %d, pparams)",
-	   presponse.toAscii().data(), pccardid,
-	   ptype.toAscii().data(), pamount, pcurrid,
-	   preforder.toAscii().data(), pccpayid);
+	   presponse.toLatin1().data(), pccardid,
+	   ptype.toLatin1().data(), pamount, pcurrid,
+	   preforder.toLatin1().data(), pccpayid);
 
   int returnValue = 0;
 
@@ -570,7 +570,7 @@ int PaymentechProcessor::handleResponse(const QString &presponse, const int pcca
 
   if (DEBUG)
     qDebug("Paymentech::handleResponse returning %d %s",
-           returnValue, errorMsg().toAscii().data());
+           returnValue, errorMsg().toLatin1().data());
   return returnValue;
 }
 

@@ -23,7 +23,7 @@
 #include "guiclient.h"
 #include "xdoublevalidator.h"
 
-updatePrices::updatePrices(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+updatePrices::updatePrices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   XSqlQuery updateupdatePrices;

@@ -15,7 +15,7 @@
 #include <QSqlError>
 #include "inputManager.h"
 
-implodeWo::implodeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+implodeWo::implodeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -24,7 +24,7 @@ implodeWo::implodeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags f
   connect(_implode, SIGNAL(clicked()), this, SLOT(sImplode()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
 
-  _captive = TRUE;
+  _captive = true;
   omfgThis->inputManager()->notify(cBCWorkOrder, this, _wo, SLOT(setId(int)));
 
   _wo->setType(cWoExploded);
@@ -43,7 +43,7 @@ void implodeWo::languageChange()
 enum SetResponse implodeWo::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -79,7 +79,7 @@ void implodeWo::sImplode()
       return;
   }
 
-  implodeImplode.prepare("SELECT implodeWo(:wo_id, TRUE) AS result;");
+  implodeImplode.prepare("SELECT implodeWo(:wo_id, true) AS result;");
   implodeImplode.bindValue(":wo_id", _wo->id());
   implodeImplode.exec();
   if (implodeImplode.first() && implodeImplode.value("result").toInt() < 0)
@@ -97,7 +97,7 @@ void implodeWo::sImplode()
   else if (implodeImplode.lastError().type() != QSqlError::NoError)
     systemError(this, implodeImplode.lastError().databaseText(), __FILE__, __LINE__);
 
-  omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+  omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
   if (_captive)
     accept();

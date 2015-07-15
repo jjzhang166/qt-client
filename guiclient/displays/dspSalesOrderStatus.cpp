@@ -16,7 +16,7 @@
 #include "inputManager.h"
 #include "salesOrderList.h"
 
-dspSalesOrderStatus::dspSalesOrderStatus(QWidget* parent, const char*, Qt::WFlags fl)
+dspSalesOrderStatus::dspSalesOrderStatus(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSalesOrderStatus", fl)
 {
   setupUi(optionsWidget());

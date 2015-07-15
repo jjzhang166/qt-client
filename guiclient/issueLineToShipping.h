@@ -22,7 +22,7 @@ class issueLineToShipping : public XDialog, public Ui::issueLineToShipping
     Q_OBJECT
 
 public:
-    issueLineToShipping(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    issueLineToShipping(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~issueLineToShipping();
 
 public slots:

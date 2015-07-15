@@ -17,7 +17,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-relocateInventory::relocateInventory(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+relocateInventory::relocateInventory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -26,7 +26,7 @@ relocateInventory::relocateInventory(QWidget* parent, const char* name, bool mod
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sFillList()));
   connect(_move, SIGNAL(clicked()), this, SLOT(sMove()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cLocationControlled);
   _qty->setValidator(omfgThis->transQtyVal());
@@ -73,11 +73,11 @@ enum SetResponse relocateInventory::set(const ParameterList &pParams)
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
 
   int locid;
@@ -116,7 +116,7 @@ enum SetResponse relocateInventory::set(const ParameterList &pParams)
   param = pParams.value("itemloc_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     XSqlQuery itemsiteid;
     itemsiteid.prepare( "SELECT itemloc_itemsite_id "
@@ -127,8 +127,8 @@ enum SetResponse relocateInventory::set(const ParameterList &pParams)
     if (itemsiteid.first())
     {
       _item->setItemsiteid(itemsiteid.value("itemloc_itemsite_id").toInt());
-      _item->setEnabled(FALSE);
-      _warehouse->setEnabled(FALSE);
+      _item->setEnabled(false);
+      _warehouse->setEnabled(false);
 
       for (int i = 0; i < _source->topLevelItemCount(); i++)
       {
@@ -140,7 +140,7 @@ enum SetResponse relocateInventory::set(const ParameterList &pParams)
         }
       }
 
-      _source->setEnabled(FALSE);
+      _source->setEnabled(false);
     }
   }
 

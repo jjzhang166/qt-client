@@ -25,7 +25,7 @@ class setup : public XDialog, public Ui::setup
     Q_OBJECT
 
 public:
-    setup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    setup(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~setup();
 
     enum SetupTypes

@@ -16,7 +16,7 @@
 #include "metasql.h"
 #include "taxAdjustment.h"
 
-taxDetail::taxDetail(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+taxDetail::taxDetail(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -100,13 +100,13 @@ enum SetResponse taxDetail::set(const ParameterList & pParams )
 
    if (_readonly)
    {
-     _taxType->setEnabled(FALSE);
+     _taxType->setEnabled(false);
      _cancel->setText(tr("&Close"));
    }
 
    if(_adjustment && !_readonly)
    {	
-     _taxType->setEnabled(FALSE);
+     _taxType->setEnabled(false);
 	   _new->show();
 	   _delete->show();
    }

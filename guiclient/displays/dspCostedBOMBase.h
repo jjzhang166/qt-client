@@ -20,7 +20,7 @@ class dspCostedBOMBase : public display, public Ui::dspCostedBOMBase
     Q_OBJECT
 
 public:
-    dspCostedBOMBase(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspCostedBOMBase(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &params);
 

@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-subaccount::subaccount(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+subaccount::subaccount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -61,8 +61,8 @@ enum SetResponse subaccount::set(const ParameterList &pParams )
     {
       _mode = cView;
       
-      _number->setEnabled(FALSE);
-      _descrip->setEnabled(FALSE);
+      _number->setEnabled(false);
+      _descrip->setEnabled(false);
       _close->setText(tr("&Close"));
     }
   }

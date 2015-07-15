@@ -13,7 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-dspPendingAvailability::dspPendingAvailability(QWidget* parent, const char*, Qt::WFlags fl)
+dspPendingAvailability::dspPendingAvailability(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPendingAvailability", fl)
 {
   setupUi(optionsWidget());

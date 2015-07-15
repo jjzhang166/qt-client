@@ -72,7 +72,8 @@ public:
 
     Q_INVOKABLE QString   searchText();
 
-    Q_INVOKABLE void      setupCharacteristics(unsigned int uses);
+    Q_INVOKABLE void      setupCharacteristics(QStringList  uses);
+    Q_INVOKABLE void      setupCharacteristics(QString      uses);
 
 public slots:
     virtual void sNew();

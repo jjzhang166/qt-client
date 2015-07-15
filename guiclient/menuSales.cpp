@@ -63,10 +63,8 @@
 #include "dspFreightPricesByCustomer.h"
 #include "dspFreightPricesByCustomerType.h"
 
-#include "dspSalesOrdersByCustomer.h"
+#include "dspSalesOrders.h"
 #include "dspSalesOrdersByItem.h"
-#include "dspSalesOrdersByCustomerPO.h"
-#include "dspSalesOrdersByParameterList.h"
 #include "dspQuotesByCustomer.h"
 #include "dspQuotesByItem.h"
 #include "dspInventoryAvailability.h"
@@ -170,18 +168,19 @@ menuSales::menuSales(GUIClient *pParent) :
     // Sales | Sales Order
     { "menu",	tr("&Sales Order"),	(char*)ordersMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
     { "so.newSalesOrder", 	     tr("&New..."),		SLOT(sNewSalesOrder()),   ordersMenu, "MaintainSalesOrders", NULL, NULL,	 true, NULL },
-    { "so.listOpenSalesOrders",      tr("&List Open..."),	SLOT(sOpenSalesOrders()), ordersMenu, "MaintainSalesOrders ViewSalesOrders",	QPixmap(":/images/listOpenSalesOrders.png"), toolBar,  true, tr("List Open Sales Orders") },
+    { "so.listOpenSalesOrders",  tr("&List Open..."),	SLOT(sOpenSalesOrders()), ordersMenu, "MaintainSalesOrders ViewSalesOrders", new QPixmap(":/images/listOpenSalesOrders.png"), toolBar,  true, tr("List Open Sales Orders") },
+    { "so.listSalesOrders",      tr("&Search Orders..."),	SLOT(sSalesOrders()), ordersMenu, "MaintainSalesOrders ViewSalesOrders", NULL, NULL, true, NULL },
 
     // Sales | Billing
     { "menu",	tr("&Billing"),     (char*)billingMenu,		mainMenu,	"true",	NULL, NULL, true, NULL },
     
     // Sales | Billing | Invoice
     { "menu",	tr("&Invoice"),   (char*)billingInvoicesMenu,	billingMenu,	"true",	NULL, NULL, true, NULL },
-    { "so.uninvoicedShipments",		     tr("&Uninvoiced Shipments..."),			SLOT(sUninvoicedShipments()), 		billingInvoicesMenu, "SelectBilling",	 QPixmap(":/images/uninvoicedShipments"), toolBar, true, tr("Uninvoiced Shipments") },
+    { "so.uninvoicedShipments",		     tr("&Uninvoiced Shipments..."),			SLOT(sUninvoicedShipments()), 		billingInvoicesMenu, "SelectBilling",	 new QPixmap(":/images/uninvoicedShipments"), toolBar, true, tr("Uninvoiced Shipments") },
     { "so.selectAllShippedOrdersForBilling", tr("Approve &All Shipped Orders for Billing..."),	SLOT(sSelectShippedOrdersForBilling()), billingInvoicesMenu, "SelectBilling",	NULL, NULL, true, NULL },
     { "so.selectOrderForBilling",	     tr("Approve &Order for Billing..."),			SLOT(sSelectOrderForBilling()),		billingInvoicesMenu, "SelectBilling",	NULL, NULL, true, NULL },
     { "separator",	NULL,	NULL,	billingInvoicesMenu,	"true",		NULL, NULL, true, NULL },
-    { "so.dspBillingSelections",	     tr("Billing &Approvals..."),	SLOT(sDspBillingSelections()), billingInvoicesMenu, "SelectBilling", QPixmap(":/images/billingSelections"), toolBar, true, tr("Billing Approvals") },
+    { "so.dspBillingSelections",	     tr("Billing &Approvals..."),	SLOT(sDspBillingSelections()), billingInvoicesMenu, "SelectBilling", new QPixmap(":/images/billingSelections"), toolBar, true, tr("Billing Approvals") },
     { "so.createInvoices",	     tr("&Create Invoices..."),	SLOT(sCreateInvoices()), billingInvoicesMenu, "SelectBilling",	NULL, NULL, true, NULL },
     { "separator",	NULL,	NULL,	billingInvoicesMenu,	"true",		NULL, NULL, true, NULL },
     { "so.listUnpostedInvoices",	     tr("&List Unposted Invoices..."),	SLOT(sUnpostedInvoices()), billingInvoicesMenu, "SelectBilling",	NULL, NULL,  true, NULL },
@@ -224,9 +223,7 @@ menuSales::menuSales(GUIClient *pParent) :
     
     // Sales | Lookup | Sales Order Lookup
     { "menu",	tr("&Sales Order"),           (char*)lookupSoMenu,	lookupMenu,	"true",	NULL, NULL, true, NULL },
-    { "so.dspSalesOrderLookupByCustomerType", tr("by Customer &Type..."),	SLOT(sDspOrderLookupByCustomerType()), lookupSoMenu, "ViewSalesOrders",	NULL, NULL, true, NULL },
-    { "so.dspSalesOrderLookupByCustomer", tr("by &Customer..."),	SLOT(sDspOrderLookupByCustomer()), lookupSoMenu, "ViewSalesOrders",	NULL, NULL, true, NULL },
-    { "so.dspSalesOrderLookupByCustomerPO", tr("by Customer &PO..."),	SLOT(sDspOrderLookupByCustomerPO()), lookupSoMenu, "ViewSalesOrders",	NULL, NULL, true, NULL },
+    { "so.listSalesOrders",      tr("&Search Orders..."),	SLOT(sSalesOrders()), lookupSoMenu, "MaintainSalesOrders ViewSalesOrders", NULL, NULL, true, NULL },
     { "so.dspSalesOrderLookupByItem", tr("by &Item..."),	SLOT(sDspOrderLookupByItem()), lookupSoMenu, "ViewSalesOrders",	NULL, NULL, true, NULL },
     
     { "separator",	NULL,	NULL,	lookupMenu,	"true",		NULL, NULL, true, NULL }, 
@@ -243,7 +240,7 @@ menuSales::menuSales(GUIClient *pParent) :
 
     // Sales | Reports
     { "menu",	tr("&Reports"),           (char*)reportsMenu,	mainMenu,	"true",	NULL, NULL, true, NULL },
-    { "so.dspSummarizedBacklogByWarehouse", tr("Su&mmarized Backlog..."),	SLOT(sDspSummarizedBacklogByWarehouse()), reportsMenu, "ViewSalesOrders",	QPixmap(":/images/dspSummarizedBacklogByWhse.png"), toolBar,  true, tr("Summarized Backlog") },
+    { "so.dspSummarizedBacklogByWarehouse", tr("Su&mmarized Backlog..."),	SLOT(sDspSummarizedBacklogByWarehouse()), reportsMenu, "ViewSalesOrders",	new QPixmap(":/images/dspSummarizedBacklogByWhse.png"), toolBar,  true, tr("Summarized Backlog") },
 
     // Sales | Reports | Backlog
     { "so.dspBacklog", tr("&Backlog..."),	SLOT(sDspBacklog()), reportsMenu, "ViewSalesOrders",	NULL, NULL, true, NULL },
@@ -285,7 +282,7 @@ menuSales::menuSales(GUIClient *pParent) :
     { "so.enterNewCustomer", tr("&New..."),	SLOT(sNewCustomer()), customerMenu, "MaintainCustomerMasters",	NULL, NULL, true, NULL },
     { "so.customers", tr("&List..."),	SLOT(sCustomers()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	NULL, NULL, true, NULL },
     { "separator",	NULL,	NULL,	customerMenu,	"true",		NULL, NULL, true, NULL },
-    { "so.customerWorkbench", tr("&Workbench..."),	SLOT(sCustomerWorkbench()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	QPixmap(":/images/customerInformationWorkbench.png"), toolBar,  true, tr("Customer Workbench") }, 
+    { "so.customerWorkbench", tr("&Workbench..."),	SLOT(sCustomerWorkbench()), customerMenu, "MaintainCustomerMasters ViewCustomerMasters",	new QPixmap(":/images/customerInformationWorkbench.png"), toolBar,  true, tr("Customer Workbench") },
     { "separator",	NULL,	NULL,	customerMenu,	"true",		NULL, NULL, true, NULL },
     { "so.customerGroups", tr("&Groups..."),	SLOT(sCustomerGroups()), customerMenu, "MaintainCustomerGroups ViewCustomerGroups",	NULL, NULL, true, NULL },
    
@@ -399,6 +396,11 @@ void menuSales::sNewSalesOrder()
   salesOrder::newSalesOrder(-1);
 }
 
+void menuSales::sSalesOrders()
+{
+  omfgThis->handleNewWindow(new dspSalesOrders());
+}
+
 void menuSales::sOpenSalesOrders()
 {
   omfgThis->handleNewWindow(new openSalesOrders());
@@ -411,7 +413,7 @@ void menuSales::sPackingListBatch()
 
 void menuSales::sPrintPackingList()
 {
-  printPackingList(parent, "", TRUE).exec();
+  printPackingList(parent, "", true).exec();
 }
 
 void menuSales::sNewQuote()
@@ -437,7 +439,7 @@ void menuSales::sUninvoicedShipments()
 
 void menuSales::sSelectShippedOrdersForBilling()
 {
-  selectShippedOrders(parent, "", TRUE).exec();
+  selectShippedOrders(parent, "", true).exec();
 }
 
 void menuSales::sSelectOrderForBilling()
@@ -457,7 +459,7 @@ void menuSales::sDspBillingSelections()
 
 void menuSales::sCreateInvoices()
 {
-  createInvoices(parent, "", TRUE).exec();
+  createInvoices(parent, "", true).exec();
 }
 
 void menuSales::sUnpostedInvoices()
@@ -467,22 +469,22 @@ void menuSales::sUnpostedInvoices()
 
 void menuSales::sPrintInvoices()
 {
-  printInvoices(parent, "", TRUE).exec();
+  printInvoices(parent, "", true).exec();
 }
 
 void menuSales::sReprintInvoices()
 {
-  reprintInvoices(parent, "", TRUE).exec();
+  reprintInvoices(parent, "", true).exec();
 }
 
 void menuSales::sPostInvoices()
 {
-  postInvoices(parent, "", TRUE).exec();
+  postInvoices(parent, "", true).exec();
 }
 
 void menuSales::sPurgeInvoices()
 {
-  purgeInvoices(parent, "", TRUE).exec();
+  purgeInvoices(parent, "", true).exec();
 }
 
 
@@ -508,22 +510,22 @@ void menuSales::sCreditMemoEditList()
 
 void menuSales::sPrintCreditMemos()
 {
-  printCreditMemos(parent, "", TRUE).exec();
+  printCreditMemos(parent, "", true).exec();
 }
 
 void menuSales::sReprintCreditMemos()
 {
-  reprintCreditMemos(parent, "", TRUE).exec();
+  reprintCreditMemos(parent, "", true).exec();
 }
 
 void menuSales::sPostCreditMemos()
 {
-  postCreditMemos(parent, "", TRUE).exec();
+  postCreditMemos(parent, "", true).exec();
 }
 
 void menuSales::sPurgeCreditMemos()
 {
-  purgeCreditMemos(parent, "", TRUE).exec();
+  purgeCreditMemos(parent, "", true).exec();
 }
 
 void menuSales::sNewReturn()
@@ -553,13 +555,13 @@ void menuSales::sReturnsWorkbench()
 //  S/O | Item Pricing
 void menuSales::sItemListPrice()
 {
-  itemListPrice newdlg(parent, "", TRUE);
+  itemListPrice newdlg(parent, "", true);
   newdlg.exec();
 }
 
 void menuSales::sUpdateListPricesByProductCategory()
 {
-  updateListPricesByProductCategory newdlg(parent, "", TRUE);
+  updateListPricesByProductCategory newdlg(parent, "", true);
   newdlg.exec();
 }
 
@@ -580,7 +582,7 @@ void menuSales::sSales()
 
 void menuSales::sUpdatePrices()
 {
-  updatePrices(parent, "", TRUE).exec();
+  updatePrices(parent, "", true).exec();
 }
 
 void menuSales::sDspPricesByItem()
@@ -634,29 +636,9 @@ void menuSales::sDspReservations()
   omfgThis->handleNewWindow(new dspReservations());
 }
 
-void menuSales::sDspOrderLookupByCustomer()
-{
-  omfgThis->handleNewWindow(new dspSalesOrdersByCustomer());
-}
-
-void menuSales::sDspOrderLookupByCustomerType()
-{
-  ParameterList params;
-  params.append("custtype");
-
-  dspSalesOrdersByParameterList *newdlg = new dspSalesOrdersByParameterList();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
-}
-
 void menuSales::sDspOrderLookupByItem()
 {
   omfgThis->handleNewWindow(new dspSalesOrdersByItem());
-}
-
-void menuSales::sDspOrderLookupByCustomerPO()
-{
-  omfgThis->handleNewWindow(new dspSalesOrdersByCustomerPO());
 }
 
 void menuSales::sDspQuoteLookupByCustomer()
@@ -732,12 +714,12 @@ void menuSales::sDspTimePhasedSales()
 
 void menuSales::sPrintSalesOrderForm()
 {
-  printSoForm(parent, "", TRUE).exec();
+  printSoForm(parent, "", true).exec();
 }
 
 void menuSales::sPrintReturnAuthForm()
 {
-  printRaForm(parent, "", TRUE).exec();
+  printRaForm(parent, "", true).exec();
 }
 
 
@@ -772,7 +754,7 @@ void menuSales::sCustomers()
 
 void menuSales::sUpdateCreditStatusByCustomer()
 {
-  updateCreditStatusByCustomer(parent, "", TRUE).exec();
+  updateCreditStatusByCustomer(parent, "", true).exec();
 }
 
 void menuSales::sCustomerGroups()
@@ -797,7 +779,7 @@ void menuSales::sProspects()
 
 void menuSales::sReassignCustomerTypeByCustomerType()
 {
-  reassignCustomerTypeByCustomerType(parent, "", TRUE).exec();
+  reassignCustomerTypeByCustomerType(parent, "", true).exec();
 }
 
 void menuSales::sArchiveSalesHistory()
@@ -805,7 +787,7 @@ void menuSales::sArchiveSalesHistory()
   ParameterList params;
   params.append("archieve");
 
-  archRestoreSalesHistory newdlg(parent, "", TRUE);
+  archRestoreSalesHistory newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
@@ -815,14 +797,14 @@ void menuSales::sRestoreSalesHistory()
   ParameterList params;
   params.append("restore");
 
-  archRestoreSalesHistory newdlg(parent, "", TRUE);
+  archRestoreSalesHistory newdlg(parent, "", true);
   newdlg.set(params);
   newdlg.exec();
 }
 
 void menuSales::sAllocateReservations()
 {
-  allocateReservations(parent, "", TRUE).exec();
+  allocateReservations(parent, "", true).exec();
 }
 
 

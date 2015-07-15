@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "sysLocale.h"
 
-locales::locales(QWidget* parent, const char* name, Qt::WFlags fl)
+locales::locales(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -53,7 +53,7 @@ void locales::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  sysLocale newdlg(this, "", TRUE);
+  sysLocale newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -66,7 +66,7 @@ void locales::sEdit()
   params.append("mode", "edit");
   params.append("locale_id", _locale->id());
 
-  sysLocale newdlg(this, "", TRUE);
+  sysLocale newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -85,7 +85,7 @@ void locales::sCopy()
     params.append("mode", "edit");
     params.append("locale_id", syset.value("_locale_id").toInt());
 
-    sysLocale newdlg(this, "", TRUE);
+    sysLocale newdlg(this, "", true);
     newdlg.set(params);
 
     newdlg.exec();
@@ -104,7 +104,7 @@ void locales::sView()
   params.append("mode", "view");
   params.append("locale_id", _locale->id());
 
-  sysLocale newdlg(this, "", TRUE);
+  sysLocale newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

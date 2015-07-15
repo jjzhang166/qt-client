@@ -17,7 +17,7 @@
 
 #include "calendar.h"
 
-calendars::calendars(QWidget* parent, const char* name, Qt::WFlags fl)
+calendars::calendars(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -58,7 +58,7 @@ void calendars::sNew()
     else if (calType == 2)
       params.append("type", "relative");
 
-    calendar newdlg(this, "", TRUE);
+    calendar newdlg(this, "", true);
     newdlg.set(params);
     if (newdlg.exec() != XDialog::Rejected)
       sFillList();
@@ -71,7 +71,7 @@ void calendars::sEdit()
   params.append("mode", "edit");
   params.append("calhead_id", _calhead->id());
 
-  calendar newdlg(this, "", TRUE);
+  calendar newdlg(this, "", true);
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
@@ -106,5 +106,5 @@ void calendars::sFillList()
                       "       END,"
                       "       calhead_name, calhead_descrip "
                       "FROM calhead "
-                      "ORDER BY calhead_name;", TRUE );
+                      "ORDER BY calhead_name;", true );
 }

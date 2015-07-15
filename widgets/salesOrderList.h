@@ -34,7 +34,7 @@ class XTUPLEWIDGETS_EXPORT salesOrderList : public QDialog
     Q_OBJECT
 
 public:
-    salesOrderList( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+    salesOrderList( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
 
     WarehouseGroup *_warehouse;
     QPushButton    *_close;

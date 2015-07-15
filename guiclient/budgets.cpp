@@ -22,7 +22,7 @@
 #include "maintainBudget.h"
 #include "storedProcErrorLookup.h"
 
-budgets::budgets(QWidget* parent, const char* name, Qt::WFlags fl)
+budgets::budgets(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -49,7 +49,7 @@ budgets::budgets(QWidget* parent, const char* name, Qt::WFlags fl)
   else
   {
     connect(_budget, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
   }
 
   connect(omfgThis, SIGNAL(budgetsUpdated(int, bool)), this, SLOT(sFillList()));

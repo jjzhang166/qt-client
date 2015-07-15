@@ -19,7 +19,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 
-scrapTrans::scrapTrans(QWidget* parent, const char* name, Qt::WFlags fl)
+scrapTrans::scrapTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -28,7 +28,7 @@ scrapTrans::scrapTrans(QWidget* parent, const char* name, Qt::WFlags fl)
   connect(_qty,SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
   connect(_warehouse,           SIGNAL(newID(int)), this, SLOT(sPopulateQOH(int)));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType(ItemLineEdit::cGeneralInventory | ItemLineEdit::cActive);
   _warehouse->setType(WComboBox::AllActiveInventory);
@@ -86,12 +86,12 @@ enum SetResponse scrapTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _transDate->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _qty->setEnabled(false);
+      _documentNum->setEnabled(false);
+      _notes->setEnabled(false);
       _post->hide();
       _close->setText(tr("&Close"));
 

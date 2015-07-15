@@ -21,7 +21,7 @@ class dspSalesOrdersByItem : public display, public Ui::dspSalesOrdersByItem
     Q_OBJECT
 
 public:
-    dspSalesOrdersByItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspSalesOrdersByItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool checkSitePrivs(int orderid);
     virtual bool setParams(ParameterList&);
@@ -31,6 +31,7 @@ public slots:
     virtual void sPopulateMenu(QMenu * menuThis, QTreeWidgetItem*, int);
     virtual void sEditOrder();
     virtual void sViewOrder();
+    virtual void sCopyOrder();
     virtual void sCreateRA();
     virtual void sDspShipmentStatus();
     virtual void sDspShipments();

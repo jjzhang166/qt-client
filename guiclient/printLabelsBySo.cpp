@@ -16,7 +16,7 @@
 #include <parameter.h>
 #include "guiclient.h"
 
-printLabelsBySo::printLabelsBySo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+printLabelsBySo::printLabelsBySo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);

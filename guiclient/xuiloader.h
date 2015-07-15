@@ -14,7 +14,7 @@
 #include <QMap>
 #include <QString>
 #include <QUiLoader>
-#include <QDesignerCustomWidgetInterface>
+#include <QtDesigner/QDesignerCustomWidgetInterface>
 
 class XUiLoader : public QUiLoader
 {

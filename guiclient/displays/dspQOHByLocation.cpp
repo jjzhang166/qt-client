@@ -18,7 +18,7 @@
 #include "inputManager.h"
 #include "relocateInventory.h"
 
-dspQOHByLocation::dspQOHByLocation(QWidget* parent, const char*, Qt::WFlags fl)
+dspQOHByLocation::dspQOHByLocation(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspQOHByLocation", fl)
 {
   setupUi(optionsWidget());

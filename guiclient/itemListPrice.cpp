@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QValidator>
 
-itemListPrice::itemListPrice(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+itemListPrice::itemListPrice(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
@@ -38,7 +38,7 @@ itemListPrice::itemListPrice(QWidget* parent, const char* name, bool modal, Qt::
 
   if (!_privileges->check("MaintainListPrices"))
   {
-    _listPrice->setEnabled(FALSE);
+    _listPrice->setEnabled(false);
     _close->setText(tr("&Close"));
     _save->hide();
   }
@@ -64,7 +64,7 @@ enum SetResponse itemListPrice::set(const ParameterList &pParams)
   if (valid)
   {
     _item->setId(param.toInt());
-    _item->setReadOnly(TRUE);
+    _item->setReadOnly(true);
   }
 
   return NoError;

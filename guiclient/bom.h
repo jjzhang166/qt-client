@@ -22,7 +22,7 @@ class BOM : public XWidget, public Ui::BOM
     Q_OBJECT
 
 public:
-    BOM(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    BOM(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~BOM();
     virtual bool save( bool partial );
 

@@ -73,7 +73,7 @@ int atlasMap::exec()
   }
 }
 
-atlasMap::atlasMap(QWidget* parent, const char * name, Qt::WFlags fl)
+atlasMap::atlasMap(QWidget* parent, const char * name, Qt::WindowFlags fl)
     : XDialog(parent, name, fl)
 {
   setupUi(this);
@@ -91,11 +91,11 @@ atlasMap::atlasMap(QWidget* parent, const char * name, Qt::WFlags fl)
   _mode         = cNew;
   _atlasmapId   = -1;
   _msghandler   = new AtlasMapMessageHandler(this);
-#if defined Q_WS_MACX
+#if defined Q_OS_MAC
   _defaultDir   = _metrics->value("CSVAtlasDefaultDirMac");
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   _defaultDir   = _metrics->value("CSVAtlasDefaultDirWindows");
-#elif defined Q_WS_X11
+#elif defined Q_OS_LINUX
   _defaultDir   = _metrics->value("CSVAtlasDefaultDirLinux");
 #endif
 }

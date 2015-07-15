@@ -20,7 +20,7 @@ class configurePD : public XAbstractConfigure, public Ui::configurePD
     Q_OBJECT
 
 public:
-    configurePD(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    configurePD(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~configurePD();
 
 public slots:

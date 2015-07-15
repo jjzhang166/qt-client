@@ -24,13 +24,38 @@
 #define cEdit                 2
 #define cView                 3
 
+struct DocumentMap
+{
+  int     doctypeId;
+  QString doctypeStr;
+  QString translation;
+  QString idParam;
+  QString uiname;
+  QString newPriv;
+
+  DocumentMap(int     id,       // enum DocumentSources + extensions
+              QString key,
+              QString trans,
+              QString param,
+              QString ui    = QString(),
+              QString priv  = QString()) {
+
+    doctypeId   = id;
+    doctypeStr  = key;
+    translation = trans;
+    idParam     = param;
+    uiname      = ui;
+    newPriv     = priv;
+  }
+};
+
 class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
 {
   Q_OBJECT
 
   Q_ENUMS(DocumentSources)
 
-  Q_PROPERTY(DocumentSources type READ type WRITE setType)
+  Q_PROPERTY(int type READ type WRITE setType)
 
   friend class image;
   friend class file;
@@ -38,10 +63,10 @@ class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
   public:
     Documents(QWidget *);
 
-    // if you add to this then add to the _documentMap[] below
+    // If you add to this then add to the documentMap() function in documents.cpp
     enum DocumentSources
     {
-       Uninitialized,
+      Uninitialized,
       Address,          BBOMHead,           BBOMItem,
       BOMHead,          BOMItem,            BOOHead,
       BOOItem,          CRMAccount,         Contact, 
@@ -50,50 +75,28 @@ class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
       Invoice,          InvoiceItem,
       Item,             ItemSite,           ItemSource,
       Location,         LotSerial,
-      Opportunity,      Project,		        PurchaseOrder,
+      Opportunity,      Project,            PurchaseOrder,
       PurchaseOrderItem,ReturnAuth,         ReturnAuthItem,
       Quote,            QuoteItem,          SalesOrder,
       SalesOrderItem,   ShipTo,             TimeExpense,
       Todo,             TransferOrder,      TransferOrderItem,
       Vendor,           Voucher,            Warehouse,
-      WorkOrder,			ProjectTask
+      WorkOrder,                            ProjectTask
     };
 
     static GuiClientInterface *_guiClientInterface;
-
     inline int  sourceid()             { return _sourceid; }
-    inline enum DocumentSources type() { return _source;   }
+    int         type() const;
 
-    struct DocumentMap
-    {
-      enum DocumentSources source;
-      const char          *ident;
-      const char          *keyparam;
-      const char          *uiname;
-
-      DocumentMap(enum DocumentSources s,
-                  const char *i,
-                  const char *k = 0,
-                  const char *u = 0)
-      {
-        source   = s;
-        ident    = i;
-        keyparam = k;
-        uiname   = u;
-      }
-    };
-    static const struct DocumentMap _documentMap[]; // see Documents.cpp for init
+    static QMap<QString, struct DocumentMap*> &documentMap();
 
   public slots:
-    void setType(enum DocumentSources);
+    void setType(int sourceType);
+    void setType(QString sourceType);
     void setId(int);
     void setReadOnly(bool);
-    void sNewDoc(QString type, QString ui);
+    void sNewDoc(QString type = QString(), QString ui = QString());
     void sNewImage();
-    void sNewToDo();
-    void sNewIncdt();
-    void sNewOpp();
-    void sNewProj();
     void sInsertDocass(QString, int);
     void sAttachDoc();
     void sViewDoc();
@@ -108,9 +111,13 @@ class XTUPLEWIDGETS_EXPORT Documents : public QWidget, public Ui::documents
     void handleItemSelected();
 
   private:
-    enum DocumentSources _source;
+    static QMap<QString, struct DocumentMap*> _strMap;
+    static QMap<int,     struct DocumentMap*> _intMap;
     int                  _sourceid;
+    QString              _sourcetype;
     bool                 _readOnly;
+
+    static bool addToMap(int id, QString key, QString trans, QString param = QString(), QString ui = QString(), QString priv = QString());
 
 };
 

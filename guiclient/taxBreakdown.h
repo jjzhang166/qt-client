@@ -22,7 +22,7 @@ class taxBreakdown : public XDialog, public Ui::taxBreakdown
   Q_OBJECT
 
   public:
-    taxBreakdown(QWidget* = 0, const char* = 0, bool = 0, Qt::WFlags = 0);
+    taxBreakdown(QWidget* = 0, const char* = 0, bool = 0, Qt::WindowFlags = 0);
     ~taxBreakdown();
 
   public slots:

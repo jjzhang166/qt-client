@@ -33,7 +33,7 @@
 #include "workOrder.h"
 #include "parameterwidget.h"
 
-dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WFlags fl)
+dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoSchedule", fl)
 {
   setNewVisible(true);

@@ -74,7 +74,7 @@ comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags
   _cmnttypeLit->setObjectName("_cmnttypeLit");
   layout8->addWidget( _cmnttypeLit );
 
-  _cmnttype = new XComboBox( FALSE, this);
+  _cmnttype = new XComboBox( false, this);
   _cmnttype->setObjectName("_cmnttype" );
   layout8->addWidget( _cmnttype );
   layout9->addLayout( layout8 );
@@ -135,19 +135,17 @@ comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags
   resize( QSize(524, 270).expandedTo(minimumSizeHint()) );
   //clearWState( WState_Polished );
 
-// signals and slots connections
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_next, SIGNAL(clicked()), this, SLOT(sNextComment()));
   connect(_prev, SIGNAL(clicked()), this, SLOT(sPrevComment()));
   connect(_more, SIGNAL(toggled(bool)), _comments, SLOT(setVisible(bool)));
 
-// tab order
   setTabOrder( _cmnttype, _comment );
   setTabOrder( _comment, _save );
   setTabOrder( _save, _close );
 
-  _source = Comments::Uninitialized;
+  _sourcetype = "";
   _cmnttype->setAllowNull(true);
 
   shortcuts::setStandardKeys(this);
@@ -181,174 +179,6 @@ void comment::set(const ParameterList &pParams)
       _next->setEnabled(true); 
     else
       _next->setEnabled(false); 
-  }
-
-  param = pParams.value("cust_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Customer;
-    _cmnttype->setType(XComboBox::CustomerCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("vend_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Vendor;
-    _cmnttype->setType(XComboBox::VendorCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("item_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Item;
-    _cmnttype->setType(XComboBox::ItemCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("itemsite_id", &valid);
-  if (valid)
-  {
-    _source = Comments::ItemSite;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-
-//  Quotes
-  param = pParams.value("quhead_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Quote;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("quitem_id", &valid);
-  if (valid)
-  {
-    _source = Comments::QuoteItem;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-
-//  Sales Orders
-  param = pParams.value("sohead_id", &valid);
-  if (valid)
-  {
-    _source = Comments::SalesOrder;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("soitem_id", &valid);
-  if (valid)
-  {
-    _source = Comments::SalesOrderItem;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-//  Sales Orders
-  param = pParams.value("tohead_id", &valid);
-  if (valid)
-  {
-    _source = Comments::TransferOrder;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-//  Return Authorizations
-  param = pParams.value("rahead_id", &valid);
-  if (valid)
-  {
-    _source = Comments::ReturnAuth;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("raitem_id", &valid);
-  if (valid)
-  {
-    _source = Comments::ReturnAuthItem;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-//  Purchase Orders
-  param = pParams.value("pohead_id", &valid);
-  if (valid)
-  {
-    _source = Comments::PurchaseOrder;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("poitem_id", &valid);
-  if (valid)
-  {
-    _source = Comments::PurchaseOrderItem;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
-  }
-
-
-  param = pParams.value("lsdetail_id", &valid);
-  if (valid)
-  {
-    _source = Comments::LotSerial;
-    _cmnttype->setType(XComboBox::LotSerialCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("prj_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Project;
-    _cmnttype->setType(XComboBox::ProjectCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("warehous_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Warehouse;
-    _cmnttype->setType(XComboBox::WarehouseCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("todoitem_id", &valid);
-  if (valid)
-  {
-    _source = Comments::TodoItem;
-    _cmnttype->setType(XComboBox::TodoItemCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("prjtask_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Task;
-    _cmnttype->setType(XComboBox::TaskCommentTypes);
-    _targetId = param.toInt();
-  }
-  
-  param = pParams.value("tatc_id", &valid);
-  if (valid)
-  {
-    _source = Comments::TimeAttendance;
-    _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
-    _targetId = param.toInt();
-  }
-
-  param = pParams.value("addr_id", &valid);
-  if (valid)
-  {
-    _source = Comments::Address;
-    _cmnttype->setType(XComboBox::AllCommentTypes);
-    _targetId = param.toInt();
   }
 
   param = pParams.value("mode", &valid);
@@ -388,120 +218,83 @@ void comment::set(const ParameterList &pParams)
   param = pParams.value("sourceType", &valid);
   if (valid)
   {
-    _source = (enum Comments::CommentSources)param.toInt();
+    _sourcetype = param.toString();
     if(!(_mode == cEdit || _mode == cView))
     {
-      switch (_source)
-      {
-        case Comments::Address:
-          _cmnttype->setType(XComboBox::AddressCommentTypes);
-          break;
-        case Comments::BBOMHead:
-          _cmnttype->setType(XComboBox::BBOMHeadCommentTypes);
-          break;
-        case Comments::BBOMItem:
-          _cmnttype->setType(XComboBox::BBOMItemCommentTypes);
-          break;
-        case Comments::BOMHead:
-          _cmnttype->setType(XComboBox::BOMHeadCommentTypes);
-          break;
-        case Comments::BOMItem:
-          _cmnttype->setType(XComboBox::BOMItemCommentTypes);
-          break;
-        case Comments::BOOHead:
-          _cmnttype->setType(XComboBox::BOOHeadCommentTypes);
-          break;
-        case Comments::BOOItem:
-          _cmnttype->setType(XComboBox::BOOItemCommentTypes);
-          break;
-        case Comments::CRMAccount:
-          _cmnttype->setType(XComboBox::CRMAccountCommentTypes);
-          break;
-        case Comments::Contact:
-          _cmnttype->setType(XComboBox::ContactCommentTypes);
-          break;
-        case Comments::Customer:
-          _cmnttype->setType(XComboBox::CustomerCommentTypes);
-          break;
-        case Comments::Employee:
-          _cmnttype->setType(XComboBox::EmployeeCommentTypes);
-          break;
-        case Comments::Incident:
-          _cmnttype->setType(XComboBox::IncidentCommentTypes);
-          break;
-        case Comments::Item:
-          _cmnttype->setType(XComboBox::ItemCommentTypes);
-          break;
-        case Comments::ItemSite:
-          _cmnttype->setType(XComboBox::ItemSiteCommentTypes);
-          break;
-        case Comments::ItemSource:
-          _cmnttype->setType(XComboBox::ItemSourceCommentTypes);
-          break;
-        case Comments::Location:
-          _cmnttype->setType(XComboBox::LocationCommentTypes);
-          break;
-        case Comments::LotSerial:
-          _cmnttype->setType(XComboBox::LotSerialCommentTypes);
-          break;
-        case Comments::Opportunity:
-          _cmnttype->setType(XComboBox::OpportunityCommentTypes);
-          break;
-        case Comments::Project:
-          _cmnttype->setType(XComboBox::ProjectCommentTypes);
-          break;
-        case Comments::PurchaseOrder:
-          _cmnttype->setType(XComboBox::PurchaseOrderCommentTypes);
-          break;
-        case Comments::PurchaseOrderItem:
-          _cmnttype->setType(XComboBox::PurchaseOrderItemCommentTypes);
-          break;
-        case Comments::ReturnAuth:
-          _cmnttype->setType(XComboBox::ReturnAuthCommentTypes);
-          break;
-        case Comments::ReturnAuthItem:
-          _cmnttype->setType(XComboBox::ReturnAuthItemCommentTypes);
-          break;
-        case Comments::Quote:
-          _cmnttype->setType(XComboBox::QuoteCommentTypes);
-          break;
-        case Comments::QuoteItem:
-          _cmnttype->setType(XComboBox::QuoteItemCommentTypes);
-          break;
-        case Comments::SalesOrder:
-          _cmnttype->setType(XComboBox::SalesOrderCommentTypes);
-          break;
-        case Comments::SalesOrderItem:
-          _cmnttype->setType(XComboBox::SalesOrderItemCommentTypes);
-          break;
-        case Comments::Task:
-          _cmnttype->setType(XComboBox::TaskCommentTypes);
-          break;
-        case Comments::TimeAttendance:
-          _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
-          break;          
-        case Comments::TodoItem:
-          _cmnttype->setType(XComboBox::TodoItemCommentTypes);
-          break;
-        case Comments::TransferOrder:
-          _cmnttype->setType(XComboBox::TransferOrderCommentTypes);
-          break;
-        case Comments::TransferOrderItem:
-          _cmnttype->setType(XComboBox::TransferOrderItemCommentTypes);
-          break;
-        case Comments::Vendor:
-          _cmnttype->setType(XComboBox::VendorCommentTypes);
-          break;
-        case Comments::Warehouse:
-          _cmnttype->setType(XComboBox::WarehouseCommentTypes);
-          break;
-        case Comments::WorkOrder:
-          _cmnttype->setType(XComboBox::WorkOrderCommentTypes);
-          break;
-        default:
-          _cmnttype->setType(XComboBox::AllCommentTypes);
-          break;
-      }
+      //      CommentMap *map = Comments::commentMap().value(_sourcetype);
+      //      _cmnttype->setType(map ? (XComboBox::XComboBoxTypes)map->doctypeId : XComboBox::AllCommentTypes);
+      if (_sourcetype == "ADDR")
+        _cmnttype->setType(XComboBox::AddressCommentTypes);
+      else if (_sourcetype == "BBH")
+        _cmnttype->setType(XComboBox::BBOMHeadCommentTypes);
+      else if (_sourcetype == "BBI")
+        _cmnttype->setType(XComboBox::BBOMItemCommentTypes);
+      else if (_sourcetype == "BMH")
+        _cmnttype->setType(XComboBox::BOMHeadCommentTypes);
+      else if (_sourcetype == "BMI")
+        _cmnttype->setType(XComboBox::BOMItemCommentTypes);
+      else if (_sourcetype == "BOH")
+        _cmnttype->setType(XComboBox::BOOHeadCommentTypes);
+      else if (_sourcetype == "BOI")
+        _cmnttype->setType(XComboBox::BOOItemCommentTypes);
+      else if (_sourcetype == "CRMA")
+        _cmnttype->setType(XComboBox::CRMAccountCommentTypes);
+      else if (_sourcetype == "T")
+        _cmnttype->setType(XComboBox::ContactCommentTypes);
+      else if (_sourcetype == "C")
+        _cmnttype->setType(XComboBox::CustomerCommentTypes);
+      else if (_sourcetype == "EMP")
+        _cmnttype->setType(XComboBox::EmployeeCommentTypes);
+      else if (_sourcetype == "INCDT")
+        _cmnttype->setType(XComboBox::IncidentCommentTypes);
+      else if (_sourcetype == "I")
+        _cmnttype->setType(XComboBox::ItemCommentTypes);
+      else if (_sourcetype == "IS")
+        _cmnttype->setType(XComboBox::ItemSiteCommentTypes);
+      else if (_sourcetype == "IR")
+        _cmnttype->setType(XComboBox::ItemSourceCommentTypes);
+      else if (_sourcetype == "L")
+        _cmnttype->setType(XComboBox::LocationCommentTypes);
+      else if (_sourcetype == "LS")
+        _cmnttype->setType(XComboBox::LotSerialCommentTypes);
+      else if (_sourcetype == "OPP")
+        _cmnttype->setType(XComboBox::OpportunityCommentTypes);
+      else if (_sourcetype == "J")
+        _cmnttype->setType(XComboBox::ProjectCommentTypes);
+      else if (_sourcetype == "P")
+        _cmnttype->setType(XComboBox::PurchaseOrderCommentTypes);
+      else if (_sourcetype == "PI")
+        _cmnttype->setType(XComboBox::PurchaseOrderItemCommentTypes);
+      else if (_sourcetype == "RA")
+        _cmnttype->setType(XComboBox::ReturnAuthCommentTypes);
+      else if (_sourcetype == "RI")
+        _cmnttype->setType(XComboBox::ReturnAuthItemCommentTypes);
+      else if (_sourcetype == "Q")
+        _cmnttype->setType(XComboBox::QuoteCommentTypes);
+      else if (_sourcetype == "QI")
+        _cmnttype->setType(XComboBox::QuoteItemCommentTypes);
+      else if (_sourcetype == "S")
+        _cmnttype->setType(XComboBox::SalesOrderCommentTypes);
+      else if (_sourcetype == "SI")
+        _cmnttype->setType(XComboBox::SalesOrderItemCommentTypes);
+      else if (_sourcetype == "TA")
+        _cmnttype->setType(XComboBox::TaskCommentTypes);
+      else if (_sourcetype == "TIME")
+        _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
+      else if (_sourcetype == "TD")
+        _cmnttype->setType(XComboBox::TodoItemCommentTypes);
+      else if (_sourcetype == "TO")
+        _cmnttype->setType(XComboBox::TransferOrderCommentTypes);
+      else if (_sourcetype == "TI")
+        _cmnttype->setType(XComboBox::TransferOrderItemCommentTypes);
+      else if (_sourcetype == "V")
+        _cmnttype->setType(XComboBox::VendorCommentTypes);
+      else if (_sourcetype == "WH")
+        _cmnttype->setType(XComboBox::WarehouseCommentTypes);
+      else if (_sourcetype == "W")
+        _cmnttype->setType(XComboBox::WorkOrderCommentTypes);
+      else
+        _cmnttype->setType(XComboBox::AllCommentTypes);
     }
   }
 
@@ -511,7 +304,7 @@ void comment::set(const ParameterList &pParams)
     _targetId = param.toInt();
   }
 
-  _comments->setType(_source);
+  _comments->setType(_sourcetype);
   _comments->setId(_targetId);
 }
 
@@ -529,9 +322,9 @@ void comment::sSave()
   int result = -1;
   if(_mode == cNew)
   {
-    _query.prepare("SELECT postComment(:cmnttype_id, :source, :source_id, :text, :public) AS result;");
+    _query.prepare("SELECT postComment(:cmnttype_id, :source_type, :source_id, :text, :public) AS result;");
     _query.bindValue(":cmnttype_id", _cmnttype->id());
-    _query.bindValue(":source", Comments::_commentMap[_source].ident);
+    _query.bindValue(":source_type", _sourcetype);
     _query.bindValue(":source_id", _targetId);
     _query.bindValue(":text", _comment->toPlainText().trimmed());
     _query.bindValue(":public", _public->isChecked());

@@ -470,6 +470,23 @@ to be bound by its terms.</comment>
               </property>
              </widget>
             </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="_unassignedLit">
+              <property name="text">
+               <string>Unassigned G/L Account :</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="GLCluster" name="_unassigned">
+              <property name="focusPolicy">
+               <enum>Qt::StrongFocus</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -530,7 +547,7 @@ to be bound by its terms.</comment>
              <item>
               <widget class="QGroupBox" name="_achGroup">
                <property name="title">
-                <string>Enable EFT Check Printing</string>
+                <string>Enable EFT Payments</string>
                </property>
                <property name="checkable">
                 <bool>true</bool>

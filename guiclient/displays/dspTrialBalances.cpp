@@ -24,7 +24,7 @@
 #include "parameterwidget.h"
 #include "xtreewidget.h"
 
-dspTrialBalances::dspTrialBalances(QWidget* parent, const char*, Qt::WFlags fl)
+dspTrialBalances::dspTrialBalances(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspTrialBalances", fl)
 {
   setWindowTitle(tr("Trial Balances"));

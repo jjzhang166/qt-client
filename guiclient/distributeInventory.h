@@ -22,7 +22,7 @@ class distributeInventory : public XDialog, public Ui::distributeInventory
     Q_OBJECT
 
 public:
-    distributeInventory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    distributeInventory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~distributeInventory();
 
     static int SeriesAdjust( int pItemlocSeries, QWidget * pParent, const QString & = QString::null, const QDate & = QDate(), const QDate & = QDate() );
@@ -41,6 +41,7 @@ public slots:
     virtual void sSelectLocation();
     virtual void sPopulateDefaultSelector();
     virtual void sChangeDefaultLocation();
+    virtual void updateZoneList();
 
 protected slots:
     virtual void languageChange();

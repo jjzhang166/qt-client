@@ -21,7 +21,7 @@ class plannerCode : public XDialog, public Ui::plannerCode
     Q_OBJECT
 
 public:
-    plannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    plannerCode(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~plannerCode();
 
     virtual void populate();

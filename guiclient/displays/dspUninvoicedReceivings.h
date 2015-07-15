@@ -20,7 +20,7 @@ class dspUninvoicedReceivings : public display, public Ui::dspUninvoicedReceivin
     Q_OBJECT
 
 public:
-    dspUninvoicedReceivings(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspUninvoicedReceivings(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList&);
 

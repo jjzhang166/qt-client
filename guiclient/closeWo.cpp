@@ -17,14 +17,14 @@
 #include "inputManager.h"
 #include "returnWoMaterialItem.h"
 
-closeWo::closeWo(QWidget* parent, const char* name, bool modal, Qt::WFlags fl)
+closeWo::closeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
   connect(_closeWo, SIGNAL(clicked()), this, SLOT(sCloseWo()));
 
-  _captive = FALSE;
+  _captive = false;
   _transDate->setDate(omfgThis->dbDate(), true);
 
   omfgThis->inputManager()->notify(cBCWorkOrder, this, _wo, SLOT(setId(int)));
@@ -47,7 +47,7 @@ void closeWo::languageChange()
 enum SetResponse closeWo::set(const ParameterList &pParams)
 {
   XDialog::set(pParams);
-  _captive = TRUE;
+  _captive = true;
 
   QVariant param;
   bool     valid;
@@ -60,7 +60,7 @@ enum SetResponse closeWo::set(const ParameterList &pParams)
   if (valid)
   {
     _wo->setId(param.toInt());
-    _wo->setReadOnly(TRUE);
+    _wo->setReadOnly(true);
   }
 
   return NoError;
@@ -141,8 +141,8 @@ bool closeWo::okToSave()
                                 "probably means Production Postings for "
                                 "this Work Order have been overlooked." ));
       
-      bool unissuedMaterial = FALSE;
-      bool unpushedMaterial = FALSE;
+      bool unissuedMaterial = false;
+      bool unpushedMaterial = false;
       do
       {
         if (! unissuedMaterial &&
@@ -155,7 +155,7 @@ bool closeWo::okToSave()
                                   "have not had any material issued to them. "
                                   "This probably means that required manual "
                                   "material issues have been overlooked."));
-          unissuedMaterial = TRUE;
+          unissuedMaterial = true;
         }
         else if (! unpushedMaterial &&
                  ( (closeokToSave.value("womatl_issuemethod") == "L") ||
@@ -171,7 +171,7 @@ bool closeWo::okToSave()
                                   "posting Operations. The BOM for this Item "
                                   "should be modified to list Used At "
                                   "selections for each BOM Item." ) );
-          unpushedMaterial = TRUE;
+          unpushedMaterial = true;
         }
       }
       while (closeokToSave.next());
@@ -221,7 +221,7 @@ void closeWo::sCloseWo()
       return;
     }
 
-    omfgThis->sWorkOrdersUpdated(_wo->id(), TRUE);
+    omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
     if (_captive)
       close();

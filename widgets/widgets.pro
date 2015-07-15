@@ -4,8 +4,12 @@ TEMPLATE = lib
 CONFIG += qt \
     warn_on \
     designer \
-    plugin
+    plugin \
+    uitools
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets printsupport sql script designer
+}
 # INCLUDEPATH += $$QT_SOURCE_TREE/tools/designer/interfaces ../common .
 INCLUDEPATH += ../common \
     .
@@ -33,6 +37,7 @@ HEADERS += plugins/addressclusterplugin.h \
     plugins/alarmsplugin.h \
     plugins/cmheadclusterplugin.h \
     plugins/calendarcomboboxplugin.h \
+    plugins/characteristicswidgetplugin.h       \
     plugins/clineeditplugin.h \
     plugins/aropenclusterplugin.h \
     plugins/commentsplugin.h \
@@ -113,6 +118,8 @@ SOURCES += widgets.cpp \
     alarms.cpp \
     aropencluster.cpp \
     calendarTools.cpp \
+    characteristicAssignment.cpp        \
+    characteristicswidget.cpp           \
     cmheadcluster.cpp \
     comment.cpp \
     comments.cpp \
@@ -203,6 +210,8 @@ HEADERS += widgets.h \
     alarms.h \
     aropencluster.h \
     calendarTools.h \
+    characteristicAssignment.h  \
+    characteristicswidget.h     \
     cmheadcluster.h \
     comment.h \
     comments.h \
@@ -289,6 +298,8 @@ HEADERS += widgets.h \
 
 FORMS += alarmMaint.ui \
     alarms.ui \
+    characteristicAssignment.ui         \
+    characteristicswidget.ui            \
     contactemail.ui \
     customerselector.ui \
     docAttach.ui \
@@ -310,4 +321,4 @@ FORMS += alarmMaint.ui \
 
 RESOURCES += widgets.qrc
 
-QT +=  sql script
+QT += sql script

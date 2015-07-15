@@ -16,7 +16,7 @@
 #include "storedProcErrorLookup.h"
 #include "guiclient.h"
 
-configurePD::configurePD(QWidget* parent, const char* name, bool /*modal*/, Qt::WFlags fl)
+configurePD::configurePD(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   XSqlQuery configureconfigurePD;
@@ -49,8 +49,8 @@ configurePD::configurePD(QWidget* parent, const char* name, bool /*modal*/, Qt::
     configureconfigurePD.exec("SELECT * FROM itemtrans LIMIT 1;");
     if (configureconfigurePD.first())
     {
-      _transforms->setChecked(TRUE);
-      _transforms->setEnabled(FALSE);
+      _transforms->setChecked(true);
+      _transforms->setEnabled(false);
     }
     else 
       _transforms->setChecked(_metrics->boolean("Transforms"));
@@ -58,8 +58,8 @@ configurePD::configurePD(QWidget* parent, const char* name, bool /*modal*/, Qt::
     configureconfigurePD.exec("SELECT * FROM rev LIMIT 1;");
     if (configureconfigurePD.first())
     {
-      _revControl->setChecked(TRUE);
-      _revControl->setEnabled(FALSE);
+      _revControl->setChecked(true);
+      _revControl->setEnabled(false);
     }
     else 
       _revControl->setChecked(_metrics->boolean("RevControl"));
@@ -94,7 +94,7 @@ bool configurePD::sSave()
         QMessageBox::Yes | QMessageBox::Default,
         QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
     {
-      _metrics->set("RevControl", TRUE);
+      _metrics->set("RevControl", true);
       
       QString rsql = "SELECT createbomrev(bomhead_item_id,bomhead_revision) AS result "
                      "  FROM bomhead "
@@ -111,7 +111,7 @@ bool configurePD::sSave()
       {
         systemError(this, storedProcErrorLookup("CreateRevision", configureSave.value("result").toInt()),
             __FILE__, __LINE__);
-        _metrics->set("RevControl", FALSE);
+        _metrics->set("RevControl", false);
         return false;
       }
       if (configureSave.lastError().type() != QSqlError::NoError)
@@ -120,7 +120,7 @@ bool configurePD::sSave()
           .arg(__FILE__)
           .arg(__LINE__),
           configureSave.lastError().databaseText());
-        _metrics->set("RevControl", FALSE);
+        _metrics->set("RevControl", false);
         return false;
       }
     }

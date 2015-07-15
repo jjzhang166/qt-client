@@ -36,7 +36,7 @@ adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowF
   connect(_cost, SIGNAL(textChanged(const QString&)), this, SLOT(sCostUpdated()));
   connect(_costManual, SIGNAL(toggled(bool)), this, SLOT(sPopulateQty()));
 
-  _captive = FALSE;
+  _captive = false;
 
   _item->setType((ItemLineEdit::cGeneralInventory ^ ItemLineEdit::cBreeder) | ItemLineEdit::cActive);
   _item->addExtraClause( QString("(item_type NOT IN ('R', 'F'))") );
@@ -79,30 +79,30 @@ enum SetResponse adjustmentTrans::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
   int      invhistid = -1;
-  bool     noQty     = TRUE;
+  bool     noQty     = true;
 
   param = pParams.value("itemsite_id", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _item->setItemsiteid(param.toInt());
-    _item->setEnabled(FALSE);
-    _warehouse->setEnabled(FALSE);
+    _item->setEnabled(false);
+    _warehouse->setEnabled(false);
   }
 
   param = pParams.value("qty", &valid);
   if (valid)
   {
-    _captive = TRUE;
+    _captive = true;
 
     _qty->setDouble(param.toDouble());
-    _qty->setEnabled(FALSE);
+    _qty->setEnabled(false);
     _afterQty->setDouble(param.toDouble());
-    _absolute->setChecked(TRUE);
-    _adjustmentTypeGroup->setEnabled(FALSE);
+    _absolute->setChecked(true);
+    _adjustmentTypeGroup->setEnabled(false);
 
-    noQty = FALSE;
+    noQty = false;
   }
 
   param = pParams.value("invhist_id", &valid);
@@ -125,13 +125,13 @@ enum SetResponse adjustmentTrans::set(const ParameterList &pParams)
     {
       _mode = cView;
 
-      _transDate->setEnabled(FALSE);
-      _item->setReadOnly(TRUE);
-      _warehouse->setEnabled(FALSE);
-      _adjustmentTypeGroup->setEnabled(FALSE);
-      _qty->setEnabled(FALSE);
-      _documentNum->setEnabled(FALSE);
-      _notes->setEnabled(FALSE);
+      _transDate->setEnabled(false);
+      _item->setReadOnly(true);
+      _warehouse->setEnabled(false);
+      _adjustmentTypeGroup->setEnabled(false);
+      _qty->setEnabled(false);
+      _documentNum->setEnabled(false);
+      _notes->setEnabled(false);
       _post->hide();
       _close->setText(tr("&Close"));
 

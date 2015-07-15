@@ -21,7 +21,7 @@ class salesHistoryInformation : public XDialog, public Ui::salesHistoryInformati
     Q_OBJECT
 
 public:
-    salesHistoryInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WFlags fl = 0);
+    salesHistoryInformation(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~salesHistoryInformation();
 
 public slots:

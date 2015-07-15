@@ -20,7 +20,7 @@ class dspMaterialUsageVarianceByBOMItem : public display, public Ui::dspMaterial
     Q_OBJECT
 
 public:
-    dspMaterialUsageVarianceByBOMItem(QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = Qt::Window);
+    dspMaterialUsageVarianceByBOMItem(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
 
     virtual bool setParams(ParameterList &);
 

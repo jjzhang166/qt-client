@@ -18,7 +18,7 @@
 #include "arAccountAssignment.h"
 #include "guiclient.h"
 
-arAccountAssignments::arAccountAssignments(QWidget* parent, const char* name, Qt::WFlags fl)
+arAccountAssignments::arAccountAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -46,7 +46,7 @@ arAccountAssignments::arAccountAssignments(QWidget* parent, const char* name, Qt
   }
   else
   {
-    _new->setEnabled(FALSE);
+    _new->setEnabled(false);
     connect(_araccnt, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
@@ -77,7 +77,7 @@ void arAccountAssignments::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  arAccountAssignment newdlg(this, "", TRUE);
+  arAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -90,7 +90,7 @@ void arAccountAssignments::sEdit()
   params.append("mode", "edit");
   params.append("araccnt_id", _araccnt->id());
 
-  arAccountAssignment newdlg(this, "", TRUE);
+  arAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -103,7 +103,7 @@ void arAccountAssignments::sView()
   params.append("mode", "view");
   params.append("araccnt_id", _araccnt->id());
 
-  arAccountAssignment newdlg(this, "", TRUE);
+  arAccountAssignment newdlg(this, "", true);
   newdlg.set(params);
   newdlg.exec();
 }

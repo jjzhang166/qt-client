@@ -16,7 +16,7 @@
 #include "form.h"
 #include "guiclient.h"
 
-forms::forms(QWidget* parent, const char* name, Qt::WFlags fl)
+forms::forms(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -52,7 +52,7 @@ void forms::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  form newdlg(this, "", TRUE);
+  form newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)
@@ -65,7 +65,7 @@ void forms::sEdit()
   params.append("mode", "edit");
   params.append("form_id", _form->id());
 
-  form newdlg(this, "", TRUE);
+  form newdlg(this, "", true);
   newdlg.set(params);
 
   if (newdlg.exec() != XDialog::Rejected)

@@ -27,7 +27,7 @@
 #include "transferOrder.h"
 #include "transferOrderList.h"
 
-packingListBatch::packingListBatch(QWidget* parent, const char* name, Qt::WFlags fl)
+packingListBatch::packingListBatch(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
@@ -43,7 +43,7 @@ packingListBatch::packingListBatch(QWidget* parent, const char* name, Qt::WFlags
   connect(_printPackingList, SIGNAL(clicked()), this, SLOT(sPrintPackingList()));
   connect(_warehouse, SIGNAL(updated()), this, SLOT(sFillList()));
 
-  setAcceptDrops(TRUE);
+  setAcceptDrops(true);
 
   _pack->addColumn(tr("Order #"),       80,           Qt::AlignCenter, true, "order_number" );
   _pack->addColumn(tr("Type"),		40,           Qt::AlignCenter, true, "pack_head_type" );
@@ -56,15 +56,15 @@ packingListBatch::packingListBatch(QWidget* parent, const char* name, Qt::WFlags
 
   if (_privileges->check("MaintainPackingListBatch"))
   {
-    _add->setEnabled(TRUE);
-    _addTO->setEnabled(TRUE);
-    _deletePrinted->setEnabled(TRUE);
+    _add->setEnabled(true);
+    _addTO->setEnabled(true);
+    _deletePrinted->setEnabled(true);
     connect(_pack, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
   }
 
   if (_privileges->check("PrintPackingLists"))
   {
-    _printBatch->setEnabled(TRUE);
+    _printBatch->setEnabled(true);
     connect(_pack, SIGNAL(valid(bool)), _printPackingList, SLOT(setEnabled(bool)));
   }
 
@@ -89,7 +89,7 @@ void packingListBatch::sPrintBatch()
   XSqlQuery packingPrintBatch;
   XSqlQuery updateq;
   updateq.prepare("UPDATE pack "
-		  "SET pack_printed=TRUE "
+		  "SET pack_printed=true "
 		  "WHERE (pack_id=:packid);" );
 
   ParameterList params;
@@ -105,7 +105,7 @@ void packingListBatch::sPrintBatch()
   }
 
   QPrinter printer(QPrinter::HighResolution);
-  bool     setupPrinter = TRUE;
+  bool     setupPrinter = true;
   bool userCanceled = false;
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)
   {
@@ -154,7 +154,7 @@ void packingListBatch::sPrintBatch()
     }
     else if (report.print(&printer, setupPrinter))
     {
-      setupPrinter = FALSE;
+      setupPrinter = false;
       updateq.bindValue(":packid", packingPrintBatch.value("pack_id").toInt());
       updateq.exec();
       if (updateq.lastError().type() != QSqlError::NoError)
@@ -261,7 +261,7 @@ void packingListBatch::sAddSO()
   params.append("soType", cSoOpen);
   _warehouse->appendValue(params);
   
-  salesOrderList newdlg(this, "", TRUE);
+  salesOrderList newdlg(this, "", true);
   newdlg.set(params);
 
   int soid;
@@ -288,7 +288,7 @@ void packingListBatch::sAddTO()
   params.append("toType", cToOpen);
   _warehouse->appendValue(params);
   
-  transferOrderList newdlg(this, "", TRUE);
+  transferOrderList newdlg(this, "", true);
   newdlg.set(params);
 
   int toid;
@@ -365,12 +365,12 @@ void packingListBatch::sPrintPackingList()
     params.append("shiphead_id", _pack->altId());
   }
 
-  printPackingList newdlg(this, "", TRUE);
+  printPackingList newdlg(this, "", true);
   if (newdlg.set(params) == NoError_Print ||
       newdlg.exec() != XDialog::Rejected)
   {
     QString sql( "UPDATE pack "
-		 "SET pack_printed=TRUE "
+		 "SET pack_printed=true "
 		 "WHERE ((pack_head_id=<? value(\"head_id\") ?>)"
 	       "  AND  (pack_head_type=<? value(\"head_type\") ?>)"
 		 " <? if exists(\"shiphead_id\") ?>"
