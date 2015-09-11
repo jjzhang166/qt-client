@@ -3982,15 +3982,7 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation>Objednávka</translation>
     </message>
     <message>
-        <source>Order locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>%1::sSearch() not yet defined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4016,6 +4008,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>Objednávka %1 má neplatný stav %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53393,10 +53389,6 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Customer:</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -53409,10 +53401,6 @@ post Vouchers.</source>
         <translation>Vyskytla sa systémová chyba na %1::%2.</translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation type="unfinished">Zaslanie vybranému zákazníkovi:</translation>
-    </message>
-    <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation type="unfinished"></translation>
     </message>
@@ -53421,19 +53409,27 @@ post Vouchers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Customer Type:</source>
-        <translation>Vybraný typ zákazníka :</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Vzor &amp;typu zákazníka</translation>
-    </message>
-    <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
+        <source>Pricing Schedule:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pricing Schedule:</source>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Typ zákazníka</translation>
+    </message>
+    <message>
+        <source>Customer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -57238,6 +57234,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64867,6 +64871,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

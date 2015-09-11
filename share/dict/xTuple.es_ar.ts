@@ -3975,16 +3975,8 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>OrderLineEdit</name>
     <message>
-        <source>Order locked</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Order</source>
         <translation>Pedido</translation>
-    </message>
-    <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1::sSearch() not yet defined</source>
@@ -4017,6 +4009,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>El Pedido %1 está en un estado %2 no válido.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53437,10 +53433,6 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Customer Type:</source>
-        <translation type="unfinished">Tipo Cliente Seleccionado:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -53461,24 +53453,28 @@ post Vouchers.</source>
         <translation>Asignación Código Descuento</translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Envío A Cliente Seleccionado:</translation>
-    </message>
-    <message>
-        <source>Selected Customer:</source>
-        <translation>Cliente Seleccionado:</translation>
-    </message>
-    <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>Patrón Envío A Clien. Seleccionado:</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Patrón Tipo Cliente:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>Código Descuento:</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished">Patrón del Tipo de Cliente</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Tipo de Cliente</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Cliente</translation>
     </message>
 </context>
 <context>
@@ -57294,6 +57290,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     <message>
         <source>Update Price?</source>
         <translation type="unfinished">¿Actualizar Precio?</translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -64932,6 +64936,10 @@ Orden de Trabajo seleccionada para desechar.</translation>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

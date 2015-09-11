@@ -3990,16 +3990,8 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation type="unfinished">%1::sArama() henüz tanımlanmadı</translation>
     </message>
     <message>
-        <source>Order locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Orders</source>
         <translation>Siparişler</translation>
-    </message>
-    <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>A System Error Occurred at %1::%2.</source>
@@ -4020,6 +4012,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>Sipariş %1 geçersiz bir statüye sahip %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53398,10 +53394,6 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation type="unfinished">Seçilen Müşteri Gönderim Yeri Modeli:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -53414,14 +53406,6 @@ post Vouchers.</source>
         <translation>Fiyatlandırma planı mevcut.</translation>
     </message>
     <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Müşteri Modelleri:</translation>
-    </message>
-    <message>
-        <source>Selected Customer Type:</source>
-        <translation>Seçilen Müşteri Tipi:</translation>
-    </message>
-    <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation>Fiyatlandırma planı saklanamadı</translation>
     </message>
@@ -53430,16 +53414,28 @@ post Vouchers.</source>
         <translation>%1::%2\&apos;de bir Sistem hatasi oluştu.</translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Seçilen Müşteri Sevkiyat Adresi:</translation>
-    </message>
-    <message>
-        <source>Selected Customer:</source>
-        <translation>Seçilen Müşteri:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule Assignment</source>
         <translation>Fiyatlandırma Programı Ataması</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished">Müşteri Türü Modeli</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Müşteri Tipi</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Müşteri</translation>
     </message>
 </context>
 <context>
@@ -57243,6 +57239,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64872,6 +64876,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

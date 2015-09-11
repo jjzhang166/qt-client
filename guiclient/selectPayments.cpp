@@ -379,9 +379,10 @@ void selectPayments::sApplyAllCredits()
   selectApplyAllCredits = mql.toQuery(params);
   if (selectApplyAllCredits.first())
     sFillList();
-  else if (selectApplyAllCredits.lastError().type() != QSqlError::NoError)
+  else
   {
-    systemError(this, selectApplyAllCredits.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Applying all Credits"),
+                         selectApplyAllCredits, __FILE__, __LINE__);
     return;
   }
 }

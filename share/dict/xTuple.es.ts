@@ -3979,16 +3979,8 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>OrderLineEdit</name>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished">Se está editando este pedido por otro usuario o en otra ventana. Por favor. inténtelo de nuevo más tarde.</translation>
-    </message>
-    <message>
         <source>Order</source>
         <translation>Pedido</translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation>Pedido bloqueado</translation>
     </message>
     <message>
         <source>%1::sSearch() not yet defined</source>
@@ -4021,6 +4013,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>El Pedido %1 está en un estado %2 no válido.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53442,14 +53438,6 @@ post Vouchers.</source>
         <translation>No se puede Guardar Asignación de Lista de Precios</translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>Cliente Seleccionado:</translation>
-    </message>
-    <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Dirección de Envío del Cliente Seleccionado:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;This Pricing Schedule Assignment already exists.</source>
         <translation>Ya existe esta Asignación de Lista de Precios.</translation>
     </message>
@@ -53462,20 +53450,28 @@ post Vouchers.</source>
         <translation>Debe seleccionar una Lista de Precios.</translation>
     </message>
     <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Patrón Tipo Cliente:</translation>
-    </message>
-    <message>
-        <source>Selected Customer Type:</source>
-        <translation>Tipo Cliente Elegido:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>Código Descuento:</translation>
     </message>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>Patrón de Destinario en Cliente seleccionado:</translation>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished">Envío del Cliente</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Tipo de Cliente</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Cliente</translation>
     </message>
 </context>
 <context>
@@ -57286,6 +57282,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64917,6 +64921,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

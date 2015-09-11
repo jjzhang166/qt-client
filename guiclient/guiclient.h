@@ -236,6 +236,11 @@ class GUIClient : public QMainWindow
 
     void loadScriptGlobals(QScriptEngine * engine);
 
+    #ifdef Q_OS_MAC
+    		void updateMacDockMenu(QWidget *w);
+    		void removeFromMacDockMenu(QWidget *w);
+    	#endif
+
     //check hunspell is ready
     Q_INVOKABLE bool hunspell_ready();
     //spellcheck word, returns 1 if word ok otherwise 0
@@ -454,6 +459,8 @@ class GUIClient : public QMainWindow
     Hunspell * _spellChecker;
     bool _spellReady;
     QStringList _spellAddWords;
+
+    QMenu *_menu;
 };
 extern GUIClient *omfgThis;
 

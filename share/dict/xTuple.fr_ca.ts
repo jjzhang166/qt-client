@@ -3983,14 +3983,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation>%1:sList() pas encore spécifié</translation>
     </message>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation>Cette commande est en train d&apos;&apos;être modifiée dans une autre fenêtre ou par un autre utilisateur. S.V.P. essayer de nouveau plus tard.</translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation>Commande verrouillée</translation>
-    </message>
-    <message>
         <source>Orders</source>
         <translation>Commandes</translation>
     </message>
@@ -4013,6 +4005,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>Commande %1 a un état invalide %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -10861,10 +10857,6 @@ Etes-vous certain de vouloir enregistrer ce changement?  </translation>
     <message>
         <source>No Value Entered</source>
         <translation type="unfinished">Pas de Valeur Inscrite</translation>
-    </message>
-    <message>
-        <source>You must enter a value before saving this Item Characteristic.</source>
-        <translation type="obsolete">Vous devez inscrire une valeur avant d&apos;enregistrer cette Caractéristique d&apos;&apos;Article.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -53514,16 +53506,8 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Customer Type Pattern:</source>
-        <translation type="unfinished">Filtre Type de Client:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation>&lt;p&gt;Vous devez sélectionner une Liste de Prix.</translation>
-    </message>
-    <message>
-        <source>Selected Customer Type:</source>
-        <translation>Type de Client Sélectionné:</translation>
     </message>
     <message>
         <source>&lt;p&gt;This Pricing Schedule Assignment already exists.</source>
@@ -53534,10 +53518,6 @@ post Vouchers.</source>
         <translation>Affectation de Liste de Prix</translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Client Destinataire Sélectionné:</translation>
-    </message>
-    <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation>Ne peut pas Enregistrer Affectation de Liste de Prix</translation>
     </message>
@@ -53546,16 +53526,28 @@ post Vouchers.</source>
         <translation>Une Erreur de Système s&apos;est produite à %1::%2.</translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>Client Sélectionné:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>Liste de Prix:</translation>
     </message>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>Filtre Client Destinataire Sélectionné:</translation>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished">Client Destinataire</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Type de Client</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Client</translation>
     </message>
 </context>
 <context>
@@ -57362,6 +57354,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>Cannot Save Purchase Order Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -65012,6 +65012,10 @@ Are you sure you want to do this?</source>
     <message>
         <source>Checking Privileges</source>
         <translation type="unfinished">Vérification des Privilèges</translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

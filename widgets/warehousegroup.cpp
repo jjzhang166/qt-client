@@ -9,6 +9,7 @@
  */
 
 
+#include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QRadioButton>
@@ -33,14 +34,13 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
     setObjectName(pName);
 
   _fixed = true;
-  _selectedGroup = new QWidget(this);
-  QButtonGroup * buttonGroup = new QButtonGroup(this);
+  QButtonGroup *buttonGroup = new QButtonGroup(this);
   
   _all = new QRadioButton(tr("All Sites"), this);
   _all->setObjectName("_all");
   _site = new QLabel(tr("Site:"),this);
   _site->setObjectName("_site");
-  _selected = new QRadioButton(tr("Selected:"), _selectedGroup);
+  _selected = new QRadioButton(tr("Selected:"), this);
   _selected->setObjectName("_selected");
 	 
   if (!_selectedOnly)
@@ -50,32 +50,13 @@ WarehouseGroup::WarehouseGroup(QWidget *pParent, const char *pName) :
     buttonGroup->addButton(_selected);
   }
   
-  _warehouses = new WComboBox(_selectedGroup, "_warehouses");
+  _warehouses = new WComboBox(this, "_warehouses");
 
-  if(_selectedOnly)
-  {
-    QHBoxLayout *hLayout = new QHBoxLayout(_selectedGroup);
-    hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(5);
-    hLayout->addWidget(_site);
-    hLayout->addWidget(_warehouses);
-    hLayout->addStretch();
-    _selectedGroup->setLayout(hLayout);
-    
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->setContentsMargins(5, 5, 5, 5);
-    vLayout->setSpacing(0);
-    vLayout->addWidget(_selectedGroup);
-    setLayout(vLayout);
-    
-    _all->hide();
-    _selected->hide();
-  }
-  else
-  {
-    _site->hide();
-    setFixedSize(false);
-  }
+  _all->setVisible(! _selectedOnly);
+  _selected->setVisible(! _selectedOnly);
+  _site->setVisible(_selectedOnly);
+
+  setFixedSize(! _selectedOnly);
 
   connect(_selected, SIGNAL(toggled(bool)), _warehouses, SLOT(setEnabled(bool)));
   connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SIGNAL(updated()));
@@ -106,54 +87,29 @@ void WarehouseGroup::setAll()
 
 void WarehouseGroup::setFixedSize(bool pFixed)
 {
-  if (pFixed == _fixed || _selectedOnly)
-    return;
-    
+  qDebug("WarehouseGroup::setFixedSize(%d) entered", pFixed);
   if (layout())
     delete layout();
     
-  if (_selectedGroup->layout())
-    delete _selectedGroup->layout();
-    
+  QGridLayout *gridLayout = new QGridLayout();
+  gridLayout->setMargin(0);
+  gridLayout->setSpacing(5);
+  gridLayout->addWidget(_all,        0, 0);
+  gridLayout->addWidget(_selected,   1, 0);
+  gridLayout->addWidget(_warehouses, 1, 1);
+  gridLayout->setRowStretch(2, 1);
+  gridLayout->setColumnStretch(2, 1);
   if (pFixed)
   {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    QHBoxLayout *hLayout = new QHBoxLayout(_selectedGroup);
-    hLayout->setMargin(0);
-    hLayout->setSpacing(5);
-    hLayout->addWidget(_selected);
-    hLayout->addWidget(_warehouses);
-    _selectedGroup->setLayout(hLayout);
-
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->setMargin(5);
-    vLayout->setSpacing(0);
-    vLayout->addWidget(_all);
-    vLayout->addWidget(_selectedGroup);
-    setLayout(vLayout);
   }
   else
   {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    QGridLayout *gridLayout = new QGridLayout();
-    gridLayout->addWidget(_all,0,0);
-    gridLayout->addWidget(_selected,1,0);
-    gridLayout->addWidget(_warehouses,1,1);
-#if defined Q_OS_MAC
-    gridLayout->setRowMinimumHeight(0,24);
-#endif
-    QHBoxLayout *hLayout = new QHBoxLayout();
-    hLayout->addLayout(gridLayout);
-    QSpacerItem * spacerItem = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    hLayout->addItem(spacerItem);
-    QVBoxLayout *vLayout = new QVBoxLayout();
-    vLayout->addLayout(hLayout);
-    QSpacerItem * spacerItem1 = new QSpacerItem(20, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    vLayout->addItem(spacerItem1);
-    QGridLayout *siteLayout = new QGridLayout(this);
-    siteLayout->addLayout(vLayout,0,0);
   }
-  _warehouses->setEnabled(false);
+
+  setLayout(gridLayout);
+  _warehouses->setEnabled(_selected->isChecked());
   
   _fixed = pFixed;
 }

@@ -126,7 +126,7 @@ to be bound by its terms.</comment>
           <item>
            <widget class="WComboBox" name="_warehouse">
             <property name="type">
-             <enum>WComboBox::Supply</enum>
+             <enum>WComboBox::WOSupply</enum>
             </property>
            </widget>
           </item>

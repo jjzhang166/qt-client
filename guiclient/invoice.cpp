@@ -1092,8 +1092,7 @@ void invoice::sCalculateTotal()
   _total->setLocalValue(_subtotal->localValue() + _miscAmount->localValue() +
 			_freight->localValue() + _tax->localValue());
   _balance->setLocalValue(_total->localValue() -
-			  _allocatedCM->localValue() - _authCC->localValue() -
-			  _outstandingCM->localValue());
+			  _allocatedCM->localValue() - _authCC->localValue());
   if (_balance->localValue() < 0)
     _balance->setLocalValue(0);
 }

@@ -1156,11 +1156,9 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
 
     _searchLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     _select->setEnabled(false);
-    //_listTab->setMinimumHeight(250);
     _titleLit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
     _dialogLyt   = new QVBoxLayout(this);
-    _dialogLyt->setContentsMargins(5, 5, 5, 5);
 
     QHBoxLayout* topLyt = new QHBoxLayout();
     searchLyt    = new QVBoxLayout();
@@ -1179,8 +1177,6 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
     _dialogLyt->addLayout(topLyt);
     _dialogLyt->addLayout(tableLyt);
     topLyt->addLayout(searchLyt);
-    topLyt->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding,
-					    QSizePolicy::Minimum));
     topLyt->addLayout(buttonsLyt);
     searchLyt->addItem(searchStrLyt);
     searchLyt->addItem(selectorsLyt);
@@ -1189,18 +1185,14 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
     searchStrLyt->addWidget(_searchLit);
     searchStrLyt->addWidget(_search);
 #ifdef Q_OS_MAC
-    _search->setMinimumHeight(22);
     selectorsLyt->setVerticalSpacing(6);
-#else
-    _search->setMinimumHeight(20);
 #endif
 
     selectorsLyt->addWidget(_searchNumber,  0, 0);
     selectorsLyt->addWidget(_searchName,    1, 0);
     selectorsLyt->addWidget(_searchDescrip, 2, 0);
     buttonsLyt->addWidget(_buttonBox);
-    buttonsLyt->addItem(new QSpacerItem(20, 0, QSizePolicy::Minimum,
-						QSizePolicy::Expanding));
+    ((QBoxLayout*)buttonsLyt)->addStretch();
     tableLyt->addWidget(_titleLit);
     tableLyt->addWidget(_listTab);
 

@@ -113,7 +113,7 @@ enum SetResponse cashReceiptItem::set(const ParameterList &pParams)
 
 void cashReceiptItem::sSave()
 {
-  if (_amountToApply->localValue() > _openAmount->localValue())
+  if (_amountToApply->localValue() + _discountAmount->localValue() > _openAmount->localValue())
   {
     QMessageBox::warning( this, tr("Cannot Apply"),
       tr("You may not apply more than the balance of this item.") );

@@ -3988,16 +3988,8 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation type="unfinished">%1:sList() 尚未定義</translation>
     </message>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Orders</source>
         <translation>單據</translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>A System Error Occurred at %1::%2.</source>
@@ -4018,6 +4010,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>單據 %1 的狀態無效 %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53478,16 +53474,8 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation type="unfinished">選取的客戶出貨地址:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>客戶類型樣本:</translation>
     </message>
     <message>
         <source>Pricing Schedule:</source>
@@ -53498,28 +53486,36 @@ post Vouchers.</source>
         <translation>無法儲存價格表分配</translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>選取的客戶:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;This Pricing Schedule Assignment already exists.</source>
         <translation>&lt;p&gt;這個價格表分配已經存在.</translation>
-    </message>
-    <message>
-        <source>Selected Customer Type:</source>
-        <translation>選取的客戶類型:</translation>
     </message>
     <message>
         <source>A System Error occurred at %1::%2.</source>
         <translation>系統錯誤發生於 %1::%2.</translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>選取的客戶出貨地址:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule Assignment</source>
         <translation>價格表分配</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">客戶類型</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">客戶</translation>
     </message>
 </context>
 <context>
@@ -57324,6 +57320,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64964,6 +64968,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

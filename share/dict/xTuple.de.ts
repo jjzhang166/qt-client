@@ -4008,14 +4008,6 @@ Bitte loggen Sie sich sofort aus und kontaktieren Sie Ihren Systemadministrator.
         <translation>%1::sSearch() noch nicht definiert</translation>
     </message>
     <message>
-        <source>Order locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Orders</source>
         <translation>Aufträge</translation>
     </message>
@@ -4038,6 +4030,10 @@ Bitte loggen Sie sich sofort aus und kontaktieren Sie Ihren Systemadministrator.
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>Auftrag %1 hat einen ungültigen Status %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53571,10 +53567,6 @@ Der Systemadministrator dieses Programms muß das korrigieren, bevor Sie Bezugsb
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Customer Type:</source>
-        <translation type="unfinished">Ausgewählte Kundenart:</translation>
-    </message>
-    <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation>Kann Zuweisung Preisbildungszeitplan nicht speichern</translation>
     </message>
@@ -53587,10 +53579,6 @@ Der Systemadministrator dieses Programms muß das korrigieren, bevor Sie Bezugsb
         <translation>&lt;p&gt;Diese Zuweisung Preisbildungszeitplan existiert bereits.</translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>Ausgewählter Kunde:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule Assignment</source>
         <translation>Zuweiung Preisbildungszeitplan</translation>
     </message>
@@ -53599,20 +53587,28 @@ Der Systemadministrator dieses Programms muß das korrigieren, bevor Sie Bezugsb
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Ausgewählter Kunde &apos;Liefern an&apos;:</translation>
-    </message>
-    <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>Ausgewähltes Kunden &apos;Liefern an&apos;-Schema:</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Kundenart Schema:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>Preisbildungszeitplan:</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Kundenart</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Kunde</translation>
     </message>
 </context>
 <context>
@@ -57419,6 +57415,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -65076,6 +65080,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -3994,14 +3994,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation>單據</translation>
     </message>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation>單據已鎖定</translation>
-    </message>
-    <message>
         <source>A System Error Occurred at %1::%2.</source>
         <translation>系統錯誤發生於 %1::%2.</translation>
     </message>
@@ -4020,6 +4012,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>單據 %1 的狀態無效 %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53482,16 +53478,8 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Customer:</source>
-        <translation type="unfinished">選取的客戶:</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a Pricing Schedule.</source>
         <translation>你必須選擇價格表.</translation>
-    </message>
-    <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>選取的客戶出貨地址:</translation>
     </message>
     <message>
         <source>A System Error occurred at %1::%2.</source>
@@ -53510,20 +53498,28 @@ post Vouchers.</source>
         <translation>價格表分配</translation>
     </message>
     <message>
-        <source>Selected Customer Type:</source>
-        <translation>選取的客戶類型:</translation>
-    </message>
-    <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>選取的客戶出貨地址:</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>客戶類型樣本:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>價格表:</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished">客戶類型樣本</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished">客戶出貨地址</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">客戶類型</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">客戶</translation>
     </message>
 </context>
 <context>
@@ -57329,6 +57325,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64969,6 +64973,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

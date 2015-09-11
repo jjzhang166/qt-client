@@ -48,6 +48,7 @@ public slots:
     virtual void sHandleDeleteButton();
     virtual void sHandleOrderDate();
     virtual void sHandleVendor( int pVendid );
+    virtual void sHandlePurchaseOrderEvent( int pPoheadid, bool );
     virtual void sFillList();
     virtual void sCalculateTotals();
     virtual void sSetUserOrderNumber();
