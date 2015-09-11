@@ -220,6 +220,7 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
     {
       _mode = cNew;
       emit newMode(_mode);
+      connect(omfgThis, SIGNAL(purchaseOrdersUpdated(int, bool)), this, SLOT(sHandlePurchaseOrderEvent(int, bool)));
 
       if (param.toString() == "releasePr")
       {
@@ -1260,6 +1261,12 @@ void purchaseOrder::sHandleVendor(int pVendid)
 
     _qeitem->setHeadId(_poheadid);
   }
+}
+
+void purchaseOrder::sHandlePurchaseOrderEvent(int pPoheadid, bool)
+{
+  if (pPoheadid == _poheadid)
+    sFillList();
 }
 
 void purchaseOrder::sFillList()

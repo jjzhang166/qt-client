@@ -924,7 +924,7 @@ void workOrder::sFillList()
     "           'qty' AS short_xtnumericrole, "
     "           'qty' AS setup_xtnumericrole,"
     "           'qty' AS run_xtnumericrole,"
-    "           'scrap' AS scrap_xtnumericrole, "
+    "           'qty' AS scrap_xtnumericrole, "
     "           wodata_level AS xtindentrole "
     "    FROM indentedwo(:wo_id, :showops, :showmatl, :showindent) ");
   workFillList.prepare(sql);

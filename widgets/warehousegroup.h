@@ -54,7 +54,6 @@ class XTUPLEWIDGETS_EXPORT WarehouseGroup : public QGroupBox
     QLabel	 *_site;
     QRadioButton *_all;
     QRadioButton *_selected;
-    QWidget      *_selectedGroup;
     WComboBox    *_warehouses;
 };
 

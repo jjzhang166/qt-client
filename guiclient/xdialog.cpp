@@ -101,6 +101,10 @@ void XDialog::closeEvent(QCloseEvent * event)
     saveSize();
     QDialog::closeEvent(event);
   }
+  
+  #ifdef Q_OS_MAC
+    omfgThis->removeFromMacDockMenu(this);
+  #endif
 }
 
 void XDialog::showEvent(QShowEvent *event)
@@ -184,5 +188,14 @@ enum SetResponse XDialog::postSet()
 ParameterList XDialog::get() const
 {
   return _lastSetParams;
+}
+
+int XDialog::exec()
+{
+	#ifdef Q_OS_MAC
+		omfgThis->updateMacDockMenu(this);
+	#endif
+
+	QDialog::exec();
 }
 

@@ -29,6 +29,7 @@ class XTUPLEWIDGETS_EXPORT WComboBox : public XComboBox
     {
       All, AllActive, NonTransit,
       Shipping, Sold, Supply,
+      POSupply, WOSupply,
       Transit, AllActiveInventory
     };
 

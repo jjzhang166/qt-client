@@ -26,7 +26,7 @@
 #include "../common/shortcuts.h"
 #include "imageview.h"
 
-#define DEBUG true
+#define DEBUG false
 
 class StackDescriptor
 {
@@ -156,7 +156,7 @@ docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WindowFl
                      " WHERE source_widget != ''"
                      " UNION SELECT -2, 'File',     'FILE'"
                      " UNION SELECT -3, 'Web Site', 'URL') data"
-                     " ORDER BY source_name;");
+                     " ORDER BY source_descrip;");
 
 #ifndef Q_OS_MAC
     _fileList->setMaximumWidth(25);
@@ -198,6 +198,7 @@ void docAttach::set(const ParameterList &pParams)
   param = pParams.value("url_id", &valid);
   if(valid)
   {
+    if (DEBUG) qDebug() << "got url_id" << param;
     XSqlQuery qry;
     _urlid = param.toInt();
     qry.prepare("SELECT url_source, url_source_id, url_title, url_url, url_stream "
@@ -212,10 +213,16 @@ void docAttach::set(const ParameterList &pParams)
       if (url.scheme().isEmpty())
         url.setScheme("file");
 
+      if (DEBUG) qDebug() << qry.value("url_url") << "converted to" << url;
+
       _url->setText(url.toString());
       if (url.scheme() == "file")
       {
-        _docType->setId(-3);
+        if (DEBUG)
+          qDebug() << "file title:"    << qry.value("url_title").toString()
+                   << " text:"         << url.toString()
+                   << "stream length:" << qry.value("url_stream").toString().length();
+        _docType->setId(-2);
         _filetitle->setText(qry.value("url_title").toString());
         _file->setText(url.toString());
         if (qry.value("url_stream").toString().length())
@@ -227,7 +234,10 @@ void docAttach::set(const ParameterList &pParams)
       }
       else
       {
-        _docType->setId(-2);
+        if (DEBUG)
+          qDebug() << "! file title:" << qry.value("url_title").toString()
+                   << " text:" << url.toString();
+        _docType->setId(-3);
         _urltitle->setText(qry.value("url_title").toString());
         _url->setText(url.toString());
       }
@@ -283,8 +293,9 @@ void docAttach::sHandleButtons()
   }
   else
   {
-    qDebug() << pageDesc->docWidget->objectName() << "is a"
-             << pageDesc->docWidget->metaObject()->className();
+    if (DEBUG)
+      qDebug() << pageDesc->docWidget->objectName() << "is a"
+               << pageDesc->docWidget->metaObject()->className();
     _docAttachPurpose->setEnabled(false);
     _docAttachPurpose->setCurrentIndex(0);
     _save->setEnabled(true); // presumably we're on the file or url stack page

@@ -880,6 +880,8 @@ void purchaseOrderItem::sSave()
     clear();
     prepare();
     _item->setFocus();
+    if (_orderRefresh->isChecked())
+      omfgThis->sPurchaseOrdersUpdated(_poheadid, true);
   }
   else
     done(_poitemid);

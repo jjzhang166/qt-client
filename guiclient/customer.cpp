@@ -364,7 +364,7 @@ void customer::setViewMode()
 {
   _mode = cView;
 
-  _number->setEnabled(false);
+  _number->setCanEdit(false);
   _name->setEnabled(false);
   _custtype->setEnabled(false);
   _active->setEnabled(false);

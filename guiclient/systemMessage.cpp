@@ -111,7 +111,7 @@ void systemMessage::sSave()
     }
     else
     {
-      systemSave.prepare("SELECT postMessage(:scheduled, :expires, :message) AS msgid;");
+      systemSave.prepare("SELECT postMessage(:scheduled::timestamp without time zone, :expires::timestamp without time zone, :message) AS msgid;");
 
       QDateTime scheduled;
       QDateTime expires;

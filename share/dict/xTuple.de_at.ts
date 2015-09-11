@@ -3974,10 +3974,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>OrderLineEdit</name>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Order</source>
         <translation>Auftrag</translation>
     </message>
@@ -3992,10 +3988,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Orders</source>
         <translation>Aufträge</translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>A System Error Occurred at %1::%2.</source>
@@ -4016,6 +4008,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>Auftrag %1 hat einen ungültigen Status %2.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53421,28 +53417,28 @@ post Vouchers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
+        <source>Pricing Schedule:</source>
+        <translation>Preisplan:</translation>
+    </message>
+    <message>
+        <source>Customer Type Pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>Ausgewählter Kunde:</translation>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Customer Type:</source>
-        <translation>Ausgewälter Kundentype:</translation>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation>Ausgewählte Kunden Versand-Adresse:</translation>
+        <source>Customer Type</source>
+        <translation type="unfinished">Kundentyp</translation>
     </message>
     <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Kundentype Muster:</translation>
-    </message>
-    <message>
-        <source>Pricing Schedule:</source>
-        <translation>Preisplan:</translation>
+        <source>Customer</source>
+        <translation type="unfinished">Kunde</translation>
     </message>
 </context>
 <context>
@@ -57246,6 +57242,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>&lt;p&gt;You must enter a Project for this order item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64875,6 +64879,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Checking Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

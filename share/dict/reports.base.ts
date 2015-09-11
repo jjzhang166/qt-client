@@ -3921,16 +3921,6 @@
   <context>
     <name>CharacteristicsMasterList</name>
     <message>
-      <width>50</width>
-      <source>Lot/Serial</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Options</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
       <width>95</width>
       <source>Name</source>
       <translation type="unfinished"/>
@@ -3938,11 +3928,6 @@
     <message>
       <width>200</width>
       <source>may be used for</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Attributes</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3956,28 +3941,8 @@
       <translation type="unfinished"/>
     </message>
     <message>
-      <width>50</width>
-      <source>Items</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Items</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
       <width>200</width>
       <source>may be used for</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Attributes</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Options</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -3988,11 +3953,6 @@
     <message>
       <width>80</width>
       <source>Notes</source>
-      <translation type="unfinished"/>
-    </message>
-    <message>
-      <width>50</width>
-      <source>Lot/Serial</source>
       <translation type="unfinished"/>
     </message>
     <message>

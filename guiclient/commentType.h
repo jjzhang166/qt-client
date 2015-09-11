@@ -32,7 +32,8 @@ public slots:
 protected slots:
     virtual void languageChange();
 
-    virtual void sSave();
+    virtual void sSaveClicked();
+    virtual bool sSave();
     virtual void sCheck();
     virtual void sModuleSelected( const QString & pModule );
     virtual void sAdd();

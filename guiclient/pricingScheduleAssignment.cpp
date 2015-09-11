@@ -18,11 +18,8 @@ pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char
 {
   setupUi(this);
 
-  connect(_selectedCustomerType, SIGNAL(toggled(bool)), _customerTypes, SLOT(setEnabled(bool)));
-  connect(_customerTypePattern, SIGNAL(toggled(bool)), _customerType, SLOT(setEnabled(bool)));
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sAssign()));
-  connect(_selectedCustomerShipto, SIGNAL(toggled(bool)), _customerShipto, SLOT(setEnabled(bool)));
-  connect(_cust, SIGNAL(newId(int)), this, SLOT(sCustomerSelected()));
+  connect(_buttonBox,    SIGNAL(accepted()), this, SLOT(sAssign()));
+  connect(_shiptoIdCust, SIGNAL(newId(int)), this, SLOT(sCustomerSelected()));
 
   _customerTypes->setType(XComboBox::CustomerTypes);
 
@@ -91,49 +88,54 @@ void pricingScheduleAssignment::sAssign()
     return;
   }
 
-    pricingAssign.prepare( "SELECT ipsass_id "
-               "FROM ipsass "
-               "WHERE ( (ipsass_ipshead_id=:ipsass_ipshead_id)"
-               "  AND   (ipsass_cust_id=:ipsass_cust_id)"
-               "  AND   (ipsass_shipto_id=:ipsass_shipto_id)"
-               "  AND   (ipsass_shipto_pattern=:ipsass_shipto_pattern)"
-               "  AND   (ipsass_custtype_id=:ipsass_custtype_id)"
-               "  AND   (ipsass_custtype_pattern=:ipsass_custtype_pattern) );" );
+  pricingAssign.prepare("SELECT ipsass_id "
+                        "FROM ipsass "
+                        "WHERE ( (ipsass_ipshead_id=:ipsass_ipshead_id)"
+                        "  AND   (ipsass_cust_id=:ipsass_cust_id)"
+                        "  AND   (ipsass_shipto_id=:ipsass_shipto_id)"
+                        "  AND   (ipsass_shipto_pattern=:ipsass_shipto_pattern)"
+                        "  AND   (ipsass_custtype_id=:ipsass_custtype_id)"
+                        "  AND   (ipsass_custtype_pattern=:ipsass_custtype_pattern) );" );
 
-    pricingAssign.bindValue(":ipsass_ipshead_id", _ipshead->id());
+  pricingAssign.bindValue(":ipsass_ipshead_id", _ipshead->id());
 
-    if (_selectedCustomer->isChecked() || _selectedShiptoPattern->isChecked())
-      pricingAssign.bindValue(":ipsass_cust_id", _cust->id());
-    else
-      pricingAssign.bindValue(":ipsass_cust_id", -1);
+  if (_selectedShiptoPattern->isChecked())
+  {
+    pricingAssign.bindValue(":ipsass_cust_id", _shiptoPatternCust->id());
+    pricingAssign.bindValue(":ipsass_shipto_pattern", _shiptoPattern->text());
+  }
+  else
+    pricingAssign.bindValue(":ipsass_shipto_pattern", "");
+  
+  if (_selectedCustomer->isChecked())
+    pricingAssign.bindValue(":ipsass_cust_id", _cust->id());
 
-    if (_selectedCustomerShipto->isChecked())
-      pricingAssign.bindValue(":ipsass_shipto_id", _customerShipto->id());
-    else
-      pricingAssign.bindValue(":ipsass_shipto_id", -1);
+  if (!_selectedShiptoPattern->isChecked() && !_selectedCustomer->isChecked())
+    pricingAssign.bindValue(":ipsass_cust_id", -1);
 
-    if (_selectedCustomerType->isChecked())
-      pricingAssign.bindValue(":ipsass_custtype_id", _customerTypes->id());
-    else
-      pricingAssign.bindValue(":ipsass_custtype_id", -1);
+  if (_selectedCustomerShipto->isChecked())
+    pricingAssign.bindValue(":ipsass_shipto_id", _shiptoId->id());
+  else
+    pricingAssign.bindValue(":ipsass_shipto_id", -1);
 
-    if (_customerTypePattern->isChecked())
-      pricingAssign.bindValue(":ipsass_custtype_pattern", _customerType->text());
-    else
-      pricingAssign.bindValue(":ipsass_custtype_pattern", "");
+  if (_selectedCustomerType->isChecked())
+    pricingAssign.bindValue(":ipsass_custtype_id", _customerTypes->id());
+  else
+    pricingAssign.bindValue(":ipsass_custtype_id", -1);
 
-    if (_selectedShiptoPattern->isChecked())
-      pricingAssign.bindValue(":ipsass_shipto_pattern", _shiptoPattern->text());
-    else
-      pricingAssign.bindValue(":ipsass_shipto_pattern", "");
+  if (_customerTypePattern->isChecked())
+    pricingAssign.bindValue(":ipsass_custtype_pattern", _customerType->text());
+  else
+    pricingAssign.bindValue(":ipsass_custtype_pattern", "");
 
-    pricingAssign.exec();
-    if (pricingAssign.first())
-    {
-      QMessageBox::critical(this, tr("Cannot Save Pricing Schedule Assignment"),
-                            tr("<p>This Pricing Schedule Assignment already exists."));
-      return;
-    }
+  pricingAssign.exec();
+  if (pricingAssign.first())
+  {
+    QMessageBox::critical(this, tr("Cannot Save Pricing Schedule Assignment"),
+                          tr("<p>This Pricing Schedule Assignment already exists."));
+    return;
+  }
+
   if (_mode == cNew)
   {
     pricingAssign.exec("SELECT NEXTVAL('ipsass_ipsass_id_seq') AS ipsass_id;");
@@ -169,13 +171,22 @@ void pricingScheduleAssignment::sAssign()
   pricingAssign.bindValue(":ipsass_id", _ipsassid);
   pricingAssign.bindValue(":ipsass_ipshead_id", _ipshead->id());
 
-  if (_selectedCustomer->isChecked() || _selectedShiptoPattern->isChecked())
-    pricingAssign.bindValue(":ipsass_cust_id", _cust->id());
+  if (_selectedShiptoPattern->isChecked())
+  {
+    pricingAssign.bindValue(":ipsass_cust_id", _shiptoPatternCust->id());
+    pricingAssign.bindValue(":ipsass_shipto_pattern", _shiptoPattern->text());
+  }
   else
+    pricingAssign.bindValue(":ipsass_shipto_pattern", "");
+  
+  if (_selectedCustomer->isChecked())
+    pricingAssign.bindValue(":ipsass_cust_id", _cust->id());
+  
+  if (!_selectedShiptoPattern->isChecked() && !_selectedCustomer->isChecked())
     pricingAssign.bindValue(":ipsass_cust_id", -1);
 
   if (_selectedCustomerShipto->isChecked())
-    pricingAssign.bindValue(":ipsass_shipto_id", _customerShipto->id());
+    pricingAssign.bindValue(":ipsass_shipto_id", _shiptoId->id());
   else
     pricingAssign.bindValue(":ipsass_shipto_id", -1);
 
@@ -189,11 +200,6 @@ void pricingScheduleAssignment::sAssign()
   else
     pricingAssign.bindValue(":ipsass_custtype_pattern", "");
 
-  if (_selectedShiptoPattern->isChecked())
-    pricingAssign.bindValue(":ipsass_shipto_pattern", _shiptoPattern->text());
-  else
-    pricingAssign.bindValue(":ipsass_shipto_pattern", "");
-
   pricingAssign.exec();
 
   done(_ipsassid);
@@ -202,12 +208,9 @@ void pricingScheduleAssignment::sAssign()
 void pricingScheduleAssignment::populate()
 {
   XSqlQuery pricingpopulate;
-  pricingpopulate.prepare( "SELECT ipsass_ipshead_id, ipsass_cust_id,"
-             "       ipsass_custtype_id, ipsass_custtype_pattern,"
-             "       ipsass_shipto_pattern,"
-             "       ipsass_shipto_id, shipto_cust_id "
-             "FROM ipsass LEFT OUTER JOIN shiptoinfo ON (ipsass_shipto_id=shipto_id) "
-             "WHERE (ipsass_id=:ipsass_id);" );
+  pricingpopulate.prepare("SELECT ipsass.*, shipto_cust_id "
+                          "FROM ipsass LEFT OUTER JOIN shiptoinfo ON (ipsass_shipto_id=shipto_id) "
+                          "WHERE (ipsass_id=:ipsass_id);" );
   pricingpopulate.bindValue(":ipsass_id", _ipsassid);
   pricingpopulate.exec();
   if (pricingpopulate.first())
@@ -218,7 +221,7 @@ void pricingScheduleAssignment::populate()
     {
       _selectedShiptoPattern->setChecked(true);
       _shiptoPattern->setText(pricingpopulate.value("ipsass_shipto_pattern").toString());
-      _cust->setId(pricingpopulate.value("ipsass_cust_id").toInt());
+      _shiptoPatternCust->setId(pricingpopulate.value("ipsass_cust_id").toInt());
     }
     else if (pricingpopulate.value("ipsass_cust_id").toInt() != -1)
     {
@@ -227,10 +230,9 @@ void pricingScheduleAssignment::populate()
     }
     else if (pricingpopulate.value("ipsass_shipto_id").toInt() != -1)
     {
-      int shiptoid = pricingpopulate.value("ipsass_shipto_id").toInt();
       _selectedCustomerShipto->setChecked(true);
-      _cust->setId(pricingpopulate.value("shipto_cust_id").toInt());
-      _customerShipto->setId(shiptoid);
+      _shiptoIdCust->setId(pricingpopulate.value("shipto_cust_id").toInt());
+      _shiptoId->setId(pricingpopulate.value("ipsass_shipto_id").toInt());
     }
     else if (pricingpopulate.value("ipsass_custtype_id").toInt() != -1)
     {
@@ -248,12 +250,12 @@ void pricingScheduleAssignment::populate()
 void pricingScheduleAssignment::sCustomerSelected()
 {
   XSqlQuery pricingCustomerSelected;
-  _customerShipto->clear();
+  _shiptoId->clear();
   pricingCustomerSelected.prepare("SELECT shipto_id, shipto_num"
             "  FROM shiptoinfo"
             " WHERE (shipto_cust_id=:cust_id); ");
-  pricingCustomerSelected.bindValue(":cust_id", _cust->id());
+  pricingCustomerSelected.bindValue(":cust_id", _shiptoIdCust->id());
   pricingCustomerSelected.exec();
-  _customerShipto->populate(pricingCustomerSelected);
+  _shiptoId->populate(pricingCustomerSelected);
 }
 

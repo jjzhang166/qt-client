@@ -22,7 +22,7 @@ commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::Wind
   XSqlQuery commentcommentType;
   setupUi(this);
 
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSaveClicked()));
   connect(_name, SIGNAL(editingFinished()), this, SLOT(sCheck()));
   connect(_add, SIGNAL(clicked()), this, SLOT(sAdd()));
   connect(_addAll, SIGNAL(clicked()), this, SLOT(sAddAll()));
@@ -105,40 +105,49 @@ enum SetResponse commentType::set(const ParameterList &pParams)
   return NoError;
 }
 
-void commentType::sSave()
+void commentType::sSaveClicked()
+{
+  if (sSave())
+    done(_cmnttypeid);
+}
+
+bool commentType::sSave()
 {
   XSqlQuery commentSave;
   if (_name->text().length() == 0)
   {
     QMessageBox::information( this, tr("Cannot Save Comment Type"),
-                              tr("You must enter a valid Comment Type before saving this Item Type.") );
+                             tr("You must enter a valid Comment Type before saving this Item Type.") );
     _name->setFocus();
-    return;
+    return false;
   }
-
+  
   if (_mode == cNew)
   {
     commentSave.prepare( "INSERT INTO cmnttype "
-               "( cmnttype_id, cmnttype_name, cmnttype_descrip, cmnttype_editable, cmnttype_order ) "
-               "VALUES "
-               "( :cmnttype_id, :cmnttype_name, :cmnttype_descrip, :cmnttype_editable, :cmnttype_order );" );
+                        "( cmnttype_id, cmnttype_name, cmnttype_descrip, cmnttype_editable, cmnttype_order ) "
+                        "VALUES "
+                        "( :cmnttype_id, :cmnttype_name, :cmnttype_descrip, :cmnttype_editable, :cmnttype_order );" );
   }
   else if (_mode == cEdit)
     commentSave.prepare( "UPDATE cmnttype "
-               "SET cmnttype_name=:cmnttype_name,"
-               "    cmnttype_descrip=:cmnttype_descrip,"
-               "    cmnttype_editable=:cmnttype_editable,"
-               "    cmnttype_order=:cmnttype_order "
-               "WHERE (cmnttype_id=:cmnttype_id);" );
-
+                        "SET cmnttype_name=:cmnttype_name,"
+                        "    cmnttype_descrip=:cmnttype_descrip,"
+                        "    cmnttype_editable=:cmnttype_editable,"
+                        "    cmnttype_order=:cmnttype_order "
+                        "WHERE (cmnttype_id=:cmnttype_id);" );
+  
   commentSave.bindValue(":cmnttype_id", _cmnttypeid);
   commentSave.bindValue(":cmnttype_name", _name->text());
   commentSave.bindValue(":cmnttype_descrip", _description->text());
   commentSave.bindValue(":cmnttype_editable", _editable->isChecked());
   commentSave.bindValue(":cmnttype_order", _order->value());
   commentSave.exec();
-
-  done(_cmnttypeid);
+  
+  if (_mode == cNew)
+    _mode = cEdit;
+  
+  return true;
 }
 
 void commentType::sCheck()
@@ -257,6 +266,9 @@ void commentType::sModuleSelected(const QString &pModule)
 
 void commentType::sAdd()
 {
+  if (!sSave())
+    return;
+  
   XSqlQuery commentAdd;
   commentAdd.prepare("SELECT grantCmnttypeSource(:cmnttype_id, :source_id) AS result;");
   commentAdd.bindValue(":cmnttype_id", _cmnttypeid);
@@ -274,6 +286,9 @@ void commentType::sAdd()
 
 void commentType::sAddAll()
 {
+  if (!sSave())
+    return;
+  
   XSqlQuery commentAddAll;
   commentAddAll.prepare("SELECT grantAllModuleCmnttypeSource(:cmnttype_id, :module) AS result;");
   commentAddAll.bindValue(":cmnttype_id", _cmnttypeid);

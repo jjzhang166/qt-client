@@ -175,8 +175,7 @@ void XComboBox::init()
   _data = new XComboBoxPrivate(this);
 
   setAllowNull(false);
-  setMaximumWidth(200);
-
+  setSizeAdjustPolicy(AdjustToContents);
   connect(this, SIGNAL(activated(int)), this, SLOT(sHandleNewIndex(int)));
 
 #ifdef Q_OS_MAC
@@ -1183,10 +1182,6 @@ void XComboBox::setType(XComboBoxTypes pType)
   }
 
   populate(query);
-
-  // Resize combobox _selection_view_ to fit retrieved contents
-  int _width = this->minimumSizeHint().width();
-  view()->setMinimumWidth(_width);
 
   switch (pType)
   {

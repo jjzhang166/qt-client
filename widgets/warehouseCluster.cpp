@@ -121,6 +121,8 @@ void WComboBox::findItemsites(int pItemID)
                "<? if exists(\"active\") ?>    AND (itemsite_active)  <? endif ?>"
                "<? if exists(\"soldIS\") ?>    AND (itemsite_sold)    <? endif ?>"
                "<? if exists(\"supplyIS\") ?>  AND ( (itemsite_wosupply) OR (itemsite_posupply) OR (itemsite_supply_itemsite_id IS NOT NULL) )  <? endif ?>"
+               "<? if exists(\"posupplyIS\") ?>    AND (itemsite_posupply)    <? endif ?>"
+               "<? if exists(\"wosupplyIS\") ?>    AND (itemsite_wosupply)    <? endif ?>"
                "<? if exists(\"inventory\") ?> AND (itemsite_controlmethod<>'N')  <? endif ?>"
                ") "
                "ORDER BY warehous_code;" );
@@ -161,6 +163,16 @@ void WComboBox::findItemsites(int pItemID)
         isp.append("supplyIS");
         break;
 
+      case POSupply:
+        isp.append("active");
+        isp.append("posupplyIS");
+        break;
+        
+      case WOSupply:
+        isp.append("active");
+        isp.append("wosupplyIS");
+        break;
+        
       case Transit:
         isp.append("transit");
         isp.append("active");

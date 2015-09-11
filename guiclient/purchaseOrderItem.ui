@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>744</width>
-    <height>876</height>
+    <height>881</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -104,6 +104,22 @@ to be bound by its terms.</comment>
         </spacer>
        </item>
        <item>
+        <widget class="XCheckBox" name="_orderRefresh">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Refresh the Order Items list immediately on save</string>
+         </property>
+         <property name="text">
+          <string>Refresh Order</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout">
          <item>
           <widget class="QPushButton" name="_save">
@@ -174,7 +190,7 @@ to be bound by its terms.</comment>
                  <item>
                   <widget class="WComboBox" name="_warehouse">
                    <property name="type">
-                    <enum>WComboBox::Supply</enum>
+                    <enum>WComboBox::POSupply</enum>
                    </property>
                   </widget>
                  </item>

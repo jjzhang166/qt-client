@@ -105,9 +105,7 @@ void unpostedPurchaseOrders::sEdit()
       break;
     }
   }
-  if (done)
-    omfgThis->sPurchaseOrdersUpdated(-1, true);
-  else
+  if (!done)
     QMessageBox::information(this, tr("Nothing To Edit"),
 			     tr("<p>There were no selected Purchase Orders "
 				"that you could edit."),

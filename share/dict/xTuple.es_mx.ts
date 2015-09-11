@@ -3971,10 +3971,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>OrderLineEdit</name>
     <message>
-        <source>This order is being edited in another window or by another user.  Please try again later.</source>
-        <translation type="unfinished">Esta orden está siendo editada en otra ventana o por otro usuario. Por favor intente más tarde.</translation>
-    </message>
-    <message>
         <source>Order</source>
         <translation>Pedido</translation>
     </message>
@@ -3989,10 +3985,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Orders</source>
         <translation>Pedidos</translation>
-    </message>
-    <message>
-        <source>Order locked</source>
-        <translation>Orden bloqueada</translation>
     </message>
     <message>
         <source>A System Error Occurred at %1::%2.</source>
@@ -4013,6 +4005,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Order %1 has an invalid status %2.</source>
         <translation>El Pedido %1 está en un estado %2 no válido.</translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -10873,10 +10869,6 @@ Si no, selecione NO y cambie la Cuenta Bancaria en el campo ASENTAR A</translati
     <message>
         <source>Item Characteristic</source>
         <translation>Característic del Producto</translation>
-    </message>
-    <message>
-        <source>You must enter a value before saving this Item Characteristic.</source>
-        <translation type="obsolete">Debe ingresar un valor antes de guardar esta Característica de Producto.</translation>
     </message>
     <message>
         <source>No Value Entered</source>
@@ -53440,10 +53432,6 @@ post Vouchers.</source>
 <context>
     <name>pricingScheduleAssignment</name>
     <message>
-        <source>Selected Customer Ship-To:</source>
-        <translation type="unfinished">Consignatario del Cliente Seleccionado:</translation>
-    </message>
-    <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation>No se puede Guardar la Asignación de Lista de Precios</translation>
     </message>
@@ -53464,24 +53452,28 @@ post Vouchers.</source>
         <translation>Debe seleccionar una Lista de Precios.</translation>
     </message>
     <message>
-        <source>Selected Customer:</source>
-        <translation>Cliente Seleccionado:</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern:</source>
-        <translation>Tipo Cte Comienza con:</translation>
-    </message>
-    <message>
-        <source>Selected Customer Type:</source>
-        <translation>Tipo Cliente Seleccionado:</translation>
-    </message>
-    <message>
         <source>Pricing Schedule:</source>
         <translation>Lista de Precios:</translation>
     </message>
     <message>
-        <source>Selected Cust. Ship-To Pattern:</source>
-        <translation>Consig Cte Selecc Comienza con:</translation>
+        <source>Customer Type Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Ship-To</source>
+        <translation type="unfinished">Consignatario</translation>
+    </message>
+    <message>
+        <source>Customer Ship-To Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Type</source>
+        <translation type="unfinished">Tipo de Cliente</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Cliente</translation>
     </message>
 </context>
 <context>
@@ -57299,6 +57291,14 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>Cannot Save Purchase Order Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh the Order Items list immediately on save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64938,6 +64938,10 @@ de la Orden de Trabajo con Id #%1 %2</translation>
     <message>
         <source>Checking Privileges</source>
         <translation type="unfinished">Validando Privilegios</translation>
+    </message>
+    <message>
+        <source>Applying all Credits</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

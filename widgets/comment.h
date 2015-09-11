@@ -50,6 +50,9 @@ class XTUPLEWIDGETS_EXPORT comment : public QDialog
     virtual void sNextComment();
     virtual void sPrevComment();
 
+  protected slots:
+    virtual void saveSize();
+
   private:
     XSqlQuery _query;
     QList <QVariant> _commentIDList;

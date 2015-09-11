@@ -89,6 +89,9 @@ class Preferences;
 class Privileges;
 class Metricsenc;
 
+#ifdef Q_OS_MAC
+  extern void qt_mac_set_dock_menu(QMenu *menu);
+#endif
 /** @addtogroup globals Global Variables and Functions
 
     @brief
@@ -570,6 +573,10 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
                     availableGeometry.top()));
     move(pos);
   }
+  #ifdef Q_OS_MAC
+    _menu = new QMenu(this);
+    updateMacDockMenu(this);
+  #endif
 
   setDocumentMode(true);
 
@@ -1093,16 +1100,16 @@ void GUIClient::sSystemMessageAdded()
             ParameterList params;
             params.append("mode", "acknowledge");
 
-            systemMessage newdlg(this, "", true);
-            newdlg.set(params);
+            systemMessage *newdlg = new systemMessage();
+            newdlg->set(params);
 
             do
             {
               ParameterList params;
               params.append("msguser_id", msg.value("msguser_id").toInt());
 
-              newdlg.set(params);
-              newdlg.exec();
+              newdlg->set(params);
+              omfgThis->handleNewWindow(newdlg);
             }
             while (msg.next());
           }
@@ -2058,6 +2065,11 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
 {
   // TODO:  replace this function with a centralized openWindow function
   // used by toolbox, guiclient interface, and core windows
+
+  #ifdef Q_OS_MAC
+    	updateMacDockMenu(w);
+  #endif
+  
   if(!w->isModal())
   {
     if (w->parentWidget())
@@ -2677,3 +2689,30 @@ void GUIClient::sEmitNotifyHeard(const QString &note)
     else if(note == "messagePosted")
         emit messageNotify();
 }
+#ifdef Q_OS_MAC
+    void GUIClient::updateMacDockMenu(QWidget *w)
+    {
+        QAction *action = new QAction(w);
+        action->setText(w->windowTitle());
+
+        _menu->addAction(action);
+
+        qt_mac_set_dock_menu(_menu);
+
+        connect(action, SIGNAL(triggered()), w, SLOT(hide()));
+        connect(action, SIGNAL(triggered()), w, SLOT(show()));
+    }
+
+    void GUIClient::removeFromMacDockMenu(QWidget *w)
+    {
+        foreach (QAction *action, _menu->actions())
+        {
+            if(action->text().compare(w->windowTitle()) == 0)
+            {
+                _menu->removeAction(action);
+            }
+        }
+
+        qt_mac_set_dock_menu(_menu);
+    }
+#endif
