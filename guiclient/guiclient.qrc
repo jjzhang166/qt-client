@@ -49,7 +49,7 @@
         <file>images/dspRegister.png</file>
         <file>images/xchange.png</file>
         <file>images/community.png</file>
-        <file>images/icon128x32.png</file>
+        <file>images/icon128x128.png</file>
         <file>images/clear.png</file>
     </qresource>
 </RCC>

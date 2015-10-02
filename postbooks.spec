@@ -84,7 +84,7 @@ cp -dp lib/lib*.so* %{buildroot}%{_libdir}
 find %{buildroot}%{_libdir} -name 'lib*.so*' -exec chmod 0755 {} \;
 mkdir -p %{buildroot}%{_includedir}/xtuple
 find common -name '*.h' -exec install -m 0644 -D {} %{buildroot}%{_includedir}/xtuple/{} \;
-install -m 0644 -D guiclient/images/icon128x32.png %{buildroot}%{_datadir}/postbooks/images/icon128x32.png
+install -m 0644 -D guiclient/images/icon128x128.png %{buildroot}%{_datadir}/postbooks/images/icon128x128.png
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications *.desktop
 install -m 0644 -D postbooks.appdata.xml %{buildroot}%{_datadir}/appdata/postbooks.appdata.xml
@@ -97,7 +97,7 @@ install -m 0644 -D postbooks.appdata.xml %{buildroot}%{_datadir}/appdata/postboo
 %license LICENSE.txt
 %dir %{_datadir}/postbooks
 %dir %{_datadir}/postbooks/images
-%{_datadir}/postbooks/images/icon128x32.png
+%{_datadir}/postbooks/images/icon128x128.png
 %{_bindir}/*
 %{_datadir}/applications/*.desktop
 %{_datadir}/appdata/postbooks.appdata.xml

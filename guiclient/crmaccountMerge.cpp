@@ -43,7 +43,7 @@ crmaccountMerge::crmaccountMerge(QWidget* parent, const char* name, Qt::WindowFl
   if (name)
     setObjectName(name);
   _data = new crmaccountMergePrivate(this);
-  QPixmap *pixmap = new QPixmap(":/images/icon128x32.png");
+  QPixmap *pixmap = new QPixmap(":/images/icon128x128.png");
   if (pixmap)
   {
 #ifdef Q_OS_MAC

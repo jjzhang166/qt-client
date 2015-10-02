@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=PostBooks
-Icon=/usr/share/postbooks/images/icon128x32.png
+Icon=/usr/share/postbooks/images/icon128x128.png
 Exec=postbooks
 Terminal=false
 Categories=Office;
