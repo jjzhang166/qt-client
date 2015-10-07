@@ -46950,11 +46950,11 @@ Vous devez réaffecter les Paramètres de Lieu pour ces Utilisateurs avant que v
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;The database server is at version %1 but xTuple ERP only supports %2 to %3.&lt;/p&gt;&lt;p&gt;Continue anyway?&lt;/p&gt;</source>
+        <source>Invalid Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid Database</source>
+        <source>&lt;p&gt;The database server is at version %1 but xTuple ERP only supports from %2 up to but not including %3.&lt;/p&gt;&lt;p&gt;Continue anyway?&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -345,24 +345,24 @@ void login2::sLogin()
 
   if (db.isOpen())
   {
-    QString earliest = "8.4.0",
-            latest   = "9.4.0";
-    XSqlQuery checkVersion;
+    QString earliest = "9.1.0",
+            latest   = "9.5.0";
+    XSqlQuery checkVersion;   // include earliest in the range but exclude latest
     checkVersion.prepare("SELECT compareVersion(:earliest) <= 0"
-                         "   AND compareVersion(:latest)   >= 0 AS ok,"
+                         "   AND compareVersion(:latest)   > 0 AS ok,"
                          "       version() AS version;");
     checkVersion.bindValue(":earliest", earliest);
     checkVersion.bindValue(":latest",   latest);
     checkVersion.exec();
     if (checkVersion.first() && ! checkVersion.value("ok").toBool() &&
         QMessageBox::question(this, tr("Unsupported Database Server Version"),
-                              tr("<p>The database server is at version %1 "
-                                 "but xTuple ERP only supports %2 to %3.</p>"
-                                 "<p>Continue anyway?</p>")
+                              tr("<p>The database server is at version %1 but "
+                                 "xTuple ERP only supports from %2 up to but "
+                                 "not including %3.</p><p>Continue anyway?</p>")
                                 .arg(checkVersion.value("version").toString(),
                                      earliest, latest),
-                              QMessageBox::Yes,
-                              QMessageBox::No | QMessageBox::Default) == QMessageBox::No) {
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::No) == QMessageBox::No) {
       if (_splash) {
         _splash->hide();
       }

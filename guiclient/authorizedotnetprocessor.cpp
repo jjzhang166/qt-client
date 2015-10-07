@@ -40,7 +40,7 @@ AuthorizeDotNetProcessor::AuthorizeDotNetProcessor() : CreditCardProcessor()
 {
   _company = "Authorize.Net";
   _defaultLivePort   = 443;
-  _defaultLiveServer = "https://secure.authorize.net/gateway/transact.dll";
+  _defaultLiveServer = "https://secure2.authorize.net/gateway/transact.dll";
   _defaultTestPort   = 443;
   _defaultTestServer = "https://test.authorize.net/gateway/transact.dll";
 

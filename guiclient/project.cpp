@@ -36,7 +36,8 @@
 const char *_projectStatuses[] = { "P", "O", "C" };
 
 project::project(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : XDialog(parent, name, modal, fl)
+    : XDialog(parent, name, modal, fl),
+      _prjid(-1)
 {
   setupUi(this);
 
@@ -116,8 +117,6 @@ project::project(QWidget* parent, const char* name, bool modal, Qt::WindowFlags 
   printMenu->addAction(tr("Print Tasks"), this, SLOT(sPrintTasks()));
   printMenu->addAction(tr("Print Orders"), this, SLOT(sPrintOrders()));
   _print->setMenu(printMenu);
-
-  populate();
 }
 
 project::~project()
