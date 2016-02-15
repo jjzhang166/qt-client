@@ -370,7 +370,7 @@ void issueLineToShipping::populate()
 		"       coitem_qtyord AS qtyordered,"
     "       coitem_qtyshipped AS qtyshipped,"
     "       coitem_qtyreturned AS qtyreturned,"
-    "       coitem_qtyreserved AS qtyreserved,"
+    "       (coitem_qtyreserved / coitem_qty_invuomratio) AS qtyreserved,"
 		"       noNeg(coitem_qtyord - coitem_qtyshipped +"
 		"             coitem_qtyreturned) AS balance "
         "FROM cohead, coitem, itemsite, item, whsinfo, uom "

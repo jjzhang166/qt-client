@@ -84,7 +84,7 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _miscDistrib->addColumn(tr("Amount"),     _moneyColumn, Qt::AlignRight,  true,  "vodist_amount" );
 
   _charass->setType("VCH");
-  
+
   _vendid = -1;
 
   setWindowModified(false);
@@ -592,12 +592,14 @@ void voucher::sFillList()
                "         FROM recv"
                "         WHERE ( (recv_posted)"
                "           AND (recv_invoiced)"
+               "           AND (recv_order_type='PO')"
                "           AND (recv_orderitem_id=poitem_id) ) ) AS qtyinvoiced,"
                "       ( SELECT COALESCE(SUM(recv_qty), 0)"
                "         FROM recv"
                "         WHERE ( (recv_posted)"
                "           AND (NOT recv_invoiced)"
                "           AND (recv_vohead_id IS NULL)"
+               "           AND (recv_order_type='PO')"
                "           AND (recv_orderitem_id=poitem_id) ) ) AS qtyreceived,"
                "       ( SELECT COALESCE(SUM(poreject_qty), 0)"
                "         FROM poreject"

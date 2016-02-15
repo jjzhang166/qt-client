@@ -18,6 +18,7 @@
     @brief   The implementation of Authorize.Net-specific credit card handling
  */
 
+#include <QDebug>
 #include <QSqlError>
 
 #include <currcluster.h>
@@ -550,10 +551,8 @@ int AuthorizeDotNetProcessor::fieldValue(const QStringList plist, const int pind
 int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int pccardid, const QString &ptype, const double pamount, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, ParameterList &pparams)
 {
   if (DEBUG)
-    qDebug("AN::handleResponse(%s, %d, %s, %f, %d, %s, %d, pparams)",
-	   presponse.toLatin1().data(), pccardid,
-	   ptype.toLatin1().data(), pamount, pcurrid,
-	   preforder.toLatin1().data(), pccpayid);
+    qDebug() << "AN::handleResponse(" << presponse << pccardid << ptype << pamount
+             << pcurrid << preforder << pccpayid << "pparams)";
 
   // if we got an error msg very early on
   if (presponse.startsWith("<HTML>"))
@@ -579,8 +578,10 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   QString r_tax;
   QString r_pantrunc;
   QString r_cardtype;
+  QString r_hash;
 
   QString status;
+  bool    isCP; // looks like an (unsupported) card-present transaction
 
   // TODO: explore using encap here and code from CSV Import to properly split
 
@@ -595,6 +596,16 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   int returnValue = fieldValue(responseFields, 1, r_response);
   if (returnValue < 0)
     return returnValue;
+
+  if (! QRegExp("[1-4]").exactMatch(r_response) &&
+      QRegExp("\\d+\\.\\d+").exactMatch(r_response))
+  {
+    qDebug() << "Looks like A.N returned a unsupported Card-Present response:" << r_response;
+    isCP = true;
+    returnValue = fieldValue(responseFields, 2, r_response);
+    if (returnValue < 0)
+      return returnValue;
+  }
 
   if (r_response.toInt() == 1)
     r_approved = "APPROVED";
@@ -620,38 +631,44 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   returnValue = fieldValue(responseFields, 6, r_avs);	 	// avs result
   if (returnValue < 0)
     return returnValue;
+
+  if (isCP)
+  {
+    returnValue = fieldValue(responseFields, 8, r_ordernum);	// transaction id
+    if (returnValue < 0)
+      return returnValue;
+
+    returnValue = fieldValue(responseFields, 7, r_cvv); // ccv response code
+    if (returnValue < 0 && ptype == "CP") // may not get cvv on preauth capture
+      returnValue = 0;
+    else if (returnValue < 0)
+      return returnValue;
+
+    returnValue = fieldValue(responseFields, 9, r_hash);	// md5 hash
+
+  } else {
   returnValue = fieldValue(responseFields, 7, r_ordernum);	// transaction id
 
   if (returnValue < 0)
     return returnValue;
 
-  // fieldValue(responseFields, 8-10);	// echo invoice_number description amount
-  // fieldValue(responseFields, 11-13);	// echo method transtype cust_id
-  // fieldValue(responseFields, 14-24);	// echo name, company, and address info
-  // fieldValue(responseFields, 25-32);	// echo ship_to fields
-
   returnValue = fieldValue(responseFields, 33, r_tax);		// echo x_tax
   if (returnValue < 0)
     return returnValue;
-
-  // fieldValue(responseFields, 34);				// echo x_duty
 
   returnValue = fieldValue(responseFields, 35, r_shipping);	// echo x_freight
   if (returnValue < 0)
     return returnValue;
 
-  // fieldValue(responseFields, 36);		// echo x_tax_exempt
-  // fieldValue(responseFields, 37);		// echo x_po_num
-  // fieldValue(responseFields, 38);		// MD5 hash
+  returnValue = fieldValue(responseFields, 38, r_hash);	// md5 hash
+  if (returnValue < 0)
+    return returnValue;
 
   returnValue = fieldValue(responseFields, 39, r_cvv); // ccv response code
   if (returnValue < 0 && ptype == "CP") // may not get cvv on preauth capture
     returnValue = 0;
   else if (returnValue < 0)
     return returnValue;
-
-  // fieldValue(responseFields, 40);		// cavv response code
-  // fieldValue(responseFields, 41-50);		// reserved for future use
 
   returnValue = fieldValue(responseFields, 51, r_pantrunc);
   if (returnValue < 0)
@@ -661,17 +678,13 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   returnValue = fieldValue(responseFields, 52, r_cardtype);
   if (returnValue < 0)
     return returnValue;
+  }
+
   if (r_cardtype == "Discover" || r_cardtype == "MasterCard"
       || r_cardtype == "Visa"  || r_cardtype == "American Express")
     r_cardtype.remove(1, r_cardtype.length());
   else
     r_cardtype = "O";
-
-  // fieldValue(responseFields, 53);            // split tender id
-  // fieldValue(responseFields, 54);            // original authorization amt
-  // fieldValue(responseFields, 55);            // debit/prepaid card balance
-  // fieldValue(responseFields, 56-68);		// reserved for future use
-  // fieldValue(responseFields, 69+);		// echo of merchant-defined fields
 
   /* treat heldforreview as approved because the AIM doc says response
      reason codes 252 and 253 are both approved but being reviewed.
@@ -759,9 +772,6 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   if (returnValue == 0 && _metrics->boolean("CCANMD5HashSetOnGateway"))
   {
     QString expected_hash;
-    QString r_hash;
-
-    returnValue = fieldValue(responseFields, 38, r_hash);	// md5 hash
     XSqlQuery anq;
     anq.prepare("SELECT UPPER(MD5(:inputstr)) AS expected;");
     anq.bindValue(":inputstr", _metricsenc->value("CCANMD5Hash") +

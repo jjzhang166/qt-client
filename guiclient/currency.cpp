@@ -90,6 +90,7 @@ enum SetResponse currency::set(const ParameterList &pParams)
     {
       _mode = cEdit;
       _currBase->setEnabled(! isBaseSet());
+      _select->setEnabled(! isBaseSet());
     }
     else if (param.toString() == "view")
     {

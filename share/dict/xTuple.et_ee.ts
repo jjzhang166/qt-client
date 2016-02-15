@@ -3457,10 +3457,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;You have been disconnected from the database server.  This is usually caused by an interruption in your network.  Please exit the application and restart.&lt;br&gt;&lt;pre&gt;%1&lt;/pre&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Before you can run a browser you must set the environment variable BROWSER to point to the browser executable.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3510,6 +3506,27 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     </message>
     <message>
         <source>%1 %2 - %3 on %4:%5/%6 AS %7</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It appears that the you&apos;ve been disconnected from thedatabase. Select Yes to try to reconnect or No to terminate the application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Relogging to the Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A System Error occurred at %1::%2:
+%3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5999,6 +6016,37 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Period Length:</source>
         <translation>Perioodi pikkus:</translation>
+    </message>
+</context>
+<context>
+    <name>account1099</name>
+    <message>
+        <source>Accounts for 1099 Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Account List for 1099 Inclusion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query</source>
+        <translation type="unfinished">Päring</translation>
+    </message>
+    <message>
+        <source>Add MISC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add RENT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove 1099</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14050,6 +14098,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Show all schemas</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>configureWF</name>
+    <message>
+        <source>Configure Workflow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Workflow from the Desktop client</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -33427,6 +33486,69 @@ Total</source>
     </message>
 </context>
 <context>
+    <name>dspTax1099</name>
+    <message>
+        <source>Info for 1099&apos;s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Detail 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Detail All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vendor Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query</source>
+        <translation type="unfinished">Päring</translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished">Prindi</translation>
+    </message>
+    <message>
+        <source>Print 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print 1096</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Accounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Vendors</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>dspTaxHistory</name>
     <message>
         <source>Summarize by</source>
@@ -41898,6 +42020,10 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>Owner</source>
         <translation>Omanik</translation>
     </message>
+    <message>
+        <source>Priority Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>invoice</name>
@@ -45106,6 +45232,15 @@ You must delete these assignments before you may delete the selected Pricing Sch
     </message>
     <message>
         <source>This Item Site has a quantity on hand and Cost Category cannot be changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Lot/Serial?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Item Site has not been marked as lot/serial enabled, yet other sites for item %1 are.
+ Do you wish to continue and save the Item Site? </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -53491,6 +53626,17 @@ post Vouchers.</source>
     </message>
 </context>
 <context>
+    <name>printApOpenItem</name>
+    <message>
+        <source>Print A/P Open Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A/P Open Item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>printArOpenItem</name>
     <message>
         <source>Print A/R Open Item</source>
@@ -54764,6 +54910,17 @@ post Vouchers.</source>
     <message>
         <source>Return</source>
         <translation type="unfinished">Kasum</translation>
+    </message>
+</context>
+<context>
+    <name>printToForm</name>
+    <message>
+        <source>Print Transfer Order Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report Name:</source>
+        <translation type="unfinished">Aruande nimi:</translation>
     </message>
 </context>
 <context>
@@ -58449,6 +58606,10 @@ Please correct this before continuing.</source>
     </message>
     <message>
         <source>New Registration Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Registration Key</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -66656,6 +66817,21 @@ Do you wish to convert %1 %2 at the current rate?</source>
     </message>
     <message>
         <source>Abbreviation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>statementByCustGroup</name>
+    <message>
+        <source>Print Statement by Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Group:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>As At:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

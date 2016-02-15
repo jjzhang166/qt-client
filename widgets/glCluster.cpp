@@ -312,14 +312,14 @@ void GLCluster::setId(const int p)
     if (_x_metrics->boolean("EnableProjectAccounting"))
     {
       XSqlQuery qry;
-      qry.prepare("SELECT accnt_id, prjaccnt_prj_id "
+      qry.prepare("SELECT prjaccnt_accnt_id, prjaccnt_prj_id "
                   "FROM xtprjaccnt.prjaccnt "
                   "WHERE (accnt_id=:accnt_id); ");
       qry.bindValue(":accnt_id", p);
       qry.exec();
       if (qry.first())
       {
-        id = qry.value("accnt_id").toInt();
+        id = qry.value("prjaccnt_accnt_id").toInt();
         if (qry.value("prjaccnt_prj_id").toInt() != -1 &&
             !_projectVisible)
           setProjectVisible(true);

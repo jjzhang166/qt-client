@@ -10,7 +10,7 @@
 
 #include "registrationKeyDialog.h"
 #include "xtupleproductkey.h"
-
+#include <QCloseEvent>
 #include <QVariant>
 
 registrationKeyDialog::registrationKeyDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
@@ -34,11 +34,25 @@ void registrationKeyDialog::languageChange()
   retranslateUi(this);
 }
 
+enum SetResponse registrationKeyDialog::set(const ParameterList &pParams)
+{
+  QVariant param;
+  bool     valid;
+
+  param = pParams.value("invalid", &valid);
+  if (valid)
+    setWindowTitle(tr("Invalid Registration Key"));
+
+  return NoError;
+}
+
 void registrationKeyDialog::sCheckKey()
 {
   XTupleProductKey pkey(_key->text());
   if(pkey.valid() && pkey.expiration() > QDate::currentDate())
     _select->setEnabled(true);
+  else
+    _select->setEnabled(false);
 }
 
 void registrationKeyDialog::sSelect()
@@ -47,7 +61,7 @@ void registrationKeyDialog::sSelect()
   if(pk.valid())
   {
     XSqlQuery keyq;
-    keyq.prepare("UPDATE metric SET metric_value=:key WHERE metric_name='RegistrationKey';");
+    keyq.prepare("UPDATE metric SET metric_value=UPPER(:key) WHERE metric_name='RegistrationKey';");
     keyq.bindValue(":key", _key->text());
     keyq.exec();
   }
@@ -59,3 +73,7 @@ void registrationKeyDialog::sClose()
   done(-1);
 }
 
+void registrationKeyDialog::closeEvent(QCloseEvent *pEvent)
+{
+  done(-1);
+}

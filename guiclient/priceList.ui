@@ -125,7 +125,11 @@ to be bound by its terms.</comment>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="XLabel" name="_listCost"/>
+      <widget class="XLabel" name="_listCost">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

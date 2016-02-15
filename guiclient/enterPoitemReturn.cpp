@@ -40,9 +40,6 @@ enterPoitemReturn::enterPoitemReturn(QWidget* parent, const char* name, bool mod
   _receipts->addColumn(tr("G/L Post Date"),   _dateColumn,	Qt::AlignCenter, true, "recv_gldistdate");
   _receipts->addColumn(tr("Returnable Qty."), 100,		Qt::AlignRight,  true, "returnable");
   _receipts->addColumn(tr("Purchase Cost"),   -1,		Qt::AlignRight,  true, "recv_purchcost");
-  _receiptsLit->hide();
-  _receiptsLine->hide();
-  _receipts->hide();
 }
 
 enterPoitemReturn::~enterPoitemReturn()
@@ -81,23 +78,6 @@ enum SetResponse enterPoitemReturn::set(const ParameterList &pParams)
     }
     _receipts->clear();
     _receipts->populate(enteret);
-
-    enteret.prepare(	"SELECT CASE WHEN itemsite_costmethod='A' THEN true ELSE false END AS costmethod_average "
-                "FROM poitem LEFT OUTER JOIN itemsite ON (poitem_itemsite_id = itemsite_id) "
-                "WHERE poitem_id = :poitem_id;");
-    enteret.bindValue(":poitem_id", _poitemid);
-    enteret.exec();
-    if (enteret.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, enteret.lastError().databaseText(), __FILE__, __LINE__);
-      return UndefinedError;
-    }
-    if (enteret.first())
-    {
-      _receipts->setVisible(enteret.value("costmethod_average").toBool() && _metrics->boolean("AllowReceiptCostOverride"));
-      _receiptsLit->setVisible(enteret.value("costmethod_average").toBool() && _metrics->boolean("AllowReceiptCostOverride"));
-      _receiptsLine->setVisible(enteret.value("costmethod_average").toBool() && _metrics->boolean("AllowReceiptCostOverride"));
-    }
 
     enteret.prepare( "SELECT pohead_number, poitem_linenumber,"
                "       COALESCE(itemsite_id, -1) AS itemsiteid,"

@@ -24,12 +24,16 @@ public:
     ~registrationKeyDialog();
 
 public slots:
+    virtual enum SetResponse set(const ParameterList & pParams );
     virtual void sCheckKey();
     virtual void sSelect();
     virtual void sClose();
 
 protected slots:
     virtual void languageChange();
+
+protected:
+    virtual void closeEvent(QCloseEvent*);
 
 private:
     int _bankaccntid;

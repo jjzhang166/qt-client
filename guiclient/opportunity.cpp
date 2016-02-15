@@ -122,10 +122,6 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
     if (param.toString() == "new")
     {
       _mode = cNew;
-
-      _comments->setReadOnly(true);
-      _documents->setReadOnly(true);
-      _charass->setReadOnly(true);
       
       param = pParams.value("crmacct_id", &valid);
       if (valid)
@@ -138,6 +134,8 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
       {
         _opheadid = opportunityet.value("result").toInt();
         _charass->setId(_opheadid);
+        _documents->setId(_opheadid);
+        _comments->setId(_opheadid);
       }
       else if(opportunityet.lastError().type() != QSqlError::NoError)
       {

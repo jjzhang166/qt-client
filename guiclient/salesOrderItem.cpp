@@ -136,6 +136,7 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
 
   _taxtype->setEnabled(_privileges->check("OverrideTax"));
 
+  _availability->setRootIsDecorated(true);
   _availability->addColumn(tr("#"),             _seqColumn, Qt::AlignCenter,true, "seqnumber");
   _availability->addColumn(tr("Item Number"),  _itemColumn, Qt::AlignLeft,  true, "item_number");
   _availability->addColumn(tr("Description"),           -1, Qt::AlignLeft,  true, "item_descrip");
@@ -145,6 +146,8 @@ salesOrderItem::salesOrderItem(QWidget *parent, const char *name, Qt::WindowFlag
   _availability->addColumn(tr("On Order"),      _qtyColumn, Qt::AlignRight, true, "ordered");
   _availability->addColumn(tr("Available QOH"), _qtyColumn, Qt::AlignRight, true, "availableqoh");
   _availability->addColumn(tr("Availability"),  _qtyColumn, Qt::AlignRight, true, "totalavail");
+  _availability->setIndentation(10);
+  _availability->setPopulateLinear();
 
   _itemsrcp->addColumn(tr("Vendor #"),    _itemColumn, Qt::AlignLeft, true, "vend_number");
   _itemsrcp->addColumn(tr("Vendor Name"),          -1, Qt::AlignLeft, true, "vend_name");
@@ -454,7 +457,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       _mode = cNew;
 
       _save->setEnabled(false);
-      _next->setText(tr("New"));
+      _next->setEnabled(false);
       _comments->setType(Comments::SalesOrderItem);
       _comments->setReadOnly(false);
       _item->setReadOnly(false);
@@ -501,7 +504,7 @@ enum SetResponse salesOrderItem:: set(const ParameterList &pParams)
       setWindowTitle(tr("Quote Item"));
 
       _save->setEnabled(false);
-      _next->setText(tr("New"));
+      _next->setEnabled(false);
       _comments->setType(Comments::QuoteItem);
       _comments->setReadOnly(true);
       _cancel->hide();
@@ -2079,39 +2082,17 @@ void salesOrderItem::sDetermineAvailability( bool p )
   if (_item->isValid() && _warehouse->isValid() && _scheduledDate->isValid() && _showAvailability->isChecked())
   {
     XSqlQuery availability;
-    QString sql = "SELECT itemsite_id,"
-                  "       availableqoh,"
-                  "       allocated,"
-                  "       (noNeg(availableqoh - allocated)) AS unallocated,"
-                  "       ordered,"
-                  "       (availableqoh - allocated + ordered) AS available,"
-                  "       reserved,"
-                  "       reservable,"
-                  "       itemsite_leadtime "
-                  "FROM ( SELECT itemsite_id, qtyAvailable(itemsite_id) AS availableqoh,"
-                  "              qtyAllocated(itemsite_id, DATE(<? value('date') ?>)) AS allocated,"
-                  "              qtyOrdered(itemsite_id, DATE(<? value('date') ?>)) AS ordered, "
-                  "<? if exists('includeReservations') ?>"
-                  "              COALESCE((SELECT coitem_qtyreserved"
-                  "                        FROM coitem"
-                  "                        WHERE coitem_id=<? value('soitem_id') ?>), 0.0) AS reserved,"
-                  "              (qtyAvailable(itemsite_id) - qtyreserved(itemsite_id)) AS reservable,"
-                  "<? else ?>"
-                  "              0.0 AS reserved,"
-                  "              0.0 AS reservable,"
-                  "<? endif ?>"
-                  "              itemsite_leadtime "
-                  "       FROM itemsite, item "
-                  "       WHERE ((itemsite_item_id=item_id)"
-                  "        AND (item_id=<? value('item_id') ?>)"
-                  "        AND (itemsite_warehous_id=<? value('warehous_id') ?>)) ) AS data;";
+    MetaSQLQuery mql = mqlLoad("salesOrderItem", "avail");
     ParameterList params;
     params.append("date", _scheduledDate->date());
     params.append("item_id", _item->id());
     params.append("warehous_id", _warehouse->id());
     params.append("soitem_id", _soitemid);
     params.append("includeReservations", (ISORDER(_mode) && _metrics->boolean("EnableSOReservations")));
-    MetaSQLQuery mql(sql);
+
+    params.append("qty", _availabilityQtyOrdered);
+    params.append("origQtyOrd", _originalQtyOrd);
+    
     availability = mql.toQuery(params);
     if (availability.first())
     {
@@ -2133,81 +2114,31 @@ void salesOrderItem::sDetermineAvailability( bool p )
       {
         if (_showIndented->isChecked())
         {
-          QString sql(
-            "SELECT itemsite_id, reorderlevel,"
-            "       bomdata_bomwork_level,"
-            "       bomdata_bomwork_id,"
-            "       bomdata_bomwork_parent_id,"
-            "       bomdata_bomwork_seqnumber AS seqnumber,"
-            "       bomdata_item_number AS item_number,"
-            "       bomdata_itemdescription AS item_descrip,"
-            "       bomdata_uom_name AS uom_name,"
-            "       pendalloc,"
-            "       ordered,"
-            "       availableqoh, "
-            "       (totalalloc + pendalloc) AS totalalloc,"
-            "       (availableqoh + ordered - (totalalloc + pendalloc)) AS totalavail,"
-            "       'qty' AS pendalloc_xtnumericrole,"
-            "       'qty' AS ordered_xtnumericrole,"
-            "       'qty' AS availableqoh_xtnumericrole,"
-            "       'qty' AS totalalloc_xtnumericrole,"
-            "       'qty' AS totalavail_xtnumericrole,"
-            "       CASE WHEN availableqoh < pendalloc THEN 'error'"
-            "            WHEN (availableqoh + ordered - (totalalloc + pendalloc)) < 0  THEN 'error'"
-            "            WHEN (availableqoh + ordered - (totalalloc + pendalloc)) < reorderlevel THEN 'warning'"
-            "       END AS qtforegroundrole,"
-            "       bomdata_bomwork_level - 1 AS xtindentrole "
-            "  FROM ( SELECT itemsite_id,"
-            "                CASE WHEN(itemsite_useparams)"
-            "                     THEN itemsite_reorderlevel"
-            "                     ELSE 0.0"
-            "                     END AS reorderlevel,"
-            "                ib.*, "
-            "                ((bomdata_qtyfxd::NUMERIC + bomdata_qtyper::NUMERIC * :qty) * (1 + bomdata_scrap::NUMERIC))"
-            "                                       AS pendalloc,"
-            "                (qtyAllocated(itemsite_id, DATE(:schedDate)) -"
-            "                             ((bomdata_qtyfxd::NUMERIC + bomdata_qtyper::NUMERIC * :origQtyOrd) *"
-            "                              (1 + bomdata_scrap::NUMERIC)))"
-            "                                       AS totalalloc,"
-            "                qtyAvailable(itemsite_id) AS availableqoh,"
-            "                qtyOrdered(itemsite_id, DATE(:schedDate))"
-            "                                                AS ordered"
-            "           FROM indentedBOM(:item_id, "
-            "                            getActiveRevId('BOM', :item_id),"
-            "                            0,0) ib LEFT OUTER JOIN"
-            "                itemsite ON ((itemsite_item_id=bomdata_item_id)"
-            "                         AND (itemsite_warehous_id=:warehous_id))"
-            "          WHERE (bomdata_item_id > 0)");
+          MetaSQLQuery mql = mqlLoad("salesOrderItem", "indentedbomavail");
 
           if (_item->isConfigured())  // For configured items limit to bomitems associated with selected characteristic values
           {
             QModelIndex charidx;
             QModelIndex valueidx;
-
-            sql +=  "        AND ((bomdata_char_id IS NULL) ";
-
+            QStringList clauses;
+            
+            clauses.append("(bomdata_char_id IS NULL)");
+            
             for (int i = 0; i < _itemchar->rowCount(); i++)
             {
               charidx  = _itemchar->index(i, CHAR_ID);
               valueidx = _itemchar->index(i, CHAR_VALUE);
-              sql     += QString(" OR ((bomdata_char_id=%1) AND (bomdata_value='%2'))")
-                         .arg(_itemchar->data(charidx, Qt::UserRole).toString())
-                         .arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''"));
+              clauses.append(QString("((bomdata_char_id=%1) AND (bomdata_value='%2'))")
+                             .arg(_itemchar->data(charidx, Qt::UserRole).toString())
+                             .arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''")));
             }
-
-            sql +=  " ) ";
+            if (clauses.count())
+              params.append("charClause", clauses.join(" OR ").prepend(" AND (").append(")"));
           }
+          else
+            params.append("charClause", "");
 
-          sql += "       ) AS data "
-                 "ORDER BY bomworkSequence(bomdata_bomwork_id);";
-
-          availability.prepare(sql);
-          availability.bindValue(":item_id",        _item->id());
-          availability.bindValue(":warehous_id",    _warehouse->id());
-          availability.bindValue(":qty",            _availabilityQtyOrdered);
-          availability.bindValue(":schedDate",      _scheduledDate->date());
-          availability.bindValue(":origQtyOrd",     _originalQtyOrd);
-          availability.exec();
+          availability = mql.toQuery(params);
           _availability->populate(availability);
           if (availability.lastError().type() != QSqlError::NoError)
           {
@@ -2218,68 +2149,31 @@ void salesOrderItem::sDetermineAvailability( bool p )
         }
         else
         {
-          int     itemsiteid = availability.value("itemsite_id").toInt();
-          QString sql("SELECT itemsiteid, reorderlevel,"
-                      "       bomitem_seqnumber AS seqnumber, item_number, "
-                      "       item_descrip, uom_name,"
-                      "       pendalloc, "
-                      "       ordered, "
-                      "       availableqoh, "
-                      "       (totalalloc + pendalloc) AS totalalloc,"
-                      "       (availableqoh + ordered - (totalalloc + pendalloc)) AS totalavail,"
-                      "       'qty' AS pendalloc_xtnumericrole,"
-                      "       'qty' AS ordered_xtnumericrole,"
-                      "       'qty' AS availableqoh_xtnumericrole,"
-                      "       'qty' AS totalalloc_xtnumericrole,"
-                      "       'qty' AS totalavail_xtnumericrole,"
-                      "       CASE WHEN availableqoh < pendalloc THEN 'error'"
-                      "            WHEN (availableqoh + ordered - (totalalloc + pendalloc)) < 0  THEN 'error'"
-                      "            WHEN (availableqoh + ordered - (totalalloc + pendalloc)) < reorderlevel THEN 'warning'"
-                      "       END AS qtforegroundrole "
-                      "FROM ( SELECT cs.itemsite_id AS itemsiteid,"
-                      "              CASE WHEN(cs.itemsite_useparams) THEN cs.itemsite_reorderlevel ELSE 0.0 END AS reorderlevel,"
-                      "              bomitem_seqnumber, item_number,"
-                      "              (item_descrip1 || ' ' || item_descrip2) AS item_descrip, uom_name,"
-                      "              itemuomtouom(bomitem_item_id, bomitem_uom_id, NULL, (bomitem_qtyfxd + bomitem_qtyper * :qty) * (1 + bomitem_scrap)) AS pendalloc,"
-                      "              (qtyAllocated(cs.itemsite_id, DATE(:schedDate)) - itemuomtouom(bomitem_item_id, bomitem_uom_id, NULL, (bomitem_qtyfxd + bomitem_qtyper * :origQtyOrd) * (1 + bomitem_scrap))) AS totalalloc,"
-                      "              qtyAvailable(cs.itemsite_id) AS availableqoh,"
-                      "              qtyOrdered(cs.itemsite_id, DATE(:schedDate)) AS ordered "
-                      "       FROM item, bomitem LEFT OUTER JOIN"
-                      "            itemsite AS cs ON ((cs.itemsite_warehous_id=:warehous_id)"
-                      "                           AND (cs.itemsite_item_id=bomitem_item_id)),"
-                      "            uom,"
-                      "            itemsite AS ps "
-                      "       WHERE ( (bomitem_item_id=item_id)"
-                      "        AND (item_inv_uom_id=uom_id)"
-                      "        AND (bomitem_parent_item_id=ps.itemsite_item_id)"
-                      "        AND (bomitem_rev_id=getActiveRevId('BOM',bomitem_parent_item_id))"
-                      "        AND (:schedDate BETWEEN bomitem_effective AND (bomitem_expires-1))");
+          MetaSQLQuery mql = mqlLoad("salesOrderItem", "bomavail");
 
           if (_item->isConfigured())  // For configured items limit to bomitems associated with selected characteristic values
           {
             QModelIndex charidx;
             QModelIndex valueidx;
-
-            sql +=  "        AND ((bomitem_char_id IS NULL) ";
-
+            QStringList clauses;
+            
+            clauses.append("(bomitem_char_id IS NULL)");
+            
             for (int i = 0; i < _itemchar->rowCount(); i++)
             {
               charidx  = _itemchar->index(i, CHAR_ID);
               valueidx = _itemchar->index(i, CHAR_VALUE);
-              sql     += QString(" OR ((bomitem_char_id=%1) AND (bomitem_value='%2'))").arg(_itemchar->data(charidx, Qt::UserRole).toString()).arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''"));
+              clauses.append(QString("((bomitem_char_id=%1) AND (bomitem_value='%2'))")
+                             .arg(_itemchar->data(charidx, Qt::UserRole).toString())
+                             .arg(_itemchar->data(valueidx, Qt::DisplayRole).toString().replace("'", "''")));
             }
-
-            sql +=  " ) ";
+            if (clauses.count())
+              params.append("charClause", clauses.join(" OR ").prepend(" AND (").append(")"));
           }
-          sql +=  "        AND (ps.itemsite_id=:itemsite_id) ) ) AS data "
-                  "ORDER BY bomitem_seqnumber;";
-          availability.prepare(sql);
-          availability.bindValue(":itemsite_id", itemsiteid);
-          availability.bindValue(":warehous_id", _warehouse->id());
-          availability.bindValue(":qty", _availabilityQtyOrdered);
-          availability.bindValue(":schedDate", _scheduledDate->date());
-          availability.bindValue(":origQtyOrd", _originalQtyOrd);
-          availability.exec();
+          else
+            params.append("charClause", "");
+          
+          availability = mql.toQuery(params);
           _availability->populate(availability);
           if (availability.lastError().type() != QSqlError::NoError)
           {
@@ -2293,7 +2187,7 @@ void salesOrderItem::sDetermineAvailability( bool p )
     }
     else if (availability.lastError().type() != QSqlError::NoError)
     {
-            systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
+      systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -4639,7 +4533,7 @@ void salesOrderItem::sHandleButton()
   else if (_historySalesButton->isChecked())
     _historyStack->setCurrentWidget(_historySalesPage);
 
-  if ((_item->itemType() == "K"))
+  if (ISORDER(_mode) && _item->itemType() == "K")
   {
     int lineNum, headId;
     XSqlQuery firstQry;

@@ -364,6 +364,7 @@ int main(int argc, char *argv[])
     bool checkPass = true;
     bool checkLock = false;
     bool expired   = false;
+    bool invalid   = false;
     QString checkPassReason;
     QString rkey = _metrics->value("RegistrationKey");
     XTupleProductKey pkey(rkey);
@@ -422,6 +423,7 @@ int main(int argc, char *argv[])
     else
     {
       checkPass = false;
+      invalid   = true;
       checkPassReason = QObject::tr("<p>The Registration key installed for this system does not appear to be valid.");
     }
     if(!checkPass)
@@ -441,6 +443,18 @@ int main(int argc, char *argv[])
         QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
         if(!forced)
           return 0;
+      }
+      else if(invalid)
+      {
+        ParameterList params;
+        params.append("invalid");
+        registrationKeyDialog newdlg(0, "", true);
+        newdlg.set(params);
+        if(newdlg.exec() == -1)
+        {
+          QMessageBox::critical(0, QObject::tr("Registration Key"), checkPassReason);
+          return 0;
+        }        
       }
       else
       {
@@ -462,9 +476,8 @@ int main(int argc, char *argv[])
 
 #if QT_VERSION < 0x050000  // below removed in qt5, needs to be ported
       QHttp *http = new QHttp();
-      
       QUrl url;
-      url.setPath("/api/regviolation.php");
+      url.setUrl("https://www.xtuple.org//api/regviolation.php");
       url.addQueryItem("key", QUrl::toPercentEncoding(rkey));
       url.addQueryItem("error", QUrl::toPercentEncoding(checkPassReason));
       url.addQueryItem("name", QUrl::toPercentEncoding(name));
@@ -476,6 +489,7 @@ int main(int argc, char *argv[])
 
       http->setHost("www.xtuple.org");
       http->get(url.toString());
+      http->close();
 #endif
       if(forced)
         return 0;
