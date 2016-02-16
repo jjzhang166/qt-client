@@ -36,6 +36,7 @@ public slots:
     virtual void sPopulateDueDate();
     virtual void sTaxDetail();
     virtual void sReleaseNumber();
+    virtual void sCalcBalance();
 
 protected slots:
     virtual void languageChange();

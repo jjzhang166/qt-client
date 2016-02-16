@@ -670,7 +670,6 @@ bool customer::sSave()
   }
 
   setValid(true);
-  populate();
   omfgThis->sCustomersUpdated(_custid, true);
   _autoSaved = true;
 
@@ -686,7 +685,6 @@ void customer::sSaveClicked()
 
   _autoSaved=false;
   _NumberGen = -1;
-  omfgThis->sCustomersUpdated(_custid, true);
   emit saved(_custid);
   if (_captive || isModal())
     close();

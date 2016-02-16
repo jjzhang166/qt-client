@@ -29,7 +29,8 @@ dspSalesOrders::dspSalesOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   setMetaSQLOptions("salesOrders", "detail");
   /* setReportName("ListSalesOrders");  */
   setParameterWidgetVisible(true);
-  setNewVisible(true);
+  if(_privileges->check("MaintainSalesOrders"))
+    setNewVisible(true);
   setQueryOnStartEnabled(false);
   setAutoUpdateEnabled(true);
 

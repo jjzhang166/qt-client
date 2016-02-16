@@ -18,6 +18,7 @@
 #include "apOpenItem.h"
 #include "check.h"
 #include "voucher.h"
+#include "miscVoucher.h"
 
 dspAPApplications::dspAPApplications(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAPApplications", fl)
@@ -134,12 +135,33 @@ void dspAPApplications::sViewDebitMemo()
 
 void dspAPApplications::sViewVoucher()
 {
-  ParameterList params;
-  params.append("mode",      "view");
-  params.append("vohead_id", list()->id("apapply_target_docnumber"));
-  voucher *newdlg = new voucher(this, "voucher");
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  XSqlQuery dspViewVoucher;
+  dspViewVoucher.prepare("SELECT vohead_id, COALESCE(pohead_id, -1) AS pohead_id"
+                         "  FROM vohead LEFT OUTER JOIN pohead ON (vohead_pohead_id=pohead_id)"
+                         " WHERE (vohead_id=:vohead_id);");
+  dspViewVoucher.bindValue(":vohead_id", list()->id("apapply_target_docnumber"));
+  dspViewVoucher.exec();
+  if(dspViewVoucher.first())
+  {
+    ParameterList params;
+    params.append("mode", "view");
+    params.append("vohead_id", dspViewVoucher.value("vohead_id").toInt());
+    
+    if (dspViewVoucher.value("pohead_id").toInt() == -1)
+    {
+      miscVoucher *newdlg = new miscVoucher();
+      newdlg->set(params);
+      omfgThis->handleNewWindow(newdlg);
+    }
+    else
+    {
+      voucher *newdlg = new voucher();
+      newdlg->set(params);
+      omfgThis->handleNewWindow(newdlg);
+    }
+  }
+  else
+    systemError( this, dspViewVoucher.lastError().databaseText(), __FILE__, __LINE__);
 }
 
 void dspAPApplications::sPopulateMenu(QMenu* pMenu, QTreeWidgetItem*, int)

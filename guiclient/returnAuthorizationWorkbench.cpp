@@ -288,7 +288,7 @@ void returnAuthorizationWorkbench::sProcess()
       {
 	ParameterList ccp;
 	ccp.append("cmhead_id", cmheadid);
-  MetaSQLQuery ccm = mqlLoad("creditMemoCreditCards", "detail");
+        MetaSQLQuery ccm = mqlLoad("creditMemoCreditCards", "detail");
 	XSqlQuery ccq = ccm.toQuery(ccp);
 	if (ccq.first())
 	{
@@ -304,7 +304,12 @@ void returnAuthorizationWorkbench::sProcess()
 	  {
 	    QString docnum = returnProcess.value("cmhead_number").toString();
 	    QString refnum = ccq.value("cohead_number").toString();
-	    int refid = -1;
+            int refid = ccq.value("cohead_id").toInt();
+            QString reftype = "";
+
+            if (refid > 0)
+              reftype = "cohead";
+
 	    int returnValue = cardproc->credit(ccq.value("ccard_id").toInt(),
 					 "-2",
 					 ccq.value("total").toDouble(),
@@ -314,7 +319,7 @@ void returnAuthorizationWorkbench::sProcess()
 					 0,
 					 ccq.value("cmhead_curr_id").toInt(),
 					 docnum, refnum, ccpayid,
-					 QString(), refid);
+                                         reftype, refid);
 	    if (returnValue < 0)
 	      QMessageBox::critical(this, tr("Credit Card Processing Error"),
 				    cardproc->errorMsg());

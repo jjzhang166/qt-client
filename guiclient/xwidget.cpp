@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDesktopWidget>
+#include <QDebug>
 #include <QShowEvent>
 #include <QMdiArea>
 #include <QMdiSubWindow>
@@ -94,11 +95,13 @@ void XWidget::closeEvent(QCloseEvent *event)
   if(event->isAccepted())
   {
     QString objName = objectName();
-    xtsettingsSetValue(objName + "/geometry/size", size());
-    if(omfgThis->showTopLevel() || isModal())
-      xtsettingsSetValue(objName + "/geometry/pos", pos());
-    else
-      xtsettingsSetValue(objName + "/geometry/pos", parentWidget()->pos());
+    if (omfgThis->showTopLevel() || isModal()) {
+      xtsettingsSetValue(objName + "/geometry/size", size());
+      xtsettingsSetValue(objName + "/geometry/pos",  pos());
+    } else {
+      xtsettingsSetValue(objName + "/geometry/size", parentWidget()->size());
+      xtsettingsSetValue(objName + "/geometry/pos",  parentWidget()->pos());
+    }
   }
 }
 
@@ -132,31 +135,16 @@ void XWidget::showEvent(QShowEvent *event)
         QWidget * fw = focusWidget();
         QMdiSubWindow *subwin = omfgThis->workspace()->addSubWindow(this);
         omfgThis->workspace()->setActiveSubWindow(subwin);
-        //begin re-size hack
-        QStyle * wStyle = subwin->style();
-        QStyleOptionTitleBar so;
-        so.titleBarState = 1;
-        so.titleBarFlags = Qt::Window;
-        int titleBarHeight = wStyle->pixelMetric(QStyle::PM_TitleBarHeight, &so, this);
-        titleBarHeight += 4;  //inexplicably off by 4 pixels?!
-        if(DEBUG)
-        {
-        qDebug() << "lsize= " << lsize << "titleBarHeight= " << titleBarHeight; //before pixel tweak
-        }
-        if(lsize.isValid())
-        {
-        lsize.rheight() += titleBarHeight;
-        lsize.rwidth() += 8;  //width compensation happened to be consistently 8 pixels
-        }
-        if(DEBUG)
-        qDebug() << "lsize2= " << lsize << "titleBarHeight= " << titleBarHeight; //after pixel tweak
-        //end re-size hack
         connect(this, SIGNAL(destroyed(QObject*)), subwin, SLOT(close()));
-        if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
+        if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool()) {
+	  if (DEBUG) qDebug() << "resize()" << lsize;
           subwin->resize(lsize);
+	}
         QRect r(pos, lsize);
-        if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool() && parentWidget())
+        if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool() && parentWidget()) {
+	  if (DEBUG) qDebug() << "move()" << pos;
           parentWidget()->move(pos);
+	}
         // This originally had to be after the show? Will it work here?
         if(fw)
           fw->setFocus();
@@ -202,4 +190,4 @@ QScriptEngine *XWidget::engine()
   _private->loadScriptEngine();
   return _private->_engine;
 }
-
+ 

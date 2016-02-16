@@ -3455,10 +3455,6 @@ Bitte loggen Sie sich sofort aus und kontaktieren Sie Ihren Systemadministrator.
         <translation>Initialisiere interne Daten</translation>
     </message>
     <message>
-        <source>&lt;p&gt;You have been disconnected from the database server.  This is usually caused by an interruption in your network.  Please exit the application and restart.&lt;br&gt;&lt;pre&gt;%1&lt;/pre&gt;</source>
-        <translation>&lt;p&gt;Sie wurden vom Datenbank-Server getrennt. Dies ist normalerweise durch eine Unterbrechung der Netzwerkverbindung verursacht. Bitte beenden Sie das Programm und starten Sie es neu.&lt;br&gt;&lt;pre&gt;%1&lt;/pre&gt;</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Before you can run a browser you must set the environment variable BROWSER to point to the browser executable.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3533,6 +3529,28 @@ Bitte loggen Sie sich sofort aus und kontaktieren Sie Ihren Systemadministrator.
     <message>
         <source>%1 %2 - %3 on %4:%5/%6 AS %7</source>
         <translation type="unfinished">%1 %2 - %3 auf %4/%5 als %7 {1 %2 ?} {3 ?} {4:%5/%6 ?}</translation>
+    </message>
+    <message>
+        <source>Database disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It appears that the you&apos;ve been disconnected from thedatabase. Select Yes to try to reconnect or No to terminate the application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Relogging to the Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System Error</source>
+        <translation type="unfinished">Systemfehler</translation>
+    </message>
+    <message>
+        <source>A System Error occurred at %1::%2:
+%3</source>
+        <translation type="unfinished">Ein Systemfehler ist aufgetreten bei %1::%2:
+%3</translation>
     </message>
 </context>
 <context>
@@ -6030,6 +6048,37 @@ Bitte loggen Sie sich sofort aus und kontaktieren Sie Ihren Systemadministrator.
     <message>
         <source>Period Length:</source>
         <translation>Periodendauer:</translation>
+    </message>
+</context>
+<context>
+    <name>account1099</name>
+    <message>
+        <source>Accounts for 1099 Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Account List for 1099 Inclusion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add MISC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add RENT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove 1099</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14092,6 +14141,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Move Up</source>
         <translation type="unfinished">Aufwärts bewegen</translation>
+    </message>
+</context>
+<context>
+    <name>configureWF</name>
+    <message>
+        <source>Configure Workflow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Workflow from the Desktop client</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -33520,6 +33580,69 @@ Total</source>
     </message>
 </context>
 <context>
+    <name>dspTax1099</name>
+    <message>
+        <source>Info for 1099&apos;s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Detail 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Detail All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vendor Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished">Drucken</translation>
+    </message>
+    <message>
+        <source>Print 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print 1096</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Accounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Vendors</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>dspTaxHistory</name>
     <message>
         <source>All</source>
@@ -42021,6 +42144,10 @@ Möchten Sie den gewählten Fertigungsauftrag wirklich implodieren?</translation
         <source>Created</source>
         <translation>Erstellt</translation>
     </message>
+    <message>
+        <source>Priority Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>invoice</name>
@@ -45249,6 +45376,15 @@ Sie müssen erst diese Zuweisungen löschen, bevor Sie den gewählten Preisbildu
     </message>
     <message>
         <source>This Item Site has a quantity on hand and Cost Category cannot be changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Lot/Serial?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Item Site has not been marked as lot/serial enabled, yet other sites for item %1 are.
+ Do you wish to continue and save the Item Site? </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -53667,6 +53803,17 @@ Der Systemadministrator dieses Programms muß das korrigieren, bevor Sie Bezugsb
     </message>
 </context>
 <context>
+    <name>printApOpenItem</name>
+    <message>
+        <source>Print A/P Open Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A/P Open Item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>printArOpenItem</name>
     <message>
         <source>Certified Check</source>
@@ -54940,6 +55087,17 @@ Der Systemadministrator dieses Programms muß das korrigieren, bevor Sie Bezugsb
     <message>
         <source>Return</source>
         <translation type="unfinished">Zurück</translation>
+    </message>
+</context>
+<context>
+    <name>printToForm</name>
+    <message>
+        <source>Print Transfer Order Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report Name:</source>
+        <translation type="unfinished">Berichtsname:</translation>
     </message>
 </context>
 <context>
@@ -58641,6 +58799,10 @@ Bitte korrigieren Sie dies vor dem Fortfahren korrigieren.</translation>
     <message>
         <source>Expired Registration Key</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Registration Key</source>
+        <translation type="unfinished">Ungültiger Registrierungsschlüssel</translation>
     </message>
 </context>
 <context>
@@ -66881,6 +67043,21 @@ Möchten Sie %1 %2 zum gegenwärtig im Programm hinterlegten Wechselkurs konvert
     <message>
         <source>[ pick a country ]</source>
         <translation>[ Ein Land herauspflücken ]</translation>
+    </message>
+</context>
+<context>
+    <name>statementByCustGroup</name>
+    <message>
+        <source>Print Statement by Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Group:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>As At:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

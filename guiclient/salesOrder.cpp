@@ -205,7 +205,8 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
   _soitem->addColumn(tr("Extended"),        _priceColumn,          Qt::AlignRight,  true,  "extprice");
   _soitem->addColumn(tr("Cust. Price"),     _priceColumn,          Qt::AlignRight,  false, "coitem_custprice");
   _soitem->addColumn(tr("Cust. Discount"),  _priceColumn,          Qt::AlignRight,  false, "discountfromcust");
-  _soitem->addColumn(tr("Unit Cost"),       _costColumn,           Qt::AlignRight,  false, "coitem_unitcost");
+  if (_privileges->check("ViewSOItemUnitCost"))
+    _soitem->addColumn(tr("Unit Cost"),       _costColumn,           Qt::AlignRight,  false, "coitem_unitcost");
   if (_privileges->check("ShowMarginsOnSalesOrder"))
   {
     _soitem->addColumn(tr("Margin"),          _priceColumn,          Qt::AlignRight,  false, "margin");
@@ -1954,7 +1955,7 @@ void salesOrder::populateShipto(int pShiptoid)
       _shippingZone->setId(shipto.value("shipto_shipzone_id").toInt());
       _shippingComments->setText(shipto.value("shipto_shipcomments").toString());
       _orderComments->setText(shipto.value("shipto_comments").toString());
-      if ( (ISNEW(_mode)) && (shipto.value("shipto_taxzone_id").toInt() > 0) )
+      if (shipto.value("shipto_taxzone_id").toInt() > 0)
         _taxZone->setId(shipto.value("shipto_taxzone_id").toInt());
       _ignoreSignals=false;
     }

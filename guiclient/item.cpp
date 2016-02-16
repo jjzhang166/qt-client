@@ -843,7 +843,8 @@ void item::sSave()
   itemSave.exec();
   if (itemSave.lastError().type() != QSqlError::NoError)
   {
-    itemSave.exec("ROLLBACK;");
+    XSqlQuery itemTrxn;
+    itemTrxn.exec("ROLLBACK;");
     _inTransaction = false;
     systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
@@ -1146,8 +1147,7 @@ void item::sPopulateUOMs()
   {
     saveCore();
     sPopulatePriceUOMs();
-    if (_priceUOM->id()==-1)
-      _priceUOM->setId(_inventoryUOM->id());
+    _priceUOM->setId(_inventoryUOM->id());
   }
 }
 
@@ -1923,7 +1923,7 @@ void item::sPopulatePriceUOMs()
   ParameterList params;
   params.append("uomtype", "Selling");
   params.append("item_id", _itemid);
-  params.append("uom_id", _priceUOM->id());
+  params.append("uom_id", _inventoryUOM->id());
 
   XSqlQuery puom = muom.toQuery(params);
   _priceUOM->populate(puom);

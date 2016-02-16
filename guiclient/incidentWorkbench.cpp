@@ -91,6 +91,7 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   list()->addColumn(tr("Category"),    _userColumn, Qt::AlignLeft, false, "incdtcat_name");
   list()->addColumn(tr("Severity"),    _userColumn, Qt::AlignLeft, false, "incdtseverity_name");
   list()->addColumn(tr("Priority"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_name");
+  list()->addColumn(tr("Priority Order"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_order");
   list()->addColumn(tr("Contact"),     _userColumn, Qt::AlignLeft, false, "cntct_name");
   list()->addColumn(tr("Project"),     _userColumn, Qt::AlignLeft, false, "prj_number");
   if(_metrics->boolean("IncidentsPublicPrivate"))

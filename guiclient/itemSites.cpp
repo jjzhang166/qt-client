@@ -66,6 +66,8 @@ itemSites::itemSites(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Cycle Cnt."),    _dateColumn,  Qt::AlignCenter, false,  "itemsite_cyclecountfreq" );
   list()->addColumn(tr("Last Cnt'd"),    _dateColumn,  Qt::AlignCenter, false,  "datelastcount" );
   list()->addColumn(tr("Last Used"),     _dateColumn,  Qt::AlignCenter, false,  "datelastused" );
+
+  connect(omfgThis, SIGNAL(itemsitesUpdated()), this, SLOT(sFillList()));
 }
 
 enum SetResponse itemSites::set(const ParameterList &pParams)

@@ -48,6 +48,8 @@
 #include "xdialog.h"
 #include "errorLog.h"
 #include "errorReporter.h"
+#include "login2.h"
+#include "storedProcErrorLookup.h"
 
 #include "systemMessage.h"
 #include "menuProducts.h"
@@ -1030,21 +1032,46 @@ void GUIClient::sTick()
       emit(tick());
       __intervalCount = 0;
     }
-
-    _tick.singleShot(60000, this, SLOT(sTick()));
   }
   else
   {
     // Check to make sure we are not in the middle of an aborted transaction
     // before we go doing something rash.
-    if(tickle.lastError().databaseText().contains("current transaction is aborted"))
-      return;
-    systemError(this, tr("<p>You have been disconnected from the database server.  "
-                          "This is usually caused by an interruption in your "
-                          "network.  Please exit the application and restart."
-                          "<br><pre>%1</pre>" )
-                      .arg(tickle.lastError().databaseText()));
+    if (!QSqlDatabase::database().isOpen())
+    {
+      if  (QMessageBox::question(this, tr("Database disconnected"),
+                                tr("It appears that the you've been disconnected from the"
+                                   "database. Select Yes to try to reconnect or "
+                                   "No to terminate the application."),
+                                   QMessageBox::Yes,
+                                   QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+        qApp->quit();
+      else
+      {
+        if (QSqlDatabase::database().open())
+        {
+          QString loginqry ="SELECT login() AS result, CURRENT_USER AS user;";
+          XSqlQuery login( loginqry );
+          if (login.first())
+          {
+            int result = login.value("result").toInt();
+            if (result < 0)
+            {
+              QMessageBox::critical(this, tr("Error Relogging to the Database"),
+                                    storedProcErrorLookup("login", result));
+              return;
+            }
+          }
+          else if (login.lastError().type() != QSqlError::NoError)
+            QMessageBox::critical(this, tr("System Error"),
+                                  tr("A System Error occurred at %1::%2:\n%3")
+                                    .arg(__FILE__).arg(__LINE__)
+                                    .arg(login.lastError().databaseText()));
+        }
+      }
+    }
   }
+  _tick.singleShot(30000, this, SLOT(sTick()));
 }
 
 /** @brief Make the error button in the main window's status bar visible.

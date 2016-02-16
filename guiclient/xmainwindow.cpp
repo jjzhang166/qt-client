@@ -25,6 +25,8 @@
 #include "scriptablePrivate.h"
 #include "shortcuts.h"
 
+#define DEBUG false
+
 //
 // XMainWindowPrivate
 //
@@ -116,11 +118,16 @@ void XMainWindow::closeEvent(QCloseEvent *event)
   if(event->isAccepted())
   {
     QString objName = objectName();
-    xtsettingsSetValue(objName + "/geometry/size", size());
-    if(omfgThis->showTopLevel() || isModal())
+    if(omfgThis->showTopLevel() || isModal()) {
+      if (DEBUG) qDebug() << "saving size" << size() << "position" << pos();
+      xtsettingsSetValue(objName + "/geometry/size", size());
       xtsettingsSetValue(objName + "/geometry/pos", pos());
-    else if (parentWidget() != 0)
-      xtsettingsSetValue(objName + "/geometry/pos", parentWidget()->pos());
+    } else if (parentWidget() != 0) {
+      if (DEBUG)
+        qDebug() << "saving parent size" << parentWidget()->size() << "position" << parentWidget()->pos();
+      xtsettingsSetValue(objName + "/geometry/size", parentWidget()->size());
+      xtsettingsSetValue(objName + "/geometry/pos",  parentWidget()->pos());
+    }
   }
 }
 
@@ -132,7 +139,7 @@ void XMainWindow::showEvent(QShowEvent *event)
 
     QRect availableGeometry = QApplication::desktop()->availableGeometry();
     if(!omfgThis->showTopLevel() && !isModal())
-      availableGeometry = omfgThis->workspace()->geometry();
+      availableGeometry = QRect(QPoint(0, 0), omfgThis->workspace()->size());
 
     QString objName = objectName();
     QPoint pos = xtsettingsValue(objName + "/geometry/pos").toPoint();
@@ -141,13 +148,18 @@ void XMainWindow::showEvent(QShowEvent *event)
     setAttribute(Qt::WA_DeleteOnClose);
     if(omfgThis->showTopLevel() || isModal())
     {
-      if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool() && (metaObject()->className() != QString("xTupleDesigner")))
+      if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool() && (metaObject()->className() != QString("xTupleDesigner"))) {
+	if (DEBUG) qDebug() << "resize" << lsize;
         resize(lsize);
+      }
       omfgThis->_windowList.append(this);
       statusBar()->show();
-      QRect r(pos, size());
-      if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
+      QRect r(pos, lsize);
+      if (DEBUG) qDebug() << availableGeometry << "contains?" << r;
+      if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool()) {
+	if (DEBUG) qDebug() << "move" << pos;
         move(pos);
+      }
     }
     else
     {
@@ -155,11 +167,16 @@ void XMainWindow::showEvent(QShowEvent *event)
       QMdiSubWindow *subwin = omfgThis->workspace()->addSubWindow(this);
       omfgThis->workspace()->setActiveSubWindow(subwin);
       connect(this, SIGNAL(destroyed(QObject*)), subwin, SLOT(close()));
-      if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
-          subwin->resize(lsize);
+      if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool()) {
+	if (DEBUG) qDebug() << "subwin resize" << lsize;
+        subwin->resize(lsize);
+      }
       QRect r(pos, lsize);
-      if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
-        move(pos);
+      if (DEBUG) qDebug() << availableGeometry << ">" << r << "?" << availableGeometry.contains(r);
+      if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool()) {
+	if (DEBUG) qDebug() << "subwin move" << pos;
+        subwin->move(pos);
+      }
       // This originally had to be after the show? Will it work here?
       if(fw)
         fw->setFocus();

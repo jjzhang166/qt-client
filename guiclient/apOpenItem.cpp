@@ -28,6 +28,7 @@ apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::Window
   connect(_vend,           SIGNAL(newId(int)),                     this, SLOT(sPopulateVendInfo(int)));
   connect(_taxLit,         SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
   connect(_docNumber,      SIGNAL(textEdited(QString)),       this, SLOT(sReleaseNumber()));
+  connect(_amount,         SIGNAL(valueChanged()),                 this, SLOT(sCalcBalance()));
 
   _cAmount = 0.0;
   _apopenid = -1;
@@ -117,6 +118,7 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
       _docNumber->setEnabled(false);
       _poNumber->setEnabled(false);
       _journalNumber->setEnabled(false);
+      _amount->setCurrencyEditable(false);
       _terms->setEnabled(false);
       _notes->setReadOnly(false);
       _useAltPrepaid->setEnabled(false);
@@ -621,4 +623,9 @@ void apOpenItem::populateStatus()
            "UNION "
            "SELECT 2 AS status_id, TEXT('On Hold') AS status, TEXT('On Hold') AS status;";
   _status->populate(status, -1);
+}
+
+void apOpenItem::sCalcBalance()
+{
+  _balance->setLocalValue(_amount->localValue() - _paid->localValue());
 }

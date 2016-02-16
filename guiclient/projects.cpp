@@ -114,7 +114,7 @@ projects::projects(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Completed Start Date"), "completedStartDate", ParameterWidget::Date, QDate::currentDate());
   parameterWidget()->append(tr("Completed End Date"), "completedEndDate", ParameterWidget::Date, QDate::currentDate());
 
-  setupCharacteristics("J");
+  setupCharacteristics("PROJ");
           
   _statuses << "None" << "C" << "P" << "O";
 
@@ -191,7 +191,7 @@ void projects::sBuildList()
     list()->addColumn(tr("Budget Exp."),   _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_budget");
     list()->addColumn(tr("Actual Exp."),   _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_actual");
     list()->addColumn(tr("Balance Exp."),  _priceColumn,  Qt::AlignRight,  true,  "prjtask_exp_balance");
-    setupCharacteristics("J");
+    setupCharacteristics("PROJ");
     _showHierarchy->setEnabled(false);
   }
 

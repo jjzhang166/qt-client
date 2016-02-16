@@ -112,8 +112,13 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WindowFlag
     _warehouse->setNull();
   }
 
+  _controlMethod->append(0, tr("None"),     "N");
+  _controlMethod->append(1, tr("Regular"),  "R");
+  _controlMethod->append(2, tr("Lot #"),    "L");
+  _controlMethod->append(3, tr("Serial #"), "S");
+
   //Default to Regular control  
-  _controlMethod->setCurrentIndex(1);
+  _controlMethod->setCode("R");
 
   //If not lot serial control, remove options
   if (!_metrics->boolean("LotSerialControl"))
@@ -360,7 +365,7 @@ bool itemSite::sSave()
   
 
   bool isLocationControl = _locationControl->isChecked();
-  bool isLotSerial = ((_controlMethod->currentIndex() == 2) || (_controlMethod->currentIndex() == 3));
+  bool isLotSerial = ((_controlMethod->code() == "L") || (_controlMethod->code() == "S"));
   if ( ( (_mode == cNew) && (isLocationControl) ) ||
        ( (_mode == cEdit) && (isLocationControl) && (!_wasLocationControl) ) )
   {
@@ -531,6 +536,31 @@ bool itemSite::sSave()
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Item Site"), errors))
     return false;
+
+  if (!isLotSerial)
+  {
+    itemSave.prepare("SELECT EXISTS(SELECT 1 "
+                     "              FROM itemsite "
+                     "              WHERE ((itemsite_item_id = :itemsite_item_id) "
+                     "                 AND (itemsite_warehous_id <> :itemsite_warehous_id) "
+                     "                 AND (itemsite_controlmethod IN ('L','S'))));");
+    itemSave.bindValue(":itemsite_warehous_id", _warehouse->id());
+    itemSave.bindValue(":itemsite_item_id", _item->id());
+    itemSave.exec();
+    if (itemSave.first())
+    {
+      if(itemSave.value("exists").toBool())
+      {
+        if ( QMessageBox::question(this, tr("Confirm Lot/Serial?"),
+                                 tr( "<p>This Item Site has not been marked as lot/serial "
+				    "enabled, yet other sites for item %1 are.\n "
+				    "Do you wish to continue and save the Item Site? ").arg(_item->number()),
+				  QMessageBox::Yes,
+				  QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+           return true;
+      }
+    }
+  }
   
   XSqlQuery newItemSite;
     
@@ -751,14 +781,7 @@ bool itemSite::sSave()
     newItemSite.bindValue(":itemsite_location", "");
   }
     
-  if (_controlMethod->currentIndex() == 0)
-    newItemSite.bindValue(":itemsite_controlmethod", "N");
-  else if (_controlMethod->currentIndex() == 1)
-    newItemSite.bindValue(":itemsite_controlmethod", "R");
-  else if (_controlMethod->currentIndex() == 2)
-    newItemSite.bindValue(":itemsite_controlmethod", "L");
-  else if (_controlMethod->currentIndex() == 3)
-    newItemSite.bindValue(":itemsite_controlmethod", "S");
+  newItemSite.bindValue(":itemsite_controlmethod", _controlMethod->code());
 
   if(_costNone->isChecked())
     newItemSite.bindValue(":itemsite_costmethod", "N");
@@ -1041,7 +1064,7 @@ void itemSite::sHandleWOSupplied(bool pSupplied)
 
 void itemSite::sHandleControlMethod()
 {
-  if (_controlMethod->currentIndex() == 0 || _itemType == 'R' || _itemType == 'K')
+  if (_controlMethod->code() == "N" || _itemType == 'R' || _itemType == 'K')
   {
     _costNone->setChecked(true);
     _costNone->setEnabled(true);
@@ -1062,7 +1085,7 @@ void itemSite::sHandleControlMethod()
     _costStd->setEnabled(true);
   }
   if( (_itemType == 'M' || _itemType == 'P' || _itemType == 'O') &&
-     _controlMethod->currentIndex() > 0 &&
+     _controlMethod->code() != "N" &&
      _costJob->isVisibleTo(this) &&
      _qohCache == 0)
     _costJob->setEnabled(true);
@@ -1072,8 +1095,8 @@ void itemSite::sHandleControlMethod()
     _costJob->setEnabled(false);
   }
 
-  if ( (_controlMethod->currentIndex() == 2) ||
-       (_controlMethod->currentIndex() == 3) )  
+  if ( (_controlMethod->code() == "L") ||
+       (_controlMethod->code() == "S") )  
   {
     _autoNumberGroup->setEnabled(true);
     _perishable->setEnabled(true);
@@ -1115,7 +1138,7 @@ void itemSite::sCacheItemType(char pItemType)
     _planningType->setEnabled(true);
   }
 
-  if (_controlMethod->currentIndex() == 0 || _itemType == 'R' || _itemType == 'K')
+  if (_controlMethod->code() == "N" || _itemType == 'R' || _itemType == 'K')
   {
     _costNone->setChecked(true);
     _costNone->setEnabled(true);
@@ -1171,13 +1194,13 @@ void itemSite::sCacheItemType(char pItemType)
     if((_itemType == 'R') || (_itemType == 'K'))
     {
       _sold->setEnabled(true);
-      _controlMethod->setCurrentIndex(0);
+      _controlMethod->setCode("N");
     }
     else
     {
       _sold->setChecked(false);
       _sold->setEnabled(false);
-      _controlMethod->setCurrentIndex(1);
+      _controlMethod->setCode("R");
     }
 	
     _stocked->setChecked(false);
@@ -1313,30 +1336,13 @@ void itemSite::populate()
     _orderGroup->setValue(itemsite.value("itemsite_ordergroup").toInt());
     _orderGroupFirst->setChecked(itemsite.value("itemsite_ordergroup_first").toBool());
     _mpsTimeFence->setValue(itemsite.value("itemsite_mps_timefence").toInt());
+    _controlMethod->setCode(itemsite.value("itemsite_controlmethod").toString());
 
-    if (itemsite.value("itemsite_controlmethod").toString() == "N")
-    {
-      _controlMethod->setCurrentIndex(0);
-      _wasLotSerial = false;
-    }
-    else if (itemsite.value("itemsite_controlmethod").toString() == "R")
-    {
-      _controlMethod->setCurrentIndex(1);
-      _wasLotSerial = false;
-    }
-    else if (itemsite.value("itemsite_controlmethod").toString() == "L")
-    {
-      _controlMethod->setCurrentIndex(2);
-      _wasLotSerial = true;
-    }
-    else if (itemsite.value("itemsite_controlmethod").toString() == "S")
-    {
-      _controlMethod->setCurrentIndex(3);
-      _wasLotSerial = true;
-    }
+    _wasLotSerial = ((itemsite.value("itemsite_controlmethod").toString() == "L") ||
+        	     (itemsite.value("itemsite_controlmethod").toString() == "S") );
 
-    if ( (_controlMethod->currentIndex() == 2) ||
-         (_controlMethod->currentIndex() == 3) )
+    if ( (_controlMethod->code() == "L") ||
+         (_controlMethod->code() == "S") )
     {
       _perishable->setEnabled(true);
       _perishable->setChecked(itemsite.value("itemsite_perishable").toBool());
@@ -1721,8 +1727,8 @@ void itemSite::sDefaultLocChanged()
   if (_useDefaultLocation->isChecked())
   {
     _location->setChecked(_locationControl->isChecked());
-    if ( (_controlMethod->currentIndex() == 2) ||
-        (_controlMethod->currentIndex() == 3) )
+    if ( (_controlMethod->code() == "L") ||
+        (_controlMethod->code() == "S") )
     {
       _locations_dist->setEnabled(false);
       _recvlocations_dist->setEnabled(false);

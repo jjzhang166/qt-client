@@ -345,28 +345,7 @@ to be bound by its terms.</comment>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="XComboBox" name="_controlMethod">
-                    <item>
-                     <property name="text">
-                      <string>None</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Regular</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Lot #</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Serial #</string>
-                     </property>
-                    </item>
-                   </widget>
+                   <widget class="XComboBox" name="_controlMethod" />
                   </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="_plannerCodeLit">

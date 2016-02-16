@@ -59,6 +59,9 @@ priceList::priceList(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _listPrice->setPrecision(omfgThis->priceVal());
   _listCost->setPrecision(omfgThis->priceVal());
   _unitCost->setPrecision(omfgThis->costVal());
+  _unitCost->setVisible(_privileges->check("ViewSOItemUnitCost"));
+  _unitCostLit->setVisible(_privileges->check("ViewSOItemUnitCost"));
+
 }
 
 priceList::~priceList()
