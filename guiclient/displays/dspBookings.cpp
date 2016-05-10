@@ -160,7 +160,7 @@ void dspBookings::sEditOrder()
 
 void dspBookings::sViewOrder()
 {
-  salesOrder::viewSalesOrder(list()->altId(), false);
+  salesOrder::viewSalesOrder(list()->altId());
 }
 
 void dspBookings::sEditItem()

@@ -581,7 +581,7 @@ int AuthorizeDotNetProcessor::handleResponse(const QString &presponse, const int
   QString r_hash;
 
   QString status;
-  bool    isCP; // looks like an (unsupported) card-present transaction
+  bool    isCP=false; // looks like an (unsupported) card-present transaction
 
   // TODO: explore using encap here and code from CSV Import to properly split
 
