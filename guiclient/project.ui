@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1405</width>
+    <width>750</width>
     <height>681</height>
    </rect>
   </property>
@@ -98,8 +98,17 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <widget class="XComboBox" name="_projectType">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="allowNull">
           <bool>true</bool>
+         </property>
+         <property name="nullStr">
+          <string>&lt;Select Project Type&gt;</string>
          </property>
         </widget>
        </item>
@@ -761,7 +770,16 @@ to be bound by its terms.</comment>
        <string>Comments</string>
       </attribute>
       <layout class="QVBoxLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
         <number>5</number>
        </property>
        <item>
@@ -847,6 +865,11 @@ to be bound by its terms.</comment>
    <class>UsernameCluster</class>
    <extends>QWidget</extends>
    <header>usernamecluster.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
