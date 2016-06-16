@@ -342,11 +342,14 @@ CreditCardProcessor::CreditCardProcessor()
       if (DEBUG) qDebug() << "opening" << filename;
       QString suffix = QFileInfo(certfile).suffix().toLower();
       QSslCertificate *cert = new QSslCertificate(&certfile, QSsl::Pem);
-      if (cert && ! cert->isValid()) {
+      auto valid = [](QSslCertificate *cert)->bool {
+        return !cert->isNull() && !cert->isBlacklisted() && (cert->expiryDate() >= QDateTime::currentDateTime()) && (cert->effectiveDate() <= QDateTime::currentDateTime());
+      };
+      if (cert && ! valid(cert)) {
         delete cert;
         cert = new QSslCertificate(&certfile, QSsl::Der);
       }
-      if (cert->isValid()) {
+      if (valid(cert)) {
         certs.append(*cert);
         if (DEBUG) qDebug() << "adding certificate" << cert;
       }
