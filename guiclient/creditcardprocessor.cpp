@@ -342,9 +342,21 @@ CreditCardProcessor::CreditCardProcessor()
       if (DEBUG) qDebug() << "opening" << filename;
       QString suffix = QFileInfo(certfile).suffix().toLower();
       QSslCertificate *cert = new QSslCertificate(&certfile, QSsl::Pem);
-      auto valid = [](QSslCertificate *cert)->bool {
-        return !cert->isNull() && !cert->isBlacklisted() && (cert->expiryDate() >= QDateTime::currentDateTime()) && (cert->effectiveDate() <= QDateTime::currentDateTime());
+      
+      // isValid was depricated in Qt5 and isBlacklisted was introduced.
+      // Use the appropriate validity check
+      #if QT_VERSION > 0x050000
+      auto valid = [](QSslCertificate *cert) -> bool {
+        return !cert->isNull() && !cert->isBlacklisted() &&
+               (cert->expiryDate() >= QDateTime::currentDateTime()) &&
+               (cert->effectiveDate() <= QDateTime::currentDateTime());
       };
+      #else
+      auto valid = [](QSslCertificate *cert) -> bool {
+        return !cert->isNull() && cert->isValid();
+      };
+      #endif
+
       if (cert && ! valid(cert)) {
         delete cert;
         cert = new QSslCertificate(&certfile, QSsl::Der);
