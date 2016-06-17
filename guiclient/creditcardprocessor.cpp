@@ -342,14 +342,30 @@ CreditCardProcessor::CreditCardProcessor()
       if (DEBUG) qDebug() << "opening" << filename;
       QString suffix = QFileInfo(certfile).suffix().toLower();
       QSslCertificate *cert = new QSslCertificate(&certfile, QSsl::Pem);
-      if (cert && ! cert->isValid()) {
+      
+      // isValid was depricated in Qt5 and isBlacklisted was introduced.
+      // Use the appropriate validity check
+      // NOTE: the bot builds with < c++11, so no lambdas :(
+      #if QT_VERSION > 0x050000
+      #define QSSLCERTIFICATE_VALID(cert) \
+               (!cert->isNull() && !cert->isBlacklisted() && \
+               (cert->expiryDate() >= QDateTime::currentDateTime()) && \
+               (cert->effectiveDate() <= QDateTime::currentDateTime()))
+      #else
+      #define QSSLCERTIFICATE_VALID(cert) \
+        (!cert->isNull() && cert->isValid())
+      #endif
+
+      if (cert && ! QSSLCERTIFICATE_VALID(cert)) {
         delete cert;
         cert = new QSslCertificate(&certfile, QSsl::Der);
       }
-      if (cert->isValid()) {
+      if (QSSLCERTIFICATE_VALID(cert)) {
         certs.append(*cert);
         if (DEBUG) qDebug() << "adding certificate" << cert;
       }
+      
+      #undef QSSLCERTIFICATE_VALID
     }
     else
       qDebug() << "opening" << filename << "failed:" << certfile.errorString()
