@@ -134,7 +134,7 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
 
     public slots:
 	inline virtual void clearExtraClause()	{ };
-	inline virtual void setExtraClause(const QString&)  { };
+	inline virtual void setExtraClause(const QString&, const QString&)  { };
 	virtual void        setActiveVisible(const bool p);
         virtual void        setAddrChange(QString p);
 	inline virtual void setCity(const QString& p)	{ _city->setText(p); };
@@ -156,7 +156,7 @@ class XTUPLEWIDGETS_EXPORT AddressCluster : public VirtualCluster
 	virtual void	sInfo();
 	virtual void	sList();
 	virtual void	sSearch();
-	virtual void	setId(const int);
+	virtual void	setId(const int, const QString& = QString::null);
         virtual void	setSearchAcct(const int crmAcctId) { _searchAcctId = crmAcctId; }
         virtual int	save(enum SaveFlags);
         virtual void    check();

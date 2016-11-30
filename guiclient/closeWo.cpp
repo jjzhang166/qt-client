@@ -16,6 +16,8 @@
 
 #include "inputManager.h"
 #include "returnWoMaterialItem.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 closeWo::closeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -69,15 +71,15 @@ enum SetResponse closeWo::set(const ParameterList &pParams)
 bool closeWo::okToSave()
 {
   XSqlQuery closeokToSave;
-  if (!_transDate->isValid())
-  {
-    QMessageBox::critical(this, tr("Invalid date"),
-                          tr("You must enter a valid transaction date.") );
-    _transDate->setFocus();
-    return false;
-  }
 
-  // Return any tools that have been issued  
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(!_transDate->isValid(), _transDate,
+                        tr("You must enter a valid transaction date."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Invalid Date"),errors))
+      return false;
+
+  // Return any tools that have been issued
   XSqlQuery tool;
   tool.prepare( "SELECT womatl_id"
                 "  FROM womatl "
@@ -176,25 +178,28 @@ bool closeWo::okToSave()
       }
       while (closeokToSave.next());
     }
-    else if (closeokToSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Work Order"),
+                                  closeokToSave, __FILE__, __LINE__))
     {
-      systemError(this, closeokToSave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
     
     return true;      // this is the only successful case
   }
-  else if (type.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Work Order"),
+                                type, __FILE__, __LINE__))
   {
-    systemError(this, type.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   else // type not found
   {
-    systemError(this, tr("Cannot close Work Order %1 because the Item does not "
-                         "appear to have an Item Type! Please check the Item "
-                         "definition. You may need to reset the Type and save "
-                         "the Item record.").arg(_wo->woNumber()));
+    ErrorReporter::error(QtCriticalMsg, this,tr("Error Closing Work Order"),
+                         tr("Cannot close Work Order %1 because the item does not "
+                         "appear to have an Item Type!  Please check the Item "
+                         "definition.  You may need to reset the Type and save "
+                         "the Item record.")
+                         .arg(_wo->woNumber()),
+                          __FILE__, __LINE__);
     return false;
   }
 
@@ -215,9 +220,9 @@ void closeWo::sCloseWo()
     closeCloseWo.bindValue(":postMatVar",   QVariant(_postMaterialVariance->isChecked()));
     closeCloseWo.bindValue(":date",  _transDate->date());
     closeCloseWo.exec();
-    if (closeCloseWo.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Work Order"),
+                                  closeCloseWo, __FILE__, __LINE__))
     {
-      systemError(this, closeCloseWo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 

@@ -18,6 +18,7 @@
 
 #include "guiclient.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 configureCRM::configureCRM(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
@@ -227,9 +228,9 @@ void configureCRM::sStrictCountryChanged(bool p)
         return;
       }
     }
-    else if (activeq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Confirming Country Information"),
+                                  activeq, __FILE__, __LINE__))
     {
-      systemError(this, activeq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -260,9 +261,9 @@ void configureCRM::sStrictCountryChanged(bool p)
         }
       }
     }
-    else if (allq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Confirming Country Information"),
+                                  allq, __FILE__, __LINE__))
     {
-      systemError(this, allq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

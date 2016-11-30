@@ -36,6 +36,9 @@ class todoListCalendar : public XWidget, public Ui::todoListCalendar
     void sNew();
     void sEdit();
     void sView();
+    void sNewTask();
+    void sEditTask();
+    void sViewTask();
     void sOpen();
     void sDelete();
     void sEditCustomer();

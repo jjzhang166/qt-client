@@ -407,7 +407,7 @@ void XSqlTableModelProto::setSort(int column, int order)
     item->setSort(column, (Qt::SortOrder)order);
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION < 0x050000
 void XSqlTableModelProto::setSupportedDragActions(int actions)
 {
   XSqlTableModel *item = qscriptvalue_cast<XSqlTableModel*>(thisObject());
@@ -420,7 +420,10 @@ void XSqlTableModelProto::setTable(const QString &tableName, int keyColumns)
 {
   XSqlTableModel *item = qscriptvalue_cast<XSqlTableModel*>(thisObject());
   if (item)
-    item->setTable(tableName, keyColumns);
+  {
+    item->setTable(tableName);
+    item->setKeys(keyColumns);
+  }
 }
 
 QModelIndex XSqlTableModelProto::sibling(int row, int column, const QModelIndex &index) const

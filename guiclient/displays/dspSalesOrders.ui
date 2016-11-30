@@ -20,8 +20,7 @@ to be bound by its terms.</comment>
   <property name="windowTitle">
    <string>Sales Orders</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-  </layout>
+  <layout class="QHBoxLayout" name="horizontalLayout"/>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <resources/>

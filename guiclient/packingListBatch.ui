@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>588</width>
-    <height>446</height>
+    <width>707</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,7 +90,7 @@ to be bound by its terms.</comment>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
+          <item row="0" column="3">
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -102,6 +102,45 @@ to be bound by its terms.</comment>
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="0" column="2">
+           <widget class="QGroupBox" name="_holdGroup">
+            <property name="title">
+             <string>Show Orders on Hold</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="XCheckBox" name="_creditHold">
+               <property name="text">
+                <string>Credit Hold</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="XCheckBox" name="_packHold">
+               <property name="text">
+                <string>Packing Hold</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="XCheckBox" name="_shipHold">
+               <property name="text">
+                <string>Shipping Hold</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -225,7 +264,7 @@ to be bound by its terms.</comment>
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>De&amp;lete Order</string>
+          <string>Remove Order</string>
          </property>
         </widget>
        </item>
@@ -297,6 +336,7 @@ to be bound by its terms.</comment>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XCheckBox</class>

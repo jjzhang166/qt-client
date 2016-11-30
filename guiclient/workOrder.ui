@@ -559,7 +559,7 @@ to be bound by its terms.</comment>
            <property name="title">
             <string>Show</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="gridLayout_34">
             <item row="0" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout">
               <property name="spacing">
@@ -637,6 +637,16 @@ to be bound by its terms.</comment>
          <string>Characteristics</string>
         </attribute>
         <layout class="QVBoxLayout">
+         <item row="1" column="0">
+          <widget class="XLabel" name="_itemCharLit">
+           <property name="text">
+            <string>Work Order Item Characteristics:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QTreeView" name="_itemcharView">
            <property name="focusPolicy">

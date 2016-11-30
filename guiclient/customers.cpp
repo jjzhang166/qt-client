@@ -32,6 +32,14 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   setSearchVisible(true);
   setQueryOnStartEnabled(true);
 
+  QString holdSql = QString("SELECT 0 AS code, '%1' AS desc "
+                            " UNION SELECT 1, '%2' "
+                            " UNION SELECT 2, '%3' "
+                            " ORDER BY code; ")
+          .arg(tr("None"))
+          .arg(tr("Credit Warn"))
+          .arg(tr("Credit Hold"));
+
   parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
   parameterWidget()->append(tr("Customer Number Pattern"), "cust_number_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Customer Name Pattern"), "cust_name_pattern", ParameterWidget::Text);
@@ -45,6 +53,7 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesReps);
+  parameterWidget()->appendComboBox(tr("Hold Type"), "holdtype", holdSql);
 
   if (_privileges->check("MaintainCustomerMasters"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
@@ -58,6 +67,7 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Active"),_ynColumn, Qt::AlignCenter, false, "cust_active");
   list()->addColumn(tr("Name"),         -1, Qt::AlignLeft,   true,  "cust_name");
   list()->addColumn(tr("Type"),_itemColumn, Qt::AlignLeft,   true,  "custtype_code");
+  list()->addColumn(tr("Hold Type"),    -1, Qt::AlignLeft  ,false,  "holdtype");
   list()->addColumn(tr("Bill First"),   50, Qt::AlignLeft  , true,  "bill_first_name" );
   list()->addColumn(tr("Bill Last"),    -1, Qt::AlignLeft  , true,  "bill_last_name" );
   list()->addColumn(tr("Bill Title"),  100, Qt::AlignLeft  , true,  "bill_title" );
@@ -185,4 +195,16 @@ void customers::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
   menuItem = pMenu->addAction("Reassign Customer Type", this, SLOT(sReassignCustomerType()));
   menuItem->setEnabled(_privileges->check("MaintainCustomerMasters"));
 
+}
+
+bool customers::setParams(ParameterList &params)
+{
+  if (!display::setParams(params))
+    return false;
+
+  params.append("none",   tr("None"));
+  params.append("creditwarn", tr("Credit Warn"));
+  params.append("credithold",   tr("Credit Hold"));
+
+  return true;
 }

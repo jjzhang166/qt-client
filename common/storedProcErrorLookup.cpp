@@ -70,7 +70,9 @@ const struct {
  // { "changeSOTaxAuth", -2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Tax Authority was not found."),	0, "" },
   { "changeTOTax", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Transfer Order was not found."),	0, "" },
   { "changeTOTaxAuth", -2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Tax Authority was not found."),	0, "" },
-
+  { "changeWoQty", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This Work Order is closed and cannot be changed."),	0, "" },
+  { "charassUniqueTrigger", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This characteristic has been defined as unique.  "
+                            "You cannot use this characteristic more than once in this context."),	0, "" },
   { "closeAccountingPeriod", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Accounting Period cannot be "
 				    "closed because it is already closed."),
 									0, "" },
@@ -541,6 +543,19 @@ const struct {
   { "deleteItemUOMConv", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "This UOM Conversion cannot be deleted as "
 			       "there are records for this Item which use this "
                                "UOM."), 	                        0, "" },
+  { "deleteLocation", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "There are one or more Item Sites that use the "
+                              "selected Location as their default Location. "
+                              "You must reassign the default Location for all Item Sites that use the "
+                              "selected Location before you may delete it or deactivate it."),       0, "" },
+  { "deleteLocation", -2, QT_TRANSLATE_NOOP("storedProcErrorLookup", "There is Inventory contained in the selected Location. "
+                              "You must move all Inventory out of the selected Location "
+                              "and may then set its status to inactive." ),       0, "" },
+  { "deleteLocation", -3, QT_TRANSLATE_NOOP("storedProcErrorLookup", "There are one or more undistributed Location records "
+                              "that have been posted against the selected Locations. "
+                              "This probably indicates a system error."
+                              "Please contact your Systems Adminstrator to have this resolved."),       0, "" },
+  { "deleteLocation", -4, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The selected Location cannot be deleted as there has "
+                              "been Inventory Transaction History posted against it."),       0, "" },
 
   { "deleteOpenRecurringItems",  -1, "",                 -1, "deleteIncident" },
   { "deleteOpenRecurringItems",  -2, "",                 -2, "deleteIncident" },
@@ -1107,27 +1122,37 @@ const struct {
   { "postGLSeriesNoSumm", -4, "", -4, "postGLSeries" },
   { "postGLSeriesNoSumm", -5, "", -5, "postGLSeries" },
 
+  { "postIntoInvBalance", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup",
+                                                "No accounting period exists for invhist_id %1, transaction date %2" ),
+    0, "" },
+  { "postIntoInvBalance", -2, QT_TRANSLATE_NOOP("storedProcErrorLookup",
+                                                "Average costed Item with negative balance for invhist_id %1, transaction date %2" ),
+    0, "" },
+  
   { "postInvoice",  -1, "", -1, "insertIntoGLSeries" },
   { "postInvoice",  -4, "", -4, "insertIntoGLSeries" },
   { "postInvoice",  -5, "", -5, "postGLSeries" },
   { "postInvoice", -10, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because it has "
-			   "already been posted."),		 0, "" },
+                                          "already been posted."),		 0, "" },
   { "postInvoice", -11, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because the Sales "
-			   "Account was not found."),		 0, "" },
+                                          "Account was not found."),		 0, "" },
   { "postInvoice", -12, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because there was an "
-			   "error processing Line Item taxes."), 0, "" },
+                                          "error processing Line Item taxes."), 0, "" },
   { "postInvoice", -13, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because there was an "
-			   "error processing Misc. Line Item taxes."), 0, "" },
+                                          "error processing Misc. Line Item taxes."), 0, "" },
   { "postInvoice", -14, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because the Freight "
-			   "Account was not found."),		 0, "" },
+                                          "Account was not found."),		 0, "" },
   { "postInvoice", -15, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because there was an "
-			   "error processing Freight taxes."),	 0, "" },
+                                          "error processing Freight taxes."),	 0, "" },
   { "postInvoice", -16, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because there was an "
-			   "error processing Tax Adjustments."), 0, "" },
+                                          "error processing Tax Adjustments."), 0, "" },
   { "postInvoice", -17, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Unable to post this Invoice because the A/R "
-			   "Account was not found."),		 0, "" },
-
-
+                                          "Account was not found."),		 0, "" },
+  
+  { "postInvHist", -1, QT_TRANSLATE_NOOP("storedProcErrorLookup",
+                                         "Post into Inventory Balance for invhist_id=%1 was unsuccessful" ),
+    0, "" },
+  
   { "postInvTrans",	-1, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Could not post an inventory transaction because"
 			       " the Item Site has no Control Method or the "
 			       "Item has an Item Type of Reference."),
@@ -1138,6 +1163,9 @@ const struct {
 								0, "" },
   { "postInvTrans",	-3, "",	 -3, "insertGLTransaction" },
   { "postInvTrans",	-4, "",	 -4, "insertGLTransaction" },
+  { "postInvTrans",	-5, QT_TRANSLATE_NOOP("storedProcErrorLookup", "Could not post this inventory transaction because"
+			       " the transaction will cause the Item Qty. on Hand to go negative which is not allowed."),
+								0, "" },
 
   { "postPoReceipt",	-1, "",	 -1, "postReceipt" },
   { "postPoReceipt",	-2, "",	 -2, "postReceipt" },

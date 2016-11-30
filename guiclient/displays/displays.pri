@@ -67,11 +67,13 @@ FORMS   += displays/dspAllocations.ui \
            displays/dspPurchaseReqsByItem.ui \
            displays/dspPurchaseReqsByPlannerCode.ui \
            displays/dspQOH.ui \
+           displays/dspQOHByZone.ui \
            displays/dspQOHByLocation.ui \
            displays/dspQuotesByCustomer.ui \
            displays/dspQuotesByItem.ui \
            displays/dspReorderExceptionsByPlannerCode.ui \
            displays/dspReservations.ui \
+           displays/dspReturnAuthorizationsByItem.ui \
            displays/dspRunningAvailability.ui \
            displays/dspSalesOrders.ui \
            displays/dspSalesOrdersByItem.ui \
@@ -186,11 +188,13 @@ HEADERS += displays/dspAllocations.h \
            displays/dspPurchaseReqsByItem.h \
            displays/dspPurchaseReqsByPlannerCode.h \
            displays/dspQOH.h \
+           displays/dspQOHByZone.h \
            displays/dspQOHByLocation.h \
            displays/dspQuotesByCustomer.h \
            displays/dspQuotesByItem.h \
            displays/dspReorderExceptionsByPlannerCode.h \
            displays/dspReservations.h \
+           displays/dspReturnAuthorizationsByItem.h \
            displays/dspRunningAvailability.h \
            displays/dspSalesHistory.h \
            displays/dspSalesOrders.h \
@@ -222,6 +226,7 @@ HEADERS += displays/dspAllocations.h \
            displays/dspUninvoicedReceivings.h \
            displays/dspUnusedPurchasedItems.h \
            displays/dspUsageStatistics.h \
+           displays/dspUserPrivileges.h \
            displays/dspValidLocationsByItem.h \
            displays/dspVendorAPHistory.h \
            displays/dspVoucherRegister.h \
@@ -316,11 +321,13 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspPurchaseReqsByItem.cpp \
            displays/dspPurchaseReqsByPlannerCode.cpp \
            displays/dspQOH.cpp \
+           displays/dspQOHByZone.cpp \
            displays/dspQOHByLocation.cpp \
            displays/dspQuotesByCustomer.cpp \
            displays/dspQuotesByItem.cpp \
            displays/dspReorderExceptionsByPlannerCode.cpp \
            displays/dspReservations.cpp \
+           displays/dspReturnAuthorizationsByItem.cpp \
            displays/dspRunningAvailability.cpp \
            displays/dspSalesHistory.cpp \
            displays/dspSalesOrders.cpp \
@@ -350,6 +357,7 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspUninvoicedReceivings.cpp \
            displays/dspUnusedPurchasedItems.cpp \
            displays/dspUsageStatistics.cpp \
+           displays/dspUserPrivileges.cpp \
            displays/dspValidLocationsByItem.cpp \
            displays/dspVendorAPHistory.cpp \
            displays/dspVoucherRegister.cpp \

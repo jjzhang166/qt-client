@@ -26,6 +26,8 @@ dspSalesOrderStatus::dspSalesOrderStatus(QWidget* parent, const char*, Qt::Windo
   setMetaSQLOptions("salesOrderStatus", "detail");
 
   _so->setAllowedTypes(OrderLineEdit::Sales);
+  
+  _so->setFocus();
 
   omfgThis->inputManager()->notify(cBCSalesOrder, this, _so, SLOT(setId(int)));
 
@@ -58,7 +60,10 @@ enum SetResponse dspSalesOrderStatus::set(const ParameterList &pParams)
 
   param = pParams.value("sohead_id", &valid);
   if (valid)
+  {
     _so->setId(param.toInt());
+    setQueryOnStartEnabled(true);
+  }
 
   return NoError;
 }

@@ -13,8 +13,11 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include <metasql.h>
 #include <parameter.h>
 #include "itemPricingSchedule.h"
+#include "errorReporter.h"
+#include "mqlutil.h"
 
 itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -52,7 +55,7 @@ itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt
     connect(_ipshead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 
-  sFillList();
+  _listpricesched = false;
 }
 
 itemPricingSchedules::~itemPricingSchedules()
@@ -65,10 +68,29 @@ void itemPricingSchedules::languageChange()
   retranslateUi(this);
 }
 
+enum SetResponse itemPricingSchedules::set(const ParameterList &pParams)
+{
+  bool     valid;
+  QVariant param;
+  
+  param = pParams.value("listpricesched", &valid);
+  if (valid)
+  {
+    _listpricesched = true;
+    setWindowTitle(tr("List Pricing Schedules"));
+  }
+  
+  sFillList();
+  
+  return NoError;
+}
+
 void itemPricingSchedules::sNew()
 {
   ParameterList params;
   params.append("mode", "new");
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
   itemPricingSchedule newdlg(this, "", true);
   newdlg.set(params);
@@ -83,6 +105,8 @@ void itemPricingSchedules::sEdit()
   ParameterList params;
   params.append("mode", "edit");
   params.append("ipshead_id", _ipshead->id());
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
   itemPricingSchedule newdlg(this, "", true);
   newdlg.set(params);
@@ -111,8 +135,8 @@ void itemPricingSchedules::sCopy()
     sFillList();
   }
   else if (itemCopy.lastError().type() != QSqlError::NoError)
-	systemError(this,itemCopy.lastError().databaseText(),
-                  __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item Pricing Schedule"),
+                       itemCopy, __FILE__, __LINE__);
 }
 
 void itemPricingSchedules::sView()
@@ -184,7 +208,8 @@ void itemPricingSchedules::sDeleteExpired()
   itemDeleteExpired.prepare("SELECT deleteexpiredips() AS result;");
   itemDeleteExpired.exec();
   if (itemDeleteExpired.lastError().type() != QSqlError::NoError)
-	systemError(this,itemDeleteExpired.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item Pricing Schedule"),
+                       itemDeleteExpired, __FILE__, __LINE__);
 	
   sFillList();
 }
@@ -196,36 +221,21 @@ void itemPricingSchedules::sFillList()
 
 void itemPricingSchedules::sFillList(int pIpsheadid)
 {
-  QString sql( "SELECT ipshead_id, ipshead_name, ipshead_descrip,"
-               "       ipshead_effective, ipshead_expires,"
-               "       CASE WHEN COALESCE(ipshead_effective, startOfTime()) <= startOfTime() THEN :always END AS ipshead_effective_qtdisplayrole,"
-               "       CASE WHEN COALESCE(ipshead_expires, endOfTime()) >= endOfTime() THEN :never END AS ipshead_expires_qtdisplayrole "
-               "FROM ipshead " );
-
+  ParameterList params;
+  
   if (!_showExpired->isChecked())
-  {
-    sql += "WHERE ( (ipshead_expires > CURRENT_DATE)";
+    params.append("showUnexpired", true);
+  if (!_showFuture->isChecked())
+    params.append("showUneffective", true);
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
-    if (!_showFuture->isChecked())
-      sql += " AND (ipshead_effective <= CURRENT_DATE) ) ";
-    else
-      sql += " ) ";
-  }
-  else if (!_showFuture->isChecked())
-    sql += "WHERE (ipshead_effective <= CURRENT_DATE) ";
-
-  sql += "ORDER BY ipshead_name, ipshead_effective;";
-
-  XSqlQuery r;
-  r.prepare(sql);
-  r.bindValue(":always", tr("Always"));
-  r.bindValue(":never", tr("Never"));
-  r.exec();
-
+  MetaSQLQuery mql = mqlLoad("pricingSchedules", "detail");
+  XSqlQuery qry = mql.toQuery(params);
   if (pIpsheadid == -1)
-    _ipshead->populate(r);
+    _ipshead->populate(qry);
   else
-    _ipshead->populate(r, pIpsheadid);
+    _ipshead->populate(qry, pIpsheadid);
 }
 
 void itemPricingSchedules::sSearch( const QString & pTarget)

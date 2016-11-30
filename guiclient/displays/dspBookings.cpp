@@ -36,23 +36,29 @@ dspBookings::dspBookings(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Customer Group Pattern"), "custgrp_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Customer Type"), "custtype_id", XComboBox::CustomerTypes);
   parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("Customer P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
   parameterWidget()->appendComboBox(tr("Product Category"), "prodcat_id", XComboBox::ProductCategories);
   parameterWidget()->append(tr("Product Category Pattern"), "prodcat_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesReps);
+  parameterWidget()->appendComboBox(tr("Sale Type"), "saletype_id", XComboBox::SaleTypes);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
   parameterWidget()->applyDefaultFilterSet();
 
   list()->addColumn(tr("Order #"),            _orderColumn,    Qt::AlignLeft,   true,  "cohead_number"  );
+  list()->addColumn(tr("Cust. P/O #"),        _orderColumn,    Qt::AlignLeft,   true,  "cohead_custponumber");
   list()->addColumn(tr("Line #"),             _seqColumn,      Qt::AlignLeft,   true,  "f_linenumber"  );
   list()->addColumn(tr("Ord. Date"),          _dateColumn,     Qt::AlignCenter, true,  "cohead_orderdate");
+  list()->addColumn(tr("Sale Type"),          _orderColumn,    Qt::AlignLeft,   true,  "saletype_descr");
   list()->addColumn(tr("Cust. #"),            _itemColumn,     Qt::AlignLeft,   true,  "cust_number"  );
   list()->addColumn(tr("Customer"),           -1,              Qt::AlignLeft,   false, "cust_name"  );
   list()->addColumn(tr("Item Number"),        _itemColumn,     Qt::AlignLeft,   true,  "item_number"  );
   list()->addColumn(tr("Description"),        -1,              Qt::AlignLeft,   true,  "itemdescription"  );
   list()->addColumn(tr("Ordered"),            _qtyColumn,      Qt::AlignRight,  true,  "coitem_qtyord" );
+  list()->addColumn(tr("Order Status"),       -1,              Qt::AlignLeft,   false, "cohead_status" );
+  list()->addColumn(tr("Line Status"),        -1,              Qt::AlignLeft,   false, "coitem_status" );
   if (_privileges->check("ViewCustomerPrices"))
   {
     list()->addColumn(tr("Unit Price"),       _priceColumn,    Qt::AlignRight,  false, "coitem_price" );
@@ -141,16 +147,22 @@ void dspBookings::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected, int pC
   QAction* viewSoAct = pMenu->addAction(tr("View Sales Order..."), this, SLOT(sViewOrder()));
   viewSoAct->setEnabled(_privileges->check("ViewSalesOrders") || _privileges->check("MaintainSalesOrders"));
 
-  QAction* editSoAct = pMenu->addAction(tr("Edit Sales Order..."), this, SLOT(sEditOrder()));
-  editSoAct->setEnabled(_privileges->check("MaintainSalesOrders"));
+  if (!(list()->rawValue("cohead_status") == "C"))
+  {
+    QAction* editSoAct = pMenu->addAction(tr("Edit Sales Order..."), this, SLOT(sEditOrder()));
+    editSoAct->setEnabled(_privileges->check("MaintainSalesOrders"));
+  }
 
   pMenu->addSeparator();
 
   QAction* viewItemAct = pMenu->addAction(tr("View Sales Order Item..."), this, SLOT(sViewItem()));
   viewItemAct->setEnabled(_privileges->check("ViewSalesOrders") || _privileges->check("MaintainSalesOrders"));
 
-  QAction* editItemAct = pMenu->addAction(tr("Edit Sales Order Item..."), this, SLOT(sEditItem()));
-  editItemAct->setEnabled(_privileges->check("MaintainSalesOrders"));
+  if (!(list()->rawValue("cohead_status") == "C") && !(list()->rawValue("coitem_status") == "C"))
+  {
+    QAction* editItemAct = pMenu->addAction(tr("Edit Sales Order Item..."), this, SLOT(sEditItem()));
+    editItemAct->setEnabled(_privileges->check("MaintainSalesOrders"));
+  }
 }
 
 void dspBookings::sEditOrder()

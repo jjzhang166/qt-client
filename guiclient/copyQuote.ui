@@ -116,6 +116,12 @@ to be bound by its terms.</comment>
    <header>custcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>DLineEdit</class>
+   <extends>QWidget</extends>
+   <header>datecluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>XLabel</class>
    <extends>QLabel</extends>
    <header>xlabel.h</header>

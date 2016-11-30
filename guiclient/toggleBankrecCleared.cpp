@@ -18,6 +18,7 @@
 #include <parameter.h>
 
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 toggleBankrecCleared::toggleBankrecCleared(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -96,9 +97,9 @@ void toggleBankrecCleared::sSave()
                              "of this Bank Reconciliation period.") );
     return;
   }
-  if (reconcileToggleCleared.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Reconciliation Information"),
+                                reconcileToggleCleared, __FILE__, __LINE__))
   {
-    systemError(this, reconcileToggleCleared.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -110,9 +111,9 @@ void toggleBankrecCleared::sSave()
   reconcileToggleCleared.bindValue(":baseamount", _baseamount);
   reconcileToggleCleared.bindValue(":transdate", _transdate->date());
   reconcileToggleCleared.exec();
-  if (reconcileToggleCleared.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Reconciliation Information"),
+                                reconcileToggleCleared, __FILE__, __LINE__))
   {
-    systemError(this, reconcileToggleCleared.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -143,9 +144,9 @@ void toggleBankrecCleared::populateReceipt()
     _exchrate->setDouble(rcp.value("doc_exchrate").toDouble());
     _baseamount = rcp.value("base_amount").toDouble();
   }
-  if (rcp.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Reconciliation Information"),
+                                rcp, __FILE__, __LINE__))
   {
-    systemError(this, rcp.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -166,9 +167,9 @@ void toggleBankrecCleared::populateCheck()
     _exchrate->setDouble(chk.value("doc_exchrate").toDouble());
     _baseamount = chk.value("base_amount").toDouble();
   }
-  if (chk.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                chk, __FILE__, __LINE__))
   {
-    systemError(this, chk.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -19,6 +19,8 @@
 #include "storedProcErrorLookup.h"
 #include "taxDetail.h"
 
+#include "errorReporter.h"
+
 transferOrderItem::transferOrderItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -164,6 +166,7 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
 
       _save->setEnabled(false);
       _next->setText(tr("New"));
+      _cancel->setEnabled(false);
       _comments->setReadOnly(true);
       _item->setReadOnly(false);
 
@@ -198,9 +201,9 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
       transferet.exec();
       if(!transferet.first() || transferet.value("cnt").toInt() == 0)
         _prev->setEnabled(false);
-      if (transferet.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                    transferet, __FILE__, __LINE__))
       {
-        systemError(this, transferet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
     }
@@ -244,9 +247,9 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
     transferet.exec();
     if(!transferet.first() || transferet.value("id").toInt() == _toitemid)
       _prev->setEnabled(false);
-    if (transferet.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                  transferet, __FILE__, __LINE__))
     {
-      systemError(this, transferet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
 
@@ -265,9 +268,9 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
       else
         _next->setText(tr("New"));
     }
-    if (transferet.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                  transferet, __FILE__, __LINE__))
     {
-      systemError(this, transferet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -298,9 +301,9 @@ void transferOrderItem::prepare()
     transferprepare.exec();
     if (transferprepare.first())
       _lineNumber->setText(transferprepare.value("_linenumber").toString());
-    else if (transferprepare.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                  transferprepare, __FILE__, __LINE__))
     {
-      systemError(this, transferprepare.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -311,9 +314,9 @@ void transferOrderItem::prepare()
     transferprepare.exec();
     if (transferprepare.first())
       _scheduledDate->setDate(transferprepare.value("scheddate").toDate());
-    else if (transferprepare.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                  transferprepare, __FILE__, __LINE__))
     {
-      systemError(this, transferprepare.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -405,9 +408,9 @@ void transferOrderItem::sSave()
     transferSave.exec("SELECT NEXTVAL('toitem_toitem_id_seq') AS toitem_id");
     if (transferSave.first())
       _toitemid = transferSave.value("toitem_id").toInt();
-    else if (transferSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Transfer Order Information"),
+                                  transferSave, __FILE__, __LINE__))
     {
-      systemError(this, transferSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -462,9 +465,9 @@ void transferOrderItem::sSave()
   transferSave.bindValue(":toitem_freight_curr_id",  _freight->id());
 
   transferSave.exec();
-  if (transferSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Transfer Order Information"),
+                                transferSave, __FILE__, __LINE__))
   {
-    systemError(this, transferSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -488,16 +491,17 @@ void transferOrderItem::sSave()
       {
 	      int result = transferSave.value("result").toInt();
 	      if (result < 0)
-	      {
-	        systemError(this, storedProcErrorLookup("updateCharAssignment", result),
-		      __FILE__, __LINE__);
-	        return;
-	      }
+          {
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Characteristic Information"),
+                                   storedProcErrorLookup("updateCharAssignment", result),
+                                   __FILE__, __LINE__);
+            return;
+          }
       }
-      else if (transferSave.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Characteristic Information"),
+                                    transferSave, __FILE__, __LINE__))
       {
-	      systemError(this, transferSave.lastError().databaseText(), __FILE__, __LINE__);
-	      return;
+        return;
       }
     }
   }
@@ -534,9 +538,9 @@ void transferOrderItem::sPopulateItemInfo(int pItemid)
       _stdcost->setBaseValue(transferPopulateItemInfo.value("stdcost").toDouble());
       _itemsiteid = transferPopulateItemInfo.value("itemsite_id").toInt();
     }
-    else if (transferPopulateItemInfo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                  transferPopulateItemInfo, __FILE__, __LINE__))
     {
-      systemError(this, transferPopulateItemInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     
@@ -575,9 +579,9 @@ void transferOrderItem::sPopulateItemInfo(int pItemid)
       _itemchar->setData(idx, pItemid, Qt::UserRole);
       row++;
     }
-    if (transferPopulateItemInfo.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Characteristic Information"),
+                                  transferPopulateItemInfo, __FILE__, __LINE__))
     {
-      systemError(this, transferPopulateItemInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -646,11 +650,12 @@ void transferOrderItem::sDetermineAvailability()
           {
             int _worksetid = availability.value("bomwork_set_id").toInt();
 	    if (_worksetid < 0)
-	    {
-	      systemError(this, storedProcErrorLookup("indentedBOM", _worksetid),
-			  __FILE__, __LINE__);
-	      return;
-	    }
+        {
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Information"),
+                                 storedProcErrorLookup("indentedBOM", _worksetid),
+                                 __FILE__, __LINE__);
+          return;
+        }
             availability.prepare("SELECT bomwork_id, *, "
                                  "       bomwork_seqnumber AS bomitem_seqnumber,"
                                  "       totalalloc + pendalloc AS totalalloc,"
@@ -692,11 +697,11 @@ void transferOrderItem::sDetermineAvailability()
             availability.bindValue(":origQtyOrd",     _originalQtyOrd);
             availability.exec();
             _availability->populate(availability);
-	    if (availability.lastError().type() != QSqlError::NoError)
-	    {
-	      systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
-	      return;
-	    }
+        if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                      availability, __FILE__, __LINE__))
+        {
+          return;
+        }
 
             //  All done with the bomwork set, delete it
             availability.prepare("SELECT deleteBOMWorkset(:bomwork_set_id) AS result;");
@@ -706,17 +711,18 @@ void transferOrderItem::sDetermineAvailability()
 	    {
 	      int result = availability.value("result").toInt();
 	      if (result < 0)
-	      {
-		systemError(this, storedProcErrorLookup("deleteBOMWorkset", result),
-			    __FILE__, __LINE__);
-		return;
-	      }
+          {
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting BOM Work Set"),
+                                   storedProcErrorLookup("deleteBOMWorkset", result),
+                                   __FILE__, __LINE__);
+            return;
+          }
 	    }
-	    else if (availability.lastError().type() != QSqlError::NoError)
-	    {
-	      systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
-	      return;
-	    }
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting BOM Work Set"),
+                                      availability, __FILE__, __LINE__))
+        {
+          return;
+        }
           }
         }
         else
@@ -758,9 +764,9 @@ void transferOrderItem::sDetermineAvailability()
           availability.bindValue(":origQtyOrd", _originalQtyOrd);
           availability.exec();
           _availability->populate(availability);
-          if (availability.lastError().type() != QSqlError::NoError)
+          if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                        availability, __FILE__, __LINE__))
           {
-            systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
             return;
           }
         }
@@ -768,9 +774,9 @@ void transferOrderItem::sDetermineAvailability()
       else
         _availability->setEnabled(false);
     }
-    else if (availability.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                  availability, __FILE__, __LINE__))
     {
-      systemError(this, availability.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -864,15 +870,14 @@ void transferOrderItem::populate()
       sDetermineAvailability();
     }
   }
-  else if (item.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Item Information"),
+                                item, __FILE__, __LINE__))
   {
-    systemError(this, item.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
-  if( (cNew == _mode) || ((cEdit == _mode) &&
-			  (item.value("toitem_status").toString() == "O")) )
-    _cancel->setEnabled(_shippedToDate->toDouble()==0.0);
+  if( (cEdit == _mode) && (item.value("toitem_status").toString() == "O") )
+    _cancel->setEnabled(true);
   else
     _cancel->setEnabled(false);
 }
@@ -932,9 +937,9 @@ void transferOrderItem::sNext()
 
     set(params);
   }
-  else if (transferNext.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                transferNext, __FILE__, __LINE__))
   {
-    systemError(this, transferNext.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else if (cView != _mode)
@@ -1006,9 +1011,9 @@ void transferOrderItem::sPrev()
 
     set(params);
   }
-  else if (transferPrev.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                transferPrev, __FILE__, __LINE__))
   {
-    systemError(this, transferPrev.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -1055,9 +1060,9 @@ void transferOrderItem::sCancel()
   transferCancel.prepare("UPDATE toitem SET toitem_status='X' WHERE (toitem_id=:toitem_id);");
   transferCancel.bindValue(":toitem_id", _toitemid);
   transferCancel.exec();
-  if (transferCancel.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Transfer Order"),
+                                transferCancel, __FILE__, __LINE__))
   {
-    systemError(this, transferCancel.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -1088,9 +1093,9 @@ void transferOrderItem::sCalculateTax()
   calcq.exec();
   if (calcq.first())
     _tax->setLocalValue(calcq.value("tax").toDouble());
-  else if (calcq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Calculating Tax"),
+                                calcq, __FILE__, __LINE__))
   {
-    systemError(this, calcq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

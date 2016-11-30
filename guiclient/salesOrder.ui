@@ -324,33 +324,7 @@ to be bound by its terms.</comment>
       </widget>
      </item>
      <item row="1" column="4">
-      <widget class="XComboBox" name="_holdType">
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Credit</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Shipping</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Packing</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Return</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="XComboBox" name="_holdType" />
      </item>
      <item row="0" column="3">
       <widget class="QLabel" name="_customerPOLit">
@@ -817,7 +791,7 @@ to be bound by its terms.</comment>
          <property name="title">
           <string/>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="gridLayout_27">
           <item row="0" column="0">
            <widget class="ContactCluster" name="_billToCntct">
             <property name="minimalLayout">
@@ -1471,7 +1445,7 @@ to be bound by its terms.</comment>
          <item row="4" column="0">
           <widget class="XURLLabel" name="_allocatedCMLit">
            <property name="text">
-            <string>Allocated Credit:</string>
+            <string>Allocated CM/Invoice:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1858,7 +1832,7 @@ to be bound by its terms.</comment>
        <item>
         <widget class="QTabWidget" name="_paymentInformation">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="_creditCardPage">
           <attribute name="title">
@@ -2498,6 +2472,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>

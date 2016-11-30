@@ -25,6 +25,7 @@
 #include "reserveSalesOrderItem.h"
 #include "storedProcErrorLookup.h"
 #include "workOrder.h"
+#include "errorReporter.h"
 
 dspInventoryAvailabilityBySalesOrder::dspInventoryAvailabilityBySalesOrder(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInventoryAvailabilityBySalesOrder", fl)
@@ -345,15 +346,15 @@ void dspInventoryAvailabilityBySalesOrder::sReserveLineBalance()
     int result = dspReserveLineBalance.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("reserveSoLineBalance", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                             storedProcErrorLookup("reserveSoLineBalance", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (dspReserveLineBalance.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspReserveLineBalance, __FILE__, __LINE__))
   {
-    systemError(this, tr("Error\n") +
-                      dspReserveLineBalance.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -366,10 +367,9 @@ void dspInventoryAvailabilityBySalesOrder::sUnreserveStock()
   dspUnreserveStock.prepare("UPDATE coitem SET coitem_qtyreserved=0 WHERE coitem_id=:soitem_id;");
   dspUnreserveStock.bindValue(":soitem_id", list()->altId());
   dspUnreserveStock.exec();
-  if (dspUnreserveStock.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Item Information"),
+                                dspUnreserveStock, __FILE__, __LINE__))
   {
-    systemError(this, tr("Error\n") +
-                      dspUnreserveStock.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

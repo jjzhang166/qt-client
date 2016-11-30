@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 lotSerialSequence::lotSerialSequence(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -130,11 +131,9 @@ void lotSerialSequence::sSave()
     lotSave.exec("SELECT NEXTVAL('lsseq_lsseq_id_seq') AS lsseq_id");
     if (lotSave.first())
       _lsseqid = lotSave.value("lsseq_id").toInt();
-    else
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Sequence Information"),
+                                  lotSave, __FILE__, __LINE__))
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
       return;
     }
 
@@ -155,7 +154,7 @@ void lotSerialSequence::sSave()
   if(lotSave.first())
   {
     QMessageBox::warning( this, tr("Cannot Save Sequence Number"),
-                          tr("You may not rename this Sequence number with the entered name as it is in use by another Planner code.") );
+                          tr("You may not rename this Sequence number with the entered name as it is already in use.") );
     _number->setFocus();
     return;
   }

@@ -35,6 +35,7 @@ public slots:
     virtual void sUpdateCosts( int pItemid );
     virtual void sUpdateMargins();
     virtual void sTypeChanged(bool);
+    virtual void sPopulateUOM();
     virtual void sQtyUOMChanged();
     virtual void sPriceUOMChanged();
     virtual void sNew();
@@ -52,8 +53,8 @@ private:
     int _ipsitemid;
     int _ipsfreightid;
     int _invuomid;
-    QString _rejectedMsg;
-
+    bool _listpricesched;
+ 
 };
 
 #endif // ITEMPRICINGSCHEDULEITEM_H

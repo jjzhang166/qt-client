@@ -95,10 +95,10 @@ class XTUPLEWIDGETS_EXPORT UsernameCluster : public VirtualCluster
   public slots:
     void setUsername(const QString & pUsername);
     void setReadOnly(const bool);
-    inline void setId(const int pId)  { static_cast<UsernameLineEdit *>(_number)->setId(pId);   }
+    inline void setId(const int pId, const QString& = QString::null)  { static_cast<UsernameLineEdit *>(_number)->setId(pId);   }
 
   protected:
-    void addNumberWidget(UsernameLineEdit* pNumberWidget);
+    void addNumberWidget(VirtualClusterLineEdit* pNumberWidget);
 };
 
 Q_DECLARE_METATYPE(UsernameLineEdit*)

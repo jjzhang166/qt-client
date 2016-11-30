@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>getLotInfo</class>
- <widget class="QDialog" name="getLotInfo" >
-  <property name="geometry" >
+ <widget class="QDialog" name="getLotInfo">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,49 +17,49 @@ to be bound by its terms.</comment>
     <height>114</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Lot Information</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
-    <widget class="QLabel" name="_lotSerialLit" >
-     <property name="text" >
+  <layout class="QGridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="_lotSerialLit">
+     <property name="text">
       <string>Lot #:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" >
-    <widget class="XLineEdit" name="_lot" />
+   <item row="0" column="1">
+    <widget class="XLineEdit" name="_lot"/>
    </item>
-   <item rowspan="3" row="0" column="2" >
-    <layout class="QVBoxLayout" >
-     <property name="spacing" >
+   <item row="0" column="2" rowspan="3">
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="text" >
+        <widget class="QPushButton" name="_close">
+         <property name="text">
           <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_assign" >
-         <property name="text" >
+        <widget class="QPushButton" name="_assign">
+         <property name="text">
           <string>&amp;Assign</string>
          </property>
-         <property name="autoDefault" >
+         <property name="autoDefault">
           <bool>true</bool>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
@@ -68,13 +68,13 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Preferred</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>0</height>
@@ -84,33 +84,33 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" >
-    <widget class="QLabel" name="_expirationDateLit" >
-     <property name="text" >
+   <item row="1" column="0">
+    <widget class="QLabel" name="_expirationDateLit">
+     <property name="text">
       <string>Expiration Date:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" >
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
+   <item row="1" column="1">
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item>
-      <widget class="DLineEdit" name="_expiration" />
+      <widget class="DLineEdit" name="_expiration"/>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>31</width>
          <height>10</height>
@@ -120,33 +120,33 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="2" column="0" >
-    <widget class="QLabel" name="_warrantyDateLit" >
-     <property name="text" >
+   <item row="2" column="0">
+    <widget class="QLabel" name="_warrantyDateLit">
+     <property name="text">
       <string>Warranty Date:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" >
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
+   <item row="2" column="1">
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item>
-      <widget class="DLineEdit" name="_warranty" />
+      <widget class="DLineEdit" name="_warranty"/>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>31</width>
          <height>10</height>
@@ -158,17 +158,19 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
    <class>DLineEdit</class>
-   <extends>XLineEdit</extends>
+   <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -186,11 +188,11 @@ to be bound by its terms.</comment>
    <receiver>getLotInfo</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

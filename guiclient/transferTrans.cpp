@@ -19,6 +19,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 #include "warehouseCluster.h"
+#include "errorReporter.h"
 
 transferTrans::transferTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -223,14 +224,16 @@ void transferTrans::sPost()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("interWarehouseTransfer", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Inter Warehouse Transfer"),
+                             storedProcErrorLookup("interWarehouseTransfer", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (transferPost.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, transferPost.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Inter Warehouse Transfer"),
+                           transferPost, __FILE__, __LINE__);
       return;
     }
 
@@ -264,11 +267,8 @@ void transferTrans::sPost()
   else
   {
     rollback.exec();
-    systemError( this, tr("A System Error occurred at transferTrans::%1, Item Site ID #%2, To Site ID #%3, From Site #%4.")
-                       .arg(__LINE__)
-                       .arg(_item->id())
-                       .arg(_toWarehouse->id())
-                       .arg(_fromWarehouse->id()) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Inter Warehouse Transfer"),
+                         transferPost, __FILE__, __LINE__);
     return;
   }
 }
@@ -293,9 +293,9 @@ void transferTrans::sPopulateFromQty(int pWarehousid)
       if (_qty->text().length())
         _fromAfterQty->setText(formatQty(transferPopulateFromQty.value("itemsite_qtyonhand").toDouble() - _qty->toDouble()));
     }
-    else if (transferPopulateFromQty.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                  transferPopulateFromQty, __FILE__, __LINE__))
     {
-      systemError(this, transferPopulateFromQty.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

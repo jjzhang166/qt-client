@@ -27,6 +27,35 @@
 #include "printQuote.h"
 #include "printSoForm.h"
 
+bool opportunity::userHasPriv(const int pMode, const int pId)
+{
+  if (_privileges->check("MaintainAllOpportunities"))
+    return true;
+  bool personalPriv = _privileges->check("MaintainPersonalOpportunities");
+  if(pMode==cView)
+  {
+    if(_privileges->check("ViewAllOpportunities"))
+      return true;
+    personalPriv = personalPriv || _privileges->check("ViewPersonalOpportunities");
+  }
+
+  if(pMode==cNew)
+    return personalPriv;
+  else
+  {
+    XSqlQuery usernameCheck;
+    usernameCheck.prepare( "SELECT getEffectiveXtUser() IN (ophead_owner_username, ophead_username) AS canModify "
+                           "FROM ophead "
+                            "WHERE (ophead_id=:ophead_id);" );
+    usernameCheck.bindValue(":ophead_id", pId);
+    usernameCheck.exec();
+
+    if (usernameCheck.first())
+      return usernameCheck.value("canModify").toBool()&&personalPriv;
+    return false;
+  }
+}
+
 opportunity::opportunity(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -139,7 +168,8 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
       }
       else if(opportunityet.lastError().type() != QSqlError::NoError)
       {
-        systemError(this, opportunityet.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Opportunity Information"),
+                             opportunityet, __FILE__, __LINE__);
       }
 
       opportunityet.exec("SELECT fetchNextNumber('OpportunityNumber') AS result;");
@@ -149,7 +179,8 @@ enum SetResponse opportunity::set(const ParameterList &pParams)
       }
       else if(opportunityet.lastError().type() != QSqlError::NoError)
       {
-        systemError(this, opportunityet.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Opportunity Information"),
+                             opportunityet, __FILE__, __LINE__);
       }
     }
     else if (param.toString() == "edit")
@@ -211,9 +242,9 @@ void opportunity::sCancel()
     cancelOppo.prepare("SELECT releaseNumber('OpportunityNumber', :number);");
     cancelOppo.bindValue(":number", _number->text().toInt());
     cancelOppo.exec();
-    if (cancelOppo.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Opportunity"),
+                                  cancelOppo, __FILE__, __LINE__))
     {
-      systemError(this, cancelOppo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -228,13 +259,15 @@ void opportunity::sCancel()
       int result = cancelOppo.value("result").toInt();
       if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("deleteOpportunity", result));
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Opportunity"),
+                               storedProcErrorLookup("deleteOpportunity", result),
+                               __FILE__, __LINE__);
+        return;
       }
     }
-    else if (cancelOppo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Opportunity"),
+                                  cancelOppo, __FILE__, __LINE__))
     {
-      systemError(this, cancelOppo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -276,7 +309,9 @@ bool opportunity::save(bool partial)
   if (!opportunityave.exec("BEGIN"))
   {
     rollback.exec();
-    systemError(this, opportunityave.lastError().databaseText(), __FILE__, __LINE__);
+
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Opportunity Information"),
+                         opportunityave, __FILE__, __LINE__);
     return false;
   }
 
@@ -360,7 +395,8 @@ bool opportunity::save(bool partial)
   if(!opportunityave.exec() && opportunityave.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, opportunityave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Opportunity Information"),
+                         opportunityave, __FILE__, __LINE__);
     return false;
   }
 
@@ -368,7 +404,8 @@ bool opportunity::save(bool partial)
   if(opportunityave.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, opportunityave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Opportunity Information"),
+                         opportunityave, __FILE__, __LINE__);
     return false;
   }
 
@@ -470,7 +507,7 @@ void opportunity::sNewTodoItem()
 
   todoItem newdlg(this, 0, true);
   newdlg.set(params);
-  if (!newdlg.exec() == XDialog::Rejected)
+  if (newdlg.exec() != XDialog::Rejected)
     sFillTodoList();
 }
 
@@ -482,7 +519,7 @@ void opportunity::sEditTodoItem()
 
   todoItem newdlg(this, 0, true);
   newdlg.set(params);
-  if (!newdlg.exec() == XDialog::Rejected)
+  if (newdlg.exec() != XDialog::Rejected)
     sFillTodoList();
 }
 
@@ -508,15 +545,17 @@ void opportunity::sDeleteTodoItem()
     int result = opportunityDeleteTodoItem.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteTodoItem", result));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting To-Do Information"),
+                             storedProcErrorLookup("deleteTodoItem", result),
+                             __FILE__, __LINE__);
       return;
     }
     else
       sFillTodoList();
     }
-  else if (opportunityDeleteTodoItem.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting To-Do Information"),
+                                opportunityDeleteTodoItem, __FILE__, __LINE__))
   {
-    systemError(this, opportunityDeleteTodoItem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -541,9 +580,9 @@ void opportunity::sFillTodoList()
 
   opportunityFillTodoList.bindValue(":ophead_id", _opheadid);
   opportunityFillTodoList.exec();
-  if (opportunityFillTodoList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving To-Do Information"),
+                                opportunityFillTodoList, __FILE__, __LINE__))
   {
-    systemError(this, opportunityFillTodoList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _todoList->populate(opportunityFillTodoList);
@@ -721,7 +760,9 @@ void opportunity::sConvertQuote()
                 int result = prospectq.value("result").toInt();
                 if (result < 0)
                 {
-                  systemError(this, storedProcErrorLookup("convertProspectToCustomer", result), __FILE__, __LINE__);
+                  ErrorReporter::error(QtCriticalMsg, this, tr("Error Converting Prospect To Customer"),
+                                           storedProcErrorLookup("convertProspectToCustomer", result),
+                                           __FILE__, __LINE__);
 				  continue;
                 }
                 convert.exec();
@@ -738,7 +779,8 @@ void opportunity::sConvertQuote()
 			  }
               else if (prospectq.lastError().type() != QSqlError::NoError)
               {
-                systemError(this, prospectq.lastError().databaseText(), __FILE__, __LINE__);
+                ErrorReporter::error(QtCriticalMsg, this, tr("Error Converting Prospect To Customer"),
+                                     prospectq, __FILE__, __LINE__);
                 continue;
 			  }
 			}
@@ -772,14 +814,15 @@ void opportunity::sConvertQuote()
         params.append("mode", "edit");
         params.append("sohead_id", soheadid);
     
-        salesOrder *newdlg = new salesOrder();
+        salesOrder *newdlg = new salesOrder(this);
         newdlg->setWindowModality(Qt::WindowModal);
         newdlg->set(params);
         omfgThis->handleNewWindow(newdlg);
 	  }
       else if (convert.lastError().type() != QSqlError::NoError)
       {
-        systemError(this, convert.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Converting Quote"),
+                             convert, __FILE__, __LINE__);
         continue;
 	  }
     } while (tryagain);
@@ -799,7 +842,7 @@ void opportunity::sNewQuote()
     params.append("cust_id", _prospectid);
   params.append("ophead_id", _opheadid);
 
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -828,16 +871,17 @@ void opportunity::sAttachQuote()
       int result = opportunityAttachQuote.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("attachQuoteToOpportunity", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Attaching Quote To Opportunity"),
+                               storedProcErrorLookup("attachQuoteToOpportunity", result),
+                               __FILE__, __LINE__);
         return;
       }
       else
         sFillSalesList();
     }
-    else if (opportunityAttachQuote.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Attaching Quote To Opportunity"),
+                                  opportunityAttachQuote, __FILE__, __LINE__))
     {
-      systemError(this, opportunityAttachQuote.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -849,7 +893,7 @@ void opportunity::sEditQuote()
   params.append("mode", "editQuote");
   params.append("quhead_id", _salesList->id());
     
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -862,7 +906,7 @@ void opportunity::sViewQuote()
   params.append("mode", "viewQuote");
   params.append("quhead_id", _salesList->id());
     
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -883,16 +927,17 @@ void opportunity::sDeleteQuote()
       int result = opportunityDeleteQuote.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("deleteQuote", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Quote"),
+                               storedProcErrorLookup("deleteQuote", result),
+                               __FILE__, __LINE__);
         return;
       }
       else
         sFillSalesList();
     }
-    else if (opportunityDeleteQuote.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Quote"),
+                                  opportunityDeleteQuote, __FILE__, __LINE__))
     {
-      systemError(this, opportunityDeleteQuote.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -918,7 +963,7 @@ void opportunity::sNewSalesOrder()
   params.append("cust_id", _custid);
   params.append("ophead_id", _opheadid);
 
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -947,16 +992,17 @@ void opportunity::sAttachSalesOrder()
       int result = opportunityAttachSalesOrder.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("attachSalesOrderToOpportunity", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Attaching Sales Order To Opportunity"),
+                               storedProcErrorLookup("attachSalesOrderToOpportunity", result),
+                               __FILE__, __LINE__);
         return;
       }
       else
         sFillSalesList();
     }
-    else if (opportunityAttachSalesOrder.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Attaching Sales Order To Opportunity"),
+                                  opportunityAttachSalesOrder, __FILE__, __LINE__))
     {
-      systemError(this, opportunityAttachSalesOrder.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -968,7 +1014,7 @@ void opportunity::sEditSalesOrder()
   params.append("mode", "edit");
   params.append("sohead_id", _salesList->id());
     
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -981,7 +1027,7 @@ void opportunity::sViewSalesOrder()
   params.append("mode", "view");
   params.append("sohead_id", _salesList->id());
     
-  salesOrder *newdlg = new salesOrder();
+  salesOrder *newdlg = new salesOrder(this);
   newdlg->setWindowModality(Qt::WindowModal);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
@@ -1017,9 +1063,9 @@ void opportunity::sFillSalesList()
   opportunityFillSalesList.bindValue(":quote", tr("Quote"));
   opportunityFillSalesList.bindValue(":salesorder", tr("Sales Order"));
   opportunityFillSalesList.exec();
-  if (opportunityFillSalesList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sales Information"),
+                                opportunityFillSalesList, __FILE__, __LINE__))
   {
-    systemError(this, opportunityFillSalesList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _salesList->populate(opportunityFillSalesList, true);
@@ -1029,7 +1075,6 @@ void opportunity::sPopulateSalesMenu(QMenu *pMenu)
 {
   bool editPriv = false;
   bool viewPriv = false;
-  bool convertPriv = false;
 
   if(_salesList->currentItem())
   {
@@ -1040,9 +1085,6 @@ void opportunity::sPopulateSalesMenu(QMenu *pMenu)
     viewPriv = (cNew == _mode || cEdit == _mode) && (
       (0 == _salesList->currentItem()->altId() && _privileges->check("ViewQuotes")) ||
       (1 == _salesList->currentItem()->altId() && _privileges->check("ViewSalesOrders")) );
-
-    convertPriv = (cNew == _mode || cEdit == _mode) &&
-      (0 == _salesList->currentItem()->altId() && _privileges->check("ConvertQuotes"));
   }
 
   QAction *menuItem;
@@ -1091,7 +1133,7 @@ void opportunity::sHandleSalesPrivs()
       (0 == _salesList->currentItem()->altId() && _privileges->check("MaintainQuotes")) ||
       (1 == _salesList->currentItem()->altId() && _privileges->check("MaintainSalesOrders")) );
 
-    viewPriv = (cNew == _mode || cEdit == _mode) && (
+    viewPriv = (cNew == _mode || cEdit == _mode || cView == _mode) && (
       (0 == _salesList->currentItem()->altId() && _privileges->check("ViewQuotes")) ||
       (1 == _salesList->currentItem()->altId() && _privileges->check("ViewSalesOrders")) );
 

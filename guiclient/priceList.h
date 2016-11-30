@@ -25,6 +25,14 @@ public:
     ~priceList();
 
     double _selectedPrice;
+    QString _selectedMethod;
+    QString _selectedType;
+    QString _selectedSale;
+    QString _selectedSchedule;
+    double _selectedBasis;
+    double _selectedModifierPct;
+    double _selectedModifierAmt;
+    double _selectedQtyBreak;
     int _curr_id;
 
 public slots:
@@ -33,12 +41,15 @@ public slots:
     virtual void sFillList();
 
 protected:
+    int _saletypeid;
     int _shiptoid;
+    int _shipzoneid;
     QString _shiptonum;
     int _prodcatid;
     int _custtypeid;
     double _iteminvpricerat;
     QString _custtypecode;
+    QString _listpriceschedule;
     QDate _effective;
     QDate _asOf;
 

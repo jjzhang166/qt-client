@@ -54,7 +54,8 @@ class printSinglecopyDocument : public XDialog
     virtual void    sAddToPrintedList(XSqlQuery *docq);
     virtual void    sClearPrintedList();
     virtual bool    sMarkOnePrinted(XSqlQuery *docq);
-    virtual void    sPopulate();
+    virtual void		sPopulate();
+    virtual void		sPopulate(XSqlQuery*);
     virtual void    sPrint();
     virtual bool    sPrintOneDoc(XSqlQuery *docq);
     virtual void    setDoctype(QString doctype);

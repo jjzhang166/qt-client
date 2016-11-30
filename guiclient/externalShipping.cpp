@@ -25,9 +25,10 @@ void externalShipping::setVisible(bool visible)
     XDialog::setVisible(false);
   else if (!userHasPriv())
   {
-    systemError(this,
-	        tr("You do not have sufficient privilege to view this window."),
-		__FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Privileges Error"),
+                         tr("%1: <p>Insufficient Privileges to View/Edit External "
+                         "Shipping records").arg(windowTitle()),
+                          __FILE__,__LINE__);
     reject();
   }
   else

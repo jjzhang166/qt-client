@@ -110,7 +110,7 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout_0">
         <item row="0" column="0">
          <widget class="QLabel" name="_termsLit">
           <property name="text">
@@ -177,23 +177,7 @@ to be bound by its terms.</comment>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="XComboBox" name="_docType">
-          <item>
-           <property name="text">
-            <string>Credit Memo</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Debit Memo</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Voucher</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="XComboBox" name="_docType" />
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="_docNumberLit">
@@ -283,6 +267,27 @@ to be bound by its terms.</comment>
          </widget>
         </item>
         <item row="4" column="1">
+          <widget class="XCheckBox" name="_usePrepaid">
+           <property name="text">
+            <string>Use Prepaid Account</string>
+           </property>
+          </widget>
+        </item>
+        <item row="5" column="0">
+          <widget class="QLabel" name="_accntIdLit">
+            <property name="text">
+              <string>Distribution Account:</string>
+            </property>
+          </widget>
+        </item>
+        <item  row="5" column="1">
+          <widget class="GLCluster" name="_accntId">
+            <property name="enabled">
+               <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+        <item row="6" column="1">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -370,6 +375,49 @@ to be bound by its terms.</comment>
           </property>
          </spacer>
         </item>
+        <item row="3" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="XComboBox" name="_taxzone">
+            <property name="allowNull">
+             <bool>true</bool>
+            </property>
+            <property name="nullStr">
+             <string>None</string>
+            </property>
+            <property name="type">
+             <enum>XComboBox::TaxZones</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
+         <widget class="XLabel" name="_taxZoneLit">
+          <property name="text">
+           <string>Tax Zone:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+          </property>
+          <property name="margin">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="1">
          <widget class="CurrCluster" name="_tax">
           <property name="enabled">
@@ -424,68 +472,6 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="_accountTab">
-        <attribute name="title">
-         <string>Account</string>
-        </attribute>
-        <layout class="QGridLayout">
-         <item row="1" column="0">
-          <widget class="QGroupBox" name="_altPrepaid">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title">
-            <string/>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-           <layout class="QHBoxLayout">
-            <item>
-             <widget class="QLabel" name="_altAccntidLit">
-              <property name="text">
-               <string>Alternate Prepaid Account:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="GLCluster" name="_altAccntid">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="_useAltPrepaid">
-           <property name="text">
-            <string>Use Alternate Prepaid Account</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="_applicationsTab">
         <attribute name="title">
          <string>Applications</string>
@@ -511,6 +497,13 @@ to be bound by its terms.</comment>
        </widget>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="XCheckBox" name="_printOnPost">
+       <property name="text">
+        <string>Print on post</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -521,6 +514,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
@@ -579,9 +573,9 @@ to be bound by its terms.</comment>
   <tabstop>_docNumber</tabstop>
   <tabstop>_poNumber</tabstop>
   <tabstop>_journalNumber</tabstop>
+  <tabstop>_accntId</tabstop>
   <tabstop>_terms</tabstop>
   <tabstop>_amount</tabstop>
-  <tabstop>_altAccntid</tabstop>
   <tabstop>_notes</tabstop>
   <tabstop>_apapply</tabstop>
   <tabstop>_paid</tabstop>
@@ -665,22 +659,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_useAltPrepaid</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>_altAccntid</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>451</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>374</x>
-     <y>493</y>
     </hint>
    </hints>
   </connection>

@@ -40,8 +40,10 @@ public slots:
     void sCalculateTax();
     void sPriceGroup();
     void sTaxDetail();
+    void sPopulateUOM();
     void sQtyUOMChanged();
     void sPriceUOMChanged();
+    void sSalePriceUOMChanged();
     void sDispositionChanged();
     void sDetermineAvailability();
     void sHandleWo( bool pCreate );

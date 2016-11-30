@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 countTagList::countTagList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -83,9 +84,9 @@ void countTagList::sFillList()
   countFillList.exec();
 
   _cnttag->populate(countFillList, _cnttagid);
-  if (countFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Count Tag Information"),
+                                countFillList, __FILE__, __LINE__))
   {
-    systemError(this, countFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

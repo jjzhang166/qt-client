@@ -48,6 +48,9 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   QString qryPriority = "SELECT incdtpriority_id, incdtpriority_name "
                         "FROM incdtpriority "
                         "ORDER BY incdtpriority_order, incdtpriority_name ";
+  QString qryResolution = "SELECT incdtresolution_id, incdtresolution_name "
+                        "FROM incdtresolution "
+                        "ORDER BY incdtresolution_order, incdtresolution_name ";
 
   parameterWidget()->append(tr("Account"), "crmAccountId", ParameterWidget::Crmacct);
   parameterWidget()->append(tr("Contact"),"cntct_id", ParameterWidget::Contact);
@@ -67,6 +70,7 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   parameterWidget()->append(tr("Start Date"), "startDate", ParameterWidget::Date);
   parameterWidget()->append(tr("End Date"), "endDate", ParameterWidget::Date);
   parameterWidget()->append(tr("Priority"), "incdtpriority_id_list", ParameterWidget::Multiselect, QVariant(), false, qryPriority);
+  parameterWidget()->append(tr("Resolution"), "incdtresolution_id_list", ParameterWidget::Multiselect, QVariant(), false, qryResolution);
   parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
   if(_metrics->boolean("IncidentsPublicPrivate"))
     parameterWidget()->append(tr("Public"), "public", ParameterWidget::CheckBox);
@@ -92,6 +96,8 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   list()->addColumn(tr("Severity"),    _userColumn, Qt::AlignLeft, false, "incdtseverity_name");
   list()->addColumn(tr("Priority"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_name");
   list()->addColumn(tr("Priority Order"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_order");
+  list()->addColumn(tr("Resolution"),    _userColumn, Qt::AlignLeft, false, "incdtresolution_name");
+  list()->addColumn(tr("Resolution Order"),    _userColumn, Qt::AlignLeft, false, "incdtresolution_order");
   list()->addColumn(tr("Contact"),     _userColumn, Qt::AlignLeft, false, "cntct_name");
   list()->addColumn(tr("Project"),     _userColumn, Qt::AlignLeft, false, "prj_number");
   if(_metrics->boolean("IncidentsPublicPrivate"))

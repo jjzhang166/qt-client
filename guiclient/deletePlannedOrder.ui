@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,10 +7,9 @@ It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
- <exportmacro></exportmacro>
  <class>deletePlannedOrder</class>
- <widget class="QDialog" name="deletePlannedOrder" >
-  <property name="geometry" >
+ <widget class="QDialog" name="deletePlannedOrder">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -18,35 +17,35 @@ to be bound by its terms.</comment>
     <height>182</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Delete Planned Order</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>5</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>0</number>
    </property>
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>5</number>
      </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+      <layout class="QHBoxLayout">
+       <property name="spacing">
         <number>7</number>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="PlanOrdCluster" name="_planord" >
-         <property name="minimumSize" >
+        <widget class="PlanOrdCluster" name="_planord">
+         <property name="minimumSize">
           <size>
            <width>290</width>
            <height>130</height>
@@ -55,22 +54,22 @@ to be bound by its terms.</comment>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="spacing" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>20</height>
@@ -79,37 +78,37 @@ to be bound by its terms.</comment>
           </spacer>
          </item>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="margin" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>0</number>
            </property>
-           <property name="spacing" >
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
-            <layout class="QVBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
-             <property name="spacing" >
+            <layout class="QVBoxLayout">
+             <property name="spacing">
               <number>5</number>
              </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
              <item>
-              <widget class="QPushButton" name="_close" >
-               <property name="text" >
+              <widget class="QPushButton" name="_close">
+               <property name="text">
                 <string>Cancel</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="_delete" >
-               <property name="enabled" >
+              <widget class="QPushButton" name="_delete">
+               <property name="enabled">
                 <bool>false</bool>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string>&amp;Delete</string>
                </property>
-               <property name="default" >
+               <property name="default">
                 <bool>true</bool>
                </property>
               </widget>
@@ -118,10 +117,10 @@ to be bound by its terms.</comment>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
-             <property name="sizeHint" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
                <height>20</height>
@@ -136,29 +135,29 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="margin" >
+      <layout class="QHBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="spacing" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="QCheckBox" name="_deleteChildren" >
-         <property name="text" >
+        <widget class="QCheckBox" name="_deleteChildren">
+         <property name="text">
           <string>Delete &amp;Child Orders</string>
          </property>
         </widget>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>20</height>
@@ -172,13 +171,13 @@ to be bound by its terms.</comment>
    </item>
    <item>
     <spacer>
-     <property name="orientation" >
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeType" >
+     <property name="sizeType">
       <enum>QSizePolicy::Expanding</enum>
      </property>
-     <property name="sizeHint" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>0</height>
@@ -188,15 +187,12 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>PlanOrdCluster</class>
    <extends>QWidget</extends>
    <header>plCluster.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -205,7 +201,6 @@ to be bound by its terms.</comment>
   <tabstop>_delete</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections>
   <connection>
@@ -214,11 +209,11 @@ to be bound by its terms.</comment>
    <receiver>deletePlannedOrder</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -230,11 +225,11 @@ to be bound by its terms.</comment>
    <receiver>_delete</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

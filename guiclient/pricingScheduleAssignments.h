@@ -23,6 +23,7 @@ public:
     ~pricingScheduleAssignments();
 
 public slots:
+    virtual SetResponse set( const ParameterList & pParams );
     virtual void sPrint();
     virtual void sNew();
     virtual void sEdit();
@@ -33,6 +34,9 @@ public slots:
 protected slots:
     virtual void languageChange();
 
+private:
+    bool _listpricesched;
+  
 };
 
 #endif // PRICINGSCHEDULEASSIGNMENTS_H

@@ -149,10 +149,10 @@ void adjustInvValue::sPopulate()
       _newCost->setText("0.0");
       _post->setEnabled(false);
     }
-    if (adjustPopulate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Values"),
+                                  adjustPopulate, __FILE__, __LINE__))
     {
-      systemError(this, adjustPopulate.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+        return;
     }
   }
 }
@@ -187,10 +187,10 @@ void adjustInvValue::sPost()
 
   MetaSQLQuery mql(sql);
   adjustPost = mql.toQuery(params);
-  if (adjustPost.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Adjustment"),
+                                adjustPost, __FILE__, __LINE__))
   {
-    systemError(this, adjustPost.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   QMessageBox::information( this, tr("Post Successful"),
@@ -220,10 +220,10 @@ void adjustInvValue::sUpdateCost()
   {
     _newCost->setText(adjustUpdateCost.value("f_cost").toString());
   }
-  if (adjustUpdateCost.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Cost"),
+                                adjustUpdateCost, __FILE__, __LINE__))
   {
-    systemError(this, adjustUpdateCost.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 }
 

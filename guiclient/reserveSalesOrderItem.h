@@ -47,6 +47,7 @@ private:
   
     int _soitemid;
     int _itemsiteid;
+    bool _locControl;
     QString _controlMethod;
 
 };

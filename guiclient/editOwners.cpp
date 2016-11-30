@@ -16,6 +16,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 editOwners::editOwners(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -49,10 +50,10 @@ editOwners::editOwners(QWidget* parent, const char* name, bool modal, Qt::Window
   {
     _owner->setId(editeditOwners.value("usr_id").toInt());
   }  
-  else if (editeditOwners.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Owner Information"),
+                                editeditOwners, __FILE__, __LINE__))
   {
-    systemError(this, editeditOwners.lastError().databaseText(), __FILE__, __LINE__);
-    reject();
+    return;
   }
 }
 
@@ -234,9 +235,9 @@ bool editOwners::modifyOne(XTreeWidgetItem * currentItem)
   editmodifyOne.bindValue(":new_owner_username", _newOwner->username());
   editmodifyOne.bindValue(":id", currentItem->id());
   editmodifyOne.exec();
-  if (editmodifyOne.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Owner Information"),
+                                editmodifyOne, __FILE__, __LINE__))
   {
-    systemError(this, editmodifyOne.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   return true;

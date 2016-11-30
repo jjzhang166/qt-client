@@ -14,6 +14,7 @@
 #include <QSqlError>
 
 #include <openreports.h>
+#include "errorReporter.h"
 
 postVouchers::postVouchers(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -66,10 +67,8 @@ void postVouchers::sPost()
     }
     else if (result < 0)
     {
-      systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                         .arg(__FILE__)
-                         .arg(__LINE__)
-                         .arg(result) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Voucher"),
+                           postPost, __FILE__, __LINE__);
       return;
     }
 
@@ -104,10 +103,8 @@ void postVouchers::sPost()
   }
   else
   {
-    systemError( this, tr("A System Error occurred at %1::%2.\n%3")
-                       .arg(__FILE__)
-                       .arg(__LINE__)
-                       .arg(postPost.lastError().databaseText()) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Voucher"),
+                         postPost, __FILE__, __LINE__);
     return;
   }
 

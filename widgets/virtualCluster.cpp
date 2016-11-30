@@ -618,11 +618,13 @@ void VirtualClusterLineEdit::setStrikeOut(bool enable)
 }
 
 void VirtualClusterLineEdit::setTableAndColumnNames(const char* pTabName,
-						    const char* pIdColumn,
-						    const char* pNumberColumn,
-						    const char* pNameColumn,
+						                            const char* pIdColumn,
+						                            const char* pNumberColumn,
+						                            const char* pNameColumn,
                                                     const char* pDescripColumn,
-                                                    const char* pActiveColumn)
+                                                    const char* pActiveColumn,
+                                                    const char*,
+                                                    const char*)
 {
   _idColName = QString(pIdColumn);
   _numColName = QString(pNumberColumn);
@@ -691,6 +693,11 @@ void VirtualClusterLineEdit::clear()
       emit valid(_valid);
     if (oldid != _id)
       emit newId(_id);
+}
+
+void VirtualClusterLineEdit::setId(const int pId, const QString &)
+{
+	setId(pId);
 }
 
 void VirtualClusterLineEdit::setId(const int pId)

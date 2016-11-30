@@ -500,6 +500,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
@@ -562,22 +563,6 @@ to be bound by its terms.</comment>
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>_item</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_save</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>_close</sender>
    <signal>clicked()</signal>

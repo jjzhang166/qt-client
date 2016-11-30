@@ -344,7 +344,7 @@ to be bound by its terms.</comment>
              <property name="title">
               <string>Incident Status Colors</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout">
+             <layout class="QGridLayout" name="gridLayout_9">
               <item row="0" column="0">
                <widget class="QLabel" name="_newLit">
                 <property name="text">

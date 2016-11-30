@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,10 +16,12 @@
 
 #include <openreports.h>
 
+#include "errorReporter.h"
 #include "printArOpenItem.h"
 #include "storedProcErrorLookup.h"
 #include "taxDetail.h"
 #include "currcluster.h"
+#include "guiErrorCheck.h"
 
 arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -31,32 +33,36 @@ arOpenItem::arOpenItem(QWidget* parent, const char* name, bool modal, Qt::Window
   _save = _buttonBox->button(QDialogButtonBox::Save);
   _save->setDisabled(true);
 
-  connect(_buttonBox,      SIGNAL(accepted()),                 this, SLOT(sSave()));
-  connect(_buttonBox,      SIGNAL(rejected()),                 this, SLOT(sClose()));
+  connect(_buttonBox,      SIGNAL(accepted()),                this, SLOT(sSave()));
+  connect(_buttonBox,      SIGNAL(rejected()),                this, SLOT(sClose()));
   connect(_cust,           SIGNAL(newId(int)),                this, SLOT(sPopulateCustInfo(int)));
   connect(_cust,           SIGNAL(valid(bool)),               _save, SLOT(setEnabled(bool)));
   connect(_terms,          SIGNAL(newID(int)),                this, SLOT(sPopulateDueDate()));
   connect(_docDate,        SIGNAL(newDate(const QDate&)),     this, SLOT(sPopulateDueDate()));
   connect(_taxLit,         SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
   connect(_amount,         SIGNAL(valueChanged()),            this, SLOT(sCalculateCommission()));
+  connect(_amount,         SIGNAL(editingFinished()),         this, SLOT(sDetermineTaxAmount()));
+  connect(_taxzone,        SIGNAL(newID(int)),                this, SLOT(sDetermineTaxAmount()));
   connect(_docNumber,      SIGNAL(textEdited(QString)),       this, SLOT(sReleaseNumber()));
 
   _last = -1;
   _aropenid = -1;
   _seqiss = 0;
 
+  _docType->append(0, tr("Credit Memo"),      "C");
+  _docType->append(1, tr("Debit Memo"),       "D");
+  _docType->append(2, tr("Invoice"),          "I");
+  _docType->append(3, tr("Customer Deposit"), "R");
+
   _arapply->addColumn(tr("Type"),            _dateColumn, Qt::AlignCenter,true, "doctype");
   _arapply->addColumn(tr("Doc. #"),                   -1, Qt::AlignLeft,  true, "docnumber");
   _arapply->addColumn(tr("Apply Date"),      _dateColumn, Qt::AlignCenter,true, "arapply_postdate");
   _arapply->addColumn(tr("Dist. Date"),      _dateColumn, Qt::AlignCenter,true, "arapply_distdate");
   _arapply->addColumn(tr("Amount"),         _moneyColumn, Qt::AlignRight, true, "arapply_applied");
-  _arapply->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  true, "currabbr");
+  _arapply->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "currabbr");
   _arapply->addColumn(tr("Base Amount"), _bigMoneyColumn, Qt::AlignRight, true, "baseapplied");
 
   _printOnPost->setVisible(false);
-
-  if (omfgThis->singleCurrency())
-      _arapply->hideColumn("currabbr");
 
   _cust->setType(CLineEdit::ActiveCustomers);
   _terms->setType(XComboBox::ARTerms);
@@ -87,26 +93,26 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
   XDialog::set(pParams);
   QVariant param;
   bool     valid;
-  
+
   param = pParams.value("docType", &valid);
   if (valid)
   {
     if (param.toString() == "creditMemo")
     {
       setWindowTitle(windowTitle() + tr(" - Enter Misc. Credit Memo"));
-      _docType->setCurrentIndex(0);
+      _docType->setCode("C");
       _rsnCode->setType(XComboBox::ARCMReasonCodes);
     }
     else if (param.toString() == "debitMemo")
     {
       setWindowTitle(windowTitle() + tr(" - Enter Misc. Debit Memo"));
-      _docType->setCurrentIndex(1);
+      _docType->setCode("D");
       _rsnCode->setType(XComboBox::ARDMReasonCodes);
     }
     else if (param.toString() == "invoice")
-      _docType->setCurrentIndex(2);
+      _docType->setCode("I");
     else if (param.toString() == "customerDeposit")
-      _docType->setCurrentIndex(3);
+      _docType->setCode("R");
     else
       return UndefinedError;
 //  ToDo - better error return types
@@ -127,11 +133,11 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
         _docNumber->setText(aret.value("number").toString());
         _seqiss = aret.value("number").toInt();
       }
-      else if (aret.lastError().type() != QSqlError::NoError)
-      {
-	systemError(this, aret.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
-      }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R Information"),
+                                  aret, __FILE__, __LINE__))
+    {
+      return UndefinedError;
+    }
 
       _paid->clear();
       _save->setText(tr("Post"));
@@ -147,6 +153,8 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
       _docNumber->setEnabled(false);
       _orderNumber->setEnabled(false);
       _journalNumber->setEnabled(false);
+      _amount->setEnabled(false);
+      _taxzone->setEnabled(false);
       _terms->setEnabled(false);
       _useAltPrepaid->setEnabled(false);
       _altPrepaid->setEnabled(false);
@@ -168,6 +176,7 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
       _salesrep->setEnabled(false);
       _commissionDue->setEnabled(false);
       _rsnCode->setEnabled(false);
+      _taxzone->setEnabled(false);
       _useAltPrepaid->setEnabled(false);
       _altPrepaid->setEnabled(false);
       _notes->setReadOnly(true);
@@ -177,7 +186,7 @@ enum SetResponse arOpenItem::set( const ParameterList &pParams )
     else
       return UndefinedError;
   }
-  
+
   param = pParams.value("cust_id", &valid);
   if (valid)
   {
@@ -202,70 +211,46 @@ void arOpenItem::sSave()
 
   if (_mode == cNew)
   {
-    if (!_docDate->isValid())
-    {
-      QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                             tr("You must enter a date for this Receivable Memo before you may save it") );
-      _docDate->setFocus();
-      return;
-    }
 
-    if (!_dueDate->isValid())
-    {
-      QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                             tr("You must enter a date for this Receivable Memo before you may save it") );
-      _dueDate->setFocus();
-      return;
-    }
+    QList<GuiErrorCheck>errors;
+    errors<<GuiErrorCheck(!_docDate->isValid(), _docDate,
+                            tr("You must enter a document date for this Receivable Memo before you may save it."))
+          <<GuiErrorCheck(!_dueDate->isValid(), _dueDate,
+                           tr("You must enter a due date for this Receivable Memo before you may save it."))
+          <<GuiErrorCheck(_amount->isZero(), _amount,
+                          tr("You must enter an amount for this Receivable Memo before you may save it."))
+          <<GuiErrorCheck(_tax->localValue() > _amount->localValue(), _tax,
+                          tr("The tax amount may not be greater than the total Receivable Memo amount."));
 
-    if (_amount->isZero())
-    {
-      QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                             tr("You must enter an amount for this Receivable Memo before you may save it") );
-      _amount->setFocus();
-      return;
-    }
-    
-    if(_tax->localValue() > _amount->localValue())
-    {
-      QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                             tr("The tax amount may not be greater than the total Receivable Memo amount.") );
-      return;
-    }
 
     if (_useAltPrepaid->isChecked())
     {
-      if(_altSalescatidSelected->isChecked() && !_altSalescatid->isValid())
-      {
-        QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                               tr("You must choose a valid Alternate Sales Category for this Receivable Memo before you may save it") );
-        return;
-      }
+      errors<<GuiErrorCheck(_altSalescatidSelected->isChecked() && !_altSalescatid->isValid(), _altSalescatid,
+                           tr("You must choose a valid Alternate Sales Category for this Receivable Memo before you may save it."))
+            <<GuiErrorCheck(_altAccntidSelected->isChecked() && !_altAccntid->isValid(), _altAccntid,
+                          tr("You must choose a valid Alternate Prepaid Account Number for this Receivable Memo before you may save it."));
 
-      if(_altAccntidSelected->isChecked() && !_altAccntid->isValid())
-      {
-        QMessageBox::critical( this, tr("Cannot Save Receivable Memo"),
-                               tr("You must choose a valid Alternate Prepaid Account Number for this Receivable Memo before you may save it.") );
-        return;
-      }
     }
 
-    if (_docType->currentIndex() == 0)
+    if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Receivable Memo"),errors))
+        return;
+
+    if (_docType->code() == "C")
     {
       arSave.prepare( "SELECT createARCreditMemo( :aropen_id, :cust_id, :aropen_docnumber, :aropen_ordernumber,"
                  "                           :aropen_docdate, :aropen_amount, :aropen_notes, :aropen_rsncode_id,"
                  "                           :aropen_salescat_id, :aropen_accnt_id, :aropen_duedate,"
                  "                           :aropen_terms_id, :aropen_salesrep_id, :aropen_commission_due,"
-                 "                           NULL, :curr_id ) AS result;" );
+                 "                           NULL, :curr_id, NULL, NULL, :taxzone ) AS result;" );
       storedProc = "createARCreditMemo";
     }
-    else if (_docType->currentIndex() == 1)
+    else if (_docType->code() == "D")
     {
       arSave.prepare( "SELECT createARDebitMemo( :aropen_id,:cust_id, NULL, :aropen_docnumber, :aropen_ordernumber,"
                  "                          :aropen_docdate, :aropen_amount, :aropen_notes, :aropen_rsncode_id,"
                  "                          :aropen_salescat_id, :aropen_accnt_id, :aropen_duedate,"
                  "                          :aropen_terms_id, :aropen_salesrep_id, :aropen_commission_due, "
-                 "                          :curr_id ) AS result;" );
+                 "                          :curr_id, :taxzone ) AS result;" );
       storedProc = "createARDebitMemo";
     }
 
@@ -288,7 +273,8 @@ void arOpenItem::sSave()
                "    aropen_amount=:aropen_amount,"
                "    aropen_commission_due=:aropen_commission_due, aropen_notes=:aropen_notes,"
                "    aropen_rsncode_id=:aropen_rsncode_id, "
-	       "    aropen_curr_id=:curr_id "
+               "    aropen_curr_id=:curr_id, "
+               "    aropen_taxzone_id=:taxzone "
                "WHERE (aropen_id=:aropen_id);" );
   }
 
@@ -308,6 +294,9 @@ void arOpenItem::sSave()
   arSave.bindValue(":aropen_notes",          _notes->toPlainText());
   arSave.bindValue(":aropen_rsncode_id", _rsnCode->id());
   arSave.bindValue(":curr_id", _amount->id());
+  if (_taxzone->isValid())
+    arSave.bindValue(":taxzone", _taxzone->id());
+
   if(_useAltPrepaid->isChecked() && _altSalescatidSelected->isChecked())
     arSave.bindValue(":aropen_salescat_id", _altSalescatid->id());
   else
@@ -317,24 +306,7 @@ void arOpenItem::sSave()
   else
     arSave.bindValue(":aropen_accnt_id", -1);
 
-  switch (_docType->currentIndex())
-  {
-    case 0:
-      arSave.bindValue(":aropen_doctype", "C");
-      break;
-
-    case 1:
-      arSave.bindValue(":aropen_doctype", "D");
-      break;
-
-    case 2:
-      arSave.bindValue(":aropen_doctype", "I");
-      break;
-
-    case 3:
-      arSave.bindValue(":aropen_doctype", "R");
-      break;
-  }
+  arSave.bindValue(":aropen_doctype", _docType->code());
 
   if (arSave.exec())
   {
@@ -343,30 +315,30 @@ void arOpenItem::sSave()
     else
     {
       arSave.first();
-      if (arSave.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R %1M").arg(_docType->code()),
+                                    arSave, __FILE__, __LINE__))
       {
-	systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
         reset();
-	return;
+        return;
       }
       _last = arSave.value("result").toInt();
       if (_last < 0)
       {
-	systemError(this, storedProc.isEmpty() ?
-			    tr("Saving Credit Memo Failed: %1").arg(_last) :
-			    storedProcErrorLookup(storedProc, _last),
-		    __FILE__, __LINE__);
-        reset();
-	return;
+        if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R %1M").arg(_docType->code()),
+                                    arSave, __FILE__, __LINE__))
+        {
+          reset();
+        }
+        return;
       }
       if(_printOnPost->isChecked())
         sPrintOnPost(_last);
       reset();
     }
   }
-  else if (arSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R %1M").arg(_docType->code()),
+                                arSave, __FILE__, __LINE__))
   {
-    systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
     if (_mode == cNew)
       reset();
     return;
@@ -405,9 +377,9 @@ void arOpenItem::sReleaseNumber()
     arReleaseNumber.prepare("SELECT releaseARMemoNumber(:docNumber);");
     arReleaseNumber.bindValue(":docNumber", _seqiss);
     arReleaseNumber.exec();
-    if (arReleaseNumber.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling A/R %1M").arg(_docType->code()),
+                                  arReleaseNumber, __FILE__, __LINE__))
     {
-      systemError(this, arReleaseNumber.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -418,7 +390,8 @@ void arOpenItem::sPopulateCustInfo(int pCustid)
   if ( (pCustid != -1) && (_mode == cNew) )
   {
     XSqlQuery c;
-    c.prepare( "SELECT cust_terms_id, cust_salesrep_id, cust_curr_id, cust_commprcnt "
+    c.prepare( "SELECT cust_terms_id, cust_salesrep_id, cust_curr_id, "
+               "       cust_taxzone_id, cust_commprcnt "
                "FROM custinfo "
                "WHERE (cust_id=:cust_id);" );
     c.bindValue(":cust_id", pCustid);
@@ -429,11 +402,12 @@ void arOpenItem::sPopulateCustInfo(int pCustid)
       _salesrep->setId(c.value("cust_salesrep_id").toInt());
       _amount->setId(c.value("cust_curr_id").toInt());
       _tax->setId(c.value("cust_curr_id").toInt());
+      _taxzone->setId(c.value("cust_taxzone_id").toInt());
       _commprcnt = c.value("cust_commprcnt").toDouble();
     }
-    else if (c.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R Information"),
+                                  c, __FILE__, __LINE__))
     {
-      systemError(this, c.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -451,7 +425,7 @@ void arOpenItem::populate()
              "       aropen_terms_id, aropen_salesrep_id,"
              "       aropen_commission_due, cust_commprcnt,"
              "       aropen_notes, aropen_rsncode_id, aropen_salescat_id, "
-             "       aropen_accnt_id, aropen_curr_id, "
+             "       aropen_accnt_id, aropen_curr_id, aropen_taxzone_id, "
              "       COALESCE(SUM(taxhist_tax),0) AS tax, "
              "       CASE WHEN (aropen_doctype = 'D' OR "
              "                 (aropen_doctype='C' AND cmhead_id IS NULL)) THEN "
@@ -469,7 +443,7 @@ void arOpenItem::populate()
              "  aropen_doctype, aropen_docnumber, aropen_ordernumber, aropen_journalnumber,  "
              "  aropen_amount, aropen_amount, aropen_paid, f_balance, aropen_terms_id, "
              "  aropen_salesrep_id, aropen_commission_due, cust_commprcnt, aropen_notes, aropen_rsncode_id, "
-             "  aropen_salescat_id, aropen_accnt_id, aropen_curr_id, cmhead_id;" );
+             "  aropen_salescat_id, aropen_accnt_id, aropen_curr_id, aropen_taxzone_id, cmhead_id;" );
   arpopulate.bindValue(":aropen_id", _aropenid);
   arpopulate.exec();
   if (arpopulate.first())
@@ -481,8 +455,8 @@ void arOpenItem::populate()
     _orderNumber->setText(arpopulate.value("aropen_ordernumber").toString());
     _journalNumber->setText(arpopulate.value("aropen_journalnumber").toString());
     _amount->set(arpopulate.value("aropen_amount").toDouble(),
-		 arpopulate.value("aropen_curr_id").toInt(),
-		 arpopulate.value("aropen_docdate").toDate(), false);
+                 arpopulate.value("aropen_curr_id").toInt(),
+                 arpopulate.value("aropen_docdate").toDate(), false);
     _paid->setLocalValue(arpopulate.value("aropen_paid").toDouble());
     _balance->setLocalValue(arpopulate.value("f_balance").toDouble());
     _terms->setId(arpopulate.value("aropen_terms_id").toInt());
@@ -490,10 +464,13 @@ void arOpenItem::populate()
     _commissionDue->setBaseValue(arpopulate.value("aropen_commission_due").toDouble());
     _commprcnt = arpopulate.value("cust_commprcnt").toDouble();
     _notes->setText(arpopulate.value("aropen_notes").toString());
+    _taxzone->setId(arpopulate.value("aropen_taxzone_id").toInt());
     if (arpopulate.value("showTax").toBool())
       _tax->setLocalValue(arpopulate.value("tax").toDouble());
     else
     {
+      _taxzoneLit->hide();
+      _taxzone->hide();
       _taxLit->hide();
       _tax->hide();
     }
@@ -516,14 +493,7 @@ void arOpenItem::populate()
     }
 
     QString docType = arpopulate.value("aropen_doctype").toString();
-    if (docType == "C")
-      _docType->setCurrentIndex(0);
-    else if (docType == "D")
-      _docType->setCurrentIndex(1);
-    else if (docType == "I")
-      _docType->setCurrentIndex(2);
-    else if (docType == "R")
-      _docType->setCurrentIndex(3);
+    _docType->setCode(docType);
 
     _cAmount = arpopulate.value("aropen_amount").toDouble();
 
@@ -532,16 +502,7 @@ void arOpenItem::populate()
       arpopulate.prepare( "SELECT arapply_id, arapply_source_aropen_id,"
                  "       CASE WHEN (arapply_source_doctype = 'C') THEN :creditMemo"
                  "            WHEN (arapply_source_doctype = 'R') THEN :cashdeposit"
-                 "            WHEN (arapply_fundstype='C') THEN :check"
-                 "            WHEN (arapply_fundstype='T') THEN :certifiedCheck"
-                 "            WHEN (arapply_fundstype='M') THEN :masterCard"
-                 "            WHEN (arapply_fundstype='V') THEN :visa"
-                 "            WHEN (arapply_fundstype='A') THEN :americanExpress"
-                 "            WHEN (arapply_fundstype='D') THEN :discoverCard"
-                 "            WHEN (arapply_fundstype='R') THEN :otherCreditCard"
-                 "            WHEN (arapply_fundstype='K') THEN :cash"
-                 "            WHEN (arapply_fundstype='W') THEN :wireTransfer"
-                 "            WHEN (arapply_fundstype='O') THEN :other"
+                 "            ELSE getFundsTypeName(arapply_fundstype)"
                  "       END AS doctype,"
                  "       CASE WHEN (arapply_source_doctype IN ('C','R')) THEN arapply_source_docnumber"
                  "            WHEN (arapply_source_doctype = 'K') THEN arapply_refnumber"
@@ -558,16 +519,6 @@ void arOpenItem::populate()
 
       arpopulate.bindValue(":creditMemo", tr("Credit Memo"));
       arpopulate.bindValue(":cashdeposit", tr("Cash Deposit"));
-      arpopulate.bindValue(":check", tr("Check"));
-      arpopulate.bindValue(":certifiedCheck", tr("Certified Check"));
-      arpopulate.bindValue(":masterCard", tr("Master Card"));
-      arpopulate.bindValue(":visa", tr("Visa"));
-      arpopulate.bindValue(":americanExpress", tr("American Express"));
-      arpopulate.bindValue(":discoverCard", tr("Discover Card"));
-      arpopulate.bindValue(":otherCreditCard", tr("Other Credit Card"));
-      arpopulate.bindValue(":cash", tr("Cash"));
-      arpopulate.bindValue(":wireTransfer", tr("Wire Transfer"));
-      arpopulate.bindValue(":other", tr("Other"));
     }
     else if (docType == "C" || docType == "R")
     {
@@ -598,12 +549,12 @@ void arOpenItem::populate()
     arpopulate.bindValue(":aropen_id", _aropenid);
     arpopulate.exec();
     _arapply->populate(arpopulate, true);
-    if (arpopulate.lastError().type() != QSqlError::NoError)
-	systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R Information"),
+                                  arpopulate, __FILE__, __LINE__);
   }
-  else if (arpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Next Period Number"),
+                                arpopulate, __FILE__, __LINE__))
   {
-    systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -665,85 +616,83 @@ void arOpenItem::sPrintOnPost(int temp_id)
     newdlg.exec();
 }
 
+bool arOpenItem::sInitializeMemo()
+{
+  XSqlQuery ar;
+  ar.prepare("SELECT nextval('aropen_aropen_id_seq') AS result;");
+  ar.exec();
+  if (ar.first())
+    _aropenid = ar.value("result").toInt();
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Initializing Memo"),
+                                ar, __FILE__, __LINE__))
+    return false;
+  else
+    return false;
+
+  ar.prepare("INSERT INTO aropen "
+    "( aropen_id, aropen_docdate, aropen_duedate, aropen_doctype, "
+    "  aropen_docnumber, aropen_curr_id, aropen_open, aropen_posted, aropen_amount ) "
+    "VALUES "
+    "( :aropen_id, :docDate, :dueDate, :docType, :docNumber, :currId, true, false, :amount ); ");
+  ar.bindValue(":aropen_id",_aropenid);
+  ar.bindValue(":docDate", _docDate->date());
+  ar.bindValue(":dueDate", _dueDate->date());
+  ar.bindValue(":amount", _amount->localValue());
+  ar.bindValue(":docType", _docType->code() );
+  ar.bindValue(":docNumber", _docNumber->text());
+  ar.bindValue(":currId", _amount->id());
+  ar.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Initializing Memo"),
+                                ar, __FILE__, __LINE__))
+  {
+    reset();
+    return false;
+  }
+
+  return true;
+}
+
 void arOpenItem::sTaxDetail()
 {
   XSqlQuery ar;
   if (_aropenid == -1)
   {
-    if (!_docDate->isValid() || !_dueDate->isValid())
-    {
-      QMessageBox::critical( this, tr("Cannot set tax amounts"),
-                             tr("You must enter document and due dates for this Receivable Memo before you may set tax amounts.") );
-      _docDate->setFocus();
-      return;
-    }
-    
-    if (_amount->isZero())
-    {
-      QMessageBox::critical( this, tr("Cannot set tax amounts"),
-                             tr("You must enter an amount for this Receivable Memo before you may set tax amounts.") );
-      _amount->setFocus();
-      return;
-    }
+    QList<GuiErrorCheck>errors;
+    errors<<GuiErrorCheck(!_docDate->isValid(), _docDate,
+                            tr("You must enter a document date for this Receivable Memo before you may set tax amounts."))
+          <<GuiErrorCheck(!_dueDate->isValid(), _dueDate,
+                            tr("You must enter a due date for this Receivable Memo before you may set tax amounts."))
+          <<GuiErrorCheck(_amount->isZero(), _amount,
+                           tr("You must enter an amount for this Receivable Memo before you may set tax amounts."));
 
-    ar.prepare("SELECT nextval('aropen_aropen_id_seq') AS result;");
-    ar.exec();
-    if (ar.first())
-      _aropenid = ar.value("result").toInt();
-    else if (ar.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, ar.lastError().databaseText(), __FILE__, __LINE__);
+    if(GuiErrorCheck::reportErrors(this,tr("Cannot Set Tax Amounts"),errors))
+        return;
+
+
+    if (!sInitializeMemo())
       return;
-    }
-    else
-      return;
-    
-    ar.prepare("INSERT INTO aropen "
-      "( aropen_id, aropen_docdate, aropen_duedate, aropen_doctype, "
-      "  aropen_docnumber, aropen_curr_id, aropen_open, aropen_posted, aropen_amount ) "
-      "VALUES "
-      "( :aropen_id, :docDate, :dueDate, :docType, :docNumber, :currId, true, false, :amount ); ");
-    ar.bindValue(":aropen_id",_aropenid);
-    ar.bindValue(":docDate", _docDate->date());
-    ar.bindValue(":dueDate", _dueDate->date());
-    ar.bindValue(":amount", _amount->localValue());
-    if (_docType->currentIndex())
-      ar.bindValue(":docType", "D" );
-    else
-      ar.bindValue(":docType", "C" );
-    ar.bindValue(":docNumber", _docNumber->text());
-    ar.bindValue(":currId", _amount->id());
-    ar.exec();
-    if (ar.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, ar.lastError().databaseText(), __FILE__, __LINE__);
-      reset();
-      return;
-    }
   }
-  
+
   taxDetail newdlg(this, "", true);
   ParameterList params;
 
   params.append("curr_id", _tax->id());
   params.append("date",    _tax->effective());
-  if (!_docType->currentIndex())
+  if (_docType->code() == "C")
     params.append("sense",-1);
   if (_mode != cNew)
     params.append("readOnly");
 
   ar.exec("SELECT getadjustmenttaxtypeid() as taxtype;");
   if(ar.first())
-    params.append("taxtype_id", ar.value("taxtype").toInt());  
-   
+    params.append("taxtype_id", ar.value("taxtype").toInt());
+
   params.append("order_type", "AR");
   params.append("order_id", _aropenid);
   params.append("display_type", "A");
   params.append("subtotal", _amount->localValue());
   params.append("adjustment");
-  if (!_docType->currentIndex())
-    params.append("sense",-1);
-  if (newdlg.set(params) == NoError)  
+  if (newdlg.set(params) == NoError)
   {
     newdlg.exec();
     XSqlQuery taxq;
@@ -754,16 +703,46 @@ void arOpenItem::sTaxDetail()
     taxq.exec();
     if (taxq.first())
     {
-      if (!_docType->currentIndex())
+      if (_docType->code() == "C")
         _tax->setLocalValue(taxq.value("tax").toDouble() * -1);
       else
         _tax->setLocalValue(taxq.value("tax").toDouble());
     }
-    else if (taxq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Cannot set tax amounts"),
+                                  taxq, __FILE__, __LINE__))
     {
-      systemError(this, taxq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
 }
 
+void arOpenItem::sDetermineTaxAmount()
+{
+  if (_mode != cNew)
+    return;
+
+  XSqlQuery ar;
+  if (_aropenid == -1)
+  {
+    if (!_docDate->isValid() || !_dueDate->isValid() || _amount->isZero())
+      return;
+    if (!sInitializeMemo())
+      return;
+  }
+  ar.prepare( "SELECT updatememotax(:source, :doctype, :aropen_id, :taxzone, :date, :curr, :amount) AS tax;" );
+
+  ar.bindValue(":source",    "AR");
+  ar.bindValue(":doctype",   _docType->code());
+  ar.bindValue(":aropen_id", _aropenid);
+  ar.bindValue(":taxzone",   _taxzone->id());
+  ar.bindValue(":date",      _tax->effective());
+  ar.bindValue(":curr",      _tax->id());
+  ar.bindValue(":amount",    _amount->localValue());
+  ar.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Returning AR Open Tax"),
+                           ar, __FILE__, __LINE__))
+    return;
+
+  if (ar.first())
+    _tax->setLocalValue(ar.value("tax").toDouble());
+}

@@ -25,6 +25,7 @@ class selectPayments;
 class selectedPayments;
 class unappliedAPCreditMemos;
 class viewCheckRun;
+class dspVendorAPHistory;
 
 #include "vendorgroup.h"
 
@@ -47,6 +48,7 @@ class apWorkBench : public XWidget, public Ui::apWorkBench
     selectPayments         *_payables;
     openVouchers           *_vouchers;
     selectedPayments       *_selectedPayments;
+    dspVendorAPHistory     *_history;
 };
 
 #endif // APWORKBENCH_H

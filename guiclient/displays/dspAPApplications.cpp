@@ -19,6 +19,7 @@
 #include "check.h"
 #include "voucher.h"
 #include "miscVoucher.h"
+#include "errorReporter.h"
 
 dspAPApplications::dspAPApplications(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspAPApplications", fl)
@@ -80,9 +81,9 @@ void dspAPApplications::sViewCheck()
         return;
       }
     }
-    else if (countq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Check Information"),
+                                  countq, __FILE__, __LINE__))
     {
-      systemError(this, countq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -97,9 +98,9 @@ void dspAPApplications::sViewCheck()
     chkq.exec();
     if (chkq.first())
       checkid = chkq.value("checkhead_id").toInt();
-    else if (chkq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Check Information"),
+                                  chkq, __FILE__, __LINE__))
     {
-      systemError(this, chkq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -161,7 +162,8 @@ void dspAPApplications::sViewVoucher()
     }
   }
   else
-    systemError( this, dspViewVoucher.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Voucher Information"),
+                       dspViewVoucher, __FILE__, __LINE__);
 }
 
 void dspAPApplications::sPopulateMenu(QMenu* pMenu, QTreeWidgetItem*, int)

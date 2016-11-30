@@ -16,6 +16,7 @@
 
 #include "xtreewidget.h"
 #include "xmessagebox.h"
+#include "errorReporter.h"
 
 dspSummarizedBankrecHistory::dspSummarizedBankrecHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedBankrecHistory", fl)
@@ -99,9 +100,9 @@ void dspSummarizedBankrecHistory::sReopen()
         return;
       }
     }
-    else if (open.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Reconciliation Information"),
+                                  open, __FILE__, __LINE__))
     {
-      systemError(this, open.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList();

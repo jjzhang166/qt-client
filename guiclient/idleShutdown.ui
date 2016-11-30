@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>idleShutdown</class>
- <widget class="QDialog" name="idleShutdown" >
-  <property name="geometry" >
+ <widget class="QDialog" name="idleShutdown">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,47 +17,47 @@ to be bound by its terms.</comment>
     <height>103</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Idle Shutdown</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="_message" >
-     <property name="text" >
+    <widget class="QLabel" name="_message">
+     <property name="text">
       <string>You have been idle for %1 minute(s).  xTuple ERP will be closed unless you Cancel.</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="_count" >
-     <property name="text" >
+    <widget class="QLabel" name="_count">
+     <property name="text">
       <string>Shutdown in %1 seconds</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
-     <property name="margin" >
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <spacer name="Spacer2" >
-       <property name="orientation" >
+      <spacer name="Spacer2">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>20</height>
@@ -66,24 +66,24 @@ to be bound by its terms.</comment>
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="_btnCancel" >
-       <property name="text" >
+      <widget class="QPushButton" name="_btnCancel">
+       <property name="text">
         <string>Cancel</string>
        </property>
-       <property name="default" >
+       <property name="default">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="Spacer1" >
-       <property name="orientation" >
+      <spacer name="Spacer1">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>20</height>
@@ -94,14 +94,14 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <spacer name="spacer24" >
-     <property name="orientation" >
+    <spacer name="spacer24">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeType" >
+     <property name="sizeType">
       <enum>QSizePolicy::Expanding</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>16</width>
        <height>32</height>
@@ -111,9 +111,9 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <includes>
-  <include location="global" >parameter.h</include>
+  <include location="global">parameter.h</include>
  </includes>
  <resources/>
  <connections>
@@ -123,11 +123,11 @@ to be bound by its terms.</comment>
    <receiver>idleShutdown</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>256</x>
      <y>78</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

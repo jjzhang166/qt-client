@@ -20,6 +20,7 @@
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
 #include "taxCode.h"
+#include "errorReporter.h"
 
 taxCodes::taxCodes(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -118,14 +119,15 @@ void taxCodes::sDelete()
       int result = taxDelete.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("deleteTax", result),
-	    	  __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Code"),
+                               storedProcErrorLookup("deleteTax", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
-    else if (taxDelete.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Code"),
+                                  taxDelete, __FILE__, __LINE__))
     {
-      systemError(this, taxDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList();

@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 createRecurringInvoices::createRecurringInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -43,15 +44,15 @@ void createRecurringInvoices::sUpdate()
     int result = createUpdate.value("result").toInt();
     if (result < 0)
     {
-      systemError(this,
-                  storedProcErrorLookup("createRecurringInvoices", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Recurring Invoices"),
+                             storedProcErrorLookup("createRecurringInvoices", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (createUpdate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Recurring Invoices"),
+                                createUpdate, __FILE__, __LINE__))
   {
-    systemError(this, createUpdate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

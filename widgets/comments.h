@@ -61,25 +61,30 @@ class XTUPLEWIDGETS_EXPORT Comments : public QWidget
   public:
     Comments(QWidget *, const char * = 0);
 
-    // if you add to this then add to the _commentMap[] below
+    // if you add to this then add to the _commentMap[] in the .cpp
     enum CommentSources
     {
       Uninitialized,
       Address,
-      BBOMHead,		BBOMItem,
-      BOMHead,		BOMItem,
-      BOOHead,		BOOItem,
-      CRMAccount,	Contact,	Customer,
-      Employee,         Incident,
-      Item,		ItemSite,	ItemSource,
-      Location,		LotSerial,
-      Opportunity,
-      Project,		PurchaseOrder,	PurchaseOrderItem,
-      ReturnAuth, ReturnAuthItem, Quote, QuoteItem,
-      SalesOrder,	SalesOrderItem, Task, TimeAttendance,
-      TodoItem,      TransferOrder,	TransferOrderItem,
-      Vendor,
-      Warehouse,	WorkOrder
+      BBOMHead,          BBOMItem,
+      BOMHead,           BOMItem,
+      BOOHead,           BOOItem,
+      CRMAccount,        Contact,
+      Customer,          Employee,
+      FixedAsset,        MaintOrder,
+      ExchangeRate,      Incident,
+      Item,              ItemSite,
+      ItemSource,        Location,
+      LotSerial,         Opportunity,
+      Project,           PurchaseOrder,
+      PurchaseOrderItem, ReturnAuth,
+      ReturnAuthItem,    RentalItem,
+      Quote,             QuoteItem,
+      SalesOrder,        SalesOrderItem,
+      Task,              TimeAttendance,
+      TodoItem,          TransferOrder,
+      TransferOrderItem, Vendor,
+      Warehouse,         WorkOrder
     };
 
     inline int sourceid()             { return _sourceid; }

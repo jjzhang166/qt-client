@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>List Pricing Schedules</string>
+   <string>Pricing Schedules</string>
   </property>
   <layout class="QVBoxLayout">
    <item>

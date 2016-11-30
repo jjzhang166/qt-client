@@ -20,6 +20,35 @@
 
 const char *_taskStatuses[] = { "P", "O", "C" };
 
+bool task::userHasPriv(const int pMode, const int pId)
+{
+  if (_privileges->check("MaintainAllProjects"))
+    return true;
+  bool personalPriv = _privileges->check("MaintainPersonalProjects");
+  if(pMode==cView)
+  {
+    if(_privileges->check("ViewAllProjects"))
+      return true;
+    personalPriv = personalPriv || _privileges->check("ViewPersonalProjects");
+  }
+
+  if(pMode==cNew)
+    return personalPriv;
+  else
+  {
+    XSqlQuery usernameCheck;
+    usernameCheck.prepare( "SELECT getEffectiveXtUser() IN (prjtask_owner_username, prjtask_username) AS canModify "
+                           "FROM prjtask "
+                            "WHERE (prjtask_id=:prjtask_id);" );
+    usernameCheck.bindValue(":prjtask_id", pId);
+    usernameCheck.exec();
+
+    if (usernameCheck.first())
+      return usernameCheck.value("canModify").toBool()&&personalPriv;
+    return false;
+  }
+}
+
 task::task(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -110,9 +139,8 @@ enum SetResponse task::set(const ParameterList &pParams)
         _prjtaskid = tasket.value("prjtask_id").toInt();
       else
       {
-        systemError(this, tr("A System Error occurred at %1::%2.")
-                          .arg(__FILE__)
-                          .arg(__LINE__) );
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Project Task Information"),
+                             tasket, __FILE__, __LINE__);
       }
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
@@ -199,9 +227,9 @@ void task::populate()
     sHoursAdjusted();
     sExpensesAdjusted();
   }
-  else if (taskpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Task Information"),
+                                taskpopulate, __FILE__, __LINE__))
   {
-    systemError(this, taskpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -274,9 +302,9 @@ void task::sSave()
   taskSave.bindValue(":prjtask_exp_actual", _actualExp->text().toDouble());
 
   taskSave.exec();
-  if (taskSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Task Information"),
+                                taskSave, __FILE__, __LINE__))
   {
-    systemError(this, taskSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -323,75 +351,18 @@ void task::sExpensesAdjusted()
 void task::sNewUser()
 {
   XSqlQuery taskNewUser;
-/*
-  userList newdlg(this, "", true);
-  int result = newdlg.exec();
-  if (result != XDialog::Rejected)
-  {
-    QString username = newdlg.username();
-    taskNewUser.prepare( "SELECT prjtaskuser_id "
-               "FROM prjtaskuser "
-               "WHERE ( (prjtaskuser_username=:username)"
-               " AND (prjtaskuser_prjtask_id=:prjtask_id) );" );
-    taskNewUser.bindValue(":username", username);
-    taskNewUser.bindValue(":prjtask_id", _prjtaskid);
-    taskNewUser.exec();
-    if (!taskNewUser.first())
-    {
-      taskNewUser.prepare( "INSERT INTO prjtaskuser "
-                 "( prjtaskuser_prjtask_id, prjtaskuser_username ) "
-                 "VALUES "
-                 "( :prjtaskuser_prjtask_id, :prjtaskuser_username );" );
-      taskNewUser.bindValue(":prjtaskuser_username", username);
-      taskNewUser.bindValue(":prjtaskuser_prjtask_id", _prjtaskid);
-      taskNewUser.exec();
-      sFillUserList();
-    }
-    if (taskNewUser.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, taskNewUser.lastError().databaseText(), __FILE__, __LINE__);
-      return;
-    }
-  }
-*/
 }
 
 void task::sDeleteUser()
 {
   XSqlQuery taskDeleteUser;
-/*
-  taskDeleteUser.prepare( "DELETE FROM prjtaskuser "
-             "WHERE ( (prjtaskuser_username=:username)"
-             " AND (prjtaskuser_prjtask_id=:prjtask_id) );" );
-  taskDeleteUser.bindValue(":username", _usr->username());
-  taskDeleteUser.bindValue(":prjtask_id", _prjtaskid);
-  taskDeleteUser.exec();
-  if (taskDeleteUser.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, taskDeleteUser.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-  sFillUserList();
-*/
+
 }
 
 
 void task::sFillUserList()
 {
   XSqlQuery taskFillUserList;
-/*
-  taskFillUserList.prepare( "SELECT prjtaskuser_id, usr_username, usr_propername "
-             "FROM prjtaskuser, usr "
-             "WHERE ( (prjtaskuser_username=usr_username)"
-             " AND (prjtaskuser_prjtask_id=:prjtask_id) );" );
-  taskFillUserList.bindValue(":prjtask_id", _prjtaskid);
-  taskFillUserList.exec();
-  _usr->populate(taskFillUserList);
-  if (taskFillUserList.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, taskFillUserList.lastError().databaseText(), __FILE__, __LINE__);
-    return;
-  }
-*/
+
 }
 

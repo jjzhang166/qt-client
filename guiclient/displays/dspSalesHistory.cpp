@@ -33,6 +33,7 @@ dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WindowFlags f
   parameterWidget()->append(tr("Ship Start Date"), "shipStartDate", ParameterWidget::Date);
   parameterWidget()->append(tr("Ship End Date"),   "shipEndDate",   ParameterWidget::Date);
   parameterWidget()->append(tr("Customer"),   "cust_id",   ParameterWidget::Customer);
+  parameterWidget()->append(tr("Customer P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->append(tr("Customer Ship-to"),   "shipto_id",   ParameterWidget::Shipto);
   parameterWidget()->appendComboBox(tr("Customer Group"), "custgrp_id", XComboBox::CustomerGroups);
   parameterWidget()->append(tr("Customer Group Pattern"), "custgrp_pattern", ParameterWidget::Text);
@@ -54,6 +55,7 @@ dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WindowFlags f
 
   list()->addColumn(tr("Customer"),            -1,              Qt::AlignLeft,   true,  "cust_name"   );
   list()->addColumn(tr("Doc. #"),              _orderColumn,    Qt::AlignLeft,   true,  "cohist_ordernumber"   );
+  list()->addColumn(tr("Cust. P/O #"),         _orderColumn,    Qt::AlignLeft,  true,   "cohist_ponumber" );
   list()->addColumn(tr("Invoice #"),           _orderColumn,    Qt::AlignLeft,   true,  "invoicenumber"   );
   list()->addColumn(tr("Ord. Date"),           _dateColumn,     Qt::AlignCenter, true,  "cohist_orderdate" );
   list()->addColumn(tr("Invc. Date"),          _dateColumn,     Qt::AlignCenter, true,  "cohist_invcdate" );

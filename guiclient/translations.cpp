@@ -220,8 +220,8 @@ void translations::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
 void translations::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int /*pColumn*/)
 {
-  QAction *menuItem;
-  menuItem = pMenu->addAction(tr("Check for translation"), this, SLOT(sDownload()));
+  //QAction *menuItem;
+  (void)pMenu->addAction(tr("Check for translation"), this, SLOT(sDownload()));
 }
 
 void translations::sDownload()

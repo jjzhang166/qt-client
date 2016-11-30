@@ -16,6 +16,10 @@
 #include <QtScript>
 
 Q_DECLARE_METATYPE(QByteArray*)
+Q_DECLARE_METATYPE(QByteArray)
+#if QT_VERSION >= 0x050000
+Q_DECLARE_METATYPE(enum QByteArray::Base64Option)
+#endif
 
 void setupQByteArrayProto(QScriptEngine *engine);
 QScriptValue constructQByteArray(QScriptContext *context, QScriptEngine *engine);
@@ -26,8 +30,8 @@ class QByteArrayProto : public QObject, public QScriptable
 
   public:
     QByteArrayProto(QObject *parent);
+    virtual ~QByteArrayProto();
 
-    /*
     Q_INVOKABLE QByteArray &append(const QByteArray &ba);
     Q_INVOKABLE QByteArray &append(const QString &str);
     Q_INVOKABLE QByteArray &append(const char *str);
@@ -129,9 +133,22 @@ class QByteArrayProto : public QObject, public QScriptable
     Q_INVOKABLE QByteArray toUpper() const;
     Q_INVOKABLE QByteArray trimmed() const;
     Q_INVOKABLE void truncate(int pos);
-    */
 
     Q_INVOKABLE QString toString() const;
+
+    // Node.js Buffer emulation helper functions.
+    Q_INVOKABLE int readInt16BE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE int readInt16LE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE uint readUInt16BE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE uint readUInt16LE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE int readInt32BE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE int readInt32LE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE uint readUInt32BE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE uint readUInt32LE(int offset = 0, bool noAssert = false) const;
+    Q_INVOKABLE QString toLatin1() const;
+    Q_INVOKABLE QString toLocal8Bit() const;
+    Q_INVOKABLE QString toUtf8() const;
+    Q_INVOKABLE QByteArray slice(int start = 0, int end = 0) const;
 
 };
 

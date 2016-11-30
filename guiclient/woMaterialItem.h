@@ -35,12 +35,16 @@ protected slots:
     virtual void sSave();
     virtual void sUpdateQtyRequired();
     virtual void sItemIdChanged();
+    virtual void sPopulateUOM();
+    virtual void sUOMChanged();
+    virtual void sEnableSave();
 
 private:
     int _bomitemid;
     int _mode;
     int _womatlid;
     int _wooperid;
+    int _invuomid;
     bool _captive;
 
 };

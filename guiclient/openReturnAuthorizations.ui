@@ -225,6 +225,16 @@ to be bound by its terms.</comment>
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="_closeRA">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Close</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="_delete">
                 <property name="enabled">
                  <bool>false</bool>
@@ -269,6 +279,7 @@ to be bound by its terms.</comment>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XCheckBox</class>
@@ -289,6 +300,7 @@ to be bound by its terms.</comment>
   <tabstop>_new</tabstop>
   <tabstop>_edit</tabstop>
   <tabstop>_view</tabstop>
+  <tabstop>_closeRA</tabstop>
   <tabstop>_delete</tabstop>
   <tabstop>_close</tabstop>
   <tabstop>_print</tabstop>

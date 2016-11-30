@@ -18,6 +18,7 @@
 
 #include "taxCache.h"
 #include "taxDetail.h"
+#include "errorReporter.h"
 
 taxBreakdown::taxBreakdown(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -120,33 +121,30 @@ void taxBreakdown::sFreightTaxDetail()
 						_freight->effective()));
    params.append("sense", _sense);
 
-  if (_ordertype == "S" || _ordertype == "Q" || _ordertype == "RA")
-  {
-   params.append("taxzone_id",  _taxzone->id());
+   taxFreightTaxDetail.exec("SELECT getfreighttaxtypeid() as taxtype;");
+   if(taxFreightTaxDetail.first())
+     params.append("taxtype_id", taxFreightTaxDetail.value("taxtype").toInt()); 
 
-   taxFreightTaxDetail.exec("SELECT getfreighttaxtypeid() as taxtype;");
-	 if(taxFreightTaxDetail.first())
-		params.append("taxtype_id", taxFreightTaxDetail.value("taxtype").toInt());  
+  if (_ordertype == "S" || _ordertype == "Q" || _ordertype == "RA" 
+      || _ordertype == "PO" || _ordertype == "PI")
+  {
+    params.append("taxzone_id",  _taxzone->id()); 
+    params.append("date",    _freight->effective());
   
-   params.append("date",    _freight->effective());
-  
-   params.append("readOnly");
-   if (newdlg.set(params) == NoError) 
-	   newdlg.exec();
-     
- }
- else if (_ordertype == "I" || _ordertype == "B" || _ordertype == "CM" || _ordertype == "TO")
- {
-   taxFreightTaxDetail.exec("SELECT getfreighttaxtypeid() as taxtype;");
-	 if(taxFreightTaxDetail.first())
-	   params.append("taxtype_id", taxFreightTaxDetail.value("taxtype").toInt());  
-   params.append("order_type", _ordertype);
-   params.append("order_id", _orderid);
-   params.append("display_type", "F");
-   params.append("readOnly");
-   if (newdlg.set(params) == NoError) 
-	   newdlg.exec();  
- }
+    params.append("readOnly");
+    if (newdlg.set(params) == NoError) 
+      newdlg.exec();
+  }
+  else if (_ordertype == "I" || _ordertype == "B" || _ordertype == "CM" 
+          || _ordertype == "TO" || _ordertype == "VO" || _ordertype == "VI" )
+  {
+    params.append("order_type", _ordertype);
+    params.append("order_id", _orderid);
+    params.append("display_type", "F");
+    params.append("readOnly");
+    if (newdlg.set(params) == NoError) 
+      newdlg.exec();  
+  }
 }
 
 void taxBreakdown::sLineTaxDetail()
@@ -245,9 +243,9 @@ void taxBreakdown::sPopulate()
   }
   else if (_ordertype == "CM")
   {
-    _currencyLit->setText(tr("Return Currency:"));
-    _header->setText(tr("Tax Breakdown for Return:"));
-    _totalLit->setText(tr("Return Total:"));
+    _currencyLit->setText(tr("Sales Credit Currency:"));
+    _header->setText(tr("Tax Breakdown for Sales Credit:"));
+    _totalLit->setText(tr("Sales Credit Total:"));
 
     params.append("cmhead_id", _orderid);
   }
@@ -268,26 +266,41 @@ void taxBreakdown::sPopulate()
     _currencyLit->setText(tr("Purchase Order Currency:"));
     _header->setText(tr("Tax Breakdown for Purchase Order:"));
     _totalLit->setText(tr("Purchase Order Total:"));
+    _freightLit->setText(tr("Total P/O Freight Value:"));
 
     _adjTaxLit->setVisible(false);
     _adjTax->setVisible(false);
-	  _freightTaxLit->setVisible(false);
-    _freightTax->setVisible(false);
     params.append("pohead_id", _orderid);
+  }
+  else if (_ordertype == "PI")
+  {
+    _currencyLit->setText(tr("Purchase Order Currency:"));
+    _header->setText(tr("Tax Breakdown for Purchase Order Item:"));
+    _totalLit->setText(tr("Purchase Item Total:"));
+
+    _adjTaxLit->setVisible(false);
+    _adjTax->setVisible(false);
+    params.append("poitem_id", _orderid);
   }
    else if (_ordertype == "VO")
   {
     _currencyLit->setText(tr("Voucher Currency:"));
     _header->setText(tr("Tax Breakdown for Voucher:"));
     _totalLit->setText(tr("Voucher Total:"));
-
-	_freightTaxLit->setVisible(false);
-    _freightTax->setVisible(false);
-
+    _freightLit->setText(tr("Total Voucher Freight:"));
+    _adjTaxLit->setVisible(false);
+    _adjTax->setVisible(false);
     params.append("vohead_id", _orderid);
   }
-
-
+  else if (_ordertype == "VI")
+  {
+    _currencyLit->setText(tr("Voucher Currency:"));
+    _header->setText(tr("Tax Breakdown for Voucher:"));
+    _totalLit->setText(tr("Voucher Total:"));
+    params.append("voitem_id", _orderid);
+    _adjTaxLit->setVisible(false);
+    _adjTax->setVisible(false);
+  }
 
   MetaSQLQuery mql = mqlLoad("taxBreakdown", "detail");
   taxPopulate = mql.toQuery(params);
@@ -311,5 +324,6 @@ void taxBreakdown::sPopulate()
     _total->setLocalValue(_pretax->localValue() + _totalTax->localValue());
   }
   else if (taxPopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, taxPopulate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                       taxPopulate, __FILE__, __LINE__);
 }

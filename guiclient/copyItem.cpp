@@ -21,6 +21,7 @@
 #include "bomItem.h"
 #include "itemSite.h"
 #include "storedProcErrorLookup.h"
+#include "guiErrorCheck.h"
 
 copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -28,7 +29,10 @@ copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlag
   setupUi(this);
 
   connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
-  connect(_source, SIGNAL(newId(int)), this, SLOT(sSaveItem()));
+  connect(_next, SIGNAL(clicked()), this, SLOT(sNext()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(sCancel()));
+  connect(_cancel, SIGNAL(clicked()), this, SLOT(sCancel()));
+  connect(_source, SIGNAL(newId(int)), this, SLOT(sUpdateItem()));
   connect(_rollupPrices, SIGNAL(toggled(bool)), this, SLOT(sFillBomitem()));
   connect(_searchForBOM, SIGNAL(textChanged(const QString&)), this, SLOT(sFillItem()));
   connect(_copyBOM, SIGNAL(toggled(bool)), this, SLOT(sCopyBom()));
@@ -56,8 +60,10 @@ copyItem::copyItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlag
   _listCost->setValidator(omfgThis->costVal());
 
   _newitemid = -1;
+  _isActive = false;
   _inTransaction = false;
   _captive = false;
+  _committed = false;
 }
 
 copyItem::~copyItem()
@@ -88,72 +94,121 @@ enum SetResponse copyItem::set(const ParameterList &pParams)
   return NoError;
 }
 
-void copyItem::sSaveItem()
+void copyItem::sNext()
 {
+  // Validate that the item number chosen is available.
+  if (okToSave())
+  {
+    // Create the new item and move on to the second step,
+    // choosing what else to copy (BOM, Routings, etc.)
+
+    if (saveItem())
+    {
+      // Copy Itemsites and BOM if those check boxes are already checked
+      // due to the restoration of the previous state of the screen from the
+      // last time copyItem was used.
+ 
+      sCopyBom();
+      sCopyItemsite();
+
+      // Display the next page so the user can make alterations to the staged
+      // copy of child relations and decide what else to copy.  With the item
+      // in existence, not just in a pending transaction, other users will
+      // not be able to select the same item number in a separate, attempted copy.
+
+      _pages->setCurrentIndex(1);
+
+      // Ultimately, the user will either click "Copy" (sCopy), click "Cancel"
+      // (sCancel), or close the window (closeEvent).  In the latter two cases,
+      // the creation of the item and child objects will be undone.
+    }
+  }
+}
+
+void copyItem::sUpdateItem()
+{
+  XSqlQuery query;
+  query.prepare("SELECT item_descrip1, item_listprice, item_listcost, item_active "
+                "FROM item "
+                "WHERE (item_id=:sourceitemid);");
+
+  query.bindValue(":sourceitemid", _source->id());
+  query.exec();
+
+  if (query.first())
+  {
+    _targetItemDescrip->setText(query.value("item_descrip1").toString());
+    _listPrice->setDouble(query.value("item_listprice").toDouble());
+    _listCost->setDouble(query.value("item_listcost").toDouble());
+    _isActive = query.value("item_active").toBool();
+    _next->setEnabled(true);
+  }
+  else
+  {
+    _next->setEnabled(false);
+  }
+}
+
+bool copyItem::saveItem()
+{
+  bool saved = false;
+
   if(_source->id() == -1)
-    return;
+    return saved;
 
   XSqlQuery itemsave;
-  if(_inTransaction)
-    itemsave.exec("ROLLBACK;");
-  else
-    _inTransaction = true;
-  
-  //Find an unused temporary item number
-  int tempCopyint = 0;
-  while (true)
-  {
-    itemsave.prepare("SELECT sourceitemnumber AS result "
-                     "FROM item,"
-                     " (SELECT item_number AS sourceitemnumber"
-                     "  FROM item"
-                     "  WHERE item_id=:sourceitemid) AS data "
-                     "WHERE (item_number = ('TEMPCOPY' || :tempcopyint::TEXT || sourceitemnumber));");
-    itemsave.bindValue(":sourceitemid", _source->id());
-    itemsave.bindValue(":tempcopyint", tempCopyint);
-    itemsave.exec();
-    if (itemsave.lastError().type() != QSqlError::NoError)
-    {
-      _inTransaction = false;
-      return;
-    }
-    if(!itemsave.first())
-    {
-      break;
-    }
-    tempCopyint = tempCopyint + 1;
-  }
+  XSqlQuery itemupdate;
 
-  itemsave.exec("BEGIN;");
-  
-  itemsave.prepare("SELECT copyItem(item_id, 'TEMPCOPY' || :tempcopyint::TEXT || :sourceitemnumber) AS result,"
-                   "       item_descrip1, item_listprice, item_listcost "
+  itemsave.prepare("SELECT copyItem(item_id, :targetitemnumber) AS result,"
+                   "       item_id "
                    "FROM item "
                    "WHERE (item_id=:sourceitemid);");
+
   itemsave.bindValue(":sourceitemid", _source->id());
-  itemsave.bindValue(":sourceitemnumber", _source->number());
-  itemsave.bindValue(":tempcopyint", tempCopyint);
+  itemsave.bindValue(":targetitemnumber", _targetItemNumber->text().trimmed().toUpper());
   itemsave.exec();
-  if(itemsave.first())
+
+  if (itemsave.first())
   {
     _newitemid = itemsave.value("result").toInt();
-    _targetItemDescrip->setText(itemsave.value("item_descrip1").toString());
-    _listPrice->setDouble(itemsave.value("item_listprice").toDouble());
-    _listCost->setDouble(itemsave.value("item_listcost").toDouble());
+
+    // Set item inactive until copy is committed.
+
+    itemupdate.prepare("UPDATE item SET item_active=false, "
+                       "                item_descrip1=:item_descrip1 "
+                       "WHERE (item_id=:item_id);");
+    itemupdate.bindValue(":item_id", _newitemid);
+    itemupdate.bindValue(":item_descrip1", _targetItemDescrip->text());
+    itemupdate.exec();
+
+    if (itemupdate.lastError().type() != QSqlError::NoError)
+    {
+      // Remove the copied item since the update failed.
+      cancelCopy();
+
+      // Then report the error to the user.
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item"),
+                               itemupdate, __FILE__, __LINE__);
+    }
+    else
+    {
+      saved = true;
+    }
   }
-  if (itemsave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item"),
+                                  itemsave, __FILE__, __LINE__))
   {
-    itemsave.exec("ROLLBACK;");
-    _inTransaction = false;
-    return;
+    saved = false;
   }
-  
-  sCopyBom();
-  sCopyItemsite();
+
+  return saved;
 }
 
 void copyItem::sCopyBom()
 {
+  if (_newitemid < 0)
+    return;
+
   if (_copyBOM->isChecked())
   {
     XSqlQuery bomitemq;
@@ -194,7 +249,7 @@ void copyItem::sAddBomitem()
   }
 
   XSqlQuery bomitemq;
-  int uomid;
+  int uomid=-1;
   QString uomname;
   double qtyper = 1.0;
   bool ok;
@@ -359,6 +414,9 @@ void copyItem::sFillBomitem()
 
 void copyItem::sCopyItemsite()
 {
+  if (_newitemid < 0)
+    return;
+
   if (_copyItemsite->isChecked())
   {
     XSqlQuery itemsiteq;
@@ -406,7 +464,9 @@ void copyItem::sAddItemsite()
     int result = itemCopy.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("copyItemSite", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item Site"),
+                             storedProcErrorLookup("copyItemSite", result),
+                             __FILE__, __LINE__);
       return;
     }
     ParameterList params;
@@ -425,21 +485,23 @@ void copyItem::sAddItemsite()
         int result = itemCopy.value("result").toInt();
         if (result < 0)
         {
-          systemError(this, storedProcErrorLookup("deleteItemSite", result), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item Site"),
+                                 storedProcErrorLookup("deleteItemSite", result),
+                                 __FILE__, __LINE__);
           return;
         }
       }
-      else if (itemCopy.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item Site"),
+                                    itemCopy, __FILE__, __LINE__))
       {
-        systemError(this, itemCopy.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
     }
     sFillItemsite();
   }
-  else if (itemCopy.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item Site"),
+                                itemCopy, __FILE__, __LINE__))
   {
-    systemError(this, itemCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -496,13 +558,12 @@ bool copyItem::okToSave()
   XSqlQuery copyokToSave;
   _targetItemNumber->setText(_targetItemNumber->text().trimmed().toUpper());
 
-  if (_targetItemNumber->text().length() == 0)
-  {
-    QMessageBox::warning(this, tr("Enter Item Number"),
-                         tr("<p>Please enter a Target Item Number."));
-    _targetItemNumber->setFocus();
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_targetItemNumber->text().length() == 0, _targetItemNumber,
+                        tr("<p>Please enter a Target Item Number."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Missing Target Item Number"),errors))
     return false;
-  }
 
   copyokToSave.prepare( "SELECT item_number "
              "FROM item "
@@ -527,23 +588,19 @@ bool copyItem::okToSave()
 void copyItem::sCopy()
 {
   XSqlQuery copyCopy;
-  if (! okToSave())
-    return;
 
-  copyCopy.prepare("UPDATE item SET item_number=:item_number,"
-                   "                item_descrip1=:item_descrip1,"
-                   "                item_listprice=:item_listprice,"
+  copyCopy.prepare("UPDATE item SET item_active=:item_active, "
+                   "                item_listprice=:item_listprice, "
                    "                item_listcost=:item_listcost "
                    "WHERE (item_id=:item_id);");
   copyCopy.bindValue(":item_id", _newitemid);
-  copyCopy.bindValue(":item_number", _targetItemNumber->text());
-  copyCopy.bindValue(":item_descrip1", _targetItemDescrip->text());
+  copyCopy.bindValue(":item_active", _isActive);
   copyCopy.bindValue(":item_listprice", _listPrice->toDouble());
   copyCopy.bindValue(":item_listcost", _listCost->toDouble());
   copyCopy.exec();
-  if (copyCopy.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item"),
+                                copyCopy, __FILE__, __LINE__))
   {
-    systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -582,9 +639,9 @@ void copyItem::sCopy()
   copyCopy.bindValue(":rollUp",          "f");
   copyCopy.bindValue(":updateActual",    "t" );
   copyCopy.exec();
-  if (copyCopy.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item"),
+                                copyCopy, __FILE__, __LINE__))
   {
-    systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -625,14 +682,13 @@ void copyItem::sCopy()
   copyCopy.bindValue(":lowUser",         "t");
   copyCopy.bindValue(":rollUp",          "f");
   copyCopy.exec();
-  if (copyCopy.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Item"),
+                                copyCopy, __FILE__, __LINE__))
   {
-    systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
-  copyCopy.exec("COMMIT;");
-  _inTransaction = false;
+  _committed = true;
 
   omfgThis->sItemsUpdated(_newitemid, true);
 
@@ -645,9 +701,56 @@ void copyItem::sCopy()
     clear();
 }
 
+void copyItem::sCancel()
+{
+  // The user decided not to copy the item.
+  cancelCopy();
+  close();
+}
+
+void copyItem::cancelCopy()
+{
+  if (_newitemid > 0)
+  { 
+    // Delete the item's BOM (if any)
+
+    XSqlQuery bomitemq;
+    bomitemq.prepare("SELECT deleteBom(:targetitemid) AS result;");
+    bomitemq.bindValue(":targetitemid", _newitemid);
+    bomitemq.exec();
+
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Deleting Bom"),
+                             bomitemq, __FILE__, __LINE__))
+    {
+      return;
+    }
+
+    // Delete the item sites (if any)
+
+    XSqlQuery itemsiteq;
+    itemsiteq.prepare("DELETE FROM itemsite "
+                      "WHERE (itemsite_item_id=:targetitemid);");
+    itemsiteq.bindValue(":targetitemid", _newitemid);
+    itemsiteq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Deleting Itemsite"),
+                             itemsiteq, __FILE__, __LINE__))
+      return;
+    
+    // Delete the item
+
+    XSqlQuery query;
+    query.prepare("SELECT deleteItem(:itemid)");
+    query.bindValue(":itemid", _newitemid);
+    query.exec();
+  }
+}
+
 void copyItem::clear()
 {
+  _newitemid = -1;
+  _committed = false;
   _source->setId(-1);
+  _pages->setCurrentIndex(0);
   _targetItemNumber->clear();
   _targetItemDescrip->clear();
   _listCost->clear();
@@ -661,13 +764,9 @@ void copyItem::clear()
 
 void copyItem::closeEvent(QCloseEvent *pEvent)
 {
-  XSqlQuery itemcloseEvent;
-  if(_inTransaction)
-  {
-    itemcloseEvent.exec("ROLLBACK;");
-    _inTransaction = false;
-  }
-  
+  if (!_committed)
+    cancelCopy(); 
+
   XDialog::closeEvent(pEvent);
 }
 

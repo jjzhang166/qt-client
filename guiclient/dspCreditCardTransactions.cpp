@@ -21,6 +21,7 @@
 #include "creditcardprocessor.h"
 #include "storedProcErrorLookup.h"
 #include "xtreewidget.h"
+#include "errorReporter.h"
 
 dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -39,7 +40,7 @@ dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char
 
   _preauth->addColumn(tr("Timestamp"),   _dateColumn, Qt::AlignLeft, true,  "ccpay_transaction_datetime"  ); 
   _preauth->addColumn(tr("Cust. #"),    _orderColumn, Qt::AlignLeft,  true, "cust_number");  
-  _preauth->addColumn(tr("Name"),                 -1, Qt::AlignLeft,  true, "cust_name");
+  _preauth->addColumn(tr("Name"),                 -1, Qt::AlignLeft,  !omfgThis->singleCurrency(), "cust_name");
   _preauth->addColumn(tr("Type"),       _orderColumn, Qt::AlignLeft,  true, "type"  );
   _preauth->addColumn(tr("Status"),  _bigMoneyColumn, Qt::AlignLeft,  true,  "status"  );
   _preauth->addColumn(tr("Document #"),           -1, Qt::AlignLeft,  true,  "docnumber"  );
@@ -50,9 +51,6 @@ dspCreditCardTransactions::dspCreditCardTransactions(QWidget* parent, const char
   _preauth->addColumn(tr("Allocated"),    _moneyColumn,    Qt::AlignRight,  false,  "allocated" );
   _preauth->addColumn(tr("Allocated Currency"), _currencyColumn, Qt::AlignLeft,   false,  "payco_currAbbr"  );
   
-  if (omfgThis->singleCurrency())
-    _preauth->hideColumn(2);
-
   if (_metrics->value("CCValidDays").toInt())
     _validDays->setValue(_metrics->value("CCValidDays").toInt());
   else
@@ -89,7 +87,6 @@ void dspCreditCardTransactions::sFillList()
 {
   XSqlQuery dspFillList;
   _CCAmount->clear();
-  
   MetaSQLQuery mql = mqlLoad("ccpayments", "list");
   ParameterList params;
   _customerSelector->appendValue(params);
@@ -148,7 +145,8 @@ void dspCreditCardTransactions::sgetCCAmount()
       return;
     }
     else if (dspgetCCAmount.lastError().type() != QSqlError::NoError)
-      systemError(this, dspgetCCAmount.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Card Information"),
+                         dspgetCCAmount, __FILE__, __LINE__);
   }
   _postPreauth->setEnabled(false);
   _voidPreauth->setEnabled(false);

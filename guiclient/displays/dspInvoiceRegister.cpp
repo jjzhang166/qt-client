@@ -19,6 +19,7 @@
 #include "arOpenItem.h"
 #include "creditMemo.h"
 #include "dspInvoiceInformation.h"
+#include "errorReporter.h"
 
 dspInvoiceRegister::dspInvoiceRegister(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspInvoiceRegister", fl)
@@ -82,9 +83,9 @@ enum SetResponse dspInvoiceRegister::set(const ParameterList &pParams)
       _dates->setStartDate(dspet.value("period_start").toDate());
       _dates->setEndDate(dspet.value("period_end").toDate());
     }
-    else if (dspet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoicing Information"),
+                                  dspet, __FILE__, __LINE__))
     {
-      systemError(this, dspet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -176,9 +177,9 @@ void dspInvoiceRegister::sViewCreditMemo()
       newdlg.exec();
     }
   }
-  else if (dspViewCreditMemo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                                dspViewCreditMemo, __FILE__, __LINE__))
   {
-    systemError(this, dspViewCreditMemo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -233,6 +234,10 @@ bool dspInvoiceRegister::setParams(ParameterList &params)
 
 void dspInvoiceRegister::sFillList()
 {
+  ParameterList params;
+  if (!setParams(params))
+    return;
+  
   display::sFillList();
   list()->expandAll();
 

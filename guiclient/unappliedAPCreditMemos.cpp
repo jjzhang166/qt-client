@@ -19,6 +19,8 @@
 
 #include "applyAPCreditMemo.h"
 #include "apOpenItem.h"
+#include "mqlutil.h"
+#include "errorReporter.h"
 
 unappliedAPCreditMemos::unappliedAPCreditMemos(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -41,11 +43,8 @@ unappliedAPCreditMemos::unappliedAPCreditMemos(QWidget* parent, const char* name
   _apopen->addColumn( tr("Applied"),      _moneyColumn,    Qt::AlignRight,  true,  "apopen_paid"  );
   _apopen->addColumn( tr("Applied (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, false, "base_applied"  );
   _apopen->addColumn( tr("Balance"),      _moneyColumn,    Qt::AlignRight,  true,  "balance"  );
-  _apopen->addColumn( tr("Currency"),     _currencyColumn, Qt::AlignCenter, true,  "currAbbr" );
+  _apopen->addColumn( tr("Currency"),     _currencyColumn, Qt::AlignCenter, !omfgThis->singleCurrency(),  "currAbbr" );
   _apopen->addColumn( tr("Balance (%1)").arg(CurrDisplay::baseCurrAbbr()), _bigMoneyColumn, Qt::AlignRight, true, "basebalance");
-
-  if (omfgThis->singleCurrency())
-    _apopen->hideColumn("currAbbr");
 
   if (_privileges->check("ApplyAPMemos"))
     connect(_apopen, SIGNAL(valid(bool)), _apply, SLOT(setEnabled(bool)));
@@ -113,46 +112,15 @@ void unappliedAPCreditMemos::sView()
 void unappliedAPCreditMemos::sFillList()
 {
   XSqlQuery unappliedFillList;
-  MetaSQLQuery mql(
-             "SELECT apopen_id, apopen_docnumber,"
-             "       (vend_number || '-' || vend_name) AS vendor,"
-             "       apopen_amount, (apopen_amount / apopen_curr_rate) AS base_amount, "
-             "       apopen_paid, (apopen_paid / apopen_curr_rate) AS base_applied, "
-             "       (apopen_amount - apopen_paid) AS balance,"
-             "       (apopen_amount - apopen_paid) / apopen_curr_rate AS basebalance,"
-             "	     currConcat(apopen_curr_id) AS currAbbr,"
-             "       'curr' AS apopen_amount_xtnumericrole,"
-             "       'curr' AS apopen_paid_xtnumericrole,"
-             "       'curr' AS balance_xtnumericrole,"
-             "       'curr' AS basebalance_xtnumericrole,"
-             "       'curr' AS base_amount_xtnumericrole,"
-             "       'curr' AS base_applied_xtnumericrole,"
-             "       0 AS basebalance_xttotalrole, "
-             "       0 AS base_amount_xttotalrole, "
-             "       0 AS base_applied_xttotalrole "
-             "FROM apopen, vendinfo "
-             "WHERE ( (apopen_doctype='C')"
-             " AND (apopen_open)"
-             " AND (apopen_vend_id=vend_id)"
-             "<? if exists(\"vend_id\") ?>"
-             " AND (vend_id=<? value(\"vend_id\") ?>)"
-             "<? elseif exists(\"vendtype_id\") ?>"
-             " AND (vend_vendtype_id=<? value(\"vendtype_id\") ?>)"
-             "<? elseif exists(\"vendtype_pattern\") ?>"
-             " AND (vend_vendtype_id IN (SELECT vendtype_id"
-             "                           FROM vendtype"
-             "                           WHERE (vendtype_code ~ <? value(\"vendtype_pattern\") ?>)))"
-             "<? endif ?>"
-             ") "
-             "ORDER BY apopen_docnumber;" );
+  MetaSQLQuery mql = mqlLoad("unappliedAPMemos", "list");
   ParameterList params;
   if (! setParams(params))
     return;
   unappliedFillList = mql.toQuery(params);
   _apopen->populate(unappliedFillList);
-  if (unappliedFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Unapplied AP Memo Information"),
+                                unappliedFillList, __FILE__, __LINE__))
   {
-    systemError(this, unappliedFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

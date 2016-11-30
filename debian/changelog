@@ -1,3 +1,8 @@
+postbooks (4.10.0-1) experimental; urgency=medium
+
+  * Placeholder
+
+ -- Daniel Pocock <daniel@pocock.pro>  Thu, 09 Jul 2015 11:56:59 +0200
 postbooks (4.9.5-1) experimental; urgency=medium
 
   * Placeholder
@@ -38,7 +43,7 @@ postbooks (4.8.1-1) experimental; urgency=medium
 
   * New upstream release.
 
- -- Daniel Pocock <daniel@pocock.pro>  Sat, 28 Feb 2015 14:20:13 +0100
+ -- Daniel Pocock <daniel@pocock.pro>  Thu, 09 Jul 2015 11:56:59 +0200
 
 postbooks (4.7.0-2) unstable; urgency=medium
 

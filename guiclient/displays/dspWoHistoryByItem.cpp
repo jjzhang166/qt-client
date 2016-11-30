@@ -79,10 +79,8 @@ void dspWoHistoryByItem::sEdit()
 
 void dspWoHistoryByItem::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)
 {
-  QAction *menuItem;
-
-  menuItem = pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
-  menuItem = pMenu->addAction(tr("View..."), this, SLOT(sView()));
+  (void)pMenu->addAction(tr("Edit..."), this, SLOT(sEdit()));
+  (void)pMenu->addAction(tr("View..."), this, SLOT(sView()));
 }
 
 void dspWoHistoryByItem::sHandleCosts(bool pShowCosts)
@@ -102,8 +100,8 @@ bool dspWoHistoryByItem::setParams(ParameterList & params)
   {
     if (! _item->isValid())
     {
-      QMessageBox::warning(this, tr("Invalid Item"),
-                           tr("Enter a valid Item."));
+      QMessageBox::warning(this, tr("Enter a valid Item Number"),
+                           tr("You must enter a valid item number for this report."));
       _item->setFocus();
       return false;
     }

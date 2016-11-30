@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 updateActualCostsByClassCode::updateActualCostsByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -73,11 +74,11 @@ enum SetResponse updateActualCostsByClassCode::set(const ParameterList &pParams)
     }
     else if (param.toString() != "actual")
     {
-      systemError(this, tr("A System Error occurred at %1::%2.\n"
-                           "Illegal parameter value '%3' for 'costtype'")
-                          .arg(__FILE__)
-                          .arg(__LINE__)
-                          .arg(param.toString()));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                           tr("%1: A System Error occurred. \n"
+                              "Illegal parameter value '%2' for 'costtype'")
+                           .arg(windowTitle())
+                           .arg(param.toString()),__FILE__,__LINE__);
       return UndefinedError;
     }
   }
@@ -140,9 +141,9 @@ void updateActualCostsByClassCode::sUpdate()
   _classCode->bindValue(updateUpdate);
 
   updateUpdate.exec();
-  if (updateUpdate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Cost Information"),
+                                updateUpdate, __FILE__, __LINE__))
   {
-    systemError(this, updateUpdate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

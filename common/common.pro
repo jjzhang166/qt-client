@@ -38,7 +38,6 @@ SOURCES = applock.cpp              \
           graphicstextbuttonitem.cpp \
           gunzip.cpp \
           login2.cpp \
-          login2Options.cpp \
           metrics.cpp \
           metricsenc.cpp \
           qbase64encode.cpp \
@@ -48,6 +47,7 @@ SOURCES = applock.cpp              \
           tarfile.cpp \
           xbase32.cpp \
           xtupleproductkey.cpp \
+          xtNetworkRequestManager.cpp \
           xtsettings.cpp
 HEADERS = applock.h              \
           calendarcontrol.h      \
@@ -60,7 +60,6 @@ HEADERS = applock.h              \
           graphicstextbuttonitem.h \
           gunzip.h \
           login2.h \
-          login2Options.h \
           metrics.h \
           metricsenc.h \
           qbase64encode.h \
@@ -70,9 +69,10 @@ HEADERS = applock.h              \
           tarfile.h \
           xbase32.h \
           xtupleproductkey.h \
+          xtNetworkRequestManager.h \
           xtsettings.h
 
-FORMS = login2.ui login2Options.ui checkForUpdates.ui
+FORMS = login2.ui checkForUpdates.ui
 
 QT +=  script sql xml xmlpatterns network widgets
 

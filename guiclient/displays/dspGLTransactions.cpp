@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include <metasql.h>
+#include <mqlutil.h>
 #include <parameterwidget.h>
 
 #include "glTransactionDetail.h"
@@ -32,6 +33,7 @@
 #include "storedProcErrorLookup.h"
 #include "dspJournals.h"
 #include "creditMemo.h"
+#include "errorReporter.h"
 
 dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspGLTransactions", fl)
@@ -75,6 +77,11 @@ dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFla
                               "FROM accnt "
                               "GROUP BY accnt_number "
                               "ORDER BY accnt_number;");
+
+  QString docSql = QString("SELECT DISTINCT gltrans_doctype, gltrans_doctype "
+                           "FROM gltrans ORDER by gltrans_doctype;");
+
+
  
   connect(parameterWidget(), SIGNAL(filterChanged()), this, SLOT(handleTotalCheckbox()));
   connect(_showRunningTotal, SIGNAL(toggled(bool)), this, SLOT(handleTotalCheckbox()));
@@ -106,6 +113,11 @@ dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFla
   parameterWidget()->append(tr("End Date"),   "endDate",   ParameterWidget::Date, QDate::currentDate(), true);
   parameterWidget()->append(tr("GL Account"), "accnt_id",  ParameterWidget::GLAccount);
   parameterWidget()->append(tr("Document #"), "docnum",    ParameterWidget::Text);
+
+  parameterWidget()->append(tr("Document Type"), "doctype", ParameterWidget::Multiselect, QVariant(), false, docSql);
+  parameterWidget()->append(tr("Journal # Pattern"), "journalnum", ParameterWidget::Text);
+  parameterWidget()->append(tr("Transaction Amount"), "transamt", ParameterWidget::Text);
+
   parameterWidget()->appendComboBox(tr("Source"), "source_id",    qrySource);
   if (_metrics->value("GLCompanySize").toInt() > 0)
   parameterWidget()->appendComboBox(tr("Company"), "company_id", XComboBox::Companies);
@@ -116,6 +128,8 @@ dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFla
     parameterWidget()->appendComboBox(tr("Sub Account"), "subaccnt_id", XComboBox::Subaccounts);
   parameterWidget()->appendComboBox(tr("Account Type"), "accnttype_id", qryType);
   parameterWidget()->appendComboBox(tr("Sub Type"), "subType",   qrySubType);
+
+
   parameterWidget()->append(tr("Show Deleted"), "showDeleted", ParameterWidget::Exists);
 
   parameterWidget()->applyDefaultFilterSet();
@@ -257,6 +271,8 @@ bool dspGLTransactions::setParams(ParameterList &params)
       params.append("accnt_number", num.value("accnt_number").toString());
   }
 
+  params.append("showUsernames"); // report only?
+
   param = params.value("accnt_id", &valid);
   if (valid)
   {
@@ -265,8 +281,16 @@ bool dspGLTransactions::setParams(ParameterList &params)
     {
       double beginning = 0;
       QDate  periodStart = params.value("startDate").toDate();
+
       XSqlQuery begq;
-      begq.prepare("SELECT "
+
+      MetaSQLQuery mql = mqlLoad("gltransactions", "begq");
+  //    ParameterList params;
+  //    params.append("accnt_id", )
+
+      begq = mql.toQuery(params);
+
+/*      begq.prepare("SELECT "
                    "  CASE WHEN accnt_type IN ('A','E') THEN "
                    "    trialbal_beginning * -1 "
                    "  ELSE trialbal_beginning END AS trialbal_beginning,"
@@ -277,21 +301,30 @@ bool dspGLTransactions::setParams(ParameterList &params)
                    "WHERE ((trialbal_period_id=period_id)"
                    "  AND  (trialbal_accnt_id=:accnt_id)"
                    "  AND  (:start BETWEEN period_start AND period_end));");
-      begq.bindValue(":accnt_id", params.value("accnt_id").toInt());
-      begq.bindValue(":start", params.value("startDate").toDate());
+*/
+
+
+//      begq.bindValue(":accnt_id", params.value("accnt_id").toInt());
+ //     begq.bindValue(":start", params.value("startDate").toDate());
       begq.exec();
       if (begq.first())
       {
         beginning   = begq.value("trialbal_beginning").toDouble();
         periodStart = begq.value("period_start").toDate();
       }
-      else if (begq.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Trial Balance Information"),
+                                    begq, __FILE__, __LINE__))
       {
-	systemError(this, begq.lastError().databaseText(), __FILE__, __LINE__);
-	return false;
+        return false;
       }
+
       XSqlQuery glq;
-      glq.prepare("SELECT CASE WHEN accnt_type IN ('A','E') THEN "
+      MetaSQLQuery mql2 = mqlLoad("gltransactions", "glq");
+ //     ParameterList params;
+      params.append("periodStart", periodStart);
+      glq = mql2.toQuery(params);
+
+/*      glq.prepare("SELECT CASE WHEN accnt_type IN ('A','E') THEN "
                   "         COALESCE(SUM(gltrans_amount),0) * -1"
                   "       ELSE COALESCE(SUM(gltrans_amount),0) END AS glamount "
                   "FROM gltrans "
@@ -303,13 +336,14 @@ bool dspGLTransactions::setParams(ParameterList &params)
       glq.bindValue(":periodstart", periodStart);
       glq.bindValue(":querystart",  params.value("startDate").toDate());
       glq.bindValue(":accnt_id",    params.value("accnt_id").toInt());
+      */
       glq.exec();
       if (glq.first())
         beginning   += glq.value("glamount").toDouble();
-      else if (glq.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving GL Transaction Information"),
+                                    glq, __FILE__, __LINE__))
       {
-	systemError(this, glq.lastError().databaseText(), __FILE__, __LINE__);
-	return false;
+        return false;
       }
 
       params.append("beginningBalance", beginning);
@@ -597,13 +631,15 @@ bool dspGLTransactions::forwardUpdate()
     int result = mq.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("forwardUpdateTrialBalance", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating GL Account Information"),
+                           storedProcErrorLookup("forwardUpdateTrialBalance", result),
+                           __FILE__, __LINE__);
       return false;
     }
   }
-  else if (mq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating GL Account Information"),
+                                mq, __FILE__, __LINE__))
   {
-    systemError(this, mq.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   return true;

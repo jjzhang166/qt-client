@@ -1,4 +1,5 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>updateItemSiteLeadTimes</class>
- <widget class="QDialog" name="updateItemSiteLeadTimes" >
-  <property name="geometry" >
+ <widget class="QDialog" name="updateItemSiteLeadTimes">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -16,44 +17,44 @@ to be bound by its terms.</comment>
     <height>208</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Update Item Site Lead Time Days</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" name="gridLayout" >
-     <property name="margin" >
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="margin">
       <number>12</number>
      </property>
-     <property name="spacing" >
+     <property name="spacing">
       <number>12</number>
      </property>
-     <item row="0" column="0" >
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+     <item row="0" column="0">
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" >
-           <property name="spacing" >
+          <layout class="QHBoxLayout">
+           <property name="spacing">
             <number>7</number>
            </property>
            <item>
-            <layout class="QVBoxLayout" >
-             <property name="spacing" >
+            <layout class="QVBoxLayout">
+             <property name="spacing">
               <number>0</number>
              </property>
              <item>
-              <widget class="WarehouseGroup" name="_warehouse" >
-               <property name="title" >
+              <widget class="WarehouseGroup" name="_warehouse">
+               <property name="title">
                 <string/>
                </property>
-               <property name="fixedSize" >
+               <property name="fixedSize">
                 <bool>false</bool>
                </property>
               </widget>
@@ -61,11 +62,11 @@ to be bound by its terms.</comment>
             </layout>
            </item>
            <item>
-            <widget class="ParameterGroup" name="_classCode" >
-             <property name="title" >
+            <widget class="ParameterGroup" name="_classCode">
+             <property name="title">
               <string/>
              </property>
-             <property name="fixedSize" >
+             <property name="fixedSize">
               <bool>false</bool>
              </property>
             </widget>
@@ -73,34 +74,34 @@ to be bound by its terms.</comment>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
-           <property name="spacing" >
+          <layout class="QHBoxLayout">
+           <property name="spacing">
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" >
-             <property name="spacing" >
+            <layout class="QHBoxLayout">
+             <property name="spacing">
               <number>5</number>
              </property>
              <item>
-              <widget class="QLabel" name="_leadTimePadLit" >
-               <property name="text" >
+              <widget class="QLabel" name="_leadTimePadLit">
+               <property name="text">
                 <string>Pad Lead Time by:</string>
                </property>
-               <property name="alignment" >
+               <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="_leadTimePad" />
+              <widget class="QSpinBox" name="_leadTimePad"/>
              </item>
              <item>
-              <widget class="QLabel" name="_daysLit" >
-               <property name="text" >
+              <widget class="QLabel" name="_daysLit">
+               <property name="text">
                 <string>Days</string>
                </property>
-               <property name="alignment" >
+               <property name="alignment">
                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                </property>
               </widget>
@@ -109,13 +110,13 @@ to be bound by its terms.</comment>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeType" >
+             <property name="sizeType">
               <enum>QSizePolicy::Expanding</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
                <height>20</height>
@@ -129,13 +130,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>0</height>
@@ -145,12 +146,12 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </item>
-     <item row="0" column="1" >
-      <spacer name="horizontalSpacer" >
-       <property name="orientation" >
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>0</width>
          <height>20</height>
@@ -158,34 +159,34 @@ to be bound by its terms.</comment>
        </property>
       </spacer>
      </item>
-     <item row="0" column="2" >
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+     <item row="0" column="2">
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="text" >
+        <widget class="QPushButton" name="_close">
+         <property name="text">
           <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_update" >
-         <property name="text" >
+        <widget class="QPushButton" name="_update">
+         <property name="text">
           <string>&amp;Update</string>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>20</height>
@@ -199,17 +200,19 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>ParameterGroup</class>
    <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -227,11 +230,11 @@ to be bound by its terms.</comment>
    <receiver>updateItemSiteLeadTimes</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

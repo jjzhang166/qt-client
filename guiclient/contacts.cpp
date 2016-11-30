@@ -249,15 +249,16 @@ void contacts::sAttach()
       attq.exec();
       if (attq.first())
       {
-	int returnVal = attq.value("returnVal").toInt();
-	if (returnVal < 0)
-	{
-	  systemError(this, storedProcErrorLookup("attachContact", returnVal),
-			    __FILE__, __LINE__);
-	  return;
-	}
+        int returnVal = attq.value("returnVal").toInt();
+        if (returnVal < 0)
+        {
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Attaching Contact"),
+                                 storedProcErrorLookup("attachContact", returnVal),
+                                 __FILE__, __LINE__);
+            return;
+        }
       }
-      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Attaching Contact"),
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Attaching Contact"),
                                     attq, __FILE__, __LINE__))
 	return;
     }
@@ -284,13 +285,13 @@ void contacts::sDetach()
       int returnVal = detq.value("returnVal").toInt();
       if (returnVal < 0)
       {
-	systemError(this, tr("Error detaching Contact from Account (%1).")
-			  .arg(returnVal), __FILE__, __LINE__);
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error detaching Contact from Account (%1)")
+                        .arg(returnVal),detq, __FILE__, __LINE__);
+        return;
       }
       emit cntctDetached(cntctId);
     }
-    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Detaching Contact"),
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Detaching Contact"),
                                   detq, __FILE__, __LINE__))
       return;
 

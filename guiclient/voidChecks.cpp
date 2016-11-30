@@ -19,6 +19,7 @@
 
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 voidChecks::voidChecks(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -60,10 +61,10 @@ void voidChecks::sVoid()
   {
     int result = voidVoid.value("result").toInt();
     if (result < 0)
-      systemError(this,
-		  tr("Check %1").arg(voidVoid.value("checkhead_number").toString()) +
-		  "\n" + storedProcErrorLookup("voidCheck", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this,
+                           tr("Check %1").arg(voidVoid.value("checkhead_number").toString()) + "\n",
+                             storedProcErrorLookup("voidCheck", result),
+                             __FILE__, __LINE__);
     else if(_issueReplacements->isChecked())
     {
       XSqlQuery rplc;
@@ -76,9 +77,9 @@ void voidChecks::sVoid()
     }
     omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
   }
-  if (voidVoid.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Check Information"),
+                                voidVoid, __FILE__, __LINE__))
   {
-    systemError(this, voidVoid.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -110,9 +111,9 @@ void voidChecks::sHandleBankAccount(int pBankaccntid)
       _checkNumber->setText(voidHandleBankAccount.value("checknumber").toString());
       _numberOfChecks->setText(voidHandleBankAccount.value("numofchecks").toString());
     }
-    else if (voidHandleBankAccount.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                  voidHandleBankAccount, __FILE__, __LINE__))
     {
-      systemError(this, voidHandleBankAccount.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

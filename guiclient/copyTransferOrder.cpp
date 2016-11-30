@@ -17,6 +17,7 @@
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
 #include "transferOrder.h"
+#include "errorReporter.h"
 
 copyTransferOrder::copyTransferOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -86,9 +87,9 @@ void copyTransferOrder::populate()
     copypopulate.bindValue(":tohead_id", _to->id());
     copypopulate.exec();
     _item->populate(copypopulate);
-    if (copypopulate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Transfer Order"),
+                                  copypopulate, __FILE__, __LINE__))
     {
-      systemError(this, copypopulate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -119,9 +120,9 @@ void copyTransferOrder::sCopy()
     }
     transferOrder::editTransferOrder(toheadid, true);
   }
-  else if (copyCopy.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Transfer Order"),
+                                copyCopy, __FILE__, __LINE__))
   {
-    systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

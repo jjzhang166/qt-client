@@ -43,6 +43,7 @@ dspSalesOrders::dspSalesOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("End Date"),   "endDate",   ParameterWidget::Date, QDate::currentDate());
   parameterWidget()->append(tr("P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
+  parameterWidget()->append(tr("Created By"), "createdby", ParameterWidget::User);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesRepsActive);
   parameterWidget()->appendComboBox(tr("Sale Type"), "saletype_id", XComboBox::SaleTypes);
   parameterWidget()->append(tr("Hide Closed"), "hideClosed", ParameterWidget::Exists);

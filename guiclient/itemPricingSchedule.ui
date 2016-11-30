@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>666</width>
+    <width>794</width>
     <height>371</height>
    </rect>
   </property>
@@ -329,6 +329,7 @@ to be bound by its terms.</comment>
    <class>DateCluster</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WComboBox</class>
@@ -356,7 +357,6 @@ to be bound by its terms.</comment>
  <tabstops>
   <tabstop>_name</tabstop>
   <tabstop>_descrip</tabstop>
-  <tabstop>_dates</tabstop>
   <tabstop>_currency</tabstop>
   <tabstop>_warehouse</tabstop>
   <tabstop>_ipsitem</tabstop>

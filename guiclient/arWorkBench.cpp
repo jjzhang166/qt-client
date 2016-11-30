@@ -96,7 +96,7 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
 
   _cashrcpt->addColumn(tr("Cust. #"),       _bigMoneyColumn, Qt::AlignLeft,  true, "cust_number");                                                                
   _cashrcpt->addColumn(tr("Name"),                       -1, Qt::AlignLeft,  true, "cust_name"); 
-  _cashrcpt->addColumn(tr("Check/Doc. #"),     _orderColumn, Qt::AlignLeft,  true, "cashrcpt_docnumber");
+  _cashrcpt->addColumn(tr("Check/Doc. #"),     _orderColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "cashrcpt_docnumber");
   _cashrcpt->addColumn(tr("Bank Account"),     _orderColumn, Qt::AlignLeft,  true, "bankaccnt_name");
   _cashrcpt->addColumn(tr("Dist. Date"),        _dateColumn, Qt::AlignCenter,true, "cashrcpt_distdate");
   _cashrcpt->addColumn(tr("Funds Type"),    _bigMoneyColumn, Qt::AlignCenter,true, "cashrcpt_fundstype");
@@ -119,9 +119,6 @@ arWorkBench::arWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
   if(_privileges->check("PostCashReceipts"))
     connect(_cashrcpt, SIGNAL(itemSelected(int)), _editCashrcpt, SLOT(animateClick()));
   connect(omfgThis, SIGNAL(cashReceiptsUpdated(int, bool)), this, SLOT(sFillList()));
-
-  if (omfgThis->singleCurrency())
-    _cashrcpt->hideColumn(2);
 
   if (!_metrics->boolean("CCAccept") || !_privileges->check("ProcessCreditCards"))
     _tab->removeTab(_tab->indexOf(_creditCardTab));
@@ -157,7 +154,7 @@ bool arWorkBench::setParams(ParameterList &params)
 {
   _customerSelector->appendValue(params);
   params.append("invoice", tr("Invoice"));
-  params.append("return", tr("Return"));
+  params.append("return", tr("Sales Credit"));
   params.append("creditMemo", tr("Credit Memo"));
   params.append("debitMemo", tr("Debit Memo"));
   params.append("cashdeposit", tr("Customer Deposit"));
@@ -267,13 +264,15 @@ void arWorkBench::sDeleteCashrcpt()
     int result = arDeleteCashrcpt.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteCashrcpt", result));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Cash Receipt"),
+                           storedProcErrorLookup("deleteCashrcpt", result),
+                           __FILE__, __LINE__);
       return;
     }
   }
-  else if (arDeleteCashrcpt.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Cash Receipt"),
+                                arDeleteCashrcpt, __FILE__, __LINE__))
   {
-    systemError(this, arDeleteCashrcpt.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillCashrcptList();
@@ -303,9 +302,9 @@ void arWorkBench::sPostCashrcpt()
   arPostCashrcpt.exec("SELECT fetchJournalNumber('C/R') AS journalnumber;");
   if (arPostCashrcpt.first())
     journalNumber = arPostCashrcpt.value("journalnumber").toInt();
-  else if (arPostCashrcpt.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                                arPostCashrcpt, __FILE__, __LINE__))
   {
-    systemError(this, arPostCashrcpt.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -342,15 +341,16 @@ void arWorkBench::sPostCashrcpt()
       int result = arPostCashrcpt.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("postCashReceipt", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                             storedProcErrorLookup("postCashReceipt", result),
+                             __FILE__, __LINE__);
         arPostCashrcpt.exec("ROLLBACK;");
         return;
       }
     }
-    else if (arPostCashrcpt.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                                  arPostCashrcpt, __FILE__, __LINE__))
     {
-      systemError(this, arPostCashrcpt.lastError().databaseText(), __FILE__, __LINE__);
       arPostCashrcpt.exec("ROLLBACK;");
       return;
     }

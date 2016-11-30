@@ -127,9 +127,8 @@ void uomConv::sSave()
       _uomconvid = uomSave.value("uomconv_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving UOM Conversion Information"),
+                           uomSave, __FILE__, __LINE__);
       return;
     }
  
@@ -181,7 +180,7 @@ void uomConv::sToChanged()
 void uomConv::sCheck()
 {
   XSqlQuery uomCheck;
-  if ( (_mode == cNew) )
+  if (_mode == cNew)
   {
     uomCheck.prepare( "SELECT uomconv_id"
                "  FROM uomconv"

@@ -16,6 +16,7 @@
 #include <QVariant>
 
 #include "customCommandArgument.h"
+#include "errorReporter.h"
 
 customCommand::customCommand(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -97,10 +98,10 @@ void customCommand::setMode(const int pmode)
       custometMode.exec();
       if(custometMode.first())
         _cmdid = custometMode.value("result").toInt();
-      else if (custometMode.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Custom Command Information"),
+                                    custometMode, __FILE__, __LINE__))
       {
-	systemError(this, custometMode.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
       /* fallthru */
 
@@ -144,9 +145,9 @@ void customCommand::sSave()
 
   // make sure the custom privs get updated
   customSave.exec("SELECT updateCustomPrivs();");
-  if (customSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Custom Command"),
+                                customSave, __FILE__, __LINE__))
   {
-    systemError(this, customSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -201,9 +202,9 @@ bool customCommand::save()
   customave.bindValue(":cmd_descrip", _description->toPlainText());
   customave.bindValue(":cmd_executable", _executable->text());
   customave.exec();
-  if (customave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Custom Command"),
+                                customave, __FILE__, __LINE__))
   {
-    systemError(this, customave.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   _saved = true;
@@ -218,17 +219,17 @@ void customCommand::reject()
     query.prepare("DELETE FROM cmdarg WHERE (cmdarg_cmd_id=:cmd_id);");
     query.bindValue(":cmd_id", _cmdid);
     query.exec();
-    if (query.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Rejecting Custom Command"),
+                                  query, __FILE__, __LINE__))
     {
-      systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     query.prepare("DELETE FROM cmd WHERE (cmd_id=:cmd_id);");
     query.bindValue(":cmd_id", _cmdid);
     query.exec();
-    if (query.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Rejecting Custom Command"),
+                                  query, __FILE__, __LINE__))
     {
-      systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -270,9 +271,9 @@ void customCommand::sDelete()
   customDelete.bindValue(":cmdarg_id", _arguments->id());
   if(customDelete.exec())
     sFillList();
-  else if (customDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Custom Command Argument"),
+                                customDelete, __FILE__, __LINE__))
   {
-    systemError(this, customDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -307,9 +308,9 @@ void customCommand::populate()
 
     sFillList();
   }
-  else if (custompopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Custom Command Information"),
+                                custompopulate, __FILE__, __LINE__))
   {
-    systemError(this, custompopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -324,9 +325,9 @@ void customCommand::sFillList()
   customFillList.bindValue(":cmd_id", _cmdid);
   customFillList.exec();
   _arguments->populate(customFillList);
-  if (customFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Custom Command Information"),
+                                customFillList, __FILE__, __LINE__))
   {
-    systemError(this, customFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

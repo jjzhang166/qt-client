@@ -19,6 +19,7 @@
 #include "distributeInventory.h"
 #include "issueWoMaterialItem.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -127,10 +128,10 @@ enum SetResponse materialReceiptTrans::set(const ParameterList &pParams)
         _documentNum->setText(popq.value("invhist_ordnumber"));
         _notes->setText(popq.value("invhist_comments").toString());
       }
-      else if (popq.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                    popq, __FILE__, __LINE__))
       {
-	systemError(this, popq.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
     }
   }
@@ -196,14 +197,16 @@ void materialReceiptTrans::sPost()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("invReceipt", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
+                             storedProcErrorLookup("invReceipt", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (materialPost.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, materialPost.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
+                           materialPost, __FILE__, __LINE__);
       return;
     }
 
@@ -220,16 +223,19 @@ void materialReceiptTrans::sPost()
   else if (materialPost.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, materialPost.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
+                         materialPost, __FILE__, __LINE__);
     return;
   }
   else
   {
     rollback.exec();
-    systemError( this,
-                tr("<p>No transaction was done because Item %1 "
-                   "was not found at Site %2.")
-                .arg(_item->itemNumber()).arg(_warehouse->currentText()));
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: <p>No transaction was done because Item %2 "
+                            "was not found at Site %3.")
+                         .arg(windowTitle())
+                         .arg(_item->itemNumber())
+                         .arg(_warehouse->currentText()),__FILE__,__LINE__);
     return;
   }
 
@@ -310,9 +316,9 @@ void materialReceiptTrans::sPopulateQty()
       _qty->setValidator(new QIntValidator(this));
 
   }
-  else if (materialPopulateQty.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
+                                materialPopulateQty, __FILE__, __LINE__))
   {
-    systemError(this, materialPopulateQty.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

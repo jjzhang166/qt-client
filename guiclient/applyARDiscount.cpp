@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 applyARDiscount::applyARDiscount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -120,6 +121,7 @@ void applyARDiscount::populate()
     _applieddiscounts->setLocalValue(applypopulate.value("applied").toDouble());
   }
 
-  else if (applypopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
+  else (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying Discount"),
+                                applypopulate, __FILE__, __LINE__));
+
 }

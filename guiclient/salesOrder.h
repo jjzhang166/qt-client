@@ -107,6 +107,8 @@ class salesOrder : public XWidget, public Ui::salesOrder
     virtual void        sViewPR();
     virtual void        sPopulateShipments();
     virtual void        sViewItemWorkbench();
+    virtual bool        creditLimitCheck();
+    virtual void	sHoldTypeChanged();
 
   protected slots:
     virtual void  languageChange();
@@ -126,6 +128,7 @@ class salesOrder : public XWidget, public Ui::salesOrder
     bool    deleteForCancel();
 
     bool    _saved;
+    bool    _saving;
     bool    _calcfreight;
     int     _orderNumberGen;
     double  _freightCache;
@@ -138,8 +141,10 @@ class salesOrder : public XWidget, public Ui::salesOrder
     bool    _usesPos;
     bool    _ffShipto;
     bool    _captive;
+    bool    _holdOverride;
     int     _soheadid;
     int     _lineMode;
+    int     _lineFirm;
     AppLock _lock;
     int     _mode;
     int     _numSelected;
@@ -149,6 +154,7 @@ class salesOrder : public XWidget, public Ui::salesOrder
     int     _crmacctid;
     QDate   _orderDateCache;
     QDate   _shipDateCache;
+    QString _holdTypeCache;
 };
 
 #endif  // SALESORDER_H

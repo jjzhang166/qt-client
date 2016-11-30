@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 vendorType::vendorType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -124,9 +125,8 @@ void vendorType::sSave()
       _vendtypeid = vendorSave.value("_vendtype_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor Information"),
+                           vendorSave, __FILE__, __LINE__);
       return;
     }
 

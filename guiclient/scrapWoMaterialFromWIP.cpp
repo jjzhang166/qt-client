@@ -18,6 +18,7 @@
 #include "distributeInventory.h"
 #include "postProduction.h"
 #include "returnWoMaterialItem.h"
+#include "errorReporter.h"
 
 scrapWoMaterialFromWIP::scrapWoMaterialFromWIP(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -198,11 +199,8 @@ void scrapWoMaterialFromWIP::sScrap()
           invhistid = invhist.value("invhist_id").toInt();
         else
         {
-          systemError( this, tr("A System Error occurred scrapping material for "
-                                "Work Order ID #%1, Error #%2.")
-                       .arg(_wo->id())
-                       .arg(scrapScrap.value("result").toInt()),
-                       __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory History Information"),
+                               invhist, __FILE__, __LINE__);
           return;
         }
       }
@@ -229,11 +227,8 @@ void scrapWoMaterialFromWIP::sScrap()
     if (scrapScrap.value("result").toInt() < 0)
     {
       rollback.exec();
-      systemError( this, tr("A System Error occurred scrapping material for "
-			    "Work Order ID #%1, Error #%2.")
-			   .arg(_wo->id())
-			   .arg(scrapScrap.value("result").toInt()),
-		   __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                           scrapScrap, __FILE__, __LINE__);
        return;
     }
     else
@@ -271,11 +266,8 @@ void scrapWoMaterialFromWIP::sScrap()
   else
   {
     rollback.exec();
-    systemError( this, tr("A System Error occurred scrapping material for "
-			  "Work Order ID #%1\n\n%2")
-			  .arg(_wo->id())
-			  .arg(scrapScrap.lastError().databaseText()),
-		 __FILE__, __LINE__ );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Scrapping Material"),
+                         scrapScrap, __FILE__, __LINE__);
     return;
   }
 }

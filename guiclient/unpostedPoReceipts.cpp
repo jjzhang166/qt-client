@@ -30,6 +30,7 @@
 #include "storedProcErrorLookup.h"
 #include "transferOrderItem.h"
 #include "returnAuthorizationItem.h"
+#include "errorReporter.h"
 
 unpostedPoReceipts::unpostedPoReceipts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -137,10 +138,10 @@ void unpostedPoReceipts::sDelete()
     {
       unpostedDelete.bindValue(":id", ((XTreeWidgetItem*)(selected[i]))->id() );
       unpostedDelete.exec();
-      if (unpostedDelete.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Receipt Information"),
+                                    unpostedDelete, __FILE__, __LINE__))
       {
-	systemError(this, unpostedDelete.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
     }
     omfgThis->sPurchaseOrderReceiptsUpdated();
@@ -213,7 +214,8 @@ void unpostedPoReceipts::sPost()
       setDate.exec();
       if (setDate.lastError().type() != QSqlError::NoError)
       {
-        systemError(this, setDate.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Receipt Information"),
+                             setDate, __FILE__, __LINE__);
       }
     }
   }
@@ -246,8 +248,9 @@ void unpostedPoReceipts::sPost()
         int result = postLine.value("result").toInt();
         if (result < 0)
         {
-          systemError(this, storedProcErrorLookup("postReceipt", result),
-              __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Receipt Information"),
+                                 storedProcErrorLookup("postReceipt", result),
+                                 __FILE__, __LINE__);
           rollback.exec();
           continue;
         }
@@ -272,9 +275,9 @@ void unpostedPoReceipts::sPost()
           issuewo.bindValue(":itemlocseries", postLine.value("result").toInt());
           issuewo.bindValue(":id", id);
           issuewo.exec();
-          if (issuewo.lastError().type() != QSqlError::NoError)
+          if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Receipt Information"),
+                                        issuewo, __FILE__, __LINE__))
           {
-            systemError(this, issuewo.lastError().databaseText(), __FILE__, __LINE__);
             rollback.exec();
             return;
           }
@@ -286,7 +289,7 @@ void unpostedPoReceipts::sPost()
           issue.prepare("SELECT issueToShipping('SO', coitem_id, "
                         "  (recv_qty * poitem_invvenduomratio / coitem_qty_invuomratio), "
                         "  :itemlocseries, now(), invhist_id ) AS result, "
-                        "  coitem_cohead_id, cohead_holdtype, pohead_number "
+                        "  coitem_cohead_id, soHoldType(cohead_id) AS holdtype, pohead_number "
                         "FROM invhist, recv "
                         " JOIN poitem ON (poitem_id=recv_orderitem_id) "
                         " JOIN pohead ON (poitem_pohead_id=pohead_id) "
@@ -299,7 +302,7 @@ void unpostedPoReceipts::sPost()
           issue.exec();
           if (issue.first())
           {
-            if (issue.value("cohead_holdtype").toString() != "N")
+            if (issue.value("holdtype").toString() != "N")
             {
               QString msg = tr("Purchase Order %1 is being drop shipped against "
                        "a Sales Order that is on Hold.  The Sales Order must "
@@ -317,9 +320,9 @@ void unpostedPoReceipts::sPost()
             issue.bindValue(":itemlocseries", postLine.value("result").toInt());
             issue.exec();
           }
-          if (issue.lastError().type() != QSqlError::NoError)
+          if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Receipt Information"),
+                                        issue, __FILE__, __LINE__))
           {
-            systemError(this, issue.lastError().databaseText(), __FILE__, __LINE__);
             rollback.exec();
             return;
           }
@@ -339,7 +342,8 @@ void unpostedPoReceipts::sPost()
       else if (postLine.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
-        systemError(this, postLine.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Receipt Information"),
+                             postLine, __FILE__, __LINE__);
       }
     } // for each selected line
 
@@ -364,14 +368,16 @@ void unpostedPoReceipts::sPost()
         if (ship.lastError().type() != QSqlError::NoError)
         {
           rollback.exec();
-          systemError(this, ship.lastError().databaseText(), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                               ship, __FILE__, __LINE__);
           return;
         }
       }
       if (ship.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
-        systemError(this, ship.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                             ship, __FILE__, __LINE__);
         return;
       }
       _soheadid.takeFirst();

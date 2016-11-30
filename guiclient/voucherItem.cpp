@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -17,10 +17,11 @@
 #include <metasql.h>
 
 #include "mqlutil.h"
+#include "errorReporter.h"
 #include "voucherItemDistrib.h"
 #include "enterPoitemReceipt.h"
 #include "splitReceipt.h"
-#include "taxDetail.h"
+#include "taxBreakdown.h"
 
 voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -28,16 +29,17 @@ voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::Wind
   XSqlQuery voucherItem;
   setupUi(this);
 
-  connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
-  connect(_edit, SIGNAL(clicked()), this, SLOT(sEdit()));
-  connect(_delete, SIGNAL(clicked()), this, SLOT(sDelete()));
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
-  connect(_uninvoiced, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(sToggleReceiving(QTreeWidgetItem*)));
-  connect(_uninvoiced, SIGNAL(populateMenu(QMenu*,XTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*, XTreeWidgetItem*)));
+  connect(_new,              SIGNAL(clicked()),        this, SLOT(sNew()));
+  connect(_edit,             SIGNAL(clicked()),        this, SLOT(sEdit()));
+  connect(_delete,           SIGNAL(clicked()),        this, SLOT(sDelete()));
+  connect(_save,             SIGNAL(clicked()),        this, SLOT(sSave()));
+  connect(_uninvoiced,       SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(sToggleReceiving(QTreeWidgetItem*)));
+  connect(_uninvoiced,       SIGNAL(populateMenu(QMenu*,XTreeWidgetItem*)), this, SLOT(sPopulateMenu(QMenu*, XTreeWidgetItem*)));
+  connect(_freightToVoucher, SIGNAL(editingFinished()), this, SLOT(sCalculateTax()));
   connect(_freightToVoucher, SIGNAL(editingFinished()), this, SLOT(sFillList()));
-  connect(_vodist, SIGNAL(populated()), this, SLOT(sCalculateTax()));
-  connect(_taxtype,	  SIGNAL(newID(int)), this, SLOT(sCalculateTax()));
-  connect(_taxLit, SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
+  connect(_vodist,           SIGNAL(populated()),       this, SLOT(sCalculateTax()));
+  connect(_taxtype,          SIGNAL(newID(int)),        this, SLOT(sCalculateTax()));
+  connect(_taxLit,           SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
 
   _item->setReadOnly(true);
   
@@ -62,12 +64,6 @@ voucherItem::voucherItem(QWidget* parent, const char* name, bool modal, Qt::Wind
   _uninvoiced->addColumn(tr("Qty."),           _qtyColumn,  Qt::AlignRight,  true, "qty");
   _uninvoiced->addColumn(tr("Unit Price"),     _moneyColumn,Qt::AlignRight,  true, "unitprice");
   _uninvoiced->addColumn(tr("Tagged"),         _ynColumn,   Qt::AlignCenter, true, "f_tagged");
-  
-  _rejectedMsg = tr("The application has encountered an error and must "
-                    "stop editing this Voucher Item.\n%1");
-
-  _inTransaction = true;
-  voucherItem.exec("BEGIN;"); //Lot's of things can happen in here that can cause problems if cancelled out.  Let's make it easy to roll it back.
 }
 
 voucherItem::~voucherItem()
@@ -112,9 +108,9 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
     setVoucher.exec();
     if (setVoucher.first())
       _taxzoneid = setVoucher.value("vohead_taxzone_id").toInt();
-    else if (setVoucher.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                                  setVoucher, __FILE__, __LINE__))
     {
-      systemError(this, setVoucher.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
 	else
@@ -176,10 +172,9 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
       if (setVoucher.value("itemsiteid") != -1)
         _item->setItemsiteid(setVoucher.value("itemsiteid").toInt());
     }
-    else if (setVoucher.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                                  setVoucher, __FILE__, __LINE__))
     {
-      systemError(this, _rejectedMsg.arg(setVoucher.lastError().databaseText()),
-                  __FILE__, __LINE__);
       reject();
       return UndefinedError;
     }
@@ -211,10 +206,9 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
       _freightToVoucher->setLocalValue(setVoucher.value("voitem_freight").toDouble());
       _taxtype->setId(setVoucher.value("voitem_taxtype_id").toInt());
     }
-    else if (setVoucher.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                                  setVoucher, __FILE__, __LINE__))
     {
-      systemError(this, _rejectedMsg.arg(setVoucher.lastError().databaseText()),
-                  __FILE__, __LINE__);
       reject();
       return UndefinedError;
     }
@@ -237,15 +231,33 @@ enum SetResponse voucherItem::set(const ParameterList &pParams)
     setVoucher.exec();
     if (setVoucher.first())
 	  _tax->setLocalValue(setVoucher.value("taxamt").toDouble());
-	else if (setVoucher.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                                  setVoucher, __FILE__, __LINE__))
     {
-      systemError(this, _rejectedMsg.arg(setVoucher.lastError().databaseText()),
-                  __FILE__, __LINE__);
       reject();
       return UndefinedError;
     }
     else
       _tax->clear();
+  }
+
+  //Reset recv table in case application previously closed without reject or save
+
+  setVoucher.prepare( "UPDATE recv "
+                      "SET recv_vohead_id=CASE WHEN (recv_voitem_id IS NULL) THEN NULL ELSE :vohead_id END "
+                      "WHERE ( (NOT recv_invoiced) "
+                      "AND     (recv_posted) "
+                      "AND     ((recv_vohead_id IS NULL) OR (recv_vohead_id=:vohead_id)) "
+                      "AND     (recv_order_type='PO') "
+                      "AND     (recv_orderitem_id=:poitem_id) );" );
+  setVoucher.bindValue(":vohead_id", _voheadid);
+  setVoucher.bindValue(":poitem_id", _poitemid);
+  setVoucher.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                                                setVoucher, __FILE__, __LINE__))
+  {
+    reject();
+    return UndefinedError;
   }
 
   sFillList();
@@ -279,10 +291,9 @@ void voucherItem::sSave()
                            tr("You must make at least one distribution for this Voucher Item before you may save it.") );
     return;
   }
-  if (voucherSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information"),
+                                voucherSave, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherSave.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -319,25 +330,53 @@ void voucherItem::sSave()
           return;
     }
   }
-  else if (voucherSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information"),
+                                voucherSave, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherSave.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
 
   // Update the qty vouchered
-  voucherSave.prepare( "UPDATE voitem "
-             "SET voitem_close=:voitem_close,"
-             "    voitem_freight=:voitem_freight, "
-			 "    voitem_taxtype_id=:voitem_taxtype_id "
-             "WHERE (voitem_id=:voitem_id);"
-             "UPDATE vodist "
-             "SET vodist_qty=:qty "
-             "WHERE ((vodist_vohead_id=:vohead_id)"
-             " AND (vodist_poitem_id=:poitem_id) );" );
+  voucherSave.prepare( "UPDATE vodist "
+               "SET vodist_qty=:qty "
+               "WHERE ((vodist_vohead_id=:vohead_id)"
+               " AND (vodist_poitem_id=:poitem_id) );" );
   voucherSave.bindValue(":qty", _qtyToVoucher->toDouble());
+  voucherSave.bindValue(":poitem_id", _poitemid);
+  voucherSave.bindValue(":vohead_id", _voheadid);
+  voucherSave.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information "),
+                                voucherSave, __FILE__, __LINE__))
+  {
+    reject();
+    return;
+  }
+
+  // Save the voitem information
+  if (_voitemid != -1)
+  {
+    voucherSave.prepare( "UPDATE voitem "
+               "SET voitem_close=:voitem_close,"
+               "    voitem_qty=:voitem_qty, "
+               "    voitem_freight=:voitem_freight, "
+	  		 "    voitem_taxtype_id=:voitem_taxtype_id "
+               "WHERE (voitem_id=:voitem_id) "
+               "RETURNING voitem_id;" );
+    voucherSave.bindValue(":voitem_id", _voitemid);
+  }
+  else
+  {
+    voucherSave.prepare( "INSERT INTO voitem "
+               "(voitem_vohead_id, voitem_poitem_id, voitem_close, voitem_qty, "
+               " voitem_freight, voitem_taxtype_id ) "
+               "VALUES "
+               "(:vohead_id, :poitem_id, :voitem_close, :voitem_qty, "
+               " :voitem_freight, :voitem_taxtype_id) "
+               "RETURNING voitem_id;" );
+  }
+
+  voucherSave.bindValue(":voitem_qty", _qtyToVoucher->toDouble());
   voucherSave.bindValue(":poitem_id", _poitemid);
   voucherSave.bindValue(":voitem_id", _voitemid);
   voucherSave.bindValue(":vohead_id", _voheadid);
@@ -346,16 +385,35 @@ void voucherItem::sSave()
   if (_taxtype->id() != -1)
     voucherSave.bindValue(":voitem_taxtype_id", _taxtype->id());
   voucherSave.exec();
-  if (voucherSave.lastError().type() != QSqlError::NoError)
+  if (voucherSave.first())
+    _voitemid = voucherSave.value("voitem_id").toInt();
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information"),
+                                voucherSave, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherSave.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
-  voucherSave.exec("COMMIT;");
-  
-  _inTransaction = false;
+
+  //Save 'tagged' status stored in rev_vohead_id to recv_voitem_id
+
+  voucherSave.prepare( "UPDATE recv "
+                       "SET recv_voitem_id=CASE WHEN (recv_vohead_id IS NULL) THEN NULL ELSE :voitem_id END "
+                       "WHERE ( (NOT recv_invoiced) "
+                       "AND     (recv_posted) "
+                       "AND     ((recv_vohead_id IS NULL) OR (recv_vohead_id=:vohead_id)) "
+                       "AND     (recv_order_type='PO') "
+                       "AND     (recv_orderitem_id=:poitem_id) );" );
+  voucherSave.bindValue(":voitem_id", _voitemid);
+  voucherSave.bindValue(":vohead_id", _voheadid);
+  voucherSave.bindValue(":poitem_id", _poitemid);
+  voucherSave.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information"),
+                                voucherSave, __FILE__, __LINE__))
+  {
+    reject();
+    return;
+  }
+
   accept();
 }
 
@@ -369,10 +427,9 @@ void voucherItem::sNew()
   voucherNew.bindValue(":vohead_id", _voheadid);
   voucherNew.bindValue(":poitem_id", _poitemid);
   voucherNew.exec();
-  if (voucherNew.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Item Information"),
+                                voucherNew, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherNew.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -417,10 +474,9 @@ void voucherItem::sDelete()
              "WHERE (vodist_id=:vodist_id);" );
   voucherDelete.bindValue(":vodist_id", _vodist->id());
   voucherDelete.exec();
-  if (voucherDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Voucher Item Information"),
+                                voucherDelete, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherDelete.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -481,57 +537,13 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
         _closePoitem->setChecked(true);
   else
 	_closePoitem->setChecked(false);
-  
-  // Save the voitem information
-  if (_voitemid != -1)
-  {
-    voucherToggleReceiving.prepare( "UPDATE voitem "
-               "SET voitem_qty=:voitem_qty "
-               "WHERE (voitem_id=:voitem_id);" );
-    voucherToggleReceiving.bindValue(":voitem_id", _voitemid);
-  }
-  else
-  {
-  // Get next voitem id
-    voucherToggleReceiving.prepare("SELECT NEXTVAL('voitem_voitem_id_seq') AS voitemid");
-    voucherToggleReceiving.exec();
-    if (voucherToggleReceiving.first())
-      _voitemid = (voucherToggleReceiving.value("voitemid").toInt());
-    else if (voucherToggleReceiving.lastError().type() != QSqlError::NoError)
-    {
-      systemError(this, _rejectedMsg.arg(voucherToggleReceiving.lastError().databaseText()),
-                  __FILE__, __LINE__);
-      reject();
-      return;
-    }
     
-    voucherToggleReceiving.prepare( "INSERT INTO voitem "
-               "(voitem_id, voitem_vohead_id, voitem_poitem_id, voitem_close, voitem_qty, voitem_freight) "
-               "VALUES "
-               "(:voitem_id, :vohead_id, :poitem_id, :voitem_close, :voitem_qty, :voitem_freight);" );
-  }
-
-  voucherToggleReceiving.bindValue(":voitem_id", _voitemid);
-  voucherToggleReceiving.bindValue(":vohead_id", _voheadid);
-  voucherToggleReceiving.bindValue(":poitem_id", _poitemid);
-  voucherToggleReceiving.bindValue(":voitem_close", QVariant(_closePoitem->isChecked()));
-  voucherToggleReceiving.bindValue(":voitem_qty", _qtyToVoucher->toDouble());
-  voucherToggleReceiving.bindValue(":voitem_freight", _freightToVoucher->localValue());
-  voucherToggleReceiving.exec();
-  if (voucherToggleReceiving.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, _rejectedMsg.arg(voucherToggleReceiving.lastError().databaseText()),
-                __FILE__, __LINE__);
-    reject();
-    return;
-  }
-  
   // Update the receipt record
-  if (item->text(4) == "Yes")
+  if (item->text("f_tagged") == "Yes")
   {
     if (item->altId() == 1)
       voucherToggleReceiving.prepare( "UPDATE recv "
-                 "SET recv_vohead_id=:vohead_id,recv_voitem_id=:voitem_id "
+                 "SET recv_vohead_id=:vohead_id "
                  "WHERE (recv_id=:target_id);" );
     else if (item->altId() == 2)
       voucherToggleReceiving.prepare( "UPDATE poreject "
@@ -542,7 +554,7 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
   {
     if (item->altId() == 1)
       voucherToggleReceiving.prepare( "UPDATE recv "
-                 "SET recv_vohead_id=NULL,recv_voitem_id=NULL "
+                 "SET recv_vohead_id=NULL "
                  "WHERE ((recv_id=:target_id)"
                  "  AND  (recv_vohead_id=:vohead_id));" );
     else if (item->altId() == 2)
@@ -556,10 +568,9 @@ void voucherItem::sToggleReceiving(QTreeWidgetItem *pItem)
   voucherToggleReceiving.bindValue(":voitem_id", _voitemid);
   voucherToggleReceiving.bindValue(":target_id", item->id());
   voucherToggleReceiving.exec();
-  if (voucherToggleReceiving.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Voucher Item Information"),
+                                voucherToggleReceiving, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(voucherToggleReceiving.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -576,10 +587,9 @@ void voucherItem::sFillList()
   params.append("vohead_id", _voheadid);
   XSqlQuery distq = distmql.toQuery(params);
   _vodist->populate(distq);
-  if (distq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Item Information"),
+                                distq, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(distq.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -591,10 +601,9 @@ void voucherItem::sFillList()
   params.append("reject", tr("Reject"));
   XSqlQuery recq = recmql.toQuery(params);
   _uninvoiced->populate(recq, true);
-  if (recq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Item Information "),
+                                recq, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(recq.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -612,10 +621,9 @@ void voucherItem::sFillList()
     _totalDistributed->setLocalValue(totalDist.value("totalamount").toDouble() +
                                      _tax->localValue() +
                                      _freightToVoucher->localValue());
-  else if (totalDist.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Item Information"),
+                                totalDist, __FILE__, __LINE__))
   {
-    systemError(this, _rejectedMsg.arg(totalDist.lastError().databaseText()),
-                __FILE__, __LINE__);
     reject();
     return;
   }
@@ -654,32 +662,45 @@ void voucherItem::sPopulateMenu(QMenu *pMenu,  XTreeWidgetItem *selected)
   }
 }
 
+void voucherItem::rollback()
+{
+  XSqlQuery rollback;
+
+  //Undo 'tagged' status stored in rev_vohead_id to initial state stored in recv_voitem_id
+
+  rollback.prepare( "UPDATE recv "
+                      "SET recv_vohead_id=CASE WHEN (recv_voitem_id IS NULL) THEN NULL ELSE :vohead_id END "
+                      "WHERE ( (NOT recv_invoiced) "
+                      "AND     (recv_posted) "
+                      "AND     ((recv_vohead_id IS NULL) OR (recv_vohead_id=:vohead_id)) "
+                      "AND     (recv_order_type='PO') "
+                      "AND     (recv_orderitem_id=:poitem_id) );" );
+  rollback.bindValue(":vohead_id", _voheadid);
+  rollback.bindValue(":poitem_id", _poitemid);
+  rollback.exec();
+}
+
 void voucherItem::reject()
 {
-  XSqlQuery voucherreject;
-  if(_inTransaction)
-  {
-    voucherreject.exec("ROLLBACK;");
-    _inTransaction = false;
-  }
+  rollback();
+
   XDialog::reject();
 }
 
 void voucherItem::closeEvent(QCloseEvent * event)
 {
-  XSqlQuery vouchercloseEvent;
-  if(_inTransaction)
-  {
-    vouchercloseEvent.exec("ROLLBACK;");
-    _inTransaction = false;
-  }
+  rollback();
+
   XDialog::closeEvent(event);
 }
 
 void voucherItem::sCalculateTax()
 {
   _saved = false;
+  double _taxamount = 0.00;
+  _freighttax = 0.00;
   XSqlQuery calcq;
+  XSqlQuery calcq1;
   calcq.prepare( "SELECT SUM(COALESCE(tax, 0.00)) AS totaltax "
                  "FROM (SELECT calculateTax(vohead_taxzone_id, :taxtype_id, "
 				 " vohead_docdate, vohead_curr_id, vodist_amount) AS tax "
@@ -692,56 +713,37 @@ void voucherItem::sCalculateTax()
   calcq.bindValue(":poitem_id", _poitemid);
   calcq.exec();
   if (calcq.first())
-    _tax->setLocalValue(calcq.value("totaltax").toDouble());
-  else if (calcq.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, calcq.lastError().databaseText(), __FILE__, __LINE__);
+    _taxamount = calcq.value("totaltax").toDouble();
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Tax Calculation"),
+                                    calcq, __FILE__, __LINE__))
     return;
-  }
+
+  calcq1.prepare( "SELECT COALESCE(ROUND(SUM(calculateTax(vohead_taxzone_id, getfreighttaxtypeid(), "
+                 "           vohead_docdate, vohead_curr_id, :voitem_freight)),2),0) AS freighttaxamt "
+                 "  FROM vohead "
+                 "  WHERE (vohead_id=:vohead_id);");
+  calcq1.bindValue(":vohead_id", _voheadid);
+  calcq1.bindValue(":voitem_freight", _freightToVoucher->localValue());
+  calcq1.exec();
+  if (calcq1.first())
+    _freighttax = calcq1.value("freighttaxamt").toDouble();
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Tax Calculation"),
+                                    calcq1, __FILE__, __LINE__))
+    return;
+
+  _tax->setLocalValue(_taxamount + _freighttax);
 }
 
 void voucherItem::sTaxDetail()
 {
-  XSqlQuery voucherTaxDetail;
-  voucherTaxDetail.prepare( "SELECT SUM(vodist_amount) AS distamount "
-             "FROM vodist "
-             "WHERE ( (vodist_vohead_id=:vohead_id)"
-             " AND (vodist_poitem_id=:poitem_id) );" );
-  voucherTaxDetail.bindValue(":vohead_id", _voheadid);
-  voucherTaxDetail.bindValue(":poitem_id", _poitemid);
-  voucherTaxDetail.exec();
-  if (voucherTaxDetail.first())
-    _distamount = voucherTaxDetail.value("distamount").toDouble();
-  else if (voucherTaxDetail.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, _rejectedMsg.arg(voucherTaxDetail.lastError().databaseText()),
-                __FILE__, __LINE__);
-    return;
-  }
-
-  taxDetail newdlg(this, "", true);
   ParameterList params;
-  params.append("taxzone_id", _taxzoneid);
-  params.append("taxtype_id", _taxtype->id());
-  params.append("date", _tax->effective());
-  params.append("subtotal", _distamount);
-  params.append("curr_id", _tax->id());
-  params.append("sense", -1);
-  
-  if(cView == _mode)
-    params.append("readOnly");
-  
-  if(_saved == true)
-  {
-	params.append("order_id", _voitemid);
-    params.append("order_type", "VI");
-  }
+  params.append("order_id", _voitemid);
+  params.append("order_type", "VI");
+  // mode => view since there are no fields to hold modified tax data
+  if (_mode == cView)
+    params.append("mode", "view");
 
+  taxBreakdown newdlg(this, "", true);
   newdlg.set(params);
-  
-  if (newdlg.set(params) == NoError && newdlg.exec())
-  {
-    if (_taxtype->id() != newdlg.taxtype())
-      _taxtype->setId(newdlg.taxtype());
-  }
+  newdlg.exec();
 }

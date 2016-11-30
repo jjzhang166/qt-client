@@ -18,6 +18,7 @@
 #include "distributeInventory.h"
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 transformTrans::transformTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -222,14 +223,16 @@ void transformTrans::sPost()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("postTransformTrans", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
+                             storedProcErrorLookup("postTransformTrans", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (transformPost.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, transformPost.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
+                           transformPost, __FILE__, __LINE__);
       return;
     }
 
@@ -246,17 +249,20 @@ void transformTrans::sPost()
   else if (transformPost.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, transformPost.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
+                         transformPost, __FILE__, __LINE__);
     return;
   }
   else
   {
     rollback.exec();
-    systemError( this,
-                tr("<p>No transaction was done because either Item %1 or Item "
-                   "%2 was not found at Site %3.")
-                .arg(_item->itemNumber(), _target->currentText(),
-                     _warehouse->currentText()));
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: <p>No transaction occurred due to either Item %2 or Item "
+                            "%3 was not found at Site %4.")
+                         .arg(windowTitle())
+                         .arg(_item->itemNumber())
+                         .arg(_target->currentText())
+                         .arg(_warehouse->currentText()),__FILE__,__LINE__);
   }
 
   if (_captive)
@@ -303,10 +309,10 @@ void transformTrans::sPopulateTarget(int /*pItemid*/)
     _targetIsValid = true;
 
   }
-  else if (transformPopulateTarget.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                transformPopulateTarget, __FILE__, __LINE__))
   {
     _targetIsValid = false;
-    systemError(this, transformPopulateTarget.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -338,9 +344,9 @@ void transformTrans::sFillList()
   transformFillList.exec();
   if (transformFillList.first())
     _target->populate(transformFillList);
-  else if (transformFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                transformFillList, __FILE__, __LINE__))
   {
-    systemError(this, transformFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -392,15 +398,15 @@ void transformTrans::sFillList()
     transformFillList.bindValue(":itemsite_id", itemsiteid);
     transformFillList.exec();
     _source->populate(transformFillList, true);
-    if (transformFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  transformFillList, __FILE__, __LINE__))
     {
-      systemError(this, transformFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
-  else if (transformFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                transformFillList, __FILE__, __LINE__))
   {
-    systemError(this, transformFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -434,9 +440,9 @@ void  transformTrans::sPopulateQOH()
       sRecalculateAfter();
 
     }
-    else if (transformPopulateQOH.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  transformPopulateQOH, __FILE__, __LINE__))
     {
-      systemError(this, transformPopulateQOH.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

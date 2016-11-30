@@ -91,8 +91,8 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
     else if (ccbankq.value("ccbank_ccard_type").toString() == "O")
       _otherBank->setId(ccbankq.value("ccbank_bankaccnt_id").toInt());
   }
-  if (ccbankq.lastError().type() != QSqlError::NoError)
-    systemError(this, ccbankq.lastError().text(), __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving CC Information"),
+                       ccbankq, __FILE__, __LINE__);
 
   _ccYPWinPathPEM->setText(_metrics->value("CCYPWinPathPEM"));
   _ccYPLinPathPEM->setText(_metrics->value("CCYPLinPathPEM"));

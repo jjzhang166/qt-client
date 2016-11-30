@@ -16,6 +16,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
 
 glSeriesItem::glSeriesItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -146,9 +147,9 @@ void glSeriesItem::sSave()
   glSave.bindValue(":amount",	amount);
   glSave.bindValue(":distdate",	_amount->effective());
   glSave.exec();
-  if (glSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving G/L Series Information"),
+                                glSave, __FILE__, __LINE__))
   {
-    systemError(this, glSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -178,9 +179,9 @@ void glSeriesItem::populate()
 
     _account->setId(glpopulate.value("glseries_accnt_id").toInt());
   }
-  else if (glpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                glpopulate, __FILE__, __LINE__))
   {
-    systemError(this, glpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

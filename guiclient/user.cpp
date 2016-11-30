@@ -28,6 +28,7 @@ user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   setupUi(this);
 
   _authCache     = false;
+  _windowCache   = "";
   _cUsername     = "";
   _crmacctid     = -1;
   _inTransaction = false;
@@ -160,6 +161,7 @@ enum SetResponse user::set(const ParameterList &pParams)
   _email->setEnabled(canEdit);
   _employee->setReadOnly(! canEdit);
   _enhancedAuth->setEnabled(canEdit);
+  _ssosOnly->setEnabled(canEdit);
   _exportContents->setEnabled(canEdit);
   _initials->setEnabled(canEdit);
   _locale->setEnabled(canEdit);
@@ -317,6 +319,13 @@ bool user::save()
     if (ErrorReporter::error(QtCriticalMsg, this, tr("Setting Password"),
                              usrq, __FILE__, __LINE__))
       return false;
+    usrq.prepare("SELECT setUserPreference(:username, 'PasswordResetDate', :passdate);");
+    usrq.bindValue(":username", username);
+    usrq.bindValue(":passdate", QDate::currentDate());
+    usrq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving User Account"),
+                             usrq, __FILE__, __LINE__))
+      return false;
   }
 
   usrq.prepare("SELECT setUserPreference(:username, 'DisableExportContents', :export),"
@@ -342,6 +351,17 @@ bool user::save()
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving User Account"),
                            usrq, __FILE__, __LINE__))
     return false;
+
+  if (_ssosOnly->isChecked() || _windowCache == "salesOrderSimple")
+  {
+    usrq.prepare("SELECT setUserPreference(:username, 'window', :ssosonly);");
+    usrq.bindValue(":username", username);
+    usrq.bindValue(":ssosonly", (_ssosOnly->isChecked() ? "salesOrderSimple" : ""));
+    usrq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving User Account"),
+                             usrq, __FILE__, __LINE__))
+      return false;
+  }
 
   omfgThis->sUserUpdated(username);
   return true;
@@ -704,24 +724,27 @@ bool user::sPopulate()
       _authCache = (usrq.value("usrpref_value").toString()=="t");
     _enhancedAuth->setChecked(_authCache);
 
-    usrq.prepare( "SELECT priv_module "
-               "FROM usrpriv, priv "
-               "WHERE ( (usrpriv_priv_id=priv_id)"
-               " AND (usrpriv_username=:username) ) "
-               "ORDER BY priv_module "
-               "LIMIT 1;" );
-    usrq.bindValue(":username", _cUsername);
-    usrq.exec();
-    if (usrq.first())
+    if (_metrics->boolean("SSOSEnabled"))
     {
-      _module->setCode(usrq.value("priv_module").toString());
-      sModuleSelected(_module->currentText());
+      usrq.prepare( "SELECT usrpref_value "
+                   "  FROM usrpref "
+                   " WHERE ( (usrpref_name = 'window') "
+                   "   AND (usrpref_username=:username) ); ");
+      usrq.bindValue(":username", _cUsername);
+      usrq.exec();
+      _windowCache = "";
+      if(usrq.first())
+        _windowCache = (usrq.value("usrpref_value").toString());
+      _ssosOnly->setChecked(_windowCache=="salesOrderSimple");
     }
     else
     {
-      _module->setCurrentIndex(0);
-      sModuleSelected(_module->itemText(0));
+      _ssosOnly->setChecked(false);
+      _ssosOnly->hide();
     }
+    
+    _module->setCurrentIndex(0);
+    sModuleSelected(_module->itemText(0));
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting User Account"),
                                 usrq, __FILE__, __LINE__))

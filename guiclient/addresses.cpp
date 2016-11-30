@@ -23,6 +23,7 @@
 #include "address.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
+#include "errorReporter.h"
 
 addresses::addresses(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "addresses", fl)
@@ -125,9 +126,9 @@ void addresses::sDelete()
     else
       sFillList();
   }
-  else if (deleteAddress.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Address"),
+                                deleteAddress, __FILE__, __LINE__))
   {
-    systemError(this, deleteAddress.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

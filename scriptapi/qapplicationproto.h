@@ -19,6 +19,8 @@
 #include <QSessionManager>
 #include <QtScript>
 
+#include "qcoreapplicationproto.h"
+
 class QString;
 
 Q_DECLARE_METATYPE(QApplication*)
@@ -26,7 +28,7 @@ Q_DECLARE_METATYPE(QApplication*)
 void setupQApplicationProto(QScriptEngine *engine);
 QScriptValue constructQApplication(QScriptContext *context, QScriptEngine *engine);
 
-class QApplicationProto : public QObject, public QScriptable
+class QApplicationProto : public QCoreApplicationProto
 {
   Q_OBJECT
 

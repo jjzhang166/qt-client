@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -22,12 +23,9 @@ pricingScheduleAssignment::pricingScheduleAssignment(QWidget* parent, const char
   connect(_shiptoIdCust, SIGNAL(newId(int)), this, SLOT(sCustomerSelected()));
 
   _customerTypes->setType(XComboBox::CustomerTypes);
+  _listpricesched = false;
 
   _ipshead->setAllowNull(true);
-  _ipshead->populate( "SELECT ipshead_id, (ipshead_name || ' - ' || ipshead_descrip) "
-                      "FROM ipshead "
-                      "WHERE (CURRENT_DATE < ipshead_expires) "
-                      "ORDER BY ipshead_name;" );
 }
 
 pricingScheduleAssignment::~pricingScheduleAssignment()
@@ -46,6 +44,28 @@ enum SetResponse pricingScheduleAssignment::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
 
+  param = pParams.value("listpricesched", &valid);
+  if (valid)
+  {
+    _listpricesched = true;
+    _shipZone->hide();
+    _selectedSaleType->hide();
+    _selectedShipZone->hide();
+    _saleType->hide();
+    setWindowTitle(tr("List Pricing Schedule Assignment"));
+    _ipshead->populate( "SELECT ipshead_id, (ipshead_name || ' - ' || ipshead_descrip) "
+                       "FROM ipshead "
+                       "WHERE (CURRENT_DATE < ipshead_expires) "
+                       "  AND (ipshead_listprice)"
+                       "ORDER BY ipshead_name;" );
+  }
+  else
+    _ipshead->populate( "SELECT ipshead_id, (ipshead_name || ' - ' || ipshead_descrip) "
+                       "FROM ipshead "
+                       "WHERE (CURRENT_DATE < ipshead_expires) "
+                       "  AND (NOT ipshead_listprice)"
+                       "ORDER BY ipshead_name;" );
+  
   param = pParams.value("ipsass_id", &valid);
   if (valid)
   {
@@ -93,9 +113,11 @@ void pricingScheduleAssignment::sAssign()
                         "WHERE ( (ipsass_ipshead_id=:ipsass_ipshead_id)"
                         "  AND   (ipsass_cust_id=:ipsass_cust_id)"
                         "  AND   (ipsass_shipto_id=:ipsass_shipto_id)"
-                        "  AND   (ipsass_shipto_pattern=:ipsass_shipto_pattern)"
+                        "  AND   (COALESCE(ipsass_shipto_pattern, '')=COALESCE(:ipsass_shipto_pattern,''))"
                         "  AND   (ipsass_custtype_id=:ipsass_custtype_id)"
-                        "  AND   (ipsass_custtype_pattern=:ipsass_custtype_pattern) );" );
+                        "  AND   (COALESCE(ipsass_custtype_pattern,'')=COALESCE(:ipsass_custtype_pattern,''))"
+                        "  AND   (COALESCE(ipsass_shipzone_id, -1)=COALESCE(:ipsass_shipzone_id, -1))"
+                        "  AND   (COALESCE(ipsass_saletype_id, -1)=COALESCE(:ipsass_saletype_id, -1)) );" );
 
   pricingAssign.bindValue(":ipsass_ipshead_id", _ipshead->id());
 
@@ -128,6 +150,12 @@ void pricingScheduleAssignment::sAssign()
   else
     pricingAssign.bindValue(":ipsass_custtype_pattern", "");
 
+  if (_selectedShipZone->isChecked())
+    pricingAssign.bindValue(":ipsass_shipzone_id", _shipZone->id());
+
+  if (_selectedSaleType->isChecked())
+    pricingAssign.bindValue(":ipsass_saletype_id", _saleType->id());
+
   pricingAssign.exec();
   if (pricingAssign.first())
   {
@@ -143,20 +171,21 @@ void pricingScheduleAssignment::sAssign()
       _ipsassid = pricingAssign.value("ipsass_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Pricing Schedule Assignment Information"),
+                           pricingAssign, __FILE__, __LINE__);
       return;
     }
 
     pricingAssign.prepare( "INSERT INTO ipsass "
                "( ipsass_id, ipsass_ipshead_id,"
                "  ipsass_cust_id, ipsass_shipto_id, ipsass_shipto_pattern,"
-               "  ipsass_custtype_id, ipsass_custtype_pattern ) "
+               "  ipsass_custtype_id, ipsass_custtype_pattern, ipsass_shipzone_id, "
+               "  ipsass_saletype_id ) "
                "VALUES "
                "( :ipsass_id, :ipsass_ipshead_id,"
                "  :ipsass_cust_id, :ipsass_shipto_id, :ipsass_shipto_pattern,"
-               "  :ipsass_custtype_id, :ipsass_custtype_pattern );" );
+               "  :ipsass_custtype_id, :ipsass_custtype_pattern, :ipsass_shipzone_id,"
+               "  :ipsass_saletype_id );" );
   }
   else
     pricingAssign.prepare( "UPDATE ipsass "
@@ -165,7 +194,9 @@ void pricingScheduleAssignment::sAssign()
                "    ipsass_shipto_id=:ipsass_shipto_id,"
                "    ipsass_shipto_pattern=:ipsass_shipto_pattern,"
                "    ipsass_custtype_id=:ipsass_custtype_id,"
-               "    ipsass_custtype_pattern=:ipsass_custtype_pattern "
+               "    ipsass_custtype_pattern=:ipsass_custtype_pattern, "
+               "    ipsass_shipzone_id=:ipsass_shipzone_id, "
+               "    ipsass_saletype_id=:ipsass_saletype_id "
                "WHERE (ipsass_id=:ipsass_id);" );
 
   pricingAssign.bindValue(":ipsass_id", _ipsassid);
@@ -199,6 +230,12 @@ void pricingScheduleAssignment::sAssign()
     pricingAssign.bindValue(":ipsass_custtype_pattern", _customerType->text());
   else
     pricingAssign.bindValue(":ipsass_custtype_pattern", "");
+
+  if (_selectedShipZone->isChecked())
+    pricingAssign.bindValue(":ipsass_shipzone_id", _shipZone->id());
+
+  if (_selectedSaleType->isChecked())
+    pricingAssign.bindValue(":ipsass_saletype_id", _saleType->id());
 
   pricingAssign.exec();
 
@@ -238,6 +275,16 @@ void pricingScheduleAssignment::populate()
     {
       _selectedCustomerType->setChecked(true);
       _customerTypes->setId(pricingpopulate.value("ipsass_custtype_id").toInt());
+    }
+    else if (pricingpopulate.value("ipsass_shipzone_id").toInt() > 0)
+    {
+      _selectedShipZone->setChecked(true);
+      _shipZone->setId(pricingpopulate.value("ipsass_shipzone_id").toInt());
+    }
+    else if (pricingpopulate.value("ipsass_saletype_id").toInt() > 0)
+    {
+      _selectedSaleType->setChecked(true);
+      _saleType->setId(pricingpopulate.value("ipsass_saletype_id").toInt());
     }
     else
     {

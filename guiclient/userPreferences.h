@@ -13,6 +13,8 @@
 
 #include "guiclient.h"
 #include "xdialog.h"
+#include <parameter.h>
+
 #include "ui_userPreferences.h"
 
 class userPreferences : public XDialog, public Ui::userPreferences
@@ -28,6 +30,7 @@ public:
     virtual void setBackgroundImage( int pImageid );
 
 public slots:
+    virtual SetResponse set( const ParameterList & pParams );
     virtual void sBackgroundList();
     virtual void sPopulate();
     virtual void sApply();

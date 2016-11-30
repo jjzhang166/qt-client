@@ -76,7 +76,7 @@ to be bound by its terms.</comment>
           <number>0</number>
          </property>
          <item>
-          <widget class="ItemCluster" name="_item" native="true"/>
+          <widget class="ItemCluster" name="_item"/>
          </item>
          <item>
           <layout class="QHBoxLayout">
@@ -179,7 +179,7 @@ to be bound by its terms.</comment>
               <number>0</number>
              </property>
              <item>
-              <widget class="XLineEdit" name="_quantity" native="true">
+              <widget class="XLineEdit" name="_quantity">
                <property name="maximumSize">
                 <size>
                  <width>80</width>
@@ -212,7 +212,7 @@ to be bound by its terms.</comment>
               <number>0</number>
              </property>
              <item>
-              <widget class="DLineEdit" name="_dueDate" native="true"/>
+              <widget class="DLineEdit" name="_dueDate"/>
              </item>
              <item>
               <spacer name="spacer547">
@@ -302,24 +302,32 @@ to be bound by its terms.</comment>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>WComboBox</class>
-   <extends>QComboBox</extends>
-   <header>wcombobox.h</header>
+   <class>DLineEdit</class>
+   <extends>QWidget</extends>
+   <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ItemCluster</class>
    <extends>QWidget</extends>
    <header>itemcluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WComboBox</class>
+   <extends>XComboBox</extends>
+   <header>wcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XComboBox</class>
+   <extends>QComboBox</extends>
+   <header>xcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
-   <extends>QWidget</extends>
+   <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DLineEdit</class>
-   <extends>QWidget</extends>
-   <header>dlineedit.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XTextEdit</class>

@@ -153,10 +153,10 @@ class XTUPLEWIDGETS_EXPORT OrderCluster : public VirtualCluster
     Q_INVOKABLE virtual bool lockSelected();
     Q_INVOKABLE virtual void setLockSelected(bool lock);
 
-    virtual bool        nameVisible();
+    virtual bool        nameVisible() const;
     virtual void        setNameVisible(const bool p);
 
-    virtual bool        descriptionVisible();
+    virtual bool        descriptionVisible() const;
     virtual void        setDescriptionVisible(const bool p);
 
   public slots:

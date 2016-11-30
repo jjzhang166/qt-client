@@ -16,6 +16,7 @@
 
 #include "distributeInventory.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 postMiscProduction::postMiscProduction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -212,14 +213,16 @@ bool postMiscProduction::createwo()
   {
     _itemsiteid = itemsite.value("itemsite_id").toInt();
   }
-  else if (itemsite.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Work Order"),
+                                itemsite, __FILE__, __LINE__))
   {
-    systemError(this, itemsite.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   else
   {
-    systemError(this, "Itemsite not found", __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Itemsite not found")
+                         .arg(windowTitle()),__FILE__,__LINE__);
     return false;
   }
 
@@ -236,14 +239,15 @@ bool postMiscProduction::createwo()
     _woid = wo.value("result").toInt();
     if (_woid < 0)
     {
-      systemError(this, storedProcErrorLookup("createWo", _woid),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Work Order"),
+                             storedProcErrorLookup("createWo", _woid),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (wo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Work Order"),
+                                wo, __FILE__, __LINE__))
   {
-    systemError(this, wo.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -258,14 +262,15 @@ bool postMiscProduction::createwo()
   {
     if (child.value("result").toInt() < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteWo", child.value("result").toInt()),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Child Work Order"),
+                             storedProcErrorLookup("deleteWo", child.value("result").toInt()),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (child.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Child Work Order"),
+                                child, __FILE__, __LINE__))
   {
-    systemError(this, child.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -286,14 +291,15 @@ bool postMiscProduction::post()
     _itemlocseries = post.value("result").toInt();
     if (_itemlocseries < 0)
     {
-      systemError(this, storedProcErrorLookup("postProduction", _itemlocseries),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Production"),
+                             storedProcErrorLookup("postProduction", _itemlocseries),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (post.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Production"),
+                                post, __FILE__, __LINE__))
   {
-    systemError(this, post.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -324,14 +330,15 @@ bool postMiscProduction::returntool()
     _itemlocseries = post.value("result").toInt();
     if (_itemlocseries < 0)
     {
-      systemError(this, storedProcErrorLookup("returnWoMaterial", _itemlocseries),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Material"),
+                             storedProcErrorLookup("returnWoMaterial", _itemlocseries),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (post.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Material"),
+                                post, __FILE__, __LINE__))
   {
-    systemError(this, post.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   
@@ -355,14 +362,15 @@ bool postMiscProduction::closewo()
   {
     if (close.value("result").toInt() < 0)
     {
-      systemError(this, storedProcErrorLookup("closeWo", close.value("result").toInt()),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Work Order"),
+                             storedProcErrorLookup("closeWo", close.value("result").toInt()),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (close.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Work Order"),
+                                close, __FILE__, __LINE__))
   {
-    systemError(this, close.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -390,11 +398,13 @@ bool postMiscProduction::transfer()
   }
   else
   {
-    systemError( this, tr("A System Error occurred at interWarehousTransfer::%1, Item Site ID #%2, Site ID #%3 to Site ID #%4.")
-                       .arg(__LINE__)
-                       .arg(_item->id())
-                       .arg(_warehouse->id())
-                       .arg(_transferWarehouse->id()));
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: A System Error occurred at interWarehousTransfer::%2, Item Site ID #%3, Site ID #%4 to Site ID #%5.")
+                            .arg(windowTitle())
+                            .arg(__LINE__)
+                            .arg(_item->id())
+                            .arg(_warehouse->id())
+                            .arg(_transferWarehouse->id()),__FILE__,__LINE__);
     return false;
   }
 

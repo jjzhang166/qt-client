@@ -14,10 +14,13 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include <metasql.h>
+
 #include "apCreditMemoApplication.h"
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
+#include "mqlutil.h"
 
 applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -40,17 +43,12 @@ applyAPCreditMemo::applyAPCreditMemo(QWidget* parent, const char* name, bool mod
   _apopen->addColumn(tr("Doc. Date"),   _dateColumn,     Qt::AlignCenter,true, "apopen_docdate");
   _apopen->addColumn(tr("Due Date"),    _dateColumn,     Qt::AlignCenter,true, "apopen_duedate");
   _apopen->addColumn(tr("Open"),        _moneyColumn,    Qt::AlignRight, true, "openamount");
-  _apopen->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  true, "opencurrabbr");
+  _apopen->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "opencurrabbr");
   _apopen->addColumn(tr("Applied"),     _moneyColumn,    Qt::AlignRight, true, "apcreditapply_amount");
-  _apopen->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  true, "appliedcurrabbr");
+  _apopen->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "appliedcurrabbr");
 
   if (_privileges->check("ApplyAPMemos"))
       connect(_apopen, SIGNAL(valid(bool)), _apply, SLOT(setEnabled(bool)));
-  if (omfgThis->singleCurrency())
-  {
-    _apopen->hideColumn("opencurrabbr");
-    _apopen->hideColumn("appliedcurrabbr");
-  }
 
   _vend->setReadOnly(true);
   sPriceGroup();
@@ -110,14 +108,15 @@ void applyAPCreditMemo::sApplyBalance()
     int result = applyApplyBalance.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("applyAPCreditMemoToBalance",
-                                              result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/P Credit Memo"),
+                             storedProcErrorLookup("applyAPCreditMemoToBalance", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (applyApplyBalance.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/P Credit Memo"),
+                                applyApplyBalance, __FILE__, __LINE__))
   {
-    systemError(this, applyApplyBalance.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -145,8 +144,8 @@ void applyAPCreditMemo::sClear()
   applyClear.bindValue(":sourceApopenid", _apopenid);
   applyClear.bindValue(":targetApopenid", _apopen->id());
   applyClear.exec();
-  if (applyClear.lastError().type() != QSqlError::NoError)
-      systemError(this, applyClear.lastError().databaseText(), __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Application of A/P CM"),
+                                applyClear, __FILE__, __LINE__);
 
   populate();
 }
@@ -158,10 +157,10 @@ void applyAPCreditMemo::sClose()
              "WHERE (apcreditapply_source_apopen_id=:sourceApopenid);" );
   applyClose.bindValue(":sourceApopenid", _apopenid);
   applyClose.exec();
-  if (applyClose.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Application of A/P CM"),
+                                applyClose, __FILE__, __LINE__))
   {
-      systemError(this, applyClose.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+    return;
   }
 
   reject();
@@ -193,50 +192,21 @@ void applyAPCreditMemo::populate()
   
     _cachedAmount = applypopulate.value("available").toDouble();
   }
-  else if (applypopulate.lastError().type() != QSqlError::NoError)
-      systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
+  else (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/P Information"),
+                                applypopulate, __FILE__, __LINE__));
 
-  applypopulate.prepare( "SELECT apopen_id,"
-             "       CASE WHEN (apopen_doctype='V') THEN :voucher"
-             "            WHEN (apopen_doctype='D') THEN :debitMemo"
-             "       END AS doctype,"
-             "       apopen_docnumber,"
-             "       apopen_docdate, apopen_duedate,"
-             "       (apopen_amount - apopen_paid - COALESCE(selected,0.0) -"
-             "          COALESCE(prepared,0.0)) AS openamount,"
-	           "       currConcat(apopen_curr_id) AS opencurrabbr, "
-             "       apcreditapply_amount, "
-	           "       currConcat(apcreditapply_curr_id) AS appliedcurrabbr,"
-             "       'curr' AS openamount_xtnumericrole,"
-             "       'curr' AS apcreditapply_amount_xtnumericrole"
-             "  FROM apopen LEFT OUTER JOIN apcreditapply "
-             "         ON ( (apcreditapply_source_apopen_id=:parentApopenid) AND (apcreditapply_target_apopen_id=apopen_id) ) "
-             "       LEFT OUTER JOIN (SELECT apopen_id AS selected_apopen_id,"
-             "                             SUM(currToCurr(apselect_curr_id, apopen_curr_id, apselect_amount + apselect_discount, apselect_date)) AS selected"
-             "                        FROM apselect JOIN apopen ON (apselect_apopen_id=apopen_id)"
-             "                       GROUP BY apopen_id) AS sub1"
-             "         ON (apopen_id=selected_apopen_id)"
-             "       LEFT OUTER JOIN (SELECT apopen_id AS prepared_apopen_id,"
-             "                               SUM(checkitem_amount + checkitem_discount) AS prepared"
-             "                          FROM checkhead JOIN checkitem ON (checkitem_checkhead_id=checkhead_id)"
-             "                                     JOIN apopen ON (checkitem_apopen_id=apopen_id)"
-             "                         WHERE ((NOT checkhead_posted)"
-             "                           AND  (NOT checkhead_void))"
-             "                         GROUP BY apopen_id) AS sub2"
-             "         ON (prepared_apopen_id=apopen_id)"
-             " WHERE ( (apopen_doctype IN ('V', 'D'))"
-             "   AND   (apopen_open)"
-             "   AND   ((apopen_amount - apopen_paid - COALESCE(selected,0.0) - COALESCE(prepared,0.0)) > 0.0)"
-             "   AND   (apopen_vend_id=:vend_id) ) "
-             " ORDER BY apopen_duedate, apopen_docnumber;" );
-  applypopulate.bindValue(":parentApopenid", _apopenid);
-  applypopulate.bindValue(":vend_id", _vend->id());
-  applypopulate.bindValue(":voucher", tr("Voucher"));
-  applypopulate.bindValue(":debitMemo", tr("Debit Memo"));
-  applypopulate.exec();
+
+  MetaSQLQuery mql = mqlLoad("applyAPMemo", "details");
+  ParameterList params;
+  params.append("parentApopenid", _apopenid);
+  params.append("vend_id", _vend->id());
+  params.append("voucher", tr("Voucher"));
+  params.append("debitMemo", tr("Debit Memo"));
+
+  applypopulate = mql.toQuery(params);
   _apopen->populate(applypopulate);
-  if (applypopulate.lastError().type() != QSqlError::NoError)
-      systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/P Information"),
+                                applypopulate, __FILE__, __LINE__);
 }
 
 void applyAPCreditMemo::sPriceGroup()

@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
 
 incidentResolution::incidentResolution(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -111,9 +112,9 @@ void incidentResolution::sSave()
     incidentSave.exec("SELECT NEXTVAL('incdtresolution_incdtresolution_id_seq') AS _incdtresolution_id");
     if (incidentSave.first())
       _incdtresolutionId = incidentSave.value("_incdtresolution_id").toInt();
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Resolution"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -139,9 +140,9 @@ void incidentResolution::sSave()
 			       "Incident Resolution.") );
       return;
     }
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Resolution"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -157,9 +158,9 @@ void incidentResolution::sSave()
   incidentSave.bindValue(":incdtresolution_order", _order->value());
   incidentSave.bindValue(":incdtresolution_descrip", _descrip->toPlainText());
   incidentSave.exec();
-  if (incidentSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Resolution"),
+                                incidentSave, __FILE__, __LINE__))
   {
-    systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -180,9 +181,9 @@ void incidentResolution::populate()
     _order->setValue(incidentpopulate.value("incdtresolution_order").toInt());
     _descrip->setText(incidentpopulate.value("incdtresolution_descrip").toString());
   }
-  else if (incidentpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Resolution Information"),
+                                incidentpopulate, __FILE__, __LINE__))
   {
-    systemError(this, incidentpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

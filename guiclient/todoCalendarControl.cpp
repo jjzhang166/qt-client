@@ -24,11 +24,10 @@ todoCalendarControl::todoCalendarControl(todoListCalendar * parent)
 
 QString todoCalendarControl::contents(const QDate & date)
 {
-  QString sql = "SELECT count(*) AS result"
-                "  FROM todoitem LEFT OUTER JOIN incdt ON (incdt_id=todoitem_incdt_id) "
-                "                     LEFT OUTER JOIN crmacct ON (crmacct_id=todoitem_crmacct_id) "
-                "                     LEFT OUTER JOIN custinfo ON (cust_id=crmacct_cust_id) "
-                "                     LEFT OUTER JOIN incdtpriority ON (incdtpriority_id=todoitem_priority_id) "
+  QString sql = "SELECT sum(count) AS result "
+                " FROM ( "
+                "  SELECT count(*) "
+                "  FROM todoitem() "
                 " WHERE((todoitem_due_date = <? value(\"date\") ?>)"
                 "  <? if not exists(\"completed\") ?>"
                 "   AND (todoitem_status != 'C')"
@@ -39,7 +38,21 @@ QString todoCalendarControl::contents(const QDate & date)
                 "   AND (todoitem_username ~ <? value(\"usr_pattern\") ?>) "
                 "  <? endif ?>"
                 "  <? if exists(\"active\") ?>AND (todoitem_active) <? endif ?>"
-                "       );";
+                "       ) "
+                " UNION ALL "
+                "  SELECT count(*) "
+                "  FROM prjtask() "
+                " WHERE((prjtask_due_date = <? value(\"date\") ?>)"
+                "  <? if not exists(\"completed\") ?>"
+                "   AND (prjtask_status != 'C')"
+                "  <? endif ?>"
+                "  <? if exists(\"username\") ?> "
+                "   AND (prjtask_username=<? value(\"username\") ?>) "
+                "  <? elseif exists(\"usr_pattern\") ?>"
+                "   AND (prjtask_username ~ <? value(\"usr_pattern\") ?>) "
+                "  <? endif ?>"
+                "       ) "    
+                " ) data;";     
 
   ParameterList params;
   params.append("date", date);

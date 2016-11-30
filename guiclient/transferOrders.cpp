@@ -21,9 +21,11 @@
 #include "mqlutil.h"
 #include "copyTransferOrder.h"
 #include "issueToShipping.h"
+#include "printToForm.h"
 #include "storedProcErrorLookup.h"
 #include "transferOrder.h"
 #include "printPackingList.h"
+#include "errorReporter.h"
 
 transferOrders::transferOrders(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -152,16 +154,18 @@ void transferOrders::sRelease()
 	{
 	  int result = transferRelease.value("result").toInt();
 	  if (result < 0)
-	  {
-	    systemError(this, storedProcErrorLookup("releaseTransferOrder", result), __FILE__, __LINE__);
-	    return;
-	  }
+      {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Transfer Order"),
+                               storedProcErrorLookup("releaseTransferOrder", result),
+                               __FILE__, __LINE__);
+        return;
+      }
 	}
-	else if (transferRelease.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, transferRelease.lastError().databaseText(), __FILE__, __LINE__);
-	  return;
-	}
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Transfer Order"),
+                                  transferRelease, __FILE__, __LINE__))
+    {
+      return;
+    }
   
 	sFillList();
 }
@@ -210,34 +214,47 @@ void transferOrders::sDelete()
 	{
 	  int result = transferDelete.value("result").toInt();
 	  if (result < 0)
-	  {
-	    systemError(this, storedProcErrorLookup("closeTransferOrder", result), __FILE__, __LINE__);
-	    return;
-	  }
+      {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                               storedProcErrorLookup("closeTransferOrder", result),
+                               __FILE__, __LINE__);
+        return;
+      }
 	}
-	else if (transferDelete.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, transferDelete.lastError().databaseText(), __FILE__, __LINE__);
-	  return;
-	}
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                                  transferDelete, __FILE__, __LINE__))
+    {
+      return;
+    }
   
 	sFillList();
       }
       else if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("deleteTo", result),
-		    __FILE__, __LINE__);
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                               storedProcErrorLookup("deleteTo", result),
+                               __FILE__, __LINE__);
+        return;
       }
       omfgThis->sTransferOrdersUpdated(-1);
       omfgThis->sProjectsUpdated(-1);
     }
-    else if (transferDelete.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                                  transferDelete, __FILE__, __LINE__))
     {
-      systemError(this, transferDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
+}
+
+void transferOrders::sPrintForms()
+{   
+  ParameterList params;
+  params.append("tohead_id", _to->id());
+
+  printToForm newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
 }
 
 void transferOrders::sPrintPackingList()
@@ -262,13 +279,15 @@ void transferOrders::sAddToPackingListBatch()
     int result = transferAddToPackingListBatch.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("addToPackingListBatch", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding To Packing List Batch"),
+                             storedProcErrorLookup("addToPackingListBatch", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (transferAddToPackingListBatch.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding To Packing List Batch"),
+                                transferAddToPackingListBatch, __FILE__, __LINE__))
   {
-    systemError(this, transferAddToPackingListBatch.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -356,6 +375,9 @@ void transferOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
   menuItem = pMenu->addAction(tr("Copy..."), this, SLOT(sCopy()));
   menuItem->setEnabled(_privileges->check("MaintainTransferOrders"));
 
+  menuItem = pMenu->addAction(tr("Print Transfer Order Form..."), this, SLOT(sPrintForms()));
+  menuItem->setEnabled(_privileges->check("MaintainTransferOrders"));
+
   if (item->altId() == 2)
   {
     pMenu->addSeparator();
@@ -378,9 +400,9 @@ void transferOrders::sFillList()
   MetaSQLQuery mql = mqlLoad("transferOrders", "detail");
   XSqlQuery r = mql.toQuery(params);
   _to->populate(r, true);
-  if (r.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                r, __FILE__, __LINE__))
   {
-    systemError(this, r.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _to->setDragString("toheadid=");

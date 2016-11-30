@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>779</width>
-    <height>294</height>
+    <width>670</width>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,13 +26,22 @@ to be bound by its terms.</comment>
      <item>
       <widget class="QGroupBox" name="_customerGroup">
        <layout class="QGridLayout" name="gridLayout">
-        <property name="margin">
+        <property name="leftMargin">
          <number>5</number>
         </property>
-        <item row="5" column="0">
-         <widget class="QRadioButton" name="_customerTypePattern">
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
+        <item row="6" column="0">
+         <widget class="QRadioButton" name="_selectedShipZone">
           <property name="text">
-           <string>Customer Type Pattern</string>
+           <string>Shipping Zone</string>
           </property>
          </widget>
         </item>
@@ -82,6 +91,13 @@ to be bound by its terms.</comment>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QRadioButton" name="_customerTypePattern">
+          <property name="text">
+           <string>Customer Type Pattern</string>
           </property>
          </widget>
         </item>
@@ -149,6 +165,33 @@ to be bound by its terms.</comment>
           </property>
           <property name="descriptionVisible">
            <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QRadioButton" name="_selectedSaleType">
+          <property name="text">
+           <string>Sale Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="XComboBox" name="_shipZone">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="type">
+           <enum>XComboBox::ShippingZones</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="XComboBox" name="_saleType">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="type">
+           <enum>XComboBox::SaleTypes</enum>
           </property>
          </widget>
         </item>
@@ -238,17 +281,17 @@ to be bound by its terms.</comment>
  <customwidgets>
   <customwidget>
    <class>CustCluster</class>
-   <extends>QWidget</extends>
+   <extends></extends>
    <header>custcluster.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
-   <extends>QComboBox</extends>
+   <extends></extends>
    <header>xcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
-   <extends>QLineEdit</extends>
+   <extends></extends>
    <header>xlineedit.h</header>
    <container>1</container>
   </customwidget>
@@ -266,8 +309,11 @@ to be bound by its terms.</comment>
   <tabstop>_customerTypes</tabstop>
   <tabstop>_customerTypePattern</tabstop>
   <tabstop>_customerType</tabstop>
+  <tabstop>_selectedShipZone</tabstop>
+  <tabstop>_selectedSaleType</tabstop>
+  <tabstop>_shipZone</tabstop>
+  <tabstop>_saleType</tabstop>
   <tabstop>_ipshead</tabstop>
-  <tabstop>_buttonBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -387,6 +433,38 @@ to be bound by its terms.</comment>
    <sender>_selectedShiptoPattern</sender>
    <signal>toggled(bool)</signal>
    <receiver>_shiptoPatternCust</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>96</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>95</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_selectedShipZone</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_shipZone</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>96</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>95</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_selectedSaleType</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_saleType</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

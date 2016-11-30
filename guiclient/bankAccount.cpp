@@ -14,6 +14,8 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -23,8 +25,9 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::Wind
   connect(_bankName,SIGNAL(textChanged(QString)), this, SLOT(sNameChanged(QString)));
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_transmitGroup,  SIGNAL(toggled(bool)), this, SLOT(sHandleTransmitGroup()));
+  connect(_type,  SIGNAL(currentIndexChanged(int)), this, SLOT(sHandleType()));
 
-  _nextCheckNum->setValidator(omfgThis->orderVal());
+  _nextCheckNum->setValidator(new QIntValidator(1,999999999));
 
   QRegExp tmpregex = QRegExp(_metrics->value("EFTAccountRegex"));
   _accountValidator = new QRegExpValidator (tmpregex, this);
@@ -58,8 +61,9 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::Wind
       defaultOriginValue.remove("-");
       _defaultOrigin->setText(defaultOriginValue);
     }
-    else if (bankbankAccount.lastError().type() != QSqlError::NoError)
-      systemError(this, bankbankAccount.lastError().databaseText(), __FILE__, __LINE__);
+    else
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Account Information"),
+                                  bankbankAccount, __FILE__, __LINE__);
 
     if (omfgThis->_key.isEmpty())
       _transmitTab->setEnabled(false);
@@ -132,6 +136,7 @@ enum SetResponse bankAccount::set(const ParameterList &pParams)
 
 void bankAccount::sCheck()
 {
+
   XSqlQuery bankCheck;
   _name->setText(_name->text().trimmed());
   if ((_mode == cNew) && (_name->text().length()))
@@ -149,9 +154,9 @@ void bankAccount::sCheck()
 
       _name->setEnabled(false);
     }
-    else if (bankCheck.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Account Information"),
+                                  bankCheck, __FILE__, __LINE__))
     {
-      systemError(this, bankCheck.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -160,73 +165,42 @@ void bankAccount::sCheck()
 void bankAccount::sSave()
 {
   XSqlQuery bankSave;
-  struct {
-    bool        condition;
-    QString     msg;
-    QWidget    *widget;
-  } error[] = {
-    { !_assetAccount->isValid(), 
-      tr("<p>Select an Ledger Account for this Bank Account before saving it."),
-      _assetAccount
-    },
-    { _transmitGroup->isChecked() && ! _routing->hasAcceptableInput(),
-      tr("<p>The bank's Routing Number is not valid."),
-      _routing
-    },
-    { _transmitGroup->isChecked() &&
-      ! (_useCompanyIdOrigin->isChecked() ||
-         _useRoutingNumberOrigin->isChecked() ||
-         _useOtherOrigin->isChecked()),
-      tr("<p>You must choose which value to use for the Immediate Origin."),
-      _useCompanyIdOrigin
-    },
-    { _transmitGroup->isChecked() && _useOtherOrigin->isChecked() &&
-      _otherOriginName->text().trimmed().isEmpty(),
-      tr("<p>You must enter an Immediate Origin Name if you choose 'Other'."),
-      _otherOriginName
-    },
-    { _transmitGroup->isChecked() && _useOtherOrigin->isChecked() &&
-      _otherOrigin->text().trimmed().isEmpty(),
-      tr("<p>You must enter an Immediate Origin if you choose 'Other'."),
-      _otherOrigin
-    },
-    { _transmitGroup->isChecked() &&
-      ! (_useRoutingNumberDest->isChecked() ||
-         _useFederalReserveDest->isChecked() ||
-         _useOtherDest->isChecked()),
-      tr("<p>You must choose which value to use for the Immediate Destination."),
-      _useRoutingNumberDest
-    },
-    { _transmitGroup->isChecked() && _useFederalReserveDest->isChecked() &&
-      ! _federalReserveDest->hasAcceptableInput(),
-      tr("<p>The Federal Reserve Routing Number is not valid."),
-      _federalReserveDest
-    },
-    { _transmitGroup->isChecked() && _useOtherDest->isChecked() &&
-      _otherDestName->text().trimmed().isEmpty(),
-      tr("<p>You must enter an Immediate Destination Name if you choose "
-         "'Other'."),
-      _otherDestName
-    },
-    { _transmitGroup->isChecked() && _useOtherDest->isChecked() &&
-      _otherDest->text().trimmed().isEmpty(),
-      tr("<p>You must enter an Immediate Destination number if you choose "
-         "'Other'."),
-      _otherDest
-    },
-    { _transmitGroup->isChecked() && ! _accountNumber->hasAcceptableInput(),
-      tr("<p>The Account Number is not valid for EFT purposes."),
-      _accountNumber
-    }
-  };
 
-  for (unsigned int i = 0; i < sizeof(error) / sizeof(error[0]); i++)
-    if (error[i].condition)
-    {
-      QMessageBox::critical(this, tr("Cannot Save Bank Account"), error[i].msg);
-      error[i].widget->setFocus();
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(!_assetAccount->isValid(), _assetAccount,
+                      tr("<p>Select a Ledger Account for this Bank Account before saving it."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() && ! _routing->hasAcceptableInput(), _routing,
+                      tr("<p>The bank's Routing Number is not valid."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() &&
+                      !(_useCompanyIdOrigin->isChecked() ||
+                         _useRoutingNumberOrigin->isChecked() ||
+                         _useOtherOrigin->isChecked()), _useCompanyIdOrigin,
+                      tr("<p>You must choose which value to use for the Immediate Origin."))
+        <<GuiErrorCheck( _transmitGroup->isChecked() && _useOtherOrigin->isChecked() &&
+                      _otherOriginName->text().trimmed().isEmpty(), _otherOriginName,
+                      tr("<p>You must enter an Immediate Origin Name if you choose 'Other'."))
+        <<GuiErrorCheck( _transmitGroup->isChecked() && _useOtherOrigin->isChecked() &&
+                      _otherOrigin->text().trimmed().isEmpty(), _otherOrigin,
+                      tr("<p>You must enter an Immediate Origin Name if you choose 'Other'."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() &&
+                      !(_useRoutingNumberDest->isChecked() ||
+                        _useFederalReserveDest->isChecked() ||
+                        _useOtherDest->isChecked()), _useRoutingNumberDest,
+                      tr("<p>You must choose which value to use for the Immediate Destination."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() && _useFederalReserveDest->isChecked() &&
+                      ! _federalReserveDest->hasAcceptableInput(), _federalReserveDest,
+                      tr("<p>The Federal Reserve Routing Number is not valid."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() && _useOtherDest->isChecked() &&
+                      _otherDestName->text().trimmed().isEmpty(), _otherDestName,
+                      tr("<p>You must enter an Immediate Destination Name if you choose 'Other'."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() && _useOtherDest->isChecked() &&
+                      _otherDest->text().trimmed().isEmpty(), _otherDest,
+                      tr("<p>You must enter an Immediate Destination number if you choose 'Other'."))
+        <<GuiErrorCheck(_transmitGroup->isChecked() && ! _accountNumber->hasAcceptableInput(), _accountNumber,
+                      tr("<p>The Account Number is not valid for EFT purposes."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Post Transaction"),errors))
       return;
-    }
 
   if (_transmitGroup->isChecked())
   {
@@ -395,9 +369,9 @@ void bankAccount::sSave()
     bankSave.bindValue(":bankaccnt_type", "R");
 
   bankSave.exec();
-  if (bankSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Bank Account"),
+                                bankSave, __FILE__, __LINE__))
   {
-    systemError(this, bankSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -461,9 +435,10 @@ void bankAccount::populate()
     else if (bankpopulate.value("bankaccnt_type").toString() == "R")
       _type->setCurrentIndex(2);
   }
-  else if (bankpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this,
+                          tr("Error Retrieving Bank Account Information"),
+                          bankpopulate, __FILE__, __LINE__))
   {
-    systemError(this, bankpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -478,4 +453,12 @@ void bankAccount::sHandleTransmitGroup()
 {
   _accountNumber->setValidator(_transmitGroup->isChecked() ?
                                                        _accountValidator : 0);
+}
+
+void bankAccount::sHandleType()
+{
+  if (_type->currentIndex() == 2)
+    _assetAccountLit->setText(tr("Liability Account"));
+  else
+    _assetAccountLit->setText(tr("Asset Account"));
 }

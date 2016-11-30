@@ -30,7 +30,9 @@ woMaterialItem::woMaterialItem(QWidget* parent, const char* name, bool modal, Qt
   connect(_qtyFxd, SIGNAL(textChanged(const QString&)), this, SLOT(sUpdateQtyRequired()));
   connect(_qtyPer, SIGNAL(textChanged(const QString&)), this, SLOT(sUpdateQtyRequired()));
   connect(_scrap, SIGNAL(textChanged(const QString&)), this, SLOT(sUpdateQtyRequired()));
-  connect(_item, SIGNAL(valid(bool)), _save, SLOT(setEnabled(bool)));
+  connect(_uom, SIGNAL(newID(int)), this, SLOT(sUOMChanged()));
+  connect(_wo, SIGNAL(valid(bool)), this, SLOT(sEnableSave()));
+  connect(_item, SIGNAL(valid(bool)), this, SLOT(sEnableSave()));
   connect(_item, SIGNAL(newId(int)), this, SLOT(sItemIdChanged()));
   connect(_close, SIGNAL(clicked()), this, SLOT(reject()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
@@ -188,6 +190,11 @@ enum SetResponse woMaterialItem::set(const ParameterList &pParams)
   }
 
   return NoError;
+}
+
+void woMaterialItem::sEnableSave()
+{
+  _save->setEnabled(_wo->isValid() && _item->isValid());
 }
 
 void woMaterialItem::sSave()
@@ -365,61 +372,126 @@ void woMaterialItem::populate()
 
 void woMaterialItem::sItemIdChanged()
 {
-  // Get list of active, valid MaterialIssue UOMs
-  MetaSQLQuery muom = mqlLoad("uoms", "item");
+  sPopulateUOM();
 
-  ParameterList params;
-  params.append("uomtype", "MaterialIssue");
-  params.append("item_id", _item->id());
-
-  // Also have to factor UOMs previously used on WO Material now inactive
-  if (_womatlid != -1)
-  {
-    XSqlQuery wouom;
-    wouom.prepare("SELECT womatl_uom_id "
-                "  FROM womatl"
-                " WHERE(womatl_id=:womatl_id);");
-    wouom.bindValue(":womatl_id", _womatlid);
-    wouom.exec();
-    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Sales Order UOMs"),
-                         wouom, __FILE__, __LINE__))
-      return;
-    else if (wouom.first())
-        params.append("uom_id", wouom.value("womatl_uom_id"));
-  }
-  XSqlQuery uom = muom.toQuery(params);
-  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOM"),
-                         uom, __FILE__, __LINE__))
-    return;
-  _uom->populate(uom);
-
-  uom.prepare("SELECT item_inv_uom_id, item_type "
+  XSqlQuery uom;
+  uom.prepare("SELECT item_inv_uom_id, item_type, item_picklist "
               "  FROM item"
               " WHERE(item_id=:item_id);");
   uom.bindValue(":item_id", _item->id());
   uom.exec();
   if(uom.first())
   {
-    _uom->setId(uom.value("item_inv_uom_id").toInt());
+    _invuomid = uom.value("item_inv_uom_id").toInt();
+    _uom->setId(_invuomid);
     if (uom.value("item_type").toString() != "T" && uom.value("item_type").toString() != "R")
-	{
-	  if (_qtyPer->text().length() == 0)
-	  {
-	    _qtyFxd->setDouble(0.0);
-		_qtyPer->setDouble(1.0);
-	  }
-	}
-	else
-	{
-	  if (_qtyPer->text().length() == 0)
-	  {
-	    _qtyFxd->setDouble(1.0);
-		_qtyPer->setDouble(0.0);
-	  }
-	}
-	
-	if (_scrap->text().length() == 0)
-	  _scrap->setDouble(0.0);
+    {
+      if (_qtyPer->text().length() == 0)
+      {
+        _qtyFxd->setDouble(0.0);
+        _qtyPer->setDouble(1.0);
+      }
+    }
+    else
+    {
+      if (_qtyPer->text().length() == 0)
+      {
+        _qtyFxd->setDouble(1.0);
+        _qtyPer->setDouble(0.0);
+      }
+    }
+    
+    if (_scrap->text().length() == 0)
+      _scrap->setDouble(0.0);
+    
+    _pickList->setChecked(uom.value("item_picklist").toBool());
+  }
+  else
+  {
+    _qtyFxd->clear();
+    _qtyPer->clear();
+    _qtyRequired->clear();
+    _scrap->clear();
+    _pickList->setChecked(false);
   }
 }
 
+void woMaterialItem::sPopulateUOM()
+{
+  // Get list of active, valid MaterialIssue UOMs
+  MetaSQLQuery muom = mqlLoad("uoms", "item");
+  
+  ParameterList params;
+  params.append("uomtype", "MaterialIssue");
+  params.append("item_id", _item->id());
+  
+  // Include Global UOMs
+  if (_privileges->check("MaintainUOMs"))
+  {
+    params.append("includeGlobal", true);
+    params.append("global", tr("-Global"));
+  }
+  
+  // Also have to factor UOMs previously used on WO Material now inactive
+  if (_womatlid != -1)
+  {
+    XSqlQuery wouom;
+    wouom.prepare("SELECT womatl_uom_id "
+                  "  FROM womatl"
+                  " WHERE(womatl_id=:womatl_id);");
+    wouom.bindValue(":womatl_id", _womatlid);
+    wouom.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting WoMatl UOMs"),
+                             wouom, __FILE__, __LINE__))
+      return;
+    else if (wouom.first())
+      params.append("uom_id", wouom.value("womatl_uom_id"));
+  }
+  
+  XSqlQuery uom = muom.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOM"),
+                           uom, __FILE__, __LINE__))
+    return;
+  
+  int saveuomid = _uom->id();
+  disconnect(_uom, SIGNAL(newID(int)), this, SLOT(sUOMChanged()));
+  _uom->populate(uom);
+  _uom->setId(saveuomid);
+  connect(_uom, SIGNAL(newID(int)), this, SLOT(sUOMChanged()));
+}
+
+void woMaterialItem::sUOMChanged()
+{
+  // Check for Global UOM Conversion that must be setup for Item
+  if (_uom->code() == "G")
+  {
+    if (QMessageBox::question(this, tr("Use Global UOM?"),
+                              tr("<p>This Global UOM Conversion is not setup for this Item."
+                                 "<p>Do you want to add this UOM conversion to this Item?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+    {
+      // create itemuomconv and itemuom
+      XSqlQuery adduom;
+      adduom.prepare("SELECT createItemUomConv(:item_id, :uom_id, :uom_type) AS result;");
+      adduom.bindValue(":item_id", _item->id());
+      adduom.bindValue(":uom_id", _uom->id());
+      adduom.bindValue(":uom_type", "MaterialIssue");
+      adduom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Creating Item UOM Conv"),
+                               adduom, __FILE__, __LINE__))
+        return;
+
+      // repopulate uom combobox
+      int saveuomid = _uom->id();
+      disconnect(_uom, SIGNAL(newID(int)), this, SLOT(sUOMChanged()));
+      sPopulateUOM();
+      _uom->setId(saveuomid);
+      connect(_uom, SIGNAL(newID(int)), this, SLOT(sUOMChanged()));
+    }
+    else
+    {
+      _uom->setId(_invuomid);
+    }
+  }
+}

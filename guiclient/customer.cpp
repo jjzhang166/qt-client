@@ -33,6 +33,15 @@
 #include "xcombobox.h"
 #include "parameterwidget.h"
 
+bool customer::userHasPriv(const int pMode, const int pId)
+{
+  Q_UNUSED(pId);
+  bool priv = _privileges->check("MaintainCustomerMasters");
+  if(pMode==cView)
+    priv = priv || _privileges->check("ViewCustomerMasters");
+  return priv;
+}
+
 customer::customer(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
@@ -118,6 +127,7 @@ customer::customer(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _cctrans->findChild<XTreeWidget*>("_preauth")->hideColumn("cust_number");
   _cctrans->findChild<XTreeWidget*>("_preauth")->hideColumn("cust_name");
 
+  connect(this, SIGNAL(newId(int)), this, SLOT(sIdChanged(int)));
   connect(_close, SIGNAL(clicked()), this, SLOT(sCancel()));
   connect(_crmacct, SIGNAL(clicked()), this, SLOT(sCrmAccount()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSaveClicked()));
@@ -519,8 +529,24 @@ bool customer::sSave()
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Customer"), errors))
     return false;
 
+  int custtype_id = -1;
+  bool charProfile = false;
+
   if (_mode == cEdit)
-  {
+  { 
+    XSqlQuery customerType;
+
+    customerType.prepare("SELECT cust_custtype_id, custtype_char"
+                         "  FROM custinfo JOIN custtype ON (cust_custtype_id=custtype_id)"
+                         " WHERE cust_id=:cust_id;");
+    customerType.bindValue(":cust_id", _custid);
+    customerType.exec();
+    if (customerType.first())
+    {
+      custtype_id = customerType.value("cust_custtype_id").toInt();
+      charProfile = customerType.value("custtype_char").toBool();
+    }
+
     customerSave.prepare( "UPDATE custinfo SET "
                "       cust_number=:cust_number, cust_name=:cust_name,"
                "       cust_salesrep_id=:cust_salesrep_id,"
@@ -651,6 +677,30 @@ bool customer::sSave()
   }
 
   //Save characteristics
+  if (charProfile && _custtype->id() != custtype_id &&
+      QMessageBox::question(this, tr("Delete?"),
+                            tr("Do you want to DELETE all characteristics related to the old Customer Type?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No) == QMessageBox::Yes)
+  {
+    XSqlQuery deleteChar;
+
+    deleteChar.prepare("DELETE FROM charass "
+                       "USING "
+                       " (SELECT DISTINCT b.charass_id AS id "
+                       "  FROM custtype "
+                       "  JOIN charass a ON (a.charass_target_type='CT') "
+                       "   AND (a.charass_target_id=custtype_id) "
+                       "  JOIN charass b ON (b.charass_target_type='C') "
+                       "   AND (b.charass_target_id=:cust_id) "
+                       "   AND (a.charass_char_id=b.charass_char_id) "
+                       "  WHERE (custtype_id=:custtype_id)) qry "
+                       "WHERE charass_id=qry.id;");
+    deleteChar.bindValue(":cust_id", _custid);
+    deleteChar.bindValue(":custtype_id", custtype_id);
+    deleteChar.exec();
+  }
+
   if (_widgetStack->currentIndex() == 1)
   {
     customerSave.prepare("SELECT updateCharAssignment('C', :target_id, :char_id, :char_value);");
@@ -725,7 +775,7 @@ void customer::sCheck()
   customerCheck.exec();
   if (customerCheck.first())
   {
-    if ((customerCheck.value("type").toInt() == 1) && (_notice))
+    if ((customerCheck.value("type").toInt() == 1) && (customerCheck.value("cust_id").toInt() != _custid) && (_notice))
     {
       if (QMessageBox::question(this, tr("Customer Exists"),
               tr("<p>This number is currently used by an existing Customer. "
@@ -960,12 +1010,13 @@ void customer::sDeleteShipto()
     int result = delq.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteShipTo", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Ship To"),
+                             storedProcErrorLookup("deleteShipTo", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Deleting Ship To"),
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Ship To"),
                                 delq, __FILE__, __LINE__))
     return;
 
@@ -1100,9 +1151,11 @@ void customer::sFillCharacteristicList()
 
 void customer::sPopulateShiptoMenu(QMenu *menuThis)
 {
-  menuThis->addAction(tr("Edit..."),   this, SLOT(sEditShipto()));
+  if (_mode != cView)
+    menuThis->addAction(tr("Edit..."),   this, SLOT(sEditShipto()));
   menuThis->addAction(tr("View..."),   this, SLOT(sViewShipto()));
-  menuThis->addAction(tr("Delete..."), this, SLOT(sDeleteShipto()));
+  if (_mode != cView)
+    menuThis->addAction(tr("Delete..."), this, SLOT(sDeleteShipto()));
 }
 
 void customer::sFillShiptoList()
@@ -1214,6 +1267,20 @@ void customer::sPopulateCommission()
 void customer::populate()
 {
   XSqlQuery cust;
+  XSqlQuery salesRep;
+
+  salesRep.prepare("SELECT salesrep_id, (salesrep_number || '-' || salesrep_name), salesrep_number "
+                   "FROM salesrep "
+                   "WHERE (salesrep_active) "
+                   "UNION "
+                   "SELECT salesrep_id, (salesrep_number || '-' || salesrep_name), salesrep_number "
+                   "FROM salesrep "
+                   "WHERE (salesrep_id=(SELECT cust_salesrep_id FROM custinfo WHERE cust_id=:cust)) "
+                   "ORDER by salesrep_number;");
+  salesRep.bindValue(":cust", _custid);
+  salesRep.exec();
+  _salesrep->populate(salesRep);
+
   _notice = false;
   cust.prepare( "SELECT custinfo.*, "
                 "       cust_commprcnt, cust_discntprcnt,"
@@ -1682,7 +1749,7 @@ void customer::sCancel()
   if (_autoSaved)
       QMessageBox::information( this, tr("Customer Saved"),
                            tr("The customer record was automatically "
-                           "saved to the database. The committed changes"
+                           "saved to the database. The committed changes "
                            "will not be cancelled.") );
   close();
 }
@@ -1699,10 +1766,38 @@ void customer::setId(int p)
   if (_mode == cEdit && !_lock.acquire("custinfo", p, AppLock::Interactive))
     setViewMode();
 
-  _charfilled = false;
+  sClear();
   _custid=p;
   populate();
   emit newId(_custid);
+}
+
+void customer::sIdChanged(int id)
+{
+  _orders->parameterWidget()->setDefault(tr("Customer"), id, true);
+  _quotes->parameterWidget()->setDefault(tr("Customer"), id, true);
+  _returns->findChild<CustomerSelector*>("_customerSelector")->setCustId(id);
+  _aritems->findChild<CustomerSelector*>("_customerSelector")->setCustId(id);
+  _cashreceipts->findChild<CustomerSelector*>("_customerSelector")->setCustId(id);
+  _cctrans->findChild<CustomerSelector*>("_customerSelector")->setCustId(id);
+
+  XSqlQuery qry;
+  qry.prepare("SELECT crmacct_id "
+                    "FROM crmacct "
+                    "WHERE crmacct_cust_id=:cust_id;" );
+  qry.bindValue(":cust_id", id);
+  qry.exec();
+
+  if(qry.first())
+  {
+    _contacts->parameterWidget()->setDefault(tr("Account"), qry.value("crmacct_id").toInt(), true);
+    _todoList->parameterWidget()->setDefault(tr("Account"), qry.value("crmacct_id").toInt(), true);
+    _billCntct->setSearchAcct(qry.value("crmacct_id").toInt());
+    _corrCntct->setSearchAcct(qry.value("crmacct_id").toInt());
+  }
+  else if(qry.lastError().type() != QSqlError::NoError)
+    QMessageBox::warning(this, tr("Database Error"),
+                         qry.lastError().text());
 }
 
 void customer::sClear()

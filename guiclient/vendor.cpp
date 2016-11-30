@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,10 +21,17 @@
 #include "addresscluster.h"
 #include "comment.h"
 #include "crmaccount.h"
+#include "dspAPApplications.h"
+#include "dspCheckRegister.h"
+#include "dspPOsByVendor.h"
+#include "dspPoItemReceivingsByVendor.h"
+#include "dspVendorAPHistory.h"
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
+#include "selectPayments.h"
 #include "storedProcErrorLookup.h"
 #include "taxRegistration.h"
+#include "unappliedAPCreditMemos.h"
 #include "vendorAddress.h"
 #include "xcombobox.h"
 
@@ -35,30 +42,143 @@ vendor::vendor(QWidget* parent, const char* name, Qt::WindowFlags fl)
 {
   setupUi(this);
 
-  connect(_crmacct,             SIGNAL(clicked()),                       this,         SLOT(sCrmAccount()));
-  connect(_save,                SIGNAL(clicked()),                       this,         SLOT(sSave()));
-  connect(_printAddresses,      SIGNAL(clicked()),                       this,         SLOT(sPrintAddresses()));
-  connect(_newAddress,          SIGNAL(clicked()),                       this,         SLOT(sNewAddress()));
-  connect(_editAddress,         SIGNAL(clicked()),                       this,         SLOT(sEditAddress()));
-  connect(_viewAddress,         SIGNAL(clicked()),                       this,         SLOT(sViewAddress()));
-  connect(_deleteAddress,       SIGNAL(clicked()),                       this,         SLOT(sDeleteAddress()));
-  connect(_deleteTaxreg,        SIGNAL(clicked()),                       this,         SLOT(sDeleteTaxreg()));
-  connect(_editTaxreg,          SIGNAL(clicked()),                       this,         SLOT(sEditTaxreg()));
-  connect(_newTaxreg,           SIGNAL(clicked()),                       this,         SLOT(sNewTaxreg()));
-  connect(_viewTaxreg,          SIGNAL(clicked()),                       this,         SLOT(sViewTaxreg()));
-  connect(_next,                SIGNAL(clicked()),                       this,         SLOT(sNext()));
-  connect(_previous,            SIGNAL(clicked()),                       this,         SLOT(sPrevious()));
-  connect(_mainButton,          SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
-  connect(_altButton,           SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
-  connect(_checksButton,        SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
-  connect(_number,              SIGNAL(textEdited(const QString&)),      this,         SLOT(sNumberEdited()));
-  connect(_number,              SIGNAL(editingFinished()),               this,         SLOT(sCheck()));
+  _number->setShowInactive(true);
+  
+  QWidget *hideme = 0;
+  
+  if (_privileges->check("ViewPurchaseOrders"))
+  {
+    _po = new dspPOsByVendor(this, "dspPOsByVendor", Qt::Widget);
+    _purchaseOrdersPage->layout()->addWidget(_po);
+    _po->setCloseVisible(false);
+    hideme = _po->findChild<QWidget*>("_vendGroup");
+    hideme->hide();
+    VendorGroup *povend = _po->findChild<VendorGroup*>("_vend");
+    if (povend)
+    {
+      povend->setState(VendorGroup::Selected);
+      connect(povend,  SIGNAL(newVendId(int)), _po,    SLOT(sFillList()));
+      connect(_number, SIGNAL(newId(int)),     povend, SLOT(setVendId(int)));
+    }
+    _po->show();
+
+    _receipts = new dspPoItemReceivingsByVendor(this, "dspPoItemReceivingsByVendor", Qt::Widget);
+    _receiptsReturnsPage->layout()->addWidget(_receipts);
+    _receipts->setCloseVisible(false);
+    hideme = _receipts->findChild<QWidget*>("_vendorGroup");
+    hideme->hide();
+    QWidget *rcptvend = _receipts->findChild<QWidget*>("_vendor");
+    rcptvend->hide();
+    connect(rcptvend, SIGNAL(newId(int)), _receipts,     SLOT(sFillList()));
+    connect(_number,  SIGNAL(newId(int)), rcptvend,      SLOT(setId(int)));
+  }
+  else
+    _tabs->setTabEnabled(_tabs->indexOf(_ordersTab), false);
+  
+  if (_privileges->check("MaintainPayments"))
+  {
+    _payables = new selectPayments(this, "selectPayments", Qt::Widget, false);
+    _payablesPage->layout()->addWidget(_payables);
+    hideme = _payables->findChild<QWidget*>("_close");
+    hideme->hide();
+    VendorGroup *payvend = _payables->findChild<VendorGroup*>("_vendorgroup");
+    payvend->setState(VendorGroup::Selected);
+    payvend->hide();
+    connect(payvend, SIGNAL(newVendId(int)), _payables,     SLOT(sFillList()));
+    connect(_number, SIGNAL(newId(int)),     payvend,       SLOT(setVendId(int)));
+  }
+  else
+    _payablesButton->setEnabled(false);
+  
+  if (_privileges->check("MaintainAPMemos") ||
+      _privileges->check("ViewAPMemos"))
+  {
+    _credits = new unappliedAPCreditMemos(this, "unappliedAPCreditMemos", Qt::Widget);
+    _creditMemosPage->layout()->addWidget(_credits);
+    hideme = _credits->findChild<QWidget*>("_close");
+    hideme->hide();
+    VendorGroup *cmvend = _credits->findChild<VendorGroup*>("_vendorgroup");
+    cmvend->setState(VendorGroup::Selected);
+    cmvend->hide();
+    connect(cmvend,  SIGNAL(newVendId(int)), _credits,      SLOT(sFillList()));
+    connect(_number, SIGNAL(newId(int)),     cmvend,        SLOT(setVendId(int)));
+  }
+  else
+    _creditMemosButton->setEnabled(false);
+  
+  if (_privileges->check("MaintainPayments"))
+  {
+    _checks = new dspCheckRegister(this, "dspCheckRegister", Qt::Widget);
+    _apChecksPage->layout()->addWidget(_checks);
+    _checks->findChild<QWidget*>("_close")->hide();
+    _checks->findChild<QGroupBox*>("_recipGroup")->setChecked(true);
+    _checks->findChild<QGroupBox*>("_recipGroup")->hide();
+    _checks->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _checks->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   true);
+    VendorCluster *checkvend = _checks->findChild<VendorCluster*>("_vend");
+    connect(checkvend, SIGNAL(newId(int)), _checks,       SLOT(sFillList()));
+    connect(_number,   SIGNAL(newId(int)), checkvend,     SLOT(setId(int)));
+  }
+  else
+    _apChecksButton->setEnabled(false);
+  
+  if (_privileges->check("ViewAPOpenItems"))
+  {
+    _history = new dspVendorAPHistory(this, "dspVendorAPHistory", Qt::Widget);
+    _apHistoryPage->layout()->addWidget(_history);
+    _history->setCloseVisible(false);
+    _history->findChild<QWidget*>("_vendGroup")->hide();
+    _history->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _history->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   true);
+    VendorCluster *histvend = _history->findChild<VendorCluster*>("_vend");
+    connect(histvend, SIGNAL(newId(int)), _history,      SLOT(sFillList()));
+    connect(_number,  SIGNAL(newId(int)), histvend,      SLOT(setId(int)));
+  }
+  else
+    _apHistoryButton->setEnabled(false);
+  
+  connect(_crmacct,               SIGNAL(clicked()),                       this,         SLOT(sCrmAccount()));
+  connect(_save,                  SIGNAL(clicked()),                       this,         SLOT(sSaveClicked()));
+  connect(_printAddresses,        SIGNAL(clicked()),                       this,         SLOT(sPrintAddresses()));
+  connect(_newAddress,            SIGNAL(clicked()),                       this,         SLOT(sNewAddress()));
+  connect(_editAddress,           SIGNAL(clicked()),                       this,         SLOT(sEditAddress()));
+  connect(_viewAddress,           SIGNAL(clicked()),                       this,         SLOT(sViewAddress()));
+  connect(_deleteAddress,         SIGNAL(clicked()),                       this,         SLOT(sDeleteAddress()));
+  connect(_deleteTaxreg,          SIGNAL(clicked()),                       this,         SLOT(sDeleteTaxreg()));
+  connect(_editTaxreg,            SIGNAL(clicked()),                       this,         SLOT(sEditTaxreg()));
+  connect(_newTaxreg,             SIGNAL(clicked()),                       this,         SLOT(sNewTaxreg()));
+  connect(_viewTaxreg,            SIGNAL(clicked()),                       this,         SLOT(sViewTaxreg()));
+  connect(_next,                  SIGNAL(clicked()),                       this,         SLOT(sNext()));
+  connect(_previous,              SIGNAL(clicked()),                       this,         SLOT(sPrevious()));
+  connect(_generalButton,         SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_taxButton,             SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_mainButton,            SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_altButton,             SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_summaryButton,         SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_purchaseOrdersButton,  SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_receiptsReturnsButton, SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_payablesButton,        SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_creditMemosButton,     SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_apChecksButton,        SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_apHistoryButton,       SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_notesButton,           SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_commentsButton,        SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_checksButton,          SIGNAL(clicked()),                       this,         SLOT(sHandleButtons()));
+  connect(_number,                SIGNAL(newId(int)),                      this,         SLOT(setId(int)));
+  connect(_number,                SIGNAL(editingFinished()),               this,         SLOT(sNumberEdited()));
+  connect(_number,                SIGNAL(editable(bool)),                  this,         SLOT(sNumberEditable(bool)));
+  connect(_number,                SIGNAL(editingFinished()),               this,         SLOT(sCheckRequired()));
 
   connect(_address, SIGNAL(addressChanged(QString,QString,QString,QString,QString,QString, QString)),
           _contact2, SLOT(setNewAddr(QString,QString,QString,QString,QString,QString, QString)));
 
   connect(_address, SIGNAL(addressChanged(QString,QString,QString,QString,QString,QString, QString)),
           _contact1, SLOT(setNewAddr(QString,QString,QString,QString,QString,QString, QString)));
+
+// Have to override comment *New* button and possibly force Vendor save first
+  QWidget* _newComment = _comments->findChild<QWidget*>("_newComment");
+  disconnect(_newComment, SIGNAL(clicked()), _comments, SLOT(sNew()));
+  connect(_newComment,    SIGNAL(clicked()),      this, SLOT(sSaveAndNewComment()));
 
   _defaultCurr->setLabel(_defaultCurrLit);
 
@@ -111,7 +231,7 @@ vendor::vendor(QWidget* parent, const char* name, Qt::WindowFlags fl)
 
   _vendid      = -1;
   _crmacctid   = -1;
-  _ignoreClose = false;
+  _captive     = false;
   _NumberGen   = -1;
 }
 
@@ -131,17 +251,14 @@ SetResponse vendor::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
 
-  param = pParams.value("crmacct_id", &valid);
-  if (valid)
-    _crmacctid = param.toInt();
-
   param = pParams.value("vend_id", &valid);
   if (valid)
-    _vendid = param.toInt();
-
-  if (_vendid > 0 || _crmacctid > 0)
-    if (! sPopulate())
-      return UndefinedError;
+  {
+    _number->setEditMode(true);
+//    setId(param.toInt());
+    _number->setId(param.toInt());
+    _captive=true;
+  }
 
   param = pParams.value("mode", &valid);
   if (valid)
@@ -150,30 +267,8 @@ SetResponse vendor::set(const ParameterList &pParams)
     {
       _mode = cNew;
       emit newMode(_mode);
-
-      XSqlQuery idq;
-      idq.exec("SELECT NEXTVAL('vend_vend_id_seq') AS vend_id;");
-      if (idq.first())
-      {
-        _vendid = idq.value("vend_id").toInt();
-        _charass->setId(_vendid);
-      }
-      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Id"),
-                                    idq, __FILE__, __LINE__))
-        return UndefinedError;
-
-      if(((_metrics->value("CRMAccountNumberGeneration") == "A") ||
-          (_metrics->value("CRMAccountNumberGeneration") == "O"))
-       && _number->text().isEmpty() )
-      {
-        XSqlQuery numq;
-        numq.exec("SELECT fetchCRMAccountNumber() AS number;");
-        if (numq.first())
-        {
-          _number->setText(numq.value("number"));
-          _NumberGen = numq.value("number").toInt();
-        }
-      }
+      
+      clear();
 
       if (_privileges->check("MaintainVendorAddresses"))
       {
@@ -186,8 +281,6 @@ SetResponse vendor::set(const ParameterList &pParams)
         _newAddress->setEnabled(false);
         connect(_vendaddr, SIGNAL(itemSelected(int)), _viewAddress, SLOT(animateClick()));
       }
-
-      emit newId(_vendid);
     }
     else if (param.toString() == "edit")
     {
@@ -210,8 +303,17 @@ SetResponse vendor::set(const ParameterList &pParams)
     {
       setViewMode();
     }
+    _tempMode = _mode;
   }
 
+  param = pParams.value("crmacct_id", &valid);
+  if (valid)
+  {
+    _number->setEditMode(true);
+    sLoadCrmAcct(param.toInt());
+    _captive=true;
+  }
+  
   if(_metrics->value("CRMAccountNumberGeneration") == "A")
     _number->setEnabled(false);
 
@@ -221,12 +323,32 @@ SetResponse vendor::set(const ParameterList &pParams)
     _previous->hide();
   }
 
-  if (_mode == cEdit && !_lock.acquire("vendinfo", _vendid, AppLock::Interactive))
+  if (_mode == cEdit && _vendid > 0)
   {
-    setViewMode();
+    if (!_lock.acquire("vendinfo", _vendid, AppLock::Interactive))
+    {
+      setViewMode();
+    }
   }
 
   return NoError;
+}
+
+void vendor::setId(int p)
+{
+  if (_vendid==p)
+    return;
+  
+  if (! _lock.release())
+    ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
+                         _lock.lastError(), __FILE__, __LINE__);
+  
+  if (_mode == cEdit && !_lock.acquire("vendinfo", p, AppLock::Interactive))
+    setViewMode();
+  
+  _vendid=p;
+  sPopulate();
+  emit newId(_vendid);
 }
 
 int vendor::id() const
@@ -270,6 +392,7 @@ void vendor::setViewMode()
   _match->setEnabled(false);
   _newTaxreg->setEnabled(false);
   _comments->setReadOnly(true);
+  _documents->setReadOnly(true);
   _charass->setReadOnly(true);
 
   _achGroup->setEnabled(false);
@@ -290,11 +413,12 @@ void vendor::setViewMode()
 
 }
 
-void vendor::sSave()
+bool vendor::sSave()
 {
   XSqlQuery vendorSave;
   QList<GuiErrorCheck> errors;
-  errors << GuiErrorCheck(_number->text().trimmed().isEmpty(), _number,
+  errors
+         << GuiErrorCheck(_number->number().trimmed().isEmpty(), _number,
                           tr("Please enter a Number for this new Vendor."))
          << GuiErrorCheck(_name->text().trimmed().isEmpty(), _name,
                           tr("Please enter a Name for this new Vendor."))
@@ -333,26 +457,26 @@ void vendor::sSave()
                             .arg(_useACHSpecial->title()))
     ;
 
-  if (_number->text().trimmed().toUpper() != _cachedNumber.toUpper())
+  if (_number->number().trimmed().toUpper() != _cachedNumber.toUpper())
   {
     XSqlQuery dupq;
     dupq.prepare("SELECT vend_name "
                  "FROM vendinfo "
                  "WHERE (UPPER(vend_number)=UPPER(:vend_number)) "
                  "  AND (vend_id<>:vend_id);" );
-    dupq.bindValue(":vend_number", _number->text().trimmed());
+    dupq.bindValue(":vend_number", _number->number().trimmed());
     dupq.bindValue(":vend_id", _vendid);
     dupq.exec();
     if (dupq.first())
       GuiErrorCheck(true, _number,
-			    tr("<p>The newly entered Vendor Number cannot be "
-                               "used as it is already used by the Vendor '%1'. "
-                               "Please correct or enter a new Vendor Number." )
-			     .arg(vendorSave.value("vend_name").toString()) );
+                    tr("<p>The newly entered Vendor Number cannot be "
+                       "used as it is already used by the Vendor '%1'. "
+                       "Please correct or enter a new Vendor Number." )
+                    .arg(vendorSave.value("vend_name").toString()) );
   }
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Vendor"), errors))
-    return;
+    return false;
 
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
@@ -360,7 +484,7 @@ void vendor::sSave()
   XSqlQuery begin("BEGIN;");
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
                            begin, __FILE__, __LINE__))
-    return;
+    return false;
 
   int saveResult = _address->save(AddressCluster::CHECK);
   if (-2 == saveResult)
@@ -386,11 +510,11 @@ void vendor::sSave()
 			 "Check the database server log for errors.")
                          .arg(saveResult), __FILE__, __LINE__);
     _address->setFocus();
-    return;
+    return false;
   }
 
   QString sql;
-  if (_mode == cEdit)
+  if (_mode == cEdit || _tempMode == cEdit)
   {
     sql = "UPDATE vendinfo "
           "SET vend_number=<? value(\"vend_number\") ?>,"
@@ -494,7 +618,7 @@ void vendor::sSave()
   params.append("vend_terms_id", _defaultTerms->id());
   params.append("vend_curr_id", _defaultCurr->id());
 
-  params.append("vend_number",   _number->text().trimmed().toUpper());
+  params.append("vend_number",   _number->number().trimmed().toUpper());
   params.append("vend_accntnum", _accountNumber->text().trimmed());
   params.append("vend_name",     _name->text().trimmed());
 
@@ -573,34 +697,63 @@ void vendor::sSave()
     rollback.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor"),
                          vendorSave, __FILE__, __LINE__);
-    return;
+    return false;
   }
 
-
   XSqlQuery commit("COMMIT;");
+
+  // We also need to find out the CRMAcct in case of adding Comments
+  if (_mode == cNew && _crmacctid == -1)
+  {
+    sql = "SELECT crmacct_id FROM crmacct WHERE (crmacct_vend_id = <? value('vend_id') ?>);";
+    MetaSQLQuery mql(sql);
+    XSqlQuery crma = mql.toQuery(params);
+    if (crma.first())
+    {
+      _crmacctid = crma.value("crmacct_id").toInt();
+    }
+    else if (crma.lastError().type() != QSqlError::NoError)
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor CRM Account"),
+                         crma, __FILE__, __LINE__);
+      return false;
+    }
+  }
+  _tempMode = cEdit;
+
+  return true;
+}
+
+void vendor::sSaveClicked()
+{
+  _save->setFocus();
+  
+  if (!sSave())
+    return;
+  
+//  _autoSaved=false;
   _NumberGen = -1;
   omfgThis->sVendorsUpdated();
   emit saved(_vendid);
-  if (_mode == cNew)
-    emit newId(_vendid);
-
-  if(!_ignoreClose)
+  if (_captive || isModal())
     close();
+  else
+    clear();
 }
 
 void vendor::sCheck()
 {
-  _number->setText(_number->text().trimmed().toUpper());
-  if (_number->text().length() && _cachedNumber != _number->text())
+  _number->setNumber(_number->number().trimmed().toUpper());
+  if (_number->number().length() && _cachedNumber != _number->number())
   {
-    if(cNew == _mode && -1 != _NumberGen && _number->text().toInt() != _NumberGen)
+    if(cNew == _mode && -1 != _NumberGen && _number->number().toInt() != _NumberGen)
     {
       XSqlQuery query;
       query.prepare( "SELECT releaseCRMAccountNumber(:Number);" );
       query.bindValue(":Number", _NumberGen);
       query.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Releasing Number"),
-                            query, __FILE__, __LINE__);
+                           query, __FILE__, __LINE__);
       _NumberGen = -1;
     }
 
@@ -613,33 +766,32 @@ void vendor::sCheck()
                  "  FROM crmacct "
                  " WHERE (crmacct_number=:vend_number)"
                  " ORDER BY type;");
-    dupq.bindValue(":vend_number", _number->text());
+    dupq.bindValue(":vend_number", _number->number());
     dupq.exec();
     if (dupq.first())
     {
       if ((dupq.value("type").toInt() == 1) && (_notice))
       {
         if (QMessageBox::question(this, tr("Vendor Exists"),
-                tr("<p>This number is currently "
-                     "used by an existing Vendor. "
-                     "Do you want to edit "
-                     "that Vendor?"),
-                QMessageBox::Yes,
-                QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+                                  tr("<p>This number is currently "
+                                     "used by an existing Vendor. "
+                                     "Do you want to edit "
+                                     "that Vendor?"),
+                         QMessageBox::Yes,
+                         QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
         {
-          _number->setText(_cachedNumber);
+          _number->setNumber(_cachedNumber);
           _number->setFocus();
           return;
         }
 
         if (! _lock.release())
           ErrorReporter::error(QtCriticalMsg, this, tr("Locking Error"),
-                             _lock.lastError(), __FILE__, __LINE__);
+                               _lock.lastError(), __FILE__, __LINE__);
 
         _vendid = dupq.value("vend_id").toInt();
 
-        if (_mode == cEdit && !_lock.acquire("vendinfo", _vendid, 
-                                          AppLock::Interactive))
+        if (_mode == cEdit && !_lock.acquire("vendinfo", _vendid, AppLock::Interactive))
         {
           setViewMode();
         }
@@ -656,7 +808,7 @@ void vendor::sCheck()
         QMessageBox::critical(this, tr("Invalid Number"),
                               tr("<p>This number is currently "
                                  "assigned to another Account."));
-        _number->setText(_cachedNumber);
+        _number->setNumber(_cachedNumber);
         _number->setFocus();
         _notice = false;
         return;
@@ -664,12 +816,12 @@ void vendor::sCheck()
       else if ((dupq.value("type").toInt() == 2) && (_notice))
       {
         if (QMessageBox::question(this, tr("Convert"),
-                tr("<p>This number is currently assigned to Account. "
-                   "Do you want to convert the Account to a Vendor?"),
-                QMessageBox::Yes,
-                QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
+                                  tr("<p>This number is currently assigned to Account. "
+                                     "Do you want to convert the Account to a Vendor?"),
+                         QMessageBox::Yes,
+                         QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
         {
-          _number->clear();
+          _number->setId(-1);
           _number->setFocus();
           return;
         }
@@ -680,6 +832,17 @@ void vendor::sCheck()
                                   dupq, __FILE__, __LINE__))
       return;
   }
+}
+
+bool vendor::sCheckRequired()
+{
+  if ( ( _number->number().trimmed().length() == 0) ||
+       (_name->text().trimmed().length() == 0) ||
+       (_vendid == -1) )
+  {
+    return false;
+  }
+  return true;
 }
 
 void vendor::sLoadCrmAcct(int crmacctId)
@@ -694,8 +857,10 @@ void vendor::sLoadCrmAcct(int crmacctId)
   if (getq.first())
   {
     _crmowner = getq.value("crmacct_owner_username").toString();
-    _number->setText(getq.value("crmacct_number").toString());
-    _cachedNumber=_number->text().trimmed().toUpper();
+    _number->setCanEdit(true);
+    _number->setEditMode(true);
+    _number->setNumber(getq.value("crmacct_number").toString());
+    _cachedNumber=_number->number().trimmed().toUpper();
     _name->setText(getq.value("crmacct_name").toString());
     _active->setChecked(getq.value("crmacct_active").toBool());
 
@@ -735,6 +900,9 @@ bool vendor::sPopulate()
   if (DEBUG)
     qDebug("vendor::sPopulate() entered with _vendid %d and _crmacctid %d",
            _vendid, _crmacctid);
+
+  XSqlQuery vendorPopulate;
+  ParameterList params;
 
   MetaSQLQuery mql(
             "<? if exists('vend_id') ?>"
@@ -779,7 +947,7 @@ bool vendor::sPopulate()
             "  FROM crmacct"
             " WHERE crmacct_id=<? value('crmacct_id') ?>;"
             "<? endif ?>");
-  ParameterList params;
+
   if (_vendid > 0)
     params.append("vend_id", _vendid);
   else if (_crmacctid > 0)
@@ -787,77 +955,84 @@ bool vendor::sPopulate()
 
   params.append("key",     omfgThis->_key);
   params.append("na",      tr("N/A"));
-  XSqlQuery getq = mql.toQuery(params);
-  if (getq.first())
+  vendorPopulate = mql.toQuery(params);
+  if (vendorPopulate.first())
   {
+    if (_mode == cNew)
+    {
+      _mode = cEdit;
+      emit newMode(_mode);
+    }
+    
     _notice = false;
-    _cachedNumber = getq.value("vend_number").toString();
+    _cachedNumber = vendorPopulate.value("vend_number").toString();
 
-    _crmacctid = getq.value("crmacct_id").toInt();
-    _crmowner = getq.value("crmacct_owner_username").toString();
-    _number->setText(getq.value("vend_number"));
-    _accountNumber->setText(getq.value("vend_accntnum"));
-    _vendtype->setId(getq.value("vend_vendtype_id").toInt());
-    _active->setChecked(getq.value("vend_active").toBool());
-    _name->setText(getq.value("vend_name"));
-    _contact1->setId(getq.value("vend_cntct1_id").toInt());
+    _crmacctid = vendorPopulate.value("crmacct_id").toInt();
+    _crmowner = vendorPopulate.value("crmacct_owner_username").toString();
+    _number->setNumber(vendorPopulate.value("vend_number").toString());
+    _accountNumber->setText(vendorPopulate.value("vend_accntnum"));
+    _vendtype->setId(vendorPopulate.value("vend_vendtype_id").toInt());
+    _active->setChecked(vendorPopulate.value("vend_active").toBool());
+    _name->setText(vendorPopulate.value("vend_name"));
+    _contact1->setId(vendorPopulate.value("vend_cntct1_id").toInt());
     _contact1->setSearchAcct(_crmacctid);
-    _contact2->setId(getq.value("vend_cntct2_id").toInt());
+    _contact2->setId(vendorPopulate.value("vend_cntct2_id").toInt());
     _contact2->setSearchAcct(_crmacctid);
-    _address->setId(getq.value("vend_addr_id").toInt());
-    _defaultTerms->setId(getq.value("vend_terms_id").toInt());
-    _defaultShipVia->setText(getq.value("vend_shipvia").toString());
-    _defaultCurr->setId(getq.value("vend_curr_id").toInt());
-    _poItems->setChecked(getq.value("vend_po").toBool());
-    _restrictToItemSource->setChecked(getq.value("vend_restrictpurch").toBool());
-    _receives1099->setChecked(getq.value("vend_1099").toBool());
-    _match->setChecked(getq.value("vend_match").toBool());
-    _qualified->setChecked(getq.value("vend_qualified").toBool());
-    _notes->setText(getq.value("vend_comments").toString());
-    _poComments->setText(getq.value("vend_pocomments").toString());
+    _address->setId(vendorPopulate.value("vend_addr_id").toInt());
+    _defaultTerms->setId(vendorPopulate.value("vend_terms_id").toInt());
+    _defaultShipVia->setText(vendorPopulate.value("vend_shipvia").toString());
+    _defaultCurr->setId(vendorPopulate.value("vend_curr_id").toInt());
+    _poItems->setChecked(vendorPopulate.value("vend_po").toBool());
+    _restrictToItemSource->setChecked(vendorPopulate.value("vend_restrictpurch").toBool());
+    _receives1099->setChecked(vendorPopulate.value("vend_1099").toBool());
+    _match->setChecked(vendorPopulate.value("vend_match").toBool());
+    _qualified->setChecked(vendorPopulate.value("vend_qualified").toBool());
+    _notes->setText(vendorPopulate.value("vend_comments").toString());
+    _poComments->setText(vendorPopulate.value("vend_pocomments").toString());
 
-    _taxzone->setId(getq.value("vend_taxzone_id").toInt());
+    _taxzone->setId(vendorPopulate.value("vend_taxzone_id").toInt());
 
-    if (getq.value("vend_fobsource").toString() == "V")
+    if (vendorPopulate.value("vend_fobsource").toString() == "V")
     {
       _useVendorFOB->setChecked(true);
-      _vendorFOB->setText(getq.value("vend_fob"));
+      _vendorFOB->setText(vendorPopulate.value("vend_fob"));
     }
     else
       _useWarehouseFOB->setChecked(true);
 
-    _achGroup->setChecked(getq.value("vend_ach_enabled").toBool());
-    _routingNumber->setText(getq.value("routingnum").toString());
-    _achAccountNumber->setText(getq.value("accntnum").toString());
-    _useACHSpecial->setChecked(! getq.value("vend_ach_use_vendinfo").toBool());
-    _individualId->setText(getq.value("vend_ach_indiv_number").toString());
-    _individualName->setText(getq.value("vend_ach_indiv_name").toString());
+    _achGroup->setChecked(vendorPopulate.value("vend_ach_enabled").toBool());
+    _routingNumber->setText(vendorPopulate.value("routingnum").toString());
+    _achAccountNumber->setText(vendorPopulate.value("accntnum").toString());
+    _useACHSpecial->setChecked(! vendorPopulate.value("vend_ach_use_vendinfo").toBool());
+    _individualId->setText(vendorPopulate.value("vend_ach_indiv_number").toString());
+    _individualName->setText(vendorPopulate.value("vend_ach_indiv_name").toString());
 
-    _accountType->setCode(getq.value("vend_ach_accnttype").toString());
+    _accountType->setCode(vendorPopulate.value("vend_ach_accnttype").toString());
 
-    _account->setId(getq.value("vend_accnt_id").toInt());
-    if(getq.value("vend_expcat_id").toInt() != -1)
+    _account->setId(vendorPopulate.value("vend_accnt_id").toInt());
+    if(vendorPopulate.value("vend_expcat_id").toInt() != -1)
     {
       _expcatSelected->setChecked(true);
-      _expcat->setId(getq.value("vend_expcat_id").toInt());
+      _expcat->setId(vendorPopulate.value("vend_expcat_id").toInt());
     }
-    if(getq.value("vend_tax_id").toInt() != -1)
+    if(vendorPopulate.value("vend_tax_id").toInt() != -1)
     {
       _taxSelected->setChecked(true);
-      _taxCode->setId(getq.value("vend_tax_id").toInt());
+      _taxCode->setId(vendorPopulate.value("vend_tax_id").toInt());
     }
 
     sFillAddressList();
     sFillTaxregList();
 
     _comments->setId(_crmacctid);
+    _documents->setId(_vendid);
     _address->setSearchAcct(_crmacctid);
     _charass->setId(_vendid);
 
     emit newId(_vendid);
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Vendor"),
-                                getq, __FILE__, __LINE__))
+                                vendorPopulate, __FILE__, __LINE__))
     return false;
   else
   {
@@ -873,6 +1048,79 @@ bool vendor::sPopulate()
                         _privileges->check("ViewAllCRMAccounts") ||
                         (omfgThis->username() == _crmowner && _privileges->check("MaintainPersonalCRMAccounts")) ||
                         (omfgThis->username() == _crmowner && _privileges->check("ViewPersonalCRMAccounts"))));
+
+  MetaSQLQuery pos("SELECT MIN(pohead_orderdate) AS minpodate, "
+                   "       MAX(pohead_orderdate) AS maxpodate, "
+                   "       SUM(currToBase(pohead_curr_id,"
+                   "           (poitem_qty_ordered - poitem_qty_received) * poitem_unitprice,"
+                   "           CURRENT_DATE)) AS backlog "
+                   "FROM vendinfo"
+                   "     LEFT OUTER JOIN pohead ON (pohead_vend_id=vend_id)"
+                   "     LEFT OUTER JOIN poitem ON (poitem_pohead_id=pohead_id"
+                   "                            AND poitem_status='O')"
+                   "WHERE (vend_id=<? value(\"vend_id\") ?>);");
+  
+  vendorPopulate = pos.toQuery(params);
+  if (vendorPopulate.first())
+  {
+    _firstPurchase->setDate(vendorPopulate.value("minpodate").toDate());
+    _lastPurchase->setDate(vendorPopulate.value("maxpodate").toDate());
+    _backlog->setDouble(vendorPopulate.value("backlog").toDouble());
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                vendorPopulate, __FILE__, __LINE__))
+  {
+    return false;
+  }
+  
+  MetaSQLQuery purchbydate("SELECT SUM(currToBase(vohead_curr_id,"
+                           "             vohead_amount,"
+                           "             vohead_gldistdate)) AS purchases "
+                           "FROM vohead JOIN apopen ON (apopen_doctype='V' AND"
+                           "                            apopen_docnumber=vohead_number AND"
+                           "                            NOT apopen_void) "
+                           "WHERE (vohead_posted"
+                           "  AND (vohead_gldistdate "
+                           "       BETWEEN (<? literal(\"older\") ?>)"
+                           "           AND (<? literal(\"younger\") ?>))"
+                           "  AND (vohead_vend_id=<? value(\"vend_id\") ?>));");
+  params.append("older",   "DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 year'");
+  params.append("younger", "DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 day'");
+  vendorPopulate = purchbydate.toQuery(params);
+  if (vendorPopulate.first())
+    _lastYearsPurchases->setDouble(vendorPopulate.value("purchases").toDouble());
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                vendorPopulate, __FILE__, __LINE__))
+  {
+    return false;
+  }
+  
+  ParameterList ytdparams;
+  ytdparams.append("vend_id", _number->id());
+  ytdparams.append("older",   "DATE_TRUNC('year', CURRENT_DATE)");
+  ytdparams.append("younger", "CURRENT_DATE");
+  vendorPopulate = purchbydate.toQuery(ytdparams);
+  if (vendorPopulate.first())
+    _ytdPurchases->setDouble(vendorPopulate.value("purchases").toDouble());
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                vendorPopulate, __FILE__, __LINE__))
+  {
+    return false;
+  }
+  
+  MetaSQLQuery balm("SELECT COALESCE(SUM((apopen_amount-apopen_paid) / apopen_curr_rate * "
+                    "  CASE WHEN (apopen_doctype IN ('D','V')) THEN 1 ELSE -1 END), 0.0) AS balance "
+                    "FROM apopen "
+                    "WHERE ((apopen_open)"
+                    "   AND (apopen_vend_id=<? value(\"vend_id\") ?>));");
+  vendorPopulate = balm.toQuery(params);
+  if (vendorPopulate.first())
+    _openBalance->setDouble(vendorPopulate.value("balance").toDouble());
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retreiving Vendor Information"),
+                                vendorPopulate, __FILE__, __LINE__))
+  {
+    return false;
+  }
 
   emit populated();
   return true;
@@ -1029,13 +1277,12 @@ void vendor::sDeleteTaxreg()
 void vendor::sNext()
 {
   XSqlQuery vendorNext;
-  // Find Next
   vendorNext.prepare("SELECT vend_id "
             "  FROM vendinfo"
             " WHERE (:number < vend_number)"
             " ORDER BY vend_number"
             " LIMIT 1;");
-  vendorNext.bindValue(":number", _number->text());
+  vendorNext.bindValue(":number", _number->number());
   vendorNext.exec();
   if(!vendorNext.first())
   {
@@ -1051,6 +1298,8 @@ void vendor::sNext()
   clear();
 
   _vendid = newid;
+  _mode = cEdit;
+  emit newMode(_mode);
   sPopulate();
 }
 
@@ -1062,7 +1311,7 @@ void vendor::sPrevious()
             " WHERE (:number > vend_number)"
             " ORDER BY vend_number DESC"
             " LIMIT 1;");
-  nextq.bindValue(":number", _number->text());
+  nextq.bindValue(":number", _number->number());
   nextq.exec();
   if (!nextq.first() && nextq.lastError().type() == QSqlError::NoError)
   {
@@ -1081,6 +1330,8 @@ void vendor::sPrevious()
   clear();
 
   _vendid = newid;
+  _mode = cEdit;
+  emit newMode(_mode);
   sPopulate();
 }
 
@@ -1092,9 +1343,7 @@ bool vendor::sCheckSave()
          tr("Would you like to save any changes before continuing?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel))
     {
       case QMessageBox::Yes:
-        _ignoreClose = true;
-        sSave();
-        _ignoreClose = false;
+        return sSave();
         break;
       case QMessageBox::No:
         break;
@@ -1126,7 +1375,10 @@ void vendor::clear()
 
   _useWarehouseFOB->setChecked(true);
 
+  disconnect(_number, SIGNAL(newId(int)), this, SLOT(setId(int)));
   _number->clear();
+  connect(_number, SIGNAL(newId(int)), this, SLOT(setId(int)));
+
   _name->clear();
   _accountNumber->clear();
   _defaultShipVia->clear();
@@ -1149,8 +1401,89 @@ void vendor::clear()
   _accountType->setCurrentIndex(0);
 
   _comments->setId(-1);
+  _documents->setId(-1);
   _charass->setId(-1);
   _tabs->setCurrentIndex(0);
+  
+  if (_number->editMode() || _mode == cNew)
+    sPrepare();
+}
+
+void vendor::sNumberEditable(bool p)
+{
+  if (p && _number->id() == -1)
+    clear();
+}
+
+void vendor::sPrepare()
+{
+  if (_mode == cEdit)
+  {
+    _mode = cNew;
+    emit newMode(_mode);
+  }
+  
+  XSqlQuery idq;
+  idq.exec("SELECT NEXTVAL('vend_vend_id_seq') AS vend_id");
+  if (idq.first())
+  {
+    _vendid = idq.value("vend_id").toInt();
+    emit newId(_vendid);
+    
+    _charass->setId(_vendid);
+    _documents->setId(_vendid);
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting new id"),
+                                idq, __FILE__, __LINE__))
+    return;
+  
+  disconnect(_number, SIGNAL(editable(bool)), this, SLOT(sNumberEditable(bool)));
+  _number->clear();
+  _number->setCanEdit(true);
+  _number->setEditMode(true);
+  connect(_number, SIGNAL(editable(bool)), this, SLOT(sNumberEditable(bool)));
+  
+  // Handle Auto numbering
+  if(((_x_metrics &&
+       _x_metrics->value("CRMAccountNumberGeneration") == "A") ||
+      (_x_metrics->value("CRMAccountNumberGeneration") == "O"))
+     && _number->number().isEmpty() )
+  {
+    XSqlQuery num;
+    num.exec("SELECT fetchCRMAccountNumber() AS number;");
+    if (num.first())
+      _number->setNumber(num.value("number").toString());
+  }
+  
+  _NumberGen = _number->number().toInt();
+}
+
+void vendor::close()
+{
+  if (cNew == _mode && _tempMode == cEdit && _crmacctid == -1)
+  {
+    XSqlQuery delq;
+    delq.prepare("DELETE FROM vendinfo WHERE (vend_id=:vend_id);");
+    delq.bindValue(":vend_id", _vendid);
+    delq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting"),
+                           delq, __FILE__, __LINE__))
+      return;
+    omfgThis->sVendorsUpdated();
+    // Clean out CRM Acct but only if not used elsewhere
+    delq.prepare("DELETE FROM crmacct WHERE ((crmacct_number=:vend_number) "
+                      "                 AND ((crmacct_cust_id IS NULL)  "
+                      "                  AND (crmacct_competitor_id IS NULL) "
+                      "                  AND (crmacct_partner_id IS NULL)    "
+                      "                  AND (crmacct_prospect_id IS NULL)   "
+                      "                  AND (crmacct_taxauth_id IS NULL))); ");
+    delq.bindValue(":vend_number", _number->number().trimmed().toUpper());
+    delq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting"),
+                           delq, __FILE__, __LINE__))
+      return;
+  }
+  XWidget::close();
 }
 
 void vendor::closeEvent(QCloseEvent *pEvent)
@@ -1168,21 +1501,47 @@ void vendor::closeEvent(QCloseEvent *pEvent)
 
 void vendor::sHandleButtons()
 {
-  if (_mainButton->isChecked())
-    _addressStack->setCurrentIndex(0);
+  if (_taxButton->isChecked())
+    _settingsStack->setCurrentWidget(_taxPage);
   else
-    _addressStack->setCurrentIndex(1);
+    _settingsStack->setCurrentWidget(_generalPage);
 
-  if (_checksButton->isChecked())
-    _transmitStack->setCurrentIndex(1);
+  if (_mainButton->isChecked())
+    _addressStack->setCurrentWidget(_mainPage);
   else
-    _transmitStack->setCurrentIndex(1);
+    _addressStack->setCurrentWidget(_alternatesPage);
+  
+  if (_notesButton->isChecked())
+    _remarksStack->setCurrentWidget(_notesPage);
+  else
+    _remarksStack->setCurrentWidget(_commentsPage);
+  
+  if (_purchaseOrdersButton->isChecked())
+    _ordersStack->setCurrentWidget(_purchaseOrdersPage);
+  else if (_receiptsReturnsButton->isChecked())
+    _ordersStack->setCurrentWidget(_receiptsReturnsPage);
+  else
+    _ordersStack->setCurrentWidget(_summaryPage);
+  
+  if (_payablesButton->isChecked())
+    _accountingStack->setCurrentWidget(_payablesPage);
+  else if (_creditMemosButton->isChecked())
+    _accountingStack->setCurrentWidget(_creditMemosPage);
+  else if (_apHistoryButton->isChecked())
+    _accountingStack->setCurrentWidget(_apHistoryPage);
+  else
+    _accountingStack->setCurrentWidget(_apChecksPage);
+  
+  if (_checksButton->isChecked())
+    _transmitStack->setCurrentWidget(_eftPage);
+  else
+    _transmitStack->setCurrentWidget(_emptyPage);
 }
 
 void vendor::sNumberEdited()
 {
   _notice = true;
-  _number->setText(_number->text().toUpper());
+  sCheck();
 }
 
 void vendor::sCrmAccount()
@@ -1215,4 +1574,15 @@ void vendor::sCrmAccount()
   crmaccount *newdlg = new crmaccount();
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
+}
+
+void vendor::sSaveAndNewComment()
+{
+  if (_mode == cNew && _crmacctid == -1)
+  { 
+    if (!sSave())
+      return;
+    _comments->setId(_crmacctid);
+  }
+  _comments->sNew();
 }

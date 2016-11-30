@@ -139,7 +139,7 @@ void projectCopy::sCopy()
     if (_newProjectId == -2)
     {
       QMessageBox::critical(this, "System Error", tr("The Project Number already exists.  Please choose another number."));
-      reject();
+      return;
     }
   }
   else if (copyproject.lastError().type() != QSqlError::NoError)

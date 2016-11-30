@@ -87,46 +87,52 @@ void QFormLayoutProto::addItem(QLayoutItem *item)
     formitem->addItem(item);
 }
 
-void QFormLayoutProto::addRow(QWidget *label, QWidget *field)
+void QFormLayoutProto::addRow(QWidget *label, QObject *field)
 {
   QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
   if (item)
-    item->addRow(label, field);
+  {
+    QWidget *w = qobject_cast<QWidget*>(field);
+    QLayout *l = qobject_cast<QLayout*>(field);
+    if (w)
+      item->addRow(label, w);
+    else if (l)
+      item->addRow(label, l);
+    else
+      context()->throwError(QScriptContext::UnknownError, QString("Could not determine correct overload."));
+  }
 }
 
-void QFormLayoutProto::addRow(QWidget *label, QLayout *field)
+void QFormLayoutProto::addRow(const QString &labelText, QObject *field)
 {
   QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
   if (item)
-    item->addRow(label, field);
+  {
+    QWidget *w = qobject_cast<QWidget*>(field);
+    QLayout *l = qobject_cast<QLayout*>(field);
+    if (w)
+      item->addRow(labelText, w);
+    else if (l)
+      item->addRow(labelText, l);
+    else
+      context()->throwError(QScriptContext::UnknownError, QString("Could not determine correct overload."));
+  }
 }
 
-void QFormLayoutProto::addRow(const QString &labelText, QWidget *field)
+void QFormLayoutProto::addRow(QObject *object)
 {
   QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
   if (item)
-    item->addRow(labelText, field);
-}
-
-void QFormLayoutProto::addRow(const QString &labelText, QLayout *field)
-{
-  QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
-  if (item)
-    item->addRow(labelText, field);
-}
-
-void QFormLayoutProto::addRow(QWidget *widget)
-{
-  QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
-  if (item)
-    item->addRow(widget);
-}
-
-void QFormLayoutProto::addRow(QLayout *layout)
-{
-  QFormLayout *item = qscriptvalue_cast<QFormLayout*>(thisObject());
-  if (item)
-    item->addRow(layout);
+  {
+    QWidget *w = qobject_cast<QWidget*>(object);
+    QLayout *l = qobject_cast<QLayout*>(object);
+    if (w)
+      item->addRow(w);
+    else if (l)
+      item->addRow(l);
+    else
+      context()->throwError(QScriptContext::UnknownError, QString("Could not determine correct overload."));
+  }
 }
 
 void QFormLayoutProto::addWidget(QWidget *widget)

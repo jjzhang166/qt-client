@@ -16,6 +16,7 @@
 #include <QVariant>
 
 #include "xcombobox.h"
+#include "guiErrorCheck.h"
 
 // perhaps this should be a generalized XDoubleValidator, but for now
 // it should match the definition of the curr_rate column in curr_rate table
@@ -29,7 +30,7 @@ class RateValidator : public QDoubleValidator {
 };
 
 RateValidator::RateValidator(QObject* parent, const char* name) :
-  QDoubleValidator(0.00001, 99999.99999, 5, parent)
+  QDoubleValidator(0.000001, 99999.999999, 6, parent)
 {
   if (name)
     setObjectName(name);
@@ -133,46 +134,23 @@ void currencyConversion::_sClose()
 void currencyConversion::_sSave()
 {
   XSqlQuery currency_sSave;
-  if (! _currency->isValid())
-  {
-      QMessageBox::warning(this, tr("Missing Currency"),
-                           tr("Please specify a currency for this exchange rate."));
-      _currency->setFocus();
-      return;
-  }
 
-  if (_rate->toDouble() == 0)
-  {
-    QMessageBox::warning(this, tr("No Rate Specified"),
-      tr("You must specify a Rate that is not zero.") );
-    return;
-  }
-  
-  if (!_dateCluster->startDate().isValid())
-  {
-      QMessageBox::warning( this, tr("Missing Start Date"),
-                            tr("Please specify a Start Date for this exchange rate."));
-      _dateCluster->setFocus();
-      return;
-  }
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(! _currency->isValid(), _currency,
+                        tr("Please specify a currency for this exchange rate."))
+       <<GuiErrorCheck(_rate->toDouble() == 0, _rate,
+                        tr("You must specify a Rate that is not zero."))
+       <<GuiErrorCheck(!_dateCluster->startDate().isValid(), _dateCluster,
+                        tr("Please specify a Start Date for this exchange rate."))
+       <<GuiErrorCheck(!_dateCluster->endDate().isValid(), _dateCluster,
+                        tr("Please specify an End Date for this exchange rate."))
+       <<GuiErrorCheck(_dateCluster->startDate() > _dateCluster->endDate(), _dateCluster,
+                        tr("The Start Date for this exchange rate is "
+                           "later than the End Date.\n"
+                           "Please check the values of these dates."));
 
-  if (!_dateCluster->endDate().isValid())
-  {
-      QMessageBox::warning( this, tr("Missing End Date"),
-                            tr("Please specify an End Date for this exchange rate. "));
-      _dateCluster->setFocus();
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Currency Conversion"),errors))
       return;
-  }
-
-  if (_dateCluster->startDate() > _dateCluster->endDate())
-  {
-      QMessageBox::warning(this, tr("Invalid Date Order"),
-                          tr("The Start Date for this exchange rate is "
-                             "later than the End Date.\n"
-                             "Please check the values of these dates."));
-      _dateCluster->setFocus();
-      return;
-  }
   
   currency_sSave.prepare( "SELECT count(*) AS numberOfOverlaps "
              "FROM curr_rate "
@@ -268,7 +246,7 @@ void currencyConversion::populate()
               _currency->setId(currencypopulate.value("curr_id").toInt());
               _dateCluster->setStartDate(currencypopulate.value("curr_effective").toDate());
               _dateCluster->setEndDate(currencypopulate.value("curr_expires").toDate());
-              _rate->setText(rateString.setNum(currencypopulate.value("curr_rate").toDouble(), 'f', 5));
+              _rate->setText(rateString.setNum(currencypopulate.value("curr_rate").toDouble(), 'f', 6));
           }
       }
   }

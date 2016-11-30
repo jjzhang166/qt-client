@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>customCommand</class>
- <widget class="QDialog" name="customCommand" >
-  <property name="geometry" >
+ <widget class="QDialog" name="customCommand">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,118 +17,109 @@ to be bound by its terms.</comment>
     <height>390</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Custom Command</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <layout class="QGridLayout" >
-       <item row="0" column="0" >
-        <widget class="QLabel" name="_moduleLit" >
-         <property name="text" >
+      <layout class="QGridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="_moduleLit">
+         <property name="text">
           <string>Module:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_module</cstring>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" >
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
+       <item row="0" column="1">
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="leftMargin" >
-          <number>0</number>
-         </property>
-         <property name="topMargin" >
-          <number>0</number>
-         </property>
-         <property name="rightMargin" >
-          <number>0</number>
-         </property>
-         <property name="bottomMargin" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <widget class="XComboBox" name="_module" >
+          <widget class="XComboBox" name="_module">
            <item>
-            <property name="text" >
+            <property name="text">
              <string>A/P</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>A/R</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>C/P</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>CRM</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>G/L</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>I/M</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>M/S</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>P/D</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>P/M</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>P/O</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>S/A</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>S/O</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>S/R</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>W/O</string>
             </property>
            </item>
            <item>
-            <property name="text" >
+            <property name="text">
              <string>Sys</string>
             </property>
            </item>
@@ -136,13 +127,13 @@ to be bound by its terms.</comment>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -152,120 +143,102 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </item>
-       <item row="1" column="0" >
-        <widget class="QLabel" name="_titleLit" >
-         <property name="text" >
+       <item row="1" column="0">
+        <widget class="QLabel" name="_titleLit">
+         <property name="text">
           <string>Menu Label:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_title</cstring>
          </property>
         </widget>
        </item>
-       <item row="1" column="1" >
-        <widget class="QLineEdit" name="_title" />
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="_title"/>
        </item>
-       <item row="2" column="0" >
-        <widget class="QLabel" name="_privnameLit" >
-         <property name="text" >
+       <item row="2" column="0">
+        <widget class="QLabel" name="_privnameLit">
+         <property name="text">
           <string>Priv. Name:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_privname</cstring>
          </property>
         </widget>
        </item>
-       <item row="2" column="1" >
-        <widget class="QLineEdit" name="_privname" />
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="_privname"/>
        </item>
-       <item row="3" column="0" >
-        <widget class="QLabel" name="_nameLit" >
-         <property name="text" >
+       <item row="3" column="0">
+        <widget class="QLabel" name="_nameLit">
+         <property name="text">
           <string>Action Name:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_name</cstring>
          </property>
         </widget>
        </item>
-       <item row="3" column="1" >
-        <widget class="QLineEdit" name="_name" >
-         <property name="text" >
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="_name">
+         <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="4" column="0" >
-        <widget class="QLabel" name="_executableLit" >
-         <property name="text" >
+       <item row="4" column="0">
+        <widget class="QLabel" name="_executableLit">
+         <property name="text">
           <string>Executable:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_executable</cstring>
          </property>
         </widget>
        </item>
-       <item row="4" column="1" >
-        <widget class="QLineEdit" name="_executable" />
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="_executable"/>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin" >
-        <number>0</number>
-       </property>
-       <property name="topMargin" >
-        <number>0</number>
-       </property>
-       <property name="rightMargin" >
-        <number>0</number>
-       </property>
-       <property name="bottomMargin" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
-         <property name="leftMargin" >
-          <number>0</number>
-         </property>
-         <property name="topMargin" >
-          <number>0</number>
-         </property>
-         <property name="rightMargin" >
-          <number>0</number>
-         </property>
-         <property name="bottomMargin" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Cancel</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_accept" >
-           <property name="text" >
+          <widget class="QPushButton" name="_accept">
+           <property name="text">
             <string>&amp;OK</string>
            </property>
           </widget>
@@ -274,13 +247,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>51</height>
@@ -293,115 +266,79 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <widget class="QTabWidget" name="_tab" >
-     <property name="currentIndex" >
+    <widget class="QTabWidget" name="_tab">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="descrip" >
-      <attribute name="title" >
+     <widget class="QWidget" name="descrip">
+      <attribute name="title">
        <string>Description</string>
       </attribute>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
-       <property name="leftMargin" >
-        <number>0</number>
-       </property>
-       <property name="topMargin" >
-        <number>0</number>
-       </property>
-       <property name="rightMargin" >
-        <number>0</number>
-       </property>
-       <property name="bottomMargin" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="XTextEdit" name="_description" />
+        <widget class="XTextEdit" name="_description"/>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="arguments" >
-      <attribute name="title" >
+     <widget class="QWidget" name="arguments">
+      <attribute name="title">
        <string>Arguments</string>
       </attribute>
-      <layout class="QHBoxLayout" >
-       <property name="spacing" >
+      <layout class="QHBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
-       <property name="leftMargin" >
-        <number>0</number>
-       </property>
-       <property name="topMargin" >
-        <number>0</number>
-       </property>
-       <property name="rightMargin" >
-        <number>0</number>
-       </property>
-       <property name="bottomMargin" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="XTreeWidget" name="_arguments" />
+        <widget class="XTreeWidget" name="_arguments"/>
        </item>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="leftMargin" >
-          <number>0</number>
-         </property>
-         <property name="topMargin" >
-          <number>0</number>
-         </property>
-         <property name="rightMargin" >
-          <number>0</number>
-         </property>
-         <property name="bottomMargin" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>5</number>
            </property>
-           <property name="leftMargin" >
-            <number>0</number>
-           </property>
-           <property name="topMargin" >
-            <number>0</number>
-           </property>
-           <property name="rightMargin" >
-            <number>0</number>
-           </property>
-           <property name="bottomMargin" >
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="_new" >
-             <property name="text" >
+            <widget class="QPushButton" name="_new">
+             <property name="text">
               <string>New</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_edit" >
-             <property name="enabled" >
+            <widget class="QPushButton" name="_edit">
+             <property name="enabled">
               <bool>false</bool>
              </property>
-             <property name="text" >
+             <property name="text">
               <string>Edit</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_delete" >
-             <property name="enabled" >
+            <widget class="QPushButton" name="_delete">
+             <property name="enabled">
               <bool>false</bool>
              </property>
-             <property name="text" >
+             <property name="text">
               <string>Delete</string>
              </property>
             </widget>
@@ -410,13 +347,13 @@ to be bound by its terms.</comment>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>40</height>
@@ -432,7 +369,7 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
    <class>XComboBox</class>
@@ -443,6 +380,7 @@ to be bound by its terms.</comment>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XTextEdit</class>
@@ -473,11 +411,11 @@ to be bound by its terms.</comment>
    <receiver>customCommand</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -489,11 +427,11 @@ to be bound by its terms.</comment>
    <receiver>_delete</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -505,11 +443,11 @@ to be bound by its terms.</comment>
    <receiver>_edit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

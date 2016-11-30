@@ -1,30 +1,25 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
-
-#ifndef comment_h
-#define comment_h
+#ifndef COMMENT_H
+#define COMMENT_H
 
 #include <QDialog>
 
 #include <xsqlquery.h>
+#include "ui_comment.h"
 
-#include "widgets.h"
-#include "comments.h"
-
-class XComboBox;
-class XTextEdit;
 class QPushButton;
 class ParameterList;
 
-class XTUPLEWIDGETS_EXPORT comment : public QDialog
+class XTUPLEWIDGETS_EXPORT comment : public QDialog, public Ui::comment
 {
     Q_OBJECT
 
@@ -33,15 +28,11 @@ class XTUPLEWIDGETS_EXPORT comment : public QDialog
   public:
     comment(QWidget * = 0, const char * = 0, bool = false, Qt::WindowFlags = 0);
 
-    XComboBox* _cmnttype;
-    XTextEdit* _comment;
     QPushButton* _close;
     QPushButton* _save;
     QPushButton* _next;
     QPushButton* _prev;
     QPushButton* _more;
-    Comments* _comments;
-    QCheckBox* _public;
 
   public slots:
     virtual void set(const ParameterList & pParams);

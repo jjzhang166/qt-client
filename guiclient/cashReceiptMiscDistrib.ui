@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
-    <height>308</height>
+    <width>592</width>
+    <height>318</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,25 +24,67 @@ to be bound by its terms.</comment>
    <item row="0" column="0">
     <layout class="QVBoxLayout">
      <item>
-      <layout class="QHBoxLayout">
-       <item>
-        <widget class="QLabel" name="_accountLit">
-         <property name="text">
-          <string>Account:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="GLCluster" name="_account">
-         <property name="focusPolicy">
-          <enum>Qt::StrongFocus</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="_accountSelected">
+          <property name="text">
+           <string>Account:</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="_taxCodeSelected">
+          <property name="text">
+           <string>Tax Code:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="XComboBox" name="_taxCode">
+            <property name="allowNull">
+             <bool>true</bool>
+            </property>
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="type">
+             <enum>XComboBox::TaxCodes</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <widget class="GLCluster" name="_account">
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout">
@@ -81,6 +123,33 @@ to be bound by its terms.</comment>
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>1</number>
+       </property>
+       <item>
+        <widget class="XLabel" name="_custSelLit">
+         <property name="text">
+          <string>Customer:</string>
+         </property>
+         <property name="buddy">
+          <cstring>_custSelector</cstring>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignLeft">
+        <widget class="XComboBox" name="_custSelector">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -124,6 +193,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
@@ -136,13 +206,26 @@ to be bound by its terms.</comment>
    <header>glcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>XComboBox</class>
+   <extends>QComboBox</extends>
+   <header>xcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
+  </customwidget>
+  <customwidget>
    <class>XTextEdit</class>
    <extends>QTextEdit</extends>
    <header>xtextedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_accountSelected</tabstop>
   <tabstop>_account</tabstop>
+  <tabstop>_taxCodeSelected</tabstop>
+  <tabstop>_taxCode</tabstop>
   <tabstop>_amount</tabstop>
   <tabstop>_notes</tabstop>
  </tabstops>
@@ -150,5 +233,18 @@ to be bound by its terms.</comment>
   <include location="global">parameter.h</include>
  </includes>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>_accountSelected</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_account</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+  <connection>
+   <sender>_taxCodeSelected</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_taxCode</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+ </connections>
 </ui>

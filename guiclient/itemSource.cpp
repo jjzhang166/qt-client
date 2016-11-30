@@ -74,19 +74,12 @@ itemSource::itemSource(QWidget* parent, const char* name, bool modal, Qt::Window
   }
   _itemsrcp->addColumn(tr("Qty Break"),                   _qtyColumn, Qt::AlignRight, true, "itemsrcp_qtybreak");
   _itemsrcp->addColumn(tr("Unit Price"),                          -1, Qt::AlignRight, true, "itemsrcp_price");
-  _itemsrcp->addColumn(tr("Currency"),               _currencyColumn, Qt::AlignLeft,  true, "item_curr");
+  _itemsrcp->addColumn(tr("Currency"),               _currencyColumn, Qt::AlignLeft, !omfgThis->singleCurrency(), "item_curr");
   _itemsrcp->addColumn(tr("Discount Percent"),                    -1, Qt::AlignRight, true, "itemsrcp_discntprcnt" );
   _itemsrcp->addColumn(tr("Discount Fixed Amt."),                 -1, Qt::AlignRight, true, "itemsrcp_fixedamtdiscount" );
-  _itemsrcp->addColumn(tr("Unit Price\n(%1)").arg(base),_moneyColumn, Qt::AlignRight, true, "price_base");
+  _itemsrcp->addColumn(tr("Unit Price\n(%1)").arg(base),_moneyColumn, Qt::AlignRight, !omfgThis->singleCurrency(), "price_base");
   _itemsrcp->addColumn(tr("Type"),                      _orderColumn, Qt::AlignLeft,  true, "type" );
   _itemsrcp->addColumn(tr("Method"),                    _orderColumn, Qt::AlignLeft,  true, "method" );
-
-  if (omfgThis->singleCurrency())
-  {
-    _itemsrcp->hideColumn(1);
-    _itemsrcp->hideColumn(2);
-    _itemsrcp->headerItem()->setText(3, tr("Unit Price"));
-  }
 
   _invVendorUOMRatio->setValidator(omfgThis->ratioVal());
   _minOrderQty->setValidator(omfgThis->qtyVal());
@@ -165,9 +158,9 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
         _itemsrcid = itemet.value("_itemsrc_id").toInt();
         _documents->setId(_itemsrcid);
       }
-      else if (itemet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Source Information"),
+                                    itemet, __FILE__, __LINE__))
       {
-        systemError(this, itemet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       _captive = true;
@@ -222,9 +215,9 @@ enum SetResponse itemSource::set(const ParameterList &pParams)
       itemet.exec("SELECT NEXTVAL('itemsrc_itemsrc_id_seq') AS _itemsrc_id;");
       if (itemet.first())
         _itemsrcid = itemet.value("_itemsrc_id").toInt();
-      else if (itemet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Source Information"),
+                                    itemet, __FILE__, __LINE__))
       {
-        systemError(this, itemet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       
@@ -333,9 +326,9 @@ bool itemSource::sSave()
                                "Contract, Effective Date, Expires Date,\n"
                                "Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified."));
   }
-  else if (itemSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Source Information"),
+                                 itemSave, __FILE__, __LINE__))
   {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   
@@ -426,9 +419,9 @@ bool itemSource::sSave()
   itemSave.bindValue(":itemsrc_manuf_item_number", _manufItemNumber->text());
   itemSave.bindValue(":itemsrc_manuf_item_descrip", _manufItemDescrip->toPlainText());
   itemSave.exec();
-  if (itemSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Source Information"),
+                                itemSave, __FILE__, __LINE__))
   {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -493,9 +486,9 @@ void itemSource::sDelete()
                "WHERE (itemsrcp_id=:itemsrcp_id);" );
     itemDelete.bindValue(":itemsrcp_id", _itemsrcp->id());
     itemDelete.exec();
-    if (itemDelete.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item Source Information"),
+                             itemDelete, __FILE__, __LINE__))
     {
-      systemError(this, itemDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -584,9 +577,9 @@ void itemSource::populate()
 
     sFillPriceList();
   }
-  else if (itemsrcQ.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Source Information"),
+                                itemsrcQ, __FILE__, __LINE__))
   {
-    systemError(this, itemsrcQ.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -600,9 +593,9 @@ void itemSource::sRejected()
                "WHERE (itemsrc_id=:itemsrc_id);" );
     itemRejected.bindValue(":itemsrc_id", _itemsrcid);
     itemRejected.exec();
-    if (itemRejected.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling Item Source Entry"),
+                             itemRejected, __FILE__, __LINE__))
     {
-      systemError(this, itemRejected.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -620,9 +613,9 @@ void itemSource::sVendorChanged( int pId )
   {
     _vendorCurrency->setId(vendorChanged.value("vend_curr_id").toInt());
   }
-  else if (vendorChanged.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                vendorChanged, __FILE__, __LINE__))
   {
-    systemError(this, vendorChanged.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -632,9 +625,9 @@ void itemSource::sVendorChanged( int pId )
   vendorChanged.bindValue(":vend_id", pId);
   vendorChanged.exec();
   _contract->populate(vendorChanged);
-  if (vendorChanged.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                vendorChanged, __FILE__, __LINE__))
   {
-    systemError(this, vendorChanged.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -655,9 +648,9 @@ void itemSource::sContractChanged( int pId )
     _contractedQty->setDisabled(false);
     _contractedQtyLit->setDisabled(false);
   }
-  else if (contractChanged.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contract Information"),
+                                contractChanged, __FILE__, __LINE__))
   {
-    systemError(this, contractChanged.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else

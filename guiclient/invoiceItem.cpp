@@ -32,19 +32,19 @@ invoiceItem::invoiceItem(QWidget* parent, const char * name, Qt::WindowFlags fl)
 {
   setupUi(this);
 
-  connect(_billed,  SIGNAL(editingFinished()),    this, SLOT(sCalculateExtendedPrice()));
-  connect(_item,    SIGNAL(newId(int)),     this, SLOT(sPopulateItemInfo(int)));
-  connect(_item,    SIGNAL(newId(int)),     this, SLOT(sHandleUpdateInv()));
-  connect(_extended,SIGNAL(valueChanged()), this, SLOT(sLookupTax()));
-  connect(_listPrices,   SIGNAL(clicked()), this, SLOT(sListPrices()));
-  connect(_price,   SIGNAL(idChanged(int)), this, SLOT(sPriceGroup()));
-  connect(_price,   SIGNAL(valueChanged()), this, SLOT(sCalculateExtendedPrice()));
-  connect(_save,    SIGNAL(clicked()),      this, SLOT(sSave()));
-  connect(_taxLit,  SIGNAL(leftClickedURL(QString)), this, SLOT(sTaxDetail()));
-  connect(_taxtype, SIGNAL(newID(int)),     this, SLOT(sLookupTax()));
-  connect(_qtyUOM, SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
-  connect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
-  connect(_miscSelected, SIGNAL(toggled(bool)), this, SLOT(sMiscSelected(bool)));
+  connect(_billed,       SIGNAL(editingFinished()),       this, SLOT(sCalculateExtendedPrice()));
+  connect(_item,         SIGNAL(newId(int)),              this, SLOT(sPopulateItemInfo(int)));
+  connect(_item,         SIGNAL(newId(int)),              this, SLOT(sHandleUpdateInv()));
+  connect(_extended,     SIGNAL(valueChanged()),          this, SLOT(sLookupTax()));
+  connect(_listPrices,   SIGNAL(clicked()),               this, SLOT(sListPrices()));
+  connect(_price,        SIGNAL(idChanged(int)),          this, SLOT(sPriceGroup()));
+  connect(_price,        SIGNAL(valueChanged()),          this, SLOT(sCalculateExtendedPrice()));
+  connect(_save,         SIGNAL(clicked()),               this, SLOT(sSave()));
+  connect(_taxLit,       SIGNAL(leftClickedURL(QString)), this, SLOT(sTaxDetail()));
+  connect(_taxtype,      SIGNAL(newID(int)),              this, SLOT(sLookupTax()));
+  connect(_qtyUOM,       SIGNAL(newID(int)),              this, SLOT(sQtyUOMChanged()));
+  connect(_pricingUOM,   SIGNAL(newID(int)),              this, SLOT(sPriceUOMChanged()));
+  connect(_miscSelected, SIGNAL(toggled(bool)),           this, SLOT(sMiscSelected(bool)));
 
   _ordered->setValidator(omfgThis->qtyVal());
   _billed->setValidator(omfgThis->qtyVal());
@@ -56,11 +56,13 @@ invoiceItem::invoiceItem(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _mode = cNew;
   _invcheadid	= -1;
   _custid	= -1;
+  _shiptoid	= -1;
   _invcitemid	= -1;
   _priceRatioCache = 1.0;
   _taxzoneid	= -1;
   _qtyinvuomratio = 1.0;
   _priceinvuomratio = 1.0;
+  _listprice = 0.0;
   _invuomid = -1;
   _trackqoh = true;
   
@@ -106,15 +108,16 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
     {
       _invoiceNumber->setText(invoiceet.value("invchead_invcnumber").toString());
       _custid = invoiceet.value("invchead_cust_id").toInt();
+      _shiptoid = invoiceet.value("invchead_shipto_id").toInt();
       _taxzoneid = invoiceet.value("invchead_taxzone_id").toInt();
       _tax->setId(invoiceet.value("invchead_curr_id").toInt());
       _price->setId(invoiceet.value("invchead_curr_id").toInt());
       _price->setEffective(invoiceet.value("invchead_invcdate").toDate());
       sPriceGroup();
     }
-    else if (invoiceet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoice Line Item Information"),
+                                  invoiceet, __FILE__, __LINE__))
     {
-      systemError(this, invoiceet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -136,10 +139,10 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
       invoiceet.exec("SELECT NEXTVAL('invcitem_invcitem_id_seq') AS invcitem_id;");
       if (invoiceet.first())
         _invcitemid = invoiceet.value("invcitem_id").toInt();
-      else if (invoiceet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding New Line Item"),
+                                    invoiceet, __FILE__, __LINE__))
       {
-            systemError(this, invoiceet.lastError().databaseText(), __FILE__, __LINE__);
-            return UndefinedError;
+        return UndefinedError;
       }
 
       invoiceet.prepare( "SELECT (COALESCE(MAX(invcitem_linenumber), 0) + 1) AS linenumber "
@@ -149,10 +152,10 @@ enum SetResponse invoiceItem::set(const ParameterList &pParams)
       invoiceet.exec();
       if (invoiceet.first())
         _lineNumber->setText(invoiceet.value("linenumber").toString());
-      else if (invoiceet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding New Line Item"),
+                                    invoiceet, __FILE__, __LINE__))
       {
-	    systemError(this, invoiceet.lastError().databaseText(), __FILE__, __LINE__);
-	    return UndefinedError;
+        return UndefinedError;
       }
 
       connect(_billed, SIGNAL(editingFinished()), this, SLOT(sDeterminePrice()));
@@ -228,7 +231,7 @@ void invoiceItem::sSave()
                "  invcitem_custpn,"
                "  invcitem_ordered, invcitem_billed, invcitem_updateinv,"
                "  invcitem_qty_uom_id, invcitem_qty_invuomratio,"
-               "  invcitem_custprice, invcitem_price,"
+               "  invcitem_custprice, invcitem_price, invcitem_listprice,"
                "  invcitem_price_uom_id, invcitem_price_invuomratio,"
                "  invcitem_notes, "
                "  invcitem_taxtype_id, invcitem_rev_accnt_id) "
@@ -239,7 +242,7 @@ void invoiceItem::sSave()
                "  :invcitem_custpn,"
                "  :invcitem_ordered, :invcitem_billed, :invcitem_updateinv,"
                "  :qty_uom_id, :qty_invuomratio,"
-               "  :invcitem_custprice, :invcitem_price,"
+               "  :invcitem_custprice, :invcitem_price, :invcitem_listprice,"
                "  :price_uom_id, :price_invuomratio,"
                "  :invcitem_notes, "
                "  :invcitem_taxtype_id, :invcitem_rev_accnt_id);");
@@ -286,6 +289,7 @@ void invoiceItem::sSave()
   invoiceSave.bindValue(":qty_invuomratio", _qtyinvuomratio);
   invoiceSave.bindValue(":invcitem_custprice", _custPrice->localValue());
   invoiceSave.bindValue(":invcitem_price", _price->localValue());
+  invoiceSave.bindValue(":invcitem_listprice", _listPrice->baseValue());
   if(!_miscSelected->isChecked())
     invoiceSave.bindValue(":price_uom_id", _pricingUOM->id());
   invoiceSave.bindValue(":price_invuomratio", _priceinvuomratio);
@@ -296,9 +300,9 @@ void invoiceItem::sSave()
     invoiceSave.bindValue(":invcitem_rev_accnt_id", _altRevAccnt->id());
 
   invoiceSave.exec();
-  if (invoiceSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Invoice Line Item Information"),
+                                invoiceSave, __FILE__, __LINE__))
   {
-    systemError(this, invoiceSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _saved = true;
@@ -312,9 +316,6 @@ void invoiceItem::populate()
   XSqlQuery invcitem;
   invcitem.prepare("SELECT invcitem.*,"
                    "       invchead_invcnumber, invchead_curr_id AS taxcurr_id,"
-                   "       CASE WHEN (item_id IS NULL) THEN :na"
-                   "            ELSE item_listprice"
-                   "       END AS f_listprice,"
                    "		   taxzone_id, itemsite_costmethod,"
                    "       COALESCE(cobill_id, -1) AS cobill_id "
                    " FROM invcitem JOIN invchead ON (invchead_id=invcitem_invchead_id)"
@@ -334,7 +335,7 @@ void invoiceItem::populate()
     _lineNumber->setText(invcitem.value("invcitem_linenumber").toString());
 
     // TODO: should this check itemsite_controlmethod == N?
-    _trackqoh = (invcitem.value("invcitem_invcitem_id").toInt() > 0 &&
+    _trackqoh = (invcitem.value("invcitem_item_id").toInt() > 0 &&
                  invcitem.value("itemsite_costmethod").toString() != "J");
 
     if (invcitem.value("invcitem_item_id").toInt() != -1)
@@ -381,7 +382,6 @@ void invoiceItem::populate()
     }
     _price->setLocalValue(invcitem.value("invcitem_price").toDouble());
     _custPrice->setLocalValue(invcitem.value("invcitem_custprice").toDouble());
-    _listPrice->setBaseValue(invcitem.value("f_listprice").toDouble() * (_priceinvuomratio / _priceRatioCache));
 
     _custPn->setText(invcitem.value("invcitem_custpn").toString());
     _notes->setText(invcitem.value("invcitem_notes").toString());
@@ -396,9 +396,9 @@ void invoiceItem::populate()
       _qtyUOM->setEnabled(false);
     }
   }
-  else if (invcitem.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoice Line Item Information"),
+                                invcitem, __FILE__, __LINE__))
   {
-    systemError(this, invcitem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -410,9 +410,9 @@ void invoiceItem::populate()
   invcitem.exec();
   if (invcitem.first())
     _tax->setLocalValue(invcitem.value("lineTaxTotal").toDouble());
-  else if (invcitem.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoice Line Item Information"),
+                                invcitem, __FILE__, __LINE__))
   {
-    systemError(this, invcitem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -432,57 +432,30 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
   XSqlQuery invoicePopulateItemInfo;
   if ( (_itemSelected->isChecked()) && (pItemid != -1) )
   {
-    // Get list of active, valid Selling UOMs
-    MetaSQLQuery muom = mqlLoad("uoms", "item");
-
-    ParameterList params;
-    params.append("uomtype", "Selling");
-    params.append("item_id", pItemid);
-
-    // Also have to factor UOMs previously used on Invoice now inactive
-    if (_invcitemid != -1)
-    {
-      XSqlQuery invuom;
-      invuom.prepare("SELECT invcitem_qty_uom_id, invcitem_price_uom_id "
-                "  FROM invcitem"
-                " WHERE(invcitem_id=:invcitem_id);");
-      invuom.bindValue(":invcitem_id", _invcitemid);
-      invuom.exec();
-      if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Invoice UOMs"),
-                           invuom, __FILE__, __LINE__))
-        return;
-      else if (invuom.first())
-      {
-        params.append("uom_id", invuom.value("invcitem_qty_uom_id"));
-        params.append("uom_id2", invuom.value("invcitem_price_uom_id"));
-      }
-    }
-    XSqlQuery uom = muom.toQuery(params);
-    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
-                           uom, __FILE__, __LINE__))
-      return;
-
-    _qtyUOM->populate(uom);
-    _pricingUOM->populate(uom);
+    sPopulateUOM();
 
     invoicePopulateItemInfo.prepare( "SELECT item_inv_uom_id, item_price_uom_id,"
-               "       iteminvpricerat(item_id) AS invpricerat,"
-               "       item_listprice, item_fractional, "
-               "       stdcost(item_id) AS f_unitcost,"
-               "       getItemTaxType(item_id, :taxzone) AS taxtype_id,"
-               "       itemsite_costmethod"
-               "  FROM item"
-               "  JOIN itemsite ON (item_id=itemsite_item_id)"
-               " WHERE ((item_id=:item_id)"
-               "    AND (itemsite_warehous_id=:whsid));" );
+                                    "       iteminvpricerat(item_id) AS invpricerat,"
+                                    "       listPrice(item_id, :cust_id, :shipto_id, :whsid) AS listprice,"
+                                    "       item_fractional, "
+                                    "       stdcost(item_id) AS f_unitcost,"
+                                    "       getItemTaxType(item_id, :taxzone) AS taxtype_id,"
+                                    "       itemsite_costmethod"
+                                    "  FROM item"
+                                    "  JOIN itemsite ON (item_id=itemsite_item_id)"
+                                    " WHERE ((item_id=:item_id)"
+                                    "    AND (itemsite_warehous_id=:whsid));" );
     invoicePopulateItemInfo.bindValue(":item_id", pItemid);
     invoicePopulateItemInfo.bindValue(":taxzone", _taxzoneid);
     invoicePopulateItemInfo.bindValue(":whsid",   _warehouse->id());
+    invoicePopulateItemInfo.bindValue(":cust_id", _custid);
+    invoicePopulateItemInfo.bindValue(":shipto_id", _shiptoid);
     invoicePopulateItemInfo.exec();
     if (invoicePopulateItemInfo.first())
     {
       _priceRatioCache = invoicePopulateItemInfo.value("invpricerat").toDouble();
-      _listPrice->setBaseValue(invoicePopulateItemInfo.value("item_listprice").toDouble());
+      _listprice = invoicePopulateItemInfo.value("listprice").toDouble();
+      _listPrice->setBaseValue(_listprice  * (_priceinvuomratio / _priceRatioCache));
 
       _invuomid = invoicePopulateItemInfo.value("item_inv_uom_id").toInt();
       _qtyUOM->setId(invoicePopulateItemInfo.value("item_inv_uom_id").toInt());
@@ -506,9 +479,9 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
       // TODO: should this check itemsite_controlmethod == N?
       _trackqoh = (invoicePopulateItemInfo.value("itemsite_costmethod").toString() != "J");
     }
-    else if (invoicePopulateItemInfo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoice Line Item Information"),
+                                  invoicePopulateItemInfo, __FILE__, __LINE__))
     {
-      systemError(this, invoicePopulateItemInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -517,6 +490,7 @@ void invoiceItem::sPopulateItemInfo(int pItemid)
     _priceRatioCache = 1.0;
     _qtyinvuomratio = 1.0;
     _priceinvuomratio = 1.0;
+    _listprice = 0.0;
     _qtyUOM->clear();
     _pricingUOM->clear();
     _listPrice->clear();
@@ -530,11 +504,12 @@ void invoiceItem::sDeterminePrice()
   if ( (_itemSelected->isChecked()) && (_item->isValid()) && (_billed->toDouble()) && (_qtyUOM->id() > 0) && (_pricingUOM->id() > 0) )
   {
     XSqlQuery itemprice;
-    itemprice.prepare( "SELECT itemPrice(item_id, :cust_id, -1, "
-		       "		 :qty, :qtyUOM, :priceUOM, :curr_id, :effective) AS price "
-                       "FROM item "
-                       "WHERE (item_id=:item_id);" );
+    itemprice.prepare("SELECT itemPrice(item_id, :cust_id, :shipto_id, "
+                      "		              :qty, :qtyUOM, :priceUOM, :curr_id, :effective) AS price "
+                      "FROM item "
+                      "WHERE (item_id=:item_id);" );
     itemprice.bindValue(":cust_id", _custid);
+    itemprice.bindValue(":shipto_id", _shiptoid);
     itemprice.bindValue(":qty", _billed->toDouble());
     itemprice.bindValue(":qtyUOM", _qtyUOM->id());
     itemprice.bindValue(":priceUOM", _pricingUOM->id());
@@ -565,9 +540,9 @@ void invoiceItem::sDeterminePrice()
       _custPrice->setLocalValue(price);
       _price->setLocalValue(price);
     }
-    else if (itemprice.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Determining Item Price"),
+                                  itemprice, __FILE__, __LINE__))
     {
-      systemError(this, itemprice.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -609,8 +584,92 @@ void invoiceItem::sTaxDetail()
   }
 }
 
+void invoiceItem::sPopulateUOM()
+{
+  if ( (_itemSelected->isChecked()) && (_item->id() != -1) )
+  {
+    // Get list of active, valid Selling UOMs
+    MetaSQLQuery muom = mqlLoad("uoms", "item");
+    
+    ParameterList params;
+    params.append("uomtype", "Selling");
+    params.append("item_id", _item->id());
+    
+    // Include Global UOMs
+    if (_privileges->check("MaintainUOMs"))
+    {
+      params.append("includeGlobal", true);
+      params.append("global", tr("-Global"));
+    }
+    
+    // Also have to factor UOMs previously used on Invoice now inactive
+    if (_invcitemid != -1)
+    {
+      XSqlQuery invcuom;
+      invcuom.prepare("SELECT invcitem_qty_uom_id, invcitem_price_uom_id "
+                      "  FROM invcitem"
+                      " WHERE(invcitem_id=:invcitem_id);");
+      invcuom.bindValue(":invcitem_id", _invcitemid);
+      invcuom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Invoice UOMs"),
+                               invcuom, __FILE__, __LINE__))
+        return;
+      else if (invcuom.first())
+      {
+        params.append("uom_id", invcuom.value("invcitem_qty_uom_id"));
+        params.append("uom_id2", invcuom.value("invcitem_price_uom_id"));
+      }
+    }
+
+    XSqlQuery uom = muom.toQuery(params);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
+                             uom, __FILE__, __LINE__))
+      return;
+    
+    int saveqtyuomid = _qtyUOM->id();
+    int savepriceuomid = _pricingUOM->id();
+    disconnect(_qtyUOM,     SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
+    disconnect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
+    _qtyUOM->populate(uom);
+    _pricingUOM->populate(uom);
+    _qtyUOM->setId(saveqtyuomid);
+    _pricingUOM->setId(savepriceuomid);
+    connect(_qtyUOM,     SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
+    connect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
+  }
+}
+
 void invoiceItem::sQtyUOMChanged()
 {
+  // Check for Global UOM Conversion that must be setup for Item
+  if (_qtyUOM->code() == "G")
+  {
+    if (QMessageBox::question(this, tr("Use Global UOM?"),
+                              tr("<p>This Global UOM Conversion is not setup for this Item."
+                                 "<p>Do you want to add this UOM conversion to this Item?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+    {
+      // create itemuomconv and itemuom
+      XSqlQuery adduom;
+      adduom.prepare("SELECT createItemUomConv(:item_id, :uom_id, :uom_type) AS result;");
+      adduom.bindValue(":item_id", _item->id());
+      adduom.bindValue(":uom_id", _qtyUOM->id());
+      adduom.bindValue(":uom_type", "Selling");
+      adduom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Creating Item UOM Conv"),
+                               adduom, __FILE__, __LINE__))
+        return;
+      
+      // repopulate uom comboboxes
+      sPopulateUOM();
+    }
+    else
+    {
+      _qtyUOM->setId(_invuomid);
+    }
+  }
+  
   if(_qtyUOM->id() == _invuomid)
     _qtyinvuomratio = 1.0;
   else
@@ -625,7 +684,8 @@ void invoiceItem::sQtyUOMChanged()
     if(invuom.first())
       _qtyinvuomratio = invuom.value("ratio").toDouble();
     else
-      systemError(this, invuom.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Quantity UOM"),
+                         invuom, __FILE__, __LINE__);
   }
 
   if(_qtyUOM->id() != _invuomid)
@@ -635,6 +695,7 @@ void invoiceItem::sQtyUOMChanged()
   }
   else
     _pricingUOM->setEnabled(true);
+  
   sDeterminePrice();
   sCalculateExtendedPrice();
 }
@@ -644,6 +705,34 @@ void invoiceItem::sPriceUOMChanged()
   if(_pricingUOM->id() == -1 || _qtyUOM->id() == -1)
     return;
 
+  // Check for Global UOM Conversion that must be setup for Item
+  if (_pricingUOM->code() == "G")
+  {
+    if (QMessageBox::question(this, tr("Use Global UOM?"),
+                              tr("<p>This Global UOM Conversion is not setup for this Item."
+                                 "<p>Do you want to add this UOM conversion to this Item?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+    {
+      XSqlQuery adduom;
+      adduom.prepare("SELECT createItemUomConv(:item_id, :uom_id, :uom_type) AS result;");
+      adduom.bindValue(":item_id", _item->id());
+      adduom.bindValue(":uom_id", _pricingUOM->id());
+      adduom.bindValue(":uom_type", "Selling");
+      adduom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Creating Item UOM Conv"),
+                               adduom, __FILE__, __LINE__))
+        return;
+      
+      // repopulate uom comboboxes
+      sPopulateUOM();
+    }
+    else
+    {
+      _pricingUOM->setId(_invuomid);
+    }
+  }
+  
   if(_pricingUOM->id() == _invuomid)
     _priceinvuomratio = 1.0;
   else
@@ -658,17 +747,11 @@ void invoiceItem::sPriceUOMChanged()
     if(invuom.first())
       _priceinvuomratio = invuom.value("ratio").toDouble();
     else
-      systemError(this, invuom.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Price UOM"),
+                         invuom, __FILE__, __LINE__);
   }
 
-  XSqlQuery item;
-  item.prepare("SELECT item_listprice"
-               "  FROM item"
-               " WHERE(item_id=:item_id);");
-  item.bindValue(":item_id", _item->id());
-  item.exec();
-  item.first();
-  _listPrice->setBaseValue(item.value("item_listprice").toDouble() * (_priceinvuomratio / _priceRatioCache));
+  _listPrice->setBaseValue(_listprice * (_priceinvuomratio / _priceRatioCache));
   sDeterminePrice();
   sCalculateExtendedPrice();
 }
@@ -697,9 +780,9 @@ void invoiceItem::sHandleUpdateInv()
     {
       _updateInv->setEnabled(true);
     }
-    else if (invq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Invoice Line Item Information"),
+                                  invq, __FILE__, __LINE__))
     {
-      systemError(this, invq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -719,7 +802,7 @@ void invoiceItem::sListPrices()
 {
   ParameterList params;
   params.append("cust_id",   _custid);
-  //params.append("shipto_id", _shiptoid);
+  params.append("shipto_id", _shiptoid);
   params.append("item_id",   _item->id());
   params.append("warehous_id", _warehouse->id());
   params.append("qty",       _billed->toDouble() * _qtyinvuomratio);
@@ -751,9 +834,9 @@ void invoiceItem::sLookupTax()
     _tax->setLocalValue(taxcal.value("taxamount").toDouble());
 	_saved = false;
   }
-  else if (taxcal.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Calculating Line Item Tax"),
+                                taxcal, __FILE__, __LINE__))
   {
-    systemError(this, taxcal.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

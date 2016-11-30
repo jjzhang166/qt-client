@@ -46,6 +46,7 @@
 #include "display.h"
 #include "xuiloader.h"
 #include "getscreen.h"
+#include "errorReporter.h"
 
 /** @ingroup scriptapi
 
@@ -893,7 +894,8 @@ bool ScriptToolbox::printReportCopies(const QString & name, const ParameterList 
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)
   {
     if(!userCanceled)
-      systemError(NULL, tr("Could not initialize printing system for multiple reports."));
+      ErrorReporter::error(QtCriticalMsg, 0, tr("Error Occurred"),
+                         tr("Could not initialize the printing system for multiple reports."),__FILE__,__LINE__);
     return userCanceled;
   }
   userCanceled = false;
@@ -1282,10 +1284,7 @@ QWidget *ScriptToolbox::openWindow(QString pname, QWidget *parent, Qt::WindowMod
   if(returnVal)
   {
     if(!returnVal->inherits("QDialog"))
-    {
-      returnVal->setWindowModality(modality);
-      omfgThis->handleNewWindow(returnVal);
-    }
+      omfgThis->handleNewWindow(returnVal, modality);
     _lastWindow = returnVal;
     return returnVal;
   }
@@ -1335,7 +1334,6 @@ QWidget *ScriptToolbox::openWindow(QString pname, QWidget *parent, Qt::WindowMod
 
     window->setCentralWidget(ui);
     window->setWindowTitle(ui->windowTitle());
-    window->setWindowModality(modality);
     window->resize(size);
 
     if (ui->inherits("QDialog"))
@@ -1356,19 +1354,19 @@ QWidget *ScriptToolbox::openWindow(QString pname, QWidget *parent, Qt::WindowMod
         qWarning("Could not find the script engine to embed a dialog inside "
                "a placeholder window");
 
-      omfgThis->handleNewWindow(window);
+      omfgThis->handleNewWindow(window, modality);
       returnVal = ui;
     }
     else
     {
-      omfgThis->handleNewWindow(window);
+      omfgThis->handleNewWindow(window, modality);
       returnVal = window;
     }
     _lastWindow = window;
   }
-  else if (screenq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Opening New Window"),
+                                screenq, __FILE__, __LINE__))
   {
-    systemError(0, screenq.lastError().databaseText(), __FILE__, __LINE__);
     return 0;
   }
 

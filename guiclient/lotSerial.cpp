@@ -17,6 +17,7 @@
 
 #include <openreports.h>
 #include <comments.h>
+#include <errorReporter.h>
 
 lotSerial::lotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -24,6 +25,7 @@ lotSerial::lotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFl
     setupUi(this);
 
     _print = _buttonBox->addButton(tr("Print Label"),QDialogButtonBox::ActionRole);
+    _print->setEnabled(false);
 
     connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
     connect(_lotSerial, SIGNAL(valid(bool)), this, SLOT(populate()));
@@ -34,6 +36,7 @@ lotSerial::lotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFl
     connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
     
     _charass->setType("LS");
+    _charass->findChild<QPushButton*>("_newCharacteristic")->setEnabled(false);
     
     _reg->addColumn(tr("Number")      ,        _orderColumn,  Qt::AlignLeft, true, "lsreg_number" );
     _reg->addColumn(tr("Account#"),            _itemColumn,  Qt::AlignLeft, true, "crmacct_number" );
@@ -53,6 +56,26 @@ lotSerial::~lotSerial()
 void lotSerial::languageChange()
 {
     retranslateUi(this);
+}
+
+enum SetResponse lotSerial::set(const ParameterList &pParams)
+{
+  QVariant param;
+  bool     valid;
+
+  param = pParams.value("item_id", &valid);
+  if (valid)
+  {
+    _item->setId(param.toInt());
+  }
+  
+  param = pParams.value("ls_id", &valid);
+  if (valid)
+  {
+    _lotSerial->setId(param.toInt());
+  }
+  
+  return NoError;
 }
 
 void lotSerial::populate()
@@ -91,11 +114,13 @@ void lotSerial::populate()
     _notes->setText(lotpopulate.value("ls_notes").toString());
     _changed=false;
   }
-  else if (lotpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                lotpopulate, __FILE__, __LINE__))
   {
-    systemError(this, lotpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+  _charass->findChild<QPushButton*>("_newCharacteristic")->setEnabled(_lotSerial->isValid());
+  _print->setEnabled(_lotSerial->isValid());
   sFillList();
 }
 
@@ -108,9 +133,9 @@ void lotSerial::sSave()
   lotSave.bindValue(":notes",_notes->toPlainText());
   lotSave.bindValue(":ls_id", _lotSerial->id());
   lotSave.exec();
-  if (lotSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Lot/Serial Information"),
+                                lotSave, __FILE__, __LINE__))
   {
-    systemError(this, lotSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _notes->clear();
@@ -162,9 +187,9 @@ void lotSerial::sDeleteReg()
              "AND (charass_target_id=:lsreg_id))" );
   lotDeleteReg.bindValue(":lsreg_id", _reg->id());
   lotDeleteReg.exec();
-  if (lotDeleteReg.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Lot/Serial Information"),
+                                lotDeleteReg, __FILE__, __LINE__))
   {
-    systemError(this, lotDeleteReg.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -187,9 +212,9 @@ void lotSerial::sFillList()
   lotFillList.exec();
   _reg->clear();
   _reg->populate(lotFillList);
-  if (lotFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                lotFillList, __FILE__, __LINE__))
   {
-    systemError(this, lotFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -216,9 +241,9 @@ void lotSerial::sPrint()
     else
       params.append("label", serial);
   }
-  else if (lotPrint.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                lotPrint, __FILE__, __LINE__))
   {
-    systemError(this, lotPrint.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else {

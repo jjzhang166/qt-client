@@ -17,6 +17,8 @@
 
 #include "inputManager.h"
 #include "distributeInventory.h"
+#include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 issueWoMaterialItem::issueWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -181,13 +183,14 @@ void issueWoMaterialItem::sIssue()
   issueIssue.exec();
   if (issueIssue.first())
   {
-    if (issueIssue.value("result").toInt() < 0)
+    int result = issueIssue.value("result").toInt();
+    if (result < 0)
     {
       rollback.exec();
-      systemError( this, tr("A System Error occurred at issueWoMaterialItem::%1, Work Order ID #%2, Error #%3.")
-                         .arg(__LINE__)
-                         .arg(_wo->id())
-                         .arg(issueIssue.value("result").toInt()) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material To Work Order #: %1")
+                           .arg(_wo->id()),
+                            storedProcErrorLookup("issueWoMaterial", result),
+                            __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(issueIssue.value("result").toInt(), this) == XDialog::Rejected)
@@ -216,7 +219,8 @@ void issueWoMaterialItem::sIssue()
       if (lsdetail.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
-        systemError(this, lsdetail.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Work Order Material Information"),
+                             lsdetail, __FILE__, __LINE__);
         return;
       }
     }
@@ -226,9 +230,9 @@ void issueWoMaterialItem::sIssue()
   else
   {
     rollback.exec();
-    systemError( this, tr("A System Error occurred at issueWoMaterialItem::%1, Work Order ID #%2.")
-                       .arg(__LINE__)
-                       .arg(_wo->id()) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material to Work Order #: %1")
+                         .arg(_wo->id()),
+                         issueIssue, __FILE__, __LINE__);
     return;
   }
 
@@ -275,9 +279,8 @@ void issueWoMaterialItem::sSetQOH(int pWomatlid)
       _beforeQty->setDouble(_cachedQOH);
     }
     else
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Quantity On Hand Information"),
+                         qoh, __FILE__, __LINE__);
   }
   sPopulateQOH();
 }

@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 applyDiscount::applyDiscount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -133,8 +134,12 @@ void applyDiscount::populate()
 		 applypopulate.value("apopen_docdate").toDate(), false);
   }
   else if (applypopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Discount Information"),
+                       applypopulate, __FILE__, __LINE__);
+
 }
+
+// TODO:  remove unused method? [jrosengarden]
 
 void applyDiscount::sViewVoucher()
 {
@@ -165,7 +170,8 @@ void applyDiscount::sViewVoucher()
     }
   }
   else
-    systemError( this, applyViewVoucher.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Discount Information"),
+                       applyViewVoucher, __FILE__, __LINE__);
 }
 
 

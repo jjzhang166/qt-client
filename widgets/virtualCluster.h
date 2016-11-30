@@ -195,6 +195,7 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
         virtual void sNew();
         virtual void sSearch();
         virtual void setId(const int);
+        virtual void setId(const int, const QString&);
         virtual void setNumber(const QString&);
         virtual void setShowInactive(const bool);
 
@@ -224,7 +225,9 @@ class XTUPLEWIDGETS_EXPORT VirtualClusterLineEdit : public XLineEdit
                                             const char* pNumberColumn,
                                             const char* pNameColumn,
                                             const char* pDescripColumn,
-                                            const char* pActiveColumn);
+                                            const char* pActiveColumn,
+                                            const char* = 0,
+                                            const char* = 0);
 
         void setStrict(bool);
         bool isStrict() const { return _strict; }
@@ -346,12 +349,12 @@ class XTUPLEWIDGETS_EXPORT VirtualCluster : public QWidget
         virtual void clearExtraClause()                { _number->clearExtraClause(); }
         virtual void setDefaultNumber(const QString& p){ _default=p;}
         virtual void setDescription(const QString& p)  { _description->setText(p); }
-        virtual void setExtraClause(const QString& p)  { _number->setExtraClause(p); }
+        virtual void setExtraClause(const QString& p, const QString& = QString::null)  { _number->setExtraClause(p); }
         virtual void setFieldName(QString p)           { _fieldName = p; }
-        virtual void setId(const int p)                { _number->setId(p); }
-        virtual void setName(const QString& p)         { _name->setText(p); }
+        virtual void setId(const int p, const QString& = QString::null)                { _number->setId(p); }
+        virtual void setName(int, const QString& p)    { _name->setText(p); }
         virtual void setNumber(const int p)            { _number->setNumber(QString::number(p)); }
-        virtual void setNumber(const QString& p)       { _number->setNumber(p); }
+        virtual void setNumber(QString p)              { _number->setNumber(p); }
 
         virtual void clear();
         virtual void setDataWidgetMap(XDataWidgetMapper* m);

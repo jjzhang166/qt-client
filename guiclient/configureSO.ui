@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>714</width>
-    <height>728</height>
+    <height>751</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,7 +106,7 @@ to be bound by its terms.</comment>
        <item row="3" column="0">
         <widget class="QLabel" name="_creditMemoNumGenerationLit">
          <property name="text">
-          <string>Return # Generation:</string>
+          <string>Sales Credit # Generation:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -122,10 +122,10 @@ to be bound by its terms.</comment>
           </sizepolicy>
          </property>
          <property name="automaticText">
-          <string>Automatic, Use Return #'s</string>
+          <string>Automatic, Use Sales Credit #'s</string>
          </property>
          <property name="overrideText">
-          <string>Automatic, Use Return #'s, Allow Override</string>
+          <string>Automatic, Use Sales Credit #'s, Allow Override</string>
          </property>
          <property name="sharedText">
           <string>Automatic, Use S/O #'s</string>
@@ -306,7 +306,7 @@ to be bound by its terms.</comment>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
               <layout class="QGridLayout" name="gridLayout_2">
-               <item row="2" column="0">
+               <item row="3" column="0">
                 <widget class="QGroupBox" name="groupBox_4">
                  <property name="title">
                   <string>Change Log</string>
@@ -350,6 +350,13 @@ to be bound by its terms.</comment>
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
+                <widget class="QCheckBox" name="_creditCheckSO">
+                 <property name="text">
+                  <string>Perform Credit Limit check on S/O Save</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="2">
                 <widget class="QGroupBox" name="groupBox_2">
                  <property name="title">
                   <string>Date Control</string>
@@ -385,7 +392,7 @@ to be bound by its terms.</comment>
                  </layout>
                 </widget>
                </item>
-               <item row="2" column="1" colspan="2">
+               <item row="3" column="1" colspan="2">
                 <widget class="QGroupBox" name="groupBox_3">
                  <property name="title">
                   <string>Ship Control</string>
@@ -422,37 +429,37 @@ to be bound by its terms.</comment>
                  </layout>
                 </widget>
                </item>
-               <item row="3" column="0" colspan="3">
+               <item row="4" column="0" colspan="3">
                 <widget class="QGroupBox" name="groupBox_5">
                  <property name="title">
-                  <string>Return Control</string>
+                  <string>Sales Credit Control</string>
                  </property>
                  <layout class="QGridLayout">
                   <item row="0" column="0">
                    <widget class="QCheckBox" name="_restrictCreditMemos">
                     <property name="text">
-                     <string>Restrict Returns to Items on their Apply-To Document</string>
+                     <string>Restrict Sales Credits to Items on their Apply-To Document</string>
                     </property>
                    </widget>
                   </item>
                   <item row="1" column="0">
                    <widget class="QCheckBox" name="_autoAllocateCM">
                     <property name="text">
-                     <string>Allocate Returns to New Sales Order on Save</string>
+                     <string>Allocate Sales Credits to New Sales Order on Save</string>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </widget>
                </item>
-               <item row="4" column="0" colspan="2">
+               <item row="5" column="0" colspan="2">
                 <widget class="QCheckBox" name="_quoteafterSO">
                  <property name="text">
                   <string>Show Quotes After Converted</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2">
+               <item row="2" column="2">
                 <widget class="QGroupBox" name="_enableReservations">
                  <property name="title">
                   <string>Enable Reservations</string>
@@ -552,7 +559,7 @@ to be bound by its terms.</comment>
                  </layout>
                 </widget>
                </item>
-               <item row="4" column="2">
+               <item row="5" column="2">
                 <widget class="QCheckBox" name="_lineItemsSO">
                  <property name="text">
                   <string>Display Sales Order Line Items Tab by Default</string>
@@ -610,20 +617,6 @@ to be bound by its terms.</comment>
                   <string>Price Control</string>
                  </property>
                  <layout class="QGridLayout">
-                  <item row="1" column="0">
-                   <widget class="QCheckBox" name="_priceOverride">
-                    <property name="text">
-                     <string>Disallow Override of Sales Price on Sales Order</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QCheckBox" name="_wholesalePriceCosting">
-                    <property name="text">
-                     <string>Use Wholesale Price as Unit Cost for Markups</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="0">
                    <widget class="QCheckBox" name="_allowDiscounts">
                     <property name="text">
@@ -631,7 +624,7 @@ to be bound by its terms.</comment>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="0">
+                  <item row="6" column="0">
                    <widget class="QCheckBox" name="_long30Markups">
                     <property name="text">
                      <string>Use &quot;Gross Margin&quot; Method for Markups</string>
@@ -649,6 +642,27 @@ to be bound by its terms.</comment>
                    <widget class="QCheckBox" name="_itemPricingPrecedence">
                     <property name="text">
                      <string>Item Precedence Over Product Category Pricing</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QCheckBox" name="_wholesalePriceCosting">
+                    <property name="text">
+                     <string>Use Wholesale Price as Unit Cost for Markups</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QCheckBox" name="_priceOverride">
+                    <property name="text">
+                     <string>Disallow Override of Sales Price on Sales Order</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QCheckBox" name="_useListPriceSchedules">
+                    <property name="text">
+                     <string>Use List Price Schedules</string>
                     </property>
                    </widget>
                   </item>
@@ -743,7 +757,7 @@ to be bound by its terms.</comment>
                  <property name="title">
                   <string>Price Effective Date</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout">
+                 <layout class="QGridLayout" name="gridLayout_12">
                   <item row="0" column="0">
                    <widget class="QRadioButton" name="_priceCurrent">
                     <property name="text">
@@ -882,7 +896,7 @@ to be bound by its terms.</comment>
          <item row="1" column="1">
           <widget class="XDocCopySetter" name="_creditMemoCopies">
            <property name="labelText">
-            <string>Default Return Copies:</string>
+            <string>Default Sales Credit Copies:</string>
            </property>
            <property name="numCopiesMetric">
             <string>CreditMemoCopies</string>
@@ -1365,7 +1379,7 @@ to be bound by its terms.</comment>
               </item>
               <item>
                <property name="text">
-                <string>Return</string>
+                <string>Sales Credit</string>
                </property>
               </item>
               <item>
@@ -1392,6 +1406,16 @@ to be bound by its terms.</comment>
               </property>
               <property name="text">
                <string>Check Print On Save by Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="2">
+             <widget class="QCheckBox" name="_closeRA">
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="text">
+               <string>Close Return Authorization when Crediting</string>
               </property>
              </widget>
             </item>
@@ -1429,6 +1453,190 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="_ssosTab">
+        <attribute name="title">
+         <string>Simple S/O</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QCheckBox" name="_enableSSOS">
+               <property name="text">
+                <string>Enable Simple S/O</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="_ssosGroup">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="title">
+                <string/>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="CustCluster" name="_ssosCust">
+                  <property name="label">
+                   <string>Cash Customer #:</string>
+                  </property>
+                  <property name="nameVisible">
+                   <bool>false</bool>
+                  </property>
+                  <property name="descriptionVisible">
+                   <bool>false</bool>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="canEdit">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                  <item>
+                   <widget class="QLabel" name="_ssosSaleTypeLit">
+                    <property name="text">
+                     <string>Sale Type:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="XComboBox" name="_ssosSaleType">
+                    <property name="type">
+                     <enum>XComboBox::SaleTypes</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_6">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="XCheckBox" name="_ssosRequireInv">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Require Sufficient Inventory to Ship</string>
+                  </property>
+                  <property name="forgetful">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="XCheckBox" name="_ssosPrintSOAck">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Print S/O Acknowledgement (Hold only)</string>
+                  </property>
+                  <property name="forgetful">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="XCheckBox" name="_ssosPrintPackList">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Print Shipping Packing List</string>
+                  </property>
+                  <property name="forgetful">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="XCheckBox" name="_ssosPrintInvoice">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Print Invoice</string>
+                  </property>
+                  <property name="forgetful">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>107</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>313</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -1437,6 +1645,11 @@ to be bound by its terms.</comment>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
+  <customwidget>
+   <class>CustCluster</class>
+   <extends>QWidget</extends>
+   <header>custcluster.h</header>
+  </customwidget>
   <customwidget>
    <class>NumberGenComboBox</class>
    <extends>QComboBox</extends>
@@ -1591,6 +1804,22 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>543</x>
      <y>369</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_enableSSOS</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_ssosGroup</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>527</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>359</y>
     </hint>
    </hints>
   </connection>

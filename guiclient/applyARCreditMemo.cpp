@@ -19,6 +19,7 @@
 #include "arCreditMemoApplication.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 applyARCreditMemo::applyARCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -94,9 +95,9 @@ void applyARCreditMemo::sPost()
   rollback.prepare("ROLLBACK;");
 
   applyPost.exec("BEGIN;");
-  if (applyPost.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R CM"),
+                                applyPost, __FILE__, __LINE__))
   {
-    systemError(this, applyPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -110,21 +111,22 @@ void applyARCreditMemo::sPost()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("postARCreditMemoApplication", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R CM"),
+                                      applyPost, __FILE__, __LINE__);
       return;
     }
   }
   else if (applyPost.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, applyPost.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R CM"),
+                                  applyPost, __FILE__, __LINE__);
     return;
   }
   applyPost.exec("COMMIT;");
-  if (applyPost.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting A/R CM"),
+                                applyPost, __FILE__, __LINE__))
   {
-    systemError(this, applyPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -142,13 +144,14 @@ void applyARCreditMemo::sApplyBalance()
     int result = applyApplyBalance.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("applyARCreditMemoToBalance", result));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/R CM"),
+                                      applyApplyBalance, __FILE__, __LINE__);
       return;
     }
   }
-  else if (applyApplyBalance.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/R CM"),
+                                applyApplyBalance, __FILE__, __LINE__))
   {
-    systemError(this, applyApplyBalance.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -167,13 +170,14 @@ void applyARCreditMemo::sApplyLineBalance()
     int result = applyApplyLineBalance.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("applyARCreditMemoToBalance", result));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/R CM"),
+                                      applyApplyLineBalance, __FILE__, __LINE__);
       return;
     }
   }
-  else if (applyApplyLineBalance.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Applying A/R CM"),
+                                applyApplyLineBalance, __FILE__, __LINE__))
   {
-    systemError(this, applyApplyLineBalance.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -201,8 +205,8 @@ void applyARCreditMemo::sClear()
   applyClear.bindValue(":sourceAropenid", _aropenid);
   applyClear.bindValue(":targetAropenid", _aropen->id());
   applyClear.exec();
-  if (applyClear.lastError().type() != QSqlError::NoError)
-      systemError(this, applyClear.lastError().databaseText(), __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Application of A/R CM"),
+                                applyClear, __FILE__, __LINE__);
 
   populate();
 }
@@ -214,8 +218,8 @@ void applyARCreditMemo::sClose()
              "WHERE (arcreditapply_source_aropen_id=:sourceAropenid);" );
   applyClose.bindValue(":sourceAropenid", _aropenid);
   applyClose.exec();
-  if (applyClose.lastError().type() != QSqlError::NoError)
-      systemError(this, applyClose.lastError().databaseText(), __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Application of A/R CM"),
+                                applyClose, __FILE__, __LINE__);
 
   reject();
 }
@@ -264,7 +268,8 @@ void applyARCreditMemo::populate()
     _docDate->setDate(applypopulate.value("aropen_docdate").toDate(), true);
   }
   else
-      systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R CM Information"),
+                                applypopulate, __FILE__, __LINE__);
 
   MetaSQLQuery mql = mqlLoad("arOpenApplications", "detail");
   ParameterList params;
@@ -274,9 +279,9 @@ void applyARCreditMemo::populate()
   params.append("source_aropen_id", _aropenid);
   applypopulate = mql.toQuery(params);
   _aropen->populate(applypopulate);
-  if (applypopulate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R CM Information"),
+                                applypopulate, __FILE__, __LINE__))
   {
-    systemError(this, applypopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

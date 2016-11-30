@@ -21,6 +21,7 @@
 #include "guiclient.h"
 #include "maintainBudget.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 budgets::budgets(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -78,15 +79,16 @@ void budgets::sDelete()
     int result = budgetsDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteBudget", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Budget"),
+                           storedProcErrorLookup("deleteBudget", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (budgetsDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Budget"),
+                                budgetsDelete, __FILE__, __LINE__))
   {
-    systemError(this, budgetsDelete.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   sFillList();
@@ -130,9 +132,9 @@ void budgets::sFillList()
 	    " ORDER BY startdate DESC, budghead_name;" );
   budgetsFillList.exec();
   _budget->populate(budgetsFillList);
-  if (budgetsFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Budget Information"),
+                                budgetsFillList, __FILE__, __LINE__))
   {
-    systemError(this, budgetsFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

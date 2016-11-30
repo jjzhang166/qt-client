@@ -106,13 +106,17 @@ void itemAlias::sSave()
                              "before continuing"))
      ;
 
+  _number->setText(_number->text().trimmed().toUpper());
+
   itemSave.prepare( "SELECT itemalias_id "
              "FROM itemalias "
              "WHERE ( (itemalias_item_id=:itemalias_item_id)"
+             " AND (COALESCE(itemalias_crmacct_id, -1)=COALESCE(:itemalias_crmacct_id, -1))"
              " AND (itemalias_number=:itemalias_number)"
              " AND (itemalias_id != :itemalias_id) );" );
   itemSave.bindValue(":itemalias_id", _itemaliasid);
   itemSave.bindValue(":itemalias_item_id", _itemid);
+  itemSave.bindValue(":itemalias_crmacct_id", _crmacct->id());
   itemSave.bindValue(":itemalias_number", _number->text());
   itemSave.exec();
   if (itemSave.first())

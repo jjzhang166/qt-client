@@ -74,50 +74,54 @@ bool Comments::addToMap(int id,        QString key, QString trans,
 // Inconsistencies between here and the rest of the app: S? Q?
 QMap<QString, struct CommentMap *> &Comments::commentMap() {
   if (_strMap.isEmpty()) {
-    addToMap(Uninitialized,     "",      tr("[Pick a Document Type]")                           );
-    addToMap(Address,           "ADDR",  tr("Address")                                          );
-    addToMap(BBOMHead,          "BBH",   tr("Breeder BOM Head")                                 );
-    addToMap(BBOMItem,          "BBI",   tr("Breeder BOM Item")                                 );
-    addToMap(BOMHead,           "BMH",   tr("BOM Head"),        "bomhead_id", "bom"             );
-    addToMap(BOMItem,           "BMI",   tr("BOM Item")                                         );
-    addToMap(BOOHead,           "BOH",   tr("Router Head")                                      );
-    addToMap(BOOItem,           "BOI",   tr("Router Item")                                      );
-    addToMap(CRMAccount,        "CRMA",  tr("Account"),         "crmacct_id", "crmaccount"      );
-    addToMap(Contact,           "T",     tr("Contact"),         "cntct_id",   "contact"         );
-//    addToMap(Contract,          "CNTR",  tr("Contract"),        "contrct_id", "contrct"         );
-//    addToMap(CreditMemo,        "CM",    tr("Return"),          "cmhead_id",  "creditMemo"      );
-//    addToMap(CreditMemoItem,    "CMI",   tr("Return Item")                                      );
-    addToMap(Customer,          "C",     tr("Customer"),        "cust_id",    "customer"        );
-    addToMap(Employee,          "EMP",   tr("Employee"),        "emp_id",     "employee"        );
-    addToMap(Incident,          "INCDT", tr("Incident"),        "incdt_id",   "incident",     "MaintainPersonalIncidents MaintainAllIncidents" );
-//    addToMap(Invoice,           "INV",   tr("Invoice"),         "invchead_id","invoice"         );
-//    addToMap(InvoiceItem,       "INVI",  tr("Invoice Item")                                     );
-    addToMap(Item,              "I",     tr("Item"),            "item_id",    "item"            );
-    addToMap(ItemSite,          "IS",    tr("Item Site")                                        );
-    addToMap(ItemSource,        "IR",    tr("Item Source"),     "itemsrc_id", "itemSource"      );
-    addToMap(Location,          "L",     tr("Location")                                         );
-    addToMap(LotSerial,         "LS",    tr("Lot/Serial"),      "ls_id",      "lotSerial"       );
-    addToMap(Opportunity,       "OPP",   tr("Opportunity"),     "ophead_id",  "opportunity",  "MaintainPersonalOpportunities MaintainAllOpportunities" );
-    addToMap(Project,           "J",     tr("Project"),         "prj_id",     "project",      "MaintainPersonalProjects MaintainAllProjects" );
-    addToMap(PurchaseOrder,     "P",     tr("Purchase Order"),  "pohead_id",  "purchaseOrder"   );
-    addToMap(PurchaseOrderItem, "PI",    tr("Purchase Order Item")                              );
-    addToMap(ReturnAuth,        "RA",    tr("Return Authorization"), "rahead_id", "returnAuthorization");
-    addToMap(ReturnAuthItem,    "RI",    tr("Return Authorization Item")                        );
-    addToMap(Quote,             "Q",     tr("Quote"),           "quhead_id",  "salesOrder"      );
-    addToMap(QuoteItem,         "QI",    tr("Quote Item")                                       );
-    addToMap(SalesOrder,        "S",     tr("Sales Order"),     "sohead_id",  "salesOrder"      );
-    addToMap(SalesOrderItem,    "SI",    tr("Sales Order Item")                                 );
-//    addToMap(ShipTo,            "SHP",   tr("Ship To"),         "shipto_id",  "shipTo"          );
-    addToMap(TimeAttendance,    "TATC",  tr("Time Attendance")                                     );
-//    addToMap(TimeExpense,       "TE",    tr("Time Expense")                                     );
-    addToMap(TodoItem,          "TD",    tr("To-Do"),           "todoitem_id","todoItem",     "MaintainPersonalToDoItems MaintainAllTodoItems" );
-    addToMap(TransferOrder,     "TO",    tr("Transfer Order"),  "tohead_id",  "transferOrder"   );
-    addToMap(TransferOrderItem, "TI",    tr("Transfer Order Item")                              );
-    addToMap(Vendor,            "V",     tr("Vendor"),          "vend_id",    "vendor"          );
-//    addToMap(Voucher,           "VCH",   tr("Voucher"),         "vohead_id",  "voucher"         );
-    addToMap(Warehouse,         "WH",    tr("Site")                                             );
-    addToMap(WorkOrder,         "W",     tr("Work Order"),      "wo_id",      "workOrder"       );
-    addToMap(Task,              "TA",    tr("Project Task"),    "prjtask_id", "projectTask"     );
+    addToMap(Uninitialized,     "",      tr("[Pick a Document Type]")                                        );
+    addToMap(Address,           "ADDR",  tr("Address")                                                       );
+    addToMap(BBOMHead,          "BBH",   tr("Breeder BOM Head")                                              );
+    addToMap(BBOMItem,          "BBI",   tr("Breeder BOM Item")                                              );
+    addToMap(BOMHead,           "BMH",   tr("BOM Head"),                 "bomhead_id",   "bom"               );
+    addToMap(BOMItem,           "BMI",   tr("BOM Item")                                                      );
+    addToMap(BOOHead,           "BOH",   tr("Router Head")                                                   );
+    addToMap(BOOItem,           "BOI",   tr("Router Item")                                                   );
+    addToMap(CRMAccount,        "CRMA",  tr("Account"),                  "crmacct_id",   "crmaccount"        );
+    addToMap(Contact,           "T",     tr("Contact"),                  "cntct_id",     "contact"           );
+//  addToMap(Contract,          "CNTR",  tr("Contract"),                 "contrct_id",   "contrct"           );
+//  addToMap(CreditMemo,        "CM",    tr("Return"),                   "cmhead_id",    "creditMemo"        );
+//  addToMap(CreditMemoItem,    "CMI",   tr("Return Item")                                                   );
+    addToMap(Customer,          "C",     tr("Customer"),                 "cust_id",      "customer"          );
+    addToMap(Employee,          "EMP",   tr("Employee"),                 "emp_id",       "employee"          );
+    addToMap(FixedAsset,        "FADOC", tr("Fixed Asset"),              "id",           "fixedAsset"        );
+    addToMap(MaintOrder,        "FAMAINT", tr("Maintenance Order"),      "maintord_id",  "maintOrder"        );
+    addToMap(ExchangeRate,      "FX",    tr("Exchange Rate")                                                 );
+    addToMap(Incident,          "INCDT", tr("Incident"),                 "incdt_id",     "incident",     "MaintainPersonalIncidents MaintainAllIncidents");
+//  addToMap(Invoice,           "INV",   tr("Invoice"),                  "invchead_id",  "invoice"           );
+//  addToMap(InvoiceItem,       "INVI",  tr("Invoice Item")                                                  );
+    addToMap(Item,              "I",     tr("Item"),                     "item_id",      "item"              );
+    addToMap(ItemSite,          "IS",    tr("Item Site")                                                     );
+    addToMap(ItemSource,        "IR",    tr("Item Source"),              "itemsrc_id",   "itemSource"        );
+    addToMap(Location,          "L",     tr("Location")                                                      );
+    addToMap(LotSerial,         "LS",    tr("Lot/Serial"),               "ls_id",        "lotSerial"         );
+    addToMap(Opportunity,       "OPP",   tr("Opportunity"),              "ophead_id",    "opportunity",  "MaintainPersonalOpportunities MaintainAllOpportunities");
+    addToMap(Project,           "J",     tr("Project"),                  "prj_id",       "project",      "MaintainPersonalProjects MaintainAllProjects");
+    addToMap(PurchaseOrder,     "P",     tr("Purchase Order"),           "pohead_id",   "purchaseOrder"      );
+    addToMap(PurchaseOrderItem, "PI",    tr("Purchase Order Item")                                           );
+    addToMap(ReturnAuth,        "RA",    tr("Return Authorization"),     "rahead_id",   "returnAuthorization");
+    addToMap(ReturnAuthItem,    "RI",    tr("Return Authorization Item")                                     );
+    addToMap(RentalItem,        "RNTI",  tr("Rental Item"),              "rentline_id", "rentalItem"         );
+    addToMap(Quote,             "Q",     tr("Quote"),                    "quhead_id",   "salesOrder"         );
+    addToMap(QuoteItem,         "QI",    tr("Quote Item")                                                    );
+    addToMap(SalesOrder,        "S",     tr("Sales Order"),              "sohead_id",   "salesOrder"         );
+    addToMap(SalesOrderItem,    "SI",    tr("Sales Order Item")                                              );
+//  addToMap(ShipTo,            "SHP",   tr("Ship To"),                  "shipto_id",   "shipTo"             );
+    addToMap(TimeAttendance,    "TATC",  tr("Time Attendance")                                               );
+//  addToMap(TimeExpense,       "TE",    tr("Time Expense")                                                  );
+    addToMap(TodoItem,          "TD",    tr("To-Do"),                    "todoitem_id", "todoItem",     "MaintainPersonalToDoItems MaintainAllTodoItems");
+    addToMap(TransferOrder,     "TO",    tr("Transfer Order"),           "tohead_id",   "transferOrder"      );
+    addToMap(TransferOrderItem, "TI",    tr("Transfer Order Item")                                           );
+    addToMap(Vendor,            "V",     tr("Vendor"),                   "vend_id",     "vendor"             );
+//  addToMap(Voucher,           "VCH",   tr("Voucher"),                  "vohead_id",   "voucher"            );
+    addToMap(Warehouse,         "WH",    tr("Site")                                                          );
+    addToMap(WorkOrder,         "W",     tr("Work Order"),               "wo_id",       "workOrder"          );
+    addToMap(Task,              "TA",    tr("Project Task"),             "prjtask_id",  "projectTask"        );
   }
 
   return _strMap;
@@ -172,6 +176,7 @@ Comments::Comments(QWidget *pParent, const char *name) :
 
   _newComment = new QPushButton(tr("New"), buttons);
   _newComment->setObjectName("_newComment");
+  _newComment->setEnabled(false); 
   buttonsLayout->addWidget(_newComment);
 
   _viewComment = new QPushButton(tr("View"), buttons);
@@ -224,6 +229,7 @@ void Comments::setType(QString sourceType)
 void Comments::setId(int pSourceid)
 {
   _sourceid = pSourceid;
+  _newComment->setEnabled(true); 
   refresh();
 }
 
@@ -341,7 +347,7 @@ void Comments::refresh()
                      "       comment_user=getEffectiveXtUser() AS self "
                      "  FROM crmacct, comment LEFT OUTER JOIN cmnttype ON (comment_cmnttype_id=cmnttype_id) "
                      " WHERE((comment_source=:sourceCust)"
-                     "   AND (crmacct_id=:sourceid)"
+                     "   AND ( (crmacct_id=:sourceid) OR (crmacct_parent_id=:sourceid) )"
                      "   AND (comment_source_id=crmacct_cust_id) ) "
                      " UNION "
                      "SELECT comment_id, comment_date, comment_source,"
@@ -355,7 +361,7 @@ void Comments::refresh()
                      "       comment_user=getEffectiveXtUser() AS self "
                      "  FROM crmacct, comment LEFT OUTER JOIN cmnttype ON (comment_cmnttype_id=cmnttype_id) "
                      " WHERE((comment_source=:sourceVend)"
-                     "   AND (crmacct_id=:sourceid)"
+                     "   AND ( (crmacct_id=:sourceid) OR (crmacct_parent_id=:sourceid) )"
                      "   AND (comment_source_id=crmacct_vend_id) ) "
                      " UNION "
                      "SELECT comment_id, comment_date, comment_source,"

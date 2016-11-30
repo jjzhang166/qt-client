@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
+    <width>539</width>
     <height>110</height>
    </rect>
   </property>
@@ -113,6 +113,7 @@ to be bound by its terms.</comment>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

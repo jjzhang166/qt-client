@@ -25,14 +25,17 @@ public:
     ~group();
 
 public slots:
-    virtual void        reject();
+    virtual void sPopulateMenu(QMenu * pMenu, QTreeWidgetItem * );
+    virtual void reject();
     virtual SetResponse set(const ParameterList &pParams);
     virtual void sCheck();
     virtual void populate();
+    virtual void populateAssigned();
     virtual void sSave();
     virtual void sModuleSelected(const QString &);
     virtual void sAdd();
     virtual void sAddAll();
+    virtual void sEditUser();
     virtual void sRevoke();
     virtual void sRevokeAll();
 

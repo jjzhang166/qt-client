@@ -24,6 +24,7 @@
 #include <openreports.h>
 
 #include "bomItem.h"
+#include "errorReporter.h"
 
 BOM::BOM(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -128,9 +129,9 @@ enum SetResponse BOM::set(const ParameterList &pParams)
         _documents->setId(_bomheadid);
         _comments->setId(_bomheadid);
       }
-      else if (bomet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Information"),
+                                    bomet, __FILE__, __LINE__))
       {
-        systemError(this, bomet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       
@@ -262,6 +263,7 @@ bool BOM::save(bool partial)
     emit newMode(_mode);
   }
 
+  omfgThis->sBOMsUpdated(_bomheadid, true);
   return true;
 }
 
@@ -548,9 +550,9 @@ void BOM::sFillList(int pItemid, bool)
     MetaSQLQuery mql = mqlLoad("bomItems", "detail");
     BFillList = mql.toQuery(params);
     _bomitem->populate(BFillList);
-    if (BFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Information"),
+                                  BFillList, __FILE__, __LINE__))
     {
-      systemError(this, BFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     
@@ -592,9 +594,9 @@ void BOM::sFillList(int pItemid, bool)
         _nonPickQtyPer->setDouble(BFillList.value("qtyper").toDouble());
       }
     }
-    if (BFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Information"),
+                                  BFillList, __FILE__, __LINE__))
     {
-      systemError(this, BFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     
@@ -638,9 +640,9 @@ void BOM::sFillList(int pItemid, bool)
         _currentActCost->setDouble(BFillList.value("actcost").toDouble());
         _maxCost->setDouble(BFillList.value("item_maxcost").toDouble());
       }
-      if (BFillList.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Information"),
+                                    BFillList, __FILE__, __LINE__))
       {
-        systemError(this, BFillList.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
     }

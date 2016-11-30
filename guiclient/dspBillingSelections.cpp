@@ -24,6 +24,9 @@
 #include "printInvoices.h"
 #include "createInvoices.h"
 
+#include "errorReporter.h"
+#include "storedProcErrorLookup.h"
+
 dspBillingSelections::dspBillingSelections(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
@@ -108,9 +111,9 @@ void dspBillingSelections::sPost()
   {
     soheadid = dspPost.value("sohead_id").toInt();
   }
-  else if (dspPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Billing Selection(s)"),
+                                dspPost, __FILE__, __LINE__))
   {
-    systemError(this, dspPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -120,17 +123,12 @@ void dspBillingSelections::sPost()
   if (dspPost.first())
   {
     int result = dspPost.value("result").toInt();
-
-    if (result == -5)
-      QMessageBox::critical( this, tr("Cannot Create one or more Invoices"),
-                             tr( "The Ledger Account Assignments for the selected Invoice are not configured correctly.\n"
-                                 "Because of this, G/L Transactions cannot be created for this Invoices.\n"
-                                 "You must contact your Systems Administrator to have this corrected before you may Create this Invoice." ) );
-    else if (result < 0)
-      systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                         .arg(__FILE__)
-                         .arg(__LINE__)
-                         .arg(dspPost.value("result").toInt()) );
+    if (result < 0) {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Billing Selection(s)"),
+                               storedProcErrorLookup("createInvoice", result),
+                               __FILE__, __LINE__);
+      return;
+     }
 
     omfgThis->sInvoicesUpdated(result, true);
     omfgThis->sSalesOrdersUpdated(soheadid);
@@ -138,9 +136,9 @@ void dspBillingSelections::sPost()
 
     sFillList();
   }
-  else if (dspPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Billing Selection(s)"),
+                                dspPost, __FILE__, __LINE__))
   {
-    systemError(this, dspPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -171,9 +169,9 @@ void dspBillingSelections::sEdit()
     int sohead_id = dspEdit.value("sohead_id").toInt();
     params.append("sohead_id", sohead_id);
   }
-  else if (dspEdit.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Billing Selection"),
+                                dspEdit, __FILE__, __LINE__))
   {
-    systemError(this, dspEdit.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

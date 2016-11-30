@@ -44,9 +44,9 @@ void purgeCreditMemos::sPurge()
     return;
   }
 
-  if ( QMessageBox::warning( this, tr("Delete Return Records"),
-                             tr( "You will not be able to re-print a Return if you delete it.\n"
-                                 "Are you sure that you want to delete the selected Returns?" ),
+  if ( QMessageBox::warning( this, tr("Delete Sales Credit Records"),
+                             tr( "You will not be able to re-print a Sales Credit if you delete it.\n"
+                                 "Are you sure that you want to delete the selected Sales Credits?" ),
                              tr("Yes"), tr("No"), QString::null, 0, 1) == 0)
   {
     purgePurge.prepare("SELECT purgeCreditMemos(:cutOffDate) AS result;");

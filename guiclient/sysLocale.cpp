@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 #define DEBUG true
 
@@ -81,7 +82,8 @@ enum SetResponse sysLocale::set(const ParameterList &pParams)
         _localeid = syset.value("_locale_id").toInt();
       else
       {
-        systemError(this, syset.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Locale Information"),
+                                            syset, __FILE__, __LINE__);
         return UndefinedError;
       }
     }
@@ -141,9 +143,9 @@ void sysLocale::sSave()
     _code->setFocus();
     return;
   }
-  else if (sysSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Locale Information "),
+                                sysSave, __FILE__, __LINE__))
   {
-    systemError(this, sysSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -245,9 +247,9 @@ void sysLocale::sSave()
                                         QString(sampleLocale.negativeSign()) +
                                         QString(sampleLocale.groupSeparator()));
   sysSave.exec();
-  if (sysSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Locale Information"),
+                                sysSave, __FILE__, __LINE__))
   {
-    systemError(this, sysSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -264,9 +266,9 @@ void sysLocale::close()
                "WHERE (locale_id=:locale_id);" );
     sysclose.bindValue(":locale_id", _localeid);
     sysclose.exec();
-    if (sysclose.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Locale Information"),
+                                  sysclose, __FILE__, __LINE__))
     {
-      systemError(this, sysclose.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -288,9 +290,9 @@ void sysLocale::sUpdateCountries()
     {
       localeLang = QLocale::Language(sysUpdateCountries.value("lang_qt_number").toInt());
     }
-    else if (sysUpdateCountries.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Language Information"),
+                                  sysUpdateCountries, __FILE__, __LINE__))
     {
-      systemError(this, sysUpdateCountries.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -349,9 +351,9 @@ void sysLocale::sUpdateSamples()
     _uomRatioSample->setText(sampleLocale.toString(sysUpdateSamples.value("doubleSample").toDouble(), 'f', _uomRatioScale->value()));
     _percentSample->setText(sampleLocale.toString(sysUpdateSamples.value("doubleSample").toDouble(), 'f', _percentScale->value()));
   }
-  else if (sysUpdateSamples.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Date/Time Example Information"),
+                                sysUpdateSamples, __FILE__, __LINE__))
   {
-    systemError(this, sysUpdateSamples.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -405,9 +407,9 @@ void sysLocale::populate()
     sUpdateSamples();
     sUpdateColors();
   }
-  if (popq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Locale Information"),
+                                popq, __FILE__, __LINE__))
   {
-    systemError(this, popq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -419,9 +421,6 @@ QString sysLocale::convert(const QString &input)
   QByteArray output(input.size()+1, '\0');
   // clear the array so we are starting at the beginning but still have the allocations
   output.clear();
-  QString errMsg = tr("<p>.Could not translate Qt date/time formatting "
-                      "string %1 to PostgreSQL date/time formatting "
-                      "string. Error at or near character %2.");
 
   int i = 0;
 
@@ -498,7 +497,13 @@ QString sysLocale::convert(const QString &input)
     case 'y':
       if (input[i+1] != 'y')
       {
-        systemError(this, errMsg.arg(input).arg(i), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                             tr("%1: <p>.Could not translate Qt date/time formatting "
+                                "string %2 to PostgreSQL date/time formatting "
+                                "string. Error at or near character %3.")
+                             .arg(windowTitle())
+                             .arg(input)
+                             .arg(i),__FILE__,__LINE__);
         return "";
       }
       else if (input[i+2] != 'y')
@@ -509,7 +514,13 @@ QString sysLocale::convert(const QString &input)
       }
       else if (input[i+3] != 'y')
       {
-        systemError(this, errMsg.arg(input).arg(i), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                               tr("%1: <p>.Could not translate Qt date/time formatting "
+                                  "string %2 to PostgreSQL date/time formatting "
+                                  "string. Error at or near character %3.")
+                               .arg(windowTitle())
+                               .arg(input)
+                               .arg(i),__FILE__,__LINE__);
         return "";
       }
       else if (input[i+3] == 'y')
@@ -570,7 +581,13 @@ QString sysLocale::convert(const QString &input)
       output.append('S');
       if (input[i+1] == 'z' && input[i+2] != 'z')
       {
-        systemError(this, errMsg.arg(input).arg(i), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                               tr("%1: <p>.Could not translate Qt date/time formatting "
+                                  "string %2 to PostgreSQL date/time formatting "
+                                  "string. Error at or near character %3.")
+                               .arg(windowTitle())
+                               .arg(input)
+                               .arg(i),__FILE__,__LINE__);
         return "";
       }
       else if (input[i+1] == 'z' && input[i+2] == 'z')
@@ -624,9 +641,9 @@ QLocale sysLocale::generateLocale()
     {
       localeLang = QLocale::Language(sysgenerateLocale.value("lang_qt_number").toInt());
     }
-    else if (sysgenerateLocale.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Language Information"),
+                                  sysgenerateLocale, __FILE__, __LINE__))
     {
-      systemError(this, sysgenerateLocale.lastError().databaseText(), __FILE__, __LINE__);
       return QLocale("C");
     }
   }
@@ -642,9 +659,9 @@ QLocale sysLocale::generateLocale()
     {
       localeCountry = QLocale::Country(sysgenerateLocale.value("country_qt_number").toInt());
     }
-    else if (sysgenerateLocale.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Country Information"),
+                                  sysgenerateLocale, __FILE__, __LINE__))
     {
-      systemError(this, sysgenerateLocale.lastError().databaseText(), __FILE__, __LINE__);
       return QLocale("C");
     }
   }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -41,14 +41,14 @@ void setupWoCluster(QScriptEngine *engine)
 }
 
 WoLineEdit::WoLineEdit(QWidget *pParent, const char *pName) :
-    VirtualClusterLineEdit(pParent, "wo", "wo_id", "wo_number::text || '-' || wo_subnumber::text", "item_number", "(item_descrip1 || ' ' || item_descrip2) ", 0, pName)
+    VirtualClusterLineEdit(pParent, "wo", "wo_id", "formatWoNumber(wo_id)", "item_number", "(item_descrip1 || ' ' || item_descrip2) ", 0, pName)
 {
   _woType = 0;
   init();
 }
 
 WoLineEdit::WoLineEdit(int pWoType, QWidget* pParent, const char* pName) :
-    VirtualClusterLineEdit(pParent, "wo", "wo_id", "wo_number::text || '-' || wo_subnumber::text", "item_number", "(item_descrip1 || ' ' || item_descrip2) ", 0, pName)
+    VirtualClusterLineEdit(pParent, "wo", "wo_id", "formatWoNumber(wo_id)", "item_number", "(item_descrip1 || ' ' || item_descrip2) ", 0, pName)
 {
   _woType = pWoType;
   init();
@@ -68,7 +68,7 @@ void WoLineEdit::init()
   _qtyReceived = 0.0;
 
   _query =  QString("SELECT wo_id AS id, "
-                    "       wo_number::text || '-' || wo_subnumber::text AS number,"
+                    "       formatWoNumber(wo_id) AS number,"
                     "       item_number AS name, "
                     "       (item_descrip1 || ' ' || item_descrip2) AS description, "
                     "       warehous_id,"
@@ -157,13 +157,18 @@ void WoLineEdit::silentSetId(const int pId)
   }
   else
   {
-    _id    = -1;
-    _valid = false;
+    clear();
+  }
+
+  _parsed = true;
+  emit parsed();
+}
+
+void WoLineEdit::clear()
+{
+    VirtualClusterLineEdit::clear();
     _currentWarehouseid = -1;
 
-    XLineEdit::clear();
-
-    emit newId(-1);
     emit newItemid(-1);
     emit warehouseChanged("");
     emit itemNumberChanged("");
@@ -177,14 +182,9 @@ void WoLineEdit::silentSetId(const int pId)
     emit qtyBalanceChanged(0);
     emit statusChanged("");
     emit methodChanged("");
-    emit valid(false);
-      
+
     _qtyOrdered  = 0;
     _qtyReceived = 0;
-  }
-
-  _parsed = true;
-  emit parsed();
 }
 
 void WoLineEdit::sList()
@@ -350,14 +350,14 @@ void WoCluster::constructor()
   _line2Layout->setContentsMargins(0, 0, 0, 0);
   _statusLayout->setContentsMargins(0, 0, 0, 0);
 
-  _mainLayout->setSpacing(2); 
-  _woLayout->setSpacing(5); 
-  _warehouseLayout->setSpacing(5); 
-  _line1Layout->setSpacing(7); 
-  _itemLayout->setSpacing(5); 
-  _uomLayout->setSpacing(5); 
-  _line2Layout->setSpacing(7); 
-  _statusLayout->setSpacing(5); 
+  _mainLayout->setSpacing(2);
+  _woLayout->setSpacing(5);
+  _warehouseLayout->setSpacing(5);
+  _line1Layout->setSpacing(7);
+  _itemLayout->setSpacing(5);
+  _uomLayout->setSpacing(5);
+  _line2Layout->setSpacing(7);
+  _statusLayout->setSpacing(5);
 
   _woNumberLit = new QLabel(tr("Work Order #:"), this);
   _woNumberLit->setObjectName("woNumberLit");
@@ -491,7 +491,7 @@ void WoCluster::setWoNumber(const QString& number)
 {
   if (_woNumber->text() == number)
     return;
-    
+
   _woNumber->setText(number);
   _woNumber->sParse();
 }
@@ -680,7 +680,7 @@ void WomatlCluster::setWooperid(int pWooperid)
     _valid = false;
     _required = 0.0;
     _issued  = 0.0;
-    
+
     emit newId(-1);
     emit newQtyRequired(0.0);
     emit newQtyIssued(0.0);
@@ -764,7 +764,7 @@ void WomatlCluster::setWoid(int pWoid)
     _valid = false;
     _required = 0.0;
     _issued  = 0.0;
-    
+
     emit newId(-1);
     emit newQtyRequired(0.0);
     emit newQtyIssued(0.0);

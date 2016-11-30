@@ -21,6 +21,7 @@
 #include "dspItemCostDetail.h"
 #include "mqlutil.h"
 #include "itemCost.h"
+#include "errorReporter.h"
 
 maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -39,22 +40,16 @@ maintainItemCosts::maintainItemCosts(QWidget* parent, const char* name, Qt::Wind
     _itemcost->addColumn(tr("Element"),     -1,           Qt::AlignLeft,   true, "costelem_type");
     _itemcost->addColumn(tr("Lower"),       _costColumn,  Qt::AlignCenter, true, "itemcost_lowlevel" );
     _itemcost->addColumn(tr("Std. Cost"),   _costColumn,  Qt::AlignRight,  true, "itemcost_stdcost"  );
-    _itemcost->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,true, "baseCurr" );
+    _itemcost->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,!omfgThis->singleCurrency(), "baseCurr" );
     _itemcost->addColumn(tr("Posted"),      _dateColumn,  Qt::AlignCenter, true, "itemcost_posted" );
     _itemcost->addColumn(tr("Act. Cost"),   _costColumn,  Qt::AlignRight,  true, "itemcost_actcost"  );
-    _itemcost->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,true, "costCurr" );
+    _itemcost->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,!omfgThis->singleCurrency(), "costCurr" );
     _itemcost->addColumn(tr("Updated"),     _dateColumn,  Qt::AlignCenter, true, "itemcost_updated" );
-
-    if (omfgThis->singleCurrency())
-    {
-	_itemcost->hideColumn(3);
-	_itemcost->hideColumn(6);
-    }
 
     if (_privileges->check("CreateCosts"))
     {
       connect(_item, SIGNAL(valid(bool)), _new, SLOT(setEnabled(bool)));
-      _new->setEnabled(true);
+      _new->setEnabled(false);  //initially disabled until item entered
     }
 }
 
@@ -199,7 +194,8 @@ void maintainItemCosts::sPost()
   maintainPost.bindValue(":item_id", _itemcost->id());
   maintainPost.exec();
   if (maintainPost.lastError().type() != QSqlError::NoError)
-      systemError(this, maintainPost.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cost Information"),
+                       maintainPost, __FILE__, __LINE__);
 
   sFillList();
 }
@@ -215,9 +211,9 @@ void maintainItemCosts::sDelete()
   maintainDelete.exec();
   if (maintainDelete.first())
     stdCost = maintainDelete.value("itemcost_stdcost").toDouble();
-  else if (maintainDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Cost Information"),
+                                maintainDelete, __FILE__, __LINE__))
   {
-    systemError(this, maintainDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -242,7 +238,8 @@ void maintainItemCosts::sDelete()
   maintainDelete.bindValue(":itemcost_id", _itemcost->id());
   maintainDelete.exec();
   if (maintainDelete.lastError().type() != QSqlError::NoError)
-    systemError(this, maintainDelete.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Cost Information"),
+                                maintainDelete, __FILE__, __LINE__);
 
   sFillList();
 }
@@ -262,13 +259,18 @@ void maintainItemCosts::sEnterActualCost()
 
 void maintainItemCosts::sCreateUserCost()
 {
-  ParameterList params;
-  params.append("item_id", _item->id());
-  params.append("mode", "new");
+  if (_item->isValid()) {
+    ParameterList params;
+    params.append("item_id", _item->id());
+    params.append("mode", "new");
 
-  itemCost newdlg(this, "", true);
-  if (newdlg.set(params) == NoError && newdlg.exec())
-    sFillList();
+    itemCost newdlg(this, "", true);
+    if (newdlg.set(params) == NoError && newdlg.exec())
+      sFillList();
+  } else {
+    QMessageBox::warning(this, tr("Missing or Invalid Item Number"),
+                           tr("Item Number Required"));
+  }
 }
 
 void maintainItemCosts::sNew()
@@ -348,11 +350,14 @@ void maintainItemCosts::sFillList()
 			    baseKnown ? formatCost(actualCost) : tr("?????"),
 			    convert.value("currConcat"));
     else if (convert.lastError().type() != QSqlError::NoError)
-	systemError(this, convert.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Cost Information"),
+                                convert, __FILE__, __LINE__);
 
   }
-  else
+  else {
     _itemcost->clear();
+    _new->setEnabled(false);
+  }
 }
 
 void maintainItemCosts::sSelectionChanged()

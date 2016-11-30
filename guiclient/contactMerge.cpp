@@ -16,6 +16,7 @@
 
 #include <metasql.h>
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 contactMerge::contactMerge(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -146,9 +147,9 @@ void contactMerge::sCntctDelete()
   ParameterList params;
   params.append("cntct_id", _cntct->id());
   contactCntctDelete = mql.toQuery(params);
-  if (contactCntctDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Contact"),
+                                contactCntctDelete, __FILE__, __LINE__))
   {
-    systemError(this, contactCntctDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -174,9 +175,9 @@ void contactMerge::sDeselect(int id)
   ParameterList params;
   params.append("cntct_id", id);
   contactDeselect = mql.toQuery(params);
-  if (contactDeselect.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deselecting Contact"),
+                                contactDeselect, __FILE__, __LINE__))
   {
-    systemError(this, contactDeselect.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -216,9 +217,9 @@ void contactMerge::sFillList()
     params.append("CheckEmail", QVariant(_showGroup->isChecked() && _checkEmail->isChecked()));
     MetaSQLQuery mql = mqlLoad("contactmerge", "search");
     XSqlQuery qry = mql.toQuery(params);
-    if (qry.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contact Information"),
+                                qry, __FILE__, __LINE__))
     {
-      systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     _cntct->populate(qry, true);
@@ -228,9 +229,9 @@ void contactMerge::sFillList()
     ParameterList params;
     MetaSQLQuery mql = mqlLoad("contactmerge", "merged");
     XSqlQuery qry = mql.toQuery(params);
-    if (qry.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contact Information"),
+                                  qry, __FILE__, __LINE__))
     {
-      systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     _cntct->populate(qry, true);
@@ -317,9 +318,9 @@ void contactMerge::sPopulateCntctMenu(QMenu *pMenu)
     params.append("cntct_id", _cntct->id());
     MetaSQLQuery mql = mqlLoad("contactmerge", "contactused");
     contactPopulateCntctMenu = mql.toQuery(params);
-    if (contactPopulateCntctMenu.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Delete Action To Menu"),
+                                  contactPopulateCntctMenu, __FILE__, __LINE__))
     {
-      systemError(this, contactPopulateCntctMenu.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     if (contactPopulateCntctMenu.first() && !contactPopulateCntctMenu.value("used").toBool())
@@ -395,9 +396,9 @@ void contactMerge::sPopulateSources()
 
   MetaSQLQuery mql = mqlLoad("contactmerge", "populate");
   contactPopulateSources = mql.toQuery(params);
-  if (contactPopulateSources.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contact Information"),
+                                contactPopulateSources, __FILE__, __LINE__))
   {
-    systemError(this, contactPopulateSources.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _srccntct->populate(contactPopulateSources);
@@ -412,9 +413,9 @@ void contactMerge::sPopulateTarget()
 
   MetaSQLQuery mql = mqlLoad("contactmerge", "populate");
   contactPopulateTarget = mql.toQuery(params);
-  if (contactPopulateTarget.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contact Information"),
+                                contactPopulateTarget, __FILE__, __LINE__))
   {
-    systemError(this, contactPopulateTarget.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -461,9 +462,9 @@ void contactMerge::sProcess()
 
   MetaSQLQuery mql = mqlLoad("contactmerge", qry);
   contactProcess = mql.toQuery(params);
-  if (contactProcess.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Processing Requested Action"),
+                                contactProcess, __FILE__, __LINE__))
   {
-    systemError(this, contactProcess.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -480,9 +481,9 @@ void contactMerge::sPurge()
   ParameterList params;
   params.append("cntct_id", _cntct->id());
   contactPurge = mql.toQuery(params);
-  if (contactPurge.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Processing Requested Action"),
+                                contactPurge, __FILE__, __LINE__))
   {
-    systemError(this, contactPurge.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -508,9 +509,9 @@ void contactMerge::sRestore()
   ParameterList params;
   params.append("cntct_id", _cntct->id());
   contactRestore = mql.toQuery(params);
-  if (contactRestore.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Processing Requested Action"),
+                                contactRestore, __FILE__, __LINE__))
   {
-    systemError(this, contactRestore.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -525,9 +526,9 @@ void contactMerge::sSelect(bool target)
   params.append("cntct_id", _cntct->id());
   params.append("target", QVariant(target));
   contactSelect = mql.toQuery(params);
-  if (contactSelect.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Processing Requested Action"),
+                                contactSelect, __FILE__, __LINE__))
   {
-    systemError(this, contactSelect.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -542,11 +543,12 @@ void contactMerge::sSelectCol()
   params.append("cntct_id", _srccntct->id());
   params.append("col_number", _selectCol);
   contactSelectCol = mql.toQuery(params);
-  if (contactSelectCol.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Processing Requested Action"),
+                                contactSelectCol, __FILE__, __LINE__))
   {
-    systemError(this, contactSelectCol.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
   sPopulateSources();
 }
 

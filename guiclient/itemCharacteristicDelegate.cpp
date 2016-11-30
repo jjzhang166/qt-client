@@ -61,13 +61,6 @@ QWidget *ItemCharacteristicDelegate::createEditor(QWidget *parent,
     QComboBox *editor = new QComboBox(parent);
     editor->setEditable(chartype == characteristic::Text);
 
-
-#ifdef Q_OS_MAC
-    QFont boxfont = editor->font();
-    boxfont.setPointSize((boxfont.pointSize() == -1) ? boxfont.pixelSize() - 3 : boxfont.pointSize() - 3);
-    editor->setFont(boxfont);
-#endif
-
     while(qry.next())
       editor->addItem(qry.value("charass_value").toString());
     editor->installEventFilter(const_cast<ItemCharacteristicDelegate*>(this));

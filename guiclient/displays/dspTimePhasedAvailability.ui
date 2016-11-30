@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>412</width>
-    <height>118</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -108,11 +108,13 @@ to be bound by its terms.</comment>
    <class>ParameterGroup</class>
    <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

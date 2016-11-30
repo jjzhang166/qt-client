@@ -213,9 +213,8 @@ enum SetResponse transferOrder::set(const ParameterList &pParams)
       }
       else
       {
-        systemError(this, tr("A System Error occurred at %1::%2.")
-                          .arg(__FILE__)
-                          .arg(__LINE__) );
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Planned Order Information"),
+                             transferet, __FILE__, __LINE__);
         return UndefinedError;
       }
 
@@ -744,7 +743,8 @@ void transferOrder::sPopulateMenu(QMenu *pMenu)
       }
     }
 
-    if(_metrics->boolean("EnableTOShipping"))
+    if(_metrics->boolean("EnableTOShipping") &&
+       (_lineMode == cActiveOpen || _lineMode == cInactiveOpen))
     {
       if(_numSelected == 1)
         pMenu->addSeparator();
@@ -1026,8 +1026,9 @@ void transferOrder::sAction()
         int result = transferAction.value("result").toInt();
         if (result < 0)
         {
-          systemError(this, storedProcErrorLookup("closeToItem", result),
-                      __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Information"),
+                                 storedProcErrorLookup("closeToItem", result),
+                                 __FILE__, __LINE__);
           return;
         }
       }
@@ -1091,8 +1092,9 @@ void transferOrder::sDelete()
           {
             int result = transferDelete.value("result").toInt();
             if (result < 0)
-              systemError(this, storedProcErrorLookup("deleteTO", result),
-			  __FILE__, __LINE__);            
+              ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                                  storedProcErrorLookup("deleteTO", result),
+                                  __FILE__, __LINE__);
           }
           ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Order"),
                                transferDelete, __FILE__, __LINE__);
@@ -1378,7 +1380,7 @@ bool transferOrder::deleteForCancel()
     deleteTo = true;
   }
 
-  if (cNew == _mode && _toitem->topLevelItemCount() > 0)
+  if (cNew == _mode && _toitem->topLevelItemCount() > 0 && !_captive)
   {
     if (QMessageBox::question(this, tr("Delete Transfer Order?"),
                           tr("<p>Are you sure you want to delete this "
@@ -1411,8 +1413,9 @@ bool transferOrder::deleteForCancel()
     {
       int result = query.value("result").toInt();
       if (result < 0)
-        systemError(this, storedProcErrorLookup("deleteTO", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Transfer Order"),
+                             storedProcErrorLookup("deleteTO", result),
+                             __FILE__, __LINE__);
 
       sReleaseNumber();
     }
@@ -1779,9 +1782,9 @@ void transferOrder::sReturnStock()
       if (result < 0)
       {
         rollback.exec();
-        systemError(this, storedProcErrorLookup("returnItemShipments", result) +
-                          tr("<br>Line Item %1").arg(selected[i]->text(0)),
-                           __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Return Item Information"),
+                               storedProcErrorLookup("returnItemShipments", result),
+                               __FILE__, __LINE__);
         return;
       }
       if (distributeInventory::SeriesAdjust(transferReturnStock.value("result").toInt(), this) == XDialog::Rejected)
@@ -1795,8 +1798,8 @@ void transferOrder::sReturnStock()
     else if (transferReturnStock.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, tr("Line Item %1\n").arg(selected[i]->text(0)) +
-                        transferReturnStock.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Return Item Information"),
+                           transferReturnStock, __FILE__, __LINE__);
       return;
     }
   }
@@ -1861,16 +1864,17 @@ void transferOrder::sIssueLineBalance()
                 "   AND  (toitem_id=:toitem_id)); ");
             transferIssueLineBalance.bindValue(":toitem_id", toitem->id());
             transferIssueLineBalance.exec();
-            if (! transferIssueLineBalance.first() && transferIssueLineBalance.lastError().type() != QSqlError::NoError)
+            if (transferIssueLineBalance.first())
             {
-              ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Item"),
-                                   transferIssueLineBalance, __FILE__, __LINE__);
-              systemError(this,
-                storedProcErrorLookup("sufficientInventoryToShipItem",
-                          result)
-                .arg(transferIssueLineBalance.value("item_number").toString())
-                .arg(transferIssueLineBalance.value("tohead_srcname").toString()), __FILE__, __LINE__);
+              ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Transfer Order Item Information"),
+                                     storedProcErrorLookup("sufficientInventoryToShipItem", result)
+                                     .arg(transferIssueLineBalance.value("item_number").toString())
+                                     .arg(transferIssueLineBalance.value("tohead_srcname").toString()),
+                                     __FILE__, __LINE__);
               return;
+            } else {
+                ErrorReporter::error(QtCriticalMsg, this, tr("Error Checking Item Availability"),
+                                     transferIssueLineBalance, __FILE__, __LINE__);
             }
           }
         }
@@ -1892,9 +1896,10 @@ void transferOrder::sIssueLineBalance()
         if (result < 0)
         {
           rollback.exec();
-          systemError(this, storedProcErrorLookup("issueLineBalance", result) +
-                            tr("<br>Line Item %1").arg(selected[i]->text(0)),
-                      __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Line Item Balance"),
+                               storedProcErrorLookup("issueLineBalance", result) +
+                               tr("<br>Line Item %1").arg(selected[i]->text(0)),
+                               __FILE__, __LINE__);
           return;
         }
         if (distributeInventory::SeriesAdjust(transferIssueLineBalance.value("result").toInt(), this) == XDialog::Rejected)
@@ -1908,9 +1913,9 @@ void transferOrder::sIssueLineBalance()
       }
       else
       {
-        rollback.exec();
-        systemError(this, tr("Line Item %1\n").arg(selected[i]->text(0)) +
-                          transferIssueLineBalance.lastError().databaseText(), __FILE__, __LINE__);
+        rollback.exec();     
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Line Item %1\n").arg(selected[i]->text(0)),
+                             transferIssueLineBalance, __FILE__, __LINE__);
         return;
       }
     }
@@ -1951,7 +1956,10 @@ bool transferOrder::sQESave()
   if (! _qeitem->submitAll())
   {
     if (! _qeitem->lastError().databaseText().isEmpty())
-      systemError(this, _qeitem->lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Error Saving Quick Item Information: \n %2")
+                        .arg(windowTitle())
+                        .arg(_qeitem->lastError().databaseText()),__FILE__,__LINE__);
     return false;
   }
   sFillItemList();
@@ -1962,7 +1970,9 @@ void transferOrder::sQEDelete()
 {
   if (! _qeitem->removeRow(_qeitemView->currentIndex().row()))
   {
-    systemError(this, tr("Removing row from view failed"), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Removing row from view failed ")
+                            .arg(windowTitle()),__FILE__,__LINE__);
     return;
   }
 }

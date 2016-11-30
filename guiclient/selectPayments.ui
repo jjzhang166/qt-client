@@ -34,7 +34,7 @@ to be bound by its terms.</comment>
        <item>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0" colspan="3">
-          <widget class="VendorGroup" name="_vendorgroup" native="true"/>
+          <widget class="VendorGroup" name="_vendorgroup"/>
          </item>
          <item row="1" column="0">
           <widget class="XLabel" name="_selectDateLit">
@@ -76,7 +76,7 @@ to be bound by its terms.</comment>
              <item row="0" column="0">
               <layout class="QHBoxLayout" name="_3">
                <item>
-                <widget class="DLineEdit" name="_onOrBeforeDate" native="true">
+                <widget class="DLineEdit" name="_onOrBeforeDate">
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
@@ -102,7 +102,7 @@ to be bound by its terms.</comment>
            <widget class="QWidget" name="_betweenPage">
             <layout class="QGridLayout" name="_4">
              <item row="0" column="0">
-              <widget class="DLineEdit" name="_startDate" native="true"/>
+              <widget class="DLineEdit" name="_startDate"/>
              </item>
              <item row="0" column="1">
               <widget class="XLabel" name="_andLit">
@@ -112,7 +112,7 @@ to be bound by its terms.</comment>
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="DLineEdit" name="_endDate" native="true"/>
+              <widget class="DLineEdit" name="_endDate"/>
              </item>
             </layout>
            </widget>
@@ -382,7 +382,7 @@ to be bound by its terms.</comment>
             </property>
             <item>
              <widget class="XComboBox" name="_bankaccnt">
-              <property name="allowNull" stdset="0">
+              <property name="allowNull">
                <bool>true</bool>
               </property>
              </widget>
@@ -492,6 +492,22 @@ to be bound by its terms.</comment>
   <connection>
    <sender>_apopen</sender>
    <signal>valid(bool)</signal>
+   <receiver>_select</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>534</x>
+     <y>469</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>775</x>
+     <y>187</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_apopen</sender>
+   <signal>valid(bool)</signal>
    <receiver>_selectLine</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
@@ -518,22 +534,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>279</x>
      <y>93</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_apopen</sender>
-   <signal>valid(bool)</signal>
-   <receiver>_select</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>637</x>
-     <y>148</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>701</x>
-     <y>148</y>
     </hint>
    </hints>
   </connection>

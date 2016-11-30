@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>443</width>
-    <height>134</height>
+    <height>137</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,6 +196,11 @@ to be bound by its terms.</comment>
            <item>
             <property name="text">
              <string>Return Authorizations</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Transfer Orders</string>
             </property>
            </item>
           </widget>

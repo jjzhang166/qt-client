@@ -73,16 +73,16 @@ void XTextEdit::contextMenuEvent(QContextMenuEvent *event)
        if (_guiClientInterface->hunspell_check(textBlock) < 1)
        {
          menu->addSeparator();
-         QAction *act;
-         act = menu->addAction(tr("Add Word"), this, SLOT(sAddWord()));
-         act = menu->addAction(tr("Ignore Word"), this, SLOT(sIgnoreWord()));       
+
+         (void)menu->addAction(tr("Add Word"), this, SLOT(sAddWord()));
+         (void)menu->addAction(tr("Ignore Word"), this, SLOT(sIgnoreWord()));
          if(!wordList.isEmpty())
          {
             menu->addSeparator();
             for (int menuActionCount = 0;menuActionCount < qMin(int(_MaxWords),wordList.size());
             ++menuActionCount)
             {
-                 act = menu->addAction(wordList.at(menuActionCount).trimmed(),
+              (void)menu->addAction(wordList.at(menuActionCount).trimmed(),
                        this, SLOT(sCorrectWord()));
             }
          }

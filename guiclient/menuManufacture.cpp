@@ -204,11 +204,7 @@ void menuManufacture::addActionsToMenu(actionProperties acts[], unsigned int num
   QAction * m = 0;
   for (unsigned int i = 0; i < numElems; i++)
   {
-    if (! acts[i].visible)
-    {
-      continue;
-    }
-    else if (acts[i].actionName == QString("menu"))
+    if (acts[i].actionName == QString("menu"))
     {
       m = acts[i].menu->addMenu((QMenu*)(acts[i].slot));
       if(m)
@@ -216,11 +212,11 @@ void menuManufacture::addActionsToMenu(actionProperties acts[], unsigned int num
     }
     else if (acts[i].actionName == QString("separator"))
     {
-      acts[i].menu->addSeparator();
+      m = acts[i].menu->addSeparator();
     }
     else if ((acts[i].toolBar != NULL) && (!acts[i].toolTip.isEmpty()))
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -233,7 +229,7 @@ void menuManufacture::addActionsToMenu(actionProperties acts[], unsigned int num
     }
     else if (acts[i].toolBar != NULL)
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -246,7 +242,7 @@ void menuManufacture::addActionsToMenu(actionProperties acts[], unsigned int num
     }
     else
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -254,6 +250,7 @@ void menuManufacture::addActionsToMenu(actionProperties acts[], unsigned int num
                   acts[i].menu,
                   acts[i].priv ) ;
     }
+    if (m) m->setVisible(acts[i].visible);
   }
 }
 

@@ -16,6 +16,7 @@
 #include <QtSql>
 #include <dlineedit.h>
 #include <xcombobox.h>
+#include <QRegExpValidator>
 
 LotSerialUtils::LotSerialUtils()
 {
@@ -169,19 +170,34 @@ QList<QWidget *> LotSerialUtils::addLotCharsToGridLayout(QWidget *parent, QGridL
         }
         else if (charTypes.at(i) == 1)
         {
-            XComboBox *x = new XComboBox(parent);
-            XSqlQuery q;
-            q.prepare(QString("SELECT charopt_value FROM charopt WHERE charopt_char_id=%1 ORDER BY charopt_id ASC;").arg(charIds.at(i)));
-            q.exec();
-            while(q.next()) {
-                x->addItem(q.value("charopt_value").toString());
-            }
-            edit = x;
+          XComboBox *x = new XComboBox(parent);
+          XSqlQuery q;
+          q.prepare(QString("SELECT charopt_value FROM charopt WHERE charopt_char_id=%1 ORDER BY charopt_id ASC;").arg(charIds.at(i)));
+          q.exec();
+          while(q.next()) {
+              x->addItem(q.value("charopt_value").toString());
+          }
+          edit = x;
 
         }
         else
         {
-            edit = new QLineEdit(parent);
+          XLineEdit *x = new XLineEdit(parent);
+          XSqlQuery mask;
+          mask.prepare( "SELECT COALESCE(char_mask, '') AS char_mask,"
+                        "       COALESCE(char_validator, '.*') AS char_validator "
+                        "FROM char "
+                        "WHERE (char_id=:char_id);" );
+          mask.bindValue(":char_id", charIds.at(i));
+          mask.exec();
+          if (mask.first())
+          {
+            x->setInputMask(mask.value("char_mask").toString());
+            QRegExp rx(mask.value("char_validator").toString());
+            QValidator *validator = new QRegExpValidator(rx, x);
+            x->setValidator(validator);
+          }
+          edit = x;
         }
         layout->addWidget(label, rowCount + i, 0, 0);
         layout->addWidget(edit, rowCount + i, 1, 0);

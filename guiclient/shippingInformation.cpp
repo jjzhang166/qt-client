@@ -21,6 +21,7 @@
 #include "salesOrderItem.h"
 #include "storedProcErrorLookup.h"
 #include "transferOrderItem.h"
+#include "errorReporter.h"
 
 shippingInformation::shippingInformation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -85,9 +86,9 @@ enum SetResponse shippingInformation::set(const ParameterList &pParams)
                     shippinget.value("shiphead_order_type").toString());
       _order->setReadOnly(true);
     }
-    else if (shippinget.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shippinget, __FILE__, __LINE__))
     {
-      systemError(this, shippinget.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -141,9 +142,9 @@ void shippingInformation::sSave()
   shippingSave.bindValue(":shiphead_shipchrg_id", _shippingCharges->id());
   shippingSave.bindValue(":shiphead_shipform_id", _shippingForm->id());
   shippingSave.exec();
-  if (shippingSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Shipping Information"),
+                                shippingSave, __FILE__, __LINE__))
   {
-    systemError(this, shippingSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -188,13 +189,15 @@ void shippingInformation::sReturnAllLineStock()
     int result = shippingReturnAllLineStock.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("returnItemShipments", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Items From Shipment"),
+                             storedProcErrorLookup("returnItemShipments", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (shippingReturnAllLineStock.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Items From Shipment"),
+                                shippingReturnAllLineStock, __FILE__, __LINE__))
   {
-    systemError(this, shippingReturnAllLineStock.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -276,27 +279,27 @@ void shippingInformation::sFillList()
       _notes->setText(shippingFillList.value("shiphead_notes").toString());
     }
   }
-  else if (shippingFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                shippingFillList, __FILE__, __LINE__))
   {
-    systemError(this, shippingFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
   if (_order->isValid() && _order->type() == "SO")
   {
-    shippingFillList.prepare( "SELECT cohead_orderdate AS orderdate,"
-	       "       cohead_holdtype AS holdtype,"
-               "       cohead_custponumber AS ponumber,"
-               "       cust_name AS name, cntct_phone AS phone,"
-               "       cohead_shipcomments AS shipcomments,"
-	       "       cohead_shipvia AS shipvia,"
-               "       cohead_shipchrg_id AS shipchrg_id,"
-               "       cohead_shipform_id AS shipform_id, "
-               "       cohead_shiptoname AS shiptoname "
-               "FROM cohead, custinfo "
-               "LEFT OUTER JOIN cntct ON (cust_cntct_id=cntct_id)"
-               "WHERE ((cohead_cust_id=cust_id)"
-               " AND (cohead_id=:cohead_id));" );
+    shippingFillList.prepare("SELECT cohead_orderdate AS orderdate,"
+                             "       soHoldType(cohead_id) AS holdtype,"
+                             "       cohead_custponumber AS ponumber,"
+                             "       cust_name AS name, cntct_phone AS phone,"
+                             "       cohead_shipcomments AS shipcomments,"
+                             "       cohead_shipvia AS shipvia,"
+                             "       cohead_shipchrg_id AS shipchrg_id,"
+                             "       cohead_shipform_id AS shipform_id, "
+                             "       cohead_shiptoname AS shiptoname "
+                             "FROM cohead, custinfo "
+                             "LEFT OUTER JOIN cntct ON (cust_cntct_id=cntct_id)"
+                             "WHERE ((cohead_cust_id=cust_id)"
+                             " AND (cohead_id=:cohead_id));" );
     shippingFillList.bindValue(":cohead_id", _order->id());
   }
   else if (_order->isValid() && _order->type() == "TO")
@@ -324,11 +327,11 @@ void shippingInformation::sFillList()
     _shipToName->setText(shippingFillList.value("shiptoname").toString());
 
     QString msg;
-    if (shippingFillList.value("head_holdtype").toString() == "C")
+    if (shippingFillList.value("holdtype").toString() == "C")
       msg = storedProcErrorLookup("issuetoshipping", -12);
-    else if (shippingFillList.value("head_holdtype").toString() == "P")
+    else if (shippingFillList.value("holdtype").toString() == "P")
       msg = storedProcErrorLookup("issuetoshipping", -13);
-    else if (shippingFillList.value("head_holdtype").toString() == "R")
+    else if (shippingFillList.value("holdtype").toString() == "R")
       msg = storedProcErrorLookup("issuetoshipping", -14);
 
     if (! msg.isEmpty())
@@ -349,9 +352,9 @@ void shippingInformation::sFillList()
       _shipVia->setText(shippingFillList.value("shipvia").toString());
     }
   }
-  else if (shippingFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                         shippingFillList, __FILE__, __LINE__))
   {
-    systemError(this, shippingFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -397,9 +400,9 @@ void shippingInformation::sFillList()
   XSqlQuery qry = mql.toQuery(params);
   _item->populate(qry, true);
 
-  if (shippingFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                shippingFillList, __FILE__, __LINE__))
   {
-    systemError(this, shippingFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -18,6 +18,8 @@
 #include <QXmlQuery>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 #define DEBUG false
 
@@ -66,9 +68,9 @@ int atlasMap::exec()
     return XDialog::exec();
   else
   {
-    systemError(this,
-                tr("You do not have sufficient privilege to view this window"),
-                __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Insufficient privileges to view this window")
+                         .arg(windowTitle()),__FILE__,__LINE__);
     return XDialog::Rejected;
   }
 }
@@ -157,46 +159,21 @@ enum SetResponse atlasMap::set(const ParameterList &pParams)
 
 void atlasMap::sSave()
 {
-  QString errorCaption = tr("Cannot Save Atlas Map");
 
-  struct {
-    bool        condition;
-    QString     msg;
-    QWidget*    widget;
-  } error[] = {
-    { _name->text().trimmed().isEmpty(),
-      tr("<p>Please enter a name for this Atlas Map before saving it."),
-      _name
-    },
-    { _filter->text().trimmed().isEmpty(),
-      tr("<p>Please enter a filter before saving this Atlas Map."),
-      _filter
-    },
-    { _filtertype->currentText().trimmed().isEmpty(),
-      tr("<p>Please select a filter type before saving this Atlas Map."),
-      _filtertype
-    },
-    { _atlas->text().trimmed().isEmpty(),
-      tr("<p>Please enter an Atlas File Name before saving this Atlas Map."),
-      _atlas
-    },
-    { _map->id() <= -1,
-      tr("Please select a Map Name before saving this Atlas Map."),
-      _map
-    },
-    { true, "", NULL }
-  }; // error[]
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_name->text().trimmed().isEmpty(), _name,
+                        tr("<p>Please enter a name for this Atlas Map before saving it."))
+        <<GuiErrorCheck(_filter->text().trimmed().isEmpty(), _filter,
+                         tr("<p>Please enter a filter before saving this Atlas Map."))
+        <<GuiErrorCheck(_filtertype->currentText().trimmed().isEmpty(), _filtertype,
+                        tr("<p>Please select a filter type before saving this Atlas Map."))
+        <<GuiErrorCheck(_atlas->text().trimmed().isEmpty(), _atlas,
+                        tr("<p>Please enter an Atlas File Name before saving this Atlas Map."))
+        <<GuiErrorCheck(_map->id() <= -1, _map,
+                       tr("Please select a Map Name before saving this Atlas Map."));
 
-  int errIndex;
-  for (errIndex = 0; ! error[errIndex].condition; errIndex++)
-    ;
-  if (! error[errIndex].msg.isEmpty())
-  {
-    QMessageBox::critical(this, errorCaption,
-                          error[errIndex].msg);
-    error[errIndex].widget->setFocus();
-    return;
-  }
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Atlas Map"),errors))
+      return;
 
   XSqlQuery dupq;
   dupq.prepare( "SELECT atlasmap_name "
@@ -209,15 +186,15 @@ void atlasMap::sSave()
   dupq.exec();
   if (dupq.first())
   {
-    QMessageBox::critical(this, errorCaption,
+    QMessageBox::critical(this, tr("Cannot Save Atlas Map"),
                           tr("<p>This Name is already in use by another "
                              "Atlas Map."));
     _name->setFocus();
     return;
   }
-  else if (dupq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Atlas Map Information"),
+                                dupq, __FILE__, __LINE__))
   {
-    systemError(this, dupq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -253,9 +230,9 @@ void atlasMap::sSave()
   upsq.exec();
   if (upsq.first())
     _atlasmapId = upsq.value("atlasmap_id").toInt();
-  else if (upsq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Atlas Map Information"),
+                                upsq, __FILE__, __LINE__))
   {
-    systemError(this, upsq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -290,9 +267,9 @@ void atlasMap::sPopulate()
         _map->setCode(atlasPopulate.value("atlasmap_map").toString());
       _firstLine->setChecked(atlasPopulate.value("atlasmap_headerline").toBool());
     }
-    else if (atlasPopulate.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Atlas Map Information"),
+                                  atlasPopulate, __FILE__, __LINE__))
     {
-      systemError(this, atlasPopulate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

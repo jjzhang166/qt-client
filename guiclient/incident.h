@@ -25,6 +25,8 @@ class incident : public XDialog, public Ui::incident
 public:
     incident(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~incident();
+
+    static bool userHasPriv(const int = cView, const int = 0);
     
     Q_INVOKABLE virtual int     aropenid()  const;
     Q_INVOKABLE virtual QString arDoctype() const;
@@ -52,6 +54,7 @@ public slots:
     virtual void sReturn();
     virtual void sViewAR();
     virtual void sAssigned();
+    virtual void sNewCharacteristic();
 
 signals:
     void populated();

@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QtDesigner>
+#include "errorReporter.h"
 
 // TODO: can we live without this?
 // copied from .../qt-mac-commercial-src-4.4.3/tools/designer/src/lib/shared/pluginmanager_p.h
@@ -273,9 +274,9 @@ bool xTupleDesignerActions::sSaveToDB()
     xSaveToDB.exec("SELECT NEXTVAL('uiform_uiform_id_seq') AS _uiform_id");
     if (xSaveToDB.first())
       _designer->setFormId(xSaveToDB.value("_uiform_id").toInt());
-    else if (xSaveToDB.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, _designer, tr("Error Saving UIForm Information"),
+                                  xSaveToDB, __FILE__, __LINE__))
     {
-      systemError(_designer, xSaveToDB.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
 
@@ -302,9 +303,9 @@ bool xTupleDesignerActions::sSaveToDB()
   xSaveToDB.bindValue(":uiform_notes",   _designer->notes());
 
   xSaveToDB.exec();
-  if (xSaveToDB.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, _designer, tr("Error Saving UIForm Information"),
+                                xSaveToDB, __FILE__, __LINE__))
   {
-    systemError(_designer, xSaveToDB.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 

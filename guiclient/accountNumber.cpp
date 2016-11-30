@@ -16,6 +16,7 @@
 
 #include <metasql.h>
 #include <parameter.h>
+#include "errorReporter.h"
 
 accountNumber::accountNumber(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -166,13 +167,13 @@ void accountNumber::sSave()
   ParameterList params;
   params.append("accnt_number", _number->text().trimmed());
 
-  if (_metrics->value("GLCompanySize").toInt())
+  if (_metrics->value("GLCompanySize").toInt() > 0)
     params.append("accnt_company", _company->currentText());
 
-  if (_metrics->value("GLProfitSize").toInt())
+  if (_metrics->value("GLProfitSize").toInt() > 0)
     params.append("accnt_profit", _profit->currentText());
 
-  if (_metrics->value("GLSubaccountSize").toInt())
+  if (_metrics->value("GLSubaccountSize").toInt() > 0)
     params.append("accnt_sub", _sub->currentText());
 
   if (_mode == cEdit)
@@ -187,10 +188,10 @@ void accountNumber::sSave()
 			     "with the same number already exists.") );
     return;
   }
-  else if (accountSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Account"),
+                                accountSave, __FILE__, __LINE__))
   {
-    systemError(this, accountSave.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   if (_mode == cNew)
@@ -206,10 +207,10 @@ void accountNumber::sSave()
     accountSave.exec("SELECT NEXTVAL('accnt_accnt_id_seq') AS _accnt_id;");
     if (accountSave.first())
       _accntid = accountSave.value("_accnt_id").toInt();
-    else if (accountSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Account"),
+                                  accountSave, __FILE__, __LINE__))
     {
-      systemError(this, accountSave.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+        return;
     }
 
     accountSave.prepare( "INSERT INTO accnt "
@@ -240,9 +241,11 @@ void accountNumber::sSave()
 
   accountSave.bindValue(":accnt_id", _accntid);
   accountSave.bindValue(":accnt_company", _company->currentText());
-  accountSave.bindValue(":accnt_profit", _profit->currentText());
+  if (_profit->isVisible())
+    accountSave.bindValue(":accnt_profit", _profit->currentText());
   accountSave.bindValue(":accnt_number", _number->text());
-  accountSave.bindValue(":accnt_sub", _sub->currentText());
+  if (_sub->isVisible())
+    accountSave.bindValue(":accnt_sub", _sub->currentText());
   accountSave.bindValue(":accnt_descrip", _description->text());
   accountSave.bindValue(":accnt_extref", _extReference->text());
   accountSave.bindValue(":accnt_forwardupdate", QVariant(_forwardUpdate->isChecked()));
@@ -263,10 +266,11 @@ void accountNumber::sSave()
     accountSave.bindValue(":accnt_type", "Q");
 
   accountSave.exec();
-  if (accountSave.lastError().type() != QSqlError::NoError)
+
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Period"),
+                                accountSave, __FILE__, __LINE__))
   {
-    systemError(this, accountSave.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   done(_accntid);
@@ -286,13 +290,13 @@ void accountNumber::populate()
   populateAccount.exec();
   if (populateAccount.first())
   {
-    if (_metrics->value("GLCompanySize").toInt())
+    if (_metrics->value("GLCompanySize").toInt() > 0)
       _company->setText(populateAccount.value("accnt_company"));
 
-    if (_metrics->value("GLProfitSize").toInt())
+    if (_metrics->value("GLProfitSize").toInt() > 0)
       _profit->setText(populateAccount.value("accnt_profit"));
 
-    if (_metrics->value("GLSubaccountSize").toInt())
+    if (_metrics->value("GLSubaccountSize").toInt() > 0)
       _sub->setText(populateAccount.value("accnt_sub"));
 
     _number->setText(populateAccount.value("accnt_number"));
@@ -320,10 +324,10 @@ void accountNumber::populate()
     populateSubTypes();
     _subType->setId(populateAccount.value("subaccnttype_id").toInt());
   }
-  else if (populateAccount.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Account"),
+                                populateAccount, __FILE__, __LINE__))
   {
-    systemError(this, populateAccount.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 }
 
@@ -346,10 +350,10 @@ void accountNumber::populateSubTypes()
     sub.bindValue(":subaccnttype_accnt_type", "Q");
   sub.exec();
   _subType->populate(sub);
-  if (sub.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retreiving SubTypes"),
+                                sub, __FILE__, __LINE__))
   {
-    systemError(this, sub.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
   
 }

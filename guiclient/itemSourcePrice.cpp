@@ -95,9 +95,9 @@ enum SetResponse itemSourcePrice::set(const ParameterList &pParams)
       itemet.exec("SELECT NEXTVAL('itemsrcp_itemsrcp_id_seq') AS _itemsrcp_id;");
       if (itemet.first())
         _itemsrcpid = itemet.value("_itemsrcp_id").toInt();
-      else if (itemet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Source Price Information"),
+                                    itemet, __FILE__, __LINE__))
       {
-        systemError(this, itemet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
     }

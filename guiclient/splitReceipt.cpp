@@ -19,6 +19,7 @@
 
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 splitReceipt::splitReceipt(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -77,9 +78,9 @@ void splitReceipt::populate()
     _freight->setId(splitpopulate.value("curr_id").toInt());
     _freight->setLocalValue(splitpopulate.value("recv_freight").toDouble());
   }
-  else if (splitpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receipt Information"),
+                                splitpopulate, __FILE__, __LINE__))
   {
-    systemError(this, splitpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -89,25 +90,37 @@ void splitReceipt::sSplit()
   XSqlQuery splitSplit;
   int result = 0;
 
+  splitSplit.prepare("UPDATE recv SET recv_freight=:freight, recv_date=:date WHERE recv_id=:recvid;");
+  splitSplit.bindValue(":recvid",	_recvid);
+  splitSplit.bindValue(":freight",	_freight->localValue());
+  splitSplit.bindValue(":date",		_receiptDate->date());
+  splitSplit.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receipt Information"),
+                                splitSplit, __FILE__, __LINE__))
+  {
+    return;
+  }
+
   splitSplit.prepare("SELECT splitReceipt(:recvid, :qty, :freight) AS result;");
   splitSplit.bindValue(":recvid",	_recvid);
   splitSplit.bindValue(":qty",		_toSplit->toDouble());
-  splitSplit.bindValue(":freight",	_freight->localValue());
+  splitSplit.bindValue(":freight",	_freightSplit->localValue());
   splitSplit.exec();
   if (splitSplit.first())
   {
     result = splitSplit.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup(QString("splitReceipt"), result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receipt Information"),
+                             storedProcErrorLookup("splitReceipt", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (splitSplit.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receipt Information"),
+                                splitSplit, __FILE__, __LINE__))
   {
-      systemError(this, splitSplit.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+    return;
   }
 
   omfgThis->sPurchaseOrderReceiptsUpdated();

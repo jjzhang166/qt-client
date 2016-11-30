@@ -719,7 +719,7 @@ to be bound by its terms.</comment>
         <attribute name="title">
          <string>Notes</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
           <widget class="XTextEdit" name="_notes"/>
          </item>
@@ -737,11 +737,13 @@ to be bound by its terms.</comment>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XTextEdit</class>

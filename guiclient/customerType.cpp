@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 customerType::customerType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -67,9 +69,8 @@ enum SetResponse customerType::set(const ParameterList &pParams)
       }
       else
       {
-        systemError(this, tr("A System Error occurred at %1::%2.")
-                          .arg(__FILE__)
-                          .arg(__LINE__) );
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Type Information"),
+                             customeret, __FILE__, __LINE__);
       }
     }
     else if (param.toString() == "edit")
@@ -117,13 +118,13 @@ void customerType::sCheck()
 void customerType::sSave()
 {
   XSqlQuery customerSave;
-  if (_code->text().trimmed().length() == 0)
-  {
-    QMessageBox::information( this, tr("Invalid Customer Type Code"),
-                              tr("You must enter a valid Code for this Customer Type before creating it.")  );
-    _code->setFocus();
-    return;
-  }
+
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_code->text().trimmed().length() == 0, _code,
+                        tr("You must enter a valid Code for this Customer Type before creating it."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Customer Type"),errors))
+      return;
 
   customerSave.prepare("SELECT custtype_id"
             "  FROM custtype"
@@ -160,9 +161,9 @@ void customerType::sSave()
   customerSave.bindValue(":custtype_descrip", _description->text().trimmed());
   customerSave.bindValue(":custtype_char",  QVariant(_characteristicGroup->isChecked()));
   customerSave.exec();
-  if (customerSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Customer Type"),
+                                customerSave, __FILE__, __LINE__))
   {
-    systemError(this, customerSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -184,9 +185,9 @@ void customerType::populate()
     _characteristicGroup->setChecked(customerpopulate.value("custtype_char").toBool());
     _charass->setId(_custtypeid);
   }
-  else if (customerpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Type Information"),
+                                customerpopulate, __FILE__, __LINE__))
   {
-    systemError(this, customerpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -28,8 +28,9 @@ public slots:
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
-    virtual void sFillList(int pId);
+    virtual void sFillList();
     virtual void sHandleButtons();
+    virtual ParameterList getParams();
 
 protected slots:
     virtual void languageChange();

@@ -889,7 +889,7 @@ to be bound by its terms.</comment>
                <item row="2" column="0">
                 <widget class="QLabel" name="_issuelocationsLit">
                  <property name="text">
-                  <string>W/O Issue:</string>
+                  <string>Issue:</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1251,7 +1251,7 @@ to be bound by its terms.</comment>
           <item row="0" column="0">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <layout class="QGridLayout" name="gridLayout">
+             <layout class="QGridLayout" name="gridLayout_24">
               <item row="0" column="0">
                <widget class="QLabel" name="_planningTypeLit">
                 <property name="text">

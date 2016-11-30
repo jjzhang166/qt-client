@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Re-Print Returns</string>
+   <string>Re-Print Sales Credits</string>
   </property>
   <layout class="QGridLayout" name="gridLayout"/>
  </widget>

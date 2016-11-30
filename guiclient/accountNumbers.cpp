@@ -20,6 +20,7 @@
 
 #include "accountNumber.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 accountNumbers::accountNumbers(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -86,15 +87,17 @@ void accountNumbers::sDelete()
     int result = deleteAccount.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteAccount", result), __FILE__, __LINE__);
-      return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Account"),
+                             storedProcErrorLookup("deleteAccounting", result),
+                             __FILE__, __LINE__);
+        return;
     }
     sFillList();
   }
-  else if (deleteAccount.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Account"),
+                                deleteAccount, __FILE__, __LINE__))
   {
-    systemError(this, deleteAccount.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 }
 
@@ -184,16 +187,17 @@ void accountNumbers::sFillList()
   MetaSQLQuery mql = MQLUtil::mqlLoad("accountNumbers", "detail", errorString, &ok);
   if(!ok)
   {
-    systemError(this, errorString, __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Accounts"),
+                                errorString, __FILE__, __LINE__);
     return;
   }
   accountFillList = mql.toQuery(params);
 
   _account->populate(accountFillList);
-  if (accountFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Accounts"),
+                                accountFillList, __FILE__, __LINE__))
   {
-    systemError(this, accountFillList.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 }
 
@@ -278,10 +282,10 @@ void accountNumbers::populateSubTypes()
     sub.bindValue(":subaccnttype_accnt_type", "Q");
   sub.exec();
   _subType->populate(sub);
-  if (sub.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving SubTypes"),
+                                sub, __FILE__, __LINE__))
   {
-    systemError(this, sub.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
   
 }

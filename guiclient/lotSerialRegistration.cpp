@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -17,6 +17,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 lotSerialRegistration::lotSerialRegistration(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -93,19 +94,19 @@ enum SetResponse lotSerialRegistration::set(const ParameterList &pParams)
       lotet.exec ("SELECT fetchlsregnumber() AS number;");
       if (lotet.first())
 	_regNumber->setText(lotet.value("number").toString());
-      else if(lotet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Registration Information"),
+                                    lotet, __FILE__, __LINE__))
       {
-        systemError(this, lotet.lastError().databaseText(), __FILE__, __LINE__);
-        reject();
+          reject();
       }
       lotet.exec("SELECT NEXTVAL('lsreg_lsreg_id_seq') AS _lsreg_id;");
       if (lotet.first())
       {
         _lsregid = lotet.value("_lsreg_id").toInt();
       }
-      else if (lotet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Registration Information"),
+                                    lotet, __FILE__, __LINE__))
       {
-        systemError(this, lotet.lastError().databaseText(), __FILE__, __LINE__);
         reject();
       }
       _qty->setText("1");
@@ -152,7 +153,8 @@ void lotSerialRegistration::closeEvent(QCloseEvent *pEvent)
     lotcloseEvent.bindValue(":regNumber", _regNumber->text());
     lotcloseEvent.exec();
     if (lotcloseEvent.lastError().type() != QSqlError::NoError)
-      systemError(this, lotcloseEvent.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Registration Information"),
+                         lotcloseEvent, __FILE__, __LINE__);
   }
 
   pEvent->accept();
@@ -186,9 +188,9 @@ void lotSerialRegistration::populate()
       _shipment->setId(lotpopulate.value("lsreg_shiphead_id").toInt());
     _charass->setId(lotpopulate.value("lsreg_ls_id").toInt());
   }
-  else if(lotpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Registration Information"),
+                                lotpopulate, __FILE__, __LINE__))
   {
-    systemError(this, lotpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -293,9 +295,9 @@ void lotSerialRegistration::sSave()
     lotSave.bindValue(":lsreg_shiphead_id", _shipment->id());
 
   lotSave.exec();
-  if (lotSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Lot/Serial Registration Information"),
+                                lotSave, __FILE__, __LINE__))
   {
-    systemError(this, lotSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -320,7 +322,7 @@ void lotSerialRegistration::sDateUpdated()
   dq.exec();
   if(dq.first())
   {
-    date.addDays(dq.value("item_warrdays").toInt());
+    (void)date.addDays(dq.value("item_warrdays").toInt());
     _expireDate->setDate(date);
   }
 }
@@ -340,11 +342,11 @@ void lotSerialRegistration::sSetSoCustId()
       _so->setCustId(cq.value("crmacct_cust_id").toInt());
       _shipment->setId(-1);
     }
-    else if(cq.lastError().type() != QSqlError::NoError)
-    { 
-      systemError(this, cq.lastError().databaseText(), __FILE__, __LINE__);
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Information"),
+                                  cq, __FILE__, __LINE__))
+    {
       return;
-    }     
+    }
   }
   else
   {

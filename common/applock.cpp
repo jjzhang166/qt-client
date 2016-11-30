@@ -78,11 +78,10 @@ class AppLockPrivate
           return;
       }
 
-      // double-check pg_locks in mobilized dbs in case the search path is wrong
       q.prepare("SELECT l.pid = pg_backend_pid() AS mylock, usename"
                 "  FROM pg_locks l"
-                "  JOIN pg_class c    on relation = c.oid"
-                "  JOIN pg_database d on database = c.oid"
+                "  JOIN pg_class c    on classid = c.oid"
+                "  JOIN pg_database d on database = d.oid"
                 "  JOIN pg_stat_activity a ON l.pid = a." + _actPidCol +
                 " WHERE d.datname = current_database()"
                 "   AND relname = :table"

@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
+    <width>759</width>
     <height>219</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <property name="fixedSize">
+       <property name="fixedSize" stdset="0">
         <bool>false</bool>
        </property>
       </widget>
@@ -49,38 +49,130 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <widget class="XCheckBox" name="_onlyShowZero">
-     <property name="text">
-      <string>Only Show &amp;Zero Cost Items</string>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="_onlyShowZeroLast">
+        <property name="text">
+         <string>Only Show Zero Last Actual Items</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="XCheckBox" name="_onlyShowDiff">
+        <property name="text">
+         <string>Only Show Items where Actual and Standard are different</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="XCheckBox" name="_onlyShowZeroStd">
+        <property name="text">
+         <string>Only Show &amp;Zero Standard Cost Items</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="XCheckBox" name="_showInactive">
+        <property name="text">
+         <string>Show Inactive Items</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="XCheckBox" name="_onlyShowDiff">
-     <property name="text">
-      <string>Only Show Items where Actual and Standard are different</string>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Item Types</string>
      </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="_cbOS">
+        <property name="text">
+         <string>Outside Service</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="_cbPurchase">
+        <property name="text">
+         <string>Purchased</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="_cbPlan">
+        <property name="text">
+         <string>Planning</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="_cbOther">
+        <property name="text">
+         <string>All Others</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="_cbMfg">
+        <property name="text">
+         <string>Manufactured</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="_cbCosting">
+        <property name="text">
+         <string>Costing</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </widget>
-   </item>
-   <item>
-    <widget class="XCheckBox" name="_showInactive">
-     <property name="text">
-      <string>Show Inactive Items</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>7</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
@@ -90,6 +182,7 @@ to be bound by its terms.</comment>
    <class>ParameterGroup</class>
    <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XCheckBox</class>
@@ -99,7 +192,6 @@ to be bound by its terms.</comment>
  </customwidgets>
  <tabstops>
   <tabstop>_classCode</tabstop>
-  <tabstop>_onlyShowZero</tabstop>
  </tabstops>
  <resources/>
  <connections/>

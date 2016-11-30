@@ -34,6 +34,7 @@ public slots:
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
+    virtual void sCloseRA();
     virtual void sDelete();
     virtual void sPopulateMenu( QMenu * pMenu );
     virtual void sFillList();

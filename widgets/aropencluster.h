@@ -63,7 +63,7 @@ class XTUPLEWIDGETS_EXPORT AropenCluster : public VirtualCluster
     AropenCluster(QWidget *, const char * = 0);
 
     Q_INVOKABLE virtual AropenLineEdit::DocTypes allowedDocTypes()  const;
-    Q_INVOKABLE virtual void                     setExtraClause(const QString&);
+    Q_INVOKABLE virtual void                     setExtraClause(const QString&, const QString& = QString::null);
     Q_INVOKABLE virtual AropenLineEdit::DocType  type()             const;
     Q_INVOKABLE virtual QString                  typeString()       const;
 

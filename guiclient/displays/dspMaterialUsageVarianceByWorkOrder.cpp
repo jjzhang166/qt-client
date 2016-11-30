@@ -53,7 +53,7 @@ bool dspMaterialUsageVarianceByWorkOrder::setParams(ParameterList &params)
 {
   if(!_wo->isValid())
   {
-    QMessageBox::warning(this, tr("Invalid W/O"),
+    QMessageBox::warning(this, tr("Work Order Required"),
       tr("You must specify a Work Order.") );
     return false;
   }

@@ -22,6 +22,7 @@
 #include "invoice.h"
 #include "purchaseOrder.h"
 #include "glTransactionDetail.h"
+#include "errorReporter.h"
 
 unpostedGLTransactions::unpostedGLTransactions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -145,9 +146,9 @@ void unpostedGLTransactions::sFillList()
   unpostedFillList.bindValue(":period_id", _periodid);
   unpostedFillList.exec();
   _gltrans->populate(unpostedFillList);
-  if (unpostedFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Transaction Information"),
+                                unpostedFillList, __FILE__, __LINE__))
   {
-    systemError(this, unpostedFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

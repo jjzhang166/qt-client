@@ -24,6 +24,8 @@ class todoItem : public XDialog, public Ui::todoItem
 public:
     todoItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
 
+    static bool userHasPriv(const int = cView, const int = 0);
+
     virtual SetResponse set(const ParameterList & pParams );
     virtual void	languageChange();
 

@@ -1,5 +1,5 @@
-<ui version="4.0" stdsetdef="1" >
-  <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,312 +7,341 @@ It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
-  <exportmacro></exportmacro>
-  <class>massReplaceComponent</class>
-  <widget class="QWidget" name="massReplaceComponent" >
-    <property name="geometry" >
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>414</width>
-        <height>262</height>
-      </rect>
-    </property>
-    <property name="windowTitle" >
-      <string>Mass Replace Component Item</string>
-    </property>
-      <layout class="QVBoxLayout" >
-        <item>
-          <layout class="QHBoxLayout" >
-            <property name="margin" >
-              <number>0</number>
-            </property>
-            <property name="spacing" >
-              <number>6</number>
-            </property>
-            <item>
-              <layout class="QVBoxLayout" >
-                <property name="margin" >
-                  <number>0</number>
-                </property>
-                <property name="spacing" >
-                  <number>5</number>
-                </property>
-                <item>
-                  <layout class="QVBoxLayout" >
-                    <property name="margin" >
-                      <number>0</number>
-                    </property>
-                    <property name="spacing" >
-                      <number>0</number>
-                    </property>
-                    <item>
-                      <widget class="QLabel" name="_originalItemLit" >
-                        <property name="text" >
-                          <string>Original Item:</string>
-                        </property>
-                      </widget>
-                    </item>
-                    <item>
-                      <widget class="ItemCluster" name="_original" />
-                    </item>
-                  </layout>
-                </item>
-                <item>
-                  <layout class="QVBoxLayout" >
-                    <property name="margin" >
-                      <number>0</number>
-                    </property>
-                    <property name="spacing" >
-                      <number>5</number>
-                    </property>
-                    <item>
-                      <widget class="QLabel" name="_replacementItemLit" >
-                        <property name="text" >
-                          <string>Replacement Item:</string>
-                        </property>
-                      </widget>
-                    </item>
-                    <item>
-                      <widget class="ItemCluster" name="_replacement" />
-                    </item>
-                  </layout>
-                </item>
-                <item>
-                  <layout class="QHBoxLayout" >
-                    <property name="margin" >
-                      <number>0</number>
-                    </property>
-                    <property name="spacing" >
-                      <number>5</number>
-                    </property>
-                    <item>
-                      <layout class="QVBoxLayout" >
-                        <property name="margin" >
-                          <number>0</number>
-                        </property>
-                        <property name="spacing" >
-                          <number>5</number>
-                        </property>
-                        <item>
-                          <widget class="QLabel" name="_effectiveLit" >
-                            <property name="text" >
-                              <string>&amp;Effective:</string>
-                            </property>
-                            <property name="alignment" >
-                              <set>Qt::AlignVCenter|Qt::AlignRight</set>
-                            </property>
-                            <property name="buddy" stdset="0" >
-                              <cstring>_effective</cstring>
-                            </property>
-                          </widget>
-                        </item>
-                        <item>
-                          <widget class="QLabel" name="_ecnNumLit" >
-                            <property name="text" >
-                              <string>EC&amp;N #:</string>
-                            </property>
-                            <property name="alignment" >
-                              <set>Qt::AlignVCenter|Qt::AlignRight</set>
-                            </property>
-                            <property name="buddy" stdset="0" >
-                              <cstring>_ecn</cstring>
-                            </property>
-                          </widget>
-                        </item>
-                      </layout>
-                    </item>
-                    <item>
-                      <layout class="QVBoxLayout" >
-                        <property name="margin" >
-                          <number>0</number>
-                        </property>
-                        <property name="spacing" >
-                          <number>5</number>
-                        </property>
-                        <item>
-                          <layout class="QHBoxLayout" >
-                            <property name="margin" >
-                              <number>0</number>
-                            </property>
-                            <property name="spacing" >
-                              <number>0</number>
-                            </property>
-                            <item>
-                              <widget class="DLineEdit" name="_effective" />
-                            </item>
-                            <item>
-                              <spacer name="Spacer140" >
-                                <property name="sizeHint" >
-                                  <size>
-                                    <width>20</width>
-                                    <height>20</height>
-                                  </size>
-                                </property>
-                                <property name="sizeType" >
-                                  <enum>Expanding</enum>
-                                </property>
-                                <property name="orientation" >
-                                  <enum>Horizontal</enum>
-                                </property>
-                              </spacer>
-                            </item>
-                          </layout>
-                        </item>
-                        <item>
-                          <layout class="QHBoxLayout" >
-                            <property name="margin" >
-                              <number>0</number>
-                            </property>
-                            <property name="spacing" >
-                              <number>0</number>
-                            </property>
-                            <item>
-                              <widget class="XLineEdit" name="_ecn" />
-                            </item>
-                            <item>
-                              <spacer name="Spacer26" >
-                                <property name="sizeHint" >
-                                  <size>
-                                    <width>20</width>
-                                    <height>20</height>
-                                  </size>
-                                </property>
-                                <property name="sizeType" >
-                                  <enum>Expanding</enum>
-                                </property>
-                                <property name="orientation" >
-                                  <enum>Horizontal</enum>
-                                </property>
-                              </spacer>
-                            </item>
-                          </layout>
-                        </item>
-                      </layout>
-                    </item>
-                  </layout>
-                </item>
-              </layout>
-            </item>
-            <item>
-              <layout class="QHBoxLayout" >
-                <property name="margin" >
-                  <number>0</number>
-                </property>
-                <property name="spacing" >
-                  <number>0</number>
-                </property>
-                <item>
-                  <spacer name="Spacer142" >
-                    <property name="sizeHint" >
-                      <size>
-                        <width>20</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                    <property name="sizeType" >
-                      <enum>Expanding</enum>
-                    </property>
-                    <property name="orientation" >
-                      <enum>Horizontal</enum>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <layout class="QVBoxLayout" >
-                    <property name="margin" >
-                      <number>0</number>
-                    </property>
-                    <property name="spacing" >
-                      <number>0</number>
-                    </property>
-                    <item>
-                      <layout class="QVBoxLayout" >
-                        <property name="margin" >
-                          <number>0</number>
-                        </property>
-                        <property name="spacing" >
-                          <number>5</number>
-                        </property>
-                        <item>
-                          <widget class="QPushButton" name="_close" >
-                            <property name="text" >
-                              <string>&amp;Cancel</string>
-                            </property>
-                          </widget>
-                        </item>
-                        <item>
-                          <widget class="QPushButton" name="_replace" >
-                            <property name="text" >
-                              <string>&amp;Replace</string>
-                            </property>
-                            <property name="default" >
-                              <bool>true</bool>
-                            </property>
-                          </widget>
-                        </item>
-                      </layout>
-                    </item>
-                    <item>
-                      <spacer name="Spacer141" >
-                        <property name="sizeHint" >
-                          <size>
-                            <width>20</width>
-                            <height>20</height>
-                          </size>
-                        </property>
-                        <property name="sizeType" >
-                          <enum>Expanding</enum>
-                        </property>
-                        <property name="orientation" >
-                          <enum>Vertical</enum>
-                        </property>
-                      </spacer>
-                    </item>
-                  </layout>
-                </item>
-              </layout>
-            </item>
+ <class>massReplaceComponent</class>
+ <widget class="QWidget" name="massReplaceComponent">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>419</width>
+    <height>262</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Mass Replace Component Item</string>
+  </property>
+  <layout class="QVBoxLayout">
+   <item>
+    <layout class="QHBoxLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout">
+       <property name="spacing">
+        <number>5</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="_originalItemLit">
+           <property name="text">
+            <string>Original Item:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ItemCluster" name="_original"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="_replacementItemLit">
+           <property name="text">
+            <string>Replacement Item:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ItemCluster" name="_replacement"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="_effectiveLit">
+             <property name="text">
+              <string>&amp;Effective:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>_effective</cstring>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="_ecnNumLit">
+             <property name="text">
+              <string>EC&amp;N #:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>_ecn</cstring>
+             </property>
+            </widget>
+           </item>
           </layout>
-        </item>
-        <item>
-          <spacer name="Spacer143" >
-            <property name="sizeHint" >
-              <size>
-                <width>20</width>
-                <height>20</height>
-              </size>
-            </property>
-            <property name="sizeType" >
-              <enum>Expanding</enum>
-            </property>
-            <property name="orientation" >
-              <enum>Vertical</enum>
-            </property>
-          </spacer>
-        </item>
+         </item>
+         <item>
+          <layout class="QVBoxLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="DLineEdit" name="_effective"/>
+             </item>
+             <item>
+              <spacer name="Spacer140">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="XLineEdit" name="_ecn"/>
+             </item>
+             <item>
+              <spacer name="Spacer26">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
       </layout>
-  </widget>
-  <layoutdefault spacing="6" margin="11" />
-  <tabstops>
-    <tabstop>_original</tabstop>
-    <tabstop>_replacement</tabstop>
-    <tabstop>_effective</tabstop>
-    <tabstop>_ecn</tabstop>
-    <tabstop>_replace</tabstop>
-    <tabstop>_close</tabstop>
-  </tabstops>
-  <includes>
-    <include location="global" >parameter.h</include>
-    
-    <include location="global" >qstatusbar.h</include>
-  </includes>
-  <connections>
-    <connection>
-      <sender>_close</sender>
-      <signal>clicked()</signal>
-      <receiver>massReplaceComponent</receiver>
-      <slot>close()</slot>
-    </connection>
-  </connections>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="Spacer142">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QVBoxLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="_close">
+             <property name="text">
+              <string>&amp;Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="_replace">
+             <property name="text">
+              <string>&amp;Replace</string>
+             </property>
+             <property name="default">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="Spacer141">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="Spacer143">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DLineEdit</class>
+   <extends>QWidget</extends>
+   <header>datecluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ItemCluster</class>
+   <extends>QWidget</extends>
+   <header>itemcluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>XLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>xlineedit.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>_original</tabstop>
+  <tabstop>_replacement</tabstop>
+  <tabstop>_effective</tabstop>
+  <tabstop>_ecn</tabstop>
+  <tabstop>_replace</tabstop>
+  <tabstop>_close</tabstop>
+ </tabstops>
+ <includes>
+  <include location="global">parameter.h</include>
+  <include location="global">qstatusbar.h</include>
+ </includes>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>_close</sender>
+   <signal>clicked()</signal>
+   <receiver>massReplaceComponent</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

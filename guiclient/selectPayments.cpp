@@ -16,6 +16,7 @@
 #include <metasql.h>
 #include <openreports.h>
 #include <parameter.h>
+#include <xdateinputdialog.h>
 #include <QMessageBox>
 
 #include "apOpenItem.h"
@@ -145,15 +146,16 @@ void selectPayments::sSelectDue()
       int result = selectSelectDue.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("selectPayment", result),
-                    __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                               storedProcErrorLookup("selectPayment", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
     else
     {
-      ErrorReporter::error(QtCriticalMsg, this, tr("Select Due"),
-                           selectSelectDue, __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                        selectSelectDue, __FILE__, __LINE__);
       return;
     }
 
@@ -188,14 +190,15 @@ void selectPayments::sSelectDiscount()
       int result = selectSelectDiscount.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("selectPayment", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                               storedProcErrorLookup("selectPayment", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
     else
     {
-      ErrorReporter::error(QtCriticalMsg, this, tr("Select Discount"),
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
                            selectSelectDiscount, __FILE__, __LINE__);
       return;
     }
@@ -217,14 +220,15 @@ void selectPayments::sClearAll()
     int result = selectClearAll.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("clearPayment", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Payment Information"),
+                             storedProcErrorLookup("clearPayment", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (selectClearAll.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Payment Information"),
+                                selectClearAll, __FILE__, __LINE__))
   {
-    systemError(this, selectClearAll.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -314,15 +318,15 @@ void selectPayments::sSelectLine()
         int result = selectSelectLine.value("result").toInt();
         if (result < 0)
         {
-          systemError(this, cursor->text(0) + " " + cursor->text(2) + "\n" +
-                            storedProcErrorLookup("selectPayment", result),
-                      __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                 storedProcErrorLookup("selectPayment", result),
+                                 __FILE__, __LINE__);
           return;
         }
       }
-      else if (selectSelectLine.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                    selectSelectLine, __FILE__, __LINE__))
       {
-        systemError(this, selectSelectLine.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
                 }
@@ -351,15 +355,16 @@ void selectPayments::sClear()
       int result = selectClear.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, cursor->text(0) + " " + cursor->text(2) + "\n" +
-                          storedProcErrorLookup("clearPayment", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, cursor->text(0) + " " + cursor->text(2) + "\n" +
+                               tr(" Error Clearing Payment Information"),
+                               storedProcErrorLookup("clearPayment", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
-    else if (selectClear.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Payment Information"),
+                                  selectClear, __FILE__, __LINE__))
     {
-      systemError(this, selectClear.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     update = true;
@@ -433,9 +438,9 @@ void selectPayments::sFillList()
   MetaSQLQuery mql = mqlLoad("apOpenItems", "selectpayments");
   selectFillList = mql.toQuery(params);
   _apopen->populate(selectFillList,true);
-  if (selectFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                selectFillList, __FILE__, __LINE__))
   {
-    systemError(this, selectFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -529,7 +534,8 @@ void selectPayments::sViewGLSeries()
     omfgThis->handleNewWindow(newdlg);
   }
   else
-    systemError( this, dspViewGLSeries.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                       dspViewGLSeries, __FILE__, __LINE__);
 }
 
 void selectPayments::sOpen()
@@ -607,33 +613,42 @@ void selectPayments::sVoidVoucher()
   QList<XTreeWidgetItem*> list = _apopen->selectedItems();
   XTreeWidgetItem * cursor = 0;
   XSqlQuery dspVoidVoucher;
-  dspVoidVoucher.prepare("SELECT voidApopenVoucher(:apopen_id) AS result;");
+  dspVoidVoucher.prepare("SELECT voidApopenVoucher(:apopen_id, :voidDate) AS result;");
   for(int i = 0; i < list.size(); i++)
   {
     cursor = (XTreeWidgetItem*)list.at(i);
     if ( (cursor->rawValue("doctype") == tr("Voucher")) && (cursor->rawValue("selected") == 0.0) )
     {
-      dspVoidVoucher.bindValue(":apopen_id", cursor->id());
-      dspVoidVoucher.exec();
-      
-      if(dspVoidVoucher.first())
+      XDateInputDialog newdlg(this, "", true);
+      ParameterList params;
+      params.append("label", tr("On what date did you void the Voucher?"));
+      params.append("default", cursor->rawValue("apopen_docdate"));
+      newdlg.set(params);
+      int returnVal = newdlg.exec();
+      if (returnVal == XDialog::Accepted)
       {
-        if(dspVoidVoucher.value("result").toInt() < 0)
+        QDate voidDate = newdlg.getDate();
+        dspVoidVoucher.bindValue(":apopen_id", cursor->id());
+        dspVoidVoucher.bindValue(":voidDate", voidDate);
+        dspVoidVoucher.exec();
+      
+        if(dspVoidVoucher.first())
         {
-          systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                      .arg(__FILE__)
-                      .arg(__LINE__)
-                      .arg(dspVoidVoucher.value("result").toInt()) );
+          if(dspVoidVoucher.value("result").toInt() < 0)
+          {
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Voucher"),
+                                 dspVoidVoucher, __FILE__, __LINE__);
+            return;
+          }
+        }
+        else
+        {
+          ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
+                               dspVoidVoucher, __FILE__, __LINE__);
           return;
         }
+        update = true;
       }
-      else
-      {
-        ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
-                             dspVoidVoucher, __FILE__, __LINE__);
-        return;
-      }
-      update = true;
     }
   }
   if(update)

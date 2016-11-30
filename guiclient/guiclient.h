@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,7 +13,6 @@
 
 #include <QAction>
 #include <QDate>
-#include <QList>
 #include <QMainWindow>
 #include <QTimer>
 
@@ -21,6 +20,10 @@
 
 #include "../common/format.h"
 #include "../hunspell/hunspell.hxx"
+
+#include <xtuplecommon.h>
+#include <version.h>
+#include <data.h>
 
 class QCheckBox;
 class QCloseEvent;
@@ -108,7 +111,7 @@ extern Metricsenc  *_metricsenc;
 enum SetResponse
 {
   NoError, NoError_Cancel, NoError_Run, NoError_Print, NoError_Submit,
-  Error_NoSetup, UndefinedError
+  Error_NoSetup, Error_AlreadyOpen, UndefinedError
 };
 
 
@@ -175,10 +178,15 @@ class GUIClient : public QMainWindow
     Q_INVOKABLE void setCaption();
     Q_INVOKABLE void saveToolbarPositions();
 
-    Q_INVOKABLE inline QMdiArea *workspace()         { return _workspace;    }
+    Q_INVOKABLE inline QMdiArea *workspace()           { return _workspace;    }
     Q_INVOKABLE inline InputManager *inputManager()    { return _inputManager; }
     Q_INVOKABLE inline QString databaseURL()           { return _databaseURL;  }
     Q_INVOKABLE inline QString username()              { return _username;     }
+
+    // runtime versions
+    Q_INVOKABLE inline QString version()               { return _Version;         }
+    Q_INVOKABLE inline QString qtVersion()             { return QT_VERSION_STR;   }
+    Q_INVOKABLE inline QString openrptVersion()        { return OpenRPT::version; }
 
     Q_INVOKABLE inline const QDate startOfTime()       { return _startOfTime;  }
     Q_INVOKABLE inline const QDate endOfTime()         { return _endOfTime;    }
@@ -231,15 +239,14 @@ class GUIClient : public QMainWindow
     QString _singleWindow;
 
     Q_INVOKABLE        void  launchBrowser(QWidget*, const QString &);
-    Q_INVOKABLE     QWidget *myActiveWindow();
     Q_INVOKABLE inline bool  shuttingDown() { return _shuttingDown; }
 
     void loadScriptGlobals(QScriptEngine * engine);
 
-    #ifdef Q_OS_MAC
-    		void updateMacDockMenu(QWidget *w);
-    		void removeFromMacDockMenu(QWidget *w);
-    	#endif
+#ifdef Q_OS_MAC
+    void updateMacDockMenu(QWidget *w);
+    void removeFromMacDockMenu(QWidget *w);
+#endif
 
     //check hunspell is ready
     Q_INVOKABLE bool hunspell_ready();
@@ -309,8 +316,6 @@ class GUIClient : public QMainWindow
     void sWorkOrdersUpdated(int, bool);
 
     void sIdleTimeout();
-
-    void sFocusChanged(QWidget* old, QWidget* now);
 
     void sClearErrorMessages();
     void sNewErrorMessage();
@@ -412,7 +417,6 @@ class GUIClient : public QMainWindow
     bool         _showTopLevel;
     QWidgetList  _windowList;
     QMenuBar	*_menuBar;
-    QWidget     *_activeWindow;
 
     InputManager   *_inputManager;
 

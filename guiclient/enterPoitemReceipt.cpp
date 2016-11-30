@@ -22,6 +22,7 @@
 #include "itemSite.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 enterPoitemReceipt::enterPoitemReceipt(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -131,6 +132,7 @@ enum SetResponse enterPoitemReceipt::set(const ParameterList &pParams)
       _toReceiveLit->setText(tr("Correct Qty. to:"));
       _freightLit->setText(tr("Correct Freight to:"));
       _item->setEnabled(false);
+      _expcat->setEnabled(false);
       setWindowTitle(tr("Correct Item Receipt"));
     }
   }
@@ -193,14 +195,15 @@ void enterPoitemReceipt::populate()
   }
   else
   {
-    systemError(this, tr("<p>Incomplete Parameter List: "
-			 "_orderitem_id=%1, _ordertype=%2, _mode=%3.")
-                       .arg(_orderitemid)
-                       .arg(_ordertype)
-                       .arg(_mode) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Incomplete Parameter List"),
+                         tr("%1:  <p>_orderitem_id=%2, _ordertype=%3, _mode=%4")
+                         .arg(windowTitle())
+                         .arg(_orderitemid)
+                         .arg(_ordertype)
+                         .arg(_mode),
+                         __FILE__,__LINE__);
     return;
   }
-
   if (enterpopulate.first())
   {
     _orderNumber->setText(enterpopulate.value("order_number").toString());
@@ -232,9 +235,25 @@ void enterPoitemReceipt::populate()
       _orderType->setText(tr("R/A"));
 
     int itemsiteid = enterpopulate.value("itemsiteid").toInt();
-    if (itemsiteid > 0)
-      _item->setItemsiteid(itemsiteid);
-    _item->setEnabled(false);
+
+    if (enterpopulate.value("inventoryitem").toBool())   
+    {
+      if (itemsiteid > 0)
+        _item->setItemsiteid(itemsiteid);
+      _item->setEnabled(false);
+      _itemLitStack->setCurrentIndex(0);
+      _itemStack->setCurrentIndex(0);
+    }
+    else
+    {
+      int expcatid = enterpopulate.value("expcatid").toInt();
+      if (expcatid > 0)
+        _expcat->setId(expcatid);
+      _expcat->setEnabled(false);
+      _itemLitStack->setCurrentIndex(1);
+      _itemStack->setCurrentIndex(1);
+
+    }
 
     _purchCost->setId(enterpopulate.value("recv_purchcost_curr_id").toInt());
     _purchCost->setLocalValue(enterpopulate.value("recv_purchcost").toDouble());
@@ -256,16 +275,16 @@ void enterPoitemReceipt::populate()
           return;
         _item->setItemsiteid(itemsiteid);
       }
-      else if (isq.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                    isq, __FILE__, __LINE__))
       {
-        systemError(this, isq.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
     }
   }
-  else if (enterpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                enterpopulate, __FILE__, __LINE__))
   {
-    systemError(this, enterpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -324,7 +343,8 @@ void enterPoitemReceipt::sReceive()
     if (enterReceive.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, enterReceive.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
+                           enterReceive, __FILE__, __LINE__);
       return;
     }
     
@@ -347,15 +367,17 @@ void enterPoitemReceipt::sReceive()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup(storedProc, result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
+                             storedProcErrorLookup(storedProc, result),
+                             __FILE__, __LINE__);
       return;
     }
   }
   else if (enterReceive.lastError().type() != QSqlError::NoError)
   {
       rollback.exec();
-      systemError(this, enterReceive.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
+                           enterReceive, __FILE__, __LINE__);
       return;
   }
 

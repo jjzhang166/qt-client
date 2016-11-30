@@ -27,7 +27,7 @@ class taxRegistration : public XDialog, public Ui::taxRegistration
     QPushButton* _save;
 
   public slots:
-    virtual SetResponse set(const ParameterList pParams);
+    virtual SetResponse set(const ParameterList& pParams);
 
   protected slots:
     virtual void languageChange();

@@ -201,7 +201,7 @@ void CrmClusterLineEdit::sOpen()
 {
   ParameterList params;
   if (_x_privileges->check(_editPriv) ||
-      _x_privileges->check(_editOwnPriv) && (_owner == _x_username || _assignto == _x_username))
+      (_x_privileges->check(_editOwnPriv) && (_owner == _x_username || _assignto == _x_username)))
     params.append("mode", "edit");
   else
     params.append("mode", "view");

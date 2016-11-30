@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 state::state(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -136,9 +137,9 @@ void state::sSave()
     return;
 
   }
-  else if (stateq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving State Information"),
+                                stateq, __FILE__, __LINE__))
   {
-    systemError(this, stateq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -163,9 +164,9 @@ void state::sSave()
   stateSave.exec();
   if (stateSave.first())
     _stateid = stateSave.value("state_id").toInt();
-  else if (stateSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving State Information"),
+                                stateSave, __FILE__, __LINE__))
   {
-    systemError(this, stateSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -198,9 +199,9 @@ void state::populate()
     _name->setText(statepopulate.value("state_name").toString());
     _country->setId(statepopulate.value("state_country_id").toInt());
   }
-  else if (statepopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving State Information"),
+                                statepopulate, __FILE__, __LINE__))
   {
-    systemError(this, statepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

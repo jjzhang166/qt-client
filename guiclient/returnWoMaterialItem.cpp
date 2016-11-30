@@ -17,6 +17,7 @@
 #include "distributeInventory.h"
 #include "inputManager.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 returnWoMaterialItem::returnWoMaterialItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -116,8 +117,9 @@ void returnWoMaterialItem::sReturn()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("returnWoMaterial", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                           storedProcErrorLookup("returnWoMaterial", result),
+                           __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(returnItem.value("result").toInt(), this) == XDialog::Rejected)
@@ -132,7 +134,8 @@ void returnWoMaterialItem::sReturn()
   else if (returnItem.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, returnItem.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                         returnItem, __FILE__, __LINE__);
     return;
   }
 
@@ -184,9 +187,8 @@ void returnWoMaterialItem::sSetQOH(int pWomatlid)
       _beforeQty->setDouble(_cachedQOH);
     }
     else
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Item Information"),
+                         qoh, __FILE__, __LINE__);
   }
   sUpdateQty();
 }

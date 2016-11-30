@@ -19,6 +19,8 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
+#include <errorReporter.h>
+
 
 postJournals::postJournals(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
@@ -69,9 +71,9 @@ void postJournals::sPost()
 
   XSqlQuery jrnls;
   jrnls = mql.toQuery(params);
-  if (jrnls.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Journal Information"),
+                                jrnls, __FILE__, __LINE__))
   {
-    systemError(this, jrnls.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -106,9 +108,9 @@ void postJournals::sFillList()
   qry = mql.toQuery(params);
   _sources->populate(qry, true);
   _sources->expandAll();
-  if (qry.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Information"),
+                                qry, __FILE__, __LINE__))
   {
-    systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -178,8 +180,9 @@ void postJournals::sPrint(QList<int> journalnumbers)
   if (orReport::beginMultiPrint(&printer, userCanceled) == false)
   {
     if(!userCanceled)
-      systemError(this, tr("<p>Could not initialize printing system for "
-                           "multiple reports."));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Could not initialize printing system for "
+                            "multiple reports").arg(windowTitle()),__FILE__,__LINE__);
     return;
   }
 

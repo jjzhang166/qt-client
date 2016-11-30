@@ -11,6 +11,7 @@
 #include <QSqlError>
 
 #include "financialReportNotes.h"
+#include "errorReporter.h"
 
 
 financialReportNotes::financialReportNotes(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
@@ -76,9 +77,9 @@ void financialReportNotes::sSave()
   qry.exec();
   if (qry.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                .arg(__FILE__)
-                .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Data"),
+                         tr("%1: An error occurred saving financial report "
+                            "notes information").arg(windowTitle()),__FILE__,__LINE__);
     return;
   }
 

@@ -44,6 +44,11 @@ public:
     Q_INVOKABLE void setCloseVisible(bool);
     Q_INVOKABLE bool closeVisible() const;
 
+    Q_INVOKABLE void setExpandVisible(bool);
+    Q_INVOKABLE bool expandVisible() const;
+    Q_INVOKABLE void setCollapseVisible(bool);
+    Q_INVOKABLE bool collapseVisible() const;
+
     Q_INVOKABLE void setParameterWidgetVisible(bool);
     Q_INVOKABLE bool parameterWidgetVisible() const;
 
@@ -69,6 +74,8 @@ public:
     Q_INVOKABLE QAction * querySeparator();
     Q_INVOKABLE QAction * searchAction();
     Q_INVOKABLE QAction * queryAction();
+    Q_INVOKABLE QAction * expandAction();
+    Q_INVOKABLE QAction * collapseAction();
 
     Q_INVOKABLE QString   searchText();
 
@@ -77,6 +84,8 @@ public:
 
 public slots:
     virtual void sNew();
+    virtual void sExpand();
+    virtual void sCollapse();
     virtual void sPrint();
     virtual void sPrint(ParameterList, bool = false);
     virtual void sPreview();

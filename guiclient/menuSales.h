@@ -38,6 +38,7 @@ class menuSales : public QObject
     menuSales(GUIClient *);
 
   public slots:
+    void sNewSalesOrderSimple();
     void sNewSalesOrder();
     void sSalesOrders();
     void sOpenSalesOrders();
@@ -53,6 +54,7 @@ class menuSales : public QObject
     void sDspBillingSelections();
     void sCreateInvoices();
     void sUnpostedInvoices();
+    void sCreateInvoice();
     void sPrintInvoices();
     void sReprintInvoices();
     void sPostInvoices();
@@ -73,9 +75,12 @@ class menuSales : public QObject
     void sItemListPrice();
     void sUpdateListPricesByProductCategory();
     void sPricingSchedules();
+    void sListPricingSchedules();
     void sPricingScheduleAssignments();
+    void sListPricingScheduleAssignments();
     void sSales();
     void sUpdatePrices();
+    void sUpdateListPrices();
     void sDspPricesByItem();
     void sDspPricesByCustomer();
     void sDspPricesByCustomerType();
@@ -85,6 +90,7 @@ class menuSales : public QObject
     void sDspOrderLookupByItem();
     void sDspQuoteLookupByCustomer();
     void sDspQuoteLookupByItem();
+    void sDspReturnAuthLookupByItem();
     void sDspInventoryAvailability();
     void sDspInventoryAvailabilityByCustomerType();
     void sDspInventoryAvailabilityBySalesOrder();
@@ -145,6 +151,7 @@ class menuSales : public QObject
     QMenu *lookupMenu;
     QMenu *lookupQuoteMenu;
     QMenu *lookupSoMenu;
+    QMenu *lookupRaMenu;
     QMenu *formsMenu;
     QMenu *analysisMenu;
     QMenu *reportsMenu;

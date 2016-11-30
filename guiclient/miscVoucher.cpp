@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include <metasql.h>
+#include <mqlutil.h>
 
 #include "guiErrorCheck.h"
 #include "errorReporter.h"
@@ -29,7 +31,6 @@ miscVoucher::miscVoucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_amountToDistribute,   SIGNAL(valueChanged()),                 this, SLOT(sPopulateBalanceDue()));
   connect(_amountToDistribute,   SIGNAL(effectiveChanged(const QDate&)), this, SLOT(sFillMiscList()));
   connect(_amountToDistribute,   SIGNAL(idChanged(int)),                 this, SLOT(sFillMiscList()));
-  connect(_amountToDistribute,   SIGNAL(valueChanged()),                 this, SLOT(sPopulateBalanceDue()));
   connect(_delete,               SIGNAL(clicked()),                      this, SLOT(sDeleteMiscDistribution()));
   connect(_edit,                 SIGNAL(clicked()),                      this, SLOT(sEditMiscDistribution()));
   connect(_invoiceDate,          SIGNAL(newDate(const QDate&)),          this, SLOT(sPopulateDistDate()));
@@ -38,6 +39,8 @@ miscVoucher::miscVoucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_new,                  SIGNAL(clicked()),                      this, SLOT(sNewMiscDistribution()));
   connect(_save,                 SIGNAL(clicked()),                      this, SLOT(sSave()));
   connect(_voucherNumber,        SIGNAL(editingFinished()),              this, SLOT(sHandleVoucherNumber()));
+  connect(_taxzone,              SIGNAL(newID(int)),                     this, SLOT(sDistributionDateUpdated()));
+  connect(_distributionDate,     SIGNAL(newDate(const QDate&)),          this, SLOT(sDistributionDateUpdated()));
 
   _terms->setType(XComboBox::APTerms);
 
@@ -437,6 +440,7 @@ void miscVoucher::sNewMiscDistribution()
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
   {
+    sUpdateVoucherTax();
     sFillMiscList();
     sPopulateDistributed();
   }
@@ -458,6 +462,7 @@ void miscVoucher::sEditMiscDistribution()
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
   {
+    sUpdateVoucherTax();
     sFillMiscList();
     sPopulateDistributed();
   }
@@ -473,44 +478,22 @@ void miscVoucher::sDeleteMiscDistribution()
                            delq, __FILE__, __LINE__))
     return;
 
+  sUpdateVoucherTax();
   sFillMiscList();
   sPopulateDistributed();
 }
 
 void miscVoucher::sFillMiscList()
 {
-  XSqlQuery getq;
-  getq.prepare("SELECT vodist_id,"
-             " (formatGLAccount(accnt_id) || ' - ' || accnt_descrip) AS account,"
-             "       vodist_notes,"
-             "       vodist_amount, 'curr' AS vodist_amount_xtnumericrole "
-             "FROM vodist, accnt "
-             "WHERE ( (vodist_poitem_id=-1)"
-             " AND (vodist_accnt_id=accnt_id)"
-             " AND (vodist_vohead_id=:vohead_id) ) "
-             "UNION ALL "
-             "SELECT vodist_id, (expcat_code || ' - ' || expcat_descrip) AS account,"
-             "       vodist_notes,"
-             "       vodist_amount, 'curr' AS vodist_amount_xtnumericrole "
-             "  FROM vodist, expcat "
-             " WHERE ( (vodist_poitem_id=-1)"
-             "   AND   (vodist_expcat_id=expcat_id)"
-             "   AND   (vodist_vohead_id=:vohead_id) ) "
-             "UNION ALL "
-             "SELECT vodist_id, (tax_code || ' - ' || tax_descrip) AS account,"
-             "       vodist_notes,"
-             "       vodist_amount, 'curr' AS vodist_amount_xtnumericrole "
-             "  FROM vodist, tax "
-             " WHERE ( (vodist_poitem_id=-1)"
-             "   AND   (vodist_tax_id=tax_id)"
-             "   AND   (vodist_vohead_id=:vohead_id) ) "
-             "ORDER BY account;" );
-  getq.bindValue(":vohead_id", _voheadid);
-  getq.exec();
-  _miscDistrib->populate(getq);
-  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Misc. Distributions"),
-                           getq, __FILE__, __LINE__))
-    return;
+  MetaSQLQuery mql = mqlLoad("voucher", "miscDistr");
+  ParameterList params;
+
+  params.append("vohead_id", _voheadid);
+  XSqlQuery miscFillList = mql.toQuery(params);
+  _miscDistrib->populate(miscFillList, true);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Misc Distributions"),
+                              miscFillList, __FILE__, __LINE__))
+      return;
 }
 
 void miscVoucher::sPopulateDistributed()
@@ -637,6 +620,30 @@ void miscVoucher::sPopulateDueDate()
                                   dateq, __FILE__, __LINE__))
       return;
   }
+}
+
+void miscVoucher::sDistributionDateUpdated()
+{
+  sUpdateVoucherTax();
+  sFillMiscList();
+  sPopulateDistributed();
+}
+
+void miscVoucher::sUpdateVoucherTax()
+{
+  if (_amountToDistribute->localValue() <= 0 || !_taxzone->isValid() || !_distributionDate->isValid())
+    return;
+
+  XSqlQuery updTax;
+  updTax.prepare("SELECT updatemiscvouchertax(:voheadid,:taxzone,:distdate,:curr) as ret;");
+  updTax.bindValue(":voheadid", _voheadid);
+  updTax.bindValue(":taxzone",  _taxzone->id());
+  updTax.bindValue(":distdate", _distributionDate->date());
+  updTax.bindValue(":curr", _amountToDistribute->id());
+  updTax.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Adding Tax to Voucher"),
+                         updTax, __FILE__, __LINE__))
+    return;
 }
 
 void miscVoucher::keyPressEvent( QKeyEvent * e )

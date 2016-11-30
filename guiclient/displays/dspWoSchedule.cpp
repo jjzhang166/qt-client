@@ -32,6 +32,7 @@
 #include "storedProcErrorLookup.h"
 #include "workOrder.h"
 #include "parameterwidget.h"
+#include "errorReporter.h"
 
 dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspWoSchedule", fl)
@@ -168,6 +169,7 @@ bool dspWoSchedule::setParams(ParameterList & params)
   params.append("planord", tr("Planned Order"));
   params.append("mps", tr("MPS"));
   params.append("so", tr("S/O"));
+  params.append("quote", tr("Quote"));
 
   params.append("overdue", tr("Overdue"));
   params.append("ontime", tr("On Time"));
@@ -307,18 +309,21 @@ void dspWoSchedule::sDeleteWO()
       int result = dspDeleteWO.value("returnVal").toInt();
       if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("deleteWo", result));
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                               storedProcErrorLookup("deleteWo", result),
+                               __FILE__, __LINE__);
+        return;
       }
     }
     else if (dspDeleteWO.lastError().type() != QSqlError::NoError)
-      systemError(this, dspDeleteWO.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                         dspDeleteWO, __FILE__, __LINE__);
 
     omfgThis->sWorkOrdersUpdated(-1, true);
   }
-  else if (dspDeleteWO.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                                dspDeleteWO, __FILE__, __LINE__))
   {
-    systemError(this, dspDeleteWO.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -558,9 +563,9 @@ void dspWoSchedule::sDspRunningAvailability()
     newdlg->set(params);
     omfgThis->handleNewWindow(newdlg);
   }
-  else if (dspDspRunningAvailability.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspDspRunningAvailability, __FILE__, __LINE__))
   {
-    systemError(this, dspDspRunningAvailability.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -584,9 +589,9 @@ void dspWoSchedule::sViewBOM()
     newdlg->set(params);
     omfgThis->handleNewWindow(newdlg);
   }
-  else if (dspViewBOM.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspViewBOM, __FILE__, __LINE__))
   {
-    systemError(this, dspViewBOM.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

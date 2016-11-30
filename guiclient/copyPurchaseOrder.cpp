@@ -17,6 +17,7 @@
 #include "inputManager.h"
 #include "purchaseOrderList.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 copyPurchaseOrder::copyPurchaseOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -90,9 +91,10 @@ void copyPurchaseOrder::sPopulatePoInfo(int)
       _vendPhone->setText(copyPopulatePoInfo.value("cntct_phone").toString());
       _currency->setId(copyPopulatePoInfo.value("pohead_curr_id").toInt());
     }
-    else if (copyPopulatePoInfo.lastError().type() != QSqlError::NoError)
+
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Purchase Order"),
+                                  copyPopulatePoInfo, __FILE__, __LINE__))
     {
-      systemError(this, copyPopulatePoInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -113,9 +115,9 @@ void copyPurchaseOrder::sPopulatePoInfo(int)
     copyPopulatePoInfo.bindValue(":pohead_id", _po->id());
     copyPopulatePoInfo.exec();
     _poitem->populate(copyPopulatePoInfo);
-    if (copyPopulatePoInfo.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Purchase Order"),
+                                  copyPopulatePoInfo, __FILE__, __LINE__))
     {
-      systemError(this, copyPopulatePoInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -155,9 +157,9 @@ void copyPurchaseOrder::sCopy()
       return;
     }
   }
-  else if (copyCopy.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Purchase Order"),
+                                copyCopy, __FILE__, __LINE__))
   {
-    systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

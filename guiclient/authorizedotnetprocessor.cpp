@@ -376,6 +376,8 @@ int  AuthorizeDotNetProcessor::doCharge(const int pccardid, const QString &pcvv,
   if (! preforder.isEmpty())
     APPENDFIELD(request, "x_po_num",   preforder);
 
+  APPENDFIELD(request, "x_invoice_num",   pneworder);
+
   QString response;
 
   returnValue = sendViaHTTP(request, response);
@@ -441,7 +443,11 @@ int AuthorizeDotNetProcessor::doCredit(const int pccardid, const QString &pcvv, 
               "  AND ccpay_amount = :amount) AS tryVoid,"
               "  ccpay_r_code,"
               "  formatbytea(decrypt(setbytea(ccard_number),"
-              "              setbytea(:key),'bf')) AS ccard_number"
+              "              setbytea(:key),'bf')) AS ccard_number,"
+              "  formatbytea(decrypt(setbytea(ccard_month_expired),"
+              "              setbytea(:key),'bf')) AS ccard_month_expired,"
+              "  formatbytea(decrypt(setbytea(ccard_year_expired),"
+              "              setbytea(:key),'bf')) AS ccard_year_expired"
               "  FROM ccpay LEFT OUTER JOIN ccard ON (ccpay_ccard_id=ccard_id)"
               " WHERE (ccpay_id=:ccpayid);");
   anq.bindValue(":ccpayid", pccpayid);
@@ -454,7 +460,13 @@ int AuthorizeDotNetProcessor::doCredit(const int pccardid, const QString &pcvv, 
     QString cardnum = anq.value("ccpay_card_pan_trunc").toString();
     if (cardnum.isEmpty())
       cardnum = anq.value("ccard_number").toString();
-    APPENDFIELD(request, "x_card_num", cardnum.right(4));
+    APPENDFIELD(request, "x_card_num", cardnum);
+    QString work_month;
+    work_month.setNum(anq.value("ccard_month_expired").toDouble());
+    if (work_month.length() == 1)
+      work_month = "0" + work_month;
+    APPENDFIELD(request, "x_exp_date",
+                work_month + anq.value("ccard_year_expired").toString().right(2));
     tryVoid = anq.value("tryVoid").toBool();
     approvalCode = anq.value("ccpay_r_code").toString();
   }

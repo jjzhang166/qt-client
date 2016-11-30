@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 returnAuthCheck::returnAuthCheck(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -106,8 +107,9 @@ void returnAuthCheck::sSave()
       _checkid = returnSave.value("result").toInt();
       if (_checkid < 0)
       {
-        systemError(this, storedProcErrorLookup("createCheck", _checkid),
-		    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                               storedProcErrorLookup("createCheck", _checkid),
+                               __FILE__, __LINE__);
         return;
       }
       returnSave.prepare( "SELECT checkhead_number "
@@ -115,17 +117,17 @@ void returnAuthCheck::sSave()
                "WHERE (checkhead_id=:check_id);" );
       returnSave.bindValue(":check_id", _checkid);
       returnSave.exec();
-      if (returnSave.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                    returnSave, __FILE__, __LINE__))
       {
-        systemError(this, returnSave.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
 	  done(true);
 	}
-    else if (returnSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                  returnSave, __FILE__, __LINE__))
     {
-     systemError(this, returnSave.lastError().databaseText(), __FILE__, __LINE__);
-        return;
+      return;
     }
   }
 }
@@ -166,9 +168,9 @@ void returnAuthCheck::sPopulateBankInfo(int pBankaccntid)
       _checkNum->setText(checkNumber.value("bankaccnt_nextchknum").toString());
       _amount->setId(checkNumber.value("bankaccnt_curr_id").toInt());
     }
-    else if (returnPopulateBankInfo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Information"),
+                                  checkNumber, __FILE__, __LINE__))
     {
-      systemError(this, checkNumber.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -179,7 +181,7 @@ void returnAuthCheck::populate()
   XSqlQuery returnpopulate;
   returnpopulate.prepare("SELECT cust_id,cust_name,cmhead_number,cmhead_curr_id, "
 	        "'Return Authorization ' || rahead_number::text AS memo, "
-			"'Applied Against Return ' || cmhead_number::text AS note, "
+			"'Applied Against Sales Credit ' || cmhead_number::text AS note, "
 			"aropen_id,aropen_amount "
 			"FROM rahead,cmhead,custinfo,aropen "
 			"WHERE ((cmhead_cust_id=cust_id) "
@@ -201,9 +203,9 @@ void returnAuthCheck::populate()
 	_for->setText(returnpopulate.value("memo").toString());
 	_notes->setText(returnpopulate.value("note").toString());
   }
-  else if (returnpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                           returnpopulate, __FILE__, __LINE__))
   {
-    systemError(this, returnpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -216,9 +218,9 @@ void returnAuthCheck::populate()
   returnpopulate.exec();
   if (returnpopulate.first())
     _bankaccnt->setId(returnpopulate.value("bankaccnt_id").toInt());
-  else if (returnpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                returnpopulate, __FILE__, __LINE__))
   {
-    systemError(this, returnpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else

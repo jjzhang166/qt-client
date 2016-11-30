@@ -37,12 +37,15 @@ public:
     customer(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~customer();
 
+    static bool userHasPriv(const int = cView, const int = 0);
+
     Q_INVOKABLE virtual int id()   const;
     Q_INVOKABLE virtual int mode() const;
 
 public slots:
     virtual SetResponse set(const ParameterList & pParams );
     virtual void setId(int);
+    virtual void sIdChanged(int);
     virtual void currentTabChanged(int index);
     virtual void populate();
     virtual void sCancel();

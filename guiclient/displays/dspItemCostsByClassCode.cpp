@@ -40,6 +40,7 @@ dspItemCostsByClassCode::dspItemCostsByClassCode(QWidget* parent, const char*, Q
   list()->addColumn(tr("Std. Cost"),   _costColumn,  Qt::AlignRight,  true,  "scost"  );
   list()->addColumn(tr("Act. Cost"),   _costColumn,  Qt::AlignRight,  true,  "acost"  );
   list()->addColumn(tr("% Var."),      _costColumn,  Qt::AlignRight,  false,  "percent_variance" );
+   list()->addColumn(tr("Item Type"), _orderColumn,  Qt::AlignLeft,   true,  "itemtype"   );
 }
 
 void dspItemCostsByClassCode::languageChange()
@@ -73,14 +74,34 @@ bool dspItemCostsByClassCode::setParams(ParameterList &params)
   params.append("byClassCode");
   _classCode->appendValue(params);
 
-  if(_onlyShowZero->isChecked())
-    params.append("onlyShowZeroCosts");
+  if(_onlyShowZeroStd->isChecked())
+    params.append("onlyShowZeroStdCosts");
+  if(_onlyShowZeroLast->isChecked())
+    params.append("onlyShowZeroLastCosts");
 
   if(_onlyShowDiff->isChecked())
     params.append("onlyShowDiffCosts");
 
   if(!_showInactive->isChecked())
     params.append("onlyShowActive");
+
+  if(_cbPurchase->isChecked())
+      params.append("showPurchased");
+
+  if(_cbMfg->isChecked())
+    params.append("showMfg");
+
+  if(_cbOS->isChecked())
+    params.append("showOS");
+
+  if(_cbCosting->isChecked())
+    params.append("showCosting");
+
+  if(_cbPlan->isChecked())
+    params.append("showPlanning");
+
+  if(_cbOther->isChecked())
+    params.append("showOther");
 
   XSqlQuery qq;
   qq.exec("SELECT locale_cost_scale "

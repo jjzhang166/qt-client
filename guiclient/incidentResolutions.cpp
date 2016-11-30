@@ -19,6 +19,7 @@
 #include <openreports.h>
 
 #include "incidentResolution.h"
+#include "errorReporter.h"
 
 incidentResolutions::incidentResolutions(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -72,9 +73,9 @@ void incidentResolutions::sFillList()
              "FROM incdtresolution "
              "ORDER BY incdtresolution_order, incdtresolution_name;" );
   incidentFillList.exec();
-  if (incidentFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Resolution Information"),
+                                incidentFillList, __FILE__, __LINE__))
   {
-    systemError(this, incidentFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _incidentResolutions->populate(incidentFillList);
@@ -87,9 +88,9 @@ void incidentResolutions::sDelete()
              "WHERE (incdtresolution_id=:incdtresolution_id);" );
   incidentDelete.bindValue(":incdtresolution_id", _incidentResolutions->id());
   incidentDelete.exec();
-  if (incidentDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Incident Resolution"),
+                                incidentDelete, __FILE__, __LINE__))
   {
-    systemError(this, incidentDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

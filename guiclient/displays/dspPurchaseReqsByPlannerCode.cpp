@@ -22,6 +22,7 @@
 #include "dspRunningAvailability.h"
 #include "purchaseOrder.h"
 #include "purchaseRequest.h"
+#include "errorReporter.h"
 
 dspPurchaseReqsByPlannerCode::dspPurchaseReqsByPlannerCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPurchaseReqsByPlannerCode", fl)
@@ -155,9 +156,9 @@ void dspPurchaseReqsByPlannerCode::sRelease()
                                         "could not be released.").arg(selected[i]->rawValue("pr_number").toString()),
                                      QMessageBox::Ok|QMessageBox::Default);
         }
-        else if (dspRelease.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Purchase Request(s)"),
+                                      dspRelease, __FILE__, __LINE__))
         {
-          systemError(this, dspRelease.lastError().databaseText(), __FILE__, __LINE__);
           return;
         }
       }

@@ -869,6 +869,8 @@ void ItemLineEdit::sParse()
       if (item.first())
       {
         setId(item.value("item_id").toInt());
+        if(_itemNumber != item.value("number").toString())
+          emit aliasChanged(item.value("number").toString());
         return;
       }
       // item number not found, check upccode
@@ -951,9 +953,15 @@ ItemCluster::ItemCluster(QWidget* pParent, const char* pName) :
   connect(itemNumber, SIGNAL(descrip2Changed(const QString &)), _descrip2, SLOT(setText(const QString &)));
 }
 
-void ItemCluster::addNumberWidget(ItemLineEdit* pNumberWidget)
+void ItemCluster::addNumberWidget(VirtualClusterLineEdit* pNumberWidget)
 {
-    _number = pNumberWidget;
+	VirtualClusterLineEdit *matchType = qobject_cast<VirtualClusterLineEdit *>(pNumberWidget);
+
+	if(matchType == 0)
+	  return;
+	  
+    _number = matchType;
+    
     if (! _number)
       return;
 
@@ -989,7 +997,7 @@ void ItemCluster::setDisabled(bool pDisabled)
   setReadOnly(pDisabled);
 }
 
-void ItemCluster::setId(const int pId)
+void ItemCluster::setId(const int pId, const QString&)
 {
   _number->setId(pId);
 }
@@ -1092,7 +1100,6 @@ void itemList::set(const ParameterList &pParams)
   param = pParams.value("caption", &valid);
   if (valid)
     setWindowTitle(param.toString());
-
   sFillList();
 }
 
@@ -1130,15 +1137,15 @@ void itemList::sFillList()
       QString post;
       if(_x_preferences && _x_preferences->boolean("ListNumericItemNumbersFirst"))
       {
-        pre =  "SELECT DISTINCT ON (toNumeric(item_number, 999999999999999), item_number) item_id, item_number,"
-               "(item_descrip1 || ' ' || item_descrip2) AS itemdescrip, item_upccode ";
-        post = "ORDER BY toNumeric(item_number, 999999999999999), item_number, item_upccode ";
+        pre = "SELECT DISTINCT item_id, item_number,  "
+              "(item_descrip1 || ' ' || item_descrip2) AS itemdescrip, item_upccode, isNumeric(item_number) ";
+        post = "ORDER BY isNumeric(item_number) DESC, item_number, item_upccode;";
       }
       else
       {
         pre =  "SELECT DISTINCT item_id, item_number,"
                "(item_descrip1 || ' ' || item_descrip2) AS itemdescrip, item_upccode ";
-        post = "ORDER BY item_number";
+        post = "ORDER BY item_number;";
       }
 
       QStringList clauses;
@@ -1165,6 +1172,11 @@ void itemList::sFillList()
 void itemList::reject()
 {
   done(_itemid);
+}
+
+void itemList::showEvent(QShowEvent *e)
+{
+  QDialog::showEvent(e);
 }
 
 //////////////////////////////////////////////////////////////////////

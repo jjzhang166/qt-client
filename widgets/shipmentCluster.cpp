@@ -60,7 +60,7 @@ void ShipmentCluster::limitToOrder(const int head_id)
 //    removeOrderLimit();
 }
 
-void ShipmentCluster::setId(const int pid)
+void ShipmentCluster::setId(const int pid, const QString&)
 {
 //  removeOrderLimit();
   static_cast<ShipmentClusterLineEdit*>(_number)->setId(pid);

@@ -12,21 +12,22 @@
 
 #include <QMessageBox>
 #include <QSqlError>
-//#include <QStatusBar>
 #include <QVariant>
 
 #include <metasql.h>
 #include <parameter.h>
+#include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 recallOrders::recallOrders(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
 
-  connect(_recall,	   SIGNAL(clicked()),	  this, SLOT(sRecall()));
-  connect(_showInvoiced, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(omfgThis, SIGNAL(invoicesUpdated(int, bool)), this, SLOT(sFillList()));
+  connect(_query,      SIGNAL(clicked()),                  this, SLOT(sFillList()));
+  connect(_recall,	   SIGNAL(clicked()),	                 this, SLOT(sRecall()));
+  connect(omfgThis,    SIGNAL(invoicesUpdated(int, bool)), this, SLOT(sFillList()));
 
   _showInvoiced->setEnabled(_privileges->check("RecallInvoicedShipment"));
   
@@ -58,7 +59,7 @@ void recallOrders::sRecall()
   if (_ship->altId() != -1)
   {    
     int answer = QMessageBox::question(this, tr("Purge Invoice?"),
-                            tr("<p>There is an unposted Invoice associated "
+                            tr("<p>There is an unposted Invoice associated with "
                                "this Shipment.  This Invoice will be purged "
                                "as part of the recall process. <p> "
                                "OK to continue? "),
@@ -76,65 +77,58 @@ void recallOrders::sRecall()
     int result = recallRecall.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("recallShipment", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Recalling Shipment"),
+                             storedProcErrorLookup("recallShipment", result),
+                             __FILE__, __LINE__);
       return;
     }
     sFillList();
   }
-  else if (recallRecall.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Recalling Shipment"),
+                                recallRecall, __FILE__, __LINE__))
   {
-    systemError(this, recallRecall.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
 
 void recallOrders::sFillList()
 {
+  if (_showInvoiced->isChecked())
+  {
+    if (!_customer->isValid())
+    {
+      QMessageBox::critical(this, tr("Missing Parameter"),
+                            tr("You must select a Customer if Show Invoiced is checked.")) ;
+      _customer->setFocus();
+      return;
+    }
+    if (!_dateRange->allValid())
+    {
+      QMessageBox::critical(this, tr("Missing Parameter"),
+                            tr("You must select a Date Range if Show Invoiced is checked.")) ;
+      _dateRange->setFocus();
+      return;
+    }
+  }
+
+  MetaSQLQuery mql = mqlLoad("shipments", "recall");
   ParameterList params;
 
   if (_showInvoiced->isChecked())
     params.append("showInvoiced", true);
+  if (_customer->isValid())
+    params.append("cust_id", _customer->id());
+  if (_dateRange->allValid())
+    _dateRange->appendValue(params);
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
 
-  QString sql = "SELECT DISTINCT shiphead_id, COALESCE(invchead_id, -1) AS invchead_id, shiphead_shipdate, "
-                "       cohead_number AS number, shiphead_number, cohead_billtoname, "
-                "       shipitem_invoiced "
-                "FROM shiphead JOIN shipitem ON (shipitem_shiphead_id=shiphead_id)"
-                "              JOIN coitem ON (coitem_id=shipitem_orderitem_id)"
-                "              JOIN cohead ON (cohead_id=coitem_cohead_id)"
-                "              JOIN itemsite ON (itemsite_id=coitem_itemsite_id)"
-                "              JOIN site() ON (warehous_id=itemsite_warehous_id)"
-                "              LEFT OUTER JOIN invcitem ON (invcitem_id=shipitem_invcitem_id)"
-                "              LEFT OUTER JOIN invchead ON (invchead_id=invcitem_invchead_id) "
-                "WHERE ( (shiphead_shipped)"
-                "  AND   (shiphead_order_type='SO')"
-                "<? if exists(\"showInvoiced\") ?>"
-                "  AND   (NOT shipitem_invoiced OR invchead_posted=false)"
-                "<? else ?>"
-                "  AND   (NOT shipitem_invoiced) "
-                "<? endif ?>"
-                " ) "
-                "<? if exists(\"MultiWhs\") ?>"
-                "UNION "
-                "SELECT DISTINCT shiphead_id, -1 AS invchead_id, shiphead_shipdate, "
-                "       tohead_number AS number, shiphead_number, '' AS cohead_billtoname, "
-                "       false AS shipitem_invoiced "
-                "FROM shiphead JOIN tohead ON (tohead_id=shiphead_order_id)"
-                "              JOIN toitem ON (toitem_tohead_id=tohead_id) "
-                "WHERE ((shiphead_shipped)"
-                "  AND  (shiphead_order_type='TO')"
-                "  AND  (tohead_status <> 'C')) "
-                "<? endif ?>"
-                "ORDER BY shiphead_shipdate DESC, number;" ;
-  MetaSQLQuery mql(sql);
   XSqlQuery r = mql.toQuery(params);
   _ship->clear();
   _ship->populate(r, true);
-  if (r.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                                r, __FILE__, __LINE__))
   {
-    systemError(this, r.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

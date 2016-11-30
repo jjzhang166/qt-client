@@ -25,7 +25,7 @@ class XDateInputDialog : public XDialog, public Ui::XDateInputDialog
 public:
     XDateInputDialog(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~XDateInputDialog();
-    QDate getDate();
+    Q_INVOKABLE virtual QDate   getDate();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );

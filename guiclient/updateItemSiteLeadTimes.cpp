@@ -10,6 +10,11 @@
 
 #include "updateItemSiteLeadTimes.h"
 
+#include <metasql.h>
+#include "mqlutil.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
+
 updateItemSiteLeadTimes::updateItemSiteLeadTimes(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
@@ -34,26 +39,50 @@ void updateItemSiteLeadTimes::languageChange()
 
 void updateItemSiteLeadTimes::sUpdate()
 {
+  ParameterList params;
+  _warehouse->appendValue(params);
+  _classCode->appendValue(params);
+
   XSqlQuery updateUpdate;
-  QString sql( "SELECT updateItemSiteLeadTime(itemsite_id, :leadTimePad) AS result "
-               "FROM itemsite, item "
-               "WHERE ((itemsite_item_id=item_id)" );
-
-  if (_warehouse->isSelected())
-    sql += " AND (itemsite_warehous_id=:warehous_id)";
-
-  if (_classCode->isSelected())
-    sql += " AND (item_classcode_id=:classcode_id)";
-  else if (_classCode->isPattern())
-    sql += " AND (item_classcode_id IN (SELECT classcode_id FROM classcode WHERE (classcode_code ~ :classcode_pattern)))";
-
-  sql += ");";
-
-  updateUpdate.prepare(sql);
-  updateUpdate.bindValue(":leadTimePad", _leadTimePad->value());
-  _warehouse->bindValue(updateUpdate);
-  _classCode->bindValue(updateUpdate);
-  updateUpdate.exec();
+  QProgressDialog progress;
+  progress.setWindowModality(Qt::ApplicationModal);
+  
+  MetaSQLQuery mql = mqlLoad("updateItemsiteLeadTimes", "load");
+  updateUpdate = mql.toQuery(params);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Loading Item Site Lead Times"),
+                           updateUpdate, __FILE__, __LINE__))
+  {
+    return;
+  }
+  
+  int count=0;
+  progress.setMaximum(updateUpdate.size());
+  XSqlQuery update;
+  while (updateUpdate.next())
+  {
+    progress.setLabelText(tr("Site: %1\n"
+                             "Item: %2 - %3")
+                          .arg(updateUpdate.value("warehous_code").toString())
+                          .arg(updateUpdate.value("item_number").toString())
+                          .arg(updateUpdate.value("item_descrip1").toString()));
+    
+    ParameterList rparams = params;
+    rparams.append("itemsite_id", updateUpdate.value("itemsite_id"));
+    rparams.append("leadTimePad", _leadTimePad->value());
+    MetaSQLQuery mql2 = mqlLoad("updateItemsiteLeadTimes", "update");
+    update = mql2.toQuery(rparams);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Item Site Lead Times"),
+                             update, __FILE__, __LINE__))
+    {
+      return;
+    }
+    
+    if (progress.wasCanceled())
+      break;
+    
+    count++;
+    progress.setValue(count);
+  }
 
   accept();
 }

@@ -12,6 +12,7 @@
 
 #include <QMessageBox>
 #include <QVariant>
+#include "errorReporter.h"
 
 reprioritizeWo::reprioritizeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -97,9 +98,8 @@ void reprioritizeWo::sPopulateWoInfo(int pWoid)
       return;
     }
     else
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                         reprioritizePopulateWoInfo, __FILE__, __LINE__);
   }
 
   _current->clear();

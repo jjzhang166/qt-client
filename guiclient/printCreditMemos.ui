@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Print Returns</string>
+   <string>Print Sales Credits</string>
   </property>
   <layout class="QHBoxLayout" name="_printCreditMemosLyt"/>
  </widget>

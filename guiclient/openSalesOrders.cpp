@@ -45,14 +45,29 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags f
   _dates->setStartDate(QDate().currentDate().addDays(-90));
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
+  QString holdSql = QString("SELECT 0 AS code, '%1' AS desc "
+                            " UNION SELECT 1, '%2' " 
+                            " UNION SELECT 2, '%3' " 
+                            " UNION SELECT 3, '%4' " 
+                            " UNION SELECT 4, '%5' "
+                            " ORDER BY code; ")
+          .arg(tr("None"))
+          .arg(tr("Credit"))
+          .arg(tr("Shipping"))
+          .arg(tr("Packing"))
+          .arg(tr("Return"));
+
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
   parameterWidget()->append(tr("Customer"), "cust_id", ParameterWidget::Customer);
   parameterWidget()->appendComboBox(tr("Customer Type"), "custtype_id", XComboBox::CustomerTypes);
   parameterWidget()->append(tr("Customer Type Pattern"), "custtype_pattern", ParameterWidget::Text);
-  parameterWidget()->append(tr("P/O Number"), "poNumber", ParameterWidget::Text);
+  parameterWidget()->append(tr("Customer P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Sales Rep."), "salesrep_id", XComboBox::SalesRepsActive);
   parameterWidget()->appendComboBox(tr("Sale Type"), "saletype_id", XComboBox::SaleTypes);
+  parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
+  parameterWidget()->append(tr("Created By"), "createdby", ParameterWidget::User);
+  parameterWidget()->appendComboBox(tr("Hold Type"), "holdtype", holdSql);
 
   list()->addColumn(tr("Order #"),          _orderColumn,    Qt::AlignLeft,  true,  "cohead_number");
   list()->addColumn(tr("Sale Type"),        _orderColumn,    Qt::AlignLeft,  true,  "saletype_descr");
@@ -69,6 +84,7 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags f
     list()->addColumn(tr("Margin %"),       _prcntColumn,    Qt::AlignRight, true,  "ordermarginpercent");
   }
   list()->addColumn(tr("Status"),           _statusColumn,   Qt::AlignCenter,false, "status");
+  list()->addColumn(tr("Hold Type"),        -1,              Qt::AlignLeft  ,false, "holdtype");
   list()->addColumn(tr("Notes"),            -1,              Qt::AlignLeft,  false, "notes");
   
   setupCharacteristics("SO");
@@ -128,6 +144,12 @@ bool openSalesOrders::setParams(ParameterList &params)
   if (_showClosed->isChecked() && _showClosed->isVisible())
     params.append("showClosed");
 
+  params.append("none",   tr("None"));
+  params.append("credit", tr("Credit"));
+  params.append("ship",   tr("Shipping"));
+  params.append("pack",   tr("Packing"));
+  params.append("return", tr("Return"));
+   
   return true;
 }
 
@@ -193,13 +215,15 @@ void openSalesOrders::sAddToPackingListBatch()
     int result = openAddToPackingListBatch.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("addToPackingListBatch", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Packing List Information"),
+                             storedProcErrorLookup("addToPackingListBatch", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (openAddToPackingListBatch.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Packing List Information"),
+                                openAddToPackingListBatch, __FILE__, __LINE__))
   {
-    systemError(this, openAddToPackingListBatch.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

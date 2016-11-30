@@ -224,7 +224,7 @@ to be bound by its terms.</comment>
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="gridLayout_1">
             <item row="0" column="0">
              <widget class="QLabel" name="_docTypeLit">
               <property name="text">
@@ -245,26 +245,6 @@ to be bound by its terms.</comment>
                   <height>16777215</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Credit Memo</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Debit Memo</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Invoice</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Customer Deposit</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
@@ -478,7 +458,7 @@ to be bound by its terms.</comment>
             <item row="2" column="1">
              <widget class="CurrDisplay" name="_balance"/>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="_commissionDueLit">
               <property name="text">
                <string>Commission Due:</string>
@@ -488,7 +468,7 @@ to be bound by its terms.</comment>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="5" column="1">
              <widget class="CurrCluster" name="_commissionDue">
               <property name="baseVisible">
                <bool>false</bool>
@@ -502,13 +482,56 @@ to be bound by its terms.</comment>
              </widget>
             </item>
             <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="XComboBox" name="_taxzone">
+                <property name="allowNull">
+                 <bool>true</bool>
+                </property>
+                <property name="nullStr">
+                 <string>None</string>
+                </property>
+                <property name="type">
+                 <enum>XComboBox::TaxZones</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0">
+             <widget class="XLabel" name="_taxzoneLit">
+              <property name="text">
+               <string>Tax Zone:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
              <widget class="CurrCluster" name="_tax">
               <property name="enabled">
                <bool>false</bool>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="XURLLabel" name="_taxLit">
               <property name="text">
                <string>Tax:</string>
@@ -698,6 +721,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>

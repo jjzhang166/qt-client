@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include "standardJournalItem.h"
+#include "errorReporter.h"
 
 standardJournal::standardJournal(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -282,9 +283,8 @@ void standardJournal::sFillList()
     _credits->setStyleSheet(stylesheet);
   }
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Information"),
+                       standardFillList, __FILE__, __LINE__);
 }
 
 void standardJournal::populate()
@@ -304,8 +304,7 @@ void standardJournal::populate()
     sFillList();
   }
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Information"),
+                       standardpopulate, __FILE__, __LINE__);
 }
 

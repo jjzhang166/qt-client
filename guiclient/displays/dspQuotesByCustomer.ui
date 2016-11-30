@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>541</width>
-    <height>165</height>
+    <height>168</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -184,6 +184,7 @@ to be bound by its terms.</comment>
    <class>DateCluster</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XCheckBox</class>

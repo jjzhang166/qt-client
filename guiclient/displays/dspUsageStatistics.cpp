@@ -29,6 +29,13 @@ dspUsageStatistics::dspUsageStatistics(QWidget* parent, const char* name, Qt::Wi
   setParameterWidgetVisible(true);
   _printing = false;
 
+  QString qryABC = QString( "SELECT  'A', '%1' UNION "
+                            "SELECT  'B', '%2' UNION "
+                            "SELECT  'C', '%3' ORDER BY 1;")
+      .arg(tr("A Class"))
+      .arg(tr("B Class"))
+      .arg(tr("C Class"));
+
   parameterWidget()->append(tr("Start Date"), "startDate", ParameterWidget::Date, QDate(QDate::currentDate().year(),1,1), true);
   parameterWidget()->append(tr("End Date"),   "endDate",   ParameterWidget::Date, QDate::currentDate(), true);
   parameterWidget()->appendComboBox(tr("Class Code"), "classcode_id", XComboBox::ClassCodes);
@@ -38,12 +45,16 @@ dspUsageStatistics::dspUsageStatistics(QWidget* parent, const char* name, Qt::Wi
   parameterWidget()->append(tr("Item Group Pattern"), "itemgrp_pattern", ParameterWidget::Text);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
+  parameterWidget()->append(tr("ABC Class"), "abc_class",
+                           ParameterWidget::Multiselect, QVariant(), false,
+                           qryABC);
 
   parameterWidget()->applyDefaultFilterSet();
 
   list()->addColumn(tr("Site"),        _whsColumn,  Qt::AlignCenter, true,  "warehous_code" );
   list()->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft,   true,  "item_number"   );
   list()->addColumn(tr("Description"), -1,          Qt::AlignLeft,   true,  "itemdescrip"   );
+  list()->addColumn(tr("ABC Class"),   _itemColumn, Qt::AlignLeft,   false, "itemsite_abcclass"   );
   list()->addColumn(tr("Received"),    _qtyColumn,  Qt::AlignRight,  true,  "received"  );
   list()->addColumn(tr("Issued"),      _qtyColumn,  Qt::AlignRight,  true,  "issued"  );
   list()->addColumn(tr("Sold"),        _qtyColumn,  Qt::AlignRight,  true,  "sold"  );

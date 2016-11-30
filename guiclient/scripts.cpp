@@ -56,7 +56,7 @@ void scripts::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  scriptEditor *newdlg = new scriptEditor(this, "", Qt::Window);
+  scriptEditor *newdlg = new scriptEditor();
   newdlg->set(params);
 
   omfgThis->handleNewWindow(newdlg);
@@ -69,7 +69,7 @@ void scripts::sEdit()
   params.append("mode", "edit");
   params.append("script_id", _script->id());
 
-  scriptEditor *newdlg = new scriptEditor(this, "", Qt::Window);
+  scriptEditor *newdlg = new scriptEditor();
   newdlg->set(params);
 
   omfgThis->handleNewWindow(newdlg);

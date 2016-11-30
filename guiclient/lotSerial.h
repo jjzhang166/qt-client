@@ -28,6 +28,7 @@ public:
     QPushButton* _print;
 
 public slots:
+    virtual enum SetResponse set( const ParameterList & pParams );
     virtual void populate();
     virtual void sSave();
     virtual void sChanged();

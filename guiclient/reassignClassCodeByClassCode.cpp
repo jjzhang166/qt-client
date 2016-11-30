@@ -40,7 +40,7 @@ void reassignClassCodeByClassCode::languageChange()
 void reassignClassCodeByClassCode::sReassign()
 {
   XSqlQuery reassignReassign;
-  if ( (_classCodePattern->isChecked()) && (_classCode->text().length() == 0) )
+  if ( (_classCodePattern->isChecked()) && (_classCode->text().trimmed().length() == 0) )
   {
     QMessageBox::warning(this, tr("Missing Class Code Pattern"),
                       tr("<p>You must enter a Class Code Pattern."));

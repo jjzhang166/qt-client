@@ -12,6 +12,7 @@
 
 #include <parameter.h>
 #include "projectType.h"
+#include "errorReporter.h"
 #include "guiclient.h"
 
 projectTypes::projectTypes(QWidget* parent, const char* name, Qt::WindowFlags fl)
@@ -64,6 +65,9 @@ void projectTypes::sDelete()
   typeDelete.bindValue(":prjtype_id", _projecttype->id());
   typeDelete.exec();
 
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Project Type"),
+                            typeDelete, __FILE__, __LINE__);
+
   sFillList();
 }
 
@@ -73,9 +77,11 @@ void projectTypes::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  projectType *newdlg = new projectType();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  projectType newdlg(this, "", true);
+  newdlg.set(params);
+
+  if (newdlg.exec() != XDialog::Rejected)
+    sFillList();
 }
 
 void projectTypes::sEdit()
@@ -84,9 +90,11 @@ void projectTypes::sEdit()
   params.append("mode", "edit");
   params.append("prjtype_id", _projecttype->id());
 
-  projectType *newdlg = new projectType();
-  newdlg->set(params);
-  omfgThis->handleNewWindow(newdlg);
+  projectType newdlg(this, "", true);
+  newdlg.set(params);
+
+  if (newdlg.exec() != XDialog::Rejected)
+    sFillList();
 }
 
 void projectTypes::sFillList()

@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>editOwners</class>
- <widget class="QDialog" name="editOwners" >
-  <property name="geometry" >
+ <widget class="QDialog" name="editOwners">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,65 +17,45 @@ to be bound by its terms.</comment>
     <height>400</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Edit Owners</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
-    <layout class="QVBoxLayout" >
+  <layout class="QGridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout">
      <item>
-      <layout class="QGridLayout" >
-       <item row="0" column="0" >
-        <layout class="QGridLayout" >
-         <item row="0" column="0" >
-          <widget class="QLabel" name="_ownerLit" >
-           <property name="text" >
-            <string>Owner:</string>
-           </property>
-           <property name="alignment" >
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" >
-          <widget class="UsernameCluster" name="_owner" >
-           <property name="minimumSize" >
+      <layout class="QGridLayout">
+       <item row="0" column="0">
+        <layout class="QGridLayout">
+         <item row="0" column="0" alignment="Qt::AlignRight">
+          <widget class="UsernameCluster" name="_owner">
+           <property name="minimumSize">
             <size>
              <width>0</width>
              <height>0</height>
             </size>
            </property>
-           <property name="label" >
-            <string/>
+           <property name="label">
+            <string>Owner:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0" >
-          <widget class="QLabel" name="_newOwnerLit" >
-           <property name="text" >
+         <item row="1" column="0" alignment="Qt::AlignRight">
+          <widget class="UsernameCluster" name="_newOwner">
+           <property name="label">
             <string>New Owner:</string>
            </property>
-           <property name="alignment" >
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
           </widget>
          </item>
-         <item row="1" column="1" >
-          <widget class="UsernameCluster" name="_newOwner" >
-           <property name="label" >
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2" >
+         <item row="2" column="0" colspan="2">
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Maximum</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>241</width>
              <height>20</height>
@@ -85,56 +65,56 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </item>
-       <item row="0" column="1" >
-        <widget class="QGroupBox" name="_categoriesBox" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="_categoriesBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>In the following categories:</string>
          </property>
-         <layout class="QGridLayout" >
-          <item row="0" column="0" >
-           <widget class="QCheckBox" name="_project" >
-            <property name="text" >
+         <layout class="QGridLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="_project">
+            <property name="text">
              <string>Project</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QCheckBox" name="_todo" >
-            <property name="text" >
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="_todo">
+            <property name="text">
              <string>To Do</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2" >
-           <widget class="QCheckBox" name="_account" >
-            <property name="text" >
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="_account">
+            <property name="text">
              <string>Account</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QCheckBox" name="_contact" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="_contact">
+            <property name="text">
              <string>Contact</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" >
-           <widget class="QCheckBox" name="_incident" >
-            <property name="text" >
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="_incident">
+            <property name="text">
              <string>Incident</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2" >
-           <widget class="QCheckBox" name="_oppourtunity" >
-            <property name="text" >
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="_oppourtunity">
+            <property name="text">
              <string>Opportunity</string>
             </property>
            </widget>
@@ -142,12 +122,12 @@ to be bound by its terms.</comment>
          </layout>
         </widget>
        </item>
-       <item row="0" column="2" >
+       <item row="0" column="2">
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>16</width>
            <height>86</height>
@@ -155,24 +135,24 @@ to be bound by its terms.</comment>
          </property>
         </spacer>
        </item>
-       <item row="0" column="3" >
-        <layout class="QVBoxLayout" >
+       <item row="0" column="3">
+        <layout class="QVBoxLayout">
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Close</string>
            </property>
           </widget>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Maximum</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>40</height>
@@ -185,11 +165,11 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" >
+      <layout class="QHBoxLayout">
        <item>
-        <widget class="XTreeWidget" name="_list" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
+        <widget class="XTreeWidget" name="_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
            <horstretch>244</horstretch>
            <verstretch>232</verstretch>
           </sizepolicy>
@@ -197,37 +177,37 @@ to be bound by its terms.</comment>
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_query" >
-           <property name="text" >
+          <widget class="QPushButton" name="_query">
+           <property name="text">
             <string>&amp;Query</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_modify" >
-           <property name="text" >
+          <widget class="QPushButton" name="_modify">
+           <property name="text">
             <string>Modify</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_modifyAll" >
-           <property name="text" >
+          <widget class="QPushButton" name="_modifyAll">
+           <property name="text">
             <string>Modify All</string>
            </property>
           </widget>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>281</height>
@@ -253,6 +233,7 @@ to be bound by its terms.</comment>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -17,7 +17,6 @@
 
 #include "project.h"
 #include "projects.h"
-#include "projectTypes.h"
 #include "dspOrderActivityByProject.h"
 
 #include "contact.h"
@@ -95,10 +94,6 @@ menuCRM::menuCRM(GUIClient *Pparent) :
     { "pm.newProject", tr("&New..."), SLOT(sNewProject()), projectsMenu, "MaintainPersonalProjects MaintainAllProjects", NULL, NULL, true , NULL },
     { "pm.projects", tr("&List..."), SLOT(sProjects()), projectsMenu, "ViewPersonalProjects MaintainPersonalProjects ViewAllProjects MaintainAllProjects", new QPixmap(":/images/projects.png"), toolBar, true , tr("List Projects") },
     
-    { "separator",		NULL,				NULL,			projectsMenu,	"true", NULL, NULL, true	, NULL },
-
-    { "pm.projectTypes", tr("&Project Types..."), SLOT(sProjectTypes()), projectsMenu, "MaintainProjectTypes", NULL, NULL, true , NULL },
-
     // Opportunity
     { "menu",		tr("&Opportunity"),	(char*)opportunityMenu,	crmMenu,		"true", NULL, NULL, true	, NULL },
     { "crm.newOpportunity", tr("&New..."), SLOT(sNewOpportunity()), opportunityMenu, "MaintainPersonalOpportunities MaintainAllOpportunities", NULL, NULL, true , NULL },
@@ -153,11 +148,7 @@ void menuCRM::addActionsToMenu(actionProperties acts[], unsigned int numElems)
   QAction * m = 0;
   for (unsigned int i = 0; i < numElems; i++)
   {
-    if (! acts[i].visible)
-    {
-      continue;
-    }
-    else if (acts[i].actionName == QString("menu"))
+    if (acts[i].actionName == QString("menu"))
     {
       m = acts[i].menu->addMenu((QMenu*)(acts[i].slot));
       if(m)
@@ -165,11 +156,11 @@ void menuCRM::addActionsToMenu(actionProperties acts[], unsigned int numElems)
     }
     else if (acts[i].actionName == QString("separator"))
     {
-      acts[i].menu->addSeparator();
+      m = acts[i].menu->addSeparator();
     }
     else if ((acts[i].toolBar != NULL) && (!acts[i].toolTip.isEmpty()))
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -182,7 +173,7 @@ void menuCRM::addActionsToMenu(actionProperties acts[], unsigned int numElems)
     }
     else if (acts[i].toolBar != NULL)
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -195,7 +186,7 @@ void menuCRM::addActionsToMenu(actionProperties acts[], unsigned int numElems)
     }
     else
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -203,6 +194,7 @@ void menuCRM::addActionsToMenu(actionProperties acts[], unsigned int numElems)
                   acts[i].menu,
                   acts[i].priv ) ;
     }
+    if (m) m->setVisible(acts[i].visible);
   }
 }
 
@@ -219,11 +211,6 @@ void menuCRM::sNewProject()
 void menuCRM::sProjects()
 {
   omfgThis->handleNewWindow(new projects());
-}
-
-void menuCRM::sProjectTypes()
-{
-  omfgThis->handleNewWindow(new projectTypes());
 }
 
 void menuCRM::sDspOrderActivityByProject()

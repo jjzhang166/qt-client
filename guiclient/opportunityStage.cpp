@@ -13,6 +13,8 @@
 #include <QVariant>
 #include <QMessageBox>
 
+#include "errorReporter.h"
+
 /*
  *  Constructs a opportunityStage as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
@@ -130,9 +132,8 @@ void opportunityStage::sSave()
       _opstageid = opportunitySave.value("opstage_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Opportunity Stage"),
+                           opportunitySave, __FILE__, __LINE__);
       return;
     }
 

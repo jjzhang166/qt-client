@@ -16,6 +16,7 @@
 #include <metasql.h>
 #include "inputManager.h"
 #include "distributeInventory.h"
+#include "errorReporter.h"
 
 issueWoMaterialBatch::issueWoMaterialBatch(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -164,10 +165,9 @@ void issueWoMaterialBatch::sIssue()
       if (issue.value("result").toInt() < 0)
       {
         rollback.exec();
-        systemError( this, tr("A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2, Error #%3.")
-                           .arg(__LINE__)
-                           .arg(_wo->id())
-                           .arg(issue.value("result").toInt()) );
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information; Work Order ID #%1")
+                             .arg(_wo->id()),
+                             issue, __FILE__, __LINE__);
         return;
       }
       if (distributeInventory::SeriesAdjust(issue.value("result").toInt(), this) == XDialog::Rejected)
@@ -196,7 +196,8 @@ void issueWoMaterialBatch::sIssue()
         if (lsdetail.lastError().type() != QSqlError::NoError)
         {
           rollback.exec();
-          systemError(this, lsdetail.lastError().databaseText(), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material"),
+                               lsdetail, __FILE__, __LINE__);
           return;
         }
       }
@@ -205,9 +206,10 @@ void issueWoMaterialBatch::sIssue()
     else
     {
       rollback.exec();
-      systemError( this, tr("A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2.")
-                         .arg(__LINE__)
-                         .arg(_wo->id()) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                           tr("Window:%1/n Error Issuing Material: Work Order ID #%2")
+                           .arg(windowTitle())
+                           .arg(_wo->id()),__FILE__,__LINE__);
       return;
     }
 

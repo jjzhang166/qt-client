@@ -55,10 +55,10 @@ to be bound by its terms.</comment>
      <property name="enabled">
       <bool>false</bool>
      </property>
-     <property name="allowNull">
+     <property name="allowNull" stdset="0">
       <bool>true</bool>
      </property>
-     <property name="nullStr">
+     <property name="nullStr" stdset="0">
       <string>[ Not in a Package ]</string>
      </property>
     </widget>
@@ -201,6 +201,16 @@ to be bound by its terms.</comment>
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="_extractWidgets">
+       <property name="toolTip">
+        <string>Extract widget names from matching screen, or present list of matching screens if multiple matches found</string>
+       </property>
+       <property name="text">
+        <string>E&amp;xtract Widgets</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="_import">

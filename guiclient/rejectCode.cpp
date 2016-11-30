@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -104,20 +104,21 @@ void rejectCode::sSave()
               "  FROM rjctcode"
               " WHERE((rjctcode_id != :rjctcode_id)"
               " AND (rjctcode_code = :rjctcode_code));");
-    rejectSave.bindValue(":rjctcode_id", _rjctcodeid); 
-    rejectSave.bindValue(":rjctcode_code", _code->text());
-    rejectSave.exec();
-    if (rejectSave.first())
-    {
-      QMessageBox::warning( this, tr("Cannot Save Reject Code"),
-                            tr("You may not rename this Reject code with the entered name as it is in use by another Reject code.") );
-      return;
-    }
 
-    rejectSave.prepare( "UPDATE rjctcode "
-               "SET rjctcode_code=:rjctcode_code,"
-               "    rjctcode_descrip=:rjctcode_descrip "
-               "WHERE (rjctcode_id=:rjctcode_id);" );
+  rejectSave.bindValue(":rjctcode_id", _rjctcodeid); 
+  rejectSave.bindValue(":rjctcode_code", _code->text());
+  rejectSave.exec();
+  if (rejectSave.first())
+  {
+    QMessageBox::warning( this, tr("Cannot Save Reject Code"),
+                          tr("You may not rename this Reject code with the entered name as it is in use by another Reject code.") );
+    return;
+  }
+
+  rejectSave.prepare( "UPDATE rjctcode "
+             "SET rjctcode_code=:rjctcode_code,"
+             "    rjctcode_descrip=:rjctcode_descrip "
+             "WHERE (rjctcode_id=:rjctcode_id);" );
 
   rejectSave.bindValue(":rjctcode_id", _rjctcodeid);
   rejectSave.bindValue(":rjctcode_code", _code->text());

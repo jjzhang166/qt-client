@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include "inputManager.h"
+#include "errorReporter.h"
 
 implodeWo::implodeWo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -95,7 +96,8 @@ void implodeWo::sImplode()
     return;
   }
   else if (implodeImplode.lastError().type() != QSqlError::NoError)
-    systemError(this, implodeImplode.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Imploding Work Order"),
+                       implodeImplode, __FILE__, __LINE__);
 
   omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 

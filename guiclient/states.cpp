@@ -19,6 +19,7 @@
 #include <openreports.h>
 
 #include "state.h"
+#include "errorReporter.h"
 
 states::states(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -94,9 +95,9 @@ void states::sDelete()
                                 .arg(_state->currentItem()->text("state_name")),
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
     return;
-  else if (statesDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving State Information"),
+                                statesDelete, __FILE__, __LINE__))
   {
-    systemError(this, statesDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else if (QMessageBox::question(this, tr("Delete State?"),

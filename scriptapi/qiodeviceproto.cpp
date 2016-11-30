@@ -8,6 +8,7 @@
  *to be bound by its terms.
  */
 
+#include "scriptapi_internal.h"
 #include "qiodeviceproto.h"
 
 /** \ingroup scriptapi
@@ -19,10 +20,23 @@
 */
 
 QScriptValue QIODevicetoScriptValue(QScriptEngine *engine, QIODevice* const &item)
-{ return engine->newQObject(item); }
+{
+  return engine->newQObject(item);
+}
 
 void QIODevicefromScriptValue(const QScriptValue &obj, QIODevice* &item)
-{ item = qobject_cast<QIODevice*>(obj.toQObject()); }
+{
+  item = qobject_cast<QIODevice*>(obj.toQObject());
+}
+
+QScriptValue OpenModeFlagToScriptValue(QScriptEngine *engine, const enum QIODevice::OpenModeFlag &p)
+{
+  return QScriptValue(engine, (int)p);
+}
+void OpenModeFlagFromScriptValue(const QScriptValue &obj, enum QIODevice::OpenModeFlag &p)
+{
+  p = (enum QIODevice::OpenModeFlag)obj.toInt32();
+}
 
 void setupQIODeviceProto(QScriptEngine *engine)
 {
@@ -32,17 +46,16 @@ void setupQIODeviceProto(QScriptEngine *engine)
   engine->globalObject().setProperty("QIODevice",  iodev, QScriptValue::ReadOnly | QScriptValue::Undeletable);
 
   // enum QIODevice::OpenModeFlag
-  iodev.setProperty("NotOpen", QScriptValue(engine, QIODevice::NotOpen), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("ReadOnly", QScriptValue(engine, QIODevice::ReadOnly), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("WriteOnly", QScriptValue(engine, QIODevice::WriteOnly), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("ReadWrite", QScriptValue(engine, QIODevice::ReadWrite), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("Append", QScriptValue(engine, QIODevice::Append), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("Truncate", QScriptValue(engine, QIODevice::Truncate), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("Text", QScriptValue(engine, QIODevice::Text), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  iodev.setProperty("Unbuffered", QScriptValue(engine, QIODevice::Unbuffered), QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  qScriptRegisterMetaType(engine, OpenModeFlagToScriptValue, OpenModeFlagFromScriptValue);
+  iodev.setProperty("NotOpen",    QScriptValue(engine, QIODevice::NotOpen),    ENUMPROPFLAGS);
+  iodev.setProperty("ReadOnly",   QScriptValue(engine, QIODevice::ReadOnly),   ENUMPROPFLAGS);
+  iodev.setProperty("WriteOnly",  QScriptValue(engine, QIODevice::WriteOnly),  ENUMPROPFLAGS);
+  iodev.setProperty("ReadWrite",  QScriptValue(engine, QIODevice::ReadWrite),  ENUMPROPFLAGS);
+  iodev.setProperty("Append",     QScriptValue(engine, QIODevice::Append),     ENUMPROPFLAGS);
+  iodev.setProperty("Truncate",   QScriptValue(engine, QIODevice::Truncate),   ENUMPROPFLAGS);
+  iodev.setProperty("Text",       QScriptValue(engine, QIODevice::Text),       ENUMPROPFLAGS);
+  iodev.setProperty("Unbuffered", QScriptValue(engine, QIODevice::Unbuffered), ENUMPROPFLAGS);
 }
-
-Q_DECLARE_METATYPE(enum QIODevice::OpenModeFlag);
 
 QIODeviceProto::QIODeviceProto(QObject *parent)
     : QObject(parent)
@@ -96,11 +109,19 @@ QString QIODeviceProto::errorString() const
   return QString();
 }
 
-bool QIODeviceProto::getChar(char *c)
+// Javascript does not support pass by reference String parameters. Return char instead.
+//bool QIODeviceProto::getChar(char *c)
+char QIODeviceProto::getChar()
 {
+  char c;
   QIODevice *item = qscriptvalue_cast<QIODevice*>(thisObject());
-  if (item)
-    return item->getChar(c);
+  if (item) {
+    if (item->getChar(&c)) {
+      return c;
+    } else {
+      return false;
+    }
+  }
   return false;
 }
 
@@ -294,28 +315,22 @@ qint64 QIODeviceProto::write(const QByteArray &byteArray)
   return 0;
 }
 
-qint64 QIODeviceProto::write(const char *data)
+// Javascript does not support pass by reference String parameters. Don't use a pointer.
+//qint64 QIODeviceProto::write(const char *data)
+qint64 QIODeviceProto::write(char data)
 {
   QIODevice *item = qscriptvalue_cast<QIODevice*>(thisObject());
   if (item)
-    return item->write(data);
+    return item->write(&data);
   return 0;
 }
 
-qint64 QIODeviceProto::write(const char *data, qint64 maxSize)
+// Javascript does not support pass by reference String parameters. Don't use a pointer.
+//qint64 QIODeviceProto::write(const char *data, qint64 maxSize)
+qint64 QIODeviceProto::write(char data, qint64 maxSize)
 {
   QIODevice *item = qscriptvalue_cast<QIODevice*>(thisObject());
   if (item)
-    return item->write(data, maxSize);
+    return item->write(&data, maxSize);
   return 0;
 }
-
-/**
-QString QIODeviceProto::toString() const
-{
-  QIODevice *item = qscriptvalue_cast<QIODevice*>(thisObject());
-  if (item)
-    return QString("QIODevice()");
-  return QString("QIODevice(unknown)");
-}
-*/

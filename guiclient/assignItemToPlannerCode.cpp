@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QVariant>
 
+#include "guiErrorCheck.h"
+
 assignItemToPlannerCode::assignItemToPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
 {
@@ -40,12 +42,15 @@ void assignItemToPlannerCode::languageChange()
 void assignItemToPlannerCode::sAssign()
 {
   XSqlQuery assignAssign;
-  if(!_plannerCode->isValid())
-  {
-    QMessageBox::warning(this, tr("No Planner Code Selected"),
-      tr("You must select a Planner Code to assign before continuing.") );
-    return;
-  }
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(!_item->isValid(), _item,
+                          tr("You must select a valid Item before continuing.") )
+         << GuiErrorCheck(!_plannerCode->isValid(), _plannerCode,
+                          tr("You must select a Planner Code to assign before continuing.") )
+  ;
+
+  if (GuiErrorCheck::reportErrors(this, tr("Missing Information"), errors))
+      return;
 
   QString sql( "UPDATE itemsite "
                "SET itemsite_plancode_id=:plancode_id "

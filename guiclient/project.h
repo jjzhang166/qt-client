@@ -24,6 +24,8 @@ public:
     project(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~project();
 
+    static bool userHasPriv(const int = cView, const int = 0);
+
 public slots:
     virtual SetResponse set( const ParameterList & pParams );
     virtual void populate();

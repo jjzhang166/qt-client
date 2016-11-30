@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>viewCheckRun</class>
- <widget class="QWidget" name="viewCheckRun" >
-  <property name="geometry" >
+ <widget class="QWidget" name="viewCheckRun">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,58 +17,58 @@ to be bound by its terms.</comment>
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>View Payment Run</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_4" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" name="gridLayout_3" >
-     <property name="margin" >
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="margin">
       <number>12</number>
      </property>
-     <property name="spacing" >
+     <property name="spacing">
       <number>12</number>
      </property>
-     <item row="0" column="0" >
-      <layout class="QHBoxLayout" name="horizontalLayout_3" >
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout" >
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QGridLayout" name="gridLayout_2" >
-           <item row="0" column="0" colspan="2" >
-            <widget class="VendorGroup" name="_vendorgroup" />
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0" colspan="2">
+            <widget class="VendorGroup" name="_vendorgroup"/>
            </item>
-           <item row="1" column="0" >
-            <widget class="QLabel" name="_bankaccntLit" >
-             <property name="text" >
+           <item row="1" column="0">
+            <widget class="QLabel" name="_bankaccntLit">
+             <property name="text">
               <string>Bank Account:</string>
              </property>
-             <property name="alignment" >
+             <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="1" column="1" >
-            <layout class="QHBoxLayout" name="horizontalLayout_2" >
+           <item row="1" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="XComboBox" name="_bankaccnt" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+              <widget class="XComboBox" name="_bankaccnt">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <property name="type" >
+               <property name="type">
                 <enum>XComboBox::APBankAccounts</enum>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer" >
-               <property name="orientation" >
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
-               <property name="sizeHint" stdset="0" >
+               <property name="sizeHint" stdset="0">
                 <size>
                  <width>40</width>
                  <height>20</height>
@@ -82,13 +82,13 @@ to be bound by its terms.</comment>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>10</width>
              <height>0</height>
@@ -100,13 +100,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>13</width>
            <height>20</height>
@@ -115,26 +115,26 @@ to be bound by its terms.</comment>
         </spacer>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Close</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_4" >
-           <property name="orientation" >
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>0</height>
@@ -143,8 +143,8 @@ to be bound by its terms.</comment>
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="_prepareCheckRun" >
-           <property name="text" >
+          <widget class="QPushButton" name="_prepareCheckRun">
+           <property name="text">
             <string>Prepare...</string>
            </property>
           </widget>
@@ -153,42 +153,42 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </item>
-     <item row="1" column="0" >
-      <widget class="QFrame" name="_frame" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+     <item row="1" column="0">
+      <widget class="QFrame" name="_frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>1</verstretch>
         </sizepolicy>
        </property>
-       <property name="frameShape" >
+       <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
-       <property name="frameShadow" >
+       <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QGridLayout" name="gridLayout" >
-        <property name="margin" >
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="margin">
          <number>0</number>
         </property>
-        <item row="0" column="0" >
-         <layout class="QVBoxLayout" name="verticalLayout_4" >
-          <property name="spacing" >
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="_checksLit" >
-            <property name="text" >
+           <widget class="QLabel" name="_checksLit">
+            <property name="text">
              <string>Payments:</string>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout" >
+           <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="XTreeWidget" name="_check" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+             <widget class="XTreeWidget" name="_check">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -196,39 +196,39 @@ to be bound by its terms.</comment>
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2" >
-              <property name="spacing" >
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="spacing">
                <number>1</number>
               </property>
               <item>
-               <widget class="QPushButton" name="_print" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_print">
+                <property name="enabled">
                  <bool>true</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Pri&amp;nt/Written/Paid</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_postCheck" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_postCheck">
+                <property name="enabled">
                  <bool>true</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Po&amp;st</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_2" >
-                <property name="orientation" >
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
-                <property name="sizeType" >
+                <property name="sizeType">
                  <enum>QSizePolicy::Fixed</enum>
                 </property>
-                <property name="sizeHint" stdset="0" >
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
                   <height>10</height>
@@ -237,61 +237,61 @@ to be bound by its terms.</comment>
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="_newMiscCheck" >
-                <property name="text" >
+               <widget class="QPushButton" name="_newMiscCheck">
+                <property name="text">
                  <string>New</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_void" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_void">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>&amp;Void</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_edit" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_edit">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Edit</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_delete" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_delete">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Delete</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_replace" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_replace">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Replace</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_3" >
-                <property name="orientation" >
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
-                <property name="sizeType" >
+                <property name="sizeType">
                  <enum>QSizePolicy::Fixed</enum>
                 </property>
-                <property name="sizeHint" stdset="0" >
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
                   <height>10</height>
@@ -300,24 +300,24 @@ to be bound by its terms.</comment>
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="_replaceAll" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_replaceAll">
+                <property name="enabled">
                  <bool>true</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>Replace All</string>
                 </property>
                </widget>
               </item>
               <item>
                <spacer>
-                <property name="orientation" >
+                <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
-                <property name="sizeType" >
+                <property name="sizeType">
                  <enum>QSizePolicy::Expanding</enum>
                 </property>
-                <property name="sizeHint" stdset="0" >
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
                   <height>10</height>
@@ -338,7 +338,7 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>VendorGroup</class>
@@ -354,6 +354,7 @@ to be bound by its terms.</comment>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -376,11 +377,11 @@ to be bound by its terms.</comment>
    <receiver>viewCheckRun</receiver>
    <slot>close()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>673</x>
      <y>34</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -392,11 +393,11 @@ to be bound by its terms.</comment>
    <receiver>_edit</receiver>
    <slot>animateClick()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>33</x>
      <y>182</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>689</x>
      <y>332</y>
     </hint>

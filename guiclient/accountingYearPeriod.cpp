@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 accountingYearPeriod::accountingYearPeriod(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -104,16 +105,18 @@ void accountingYearPeriod::sSave()
     if (saveAccountingYear.first())
     {
       _periodid = saveAccountingYear.value("_period_id").toInt();
-      if (_periodid < 0)
+       if (_periodid < 0)
       {
-	systemError(this, storedProcErrorLookup("createAccountingYearPeriod", _periodid), __FILE__, __LINE__);
-	return;
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Fiscal Year"),
+                               storedProcErrorLookup("createAccountingYearPeriod", _periodid),
+                               __FILE__, __LINE__);
+          return;
       }
     }
-    else if (saveAccountingYear.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Fiscal Year"),
+                                  saveAccountingYear, __FILE__, __LINE__))
     {
-      systemError(this, saveAccountingYear.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+        return;
     }
   }
   else if (_mode == cEdit)
@@ -128,15 +131,17 @@ void accountingYearPeriod::sSave()
       {
 	int result = saveAccountingYear.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("openAccountingYearPeriod", result), __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Opening Fiscal Year"),
+                             storedProcErrorLookup("openAccountingYearPeriod", result),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccountingYear.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Opening Fiscal Year"),
+                                    saveAccountingYear, __FILE__, __LINE__))
       {
-	systemError(this, saveAccountingYear.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+          return;
       }
     }
 
@@ -152,15 +157,17 @@ void accountingYearPeriod::sSave()
       {
 	int result = saveAccountingYear.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("createAccountingYearPeriod", result), __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing FY Dates"),
+                             storedProcErrorLookup("changeAccountingYearPeriodDates", result),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccountingYear.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing FY Dates"),
+                                    saveAccountingYear, __FILE__, __LINE__))
       {
-	systemError(this, saveAccountingYear.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+          return;
       }
     }
 
@@ -173,15 +180,17 @@ void accountingYearPeriod::sSave()
       {
 	int result = saveAccountingYear.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("closeAccountingYearPeriod", result), __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing FY Period"),
+                             storedProcErrorLookup("closeAccountingYearPeriod", _periodid),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccountingYear.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing FY Period"),
+                                    saveAccountingYear, __FILE__, __LINE__))
       {
-	systemError(this, saveAccountingYear.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+          return;
       }
     }
   }
@@ -219,9 +228,9 @@ void accountingYearPeriod::populate()
     _endDate->setDate(populateAccountingYear.value("yearperiod_end").toDate());
     _closed->setChecked(populateAccountingYear.value("yearperiod_closed").toBool());
   }
-  else if (populateAccountingYear.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Populating FY Periods"),
+                                populateAccountingYear, __FILE__, __LINE__))
   {
-    systemError(this, populateAccountingYear.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 }

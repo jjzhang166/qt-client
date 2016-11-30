@@ -76,7 +76,7 @@ class XTUPLEWIDGETS_EXPORT XTreeView : public QTreeView
       virtual void setDataWidgetMap(XDataWidgetMapper* mapper);
       virtual void setFilter(const QString filter);
       virtual void setForegroundColor(int row, int col, QString color);
-      virtual void setModel(XSqlTableModel* model=0);
+      virtual void setModel(QAbstractItemModel* model=0);
       virtual void setPrimaryKeyColumns(int p)                { _keyColumns = p;            }
       virtual void setRowForegroundColor(int row, QString color);
       virtual void setSchemaName(QString p)                   { _schemaName = p;            }

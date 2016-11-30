@@ -135,9 +135,9 @@ void characteristics::sFillList()
             "ORDER BY char_name;");
   characteristicsFillList.exec();
   _char->populate(characteristicsFillList);
-  if (characteristicsFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Characteristic Information"),
+                                characteristicsFillList, __FILE__, __LINE__))
   {
-    systemError(this, characteristicsFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

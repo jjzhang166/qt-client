@@ -21,6 +21,7 @@
 #include "item.h"
 #include "storedProcErrorLookup.h"
 #include "parameterwidget.h"
+#include "errorReporter.h"
 
 items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "items", fl)
@@ -150,14 +151,16 @@ void items::sDelete()
       int returnVal = qry.value("returnVal").toInt();
       if (returnVal < 0)
       {
-        systemError(this, storedProcErrorLookup("deleteItem", returnVal), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item"),
+                               storedProcErrorLookup("deleteItem", returnVal),
+                               __FILE__, __LINE__);
         return;
       }
       sFillList();
     }
-    else if (qry.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item"),
+                                  qry, __FILE__, __LINE__))
     {
-      systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }   

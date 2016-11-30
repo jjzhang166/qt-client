@@ -583,7 +583,6 @@ to be bound by its terms.</comment>
            </layout>
           </item>
          </layout>
-         <zorder></zorder>
         </widget>
        </item>
        <item row="2" column="1" colspan="2">
@@ -1085,6 +1084,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>

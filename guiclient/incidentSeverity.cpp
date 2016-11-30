@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
 
 incidentSeverity::incidentSeverity(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -111,9 +112,9 @@ void incidentSeverity::sSave()
     incidentSave.exec("SELECT NEXTVAL('incdtseverity_incdtseverity_id_seq') AS _incdtseverity_id");
     if (incidentSave.first())
       _incdtseverityId = incidentSave.value("_incdtseverity_id").toInt();
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Severity"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -139,9 +140,9 @@ void incidentSeverity::sSave()
 			       "Incident Severity.") );
       return;
     }
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Severity"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -157,9 +158,9 @@ void incidentSeverity::sSave()
   incidentSave.bindValue(":incdtseverity_order", _order->value());
   incidentSave.bindValue(":incdtseverity_descrip", _descrip->toPlainText());
   incidentSave.exec();
-  if (incidentSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Severity"),
+                                incidentSave, __FILE__, __LINE__))
   {
-    systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -180,9 +181,9 @@ void incidentSeverity::populate()
     _order->setValue(incidentpopulate.value("incdtseverity_order").toInt());
     _descrip->setText(incidentpopulate.value("incdtseverity_descrip").toString());
   }
-  else if (incidentpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Severity Information"),
+                                incidentpopulate, __FILE__, __LINE__))
   {
-    systemError(this, incidentpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

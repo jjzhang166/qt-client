@@ -1,78 +1,108 @@
-<ui version="4.0" >
- <class>taxAssignment</class>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
-Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
 It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
- <widget class="QDialog" name="taxAssignment" >
-  <property name="geometry" >
+ <class>taxAssignment</class>
+ <widget class="QDialog" name="taxAssignment">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>425</width>
-    <height>310</height>
+    <width>477</width>
+    <height>382</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Tax Assignment</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_5" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" name="gridLayout_4" >
-     <property name="margin" >
+  <layout class="QGridLayout" name="gridLayout_5">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <property name="leftMargin">
       <number>12</number>
      </property>
-     <property name="spacing" >
+     <property name="topMargin">
       <number>12</number>
      </property>
-     <item row="0" column="0" >
-      <layout class="QHBoxLayout" name="horizontalLayout_4" >
+     <property name="rightMargin">
+      <number>12</number>
+     </property>
+     <property name="bottomMargin">
+      <number>12</number>
+     </property>
+     <property name="spacing">
+      <number>12</number>
+     </property>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="_autoapply">
+       <property name="text">
+        <string>Automatically Apply to AP/AR Memos</string>
+       </property>
+       <property name="toolTip">
+        <string>Taxation applicable to A/P or A/R Memos</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="_reversechg">
+       <property name="text">
+        <string>Apply Reverse Charges</string>
+       </property>
+       <property name="toolTip">
+        <string>Automatically apply reverse VAT charges when using this assignment</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <layout class="QGridLayout" name="gridLayout_2" >
-         <item row="1" column="0" >
-          <widget class="QLabel" name="_taxTypeLit" >
-           <property name="text" >
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="0">
+          <widget class="QLabel" name="_taxTypeLit">
+           <property name="text">
             <string>Tax Type</string>
            </property>
-           <property name="alignment" >
+           <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
-         <item row="0" column="0" >
-          <widget class="QLabel" name="_taxZoneLit" >
-           <property name="text" >
+         <item row="0" column="0">
+          <widget class="QLabel" name="_taxZoneLit">
+           <property name="text">
             <string>Tax Zone:</string>
            </property>
-           <property name="alignment" >
+           <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
-         <item row="0" column="1" >
-          <layout class="QHBoxLayout" name="horizontalLayout_2" >
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="XComboBox" name="_taxZone" >
-             <property name="allowNull" >
+            <widget class="XComboBox" name="_taxZone">
+             <property name="allowNull">
               <bool>true</bool>
              </property>
-             <property name="nullStr" >
+             <property name="nullStr">
               <string>Any</string>
              </property>
-             <property name="type" >
+             <property name="type">
               <enum>XComboBox::TaxZones</enum>
              </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_2" >
-             <property name="orientation" >
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
                <height>20</height>
@@ -82,27 +112,27 @@ to be bound by its terms.</comment>
            </item>
           </layout>
          </item>
-         <item row="1" column="1" >
-          <layout class="QHBoxLayout" name="horizontalLayout_5" >
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="XComboBox" name="_taxType" >
-             <property name="allowNull" >
+            <widget class="XComboBox" name="_taxType">
+             <property name="allowNull">
               <bool>true</bool>
              </property>
-             <property name="nullStr" >
+             <property name="nullStr">
               <string>Any</string>
              </property>
-             <property name="type" >
+             <property name="type">
               <enum>XComboBox::TaxTypes</enum>
              </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_5" >
-             <property name="orientation" >
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
                <height>20</height>
@@ -112,12 +142,12 @@ to be bound by its terms.</comment>
            </item>
           </layout>
          </item>
-         <item row="2" column="1" >
-          <spacer name="verticalSpacer" >
-           <property name="orientation" >
+         <item row="2" column="1">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>0</height>
@@ -128,11 +158,11 @@ to be bound by its terms.</comment>
         </layout>
        </item>
        <item>
-        <spacer name="horizontalSpacer_4" >
-         <property name="orientation" >
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>0</width>
            <height>20</height>
@@ -141,23 +171,23 @@ to be bound by its terms.</comment>
         </spacer>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Close</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_2" >
-           <property name="orientation" >
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>0</height>
@@ -169,70 +199,79 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </item>
-     <item row="1" column="0" >
-      <widget class="QFrame" name="_frame" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+     <item row="1" column="1">
+      <widget class="QFrame" name="_frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>1</verstretch>
         </sizepolicy>
        </property>
-       <property name="frameShape" >
+       <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
-       <property name="frameShadow" >
+       <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QGridLayout" name="gridLayout_3" >
-        <property name="margin" >
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="leftMargin">
          <number>0</number>
         </property>
-        <property name="spacing" >
+        <property name="topMargin">
          <number>0</number>
         </property>
-        <item row="0" column="0" >
-         <layout class="QGridLayout" name="gridLayout" >
-          <item row="0" column="0" >
-           <widget class="XTreeWidget" name="_taxCodeOption" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="XTreeWidget" name="_taxCodeOption">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <layout class="QVBoxLayout" name="verticalLayout" >
-            <property name="spacing" >
+          <item row="0" column="1">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="_add" >
-              <property name="enabled" >
+             <widget class="QPushButton" name="_add">
+              <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="text" >
-               <string>Add-></string>
+              <property name="text">
+               <string>Add-&gt;</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="_revoke" >
-              <property name="enabled" >
+             <widget class="QPushButton" name="_revoke">
+              <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="text" >
+              <property name="text">
                <string>&lt;-Revoke</string>
               </property>
              </widget>
             </item>
             <item>
              <spacer>
-              <property name="orientation" >
+              <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
                 <height>0</height>
@@ -242,10 +281,10 @@ to be bound by its terms.</comment>
             </item>
            </layout>
           </item>
-          <item row="0" column="2" >
-           <widget class="XTreeWidget" name="_taxCodeSelected" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+          <item row="0" column="2">
+           <widget class="XTreeWidget" name="_taxCodeSelected">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>5</verstretch>
              </sizepolicy>
@@ -282,11 +321,11 @@ to be bound by its terms.</comment>
    <receiver>taxAssignment</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>353</x>
      <y>37</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>302</x>
      <y>26</y>
     </hint>

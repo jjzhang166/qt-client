@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -20,6 +20,7 @@
 
 #include "salesAccount.h"
 #include "guiclient.h"
+#include "errorReporter.h"
 
 salesAccounts::salesAccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -38,7 +39,7 @@ salesAccounts::salesAccounts(QWidget* parent, const char* name, Qt::WindowFlags 
   _salesaccnt->addColumn(tr("Sale Type"),                 _itemColumn, Qt::AlignCenter  , true, "saletypecode");
   _salesaccnt->addColumn(tr("Prod. Cat."),                _itemColumn, Qt::AlignCenter  , true, "prodcatcode");
   _salesaccnt->addColumn(tr("Sales Accnt. #"),            _itemColumn, Qt::AlignCenter  , true, "salesaccount");
-  _salesaccnt->addColumn(tr("Return Accnt. #"),           _itemColumn, Qt::AlignCenter  , true, "creditaccount");
+  _salesaccnt->addColumn(tr("Sales Credit Accnt. #"),     _itemColumn, Qt::AlignCenter  , true, "creditaccount");
   _salesaccnt->addColumn(tr("COS Accnt. #"),              _itemColumn, Qt::AlignCenter  , true, "cosaccount");
   _salesaccnt->addColumn(tr("Returns Accnt. #"),          _itemColumn, Qt::AlignCenter  , true, "returnsaccount");
   _salesaccnt->addColumn(tr("Cost of Returns Accnt. #"),  _itemColumn, Qt::AlignCenter  , true, "coraccount" );
@@ -128,9 +129,9 @@ void salesAccounts::sDelete()
              "WHERE (salesaccnt_id=:salesaccnt_id);" );
   salesDelete.bindValue(":salesaccnt_id", _salesaccnt->id());
   salesDelete.exec();
-  if (salesDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Account"),
+                                salesDelete, __FILE__, __LINE__))
   {
-    systemError(this, salesDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -147,9 +148,9 @@ void salesAccounts::sFillList()
 
   XSqlQuery fillq = mql.toQuery(params);
   _salesaccnt->populate(fillq);
-  if (fillq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sales Account Information"),
+                                fillq, __FILE__, __LINE__))
   {
-    systemError(this, fillq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

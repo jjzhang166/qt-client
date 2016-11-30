@@ -19,6 +19,7 @@
 #include <openreports.h>
 #include "guiclient.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 dspBankrecHistory::dspBankrecHistory(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -120,13 +121,12 @@ void dspBankrecHistory::sFillList()
     params.append("treeView", true);
     if (! setParams(params))
       return;
-    
     MetaSQLQuery mql = mqlLoad("bankrecHistory", "reconciled");
     dspFillList = mql.toQuery(params);
     _rec->populate(dspFillList, true);
-    if (dspFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Rec Information"),
+                                  dspFillList, __FILE__, __LINE__))
     {
-      systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -142,9 +142,9 @@ void dspBankrecHistory::sFillList()
       MetaSQLQuery mql2 = mqlLoad("bankrecHistory", "unreconciled");
       dspFillList = mql2.toQuery(params2);
       _unrec->populate(dspFillList, true);
-      if (dspFillList.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Rec Information"),
+                                    dspFillList, __FILE__, __LINE__))
       {
-        systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
       else

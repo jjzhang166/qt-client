@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,47 +8,54 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>itemCost</class>
- <widget class="QDialog" name="itemCost" >
-  <property name="geometry" >
+ <widget class="QDialog" name="itemCost">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
-    <height>195</height>
+    <width>459</width>
+    <height>188</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Item Cost</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="ItemCluster" name="_item" />
+      <widget class="ItemCluster" name="_item">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Cancel</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_save" >
-           <property name="text" >
+          <widget class="QPushButton" name="_save">
+           <property name="text">
             <string>&amp;Save</string>
            </property>
-           <property name="default" >
+           <property name="default">
             <bool>true</bool>
            </property>
           </widget>
@@ -57,13 +64,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
-          <enum>QSizePolicy::Expanding</enum>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>0</height>
@@ -76,28 +83,28 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="_costingElementLit" >
-         <property name="text" >
+        <widget class="QLabel" name="_costingElementLit">
+         <property name="text">
           <string>Costing Element:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="_lowerLevelLit" >
-         <property name="text" >
+        <widget class="QLabel" name="_lowerLevelLit">
+         <property name="text">
           <string>Lower Level:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
@@ -105,14 +112,14 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <widget class="XComboBox" name="_costelem" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+        <widget class="XComboBox" name="_costelem">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -120,9 +127,9 @@ to be bound by its terms.</comment>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="_lowerLevel" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+        <widget class="QLabel" name="_lowerLevel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -134,28 +141,28 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="spacing" >
+      <layout class="QHBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
        <item>
-        <widget class="QLabel" name="_actualCostLit" >
-         <property name="text" >
+        <widget class="QLabel" name="_actualCostLit">
+         <property name="text">
           <string>Actual Cost:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="CurrCluster" name="_actualCost" >
-         <property name="format" >
+        <widget class="CurrCluster" name="_actualCost">
+         <property name="format">
           <enum>CurrDisplay::Cost</enum>
          </property>
-         <property name="allowNegative" >
+         <property name="allowNegative">
           <bool>false</bool>
          </property>
         </widget>
@@ -163,8 +170,8 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="_postCost" >
-       <property name="text" >
+      <widget class="QCheckBox" name="_postCost">
+       <property name="text">
         <string>&amp;Post Cost to Standard</string>
        </property>
       </widget>
@@ -173,11 +180,17 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
+   <header>currcluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CurrDisplay</class>
+   <extends>QWidget</extends>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
@@ -201,7 +214,7 @@ to be bound by its terms.</comment>
   <tabstop>_close</tabstop>
  </tabstops>
  <includes>
-  <include location="global" >parameter.h</include>
+  <include location="global">parameter.h</include>
  </includes>
  <resources/>
  <connections>
@@ -211,11 +224,11 @@ to be bound by its terms.</comment>
    <receiver>itemCost</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

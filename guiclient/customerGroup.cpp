@@ -16,6 +16,8 @@
 
 #include "crmacctcluster.h"
 #include "customerGroup.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 customerGroup::customerGroup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -66,10 +68,10 @@ enum SetResponse customerGroup::set(const ParameterList &pParams)
       customeret.exec("SELECT NEXTVAL('custgrp_custgrp_id_seq') AS _custgrp_id;");
       if (customeret.first())
         _custgrpid = customeret.value("_custgrp_id").toInt();
-      else if (customeret.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Group Information"),
+                                    customeret, __FILE__, __LINE__))
       {
-	systemError(this, customeret.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
 
       connect(_custgrpitem, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
@@ -118,9 +120,9 @@ void customerGroup::sCheck()
 
       _name->setEnabled(false);
     }
-    else if (customerCheck.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Group Information"),
+                                  customerCheck, __FILE__, __LINE__))
     {
-      systemError(this, customerCheck.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -139,7 +141,8 @@ void customerGroup::sClose()
     customerClose.exec();
     if (customerClose.lastError().type() != QSqlError::NoError)
     {
-      systemError(this, customerClose.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Rejecting Customer Group"),
+                           customerClose, __FILE__, __LINE__);
     }
   }
 
@@ -149,13 +152,13 @@ void customerGroup::sClose()
 void customerGroup::sSave()
 {
   XSqlQuery customerSave;
-  if(_name->text().trimmed().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Cannot Save Customer Group"),
-      tr("You cannot have an empty name."));
-    _name->setFocus();
-    return;
-  }
+
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_name->text().trimmed().isEmpty(), _name,
+                        tr("You cannot have an empty name."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Customer Group"),errors))
+      return;
 
   customerSave.prepare("SELECT custgrp_id"
             "  FROM custgrp"
@@ -186,9 +189,9 @@ void customerGroup::sSave()
   customerSave.bindValue(":custgrp_name", _name->text());
   customerSave.bindValue(":custgrp_descrip", _descrip->text().trimmed());
   customerSave.exec();
-  if (customerSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Customer Group"),
+                                customerSave, __FILE__, __LINE__))
   {
-    systemError(this, customerSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -202,9 +205,9 @@ void customerGroup::sDelete()
              "WHERE (custgrpitem_id=:custgrpitem_id);" );
   customerDelete.bindValue(":custgrpitem_id", _custgrpitem->id());
   customerDelete.exec();
-  if (customerDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Customer From Group"),
+                                customerDelete, __FILE__, __LINE__))
   {
-    systemError(this, customerDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -231,9 +234,9 @@ void customerGroup::sNew()
     customerNew.exec();
     if (customerNew.first())
       return;
-    else if (customerNew.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Customer To Group"),
+                                  customerNew, __FILE__, __LINE__))
     {
-      systemError(this, customerNew.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -244,9 +247,9 @@ void customerGroup::sNew()
     customerNew.bindValue(":custgrpitem_custgrp_id", _custgrpid);
     customerNew.bindValue(":custgrpitem_cust_id", custid);
     customerNew.exec();
-    if (customerNew.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Customer To Group"),
+                                  customerNew, __FILE__, __LINE__))
     {
-      systemError(this, customerNew.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -265,9 +268,9 @@ void customerGroup::sFillList()
   customerFillList.bindValue(":custgrp_id", _custgrpid);
   customerFillList.exec();
   _custgrpitem->populate(customerFillList);
-  if (customerFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Group Information"),
+                                customerFillList, __FILE__, __LINE__))
   {
-    systemError(this, customerFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -285,9 +288,9 @@ void customerGroup::populate()
     _name->setText(customerpopulate.value("custgrp_name").toString());
     _descrip->setText(customerpopulate.value("custgrp_descrip").toString());
   }
-  else if (customerpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Customer Group Information"),
+                                customerpopulate, __FILE__, __LINE__))
   {
-    systemError(this, customerpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

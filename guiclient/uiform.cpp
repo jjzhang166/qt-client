@@ -27,6 +27,7 @@
 #include "storedProcErrorLookup.h"
 #include "xTupleDesigner.h"
 #include "xuiloader.h"
+#include "errorReporter.h"
 
 uiform::uiform(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -179,9 +180,9 @@ void uiform::sSave()
     uiformSave.exec("SELECT NEXTVAL('uiform_uiform_id_seq') AS _uiform_id");
     if (uiformSave.first())
       _uiformid = uiformSave.value("_uiform_id").toInt();
-    else if (uiformSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving UI Form Information"),
+                                  uiformSave, __FILE__, __LINE__))
     {
-      systemError(this, uiformSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -206,9 +207,9 @@ void uiform::sSave()
   uiformSave.bindValue(":uiform_notes", _notes->text());
 
   uiformSave.exec();
-  if (uiformSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving UI Form Information"),
+                                uiformSave, __FILE__, __LINE__))
   {
-    systemError(this, uiformSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -231,19 +232,20 @@ void uiform::sSave()
         _pkgheadidOrig = _package->id();
       else
       {
-        systemError(this,
-                    tr("<p>The screen was saved to its original location but "
-                       "could not be moved: %1")
-                    .arg(storedProcErrorLookup("moveuiform", result)),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                             tr("%1: <p>The screen was saved to its original location but "
+                                "could not be moved: %2")
+                             .arg(windowTitle())
+                             .arg(storedProcErrorLookup("moveuiform", result)),__FILE__,__LINE__);
       }
     }
     else if (uiformSave.lastError().type() != QSqlError::NoError)
     {
-      systemError(this,
-                  tr("<p>The screen was saved to its original location but "
-                     "could not be moved: <pre>%1</pre>")
-                  .arg(uiformSave.lastError().databaseText()), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                           tr("%1: <p>The screen was saved to its original location but "
+                              "could not be moved: <pre>%2</pre>")
+                           .arg(windowTitle())
+                           .arg(uiformSave.lastError().databaseText()),__FILE__,__LINE__);
     }
   }
 
@@ -278,9 +280,9 @@ void uiform::populate()
 
     sFillList();
   }
-  else if (uiformpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving UI Form Information"),
+                                uiformpopulate, __FILE__, __LINE__))
   {
-    systemError(this, uiformpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -339,8 +341,10 @@ void uiform::sEdit()
       size = ui->size();
     else
     {
-      systemError(this,
-                  tr("Could not load .ui (%1)").arg(uiFile.errorString()));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                           tr("%1: Could not load .ui (%2)")
+                           .arg(windowTitle())
+                           .arg(uiFile.errorString()),__FILE__,__LINE__);
       return;
     }
   }
@@ -408,7 +412,7 @@ void uiform::sScriptNew()
   scriptEditor *newdlg = new scriptEditor(this, "", Qt::Window);
   newdlg->set(params);
 
-  omfgThis->handleNewWindow(newdlg);
+  omfgThis->handleNewWindow(newdlg, Qt::ApplicationModal);
   connect(newdlg, SIGNAL(destroyed()), this, SLOT(sFillList()));
 }
 
@@ -421,7 +425,7 @@ void uiform::sScriptEdit()
   scriptEditor *newdlg = new scriptEditor(this, "", Qt::Window);
   newdlg->set(params);
 
-  omfgThis->handleNewWindow(newdlg);
+  omfgThis->handleNewWindow(newdlg, Qt::ApplicationModal);
   connect(newdlg, SIGNAL(destroyed()), this, SLOT(sFillList()));
 }
 
@@ -484,8 +488,8 @@ void uiform::sCmdDelete()
     if(uiformCmdDelete.exec())
       sFillList();
     else
-      systemError( this, tr("A System Error occurred at customCommands::%1")
-                               .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Selected Command"),
+                         uiformCmdDelete, __FILE__, __LINE__);
   }
 }
 
@@ -504,9 +508,9 @@ void uiform::sFillList()
   uiformFillList.bindValue(":name", _name->text());
   uiformFillList.exec();
   _script->populate(uiformFillList);
-  if (uiformFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving UI Form Information"),
+                                uiformFillList, __FILE__, __LINE__))
   {
-    systemError(this, uiformFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -523,9 +527,9 @@ void uiform::sFillList()
   uiformFillList.bindValue(":name", _name->text());
   uiformFillList.exec();
   _commands->populate(uiformFillList);
-  if (uiformFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving UI Form Information"),
+                                uiformFillList, __FILE__, __LINE__))
   {
-    systemError(this, uiformFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

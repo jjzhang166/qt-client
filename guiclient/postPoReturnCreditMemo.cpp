@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <openreports.h>
+#include "errorReporter.h"
 
 postPoReturnCreditMemo::postPoReturnCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -78,8 +79,8 @@ void postPoReturnCreditMemo::sPost()
   postPost.bindValue(":amount", _amount->localValue());
   if(!postPost.exec())
   {
-    systemError( this, tr("A System Error occurred at postPoReturnCreditMemo::%1.")
-                       .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Credit Memo"),
+                         postPost, __FILE__, __LINE__);
     return;
   }
 

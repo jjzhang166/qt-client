@@ -125,19 +125,15 @@ to be bound by its terms.</comment>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>XCheckBox</class>
-   <extends></extends>
-   <header>xcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>XLabel</class>
-   <extends></extends>
+   <extends>QLabel</extends>
    <header>xlabel.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
-   <extends></extends>
+   <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

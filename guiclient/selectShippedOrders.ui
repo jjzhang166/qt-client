@@ -1,4 +1,5 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>selectShippedOrders</class>
- <widget class="QDialog" name="selectShippedOrders" >
-  <property name="geometry" >
+ <widget class="QDialog" name="selectShippedOrders">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -16,32 +17,32 @@ to be bound by its terms.</comment>
     <height>158</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Approve Shipped Orders for Billing</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
-   <item row="0" column="0" >
-    <layout class="QHBoxLayout" name="horizontalLayout_2" >
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout" >
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout" >
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="ParameterGroup" name="_customerType" >
-           <property name="title" >
+          <widget class="ParameterGroup" name="_customerType">
+           <property name="title">
             <string/>
            </property>
-           <property name="fixedSize" >
+           <property name="fixedSize">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="WarehouseGroup" name="_warehouse" >
-           <property name="title" >
+          <widget class="WarehouseGroup" name="_warehouse">
+           <property name="title">
             <string/>
            </property>
-           <property name="fixedSize" >
+           <property name="fixedSize">
             <bool>false</bool>
            </property>
           </widget>
@@ -49,14 +50,14 @@ to be bound by its terms.</comment>
         </layout>
        </item>
        <item>
-        <spacer name="Spacer50" >
-         <property name="orientation" >
+        <spacer name="Spacer50">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>0</height>
@@ -67,11 +68,11 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item>
-      <spacer name="horizontalSpacer" >
-       <property name="orientation" >
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>0</width>
          <height>20</height>
@@ -80,31 +81,31 @@ to be bound by its terms.</comment>
       </spacer>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Cancel</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="_select" >
-           <property name="text" >
+          <widget class="QPushButton" name="_select">
+           <property name="text">
             <string>&amp;Approve</string>
            </property>
-           <property name="autoDefault" >
+           <property name="autoDefault">
             <bool>true</bool>
            </property>
-           <property name="default" >
+           <property name="default">
             <bool>true</bool>
            </property>
           </widget>
@@ -112,14 +113,14 @@ to be bound by its terms.</comment>
         </layout>
        </item>
        <item>
-        <spacer name="Spacer52" >
-         <property name="orientation" >
+        <spacer name="Spacer52">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>20</height>
@@ -133,17 +134,19 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>ParameterGroup</class>
    <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -160,11 +163,11 @@ to be bound by its terms.</comment>
    <receiver>selectShippedOrders</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

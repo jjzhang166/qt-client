@@ -40,6 +40,7 @@
 
 #include "eventManager.h"
 #include "users.h"
+#include "dspUserPrivileges.h"
 #include "userPreferences.h"
 #include "hotkeys.h"
 #include "errorLog.h"
@@ -104,17 +105,16 @@ menuSystem::menuSystem(GUIClient *Pparent) :
     { "sys.eventManager",             tr("E&vent Manager..."),              SLOT(sEventManager()),             systemMenu, "true",                                      NULL, NULL, true },
     { "sys.viewDatabaseLog",          tr("View Database &Log..."),          SLOT(sErrorLog()),                 systemMenu, "true",                                      NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, true },
-#ifndef Q_OS_MAC
-    { "sys.preferences",              tr("P&references..."),                SLOT(sPreferences()),              systemMenu, "MaintainPreferencesSelf MaintainPreferencesOthers",  NULL,   NULL,   true },
-#endif
+    { "sys.preferences",              tr("&Preferences..."),                SLOT(sPreferences()),              systemMenu, "MaintainPreferencesSelf MaintainPreferencesOthers",  NULL,   NULL,   true },
     { "sys.hotkeys",                  tr("&Hot Keys..."),                   SLOT(sHotKeys()),                  systemMenu, "true",  NULL,   NULL,   !(_privileges->check("MaintainPreferencesSelf") || _privileges->check("MaintainPreferencesOthers")) },
     { "sys.rescanPrivileges",         tr("Rescan &Privileges"),             SLOT(sRescanPrivileges()),         systemMenu, "true",                                      NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                              systemMenu, "true",                                      NULL, NULL, true },
-    { "sys.maintainUsers",            tr("Maintain &User Accounts..."),             SLOT(sMaintainUsers()),            systemMenu, "MaintainUsers",       NULL, NULL, true },
-    { "sys.maintainGroups",           tr("Maintain &Roles..."),            SLOT(sMaintainGroups()),           systemMenu, "MaintainGroups",      NULL, NULL, true },
+    { "sys.maintainUsers",            tr("Maintain &User Accounts..."),     SLOT(sMaintainUsers()),            systemMenu, "MaintainUsers",                             NULL, NULL, true },
+    { "sys.maintainGroups",           tr("Maintain &Roles..."),             SLOT(sMaintainGroups()),           systemMenu, "MaintainGroups",                            NULL, NULL, true },
+    { "sys.userPrivileges",           tr("User Privilege Audit..."),        SLOT(sUserPrivileges()),           systemMenu, "MaintainUsers MaintainGroups",              NULL, NULL, true },
 
     { "menu",                         tr("&Employees"),                     (char*)employeeMenu,               systemMenu, "true",                                      NULL, NULL, true },
-    { "sys.employee",                 tr("&New..."),               	    SLOT(sNewEmployee()),            employeeMenu, "MaintainEmployees",               NULL, NULL, true },
+    { "sys.employee",                 tr("&New..."),               	    SLOT(sNewEmployee()),            employeeMenu, "MaintainEmployees",                         NULL, NULL, true },
     { "sys.listEmployees",            tr("&List..."),             	    SLOT(sListEmployees()),          employeeMenu, "ViewEmployees MaintainEmployees",           NULL, NULL, true },
     { "sys.searchEmployees",          tr("&Search..."),       		    SLOT(sSearchEmployees()),        employeeMenu, "ViewEmployees MaintainEmployees",           NULL, NULL, true },
     { "separator",                    NULL,                                 NULL,                            employeeMenu, "true",                                      NULL, NULL, true },
@@ -186,11 +186,7 @@ void menuSystem::addActionsToMenu(actionProperties acts[], unsigned int numElems
   QAction * m = 0;
   for (unsigned int i = 0; i < numElems; i++)
   {
-    if (! acts[i].visible)
-    {
-      continue;
-    }
-    else if (acts[i].actionName == QString("menu"))
+    if (acts[i].actionName == QString("menu"))
     {
       m = acts[i].menu->addMenu((QMenu*)(acts[i].slot));
       if(m)
@@ -198,11 +194,11 @@ void menuSystem::addActionsToMenu(actionProperties acts[], unsigned int numElems
     }
     else if (acts[i].actionName == QString("separator"))
     {
-      acts[i].menu->addSeparator();
+      m = acts[i].menu->addSeparator();
     }
     else if (acts[i].toolBar != NULL)
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -214,7 +210,7 @@ void menuSystem::addActionsToMenu(actionProperties acts[], unsigned int numElems
     }
     else
     {
-      new Action( parent,
+      m = new Action( parent,
                   acts[i].actionName,
                   acts[i].actionTitle,
                   this,
@@ -222,6 +218,7 @@ void menuSystem::addActionsToMenu(actionProperties acts[], unsigned int numElems
                   acts[i].menu,
                   acts[i].priv ) ;
     }
+    if (m) m->setVisible(acts[i].visible);
   }
 }
 
@@ -232,7 +229,8 @@ void menuSystem::sEventManager()
 
 void menuSystem::sPreferences()
 {
-  userPreferences(parent, "", true).exec();
+  userPreferences newdlg(parent, "", true);
+  newdlg.exec();
 }
 
 void menuSystem::sHotKeys()
@@ -300,6 +298,11 @@ void menuSystem::sMaintainUsers()
   omfgThis->handleNewWindow(new users());
 }
 
+void menuSystem::sUserPrivileges()
+{
+  omfgThis->handleNewWindow(new dspUserPrivileges());
+}
+
 void menuSystem::sMaintainGroups()
 {
   omfgThis->handleNewWindow(new groups());
@@ -348,15 +351,6 @@ void menuSystem::sExit()
   parent->close();
 }
 
-void menuSystem::sAbout()
-{
-  QMessageBox::about( parent, tr("About..."),
-                      tr( "%1\nVersion %2\n%3")
-                          .arg(_Name)
-                          .arg(_Version)
-                          .arg(_Copyright) );
-}
-
 void menuSystem::sTOC()
 {
   helpView *_help = helpView::getInstance(parent);
@@ -367,6 +361,7 @@ void menuSystem::sDownload()
 {
   omfgThis->handleNewWindow(new helpDownload());
 }
+
 void menuSystem::sReferenceGuide()
 {
   QDesktopServices::openUrl(QUrl("http://www.xtuple.org/sites/default/files/refguide/current/index.html"));
@@ -427,7 +422,7 @@ void menuSystem::sCommunityForums()
 
 void menuSystem::sCommunityBlogs()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.org/blog");
+  omfgThis->launchBrowser(omfgThis, "http://xtuple.com/blog");
 }
 
 void menuSystem::sCommunityIssues()
@@ -437,6 +432,24 @@ void menuSystem::sCommunityIssues()
 
 void menuSystem::sCommunityXchange()
 {
-  omfgThis->launchBrowser(omfgThis, "http://www.xtuple.com/xchange");
+  omfgThis->launchBrowser(omfgThis, "https://www.xtuple.org/xchange");
 }
 
+#include "../hunspell/config.h"
+#include "data.h"        // openrpt/common
+void menuSystem::sAbout()
+{
+  QMessageBox::about( parent, tr("About..."),
+                      tr( "<p>%1<br/>Version %2<br/>%3</p>"
+                          "<p>Built with:</p><ul>"
+                          "<li>OpenRPT %4 %5</li>"
+                          "<li>Qt %6</li>"
+                          "<li>hunspell %7 (modified by xTuple for compiler compatibility)</li>"
+                          "</ul>"
+                          )
+                          .arg(_Name, _Version, _Copyright)
+                          .arg( OpenRPT::version, OpenRPT::build)
+                          .arg(QT_VERSION_STR)
+                          .arg(PACKAGE_VERSION) // hunspell/config.h
+                          );
+}

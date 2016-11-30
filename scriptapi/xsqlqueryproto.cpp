@@ -18,28 +18,45 @@ void setupXSqlQueryProto(QScriptEngine *engine)
   engine->setDefaultPrototype(qMetaTypeId<XSqlQuery*>(), proto);
   engine->setDefaultPrototype(qMetaTypeId<XSqlQuery>(),  proto);
 
-/*
-  QScriptValue constructor = engine->newFunction(constructXSqlQuery,
-                                                 proto);
+  QScriptValue constructor = engine->newFunction(constructXSqlQuery, proto);
   engine->globalObject().setProperty("XSqlQuery",  constructor);
-*/
 }
 
-/*
-QScriptValue constructXSqlQuery(QScriptContext * context,
-                                QScriptEngine  *engine)
+QScriptValue constructXSqlQuery(QScriptContext *context, QScriptEngine  *engine)
 {
   XSqlQuery *obj = 0;
-  if (context->argumentCount() == 1)
-    obj = new XSqlQuery(context->argument(1).toQObject());
-  else
+  if (context->argumentCount() > 0) {
+    QScriptValue arg = context->argument(0);
+    if (arg.isString()) {
+      /* TODO: Cannot pass QSqlDatabase.
+      if (context->argumentCount() == 2) {
+        QSqlDatabase db = context->argument(1).toVariant().value<QSqlDatabase>();
+        obj = new XSqlQuery(arg.toString(), db);
+      } else {
+        obj = new XSqlQuery(arg.toString());
+      }
+      */
+      obj = new XSqlQuery(arg.toString());
+    } else {
+      /* TODO: Cannot pass QSqlDatabase.
+      QSqlDatabase db = arg.toVariant().value<QSqlDatabase>();
+      obj = new XSqlQuery(db);
+      */
+      context->throwError(QScriptContext::UnknownError,
+                          "Qt Script XSqlQuery() can only take one QString arg. No other instantiation is supported at this time.");
+    }
+  } else {
     obj = new XSqlQuery();
+  }
+
   return engine->toScriptValue(obj);
 }
-*/
 
-XSqlQueryProto::XSqlQueryProto(QObject * parent)
-  : QObject(parent)
+XSqlQueryProto::XSqlQueryProto(QObject * parent) : QObject(parent)
+{
+}
+
+XSqlQueryProto::~XSqlQueryProto()
 {
 }
 
@@ -197,4 +214,3 @@ int XSqlQueryProto::findFirst(const QString & col, const QString & val)
     return item->findFirst(col, val);
   return -1;
 }
-

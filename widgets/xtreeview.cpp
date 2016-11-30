@@ -443,9 +443,14 @@ void XTreeView::setForegroundColor(int row, int col, QString color)
   _model->setData(_model->index(row,col), namedColor(color), Qt::ForegroundRole);
 }
 
-void XTreeView::setModel(XSqlTableModel * model)
+void XTreeView::setModel(QAbstractItemModel * model)
 {
-  QTreeView::setModel(model);
+  XSqlTableModel *matchType = qobject_cast<XSqlTableModel *>(model);
+
+  if(matchType == 0)
+    return;
+
+  QTreeView::setModel(matchType);
 
   for (int i = 0; i < QTreeView::model()->columnCount(); ++i)
   {
@@ -547,7 +552,7 @@ void XTreeView::setModel(XSqlTableModel * model)
       }
     }
   }
-  emit newModel(model);
+  emit newModel(matchType);
 }
 
 void XTreeView::setRowForegroundColor(int row, QString color)
@@ -566,7 +571,8 @@ void XTreeView::setTable()
     QString tablename=_tableName;
     if (!_schemaName.isEmpty())
       tablename = _schemaName + "." + tablename;
-    _model->setTable(tablename,_keyColumns);
+    _model->setTable(tablename);
+    _model->setKeys(_keyColumns);
     
     setModel(_model);
   }

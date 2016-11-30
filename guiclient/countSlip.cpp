@@ -303,6 +303,28 @@ void countSlip::sSave()
       }
     }
 
+    // Check for duplicate Serial # in different Site from Site being counted
+    if (_metrics->boolean("MultiWhs"))
+    {
+      countSave.prepare( "SELECT itemloc_id "
+                        "FROM itemsite JOIN itemloc ON (itemloc_itemsite_id=itemsite_id)"
+                        "              JOIN ls ON (ls_id=itemloc_ls_id)"
+                        "WHERE ( (itemsite_item_id=:item_id)"
+                        "  AND   (itemsite_warehous_id != :warehous_id)"
+                        "  AND   (itemsite_controlmethod='S')"
+                        "  AND   (UPPER(ls_number)=UPPER(:cntslip_lotserial)) );" );
+      countSave.bindValue(":item_id", _item->id());
+      countSave.bindValue(":warehous_id", _warehouse->id());
+      countSave.bindValue(":cntslip_lotserial", _lotSerial->text());
+      countSave.exec();
+      if (countSave.first())
+      {
+        errors << GuiErrorCheck(true, _lotSerial,
+                                tr( "This Serial # exists in a different Site.\n"
+                                   "Please verify the Serial # of the Count Slip you are entering." ));
+      }
+    }
+    
     if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Count Slip"), errors))
       return;
 
@@ -456,7 +478,8 @@ void countSlip::sPopulateItemSiteInfo()
                         "FROM location, itemsite "
                         "WHERE ( (validLocation(location_id, itemsite_id))"
                         " AND (itemsite_warehous_id=:warehous_id)"
-                        " AND (itemsite_item_id=:item_id) ) "
+                        " AND (itemsite_item_id=:item_id) "
+                        " AND (location_active) ) "
                         "ORDER BY locationname;" );
       location.bindValue(":warehous_id", _warehouse->id());
       location.bindValue(":item_id", _item->id());

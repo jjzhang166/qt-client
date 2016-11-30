@@ -16,6 +16,8 @@
 
 #include "configureEncryption.h"
 #include "guiclient.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
@@ -96,6 +98,7 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _reqInvoiceReg->setChecked(_metrics->boolean("ReqInvRegVoucher"));
   _reqInvoiceMisc->setChecked(_metrics->boolean("ReqInvMiscVoucher"));
   _recurringVoucherBuffer->setValue(_metrics->value("RecurringVoucherBuffer").toInt());
+  _reprint->setChecked(_metrics->boolean("ReprintPaymentNumbers"));
 
   // AR
   _nextARMemoNumber->setValidator(omfgThis->orderVal());
@@ -104,14 +107,16 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
   configureconfigureGL.exec("SELECT currentARMemoNumber() AS result;");
   if (configureconfigureGL.first())
     _nextARMemoNumber->setText(configureconfigureGL.value("result"));
-  else if (configureconfigureGL.lastError().type() != QSqlError::NoError)
-    systemError(this, configureconfigureGL.lastError().databaseText(), __FILE__, __LINE__);
+  else
+     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Next AR Memo Number"),
+                       configureconfigureGL, __FILE__, __LINE__);
 
   configureconfigureGL.exec("SELECT currentCashRcptNumber() AS result;");
   if (configureconfigureGL.first())
     _nextCashRcptNumber->setText(configureconfigureGL.value("result"));
-  else if (configureconfigureGL.lastError().type() != QSqlError::NoError)
-    systemError(this, configureconfigureGL.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Next Cash Receipt Number"),
+                                 configureconfigureGL, __FILE__, __LINE__);
 
   _hideApplyto->setChecked(_metrics->boolean("HideApplyToBalance"));
   _customerDeposits->setChecked(_metrics->boolean("EnableCustomerDeposits"));
@@ -193,6 +198,7 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
     default:
       _baseToLocal->setChecked(true);
   }
+  _fxChangeLog->setChecked(_metrics->boolean("FXChangeLog"));
 
   _mandatoryNotes->setChecked(_metrics->boolean("MandatoryGLEntryNotes"));
   _manualFwdUpdate->setChecked(_metrics->boolean("ManualForwardUpdate"));
@@ -284,8 +290,9 @@ configureGL::configureGL(QWidget* parent, const char* name, bool /*modal*/, Qt::
     _financeChargeAccount->setId(fcquery.value("fincharg_accnt_id").toInt());
     _salesCat->setId(fcquery.value("fincharg_salescat_id").toInt());
   }
-  else if (fcquery.lastError().type() != QSqlError::NoError)
-    systemError(this, fcquery.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Finance Charge Information"),
+                    fcquery, __FILE__, __LINE__);
   
   adjustSize();
 }
@@ -504,41 +511,28 @@ bool configureGL::sSave()
   if (_metrics->boolean("ACHSupported"))
   {
     QString tmpCompanyId = _companyId->text();
-    struct {
-      bool    condition;
-      QString msg;
-      QWidget *widget;
-    } error[] = {
-      { _achGroup->isChecked() && _companyId->text().isEmpty(),
-        tr("Please enter a default Company Id if you are going to create "
-           "ACH files."),
-        _companyId },
-      { _achGroup->isChecked() &&
-        (_companyIdIsEIN->isChecked() || _companyIdIsDUNS->isChecked()) && 
-        tmpCompanyId.remove("-").size() != 9,
-        tr("EIN, TIN, and DUNS numbers are all 9 digit numbers. Other "
-           "characters (except dashes for readability) are not allowed."),
-        _companyId },
-      { _achGroup->isChecked() &&
-        _companyIdIsOther->isChecked() && _companyId->text().size() > 10,
-        tr("Company Ids must be 10 characters or shorter (not counting dashes "
-           "in EIN's, TIN's, and DUNS numbers)."),
-        _companyId },
-      { _achGroup->isChecked() &&
-        ! (_companyIdIsEIN->isChecked() || _companyIdIsDUNS->isChecked() ||
-           _companyIdIsOther->isChecked()),
-        tr("Please mark whether the Company Id is an EIN, TIN, DUNS number, "
-           "or Other."),
-        _companyIdIsEIN }
-    };
-    for (unsigned int i = 0; i < sizeof(error) / sizeof(error[0]); i++)
-      if (error[i].condition)
-      {
-        QMessageBox::critical(this, tr("Cannot Save Accounting Configuration"),
-                              error[i].msg);
-        error[i].widget->setFocus();
+
+    QList<GuiErrorCheck>errors;
+    errors<<GuiErrorCheck(_achGroup->isChecked() && _companyId->text().isEmpty(), _companyId,
+                          tr("Please enter a default Company Id if you are going to create ACH files."))
+         <<GuiErrorCheck(_achGroup->isChecked() &&
+                         (_companyIdIsEIN->isChecked() || _companyIdIsDUNS->isChecked()) &&
+                         tmpCompanyId.remove("-").size() != 9, _companyId,
+                         tr("EIN, TIN, and DUNS numbers are all 9 digit numbers. Other "
+                            "characters (except dashes for readability) are not allowed."))
+        <<GuiErrorCheck(_achGroup->isChecked() &&
+                        _companyIdIsOther->isChecked() && _companyId->text().size() > 10, _companyId,
+                        tr("Company Ids must be 10 characters or shorter (not counting dashes "
+                           "in EIN's, TIN's, and DUNS numbers)."))
+       <<GuiErrorCheck(_achGroup->isChecked() &&
+                       ! (_companyIdIsEIN->isChecked() || _companyIdIsDUNS->isChecked() ||
+                          _companyIdIsOther->isChecked()), _companyIdIsEIN,
+                        tr("Please mark whether the Company Id is an EIN, TIN, DUNS number, "
+                           "or Other."));
+
+    if(GuiErrorCheck::reportErrors(this,tr("Cannot Post Transaction"),errors))
         return false;
-      }
+
   }
 
   if (!_useProfitCenters->isChecked() && _cacheuseProfitCenters)
@@ -695,14 +689,15 @@ bool configureGL::sSave()
   _metrics->set("ReqInvRegVoucher", _reqInvoiceReg->isChecked());
   _metrics->set("ReqInvMiscVoucher", _reqInvoiceMisc->isChecked());
   _metrics->set("RecurringVoucherBuffer", _recurringVoucherBuffer->value());
+  _metrics->set("ReprintPaymentNumbers", _reprint->isChecked());
 
   // AR
   configureSave.prepare("SELECT setNextARMemoNumber(:armemo_number) AS result;");
   configureSave.bindValue(":armemo_number", _nextARMemoNumber->text().toInt());
   configureSave.exec();
-  if (configureSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Next AR Memo Number"),
+                      configureSave, __FILE__, __LINE__))
   {
-    systemError(this, configureSave.lastError().databaseText(), __FILE__, __LINE__);
     _nextARMemoNumber->setFocus();
     return false;
   }
@@ -710,9 +705,9 @@ bool configureGL::sSave()
   configureSave.prepare("SELECT setNextCashRcptNumber(:cashrcpt_number) AS result;");
   configureSave.bindValue(":cashrcpt_number", _nextCashRcptNumber->text().toInt());
   configureSave.exec();
-  if (configureSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Next AR Cash Receipt Number"),
+                      configureSave, __FILE__, __LINE__))
   {
-    systemError(this, configureSave.lastError().databaseText(), __FILE__, __LINE__);
     _nextCashRcptNumber->setFocus();
     return false;
   }
@@ -781,8 +776,8 @@ bool configureGL::sSave()
     XSqlQuery update;
     update.exec("UPDATE accnt SET accnt_profit=NULL,"
                 "                 accnt_sub=CASE WHEN (accnt_sub='') THEN NULL ELSE accnt_sub END;");
-    if (update.lastError().type() != QSqlError::NoError)
-        systemError(this, update.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Accounting Setup Information"),
+                      update, __FILE__, __LINE__);
   }
 
   if (_useSubaccounts->isChecked())
@@ -801,8 +796,8 @@ bool configureGL::sSave()
     XSqlQuery update;
     update.exec("UPDATE accnt SET accnt_sub=NULL,"
                 "                 accnt_profit=CASE WHEN (accnt_profit='') THEN NULL ELSE accnt_profit END;");
-    if (update.lastError().type() != QSqlError::NoError)
-        systemError(this, update.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Accounting Setup Information"),
+                      update, __FILE__, __LINE__);
   }
 
   _metrics->set("UseJournals", _journal->isChecked());
@@ -811,6 +806,8 @@ bool configureGL::sSave()
     _metrics->set("CurrencyExchangeSense", 1);
   else // if(_baseToLocal->isChecked())
     _metrics->set("CurrencyExchangeSense", 0);
+
+  _metrics->set("FXChangeLog", _fxChangeLog->isChecked());
 
   _metrics->set("MandatoryGLEntryNotes", _mandatoryNotes->isChecked());
   _metrics->set("ManualForwardUpdate", _manualFwdUpdate->isChecked());
@@ -887,9 +884,9 @@ bool configureGL::sSave()
     fcSave.bindValue(":salescat", _salesCat->id());
     fcSave.bindValue(":finchargid", _finchargid);
     fcSave.exec();
-    if (fcSave.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Accounting Setup Information"),
+                                  fcSave, __FILE__, __LINE__))
     {
-      systemError(this, fcSave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }

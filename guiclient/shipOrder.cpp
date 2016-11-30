@@ -22,6 +22,7 @@
 #include "printInvoice.h"
 #include "printPackingList.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -89,6 +90,12 @@ enum SetResponse shipOrder::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
 
+  param = pParams.value("transdate", &valid);
+  if (valid)
+  {
+    _transDate->setDate(param.toDate(), true);
+  }
+  
   param = pParams.value("shiphead_id", &valid);
   if (valid)
   {
@@ -131,9 +138,9 @@ enum SetResponse shipOrder::set(const ParameterList &pParams)
         _order->setId(param.toInt(), "TO");
       }
     }
-    else if (shipet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipet, __FILE__, __LINE__))
     {
-      systemError(this, shipet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
 
@@ -164,9 +171,9 @@ void shipOrder::sShip()
   shipq.bindValue(":shiphead_tracknum",	_tracknum->currentText());
   shipq.bindValue(":shiphead_id",		_shipment->id());
   shipq.exec();
-  if (shipq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Shipping Information"),
+                                shipq, __FILE__, __LINE__))
   {
-    systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
     connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
     return;
   }
@@ -216,9 +223,9 @@ void shipOrder::sShip()
           return;
         }
       }
-      if (shipq.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                    shipq, __FILE__, __LINE__))
       {
-        systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
         connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
         return;
       }
@@ -229,8 +236,9 @@ void shipOrder::sShip()
     else if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("shipShipment", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                               storedProcErrorLookup("shipShipment", result),
+                               __FILE__, __LINE__);
       connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
       return;
     }
@@ -243,7 +251,8 @@ void shipOrder::sShip()
       errorStr = tr("One or more required accounts are not set or set incorrectly."
                     " Please make sure that all your Cost Category and Sales Account Assignments"
                     " are complete and correct.");
-    systemError(this, errorStr, __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                         errorStr, __FILE__, __LINE__);
     connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
     return;
   }
@@ -251,7 +260,8 @@ void shipOrder::sShip()
   shipq.exec("COMMIT;");
   if (shipq.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                         shipq, __FILE__, __LINE__);
     connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
     return;
   }
@@ -277,9 +287,9 @@ void shipOrder::sShip()
       int cobmiscid = shipq.value("result").toInt();
       if (cobmiscid < 0)
       {
-        systemError(this,
-                    storedProcErrorLookup("selectUninvoicedShipment", cobmiscid),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                               storedProcErrorLookup("selectUninvoicedShipment", cobmiscid),
+                               __FILE__, __LINE__);
         connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
         return;
       }
@@ -300,9 +310,9 @@ void shipOrder::sShip()
           int result = shipq.value("result").toInt();
           if (result < 0)
           {
-            systemError(this,
-                        storedProcErrorLookup("postBillingSelection", result),
-                        __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Billing Information"),
+                                   storedProcErrorLookup("postBillingSelection", result),
+                                   __FILE__, __LINE__);
             connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
             return;
           }
@@ -316,15 +326,13 @@ void shipOrder::sShip()
           omfgThis->sInvoicesUpdated(result, true);
           omfgThis->sSalesOrdersUpdated(_order->id());
         }
-        else if (shipq.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("<p>Although Sales Order %1 was successfully shipped "
+                                                              "and selected for billing, the Invoice was not "
+                                                              "created properly. You may need to create an Invoice "
+                                                              "manually from the Billing Selection.")
+                                      .arg(_order->id()),
+                                      shipq, __FILE__, __LINE__))
         {
-          systemError(this, shipq.lastError().databaseText() +
-                      tr("<p>Although Sales Order %1 was successfully shipped "
-                         "and selected for billing, the Invoice was not "
-                         "created properly. You may need to create an Invoice "
-                         "manually from the Billing Selection.")
-                      .arg(_order->id()),
-                      __FILE__, __LINE__);
           connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
           return;
         }
@@ -332,14 +340,12 @@ void shipOrder::sShip()
         omfgThis->sBillingSelectionUpdated(_order->id(), true);
       }
     }
-    else if (shipq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("<p>Although Sales Order %1 was successfully shipped, "
+                                                          "it was not selected for billing. You must manually "
+                                                          "select this Sales Order for Billing.")
+                                  .arg(_order->id()),
+                                  shipq, __FILE__, __LINE__))
     {
-      systemError(this, shipq.lastError().databaseText() +
-                  tr("<p>Although Sales Order %1 was successfully shipped, "
-                     "it was not selected for billing. You must manually "
-                     "select this Sales Order for Billing.")
-                  .arg(_order->id()),
-                  __FILE__, __LINE__);
       connect(_ship,     SIGNAL(clicked()),     this, SLOT(sShip()));
       return;
     }
@@ -370,25 +376,24 @@ void shipOrder::sShip()
       if (result < 0)
       {
         rollback.exec();
-        systemError(this,
-                    recverr + storedProcErrorLookup("enterReceipt", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                 storedProcErrorLookup("enterReceipt", result),
+                                 __FILE__, __LINE__);
       }
       omfgThis->sPurchaseOrderReceiptsUpdated();
     }
     if (shipq.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, recverr + "<br>" + shipq.lastError().databaseText(),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                           shipq, __FILE__, __LINE__);
     }
     
     shipq.exec("COMMIT;");
     if (shipq.lastError().type() != QSqlError::NoError)
     {
-      systemError(this,
-                  recverr + "<br>" + shipq.lastError().databaseText(),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                           shipq, __FILE__, __LINE__);
     }
     
     ParameterList recvParams;
@@ -435,9 +440,9 @@ void shipOrder::sShip()
   if (! _shipment->number().isEmpty())
     shipq.bindValue(":shiphead_number", _shipment->number());
   shipq.exec();
-  if (shipq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Shipping Information"),
+                                shipq, __FILE__, __LINE__))
   {
-    systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -472,7 +477,7 @@ void shipOrder::sHandleSo()
 
 
   shipHandleSo.prepare( "SELECT DISTINCT"
-                        "       cohead_holdtype, cust_name, cohead_shiptoname, "
+                        "       soHoldType(cohead_id) AS holdtype, cust_name, cohead_shiptoname, "
                         "       cohead_shiptoaddress1, cohead_curr_id, cohead_freight "
                         "FROM cohead JOIN custinfo ON (cust_id=cohead_cust_id)"
                         "            JOIN coitem ON (coitem_cohead_id=cohead_id)"
@@ -485,13 +490,13 @@ void shipOrder::sHandleSo()
   if (shipHandleSo.first())
   {
     QString msg;
-    if ( (shipHandleSo.value("cohead_holdtype").toString() == "C"))
+    if ( (shipHandleSo.value("holdtype").toString() == "C"))
       msg = storedProcErrorLookup("shipShipment", -12);
-    else if (shipHandleSo.value("cohead_holdtype").toString() == "P")
+    else if (shipHandleSo.value("holdtype").toString() == "P")
       msg = storedProcErrorLookup("shipShipment", -13);
-    else if (shipHandleSo.value("cohead_holdtype").toString() == "R")
+    else if (shipHandleSo.value("holdtype").toString() == "R")
       msg = storedProcErrorLookup("shipShipment", -14);
-    else if (shipHandleSo.value("cohead_holdtype").toString() == "S")
+    else if (shipHandleSo.value("holdtype").toString() == "S")
       msg = storedProcErrorLookup("shipShipment", -15);
 
     if (! msg.isEmpty())
@@ -542,9 +547,9 @@ void shipOrder::sHandleSo()
         _shipment->setEnabled(true);
       }
     }
-    else if (shipHandleSo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipHandleSo, __FILE__, __LINE__))
     {
-      systemError(this, shipHandleSo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else if (_shipment->isValid())
@@ -564,9 +569,9 @@ void shipOrder::sHandleSo()
           _shipment->setEnabled(true);
         }
       }
-      else if (shipHandleSo.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                    shipHandleSo, __FILE__, __LINE__))
       {
-        systemError(this, shipHandleSo.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
       else
@@ -581,9 +586,9 @@ void shipOrder::sHandleSo()
       return;
     }
   }
-  else if (shipHandleSo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                shipHandleSo, __FILE__, __LINE__))
   {
-    systemError(this, shipHandleSo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -617,9 +622,9 @@ void shipOrder::sHandleTo()
     _shipToName->setText(shipHandleTo.value("tohead_destname").toString());
     _shipToAddr1->setText(shipHandleTo.value("tohead_destaddress1").toString());
   }
-  else if (shipHandleTo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                shipHandleTo, __FILE__, __LINE__))
   {
-    systemError(this, shipHandleTo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -650,9 +655,9 @@ void shipOrder::sHandleTo()
       _shipment->setEnabled(true);
     }
   }
-  else if (shipHandleTo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                shipHandleTo, __FILE__, __LINE__))
   {
-    systemError(this, shipHandleTo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else if (_shipment->isValid())
@@ -672,9 +677,9 @@ void shipOrder::sHandleTo()
         _shipment->setEnabled(true);
       }
     }
-    else if (shipHandleTo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipHandleTo, __FILE__, __LINE__))
     {
-      systemError(this, shipHandleTo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -748,9 +753,9 @@ void shipOrder::sFillList()
 		      shipq.value("effective").toDate());
       }
     }
-    else if (shipq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipq, __FILE__, __LINE__))
     {
-      systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -811,9 +816,9 @@ void shipOrder::sFillList()
     MetaSQLQuery itemm(items);
     shipq = itemm.toQuery(itemp);
     _coitem->populate(shipq);
-    if (shipq.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipq, __FILE__, __LINE__))
     {
-      systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -834,9 +839,9 @@ void shipOrder::sFillList()
     shipq = valm.toQuery(itemp);	// shared parameters
     if(shipq.first())
       _shipValue->setDouble(shipq.value("value").toDouble());
-    else if (shipq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipq, __FILE__, __LINE__))
     {
-      systemError(this, shipq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -893,9 +898,9 @@ void shipOrder::sFillFreight()
       _freight->setLocalValue(shipdataQ.value("shipdatasum_base_freight").toDouble());
       _shipVia->setText(shipdataQ.value("shipper_data").toString());
     }
-    else if (shipdataQ.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipdataQ, __FILE__, __LINE__))
     {
-      systemError(this, shipdataQ.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -930,9 +935,9 @@ void shipOrder::sFillTracknum()
     shipdataQ.exec();
     if (shipdataQ.first())
       _tracknum->populate(shipdataQ);
-    else if (shipdataQ.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipping Information"),
+                                  shipdataQ, __FILE__, __LINE__))
     {
-      systemError(this, shipdataQ.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -950,9 +955,9 @@ void shipOrder::calcFreight()
     {
       _freight->setLocalValue(data.value("freight").toDouble());
     }
-    else if (data.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Calculating Shipping Freight"),
+                                  data, __FILE__, __LINE__))
     {
-      systemError(this, data.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

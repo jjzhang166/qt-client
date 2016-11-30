@@ -37,8 +37,8 @@ dspPartiallyShippedOrders::dspPartiallyShippedOrders(QWidget* parent, const char
   _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
-  list()->addColumn(tr("Hold"),        0,           Qt::AlignCenter,true, "cohead_holdtype");
-  list()->addColumn(tr("Sale Type"),  _orderColumn, Qt::AlignLeft,  true,  "saletype_descr");
+  list()->addColumn(tr("Hold"),        0,           Qt::AlignCenter,true, "holdtype");
+  list()->addColumn(tr("Sale Type"),  _orderColumn, Qt::AlignLeft,  true, "saletype_descr");
   list()->addColumn(tr("S/O #"),      _orderColumn, Qt::AlignRight, true, "cohead_number");
   list()->addColumn(tr("Customer"),    -1,          Qt::AlignLeft,  true, "cust_name");
   list()->addColumn(tr("Hold Type"),   _dateColumn, Qt::AlignCenter,true, "f_holdtype");

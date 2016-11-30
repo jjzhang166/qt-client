@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,7 +13,9 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
-
+#include <metasql.h>
+#include "mqlutil.h"
+#include "errorReporter.h"
 #include "storedProcErrorLookup.h"
 
 miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WindowFlags fl)
@@ -23,13 +25,19 @@ miscCheck::miscCheck(QWidget* parent, const char* name, Qt::WindowFlags fl)
 
   connect(_bankaccnt, SIGNAL(newID(int)),    this, SLOT(sPopulateBankInfo(int)));
   connect(_cust,      SIGNAL(newId(int)),    this, SLOT(sHandleButtons()));
+  connect(_cust,      SIGNAL(newId(int)),    this, SLOT(sHandleTaxZone()));
   connect(_custRB,    SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_save,      SIGNAL(clicked()),     this, SLOT(sSave()));
   connect(_taxauth,   SIGNAL(newID(int)),    this, SLOT(sHandleButtons()));
   connect(_taxauthRB, SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_vend,      SIGNAL(newId(int)),    this, SLOT(sHandleButtons()));
+  connect(_vend,      SIGNAL(newId(int)),    this, SLOT(sHandleTaxZone()));
   connect(_vendRB,    SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
   connect(_cust,      SIGNAL(valid(bool)),   this, SLOT(sCustomerSelected()));
+  connect(_expense,   SIGNAL(toggled(bool)), this, SLOT(sHandleButtons()));
+  connect(_amount,    SIGNAL(editingFinished()), this, SLOT(sCalculateTax()));
+  connect(_taxzone,   SIGNAL(newID(int)),     this, SLOT(sCalculateTax()));
+  connect(_taxtype,   SIGNAL(newID(int)),     this, SLOT(sCalculateTax()));
 
   _captive = false;
   _raheadid = -1;
@@ -143,7 +151,7 @@ void miscCheck::sSave()
   {
     check.prepare("SELECT createCheck(:bankaccnt_id, :reciptype, :recipid,"
 	      "                   :checkDate, :amount, :curr_id, :expcat_id,"
-		  "                   NULL, :for, :notes, true, :cmhead_id) AS result;" );
+		  "                   NULL, :for, :notes, true, :cmhead_id, :taxzone, :taxtype) AS result;" );
     check.bindValue(":bankaccnt_id", _bankaccnt->id());
   }
   else if (_mode == cEdit)
@@ -154,7 +162,9 @@ void miscCheck::sSave()
 	       "    checkhead_checkdate=:checkDate, "
 	       "    checkhead_amount=:amount, checkhead_curr_id=:curr_id, "
                "    checkhead_expcat_id=:expcat_id, checkhead_for=:for,"
-	       "    checkhead_notes=:notes "
+	       "    checkhead_notes=:notes, "
+               "    checkhead_taxzone_id=:taxzone, "
+               "    checkhead_taxtype_id=:taxtype "
                "WHERE (checkhead_id=:check_id);" );
     check.bindValue(":check_id", _checkid);
   }
@@ -177,8 +187,12 @@ void miscCheck::sSave()
   check.bindValue(":checkDate",	_date->date());
   check.bindValue(":amount",	_amt);
   check.bindValue(":curr_id",	_amount->id());
-  check.bindValue(":for",		_for->text().trimmed());
-  check.bindValue(":notes",		_notes->toPlainText().trimmed());
+  if (_taxzone->isValid())
+    check.bindValue(":taxzone",	_taxzone->id());
+  if (_taxtype->isValid())
+    check.bindValue(":taxtype",	_taxtype->id());
+  check.bindValue(":for",	_for->text().trimmed());
+  check.bindValue(":notes",	_notes->toPlainText().trimmed());
 
   if (_expense->isChecked())
     check.bindValue(":expcat_id", _expcat->id());
@@ -192,8 +206,9 @@ void miscCheck::sSave()
     _checkid = check.value("result").toInt();
     if (_checkid < 0)
     {
-      systemError(this, storedProcErrorLookup("createCheck", _checkid),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Check Information"),
+                             storedProcErrorLookup("createCheck", _checkid),
+                             __FILE__, __LINE__);
       return;
     }
     check.prepare( "SELECT checkhead_number "
@@ -211,15 +226,15 @@ void miscCheck::sSave()
                                 .arg(check.value("checkhead_number").toString()) );
 */
     }
-    else if (check.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Check Information"),
+                                  check, __FILE__, __LINE__))
     {
-      systemError(this, check.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
-  else if (check.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Check Information"),
+                                check, __FILE__, __LINE__))
   {
-    systemError(this, check.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -244,9 +259,9 @@ void miscCheck::sPopulateBankInfo(int pBankaccntid)
     {
       _amount->setId(checkNumber.value("bankaccnt_curr_id").toInt());
     }
-    else if (miscPopulateBankInfo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Information"),
+                                  checkNumber, __FILE__, __LINE__))
     {
-      systemError(this, checkNumber.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -262,7 +277,8 @@ void miscCheck::populate()
 	     "       checkhead_bankaccnt_id, checkhead_number,"
              "       checkhead_checkdate, checkhead_expcat_id,"
              "       checkhead_for, checkhead_notes,"
-             "       checkhead_amount, checkhead_curr_id, aropen_id AS checkhead_cmhead_id "
+             "       checkhead_amount, checkhead_curr_id, aropen_id AS checkhead_cmhead_id, "
+             "       checkhead_taxzone_id, checkhead_taxtype_id "
              "FROM checkhead "
              "  LEFT OUTER JOIN checkitem ON (checkhead_id=checkitem_checkhead_id) "
              "                            AND (checkitem_aropen_id IS NOT NULL) "
@@ -296,6 +312,9 @@ void miscCheck::populate()
 		 miscpopulate.value("checkhead_checkdate").toDate(), false);
     _for->setText(miscpopulate.value("checkhead_for"));
     _notes->setText(miscpopulate.value("checkhead_notes").toString());
+    _taxzone->setId(miscpopulate.value("checkhead_taxzone_id").toInt());
+    _taxtype->setId(miscpopulate.value("checkhead_taxtype_id").toInt());
+    sCalculateTax();
 
     if (!miscpopulate.value("checkhead_cmhead_id").isNull())
     {
@@ -326,24 +345,51 @@ void miscCheck::sHandleButtons()
   if (_vendRB->isChecked())
   {
     _widgetStack->setCurrentIndex(0);
-	_memo->setText("Create Credit Memo");
+    _memo->setText("Create Credit Memo");
+    _cust->setId(-1);
   }
   else if (_custRB->isChecked())
   {
-	_widgetStack->setCurrentIndex(1);
-	_memo->setText("Create Debit Memo");
-	_cmCluster->setId(-1);
-	_cmCluster->setCustId(_cust->id());
+    _widgetStack->setCurrentIndex(1);
+    _memo->setText("Create Debit Memo");
+    _cmCluster->setId(-1);
+    _cmCluster->setCustId(_cust->id());
+    _vend->setId(-1);
   }
   else
   {
-	_widgetStack->setCurrentIndex(2);
-	_memo->setText("Create Credit Memo");
+    _widgetStack->setCurrentIndex(2);
+    _memo->setText("Create Credit Memo");
+    _cust->setId(-1);
+    _vend->setId(-1);
   }
+
+  _taxGroup->setVisible(_custRB->isChecked() || _vendRB->isChecked());
+  _taxGroup->setEnabled(_expense->isChecked());
 
   _save->setEnabled((_cust->isValid() && _custRB->isChecked())
 	             || (_vend->isValid()  && _vendRB->isChecked()) 
 				 || (_taxauth->id() > 0 && _taxauthRB->isChecked()));
+}
+
+void miscCheck::sHandleTaxZone()
+{
+  XSqlQuery getTaxZone;
+  QString sql = "<? if exists('cust_id') ?> SELECT cust_taxzone_id AS taxzone_id FROM custinfo "
+                "                           WHERE (cust_id = <? value('cust_id') ?>) "
+                "<? elseif exists('vend_id') ?> SELECT vend_taxzone_id AS taxzone_id FROM vendinfo "
+                "                           WHERE (vend_id = <? value('vend_id') ?>) "
+                "<? else ?> SELECT -1 AS taxzone_id "
+                "<? endif ?>;";
+  ParameterList params;
+  if (_cust->isValid())
+    params.append("cust_id", _cust->id());
+  else if (_vend->isValid())
+    params.append("vend_id", _vend->id());
+  MetaSQLQuery mql(sql);
+  getTaxZone = mql.toQuery(params);
+  if (getTaxZone.first())
+    _taxzone->setId(getTaxZone.value("taxzone_id").toInt());
 }
 
 void miscCheck::sCustomerSelected()
@@ -383,14 +429,38 @@ void miscCheck::sCreditMemoSelected()
       if (_mode == cNew)
         _amount->setLocalValue(miscCreditMemoSelected.value("amount").toDouble());
     }
-    else if (miscCreditMemoSelected.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                  miscCreditMemoSelected, __FILE__, __LINE__))
     {
-      systemError(this, miscCreditMemoSelected.lastError().databaseText(), __FILE__, __LINE__);
       return;
-    } 
+    }
   }
   else
   {
     _aropenamt=0;
   } 
+}
+
+void miscCheck::sCalculateTax()
+{
+  if(!_taxzone->isValid() || !_taxtype->isValid())
+  {
+    _tax->setLocalValue(0.00);
+    return;
+  }
+
+  XSqlQuery calcTax;
+  calcTax.prepare("SELECT calculateinversetax(:taxzone_id, :taxtype_id, :date, :curr_id, :amount) as tax;");
+  calcTax.bindValue(":taxzone_id", _taxzone->id());
+  calcTax.bindValue(":taxtype_id", _taxtype->id());
+  calcTax.bindValue(":date",       _date->date());
+  calcTax.bindValue(":curr_id",    _amount->id());
+  calcTax.bindValue(":amount",     _amount->localValue());
+  calcTax.exec();
+  if (calcTax.first())
+    _tax->setLocalValue(calcTax.value("tax").toDouble());
+  else if (ErrorReporter::error(QtCriticalMsg, this,
+                                tr("Tax Calculation"),
+                                calcTax, __FILE__, __LINE__))
+    return; 
 }

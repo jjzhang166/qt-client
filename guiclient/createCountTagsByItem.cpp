@@ -132,7 +132,8 @@ void createCountTagsByItem::sPopulateLocations()
                "  FROM location, itemsite"
                " WHERE ((validLocation(location_id, itemsite_id))"
                "   AND  (itemsite_warehous_id=:warehous_id)"
-               "   AND  (itemsite_item_id=:item_id)) "
+               "   AND  (itemsite_item_id=:item_id) "
+               "   AND  (location_active) ) "
                " ORDER BY locationname;");
     createPopulateLocations.bindValue(":item_id", _item->id());
     createPopulateLocations.bindValue(":warehous_id", _warehouse->id());

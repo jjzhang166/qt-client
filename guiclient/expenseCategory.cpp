@@ -120,7 +120,7 @@ void expenseCategory::sSave()
   QList<GuiErrorCheck> errors;
 
   errors << GuiErrorCheck(_category->text().trimmed().isEmpty(), _category,
-                         tr("<p>You must specify a name."));
+                         tr("<p>You must specify a Category."));
 
   if (_mode == cEdit)
   {

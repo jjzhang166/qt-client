@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include <openreports.h>
+#include "errorReporter.h"
 
 printLabelsByOrder::printLabelsByOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -107,9 +108,9 @@ void printLabelsByOrder::sPrint()
     _order->setId(-1);
     _order->setFocus();
   }
-  else if (printPrint.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Label Information"),
+                                printPrint, __FILE__, __LINE__))
   {
-    systemError(this, printPrint.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else

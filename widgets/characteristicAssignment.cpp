@@ -270,6 +270,9 @@ void characteristicAssignment::sSave()
   characteristicSave.bindValue(":charass_price", _listprice->toDouble());
   characteristicSave.bindValue(":charass_default", QVariant(_default->isChecked()));
   characteristicSave.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving Characteristic"),
+                           characteristicSave, __FILE__, __LINE__))
+    return;
 
   done(_charassid);
 }

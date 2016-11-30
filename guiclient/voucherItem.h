@@ -34,6 +34,7 @@ public slots:
     virtual void sPopulateMenu( QMenu * pMenu, XTreeWidgetItem* );
     virtual void sCorrectReceiving();
     virtual void sSplitReceipt();
+    virtual void rollback();
     virtual void reject();
 	virtual void sCalculateTax();
 	virtual void sTaxDetail();
@@ -52,7 +53,7 @@ private:
     int _taxzoneid;
     bool _inTransaction;
     bool _saved;
-    double _distamount;
+    double _freighttax;
     QString _rejectedMsg;
 };
 

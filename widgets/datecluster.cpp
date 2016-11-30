@@ -27,6 +27,7 @@
 
 #include "datecluster.h"
 #include "dcalendarpopup.h"
+#include "errorReporter.h"
 #include "format.h"
 
 #define DEBUG false
@@ -152,7 +153,9 @@ void XDateEdit::parseDate()
 
   _valid = false;
 
-  if (dateString.contains(QRegExp("[0-9]+[-][0-9]+"))) //user enters hyphens instead of slashes
+  if (dateString.contains(QRegExp("[0-9]+[-][0-9]+")) &&
+      QLocale().dateFormat(QLocale::ShortFormat).contains(QRegExp("(M+|y+|d+)/(M+|y+|d+)")))
+  //user enters hyphens instead of slashes and locale uses slashes
   {
     dateString.replace("-", "/");
   }
@@ -389,6 +392,18 @@ void XDateEdit::setDataWidgetMap(XDataWidgetMapper* m)
   m->addMapping(this, _fieldName, "date", "currentDefault");
 }
 
+void XDateEdit::setCalendarSiteId(int siteId)
+{
+  int tmpSite = _siteId;
+  _siteId = siteId;
+  if(siteId!=tmpSite&&tmpSite!=-1)
+  {
+    QDate tmpDate = _currentDate;
+    setNull();
+    checkDate(tmpDate);
+  }
+}
+
 void XDateEdit::setNull()
 {
   if (DEBUG)
@@ -474,13 +489,12 @@ void XDateEdit::checkDate(const QDate &pDate)
     workday.bindValue(":desired", 0);
     workday.exec();
     if (workday.first())
-      nextWorkDate = workday.value("result").toDate();
-    else if (workday.lastError().type() != QSqlError::NoError)
     {
-      QMessageBox::warning(this, tr("No work week calendar found"),
-                            tr("<p>The selected Site has no work week defined. "
-                               "Please go to Schedule Setup and define "
-                               "the working days for this site."));
+      nextWorkDate = workday.value("result").toDate();
+    }
+    else if (ErrorReporter::error(QtWarningMsg, this, tr("No work week calendar found"),
+                                  workday, __FILE__, __LINE__))
+    {
       return;
     }
   }

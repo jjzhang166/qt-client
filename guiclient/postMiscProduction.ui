@@ -157,7 +157,7 @@ to be bound by its terms.</comment>
        <property name="title">
         <string/>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout_30">
         <item row="0" column="0">
          <widget class="QLabel" name="_warehouseLit">
           <property name="text">
@@ -416,6 +416,7 @@ to be bound by its terms.</comment>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XTextEdit</class>

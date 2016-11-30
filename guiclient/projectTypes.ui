@@ -134,12 +134,12 @@ to be bound by its terms.</comment>
   </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
-   <extends></extends>
+   <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>_list</tabstop>
   <tabstop>_close</tabstop>
   <tabstop>_new</tabstop>
   <tabstop>_edit</tabstop>
@@ -160,22 +160,6 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>246</x>
      <y>7</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>_list</sender>
-   <signal>itemSelected(int)</signal>
-   <receiver>_edit</receiver>
-   <slot>animateClick()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>225</x>
-     <y>124</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>498</x>
-     <y>80</y>
     </hint>
    </hints>
   </connection>

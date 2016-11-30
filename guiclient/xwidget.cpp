@@ -60,6 +60,8 @@ XWidget::XWidget(QWidget * parent, Qt::WindowFlags flags)
   {
     setWindowModality(Qt::ApplicationModal);
   }
+  if(!parent || !parent->isModal())
+    setParent(omfgThis);
 
   _private = new XWidgetPrivate(this);
 }
@@ -77,6 +79,8 @@ XWidget::XWidget(QWidget * parent, const char * name, Qt::WindowFlags flags)
 
   if(name)
     setObjectName(name);
+  if(!parent || !parent->isModal())
+    setParent(omfgThis);
 
   _private = new XWidgetPrivate(this);
 }
@@ -133,7 +137,13 @@ void XWidget::showEvent(QShowEvent *event)
       else
       {
         QWidget * fw = focusWidget();
-        QMdiSubWindow *subwin = omfgThis->workspace()->addSubWindow(this);
+
+	// this verboseness works around what appear to be qt bugs
+        QMdiSubWindow *subwin = new QMdiSubWindow();
+        subwin->setParent(omfgThis->workspace());
+        omfgThis->workspace()->addSubWindow(subwin);
+        subwin->setWidget(this);
+
         omfgThis->workspace()->setActiveSubWindow(subwin);
         connect(this, SIGNAL(destroyed(QObject*)), subwin, SLOT(close()));
         if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool()) {
@@ -145,7 +155,6 @@ void XWidget::showEvent(QShowEvent *event)
 	  if (DEBUG) qDebug() << "move()" << pos;
           parentWidget()->move(pos);
 	}
-        // This originally had to be after the show? Will it work here?
         if(fw)
           fw->setFocus();
       }

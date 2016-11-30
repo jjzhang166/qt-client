@@ -15,6 +15,8 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 country::country(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -86,31 +88,20 @@ void country::sSave()
   XSqlQuery countrySave;
   sToUpper();
 
-  struct {
-    bool	condition;
-    QString	msg;
-    QWidget*	widget;
-  } error[] = {
-    { _name->text().isEmpty(), tr("Country name is required."),         _name },
-    { _abbr->text().isEmpty(), tr("Country abbreviation is required."), _abbr },
-    { _abbr->text().length() != 2, tr("Country abbreviation must be 2 "
-				      "characters long."),              _abbr },
-    { _currAbbr->text().length() != 3, tr("Currency abbreviations must be "
-					 "3 characters long."), _currAbbr},
-    { ! _currNumber->text().isEmpty() && _currNumber->text().length() != 3,
-		   tr("Currency numbers must be 3 digits long."), _currNumber },
-    { true, "", NULL }
-  }; // error[]
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_name->text().isEmpty(), _name,
+                        tr("Country name is required."))
+       <<GuiErrorCheck(_abbr->text().isEmpty(), _abbr,
+                       tr("Country abbreviation is required."))
+       <<GuiErrorCheck(_abbr->text().length() != 2, _abbr,
+                      tr("Country abbreviation must be 2 characters long."))
+       <<GuiErrorCheck(_currAbbr->text().length() != 3, _currAbbr,
+                      tr("Currency abbreviations must be 3 characters long."))
+        <<GuiErrorCheck(! _currNumber->text().isEmpty() && _currNumber->text().length() != 3, _currNumber,
+                      tr("Currency numbers must be 3 digits long."));
 
-  int errIndex;
-  for (errIndex = 0; ! error[errIndex].condition; errIndex++)
-    ;
-  if (! error[errIndex].msg.isEmpty())
-  {
-    QMessageBox::critical(this, tr("Cannot save Country"), error[errIndex].msg);
-    error[errIndex].widget->setFocus();
-    return;
-  }
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot save Country"),errors))
+      return;
   
   if (_mode == cNew)
   {
@@ -143,9 +134,9 @@ void country::sSave()
 
   countrySave.exec();
 
-  if (countrySave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Country Information"),
+                                countrySave, __FILE__, __LINE__))
   {
-    systemError(this, countrySave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   
@@ -170,9 +161,9 @@ void country::populate()
     _currNumber->setText(countrypopulate.value("country_curr_number").toString());
     _currSymbol->setText(countrypopulate.value("country_curr_symbol").toString());
   }
-  else if (countrypopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Country Information"),
+                                countrypopulate, __FILE__, __LINE__))
   {
-    systemError(this, countrypopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,11 +10,10 @@
 
 #include "updatePrices.h"
 
-#include <QCloseEvent>
 #include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QValidator>
+
 #include <metasql.h>
 #include <parameter.h>
 #include "errorReporter.h"
@@ -29,12 +28,10 @@ updatePrices::updatePrices(QWidget* parent, const char* name, bool modal, Qt::Wi
   XSqlQuery updateupdatePrices;
   setupUi(this);
 
-
-  // signals and slots connections
   connect(_byItem,             SIGNAL(toggled(bool)), this, SLOT(sHandleBy(bool)));
   connect(_byItemGroup,        SIGNAL(toggled(bool)), this, SLOT(sHandleBy(bool)));
   connect(_byProductCategory,  SIGNAL(toggled(bool)), this, SLOT(sHandleBy(bool)));
-  connect(_close,              SIGNAL(clicked()),     this, SLOT(close()));
+  connect(_close,              SIGNAL(clicked()),     this, SLOT(reject()));
   connect(_add,                SIGNAL(clicked()),     this, SLOT(sAdd()));
   connect(_addAll,             SIGNAL(clicked()),     this, SLOT(sAddAll()));
   connect(_remove,             SIGNAL(clicked()),     this, SLOT(sRemove()));
@@ -54,7 +51,8 @@ updatePrices::updatePrices(QWidget* parent, const char* name, bool modal, Qt::Wi
   ParameterList params;
   updateupdatePrices = mql.toQuery(params);
   if (updateupdatePrices.lastError().type() != QSqlError::NoError)
-    systemError(this, updateupdatePrices.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Price Information"),
+                       updateupdatePrices, __FILE__, __LINE__);
 
   _avail->addColumn(tr("Schedule"),      -1,          Qt::AlignLeft,  true,  "ipshead_name");
   _avail->addColumn(tr("Description"),   -1,          Qt::AlignLeft,  true,  "ipshead_descrip");
@@ -66,14 +64,17 @@ updatePrices::updatePrices(QWidget* parent, const char* name, bool modal, Qt::Wi
   _sel->addColumn(tr("Description"),     -1,          Qt::AlignLeft,  true,  "ipshead_descrip");
 
   _group->hide();
-  //	_value->setChecked(true);
 
-  populate();
+  _listpricesched = false;
 }
 
 updatePrices::~updatePrices()
 {
-  // no need to delete child widgets, Qt does it all for us
+  MetaSQLQuery mql = mqlLoad("updateprices", "dropselsched");
+  ParameterList params;
+  XSqlQuery dropq = mql.toQuery(params);
+  ErrorReporter::error(QtCriticalMsg, this, tr("Error Dropping Table Information"),
+                       dropq, __FILE__, __LINE__);
 }
 
 void updatePrices::languageChange()
@@ -81,14 +82,21 @@ void updatePrices::languageChange()
   retranslateUi(this);
 }
 
-void updatePrices::closeEvent(QCloseEvent * /*pEvent*/)
+enum SetResponse updatePrices::set(const ParameterList &pParams)
 {
-  XSqlQuery updatecloseEvent;
-  MetaSQLQuery mql = mqlLoad("updateprices", "dropselsched");
-  ParameterList params;
-  updatecloseEvent = mql.toQuery(params);
-  if (updatecloseEvent.lastError().type() != QSqlError::NoError)
-    systemError(this, updatecloseEvent.lastError().databaseText(), __FILE__, __LINE__);
+  bool     valid;
+  QVariant param;
+  
+  param = pParams.value("listpricesched", &valid);
+  if (valid)
+  {
+    _listpricesched = true;
+    setWindowTitle(tr("List Pricing Schedule Assignments"));
+  }
+  
+  populate();
+  
+  return NoError;
 }
 
 void updatePrices::sUpdate()
@@ -137,7 +145,8 @@ void updatePrices::sUpdate()
   if (updateUpdate.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, updateUpdate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Price Information"),
+                         updateUpdate, __FILE__, __LINE__);
     return;
   }
 
@@ -148,7 +157,8 @@ void updatePrices::sUpdate()
     if (updateUpdate.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, updateUpdate.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Price Information"),
+                           updateUpdate, __FILE__, __LINE__);
       return;
     }
   }
@@ -170,17 +180,21 @@ void updatePrices::populate()
     params.append("showExpired", true);
   if (_showCurrent->isChecked())
     params.append("showCurrent", true);
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
   MetaSQLQuery mql = mqlLoad("updateprices", "availsched");
   updatepopulate = mql.toQuery(params);
   if (updatepopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, updatepopulate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Pricing Schedule Information"),
+                       updatepopulate, __FILE__, __LINE__);
   _avail->populate(updatepopulate);
 
   MetaSQLQuery mql2 = mqlLoad("updateprices", "selsched");
   updatepopulate = mql2.toQuery(params);
   if (updatepopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, updatepopulate.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Pricing Schedule Information"),
+                       updatepopulate, __FILE__, __LINE__);
   _sel->populate(updatepopulate);
 }
 
@@ -195,7 +209,8 @@ void updatePrices::sAdd()
     params.append("ipshead_id", ((XTreeWidgetItem*)(selected[i]))->id());
     updateAdd = mql.toQuery(params);
     if (updateAdd.lastError().type() != QSqlError::NoError)
-      systemError(this, updateAdd.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Pricing Schedule Information"),
+                         updateAdd, __FILE__, __LINE__);
   }
   populate();
 }
@@ -214,7 +229,8 @@ void updatePrices::sAddAll()
   MetaSQLQuery mql = mqlLoad("updateprices", "add");
   updateAddAll = mql.toQuery(params);
   if (updateAddAll.lastError().type() != QSqlError::NoError)
-    systemError(this, updateAddAll.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Pricing Schedule Information"),
+                       updateAddAll, __FILE__, __LINE__);
   populate();
 }
 
@@ -226,7 +242,8 @@ void updatePrices::sRemove()
   params.append("ipshead_id", _sel->id());
   updateRemove = mql.toQuery(params);
   if (updateRemove.lastError().type() != QSqlError::NoError)
-    systemError(this, updateRemove.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Removing Pricing Schedule Information"),
+                       updateRemove, __FILE__, __LINE__);
   populate();
 }
 
@@ -237,7 +254,8 @@ void updatePrices::sRemoveAll()
   ParameterList params;
   updateRemoveAll = mql.toQuery(params);
   if (updateRemoveAll.lastError().type() != QSqlError::NoError)
-    systemError(this, updateRemoveAll.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Removing Pricing Schedule Information"),
+                     updateRemoveAll, __FILE__, __LINE__);
   populate();
 }
 

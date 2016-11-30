@@ -16,6 +16,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include <errorReporter.h>
 
 distributeToLocation::distributeToLocation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -85,6 +86,12 @@ enum SetResponse distributeToLocation::set(const ParameterList &pParams)
     _locationQty->setDouble(locQty);
   }
 
+  param = pParams.value("itemsite_controlmethod", &valid);
+  if (valid)
+  {
+    _controlMethod = param.toString();
+  }
+
   param = pParams.value("distribute", &valid);
   if (valid)
   {
@@ -128,6 +135,15 @@ void distributeToLocation::sDistribute()
     _locationQty->setFocus();
     return;
   }
+
+  if (qAbs(qty)>1 && _controlMethod=="S")
+  {
+    QMessageBox::warning( this, tr("Cannot Distribute Quantity"),
+                          tr("You may not distribute more than one of the same serial controlled item.") );
+    _locationQty->setFocus();
+    return;
+  }
+  
 
   if (qty < 0 && _availToDistribute < qAbs(qty) &&
       QMessageBox::question(this, tr("Distribute More Than Available?"),
@@ -329,9 +345,9 @@ void distributeToLocation::populate()
     }
     _locationQty->setDouble(locQty);
   }
-  else if (distributepopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Location Information"),
+                                distributepopulate, __FILE__, __LINE__))
   {
-    systemError(this, distributepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

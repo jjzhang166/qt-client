@@ -23,6 +23,7 @@
 #include "invoice.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 listRecurringInvoices::listRecurringInvoices(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -122,9 +123,9 @@ void listRecurringInvoices::sFillList()
   params.append("none", tr("None"));
   listFillList = mql.toQuery(params);
   _invchead->populate(listFillList);
-  if (listFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Recurring Invoice Information"),
+                                listFillList, __FILE__, __LINE__))
   {
-    systemError(this, listFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

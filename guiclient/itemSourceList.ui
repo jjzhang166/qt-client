@@ -13,7 +13,7 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
+    <width>722</width>
     <height>400</height>
    </rect>
   </property>
@@ -45,33 +45,6 @@ to be bound by its terms.</comment>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QLabel" name="_vendorLit">
-               <property name="text">
-                <string>Vendor:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item>
             <widget class="VendorCluster" name="_vendor"/>
            </item>
           </layout>
@@ -98,31 +71,24 @@ to be bound by its terms.</comment>
             <number>0</number>
            </property>
            <item>
-            <layout class="QVBoxLayout">
-             <property name="spacing">
-              <number>5</number>
+            <widget class="QPushButton" name="_close">
+             <property name="text">
+              <string>&amp;Cancel</string>
              </property>
-             <item>
-              <widget class="QPushButton" name="_close">
-               <property name="text">
-                <string>&amp;Cancel</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="_select">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>&amp;Select</string>
-               </property>
-               <property name="default">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="_select">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>&amp;Select</string>
+             </property>
+             <property name="default">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <spacer>
@@ -229,6 +195,7 @@ to be bound by its terms.</comment>
  </customwidgets>
  <tabstops>
   <tabstop>_item</tabstop>
+  <tabstop>_vendor</tabstop>
   <tabstop>_itemsrc</tabstop>
   <tabstop>_select</tabstop>
   <tabstop>_close</tabstop>

@@ -13,6 +13,7 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QVariant>
+#include "errorReporter.h"
 
 dspItemCostDetail::dspItemCostDetail(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspItemCostDetail", fl)
@@ -90,9 +91,9 @@ enum SetResponse dspItemCostDetail::set(const ParameterList &pParams)
       _costType->setId(qq.value("itemcost_costelem_id").toInt());
       _costType->setEnabled(false);
     }
-    else if (qq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Cost Information"),
+                                  qq, __FILE__, __LINE__))
     {
-      systemError(this, qq.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -117,9 +118,9 @@ void dspItemCostDetail::sPopulate()
   qq.bindValue(":item_id", _item->id());
   qq.exec();
   _costType->populate(qq);
-  if (qq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Cost Information"),
+                                qq, __FILE__, __LINE__))
   {
-    systemError(this, qq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

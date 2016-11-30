@@ -19,6 +19,7 @@
 
 #include "freightClass.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 freightClasses::freightClasses(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -111,14 +112,15 @@ void freightClasses::sDelete()
     int result = freightDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteFreightClass", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Removing Selected Freight Class"),
+                             storedProcErrorLookup("deleteFreightClass", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (freightDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Removing Selected Freight Class"),
+                                freightDelete, __FILE__, __LINE__))
   {
-    systemError(this, freightDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList(-1);
@@ -148,15 +150,15 @@ void freightClasses::sDeleteUnused()
       int result = freightDeleteUnused.value("result").toInt();
       if (result < 0)
       {
-        systemError(this,
-                    storedProcErrorLookup("deleteUnusedFreightClasses", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Unused Freight Classes"),
+                               storedProcErrorLookup("deleteUnusedFreightClasses", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
-    else if (freightDeleteUnused.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Unused Freight Classes"),
+                                  freightDeleteUnused, __FILE__, __LINE__))
     {
-      systemError(this, freightDeleteUnused.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList(-1);

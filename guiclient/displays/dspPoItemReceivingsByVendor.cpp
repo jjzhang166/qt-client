@@ -19,6 +19,7 @@
 #include "guiclient.h"
 #include "poLiabilityDistrib.h"
 #include "voucher.h"
+#include "errorReporter.h"
 
 dspPoItemReceivingsByVendor::dspPoItemReceivingsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemReceivingsByVendor", fl)
@@ -190,9 +191,9 @@ void dspPoItemReceivingsByVendor::sMarkAsInvoiced()
     if (newdlg.exec() == XDialog::Rejected)
       update = false;
   }
-  else if (dspMarkAsInvoiced.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspMarkAsInvoiced, __FILE__, __LINE__))
   {
-    systemError(this, dspMarkAsInvoiced.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if (update)
@@ -202,9 +203,9 @@ void dspPoItemReceivingsByVendor::sMarkAsInvoiced()
           "WHERE (recv_id=:recv_id); ");
     dspMarkAsInvoiced.bindValue(":recv_id",list()->id());
     dspMarkAsInvoiced.exec();
-    if (dspMarkAsInvoiced.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                  dspMarkAsInvoiced, __FILE__, __LINE__))
     {
-      systemError(this, dspMarkAsInvoiced.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList();
@@ -228,9 +229,9 @@ bool dspPoItemReceivingsByVendor::recvHasValue()
     valq.exec();
     if (valq.first())
       hasValue = true;
-    else if (valq.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  valq, __FILE__, __LINE__))
     {
-      systemError(this, valq.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }

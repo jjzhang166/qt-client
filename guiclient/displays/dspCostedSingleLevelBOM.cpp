@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 dspCostedSingleLevelBOM::dspCostedSingleLevelBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCostedBOMBase(parent, "dspCostedSingleLevelBOM", fl)
@@ -29,6 +30,10 @@ bool dspCostedSingleLevelBOM::setParams(ParameterList &params)
 
 void dspCostedSingleLevelBOM::sFillList()
 {
+  ParameterList params;
+  if (!setParams(params))
+    return;
+  
   dspCostedBOMBase::sFillList();
 
   XSqlQuery qq;
@@ -44,9 +49,9 @@ void dspCostedSingleLevelBOM::sFillList()
     last = new XTreeWidgetItem(list(), last, -1, -1, tr("Standard Cost"), "" );
     last->setText(11, qq.value("standard").toString());
   }
-  else if (qq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving BOM Cost Information"),
+                                qq, __FILE__, __LINE__))
   {
-    systemError(this, qq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

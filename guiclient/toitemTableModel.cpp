@@ -21,6 +21,7 @@
 
 #include "guiclient.h"
 #include "currcluster.h"
+#include "errorReporter.h"
 
 ToitemTableModel::ToitemTableModel(QObject * parent, QSqlDatabase db) :
   QSqlRelationalTableModel(parent, db)
@@ -98,9 +99,9 @@ void ToitemTableModel::findHeadData()
     _tostatus	  = toheadq.value("tohead_status").toString();
     _toheadsrcwhsid=toheadq.value("tohead_src_warehous_id").toInt();
   }
-  else if (toheadq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Transfer Order Information"),
+                                toheadq, __FILE__, __LINE__))
   {
-    systemError(0, toheadq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

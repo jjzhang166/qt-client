@@ -24,6 +24,7 @@
 #include "printPackingList.h"
 #include "storedProcErrorLookup.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 dspSummarizedBacklogByWarehouse::dspSummarizedBacklogByWarehouse(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSummarizedBacklogByWarehouse", fl)
@@ -170,11 +171,11 @@ void dspSummarizedBacklogByWarehouse::sDelete()
 		       "   AND (coitem_cohead_id=:sohead_id));" );
             dspDelete.bindValue(":sohead_id", list()->id());
             dspDelete.exec();
-	    if (dspDelete.lastError().type() != QSqlError::NoError)
-	    {
-	      systemError(this, dspDelete.lastError().databaseText(), __FILE__, __LINE__);
-	      return;
-	    }
+        if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Order Information"),
+                                      dspDelete, __FILE__, __LINE__))
+        {
+          return;
+        }
       
             sFillList();
           }
@@ -182,14 +183,15 @@ void dspSummarizedBacklogByWarehouse::sDelete()
           break;
 
         default:
-          systemError(this, storedProcErrorLookup("deleteSO", result),
-		      __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Order Information"),
+                               storedProcErrorLookup("deleteSO", result),
+                               __FILE__, __LINE__);
 	  return;
       }
     }
-    else if (dspDelete.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Order Information"),
+                                  dspDelete, __FILE__, __LINE__))
     {
-      systemError(this, dspDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -261,30 +263,30 @@ void dspSummarizedBacklogByWarehouse::sFillList()
       dspFillList = totm.toQuery(params);
       if (dspFillList.first())
         _totalSalesOrders->setText(dspFillList.value("totalorders").toString());
-      else if (dspFillList.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sales Order Information"),
+                                    dspFillList, __FILE__, __LINE__))
       {
-	systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
 
       MetaSQLQuery cntm = mqlLoad("summarizedBacklogByWarehouse", "counts");
       dspFillList = cntm.toQuery(params);
       if (dspFillList.first())
         _totalLineItems->setText(dspFillList.value("totalitems").toString());
-      else if (dspFillList.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sales Order Information"),
+                                    dspFillList, __FILE__, __LINE__))
       {
-	systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
 
       MetaSQLQuery qtym = mqlLoad("summarizedBacklogByWarehouse", "qtys");
       dspFillList = qtym.toQuery(params);
       if (dspFillList.first())
         _totalQty->setText(dspFillList.value("f_totalqty").toString());
-      else if (dspFillList.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sales Order Information"),
+                                    dspFillList, __FILE__, __LINE__))
       {
-	systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
 //    }
 //    else

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -12,23 +12,18 @@
 
 #include <QVariant>
 
-#include <dbtools.h>
-#include "xtupleproductkey.h"
+#include "errorReporter.h"
 #include "version.h"
+#include "xtupleproductkey.h"
 
 databaseInformation::databaseInformation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
 {
   Q_UNUSED(modal);
-  XSqlQuery databasedatabaseInformation;
   setupUi(this);
 
   if (name)
     setObjectName(name);
-
-  QString server;
-  QString database;
-  QString port;
 
   if(_metrics->value("Application") != "PostBooks")
   {
@@ -53,6 +48,13 @@ databaseInformation::databaseInformation(QWidget* parent, const char* name, bool
   _disallowMismatchClient->setChecked(_metrics->boolean("DisallowMismatchClientVersion"));
   _checkForUpdates->setChecked(_metrics->boolean("CheckForUpdates"));
   _forceLicense->setChecked(_metrics->boolean("ForceLicenseLimit"));
+  _passwdReset->setChecked(_metrics->boolean("EnforcePasswordReset"));
+
+  if(_passwdReset->isChecked())
+  {
+    int days = _metrics->value("PasswordResetDays").toInt();
+    _passwdDays->setValue(days);
+  }
   
   QString access = _metrics->value("AllowedUserLogins");
   if("AdminOnly" == access)
@@ -66,31 +68,28 @@ databaseInformation::databaseInformation(QWidget* parent, const char* name, bool
   if(val < 1) val = 1;
   _interval->setValue(val);
 
-  QString protocol;
-  parseDatabaseURL(omfgThis->databaseURL(), protocol, server, database, port);
-  _application->setText(_metrics->value("Application"));
-  if (_metrics->value("Application")== "Standard")
-      _application->setText("Distribution");
-  _server->setText(server);
-  _name->setText(database);
+  _server->setText(QSqlDatabase::database().hostName());
+  _name->setText(QSqlDatabase::database().databaseName());
 
   _disableAutoComplete->setChecked(_metrics->boolean("DisableAutoComplete"));
   _enableGapless->setChecked(_metrics->boolean("EnableGaplessNumbering"));
   
-  databasedatabaseInformation.exec(
-    QString(
-      "SELECT"
-      " numOfDatabaseUsers('%1') AS databaseusers,"
-      " numOfServerUsers() AS serverusers;"
-    ).arg(_ConnAppName)
-  );
-
-  if (databasedatabaseInformation.first())
+  XSqlQuery q;
+  q.prepare("SELECT getEdition() AS edition,"
+            "       numOfDatabaseUsers(:app) AS databaseusers,"
+            "       numOfServerUsers() AS serverusers;");
+  q.bindValue(":app", _ConnAppName);
+  q.exec();
+  if (q.first())
   {
-    _numOfDatabaseUsers->setText(databasedatabaseInformation.value("databaseusers").toString());
-    _numOfServerUsers->setText(databasedatabaseInformation.value("serverusers").toString());
+    _application->setText(q.value("edition").toString());
+    _numOfDatabaseUsers->setText(q.value("databaseusers").toString());
+    _numOfServerUsers->setText(q.value("serverusers").toString());
+  } else {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting User Data"),
+                         q, __FILE__, __LINE__);
+    _application->setText(_metrics->value("Application"));
   }
-//  ToDo
 
   if (!_privileges->check("ConfigDatabaseInfo"))
   {
@@ -118,6 +117,10 @@ bool databaseInformation::sSave()
   _metrics->set("DisallowMismatchClientVersion", _disallowMismatchClient->isChecked());
   _metrics->set("CheckForUpdates", _checkForUpdates->isChecked());
   _metrics->set("ForceLicenseLimit", _forceLicense->isChecked());
+  _metrics->set("EnforcePasswordReset", _passwdReset->isChecked());
+
+  if(_passwdReset->isChecked())
+    _metrics->set("PasswordResetDays", _passwdDays->value());
 
   _metrics->set("updateTickInterval", _interval->value());
 

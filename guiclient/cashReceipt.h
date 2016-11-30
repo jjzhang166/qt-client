@@ -44,7 +44,7 @@ public slots:
     virtual void sMoveDown();
     virtual void sMoveUp();
     virtual void sNewCreditCard();
-    virtual void sPopulateCustomerInfo( int );
+    virtual void sPopulateCustomerInfo(int = 0);
     virtual void sSave();
     virtual void sUpdateBalance();
     virtual void sViewCreditCard();
@@ -53,9 +53,17 @@ public slots:
     virtual void sHandleAltExchRate();
     virtual void sUpdateGainLoss();
 
+    virtual ParameterList getParams();
+    virtual void grpFillApplyList();
+    virtual void updateCustomerGroup();
+    virtual void activateButtons(bool c=true);
+
 protected slots:
     virtual void languageChange();
     virtual void sSearchDocNumChanged();
+
+signals:
+    void populated();
 
 
 private:

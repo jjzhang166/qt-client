@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -124,6 +124,7 @@ class menuAccounting : public QObject
     void sDspStandardJournalHistory();
     void sDspTrialBalances();
     void sDspJournals();
+    void sLedgerControl();
 
     void sCompanies();
     void sProfitCenters();
@@ -140,7 +141,9 @@ class menuAccounting : public QObject
     void sTaxClasses();
     void sTaxAssignments();
     void sTaxRegistrations();
+    void sDspTax1099();
     void sDspTaxHistory();
+    void sDspTaxReturn();
 
     void sReconcileBankaccount();
     void sEnterAdjustment();
@@ -158,6 +161,7 @@ class menuAccounting : public QObject
     
     void sPrintStatementByCustomer();
     void sPrintStatementsByCustomerType();
+    void sPrintStatementsByCustomerGroup();
 
     void sCustomers();
 
