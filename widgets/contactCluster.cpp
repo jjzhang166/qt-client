@@ -420,9 +420,14 @@ void ContactCluster::openUrl(QString url)
            qPrintable(tmpurl.toString()));
 }
 
-void ContactCluster::addNumberWidget(ContactClusterLineEdit* pNumberWidget)
+void ContactCluster::addNumberWidget(VirtualClusterLineEdit* pNumberWidget)
 {
-    _number = pNumberWidget;
+	ContactClusterLineEdit *matchType = qobject_cast<ContactClusterLineEdit *>(pNumberWidget);
+
+	if(matchType == 0)
+	  return;
+
+    _number = matchType;
     if (! _number)
       return;
 
@@ -440,7 +445,7 @@ void ContactCluster::addNumberWidget(ContactClusterLineEdit* pNumberWidget)
     connect(_number,    SIGNAL(valid(bool)),    this,   SIGNAL(valid(bool)));
 }
 
-void ContactCluster::setName(int segment, const QString name)
+void ContactCluster::setName(int segment, const QString& name)
 {
   if ((segment == 0 || segment == 2) &&
       !name.endsWith('.') &&

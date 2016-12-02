@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QValidator>
+#include "errorReporter.h"
 
 terms::terms(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -133,9 +134,8 @@ void terms::sSave()
       _termsid = termsSave.value("_terms_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Terms Code Information"),
+                           termsSave, __FILE__, __LINE__);
       return;
     }
 

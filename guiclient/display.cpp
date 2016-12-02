@@ -29,6 +29,7 @@
 #include <previewdialog.h>
 
 #include "../scriptapi/parameterlistsetup.h"
+#include "errorReporter.h"
 
 class displayPrivate : public Ui::display
 {
@@ -80,6 +81,18 @@ public:
 
     _sep2 = _toolBar->addSeparator();
     _sep2->setVisible(false);
+
+    _expandBtn = new QToolButton(_toolBar);
+    _expandBtn->setObjectName("_expandBtn");
+    _expandBtn->setFocusPolicy(Qt::NoFocus);
+    _expandAct = _toolBar->addWidget(_expandBtn);
+    _expandAct->setVisible(false);
+
+    _collapseBtn = new QToolButton(_toolBar);
+    _collapseBtn->setObjectName("_collapseBtn");
+    _collapseBtn->setFocusPolicy(Qt::NoFocus);
+    _collapseAct = _toolBar->addWidget(_collapseBtn);
+    _collapseAct->setVisible(false);
 
     // Print buttons
     _printBtn = new QToolButton(_toolBar);
@@ -142,6 +155,8 @@ public:
   QAction* _filterAct;
   QAction* _moreAct;
   QAction* _sep2;
+  QAction* _expandAct;
+  QAction* _collapseAct;
   QAction* _printAct;
   QAction* _previewAct;
   QAction* _sep3;
@@ -158,6 +173,8 @@ public:
   QToolButton * _queryBtn;
   QToolButton * _previewBtn;
   QToolButton * _printBtn;
+  QToolButton * _expandBtn;
+  QToolButton * _collapseBtn;
 
   QList<QVariant> _charidstext;
   QList<QVariant> _charidslist;
@@ -365,6 +382,8 @@ display::display(QWidget* parent, const char* name, Qt::WindowFlags flags)
   _data->_newBtn->setText(tr("New"));
   _data->_closeBtn->setText(tr("Close"));
   _data->_moreBtn->setText(tr("More"));
+  _data->_expandBtn->setText(tr("Expand All"));
+  _data->_collapseBtn->setText(tr("Collapse All"));
   _data->_printBtn->setText(tr("Print"));
   _data->_previewBtn->setText(tr("Preview"));
   _data->_queryBtn->setText(tr("Query"));
@@ -386,10 +405,14 @@ display::display(QWidget* parent, const char* name, Qt::WindowFlags flags)
   _data->_closeBtn->setToolTip(_data->_closeBtn->text() + " " + _data->_closeAct->shortcut().toString(QKeySequence::NativeText));
   _data->_queryBtn->setToolTip(_data->_queryBtn->text() + " " + _data->_queryAct->shortcut().toString(QKeySequence::NativeText));
   _data->_printBtn->setToolTip(_data->_printBtn->text() + " " + _data->_printAct->shortcut().toString(QKeySequence::NativeText));
+  _data->_expandBtn->setToolTip(_data->_expandBtn->text());
+  _data->_collapseBtn->setToolTip(_data->_collapseBtn->text());
 
   connect(_data->_newBtn, SIGNAL(clicked()), _data->_newAct, SLOT(trigger()));
   connect(_data->_closeBtn, SIGNAL(clicked()), _data->_closeAct, SLOT(trigger()));
   connect(_data->_moreBtn, SIGNAL(clicked(bool)), filterButton, SLOT(setChecked(bool)));
+  connect(_data->_expandBtn, SIGNAL(clicked()), _data->_expandAct, SLOT(trigger()));
+  connect(_data->_collapseBtn, SIGNAL(clicked()), _data->_collapseAct, SLOT(trigger()));
   connect(_data->_printBtn, SIGNAL(clicked()), _data->_printAct, SLOT(trigger()));
   connect(_data->_previewBtn, SIGNAL(clicked()), _data->_previewAct, SLOT(trigger()));
   connect(_data->_queryBtn, SIGNAL(clicked()), _data->_queryAct, SLOT(trigger()));
@@ -403,6 +426,8 @@ display::display(QWidget* parent, const char* name, Qt::WindowFlags flags)
   connect(_data->_newAct, SIGNAL(triggered()), this, SLOT(sNew()));
   connect(_data->_closeAct, SIGNAL(triggered()), this, SLOT(close()));
   connect(_data->_queryAct, SIGNAL(triggered()), this, SLOT(sFillList()));
+  connect(_data->_expandAct, SIGNAL(triggered()), this, SLOT(sExpand()));
+  connect(_data->_collapseAct, SIGNAL(triggered()), this, SLOT(sCollapse()));
   connect(_data->_printAct, SIGNAL(triggered()), this, SLOT(sPrint()));
   connect(_data->_previewAct, SIGNAL(triggered()), this, SLOT(sPreview()));
   connect(_data->_searchAct, SIGNAL(triggered()), this, SLOT(sFillList()));
@@ -460,6 +485,16 @@ QAction * display::newAction()
 QAction * display::closeAction()
 {
   return _data->_closeAct;
+}
+
+QAction * display::expandAction()
+{
+  return _data->_expandAct;
+}
+
+QAction * display::collapseAction()
+{
+  return _data->_collapseAct;
 }
 
 QAction * display::filterSeparator()
@@ -588,6 +623,26 @@ bool display::closeVisible() const
   return _data->_closeAct->isVisible();
 }
 
+void display::setExpandVisible(bool show)
+{
+  _data->_expandAct->setVisible(show);
+}
+
+bool display::expandVisible() const
+{
+  return _data->_expandAct->isVisible();
+}
+
+void display::setCollapseVisible(bool show)
+{
+  _data->_collapseAct->setVisible(show);
+}
+
+bool display::collapseVisible() const
+{
+  return _data->_collapseAct->isVisible();
+}
+
 void display::setParameterWidgetVisible(bool show)
 {
   _data->_parameterWidget->setVisible(show);
@@ -684,6 +739,19 @@ void display::sNew()
 {
 }
 
+void display::sExpand()
+{
+    if (_data->_list)
+        _data->_list->expandAll();
+}
+
+void display::sCollapse()
+{
+    if (_data->_list)
+        _data->_list->collapseAll();
+}
+
+
 void display::sPrint()
 {
   sPrint(ParameterList());
@@ -723,14 +791,16 @@ void display::sFillList(ParameterList pParams, bool forceSetParams)
   MetaSQLQuery mql = MQLUtil::mqlLoad(_data->metasqlGroup, _data->metasqlName, errorString, &ok);
   if(!ok)
   {
-    systemError(this, errorString, __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information"),
+                         errorString, __FILE__, __LINE__);
     return;
   }
   XSqlQuery xq = mql.toQuery(pParams);
   _data->_list->populate(xq, itemid, _data->_useAltId);
   if (xq.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, xq.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information"),
+                           xq, __FILE__, __LINE__);
     return;
   }
   emit fillListAfter();

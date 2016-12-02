@@ -15,6 +15,7 @@
 #include <QSqlError>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 copyBOM::copyBOM(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -88,13 +89,15 @@ void copyBOM::sCopy()
     int result = copyCopy.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("copyBOM", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying BOM"),
+                             storedProcErrorLookup("copyBOM", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (copyCopy.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying BOM"),
+                                copyCopy, __FILE__, __LINE__))
   {
-      systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   omfgThis->sBOMsUpdated(_target->id(), true);

@@ -8,9 +8,12 @@
  * to be bound by its terms.
  */
 
-#include "itemGroups.h"
+#include <QMessageBox>
 
+#include "itemGroups.h"
+#include <metasql.h>
 #include <parameter.h>
+#include "mqlutil.h"
 #include "itemGroup.h"
 #include "guiclient.h"
 
@@ -26,6 +29,7 @@ itemGroups::itemGroups(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
   connect(_itemgrp, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
+  connect(_showTopLevel, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
 
   _itemgrp->setRootIsDecorated(true);
   _itemgrp->addColumn(tr("Name"),            _itemColumn, Qt::AlignLeft, true, "name" );
@@ -45,9 +49,9 @@ itemGroups::itemGroups(QWidget* parent, const char* name, Qt::WindowFlags fl)
     _new->setEnabled(false);
   }
   
-  connect(omfgThis, SIGNAL(itemGroupsUpdated(int, bool)), this, SLOT(sFillList(int)));
+  connect(omfgThis, SIGNAL(itemGroupsUpdated(int, bool)), this, SLOT(sFillList()));
 
-  sFillList(-1);
+  sFillList();
 }
 
 itemGroups::~itemGroups()
@@ -60,21 +64,36 @@ void itemGroups::languageChange()
   retranslateUi(this);
 }
 
+ParameterList itemGroups::getParams()
+{
+  ParameterList p;
+
+  if (_showTopLevel->isChecked())
+    p.append("showTopLevel", true);
+
+  return p;
+}
+
 void itemGroups::sDelete()
 {
-  XSqlQuery itemDelete;
-  itemDelete.prepare( "DELETE FROM itemgrpitem "
-             "WHERE (itemgrpitem_itemgrp_id=:itemgrp_id);"
+  if (QMessageBox::question(this, tr("Really delete this item group?"),
+                            tr("<p>Are you sure you want to delete this item group?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No) == QMessageBox::Yes)
+  {
+    XSqlQuery itemDelete;
+    itemDelete.prepare( "DELETE FROM itemgrpitem "
+                        "WHERE (itemgrpitem_itemgrp_id=:itemgrp_id);"
 
-             "DELETE FROM itemgrpitem "
-             "WHERE ((itemgrpitem_item_id=:itemgrp_id) AND (itemgrpitem_item_type='G'));"
-                                        
-             "DELETE FROM itemgrp "
-             "WHERE (itemgrp_id=:itemgrp_id);" );
-  itemDelete.bindValue(":itemgrp_id", _itemgrp->id());
-  itemDelete.exec();
+                        "DELETE FROM itemgrpitem "
+                        "WHERE ((itemgrpitem_item_id=:itemgrp_id) AND (itemgrpitem_item_type='G'));"
 
-  sFillList(-1);
+                        "DELETE FROM itemgrp "
+                        "WHERE (itemgrp_id=:itemgrp_id);" );
+    itemDelete.bindValue(":itemgrp_id", _itemgrp->id());
+    itemDelete.exec();
+    sFillList();
+  }
 }
 
 
@@ -110,29 +129,11 @@ void itemGroups::sView()
   omfgThis->handleNewWindow(newdlg);
 }
 
-void itemGroups::sFillList(int)
+void itemGroups::sFillList()
 {
-  _itemgrp->populate("WITH RECURSIVE indentedgroups(id, name, descrip, catalog, depth, path, cycle) AS ( "
-                     "SELECT itemgrp_id AS id, "
-                     "       itemgrp_name AS name, "
-                     "       itemgrp_descrip AS descrip, "
-                     "       itemgrp_catalog AS catalog, "
-                     "       0 AS depth, array[itemgrp_id] AS path, false AS cycle "
-                     "FROM itemgrp "
-                     "UNION ALL "
-                     "SELECT itemgrp_id AS id, "
-                     "       CASE itemgrpitem_item_type WHEN 'I' THEN item_number ELSE itemgrp_name END AS name, "
-                     "       CASE itemgrpitem_item_type WHEN 'I' THEN item_descrip1 ELSE itemgrp_descrip END AS descrip, "
-                     "       NULL AS catalog, "
-                     "       (depth+1) AS depth, (path || itemgrp_id) AS path, (itemgrp_id = any(path)) AS cycle "
-                     "FROM indentedgroups JOIN itemgrpitem ON (itemgrpitem_itemgrp_id=id) "
-                     "  LEFT OUTER JOIN item ON (item_id=itemgrpitem_item_id AND itemgrpitem_item_type='I') "
-                     "  LEFT OUTER JOIN itemgrp ON (itemgrp_id=itemgrpitem_item_id AND itemgrpitem_item_type='G') "
-                     "WHERE (NOT cycle)"
-                     ") "
-                     "SELECT id, name, descrip, catalog, depth AS xtindentrole, path, cycle "
-                     "FROM indentedgroups "
-                     "ORDER BY path, name;");
+  MetaSQLQuery mql = mqlLoad("itemgroups", "detail");
+  XSqlQuery igrp = mql.toQuery(getParams());
+  _itemgrp->populate(igrp);
 }
 
 void itemGroups::sHandleButtons()

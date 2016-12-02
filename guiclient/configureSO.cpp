@@ -12,6 +12,8 @@
 
 #include <QSqlError>
 #include <QMessageBox>
+#include <errorReporter.h>
+#include <guiErrorCheck.h>
 
 configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::WindowFlags fl)
     : XAbstractConfigure(parent, fl)
@@ -65,9 +67,9 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
     _nextCmNumber->setText(configureconfigureSO.value("cmnumber"));
     _nextInNumber->setText(configureconfigureSO.value("innumber"));
   }
-  else if (configureconfigureSO.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving SO Setting Information"),
+                                configureconfigureSO, __FILE__, __LINE__))
   {
-    systemError(this, configureconfigureSO.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -84,12 +86,14 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _hideSOMiscChrg->setChecked(_metrics->boolean("HideSOMiscCharge"));
   _enableSOShipping->setChecked(_metrics->boolean("EnableSOShipping"));
   _printSO->setChecked(_metrics->boolean("DefaultPrintSOOnSave"));
+  _creditCheckSO->setChecked(_metrics->boolean("CreditCheckSOOnSave"));
   _lineItemsSO->setChecked(_metrics->boolean("DefaultSOLineItemsTab"));
   _enablePromiseDate->setChecked(_metrics->boolean("UsePromiseDate"));
   _calcFreight->setChecked(_metrics->boolean("CalculateFreight"));
   _includePkgWeight->setChecked(_metrics->boolean("IncludePackageWeight"));
   _quoteafterSO->setChecked(_metrics->boolean("ShowQuotesAfterSO"));
   _itemPricingPrecedence->setChecked(_metrics->boolean("ItemPricingPrecedence"));
+  _useListPriceSchedules->setChecked(_metrics->boolean("AllowListPriceSchedules"));
   _wholesalePriceCosting->setChecked(_metrics->boolean("WholesalePriceCosting"));
   _long30Markups->setChecked(_metrics->boolean("Long30Markups"));
 
@@ -211,6 +215,7 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
     _returnAuthChangeLog->setChecked(_metrics->boolean("ReturnAuthorizationChangeLog"));
     _printRA->setChecked(_metrics->boolean("DefaultPrintRAOnSave"));
+    _closeRA->setChecked(_metrics->boolean("CloseRAOnCredit"));
 
     _enableReservations->setChecked(_metrics->boolean("EnableSOReservations"));
     _requireReservations->setChecked(_metrics->boolean("RequireSOReservations"));
@@ -224,6 +229,21 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
     else if(_metrics->value("SOReservationLocationMethod").toInt() == 3)
       _alpha->setChecked(true);
   }
+  
+  _ssosCust->setType(CLineEdit::ActiveCustomers);
+  _enableSSOS->setChecked(_metrics->boolean("SSOSEnabled"));
+  if (_enableSSOS->isChecked())
+  {
+    _ssosCust->setId(_metrics->value("SSOSDefaultCustId").toInt());
+    _ssosSaleType->setId(_metrics->value("SSOSDefaultSaleTypeId").toInt());
+    _ssosRequireInv->setChecked(_metrics->boolean("SSOSRequireInv"));
+    _ssosPrintSOAck->setChecked(_metrics->boolean("SSOSPrintSOAck"));
+    _ssosPrintPackList->setChecked(_metrics->boolean("SSOSPrintPackList"));
+    _ssosPrintInvoice->setChecked(_metrics->boolean("SSOSPrintInvoice"));
+  }
+  else
+    _ssosGroup->setEnabled(false);
+  
   adjustSize();
 }
 
@@ -291,6 +311,7 @@ bool configureSO::sSave()
   _metrics->set("DefaultBackOrders", _backorders->isChecked());
   _metrics->set("DefaultFreeFormShiptos", _freeFormShiptos->isChecked());
   _metrics->set("DefaultPrintSOOnSave", _printSO->isChecked());
+  _metrics->set("CreditCheckSOOnSave", _creditCheckSO->isChecked());
   _metrics->set("DefaultSOLineItemsTab", _lineItemsSO->isChecked());
   _metrics->set("UsePromiseDate", _enablePromiseDate->isChecked());
   _metrics->set("CalculateFreight", _calcFreight->isChecked());
@@ -299,11 +320,12 @@ bool configureSO::sSave()
   _metrics->set("EnableSOReservations", _enableReservations->isChecked());
   _metrics->set("RequireSOReservations", _enableReservations->isChecked() && _requireReservations->isChecked());
   _metrics->set("ItemPricingPrecedence", _itemPricingPrecedence->isChecked());
+  _metrics->set("AllowListPriceSchedules", _useListPriceSchedules->isChecked());
   _metrics->set("WholesalePriceCosting", _wholesalePriceCosting->isChecked());
   _metrics->set("Long30Markups", _long30Markups->isChecked());
 
   _metrics->set("EnableSOReservationsByLocation", _enableReservations->isChecked() && _locationGroup->isChecked());
-  _metrics->set("SOManualReservations", _enableReservations->isChecked() && _manualReservations->isChecked());
+  _metrics->set("SOManualReservations", _enableReservations->isChecked() && _locationGroup->isChecked() && _manualReservations->isChecked());
   //SOReservationLocationMethod are three Options Either
   // Lowest quantity first,
   // Highest quantity first,
@@ -367,9 +389,9 @@ bool configureSO::sSave()
   configureSave.bindValue(":cmnumber", _nextCmNumber->text().toInt());
   configureSave.bindValue(":innumber", _nextInNumber->text().toInt());
   configureSave.exec();
-  if (configureSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving SO Setting Information"),
+                                configureSave, __FILE__, __LINE__))
   {
-    systemError(this, configureSave.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -380,18 +402,48 @@ bool configureSO::sSave()
     _metrics->set("DefaultRaCreditMethod", QString(creditMethodTypes[_creditBy->currentIndex()]));
     _metrics->set("ReturnAuthorizationChangeLog", _returnAuthChangeLog->isChecked());
     _metrics->set("DefaultPrintRAOnSave", _printRA->isChecked());
+    _metrics->set("CloseRAOnCredit", _closeRA->isChecked());
     _metrics->set("RANumberGeneration", _returnAuthorizationNumGeneration->methodCode());
 
     configureSave.prepare( "SELECT setNextRaNumber(:ranumber);" );
     configureSave.bindValue(":ranumber", _nextRaNumber->text().toInt());
     configureSave.exec();
-    if (configureSave.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving SO Setting Information"),
+                                  configureSave, __FILE__, __LINE__))
     {
-      systemError(this, configureSave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }
   _metrics->set("EnableReturnAuth", (_enableReturns->isChecked() || !_enableReturns->isCheckable()));
+  
+  if (_enableSSOS->isChecked())
+  {
+
+    QList<GuiErrorCheck>errors;
+    errors<<GuiErrorCheck(!_ssosCust->isValid(), _ssosCust,
+                          tr("<p>You must select a Cash Customer # if Simple S/O is enabled."));
+
+    if(GuiErrorCheck::reportErrors(this,tr("Unable To Apply Sales Settings"),errors))
+        return false;
+    
+    _metrics->set("SSOSEnabled", true);
+    _metrics->set("SSOSDefaultCustId", _ssosCust->id());
+    _metrics->set("SSOSDefaultSaleTypeId", _ssosSaleType->id());
+    _metrics->set("SSOSRequireInv", _ssosRequireInv->isChecked());
+    _metrics->set("SSOSPrintSOAck", _ssosPrintSOAck->isChecked());
+    _metrics->set("SSOSPrintPackList", _ssosPrintPackList->isChecked());
+    _metrics->set("SSOSPrintInvoice", _ssosPrintInvoice->isChecked());
+  }
+  else
+  {
+    _metrics->set("SSOSEnabled", false);
+    _metrics->set("SSOSDefaultCustId", -1);
+    _metrics->set("SSOSDefaultSaleTypeId", -1);
+    _metrics->set("SSOSRequireInv", false);
+    _metrics->set("SSOSPrintSOAck", false);
+    _metrics->set("SSOSPrintPackList", false);
+    _metrics->set("SSOSPrintInvoice", false);
+  }
 
   return true;
 }

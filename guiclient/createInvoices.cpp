@@ -17,6 +17,7 @@
 #include <openreports.h>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 createInvoices::createInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -57,17 +58,18 @@ void createInvoices::sPost()
     int result = createPost.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("createInvoices", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Invoice"),
+                               storedProcErrorLookup("createInvoices", result),
+                               __FILE__, __LINE__);
       return;
     }
     omfgThis->sInvoicesUpdated(-1, true);
     omfgThis->sBillingSelectionUpdated(-1, true);
     omfgThis->sSalesOrdersUpdated(-1);
   }
-  else if (createPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Invoices"),
+                                createPost, __FILE__, __LINE__))
   {
-    systemError(this, createPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

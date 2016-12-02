@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2011 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -131,9 +131,9 @@ enum SetResponse contract::set(const ParameterList &pParams)
         _contrctid = itemet.value("contrct_id").toInt();
         _documents->setId(_contrctid);
       }
-      else if (itemet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contract Information"),
+                                    itemet, __FILE__, __LINE__))
       {
-        systemError(this, itemet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       _captive = true;
@@ -181,9 +181,9 @@ enum SetResponse contract::set(const ParameterList &pParams)
       itemet.exec("SELECT NEXTVAL('contrct_contrct_id_seq') AS contrct_id;");
       if (itemet.first())
         _contrctid = itemet.value("contrct_id").toInt();
-      else if (itemet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contract Information"),
+                                    itemet, __FILE__, __LINE__))
       {
-        systemError(this, itemet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       
@@ -221,36 +221,6 @@ bool contract::sSave()
                           tr( "You must enter a Description before you may save this Contract." ) )
      ;
 
-  /* TODO - need this?
-  itemSave.prepare( "SELECT count(*) AS numberOfOverlaps "
-                    "FROM contrct "
-                    "WHERE (contrct_vend_id = :contrct_vend_id)"
-                    "  AND (contrct_id != :contrct_id)"
-                    "  AND ( (contrct_effective BETWEEN :contrct_effective AND :contrct_expires OR"
-                    "         contrct_expires BETWEEN :contrct_effective AND :contrct_expires)"
-                    "   OR   (contrct_effective <= :contrct_effective AND"
-                    "         contrct_expires   >= :contrct_expires) );" );
-  itemSave.bindValue(":contrct_id", _contrctid);
-  itemSave.bindValue(":contrct_vend_id", _vendor->id());
-  itemSave.bindValue(":contrct_effective", _dates->startDate());
-  itemSave.bindValue(":contrct_expires", _dates->endDate());
-  itemSave.exec();
-  if (itemSave.first())
-  {
-    if (itemSave.value("numberOfOverlaps").toInt() > 0)
-    {
-      errors << GuiErrorCheck(true, _dates,
-                              tr("The date range overlaps with another date range.\n"
-                                 "Please check the values of these dates."));
-    }
-  }
-  else if (itemSave.lastError().type() != QSqlError::NoError)
-  {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
-    return false;
-  }
-  */
-
   if(_mode == cNew || _mode == cCopy)
   {
     itemSave.prepare( "SELECT contrct_id "
@@ -266,9 +236,9 @@ bool contract::sSave()
                               tr("A Contract already exists for the Vendor,\n"
                                  "Contract Number you have specified."));
     }
-    else if (itemSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Contract Information"),
+                                  itemSave, __FILE__, __LINE__))
     {
-      systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }
@@ -304,9 +274,9 @@ bool contract::sSave()
   itemSave.bindValue(":contrct_descrip", _descrip->text());
   itemSave.bindValue(":contrct_note", _notes->toPlainText());
   itemSave.exec();
-  if (itemSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Contract Information"),
+                                itemSave, __FILE__, __LINE__))
   {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -378,9 +348,9 @@ void contract::sFillList()
 
   itemsrcFillList = mql.toQuery(params);
   _itemSource->populate(itemsrcFillList, true);
-  if (itemsrcFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contract Information"),
+                                itemsrcFillList, __FILE__, __LINE__))
   {
-    systemError(this, itemsrcFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -507,13 +477,16 @@ void contract::sDeletePo()
   unpostedDelete.bindValue(":pohead_id", _itemSource->altId());
   unpostedDelete.exec();
   if (unpostedDelete.first() && ! unpostedDelete.value("result").toBool())
-       systemError(this, tr("<p>Only Unposted Purchase Orders may be "
-                            "deleted. Check the status of Purchase Order "
-                            "%1. If it is 'U' then contact your system "
-                            "Administrator.").arg(_itemSource->currentItem()->rawValue("poitem_ordnumber").toString()),
-                   __FILE__, __LINE__);
+       ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Contract"),
+                       tr("%1: <p>Only Unposted Purchase Orders may be "
+                          "deleted.  Check the status of Purchase Order "
+                          "%2.  If it is 'U' then contact your system "
+                          "Administrator").arg(windowTitle(),
+                           _itemSource->currentItem()->rawValue("poitem_ordnumber").toString()),
+                           __FILE__,__LINE__);
   else if (unpostedDelete.lastError().type() != QSqlError::NoError)
-    systemError(this, unpostedDelete.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Purchase Order"),
+                       unpostedDelete, __FILE__, __LINE__);
 
   sFillList();
 }
@@ -540,13 +513,16 @@ void contract::sReleasePo()
   unpostedRelease.bindValue(":pohead_id", _itemSource->altId());
   unpostedRelease.exec();
   if (unpostedRelease.first() && (unpostedRelease.value("result").toInt() < 0))
-    systemError(this, tr("<p>Only Unrelease Purchase Orders may be "
-                         "released. Check the status of Purchase Order "
-                         "%1. If it is 'U' then contact your system "
-                         "Administrator.").arg(_itemSource->currentItem()->rawValue("poitem_ordnumber").toString()),
-                __FILE__, __LINE__);
+     ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Purchase Order"),
+                       tr("%1: <p>Only Unreleased Purchase Orders may be "
+                          "released.  Check the status of Purchase Order "
+                          "%2.  If it is 'U' then contact your system "
+                          "Administrator").arg(windowTitle(),
+                          _itemSource->currentItem()->rawValue("poitem_ordnumber").toString()),
+                          __FILE__,__LINE__);
   else if (unpostedRelease.lastError().type() != QSqlError::NoError)
-    systemError(this, unpostedRelease.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Purchase Order"),
+                       unpostedRelease, __FILE__, __LINE__);
   
   sFillList();
 }
@@ -588,6 +564,8 @@ void contract::sPrint()
 
 void contract::sHandleButtons(XTreeWidgetItem *pItem, int pCol)
 {
+  Q_UNUSED(pCol);
+
   QString oper;
   QString stat;
 
@@ -601,46 +579,40 @@ void contract::sHandleButtons(XTreeWidgetItem *pItem, int pCol)
     else
       _newPo->setEnabled(false);
 
-      if (!((oper == "Receipt") || (oper == "Return")) && (oper > " "))
+    if (!((oper == "Receipt") || (oper == "Return")) && (oper > " "))
+    {
+      if (_mode == cNew || _mode == cEdit)
+        _editPo->setEnabled(_privileges->check("MaintainPurchaseOrders"));
+      else
+        _editPo->setEnabled(false);
+
+      _viewPo->setEnabled(_privileges->check("ViewPurchaseOrders") || _privileges->check("MaintainPurchaseOrders"));
+
+      if (stat == "Unreleased" && _mode == cEdit)
       {
-        if (_mode == cNew || _mode == cEdit)
-          _editPo->setEnabled(_privileges->check("MaintainPurchaseOrders"));
-        else
-          _editPo->setEnabled(false);
-
-        _viewPo->setEnabled(_privileges->check("ViewPurchaseOrders") || _privileges->check("MaintainPurchaseOrders"));
-
-        if (stat == "Unreleased" && _mode == cEdit)
-        {
-          _deletePo->setEnabled(_privileges->check("MaintainPurchaseOrders"));
-          _releasePo->setEnabled(_privileges->check("ReleasePurchaseOrders"));
-        }
-        else
-        {
-          _deletePo->setEnabled(false);
-          _releasePo->setEnabled(false);
-        }
+        _deletePo->setEnabled(_privileges->check("MaintainPurchaseOrders"));
+        _releasePo->setEnabled(_privileges->check("ReleasePurchaseOrders"));
       }
       else
       {
-        _editPo->setEnabled(false);
-        _viewPo->setEnabled(false);
         _deletePo->setEnabled(false);
         _releasePo->setEnabled(false);
       }
+    }
+    else
+    {
+      _editPo->setEnabled(false);
+      _viewPo->setEnabled(false);
+      _deletePo->setEnabled(false);
+      _releasePo->setEnabled(false);
+    }
 
-      if (pItem->altId() > 0)
+    if (pItem->altId() > 0)
+    {
+      if (_mode == cNew || _mode == cEdit)
       {
-        if (_mode == cNew || _mode == cEdit)
-        {
-          _newRcpt->setEnabled(_privileges->check("EnterReceipts"));
-          _newRtrn->setEnabled(_privileges->check("EnterReturns"));
-        }
-        else
-        {
-          _newRcpt->setEnabled(false);
-          _newRtrn->setEnabled(false);
-        }
+        _newRcpt->setEnabled(_privileges->check("EnterReceipts"));
+        _newRtrn->setEnabled(_privileges->check("EnterReturns"));
       }
       else
       {
@@ -648,7 +620,12 @@ void contract::sHandleButtons(XTreeWidgetItem *pItem, int pCol)
         _newRtrn->setEnabled(false);
       }
     }
-
+    else
+    {
+      _newRcpt->setEnabled(false);
+      _newRtrn->setEnabled(false);
+    }
+  }
 }
 
 void contract::populate()
@@ -669,9 +646,9 @@ void contract::populate()
     _notes->setText(contrctQ.value("contrct_note").toString());
 	sFillList();
   }
-  else if (contrctQ.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Contract Information"),
+                                contrctQ, __FILE__, __LINE__))
   {
-    systemError(this, contrctQ.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -685,9 +662,9 @@ void contract::sRejected()
                "WHERE (contrct_id=:contrct_id);" );
     itemRejected.bindValue(":contrct_id", _contrctid);
     itemRejected.exec();
-    if (itemRejected.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Rejecting Contract Information"),
+                                  itemRejected, __FILE__, __LINE__))
     {
-      systemError(this, itemRejected.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

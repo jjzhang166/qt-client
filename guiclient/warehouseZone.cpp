@@ -119,9 +119,9 @@ void warehouseZone::sSave()
     warehouseSave.exec();
     if (warehouseSave.first())
       _whsezoneid = warehouseSave.value("whsezone_id").toInt();
-    else if (warehouseSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Warehouse Site Zone Information"),
+                                  warehouseSave, __FILE__, __LINE__))
     {
-      systemError(this, warehouseSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -141,9 +141,9 @@ void warehouseZone::sSave()
   warehouseSave.bindValue(":whsezone_name", _name->text());
   warehouseSave.bindValue(":whsezone_descrip", _description->text());
   warehouseSave.exec();
-  if (warehouseSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Warehouse Site Zone Information"),
+                                warehouseSave, __FILE__, __LINE__))
   {
-    systemError(this, warehouseSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -171,9 +171,9 @@ void warehouseZone::sCheck()
 
       _name->setEnabled(false);
     }
-    else if (warehouseCheck.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Warehouse Information"),
+                                  warehouseCheck, __FILE__, __LINE__))
     {
-      systemError(this, warehouseCheck.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -193,9 +193,9 @@ void warehouseZone::populate()
     _name->setText(warehousepopulate.value("whsezone_name").toString());
     _description->setText(warehousepopulate.value("whsezone_descrip").toString());
   }
-  else if (warehousepopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Warehouse Information"),
+                                warehousepopulate, __FILE__, __LINE__))
   {
-    systemError(this, warehousepopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

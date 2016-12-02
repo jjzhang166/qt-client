@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,63 +7,62 @@ It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
- <exportmacro></exportmacro>
  <class>updateCreditStatusByCustomer</class>
- <widget class="QDialog" name="updateCreditStatusByCustomer" >
-  <property name="geometry" >
+ <widget class="QDialog" name="updateCreditStatusByCustomer">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>465</width>
-    <height>181</height>
+    <height>187</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Update Credit Status by Customer</string>
   </property>
-  <layout class="QHBoxLayout" >
-   <property name="margin" >
-    <number>5</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QHBoxLayout">
+   <property name="spacing">
     <number>7</number>
    </property>
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
-     <property name="spacing" >
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="spacing" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <widget class="CustCluster" name="_cust" />
+          <widget class="CustCluster" name="_cust"/>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>16</width>
              <height>10</height>
@@ -74,44 +73,44 @@ to be bound by its terms.</comment>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QLabel" name="_currentStatusLit" >
-           <property name="text" >
+          <widget class="QLabel" name="_currentStatusLit">
+           <property name="text">
             <string>Current Credit Status:</string>
            </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
-           <property name="margin" >
+          <layout class="QHBoxLayout">
+           <property name="spacing">
             <number>0</number>
            </property>
-           <property name="spacing" >
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="_currentStatus" >
-             <property name="text" >
+            <widget class="QLabel" name="_currentStatus">
+             <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item>
             <spacer>
-             <property name="orientation" >
+             <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <property name="sizeType" >
+             <property name="sizeType">
               <enum>QSizePolicy::Expanding</enum>
              </property>
-             <property name="sizeHint" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>31</width>
                <height>10</height>
@@ -124,45 +123,45 @@ to be bound by its terms.</comment>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QGroupBox" name="_creditStatusGroup" >
-           <property name="title" >
+          <widget class="QGroupBox" name="_creditStatusGroup">
+           <property name="title">
             <string>New Credit Status</string>
            </property>
-           <layout class="QVBoxLayout" >
-            <property name="margin" >
-             <number>5</number>
-            </property>
-            <property name="spacing" >
+           <layout class="QVBoxLayout">
+            <property name="spacing">
              <number>0</number>
             </property>
+            <property name="margin">
+             <number>5</number>
+            </property>
             <item>
-             <widget class="QRadioButton" name="_inGoodStanding" >
-              <property name="text" >
+             <widget class="QRadioButton" name="_inGoodStanding">
+              <property name="text">
                <string>In Good Standing</string>
               </property>
-              <property name="checked" >
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="_onCreditWarning" >
-              <property name="text" >
+             <widget class="QRadioButton" name="_onCreditWarning">
+              <property name="text">
                <string>On Credit Warning</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="_onCreditHold" >
-              <property name="text" >
+             <widget class="QRadioButton" name="_onCreditHold">
+              <property name="text">
                <string>On Credit Hold</string>
               </property>
              </widget>
@@ -172,13 +171,13 @@ to be bound by its terms.</comment>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>31</width>
              <height>10</height>
@@ -192,13 +191,13 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>10</width>
          <height>91</height>
@@ -209,37 +208,37 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
-     <property name="spacing" >
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="text" >
+        <widget class="QPushButton" name="_close">
+         <property name="text">
           <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_update" >
-         <property name="text" >
+        <widget class="QPushButton" name="_update">
+         <property name="text">
           <string>&amp;Update</string>
          </property>
-         <property name="autoDefault" >
+         <property name="autoDefault">
           <bool>true</bool>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
@@ -248,13 +247,13 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>10</width>
          <height>41</height>
@@ -266,14 +265,12 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>CustCluster</class>
    <extends>QWidget</extends>
    <header>custcluster.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -282,7 +279,6 @@ to be bound by its terms.</comment>
   <tabstop>_update</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections>
   <connection>
@@ -291,11 +287,11 @@ to be bound by its terms.</comment>
    <receiver>updateCreditStatusByCustomer</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

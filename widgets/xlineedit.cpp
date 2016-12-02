@@ -141,6 +141,8 @@ void XLineEdit::setDouble(const double pDouble, const int pPrec)
 
   if (pPrec < 0 && v && v->inherits("QDoubleValidator"))
     prec = ((QDoubleValidator*)v)->decimals();
+  else if (pPrec < 0 && v && v->inherits("QIntValidator"))
+    prec = 0;
 
   QLineEdit::setText(formatNumber(pDouble, prec));
 }

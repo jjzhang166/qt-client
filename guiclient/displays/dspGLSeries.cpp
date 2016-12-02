@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
  * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -22,6 +22,7 @@
 
 #include "reverseGLSeries.h"
 #include "dspJournals.h"
+#include "errorReporter.h"
 
 dspGLSeries::dspGLSeries(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspGLSeries", fl)
@@ -225,9 +226,9 @@ void dspGLSeries::sEdit()
     params2.append("glSequence", qry.value("sequence"));
     params2.append("journalnumber", qry.value("gltrans_journalnumber"));
   }
-  else if (qry.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving GL Series Information"),
+                                qry, __FILE__, __LINE__))
   {
-    systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -269,9 +270,9 @@ void dspGLSeries::sDelete(bool edited)
                    " <? value(\"notes\") ?>) AS result;");
   XSqlQuery del;
   del = mql.toQuery(params);
-  if (del.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting GL Series Information"),
+                                del, __FILE__, __LINE__))
   {
-    systemError(this, del.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

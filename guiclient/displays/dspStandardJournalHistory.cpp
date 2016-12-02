@@ -21,6 +21,7 @@
 #include "metasql.h"
 #include "mqlutil.h"
 #include "reverseGLSeries.h"
+#include "errorReporter.h"
 
 dspStandardJournalHistory::dspStandardJournalHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspStandardJournalHistory", fl)
@@ -111,9 +112,9 @@ void dspStandardJournalHistory::sDelete()
                    "<? value(\"notes\") ?>) AS result;");
   XSqlQuery del;
   del = mql.toQuery(params);
-  if (del.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting GL Series Information"),
+                                del, __FILE__, __LINE__))
   {
-    systemError(this, del.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

@@ -23,6 +23,7 @@
 #include "transferOrder.h"
 #include "workOrder.h"
 #include "purchaseOrder.h"
+#include "errorReporter.h"
 
 dspRunningAvailability::dspRunningAvailability(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspRunningAvailability", fl)
@@ -46,6 +47,8 @@ dspRunningAvailability::dspRunningAvailability(QWidget* parent, const char*, Qt:
   list()->addColumn(tr("Amount"),                 _moneyColumn, Qt::AlignRight, true, "amount");
   list()->addColumn(tr("Ordered"),                _qtyColumn,   Qt::AlignRight, true, "qtyordered");
   list()->addColumn(tr("Received"),               _qtyColumn,   Qt::AlignRight, true, "qtyreceived");
+  if (_metrics->boolean("EnableSOReservations"))
+    list()->addColumn(tr("Reserved"),             _qtyColumn,   Qt::AlignRight, true, "reserved");
   list()->addColumn(tr("Balance"),                _qtyColumn,   Qt::AlignRight, true, "balance");
   list()->addColumn(tr("Running Avail."),         _qtyColumn,   Qt::AlignRight, true, "runningavail");
   list()->addColumn(tr("Running Netable"),        _qtyColumn,   Qt::AlignRight, true, "runningnetable");
@@ -121,6 +124,9 @@ bool dspRunningAvailability::setParams(ParameterList & params)
   if (_metrics->boolean("MultiWhs"))
     params.append("MultiWhs");
 
+  if (_metrics->boolean("EnableSOReservations"))
+    params.append("showReserved");
+  
   if (_metrics->value("Application") == "Standard")
   {
     XSqlQuery xtmfg;
@@ -208,9 +214,9 @@ void dspRunningAvailability::sSoftenOrder()
              "WHERE (planord_id=:planord_id);" );
   dspSoftenOrder.bindValue(":planord_id", list()->id());
   dspSoftenOrder.exec();
-  if (dspSoftenOrder.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Planned Order Information"),
+                                dspSoftenOrder, __FILE__, __LINE__))
   {
-    systemError(this, dspSoftenOrder.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -270,9 +276,9 @@ void dspRunningAvailability::sDeleteOrder()
     }
     */
   }
-  else if (dspDeleteOrder.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Planned Order Information"),
+                                dspDeleteOrder, __FILE__, __LINE__))
   {
-    systemError(this, dspDeleteOrder.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -375,9 +381,9 @@ void dspRunningAvailability::sFillList()
 
       display::sFillList();
     }
-    else if (dspFillList.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  dspFillList, __FILE__, __LINE__))
     {
-      systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "guiErrorCheck.h"
 
 createItemSitesByClassCode::createItemSitesByClassCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -141,67 +142,38 @@ void createItemSitesByClassCode::languageChange()
 void createItemSitesByClassCode::sSave()
 {
   XSqlQuery createSave;
-  if (_warehouse->id() == -1)
-  {
-    QMessageBox::critical( this, tr("Select a Site"),
-                           tr("<p>You must select a Site for this Item Site "
-                              "before creating it." ) );
-    _warehouse->setFocus();
-    return;
-  }
 
-//  if ( (_metrics->boolean("InterfaceToGL")) && (_costcat->id() == -1) )
-  if (_costcat->id() == -1)
-  {
-    QMessageBox::critical( this, tr("Cannot Create Item Sites"),
-                           tr("<p>You must select a Cost Category for these "
-                              "Item Sites before you may create them.") );
-    _costcat->setFocus();
-    return;
-  } 
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_warehouse->id() == -1, _warehouse,
+                        tr("<p>You must select a Site for this Item Site "
+                           "before creating it."))
+       <<GuiErrorCheck(_costcat->id() == -1, _costcat,
+                       tr("<p>You must select a Cost Category for these "
+                          "Item Sites before you may create them."))
+      <<GuiErrorCheck(_plannerCode->id() == -1, _plannerCode,
+                      tr("<p>You must select a Planner Code for these "
+                         "Item Sites before you may create them."))
+      <<GuiErrorCheck(_controlMethod->currentIndex() == -1, _controlMethod,
+                      tr("<p>You must select a Control Method for these "
+                         "Item Sites before you may create them."))
+      <<GuiErrorCheck(!_costNone->isChecked() && !_costAvg->isChecked()
+                                        && !_costStd->isChecked(), _costNone,
+                       tr("<p>You must select a Cost Method for this "
+                          "Item Site before you may save it."))
+      <<GuiErrorCheck(_stocked->isChecked() && _reorderLevel->toDouble() == 0, _reorderLevel,
+                      tr("<p>You must set a reorder level "
+                         "for a stocked item before you may save it."));
 
-  if (_plannerCode->id() == -1)
-  {
-    QMessageBox::critical( this, tr("Cannot Create Item Sites"),
-                           tr("<p>You must select a Planner Code for these "
-                              "Item Sites before you may create them.") );
-    _plannerCode->setFocus();
-    return;
-  } 
-
-  if (_controlMethod->currentIndex() == -1)
-  {
-    QMessageBox::critical( this, tr("Cannot Create Item Sites"),
-                           tr("<p>You must select a Control Method for these "
-                              "Item Sites before you may create them.") );
-    _controlMethod->setFocus();
-    return;
-  }
-
-  if(!_costNone->isChecked() && !_costAvg->isChecked()
-   && !_costStd->isChecked())
-  {
-    QMessageBox::critical(this, tr("Cannot Save Item Site"),
-                          tr("<p>You must select a Cost Method for this "
-                             "Item Site before you may save it.") );
-    return;
-  }
-
-  if (_stocked->isChecked() && _reorderLevel->toDouble() == 0)
-  {
-    QMessageBox::critical( this, tr("Cannot Save Item Site"),
-                           tr("<p>You must set a reorder level "
-			      "for a stocked item before you may save it.") );
-    _reorderLevel->setFocus();
-    return;
-  }
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Item Site"),errors))
+      return;
   
   if ( _locationControl->isChecked() )
   {
     XSqlQuery locationid;
     locationid.prepare( "SELECT location_id "
                         "FROM location "
-                        "WHERE (location_warehous_id=:warehous_id)"
+                        "WHERE ((location_warehous_id=:warehous_id) "
+                        " AND (location_active) ) " 
                         "LIMIT 1;" );
     locationid.bindValue(":warehous_id", _warehouse->id());
     locationid.exec();
@@ -462,7 +434,8 @@ void createItemSitesByClassCode::populateLocations()
   createpopulateLocations.prepare( "SELECT location_id, formatLocationName(location_id) AS locationname "
              "FROM location "
              "WHERE ( (location_warehous_id=:warehous_id)"
-             " AND (NOT location_restrict) ) "
+             " AND (NOT location_restrict) "
+             " AND (location_active) ) "
              "ORDER BY locationname;" );
   createpopulateLocations.bindValue(":warehous_id", _warehouse->id());
   createpopulateLocations.exec();

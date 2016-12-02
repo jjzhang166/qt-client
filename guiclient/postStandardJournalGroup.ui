@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>postStandardJournalGroup</class>
- <widget class="QDialog" name="postStandardJournalGroup" >
-  <property name="geometry" >
+ <widget class="QDialog" name="postStandardJournalGroup">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,52 +17,52 @@ to be bound by its terms.</comment>
     <height>105</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Post Standard Journal Group</string>
   </property>
-  <layout class="QHBoxLayout" >
-   <property name="margin" >
-    <number>5</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QHBoxLayout">
+   <property name="spacing">
     <number>7</number>
    </property>
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
-     <property name="spacing" >
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <layout class="QGridLayout" >
-       <property name="margin" >
+      <layout class="QGridLayout">
+       <property name="margin">
         <number>0</number>
        </property>
-       <property name="spacing" >
+       <property name="spacing">
         <number>5</number>
        </property>
-       <item row="1" column="1" >
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
+       <item row="1" column="1">
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <property name="spacing" >
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <widget class="DLineEdit" name="_distDate" />
+          <widget class="DLineEdit" name="_distDate"/>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>31</width>
              <height>10</height>
@@ -72,35 +72,35 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </item>
-       <item row="2" column="1" >
-        <widget class="QCheckBox" name="_reverse" >
-         <property name="text" >
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="_reverse">
+         <property name="text">
           <string>Reverse Journal Entries</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0" >
-        <widget class="QLabel" name="_stdjrnlgrpLit" >
-         <property name="text" >
+       <item row="0" column="0">
+        <widget class="QLabel" name="_stdjrnlgrpLit">
+         <property name="text">
           <string>Standard Journal Group:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_stdjrnlgrp</cstring>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" >
+       <item row="2" column="0">
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Minimum</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>142</width>
            <height>20</height>
@@ -108,33 +108,33 @@ to be bound by its terms.</comment>
          </property>
         </spacer>
        </item>
-       <item row="1" column="0" >
-        <widget class="QLabel" name="_distributionDate" >
-         <property name="text" >
+       <item row="1" column="0">
+        <widget class="QLabel" name="_distributionDate">
+         <property name="text">
           <string>Distribution Date:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>_distDate</cstring>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" >
-        <widget class="XComboBox" name="_stdjrnlgrp" />
+       <item row="0" column="1">
+        <widget class="XComboBox" name="_stdjrnlgrp"/>
        </item>
       </layout>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>16</width>
          <height>16</height>
@@ -145,50 +145,50 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="margin" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
-     <property name="spacing" >
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="text" >
+        <widget class="QPushButton" name="_close">
+         <property name="text">
           <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_post" >
-         <property name="enabled" >
+        <widget class="QPushButton" name="_post">
+         <property name="enabled">
           <bool>false</bool>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>&amp;Post</string>
          </property>
-         <property name="autoDefault" >
+         <property name="autoDefault">
           <bool>true</bool>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_submit" >
-         <property name="enabled" >
+        <widget class="QPushButton" name="_submit">
+         <property name="enabled">
           <bool>false</bool>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>Schedule</string>
          </property>
         </widget>
@@ -197,13 +197,13 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>16</width>
          <height>43</height>
@@ -215,12 +215,13 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>DLineEdit</class>
-   <extends>XLineEdit</extends>
+   <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
@@ -236,7 +237,6 @@ to be bound by its terms.</comment>
   <tabstop>_submit</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections>
   <connection>
@@ -245,11 +245,11 @@ to be bound by its terms.</comment>
    <receiver>postStandardJournalGroup</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>388</x>
      <y>27</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -261,11 +261,11 @@ to be bound by its terms.</comment>
    <receiver>_post</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>174</x>
      <y>27</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>388</x>
      <y>59</y>
     </hint>
@@ -277,11 +277,11 @@ to be bound by its terms.</comment>
    <receiver>_submit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>279</x>
      <y>30</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>390</x>
      <y>87</y>
     </hint>

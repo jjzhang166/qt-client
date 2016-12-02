@@ -41,7 +41,7 @@ to be bound by its terms.</comment>
        <height>175</height>
       </size>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout1">
       <item row="0" column="0">
        <widget class="XTreeWidget" name="_doc">
         <property name="sizePolicy">

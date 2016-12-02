@@ -13,25 +13,22 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>197</height>
+    <width>438</width>
+    <height>218</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Reschedule Purchase Order Item</string>
+   <string>Reschedule Purchase Order Item(s)</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="3">
-    <widget class="OrderCluster" name="_po">
-     <property name="allowedStatuses">
-      <set>OrderLineEdit::Open</set>
-     </property>
-     <property name="allowedTypes">
-      <set>OrderLineEdit::Purchase</set>
+   <item row="2" column="0">
+    <widget class="QLabel" name="_poitemLit">
+     <property name="text">
+      <string>Line Item:</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="3" rowspan="2" colspan="2">
+   <item row="0" column="3" rowspan="3" colspan="2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPushButton" name="_close">
@@ -68,67 +65,10 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="_poitemLit">
-     <property name="text">
-      <string>Line Item:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="XComboBox" name="_poitem">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="_currentLit">
-     <property name="text">
-      <string>Current</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2" colspan="3">
-    <widget class="QLabel" name="_rescheduledLit">
-     <property name="text">
-      <string>Rescheduled</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="_dueDateLit">
-     <property name="text">
-      <string>Due Date:</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="DLineEdit" name="_current">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2" colspan="3">
+   <item row="4" column="2" colspan="3">
     <widget class="DLineEdit" name="_new"/>
    </item>
-   <item row="4" column="0">
+   <item row="5" column="0">
     <spacer name="Spacer295">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -143,6 +83,73 @@ to be bound by its terms.</comment>
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="4" column="1">
+    <widget class="DLineEdit" name="_current">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <widget class="OrderCluster" name="_po">
+     <property name="allowedStatuses">
+      <set>OrderLineEdit::Open</set>
+     </property>
+     <property name="allowedTypes">
+      <set>OrderLineEdit::Purchase</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="XComboBox" name="_poitem">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="_currentLit">
+     <property name="text">
+      <string>Current</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" colspan="3">
+    <widget class="QLabel" name="_rescheduledLit">
+     <property name="text">
+      <string>Rescheduled</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="_dueDateLit">
+     <property name="text">
+      <string>Due Date:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="QCheckBox" name="_allItems">
+     <property name="text">
+      <string>Reschedule All Open P/O Items</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -165,9 +172,13 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_po</tabstop>
+  <tabstop>_allItems</tabstop>
+  <tabstop>_poitem</tabstop>
   <tabstop>_new</tabstop>
   <tabstop>_reschedule</tabstop>
   <tabstop>_close</tabstop>
+  <tabstop>_current</tabstop>
  </tabstops>
  <includes>
   <include location="global">parameter.h</include>

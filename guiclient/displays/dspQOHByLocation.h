@@ -32,6 +32,7 @@ public slots:
     virtual void sAddToPackingListBatch();
     virtual void sPopulateMenu(QMenu * menu, QTreeWidgetItem *, int);
     virtual void sFillList();
+    virtual void setLocation(int pId);
 
 protected slots:
     virtual void languageChange();

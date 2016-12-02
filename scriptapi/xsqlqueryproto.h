@@ -30,6 +30,7 @@ class XSqlQueryProto : public QObject, public QScriptable
 
   public:
     XSqlQueryProto(QObject * parent = 0);
+    virtual ~XSqlQueryProto();
 
     Q_INVOKABLE QSqlRecord record() const;
     Q_INVOKABLE QString    toString() const;

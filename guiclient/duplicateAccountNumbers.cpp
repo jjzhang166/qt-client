@@ -16,6 +16,7 @@
 //#include <QStatusBar>
 #include <parameter.h>
 #include <openreports.h>
+#include "errorReporter.h"
 
 /*
  *  Constructs a duplicateAccountNumbers as a child of 'parent', with the
@@ -101,12 +102,9 @@ void duplicateAccountNumbers::sDuplicate()
     duplicateDuplicate.bindValue(":accnt_id",	((XTreeWidgetItem*)selected[i])->id());
     duplicateDuplicate.bindValue(":descrip",	_descrip->text());
     duplicateDuplicate.exec();
-    if (duplicateDuplicate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Duplicating Account Numbers"),
+                                  duplicateDuplicate, __FILE__, __LINE__))
     {
-      systemError(this, tr("A System Error occurred at %1::%2\n\n%3")
-                          .arg(__FILE__)
-                          .arg(__LINE__)
-                          .arg(duplicateDuplicate.lastError().databaseText()));
       duplicateDuplicate.exec("ROLLBACK;");
       return;
     }

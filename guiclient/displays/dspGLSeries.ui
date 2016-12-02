@@ -68,7 +68,7 @@ to be bound by its terms.</comment>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="DateCluster" name="_dates" native="true">
+           <widget class="DateCluster" name="_dates">
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
@@ -213,6 +213,7 @@ to be bound by its terms.</comment>
    <class>DateCluster</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>

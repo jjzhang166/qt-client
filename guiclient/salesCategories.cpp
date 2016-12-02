@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <openreports.h>
 #include "salesCategory.h"
+#include "errorReporter.h"
 
 salesCategories::salesCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
@@ -115,9 +116,8 @@ void salesCategories::sDelete()
     }
   }
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Category"),
+                       salesDelete, __FILE__, __LINE__);
 }
 
 void salesCategories::sNew()

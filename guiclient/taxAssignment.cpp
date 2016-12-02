@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,6 +16,7 @@
 
 #include "metasql.h"
 #include "parameter.h"
+#include "errorReporter.h"
 
 taxAssignment::taxAssignment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -25,14 +26,15 @@ taxAssignment::taxAssignment(QWidget* parent, const char* name, bool modal, Qt::
   _taxCodeOption->addColumn(tr("Tax Code"),  -1,  Qt::AlignLeft,   true,  "taxcode_option"  );
   _taxCodeSelected->addColumn(tr("Tax Code"),    -1,  Qt::AlignLeft,   true,  "taxcode_selected"  );
 
-  connect(_taxCodeOption, SIGNAL(itemSelected(int)), this, SLOT(sAdd()));
-  connect(_taxCodeSelected, SIGNAL(itemSelected(int)), this, SLOT(sRevoke()));
-
+  connect(_taxCodeOption, SIGNAL(itemSelected(int)),    this, SLOT(sAdd()));
+  connect(_taxCodeSelected, SIGNAL(itemSelected(int)),  this, SLOT(sRevoke()));
   connect(_taxCodeOption,   SIGNAL(valid(bool)),    _add, SLOT(setEnabled(bool)));
   connect(_taxCodeSelected, SIGNAL(valid(bool)),    _revoke, SLOT(setEnabled(bool)));
 
-  connect(_add, SIGNAL(clicked()), this, SLOT(sAdd()));
+  connect(_add, SIGNAL(clicked()),    this, SLOT(sAdd()));
   connect(_revoke, SIGNAL(clicked()), this, SLOT(sRevoke()));
+  connect(_autoapply,  SIGNAL(toggled(bool)),  this, SLOT(sUpdateAutoMemo(bool)));
+  connect(_reversechg, SIGNAL(toggled(bool)),  this, SLOT(sUpdateReverseCharges(bool)));
 
   connect(_taxZone, SIGNAL(newID(int)),  this, SLOT(sPopulateTaxCode()));
   connect(_taxType, SIGNAL(newID(int)),  this, SLOT(sPopulateTaxCode()));
@@ -102,6 +104,40 @@ void taxAssignment::sPopulate()
 {
   _taxZone->setId(_taxzoneId);
   _taxType->setId(_taxtypeId);
+  QString populateSql("SELECT EXISTS(SELECT 1 FROM taxass "
+                  "WHERE ((<? literal('checktype') ?>) "
+                  "AND (COALESCE(taxass_taxzone_id, -1) = <? value('taxzone_id') ?>) "
+                  "AND (COALESCE(taxass_taxtype_id, -1) = <? value('taxtype_id') ?>))) AS ret;");
+
+// Auto Apply to Memos
+  XSqlQuery autoApply;
+  ParameterList params;
+  params.append("taxzone_id", _taxZone->id());
+  params.append("taxtype_id", _taxType->id());
+  params.append("checktype", "taxass_memo_apply");
+
+  MetaSQLQuery mqlTaxApply(populateSql);
+  autoApply = mqlTaxApply.toQuery(params);
+  if (autoApply.first())
+    _autoapply->setChecked(autoApply.value("ret").toBool());
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Populating Tax Assignment"),
+                                autoApply, __FILE__, __LINE__))
+    return;
+
+// Reverse Charges
+  XSqlQuery reverseTax;
+  ParameterList params2;
+  params2.append("taxzone_id", _taxZone->id());
+  params2.append("taxtype_id", _taxType->id());
+  params2.append("checktype", "taxass_reverse_tax");
+
+  MetaSQLQuery mqlTaxReverse(populateSql);
+  reverseTax = mqlTaxReverse.toQuery(params2);
+  if (reverseTax.first())
+    _reversechg->setChecked(reverseTax.value("ret").toBool());
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Populating Tax Assignment"),
+                                reverseTax, __FILE__, __LINE__))
+    return;
 }
 
 void taxAssignment::sPopulateTaxCode()
@@ -111,6 +147,7 @@ void taxAssignment::sPopulateTaxCode()
   params.append("taxzone_id", _taxZone->id());
   params.append("taxtype_id", _taxType->id());
 
+//  Tax Code Assignment
   QString sqlTaxOption("SELECT tax_id, tax_code AS taxcode_option "
                 "FROM tax "
                 "WHERE tax_id NOT IN ("
@@ -125,7 +162,7 @@ void taxAssignment::sPopulateTaxCode()
                 "<? else ?>"
                 "AND (taxass_taxtype_id IS NULL) "
                 "<? endif ?>"
-                ") "
+                 ") "
                 "AND COALESCE(tax_basis_tax_id, -1) < 0;");
 
   MetaSQLQuery mqlTaxOption(sqlTaxOption);
@@ -133,9 +170,9 @@ void taxAssignment::sPopulateTaxCode()
 
   _taxCodeOption->clear();
   _taxCodeOption->populate(taxPopulateTaxCode);
-  if (taxPopulateTaxCode.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                                taxPopulateTaxCode, __FILE__, __LINE__))
   {
-    systemError(this, taxPopulateTaxCode.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -153,6 +190,7 @@ void taxAssignment::sPopulateTaxCode()
                 "<? else ?>"
                 "AND (taxass_taxtype_id IS NULL) "
                 "<? endif ?>"
+                "AND (taxass_tax_id IS NOT NULL) "
                 ") "
                 "AND COALESCE(tax_basis_tax_id, -1) < 0;");
 
@@ -161,11 +199,12 @@ void taxAssignment::sPopulateTaxCode()
 
   _taxCodeSelected->clear();
   _taxCodeSelected->populate(taxPopulateTaxCode);
-  if (taxPopulateTaxCode.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                                taxPopulateTaxCode, __FILE__, __LINE__))
   {
-    systemError(this, taxPopulateTaxCode.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
 }
 
 void taxAssignment::sAdd()
@@ -246,28 +285,33 @@ void taxAssignment::sAdd()
   taxAdd.exec("SELECT NEXTVAL('taxass_taxass_id_seq') AS _taxass_id;");
   if (taxAdd.first())
     _taxassId = taxAdd.value("_taxass_id").toInt();
-  else if (taxAdd.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Tax Code"),
+                                taxAdd, __FILE__, __LINE__))
   {
     rollback.exec();
-    systemError(this, taxAdd.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                         taxAdd, __FILE__, __LINE__);
     return;
   }
   
   taxAdd.prepare("INSERT INTO taxass(taxass_id, taxass_taxzone_id, "
-         "taxass_taxtype_id, taxass_tax_id) "
+         "taxass_taxtype_id, taxass_tax_id, taxass_memo_apply) "
          "VALUES (:taxass_id, :taxass_taxzone_id, "
-         ":taxass_taxtype_id, :taxass_tax_id);");
+         ":taxass_taxtype_id, :taxass_tax_id, :taxass_memo_apply);");
   taxAdd.bindValue(":taxass_id", _taxassId);
   if(_taxZone->isValid())
     taxAdd.bindValue(":taxass_taxzone_id", _taxZone->id());
   if(_taxType->isValid())
     taxAdd.bindValue(":taxass_taxtype_id", _taxType->id());
   taxAdd.bindValue(":taxass_tax_id", _taxCodeOption->id());
+  taxAdd.bindValue(":taxass_memo_apply", _autoapply->isChecked());
   taxAdd.exec();
-  if (taxAdd.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Tax Code"),
+                                taxAdd, __FILE__, __LINE__))
   {
     rollback.exec();
-    systemError(this, taxAdd.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Tax Information"),
+                         taxAdd, __FILE__, __LINE__);
     return;
   }
   taxAdd.exec("COMMIT;");
@@ -285,10 +329,40 @@ void taxAssignment::sRevoke()
   taxRevoke.bindValue(":taxass_taxzone_id", _taxZone->id());
   taxRevoke.bindValue(":taxass_taxtype_id", _taxType->id());
   taxRevoke.exec();
-  if (taxRevoke.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Information"),
+                                taxRevoke, __FILE__, __LINE__))
   {
-    systemError(this, taxRevoke.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sPopulateTaxCode();
+}
+
+void taxAssignment::sUpdateAutoMemo(bool update)
+{
+  XSqlQuery taxAuto;
+  taxAuto.prepare("UPDATE taxass SET taxass_memo_apply = :autoapply "
+                  "WHERE ((COALESCE(taxass_taxzone_id, -1) = :taxass_taxzone_id) "
+                  "AND (COALESCE(taxass_taxtype_id, -1) = :taxass_taxtype_id));");
+  taxAuto.bindValue(":autoapply", update);
+  taxAuto.bindValue(":taxass_taxzone_id", _taxZone->id());
+  taxAuto.bindValue(":taxass_taxtype_id", _taxType->id());
+  taxAuto.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error applying Memo Application to tax assignments"),
+                                taxAuto, __FILE__, __LINE__))
+    return;
+}
+
+void taxAssignment::sUpdateReverseCharges(bool revchg)
+{
+  XSqlQuery taxAuto;
+  taxAuto.prepare("UPDATE taxass SET taxass_reverse_tax = :reversechg "
+                  "WHERE ((COALESCE(taxass_taxzone_id, -1) = :taxass_taxzone_id) "
+                  "AND (COALESCE(taxass_taxtype_id, -1) = :taxass_taxtype_id));");
+  taxAuto.bindValue(":reversechg", revchg);
+  taxAuto.bindValue(":taxass_taxzone_id", _taxZone->id());
+  taxAuto.bindValue(":taxass_taxtype_id", _taxType->id());
+  taxAuto.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error applying Reverse Charge to tax assignments"),
+                                taxAuto, __FILE__, __LINE__))
+    return;
 }

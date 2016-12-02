@@ -50,12 +50,12 @@ class XDateEdit : public XLineEdit
     inline  void      setAllowNullDate(bool pAllowNull)         { _allowNull  = pAllowNull;  }
     inline  void      setNullString(const QString &pNullString) { _nullString = pNullString;}
     inline  void      setNullDate(const QDate &pNullDate)       { _nullDate   = pNullDate;    }
-    inline  void      setCalendarSiteId(int siteId)             { _siteId = siteId; }
 
   public slots:
     virtual void setDataWidgetMap(XDataWidgetMapper* m);
     virtual void setFieldName(QString p) { _fieldName = p; }
 
+    void setCalendarSiteId(int);
     void setNull();
     void setDate(const QDate &, bool = false);
     void setDefaultDate(Defaults p)                             { _default = p; }

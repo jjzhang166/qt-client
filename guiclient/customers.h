@@ -28,6 +28,7 @@ public slots:
     virtual void sView();
     virtual void sDelete();
     virtual void sPopulateMenu(QMenu *, QTreeWidgetItem *, int);
+    virtual bool setParams(ParameterList &);
 };
 
 #endif // CUSTOMERS_H

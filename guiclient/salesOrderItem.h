@@ -42,6 +42,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     virtual void        sListPrices();
     virtual void        sDeterminePrice();
     virtual void        sDeterminePrice( bool force );
+    virtual void        sPopulatePrices( bool update, bool allPrices, double charTotal );
     virtual void        sRecalcPrice();
     virtual void        sPopulateItemInfo( int pItemid );
     virtual void        sRecalcAvailability();
@@ -76,6 +77,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     virtual void        sCancel();
     virtual void        sLookupTax();
     virtual void        sTaxDetail();
+    virtual void        sPopulateUOM();
     virtual void        sQtyUOMChanged();
     virtual void        sPriceUOMChanged();
     virtual void        sCalcUnitCost();
@@ -91,8 +93,10 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     QString _custName;
     double  _priceRatio;
     int     _preferredWarehouseid;
+    int     _saletypeid;
     int     _shiptoid;
     QString _shiptoname;
+    int     _shipzoneid;
     int     _supplyOrderId;
     int     _leadTime;
     int     _custid;
@@ -109,6 +113,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     int     _availabilityLastItemid;
     int     _availabilityLastWarehousid;
     QDate   _availabilityLastSchedDate;
+    bool    _availabilityLastAsOf;
     bool    _availabilityLastShow;
     bool    _availabilityLastShowIndent;
     double  _originalQtyOrd;
@@ -125,6 +130,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     QDate   _supplyOrderScheduledDateCache;
     bool    _supplyOrderDropShipCache;
     double  _supplyOverridePriceCache;
+    bool    _supplyConnectionsCache;
     double  _cachedPct;
     double  _cachedRate;
     int     _taxzoneid;
@@ -133,6 +139,7 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     double  _qtyinvuomratio;
     double  _priceinvuomratio;
     double  _qtyreserved;
+    double  _qtyatshipping;
     QDate   _scheduledDateCache;
     QString _costmethod;
     QString _priceType;

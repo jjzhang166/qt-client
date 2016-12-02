@@ -32,12 +32,16 @@ class QTimerProto : public QObject, public QScriptable
   public:
     QTimerProto(QObject *parent);
 
-                int  interval() const;
-    Q_INVOKABLE bool isActive() const;
-    Q_INVOKABLE bool isSingleShot() const;
-    Q_INVOKABLE void setInterval(int);
-    Q_INVOKABLE void setSingleShot(bool);
-    Q_INVOKABLE int  timerId() const;       
+                int             interval() const;
+    Q_INVOKABLE bool            isActive() const;
+    Q_INVOKABLE bool            isSingleShot() const;
+    Q_INVOKABLE void            setInterval(int);
+    Q_INVOKABLE void            setSingleShot(bool);
+#if QT_VERSION >= 0x050000
+    Q_INVOKABLE void            setTimerType(Qt::TimerType atype = Qt::CoarseTimer);
+    Q_INVOKABLE Qt::TimerType   timerType() const;
+#endif
+    Q_INVOKABLE int             timerId() const;
 
   public slots:
     void start(int);

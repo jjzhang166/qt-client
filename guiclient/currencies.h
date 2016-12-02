@@ -31,6 +31,7 @@ public slots:
     virtual void sDelete();
     virtual void sFillList();
     virtual void sPopulateMenu( QMenu * pMenu );
+    virtual void sSetCommentType();
 
 protected slots:
     virtual void languageChange();

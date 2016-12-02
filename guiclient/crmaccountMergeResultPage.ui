@@ -50,8 +50,8 @@ to be bound by its terms.</comment>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>411</width>
-        <height>271</height>
+        <width>417</width>
+        <height>304</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout"/>

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -38,13 +38,8 @@ ConfigAuthorizeDotNetProcessor::ConfigAuthorizeDotNetProcessor(QWidget* parent, 
   _anMD5HashWarn->setChecked(_metrics->value("CCANMD5HashAction") == "W");
   _anMD5HashFail->setChecked(_metrics->value("CCANMD5HashAction") == "F");
 
-  if (_metrics->value("CCANCurrency") == "TRANS")
-    _anCurrTransaction->setChecked(true);
-  else if (! _metrics->value("CCANCurrency").isEmpty())
-  {
-    _anCurrFixed->setChecked(true);
+  if (! _metrics->value("CCANCurrency").isEmpty())
     _anCurrFixedValue->setId(_metrics->value("CCANCurrency").toInt());
-  }
 
   _anUsingWellsFargoSecureSource->setChecked(_metrics->boolean("CCANWellsFargoSecureSource"));
   _anIgnoreSSLErrors->setChecked(_metrics->boolean("CCANIgnoreSSLErrors"));
@@ -79,10 +74,7 @@ bool ConfigAuthorizeDotNetProcessor::sSave()
   else if (_anMD5HashFail->isChecked())
     _metrics->set("CCANMD5HashAction", QString("F"));
 
-  if (_anCurrFixed->isChecked())
-    _metrics->set("CCANCurrency", _anCurrFixedValue->id());
-  else // if (_anCurrTransaction->isChecked())
-    _metrics->set("CCANCurrency", QString("TRANS"));
+  _metrics->set("CCANCurrency", _anCurrFixedValue->id());
   _metrics->set("CCANWellsFargoSecureSource", _anUsingWellsFargoSecureSource->isChecked());
   _metrics->set("CCANMD5HashSetOnGateway", _anMD5HashSetOnGateway->isChecked());
   _metrics->set("CCANIgnoreSSLErrors",     _anIgnoreSSLErrors->isChecked());
@@ -101,6 +93,6 @@ bool ConfigAuthorizeDotNetProcessor::sSave()
 void ConfigAuthorizeDotNetProcessor::sDuplicateWindow(int p)
 {
   QTime time;
-  time.addSecs(p);
+  (void)time.addSecs(p);
   _anDuplicateWindowAsHMS->setText(time.toString("HH:mm:ss"));
 }

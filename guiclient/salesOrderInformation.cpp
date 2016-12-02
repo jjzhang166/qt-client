@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 salesOrderInformation::salesOrderInformation(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -52,9 +53,9 @@ enum SetResponse salesOrderInformation::set(const ParameterList &pParams)
       _soheadid = saleset.value("coitem_cohead_id").toInt();
       populate();
     }
-    else if (saleset.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  saleset, __FILE__, __LINE__))
     {
-      systemError(this, saleset.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -76,11 +77,11 @@ void salesOrderInformation::populate()
              "       formatDate(cohead_orderdate) AS f_orderdate,"
              "       formatDate(MIN(coitem_scheddate)) AS f_shipdate,"
              "       formatDate(cohead_packdate) AS f_packdate,"
-             "       CASE WHEN (cohead_holdtype='N') THEN :none"
-             "            WHEN (cohead_holdtype='C') THEN :credit"
-             "            WHEN (cohead_holdtype='S') THEN :ship"
-             "            WHEN (cohead_holdtype='P') THEN :pack"
-             "            WHEN (cohead_holdtype='R') THEN :return"
+             "       CASE WHEN (soHoldType(cohead_id)='N') THEN :none"
+             "            WHEN (soHoldType(cohead_id)='C') THEN :credit"
+             "            WHEN (soHoldType(cohead_id)='S') THEN :ship"
+             "            WHEN (soHoldType(cohead_id)='P') THEN :pack"
+             "            WHEN (soHoldType(cohead_id)='R') THEN :return"
              "            ELSE :other"
              "       END AS f_holdtype,"
              "       cohead_shipvia, cohead_billtoname,"
@@ -97,7 +98,7 @@ void salesOrderInformation::populate()
              " AND (coitem_id=:soitem_id) "
              " AND (cohead_id=:sohead_id) ) "
              "GROUP BY cohead_number, warehous_code, cohead_orderdate, cohead_packdate,"
-             "         cohead_holdtype, cohead_shipvia, cohead_billtoname,"
+             "         cohead_id, cohead_shipvia, cohead_billtoname,"
              "         cohead_billtoaddress1, cohead_billtoaddress2, cohead_billtoaddress3,"
              "         cohead_billtocity, cohead_billtostate, cohead_billtozipcode,"
              "         cohead_shiptoname,"

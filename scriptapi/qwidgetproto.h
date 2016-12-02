@@ -56,114 +56,142 @@ class QWidgetProto : public QObject, public QScriptable
   public:
     QWidgetProto(QObject *parent);
 
-    Q_INVOKABLE QList<QAction *> actions()      const;
-    Q_INVOKABLE void activateWindow();
-    Q_INVOKABLE void addAction(QAction *action);
-    Q_INVOKABLE void addActions(QList<QAction *> actions);
-    Q_INVOKABLE void adjustSize();
-    Q_INVOKABLE int  backgroundRole()                   const;
-    Q_INVOKABLE QWidget *childAt(int x, int y)          const;
-    Q_INVOKABLE QWidget *childAt(const QPoint &p)       const;
-    Q_INVOKABLE void clearFocus();
-    Q_INVOKABLE void clearMask();
-    Q_INVOKABLE QRect contentsRect()                    const;
+    Q_INVOKABLE QList<QAction *>      actions() const;
+    Q_INVOKABLE void                  activateWindow();
+    Q_INVOKABLE void                  addAction(QAction *action);
+    Q_INVOKABLE void                  addActions(QList<QAction *> actions);
+    Q_INVOKABLE void                  adjustSize();
+    Q_INVOKABLE int                   backgroundRole() const;
+    Q_INVOKABLE QWidget              *childAt(int x, int y) const;
+    Q_INVOKABLE QWidget              *childAt(const QPoint &p) const;
+    Q_INVOKABLE void                  clearFocus();
+    Q_INVOKABLE void                  clearMask();
+    Q_INVOKABLE QRect                 contentsRect() const;
 #ifndef Q_OS_WIN
-    Q_INVOKABLE WId effectiveWinId()                    const;
+    Q_INVOKABLE WId                   effectiveWinId() const;
 #endif
-    Q_INVOKABLE void ensurePolished()                   const;
-    Q_INVOKABLE QWidget *focusProxy()                   const;
-    Q_INVOKABLE QWidget *focusWidget()                  const;
-    Q_INVOKABLE QFontInfo fontInfo()                    const;
-    Q_INVOKABLE QFontMetrics fontMetrics()              const;
-    Q_INVOKABLE int foregroundRole()                    const;
-    Q_INVOKABLE void getContentsMargins(int *left, int * top, int * right, int * bottom)        const;
-    Q_INVOKABLE void grabKeyboard();
-    Q_INVOKABLE void grabMouse();
-    Q_INVOKABLE void grabMouse(const QCursor &cursor);
-    Q_INVOKABLE int grabShortcut(const QKeySequence &key, int context = Qt::WindowShortcut);
-    Q_INVOKABLE QGraphicsProxyWidget *graphicsProxyWidget()     const;
-    //Q_INVOKABLE bool hasEditFocus()                           const;
-    Q_INVOKABLE bool hasFocus()                                 const;
-    Q_INVOKABLE int heightForWidth(int w)                       const;
-    #if QT_VERSION < 0x050000
-    Q_INVOKABLE QInputContext *inputContext();
-    #endif
-    Q_INVOKABLE QVariant inputMethodQuery(int query)            const;
-    Q_INVOKABLE void insertAction(QAction *before, QAction *action);
-    Q_INVOKABLE void insertActions(QAction *before, QList<QAction *> actions);
-    Q_INVOKABLE bool isAncestorOf(const QWidget *child) const;
-    Q_INVOKABLE bool isEnabledTo(QWidget *ancestor)     const;
-    Q_INVOKABLE bool isHidden()                         const;
-    Q_INVOKABLE bool isVisibleTo(QWidget *ancestor)     const;
-    Q_INVOKABLE bool isWindow()                         const;
-    Q_INVOKABLE QLayout *layout()                       const;
-    Q_INVOKABLE QPoint mapFrom(QWidget *parent, const QPoint &pos) const;
-    Q_INVOKABLE QPoint mapFromGlobal(const QPoint &pos) const;
-    Q_INVOKABLE QPoint mapFromParent(const QPoint &pos) const;
-    Q_INVOKABLE QPoint mapTo(QWidget *parent, const QPoint &pos)   const;
-    Q_INVOKABLE QPoint mapToGlobal(const QPoint &pos)   const;
-    Q_INVOKABLE QPoint mapToParent(const QPoint &pos)   const;
-    Q_INVOKABLE QRegion mask()                          const;
-    Q_INVOKABLE QSize minimumSizeHint()                 const;
-    Q_INVOKABLE QWidget *nativeParentWidget()           const;
-    Q_INVOKABLE QWidget *nextInFocusChain()             const;
-    Q_INVOKABLE void overrideWindowFlags(int flags);
-    Q_INVOKABLE QPaintEngine *paintEngine()             const;
-    Q_INVOKABLE QWidget *parentWidget()                 const;
-    Q_INVOKABLE void releaseKeyboard();
-    Q_INVOKABLE void releaseMouse();
-    Q_INVOKABLE void releaseShortcut(int id);
-    Q_INVOKABLE void removeAction(QAction *action);
-    Q_INVOKABLE void repaint(int x, int y, int w, int h);
-    Q_INVOKABLE void repaint(const QRect &rect);
-    Q_INVOKABLE void repaint(const QRegion &rgn);
-    Q_INVOKABLE bool restoreGeometry(const QByteArray &geometry);
-    Q_INVOKABLE QByteArray saveGeometry()       const;
-    Q_INVOKABLE void scroll(int dx, int dy);
-    Q_INVOKABLE void scroll(int dx, int dy, const QRect &r);
-    Q_INVOKABLE void setAttribute(int attribute, bool on = true);
-    Q_INVOKABLE void setBackgroundRole(int role);
-    Q_INVOKABLE void setContentsMargins(int left, int top, int right, int bottom);
-    //Q_INVOKABLE void setEditFocus(bool enable);
-    Q_INVOKABLE void setFixedHeight(int h);
-    Q_INVOKABLE void setFixedSize(const QSize &s);
-    Q_INVOKABLE void setFixedSize(int w, int h);
-    Q_INVOKABLE void setFixedWidth(int w);
-    Q_INVOKABLE void setFocus(int reason);
-    Q_INVOKABLE void setFocusProxy(QWidget *w);
-    Q_INVOKABLE void setForegroundRole(int role);
-    #if QT_VERSION < 0x050000
-    Q_INVOKABLE void setInputContext(QInputContext *context);
-    #endif
-    Q_INVOKABLE void setLayout(QLayout *layout);
-    Q_INVOKABLE void setMask(const QBitmap &bitmap);
-    Q_INVOKABLE void setMask(const QRegion &region);
-    Q_INVOKABLE void setParent(QWidget *parent);
-    Q_INVOKABLE void setParent(QWidget *parent, int f);
-    Q_INVOKABLE void setShortcutAutoRepeat(int id, bool enable = true);
-    Q_INVOKABLE void setShortcutEnabled(int id, bool enable = true);
-    Q_INVOKABLE void setStyle(QStyle *style);
-    Q_INVOKABLE void setWindowRole(const QString &role);
-    Q_INVOKABLE void setWindowState(int windowState);
-    Q_INVOKABLE void stackUnder(QWidget *w);
-    Q_INVOKABLE QStyle *style()                         const;
-    Q_INVOKABLE bool testAttribute(int attribute)       const;
-    Q_INVOKABLE bool underMouse()                       const;
-    Q_INVOKABLE void unsetCursor();
-    Q_INVOKABLE void update(int x, int y, int w, int h);
-    Q_INVOKABLE void update(const QRect &rect);
-    Q_INVOKABLE void update(const QRegion &rgn);
-    Q_INVOKABLE void updateGeometry();
-    Q_INVOKABLE QRegion visibleRegion()         const;
-#ifndef Q_OS_WIN
-    Q_INVOKABLE WId winId()                     const;
-#endif
-    Q_INVOKABLE QWidget *window()               const;
-    Q_INVOKABLE QString windowRole()            const;
-    Q_INVOKABLE int windowState()               const;
-    Q_INVOKABLE int windowType()                const;
+    Q_INVOKABLE void                  ensurePolished() const;
+    Q_INVOKABLE QWidget              *focusProxy() const;
+    Q_INVOKABLE QWidget              *focusWidget() const;
+    Q_INVOKABLE QFontInfo             fontInfo() const;
+    Q_INVOKABLE QFontMetrics          fontMetrics() const;
+    Q_INVOKABLE int                   foregroundRole() const;
+    Q_INVOKABLE void                  getContentsMargins(int *left, int * top, int * right, int * bottom) const;
+    Q_INVOKABLE void                  grabKeyboard();
+    Q_INVOKABLE void                  grabMouse();
+    Q_INVOKABLE void                  grabMouse(const QCursor &cursor);
+    Q_INVOKABLE int                   grabShortcut(const QKeySequence &key, int context = Qt::WindowShortcut);
+    Q_INVOKABLE QGraphicsProxyWidget *graphicsProxyWidget() const;
 
-    Q_INVOKABLE QString     toString()          const;
+    //Q_INVOKABLE bool                  hasEditFocus() const;
+    Q_INVOKABLE bool                  hasFocus() const;
+    Q_INVOKABLE int                   heightForWidth(int w) const;
+    #if QT_VERSION < 0x050000
+    Q_INVOKABLE QInputContext        *inputContext();
+    #endif
+    Q_INVOKABLE QVariant              inputMethodQuery(int query) const;
+    Q_INVOKABLE void                  insertAction(QAction *before, QAction *action);
+    Q_INVOKABLE void                  insertActions(QAction *before, QList<QAction *> actions);
+    Q_INVOKABLE bool                  isAncestorOf(const QWidget *child) const;
+    Q_INVOKABLE bool                  isEnabledTo(QWidget *ancestor) const;
+    Q_INVOKABLE bool                  isHidden() const;
+    Q_INVOKABLE bool                  isVisibleTo(QWidget *ancestor) const;
+    Q_INVOKABLE bool                  isWindow() const;
+    Q_INVOKABLE QLayout              *layout() const;
+    Q_INVOKABLE QPoint                mapFrom(QWidget *parent, const QPoint &pos) const;
+    Q_INVOKABLE QPoint                mapFromGlobal(const QPoint &pos) const;
+    Q_INVOKABLE QPoint                mapFromParent(const QPoint &pos) const;
+    Q_INVOKABLE QPoint                mapTo(QWidget *parent, const QPoint &pos) const;
+    Q_INVOKABLE QPoint                mapToGlobal(const QPoint &pos) const;
+    Q_INVOKABLE QPoint                mapToParent(const QPoint &pos) const;
+    Q_INVOKABLE QRegion               mask() const;
+    Q_INVOKABLE QSize                 minimumSizeHint() const;
+    Q_INVOKABLE QWidget              *nativeParentWidget() const;
+    Q_INVOKABLE QWidget              *nextInFocusChain() const;
+    Q_INVOKABLE void                  overrideWindowFlags(int flags);
+    Q_INVOKABLE QPaintEngine         *paintEngine() const;
+    Q_INVOKABLE QWidget              *parentWidget() const;
+    Q_INVOKABLE void                  releaseKeyboard();
+    Q_INVOKABLE void                  releaseMouse();
+    Q_INVOKABLE void                  releaseShortcut(int id);
+    Q_INVOKABLE void                  removeAction(QAction *action);
+    Q_INVOKABLE void                  repaint(int x, int y, int w, int h);
+    Q_INVOKABLE void                  repaint(const QRect &rect);
+    Q_INVOKABLE void                  repaint(const QRegion &rgn);
+    Q_INVOKABLE bool                  restoreGeometry(const QByteArray &geometry);
+    Q_INVOKABLE QByteArray            saveGeometry() const;
+    Q_INVOKABLE void                  scroll(int dx, int dy);
+    Q_INVOKABLE void                  scroll(int dx, int dy, const QRect &r);
+    Q_INVOKABLE void                  setAttribute(int attribute, bool on = true);
+    Q_INVOKABLE void                  setBackgroundRole(int role);
+    Q_INVOKABLE void                  setContentsMargins(int left, int top, int right, int bottom);
+    //Q_INVOKABLE void setEditFocus(bool enable);
+    Q_INVOKABLE void                  setFixedHeight(int h);
+    Q_INVOKABLE void                  setFixedSize(const QSize &s);
+    Q_INVOKABLE void                  setFixedSize(int w, int h);
+    Q_INVOKABLE void                  setFixedWidth(int w);
+    Q_INVOKABLE void                  setFocus(int reason);
+    Q_INVOKABLE void                  setFocusProxy(QWidget *w);
+    Q_INVOKABLE void                  setForegroundRole(int role);
+    #if QT_VERSION < 0x050000
+    Q_INVOKABLE void                  setInputContext(QInputContext *context);
+    #endif
+    Q_INVOKABLE void                  setLayout(QLayout *layout);
+    Q_INVOKABLE void                  setMask(const QBitmap &bitmap);
+    Q_INVOKABLE void                  setMask(const QRegion &region);
+    Q_INVOKABLE void                  setParent(QWidget *parent);
+    Q_INVOKABLE void                  setParent(QWidget *parent, int f);
+    Q_INVOKABLE void                  setShortcutAutoRepeat(int id, bool enable = true);
+    Q_INVOKABLE void                  setShortcutEnabled(int id, bool enable = true);
+    Q_INVOKABLE void                  setStyle(QStyle *style);
+    Q_INVOKABLE void                  setWindowRole(const QString &role);
+    Q_INVOKABLE void                  setWindowState(int windowState);
+    Q_INVOKABLE void                  stackUnder(QWidget *w);
+    Q_INVOKABLE QStyle               *style() const;
+    Q_INVOKABLE bool                  testAttribute(int attribute) const;
+    Q_INVOKABLE bool                  underMouse() const;
+    Q_INVOKABLE void                  unsetCursor();
+    Q_INVOKABLE void                  update(int x, int y, int w, int h);
+    Q_INVOKABLE void                  update(const QRect &rect);
+    Q_INVOKABLE void                  update(const QRegion &rgn);
+    Q_INVOKABLE void                  updateGeometry();
+    Q_INVOKABLE QRegion               visibleRegion() const;
+#ifndef Q_OS_WIN
+    Q_INVOKABLE WId                   winId() const;
+#endif
+    Q_INVOKABLE QWidget              *window() const;
+    Q_INVOKABLE QString               windowRole() const;
+    Q_INVOKABLE int                   windowState() const;
+    Q_INVOKABLE int                   windowType() const;
+
+    Q_INVOKABLE QString               toString() const;
+
+  public Q_SLOTS:
+    Q_INVOKABLE bool                  close();
+    Q_INVOKABLE void                  hide();
+    Q_INVOKABLE void                  lower();
+    Q_INVOKABLE void                  raise();
+    Q_INVOKABLE void                  repaint();
+    Q_INVOKABLE void                  setDisabled(bool disable);
+    Q_INVOKABLE void                  setEnabled(bool enable);
+    Q_INVOKABLE void                  setFocus();
+    Q_INVOKABLE void                  setHidden(bool hidden);
+    Q_INVOKABLE void                  setStyleSheet(const QString & styleSheet);
+    Q_INVOKABLE virtual void          setVisible(bool visible);
+    Q_INVOKABLE void                  setWindowModified(bool mod);
+    Q_INVOKABLE void                  setWindowTitle(const QString & title);
+    Q_INVOKABLE void                  show();
+    Q_INVOKABLE void                  showFullScreen();
+    Q_INVOKABLE void                  showMaximized();
+    Q_INVOKABLE void                  showMinimized();
+    Q_INVOKABLE void                  showNormal();
+    Q_INVOKABLE void                  update();
+
+  signals:
+    void   customContextMenuRequested(const QPoint & pos);
+    void    windowIconChanged(const QIcon & icon);
+    void    windowIconTextChanged(const QString & iconText);
+    void    windowTitleChanged(const QString & title);
 
 };
 

@@ -18,6 +18,7 @@
 #include <openreports.h>
 #include "storedProcErrorLookup.h"
 #include "uom.h"
+#include "errorReporter.h"
 
 /*
  *  Constructs a uoms as a child of 'parent', with the
@@ -131,13 +132,15 @@ void uoms::sDelete()
     int result = uomsDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteUOM", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting UOM Information"),
+                             storedProcErrorLookup("deleteUOM", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (uomsDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting UOM Information"),
+                                uomsDelete, __FILE__, __LINE__))
   {
-    systemError(this, uomsDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

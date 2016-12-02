@@ -41,9 +41,7 @@ class menuCRM : public QObject
 
     void sNewProject();
     void sProjects();
-    void sProjectTypes();
     void sDspOrderActivityByProject();
-
     void sAddress();
     void sAddresses();
     void sCRMAccount();
@@ -61,7 +59,6 @@ class menuCRM : public QObject
     void sNewOpportunity();
     void sOpportunities();
     void sEditOwners();
-
     void sSetup();
 
   private:

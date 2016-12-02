@@ -18,7 +18,7 @@ to be bound by its terms.</comment>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Print Return</string>
+   <string>Print Sales Credit</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -32,7 +32,7 @@ to be bound by its terms.</comment>
      <item>
       <widget class="QLabel" name="_numberLit">
        <property name="text">
-        <string>Return #:</string>
+        <string>Memo #:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

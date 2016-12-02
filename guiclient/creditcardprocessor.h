@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -20,6 +20,8 @@
 #include <QNetworkAccessManager>
 #endif
 #include <parameter.h>
+
+class QSslCertificate;
 
 class CreditCardProcessor : public QObject
 {
@@ -54,6 +56,7 @@ class CreditCardProcessor : public QObject
 
     // no public constructor for abstract class, just a factory
     Q_INVOKABLE static CreditCardProcessor *getProcessor(const QString = QString());
+    Q_INVOKABLE static bool                 certificateIsValid(const QSslCertificate *cert);
 
     // these are the primary transaction handlers and should not be overridden:
     virtual int authorize(const int pccardid, const QString &pcvv, const double pamount, double ptax, bool ptaxexempt, double pfreight, double pduty, const int pcurrid, QString &pneworder, QString &preforder, int &pccpayid, QString preftype, int &prefid);
@@ -106,9 +109,7 @@ class CreditCardProcessor : public QObject
     virtual int     fraudChecks();
     virtual int     sendViaHTTP(const QString&, QString&);
     virtual int     updateCCPay(int &, ParameterList &);
-#if QT_VERSION >= 0x050000
     virtual bool    waitForHTTP();
-#endif
 
     QList<FraudCheckResult*> _avsCodes;
     QList<FraudCheckResult*> _cvvCodes;
@@ -126,6 +127,7 @@ class CreditCardProcessor : public QObject
     QString		_ppassword;
     QString		_pport;
     QString		_pserver;
+    QString             _pemfile;
     #if QT_VERSION < 0x050000
     QHttp             * _http;
     #else

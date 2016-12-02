@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 #include <vendorcluster.h>
+#include "errorReporter.h"
 
 vendorAddress::vendorAddress(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -70,10 +71,10 @@ enum SetResponse vendorAddress::set(const ParameterList &pParams)
         _address->setSearchAcct(setVendor.value("crmacct_id").toInt());
         _contact->setSearchAcct(setVendor.value("crmacct_id").toInt());
       }
-      else if (setVendor.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                    setVendor, __FILE__, __LINE__))
       {
-	systemError(this, setVendor.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
     }
     else if (param.toString() == "edit")
@@ -102,7 +103,8 @@ void vendorAddress::sSave()
   XSqlQuery vendorSave;
   if (! vendorSave.exec("BEGIN"))
   {
-    systemError(this, vendorSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor Information"),
+                         vendorSave, __FILE__, __LINE__);
     return;
   }
 
@@ -127,10 +129,12 @@ void vendorAddress::sSave()
   }
   if (saveResult < 0)	// not else-if: this is error check for CHANGE{ONE,ALL}
   {
-    systemError(this, tr("There was an error saving this address (%1).\n"
-			 "Check the database server log for errors.")
-		      .arg(saveResult), __FILE__, __LINE__);
     rollback.exec();
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: There was an error saving this address (%2).\n"
+                            "Check the database server log for errors.")
+                         .arg(windowTitle())
+                         .arg(saveResult),__FILE__,__LINE__);
     _address->setFocus();
     return;
   }
@@ -143,7 +147,8 @@ void vendorAddress::sSave()
     else
     {
       rollback.exec();
-      systemError(this, vendorSave.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor Information"),
+                           vendorSave, __FILE__, __LINE__);
       return;
     }
 
@@ -177,7 +182,8 @@ void vendorAddress::sSave()
   if (vendorSave.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, vendorSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor Information"),
+                         vendorSave, __FILE__, __LINE__);
     return;
   }
 

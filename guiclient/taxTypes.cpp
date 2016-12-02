@@ -16,6 +16,7 @@
 #include <parameter.h>
 #include <openreports.h>
 #include "taxType.h"
+#include "errorReporter.h"
 
 /*
  *  Constructs a taxTypes as a child of 'parent', with the
@@ -95,9 +96,8 @@ void taxTypes::sDelete()
     sFillList(-1);
   }
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Type Information"),
+                       taxDelete, __FILE__, __LINE__);
 }
 
 void taxTypes::sNew()

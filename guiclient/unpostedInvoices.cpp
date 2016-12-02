@@ -26,6 +26,7 @@
 #include "printInvoice.h"
 #include "storedProcErrorLookup.h"
 #include "distributeInventory.h"
+#include "errorReporter.h"
 
 unpostedInvoices::unpostedInvoices(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : display(parent, "unpostedInvoices", fl)
@@ -117,15 +118,16 @@ void unpostedInvoices::sDelete()
         {
 	      int result = unpostedDelete.value("result").toInt();
 	      if (result < 0)
-	      {
-	        systemError(this, storedProcErrorLookup("deleteInvoice", result),
-		            __FILE__, __LINE__);
-	      }
+          {
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Invoice Information"),
+                                   storedProcErrorLookup("deleteInvoice", result),
+                                   __FILE__, __LINE__);
+          }
         }
         else if (unpostedDelete.lastError().type() != QSqlError::NoError)
-	      systemError(this,
-		          tr("Error deleting Invoice %1\n").arg(selected[i]->text(0)) +
-		          unpostedDelete.lastError().databaseText(), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Invoice Information: %1\n")
+                             .arg(selected[i]->text(0)) + unpostedDelete.lastError().databaseText(),
+                             unpostedDelete, __FILE__, __LINE__);
       }
     }
 
@@ -187,13 +189,15 @@ void unpostedInvoices::sPost()
     journal = unpostedPost.value("result").toInt();
     if (journal < 0)
     {
-      systemError(this, storedProcErrorLookup("fetchJournalNumber", journal), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Number"),
+                             storedProcErrorLookup("fetchJournalNumber", journal),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (unpostedPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Number"),
+                                unpostedPost, __FILE__, __LINE__))
   {
-    systemError(this, unpostedPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -234,7 +238,8 @@ void unpostedInvoices::sPost()
         setDate.exec();
         if (setDate.lastError().type() != QSqlError::NoError)
         {
-	      systemError(this, setDate.lastError().databaseText(), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                               setDate, __FILE__, __LINE__);
         }
       //}
     }
@@ -260,10 +265,10 @@ void unpostedInvoices::sPost()
 	      == QMessageBox::No)
 	        continue;
         }
-        else if (sum.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                                      sum, __FILE__, __LINE__))
         {
-	      systemError(this, sum.lastError().databaseText(), __FILE__, __LINE__);
-	      continue;
+          continue;
         }
         else if (sum.value("subtotal").toDouble() != 0)
         {
@@ -271,16 +276,17 @@ void unpostedInvoices::sPost()
 	      xrate.exec();
 	      if (xrate.lastError().type() != QSqlError::NoError)
 	      {
-	        systemError(this, tr("System Error posting Invoice #%1\n%2")
-			            .arg(selected[i]->text(0))
-			            .arg(xrate.lastError().databaseText()),
-		                __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information %1\n%2")
+                                 .arg(selected[i]->text(0))
+                                 .arg(xrate.lastError().databaseText()),
+                                 xrate, __FILE__, __LINE__);
 	        continue;
 	      }
 	      else if (!xrate.first() || xrate.value("curr_rate").isNull())
 	      {
-	        systemError(this, tr("Could not post Invoice #%1 because of a missing exchange rate.")
-						.arg(selected[i]->text(0)));
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                                 tr("%1: Could not post Invoice #%1 because of a missing exchange rate.")
+                                 .arg(windowTitle()),__FILE__,__LINE__);
 	        continue;
 	      }
         }
@@ -293,19 +299,21 @@ void unpostedInvoices::sPost()
         {
 	      int result = post.value("result").toInt();
 	      if (result < 0)
-              {
-                rollback.exec();
-                systemError(this, storedProcErrorLookup("postInvoice", result),
-		            __FILE__, __LINE__);
-              }
-              else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-              {
-                rollback.exec();
-                QMessageBox::information( this, tr("Post Invoices"), tr("Transaction Canceled") );
-                return;
-              }
+          {
+            rollback.exec();
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                                   storedProcErrorLookup("postInvoice", result),
+                                   __FILE__, __LINE__);
+            return;
+          }
+          else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
+          {
+            rollback.exec();
+            QMessageBox::information( this, tr("Post Invoices"), tr("Transaction Canceled") );
+            return;
+          }
 
-              unpostedPost.exec("COMMIT;");
+          unpostedPost.exec("COMMIT;");
         }
         // contains() string is hard-coded in stored procedure
         else if (post.lastError().databaseText().contains("post to closed period"))
@@ -319,10 +327,10 @@ void unpostedInvoices::sPost()
       else if (post.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
-        systemError(this, tr("A System Error occurred posting Invoice #%1.\n%2")
-                    .arg(selected[i]->text(0))
-                        .arg(post.lastError().databaseText()),
-                        __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information: %1 \n%2")
+                             .arg(selected[i]->text(0))
+                             .arg(post.lastError().databaseText()),
+                             post, __FILE__, __LINE__);
       }
     }
 

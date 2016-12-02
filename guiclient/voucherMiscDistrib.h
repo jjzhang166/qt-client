@@ -29,6 +29,7 @@ public slots:
     virtual void populate();
     virtual void sSave();
     virtual void sCheck();
+    virtual void sHandleSelection();
     virtual void sPopulateVendorInfo(int);
 
 protected slots:

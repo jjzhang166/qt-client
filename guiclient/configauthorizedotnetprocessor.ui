@@ -224,17 +224,7 @@ to be bound by its terms.</comment>
          <number>12</number>
         </property>
         <item>
-         <widget class="QRadioButton" name="_anCurrTransaction">
-          <property name="text">
-           <string>Same as Order</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="_anCurrFixed">
+         <widget class="QLabel" name="_anCurrFixedLit">
           <property name="text">
            <string>Always Use:</string>
           </property>
@@ -242,9 +232,6 @@ to be bound by its terms.</comment>
         </item>
         <item>
          <widget class="XComboBox" name="_anCurrFixedValue">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
           <property name="type">
            <enum>XComboBox::Currencies</enum>
           </property>

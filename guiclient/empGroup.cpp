@@ -17,6 +17,7 @@
 #include "empGroup.h"
 #include "empcluster.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 #define DEBUG   false
 
@@ -56,9 +57,9 @@ void empGroup::setVisible(bool visible)
 
   else if (! userHasPriv(_mode))
   {
-    systemError(this,
-		tr("You do not have sufficient privilege to view this window"),
-		__FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Privilege Error"),
+                         tr("%1: Insufficient Privileges to View/Edit Employee Groups")
+                         .arg(windowTitle()),__FILE__,__LINE__);
     reject();
   }
   else
@@ -115,10 +116,10 @@ enum SetResponse empGroup::set(const ParameterList &pParams)
       empet.exec("SELECT NEXTVAL('empgrp_empgrp_id_seq') AS empgrpid;");
       if (empet.first())
         _empgrpid = empet.value("empgrpid").toInt();
-      else if (empet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                                    empet, __FILE__, __LINE__))
       {
-	systemError(this, empet.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
     }
     else if (param.toString() == "edit")
@@ -166,9 +167,9 @@ void empGroup::sCheck()
       populate();
       _name->setEnabled(false);
     }
-    else if (empCheck.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                                  empCheck, __FILE__, __LINE__))
     {
-      systemError(this, empCheck.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -188,14 +189,15 @@ bool empGroup::close()
       int result = empclose.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("deleteEmpgrp", result),
-                    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                               storedProcErrorLookup("deleteEmpgrp", result),
+                               __FILE__, __LINE__);
         return false;
       }
     }
-    else if (empclose.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                                  empclose, __FILE__, __LINE__))
     {
-      systemError(this, empclose.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }
@@ -229,9 +231,9 @@ void empGroup::sSave(const bool pClose)
   empSave.bindValue(":empgrp_name",    _name->text().trimmed());
   empSave.bindValue(":empgrp_descrip", _descrip->text().trimmed());
   empSave.exec();
-  if (empSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Employee Group"),
+                                empSave, __FILE__, __LINE__))
   {
-    systemError(this, empSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -254,9 +256,11 @@ void empGroup::sDelete()
   empDelete.exec();
   if (empDelete.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, empDelete.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Employee From Group"),
+                         empDelete, __FILE__, __LINE__);
     return;
   }
+
 
   sFillList();
 }
@@ -279,9 +283,9 @@ void empGroup::sNew()
     empNew.exec();
     if (empNew.first())
       return;
-    else if (empNew.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Employee To Group"),
+                                  empNew, __FILE__, __LINE__))
     {
-      systemError(this, empNew.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -292,9 +296,9 @@ void empGroup::sNew()
     empNew.bindValue(":empgrpitem_empgrp_id", _empgrpid);
     empNew.bindValue(":empgrpitem_emp_id", empid);
     empNew.exec();
-    if (empNew.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Employee To Group"),
+                                  empNew, __FILE__, __LINE__))
     {
-      systemError(this, empNew.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -313,9 +317,9 @@ void empGroup::sFillList()
   empFillList.bindValue(":empgrp_id", _empgrpid);
   empFillList.exec();
   _empgrpitem->populate(empFillList);
-  if (empFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                                empFillList, __FILE__, __LINE__))
   {
-    systemError(this, empFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -333,9 +337,9 @@ void empGroup::populate()
     _name->setText(emppopulate.value("empgrp_name").toString());
     _descrip->setText(emppopulate.value("empgrp_descrip").toString());
   }
-  else if (emppopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Employee Group Information"),
+                                emppopulate, __FILE__, __LINE__))
   {
-    systemError(this, emppopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QValidator>
 #include <QSqlError>
+#include "errorReporter.h"
 
 /*
  *  Constructs a poLiabilityDistrib as a child of 'parent', with the
@@ -70,13 +71,14 @@ enum SetResponse poLiabilityDistrib::set(const ParameterList &pParams)
 void poLiabilityDistrib::populate()
 {
   XSqlQuery popopulate;
-  popopulate.prepare( "SELECT recv_value "
+  popopulate.prepare( "SELECT recv_date, recv_value "
              "FROM recv "
              "WHERE (recv_id=:recv_id);" ) ;
   popopulate.bindValue(":recv_id", _recvid);
   popopulate.exec();
   if (popopulate.first())
   {
+    _distDate->setDate(popopulate.value("recv_date").toDate());
     _amount->setLocalValue(popopulate.value("recv_value").toDouble());
   }
 }
@@ -91,9 +93,16 @@ void poLiabilityDistrib::sPost()
     _account->setFocus();
     return;
   }
+  if (!_distDate->isValid())
+  {
+    QMessageBox::warning( this, tr("Distribution Date"),
+                          tr("You must select a valid Distribution Date to post the P/O Liability Distribution to.") );
+    _distDate->setFocus();
+    return;
+  }
 
   poPost.prepare( "SELECT insertGLTransaction( 'G/L', 'PO', pohead_number, 'Qty. ' || formatqty(recv_qty) || ' for ' || COALESCE(item_number,poitem_vend_item_number) || ' marked as invoiced',"
-             "                            :creditAccntid, COALESCE(costcat_liability_accnt_id,expcat_liability_accnt_id) ,-1, :amount, current_date ) AS result"
+             "                            :creditAccntid, COALESCE(costcat_liability_accnt_id,expcat_liability_accnt_id) ,-1, :amount, :distdate ) AS result"
              " FROM recv, pohead, poitem "
 			 " LEFT OUTER JOIN expcat ON (poitem_expcat_id=expcat_id) "
 			 " LEFT OUTER JOIN itemsite ON (poitem_itemsite_id=itemsite_id) "
@@ -103,14 +112,14 @@ void poLiabilityDistrib::sPost()
              " AND (poitem_id=recv_orderitem_id) "
 			 " AND (pohead_id=poitem_pohead_id) );" );
   poPost.bindValue(":creditAccntid", _account->id());
+  poPost.bindValue(":distdate", _distDate->date());
   poPost.bindValue(":amount", _amount->baseValue());
   poPost.bindValue(":recv_id", _recvid);
   poPost.exec();
   if (!poPost.first())
   {
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving GL Information"),
+                         poPost, __FILE__, __LINE__);
     return;
   }
 

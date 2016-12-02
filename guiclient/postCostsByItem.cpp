@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 postCostsByItem::postCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -115,9 +116,8 @@ void postCostsByItem::sPost()
   sql.exec();
   if (sql.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, tr("A SystemError occurred at %1::%2")
-                        .arg(__FILE__)
-                        .arg(__LINE__));
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Cost Information"),
+                         sql, __FILE__, __LINE__);
     return;
   }
 

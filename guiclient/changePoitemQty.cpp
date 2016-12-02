@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 changePoitemQty::changePoitemQty(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -170,13 +171,15 @@ void changePoitemQty::sChangeQty()
     int result = changeChangeQty.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("changePoitemQty", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Quantity"),
+                             storedProcErrorLookup("changePoitemQty", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (changeChangeQty.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Quantity"),
+                                changeChangeQty, __FILE__, __LINE__))
   {
-    systemError(this, changeChangeQty.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -192,13 +195,15 @@ void changePoitemQty::sChangeQty()
       int result = changeChangeQty.value("result").toInt();
       if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("postcomment", result), __FILE__, __LINE__);
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Comment"),
+                               storedProcErrorLookup("postcomment", result),
+                               __FILE__, __LINE__);
+        return;
       }
     }
-    else if (changeChangeQty.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Comment"),
+                                  changeChangeQty, __FILE__, __LINE__))
     {
-      systemError(this, changeChangeQty.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -210,9 +215,9 @@ void changePoitemQty::sChangeQty()
     changeChangeQty.bindValue(":poitem_id", _poitem->id());
     changeChangeQty.bindValue(":poitem_freight", _freight->localValue());
     changeChangeQty.exec();
-    if (changeChangeQty.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Changing Quantity"),
+                                  changeChangeQty, __FILE__, __LINE__))
     {
-      systemError(this, changeChangeQty.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

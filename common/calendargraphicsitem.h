@@ -9,7 +9,7 @@
  */
 
 #ifndef __CALENDARGRAPHICSITEM_H__
-#define __CALENDARGRAPHCISITEM_H__
+#define __CALENDARGRAPHICSITEM_H__
 
 #include <QObject>
 #include <QGraphicsRectItem>

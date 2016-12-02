@@ -261,19 +261,21 @@ bool employee::sSave(const bool pClose)
   dupq.bindValue(":number", _number->text());
   dupq.bindValue(":id",     _empid);
   dupq.exec();
-  if(dupq.first())
+  if (dupq.first())
     dupNumber = true;
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
+  else if(ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
                                 dupq, __FILE__, __LINE__))
     return false;
 
   QList<GuiErrorCheck> errors;
-  errors << GuiErrorCheck(_code->text().isEmpty(), _code,
+  errors << GuiErrorCheck(_code->text().trimmed().isEmpty(), _code,
                           tr("You must enter a valid Employee Code."))
-         << GuiErrorCheck(_number->text().isEmpty(), _number,
+         << GuiErrorCheck(_number->text().trimmed().isEmpty(), _number,
                           tr("You must enter an Employee Number."))
          << GuiErrorCheck(dupCode, _code,
                           tr("An Employee already exists for the Code specified."))
+         << GuiErrorCheck(dupNumber, _number,
+                          tr("An Employee already exists for the Number specified."))
          << GuiErrorCheck(_code->text() == _mgr->number(), _number,
                           tr("An Employee already exists for the Number specified."))
          << GuiErrorCheck(_code->text() == _mgr->number(), _mgr,
@@ -339,7 +341,7 @@ bool employee::sSave(const bool pClose)
     upsq.bindValue(":emp_id", _empid);
   }
 
-  upsq.bindValue(":code",           _code->text());
+  upsq.bindValue(":code",           _code->text().trimmed());
   upsq.bindValue(":number",         _number->text());
   upsq.bindValue(":active",         _active->isChecked());
   if (_contact->isValid())
@@ -398,9 +400,9 @@ void employee::sReleaseNumber()
   employeeReleaseNumber.prepare("SELECT releaseCRMAccountNumber(:number);");
   employeeReleaseNumber.bindValue(":number", _NumberGen);
   employeeReleaseNumber.exec();
-  if (employeeReleaseNumber.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Releasing Account Number"),
+                                employeeReleaseNumber, __FILE__, __LINE__))
   {
-    systemError(this, employeeReleaseNumber.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

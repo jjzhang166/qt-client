@@ -19,6 +19,7 @@
 #include "checkFormat.h"
 #include "guiclient.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 checkFormats::checkFormats(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -112,14 +113,15 @@ void checkFormats::sDelete()
     int result = checkDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteForm", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Check Format"),
+                           storedProcErrorLookup("deleteForm", result),
+                           __FILE__, __LINE__);
       return;
     }
   }
-  else if (checkDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Check Format"),
+                                checkDelete, __FILE__, __LINE__))
   {
-    systemError(this, checkDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

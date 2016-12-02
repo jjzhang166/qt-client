@@ -15,6 +15,7 @@
 
 #include <metasql.h>
 #include <openreports.h>
+#include <errorReporter.h>
 
 releaseWorkOrdersByPlannerCode::releaseWorkOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -107,9 +108,9 @@ void releaseWorkOrdersByPlannerCode::sRelease()
     MetaSQLQuery wom(sql);
     releaseRelease = wom.toQuery(wop);
 
-    if (releaseRelease.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                                  releaseRelease, __FILE__, __LINE__))
     {
-      systemError(this, releaseRelease.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -123,8 +124,9 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 	  orReport::beginMultiPrint(&printer, userCanceled) == false)
       {
 	if(!userCanceled)
-	  systemError(this, tr("<p>Could not initialize printing system for "
-			       "multiple reports."));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: Could not initialize printing system for "
+                            "multiple reports.").arg(windowTitle()),__FILE__,__LINE__);
 	return;
       }
 
@@ -203,12 +205,12 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 	    return;
 	  }
 	}
-	else if (query.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, query.lastError().databaseText(), __FILE__, __LINE__);
-	  orReport::endMultiPrint(&printer);
-	  return;
-	}
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                                  query, __FILE__, __LINE__))
+    {
+      orReport::endMultiPrint(&printer);
+      return;
+    }
       }
     }
 
@@ -228,9 +230,9 @@ void releaseWorkOrdersByPlannerCode::sRelease()
 
   MetaSQLQuery mql(sql);
   releaseRelease = mql.toQuery(params);
-  if (releaseRelease.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
+                                         releaseRelease, __FILE__, __LINE__))
   {
-    systemError(this, releaseRelease.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

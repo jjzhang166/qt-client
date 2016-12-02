@@ -16,6 +16,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
+
 classCode::classCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
@@ -100,9 +101,10 @@ void classCode::sSave()
       _classcodeid = classSave.value("classcode_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Class Code at %1::%2.")
                         .arg(__FILE__)
-                        .arg(__LINE__) );
+                        .arg(__LINE__),
+                         classSave, __FILE__, __LINE__);
       return;
     }
  

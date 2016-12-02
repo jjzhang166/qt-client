@@ -16,6 +16,7 @@
 #include <openreports.h>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 postChecks::postChecks(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -70,7 +71,9 @@ void postChecks::sPost()
   {
     int result = postPost.value("result").toInt();
     if (result < 0)
-      systemError(this, storedProcErrorLookup("postChecks", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Checks"),
+                             storedProcErrorLookup("postChecks", result),
+                             __FILE__, __LINE__);
 
     omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
 
@@ -103,9 +106,9 @@ void postChecks::sPost()
 
     accept();
   }
-  else if (postPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Checks"),
+                                postPost, __FILE__, __LINE__))
   {
-    systemError(this, postPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -123,9 +126,9 @@ void postChecks::sHandleBankAccount(int pBankaccntid)
   postHandleBankAccount.exec();
   if (postHandleBankAccount.first())
     _numberOfChecks->setDouble(postHandleBankAccount.value("numofchecks").toDouble());
-  else if (postHandleBankAccount.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Account Information"),
+                                postHandleBankAccount, __FILE__, __LINE__))
   {
-    systemError(this, postHandleBankAccount.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -109,9 +109,9 @@ void checkFormat::sSave()
     checkSave.exec("SELECT NEXTVAL('form_form_id_seq') AS _form_id");
     if (checkSave.first())
       _formid = checkSave.value("_form_id").toInt();
-    else if (checkSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Check Format"),
+                                  checkSave, __FILE__, __LINE__))
     {
-      systemError(this, checkSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -131,9 +131,9 @@ void checkFormat::sSave()
   checkSave.bindValue(":form_descrip", _descrip->text());
   checkSave.bindValue(":form_report_name", _report->code());
   checkSave.exec();
-  if (checkSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Check Format"),
+                                checkSave, __FILE__, __LINE__))
   {
-    systemError(this, checkSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -154,9 +154,9 @@ void checkFormat::populate()
     _descrip->setText(checkpopulate.value("form_descrip").toString());
     _report->setCode(checkpopulate.value("form_report_name").toString());
   }
-  else if (checkpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Format Information"),
+                                checkpopulate, __FILE__, __LINE__))
   {
-    systemError(this, checkpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

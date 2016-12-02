@@ -102,4 +102,10 @@ void massExpireComponent::sExpire()
     _ecn->clear();
     _original->setFocus();
   }
+  else
+  {
+    QMessageBox::critical( this, tr("Mass Expire"),
+                          tr("Please provide a valid Item and As Of Date.") );
+    return;
+  }
 }

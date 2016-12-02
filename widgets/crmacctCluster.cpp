@@ -276,7 +276,7 @@ CRMAcctList::CRMAcctList(QWidget* pParent, const char* pName, bool, Qt::WindowFl
   else
     setSubtype(CRMAcctLineEdit::Crmacct);
 
-  resize(800, size().height());
+  resize(800, 600);
 }
 
 void CRMAcctList::setId(const int id)
@@ -487,7 +487,7 @@ CRMAcctSearch::CRMAcctSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
   setTabOrder(_listTab,		_buttonBox);
   setTabOrder(_buttonBox,	_search);
 
-  resize(800, size().height());
+  resize(800, 600);
   
   _parent = pParent;
   setObjectName("crmacctSearch");

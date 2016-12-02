@@ -24,6 +24,7 @@
 #include "printCheck.h"
 #include "printChecks.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -54,9 +55,6 @@ viewCheckRun::viewCheckRun(QWidget* parent, const char* name, Qt::WindowFlags fl
   if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
     _check->addColumn(tr("EFT Batch"),        _orderColumn,     Qt::AlignLeft,  true, "checkhead_ach_batch" );
 
-  if (omfgThis->singleCurrency())
-      _check->hideColumn("curr_concat");
-
   connect(omfgThis, SIGNAL(checksUpdated(int, int, bool)), this, SLOT(sFillList(int)));
 
   sFillList(); 
@@ -85,14 +83,16 @@ void viewCheckRun::sVoid()
     int result = viewVoid.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("voidCheck", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Check"),
+                             storedProcErrorLookup("voidCheck", result),
+                             __FILE__, __LINE__);
       return;
     }
     omfgThis->sChecksUpdated(viewVoid.value("checkhead_bankaccnt_id").toInt(), _check->id(), true);
   }
-  else if (viewVoid.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Check"),
+                                viewVoid, __FILE__, __LINE__))
   {
-    systemError(this, viewVoid.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -110,14 +110,16 @@ void viewCheckRun::sDelete()
     int result = viewDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteCheck", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Check Information"),
+                             storedProcErrorLookup("deleteCheck", result),
+                             __FILE__, __LINE__);
       return;
     }
     omfgThis->sChecksUpdated(viewDelete.value("checkhead_bankaccnt_id").toInt(), _check->id(), true);
   }
-  else if (viewDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Check Information"),
+                                viewDelete, __FILE__, __LINE__))
   {
-    systemError(this, viewDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -159,15 +161,17 @@ void viewCheckRun::sReplace()
     int result = viewReplace.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("replaceVoidedCheck", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Replacing Voided Check"),
+                             storedProcErrorLookup("replaceVoidedCheck", result),
+                             __FILE__, __LINE__);
       return;
     }
     omfgThis->sChecksUpdated( viewReplace.value("checkhead_bankaccnt_id").toInt(),
                                 viewReplace.value("result").toInt(), true);
   }
-  else if (viewReplace.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Replacing Voided Check"),
+                                viewReplace, __FILE__, __LINE__))
   {
-    systemError(this, viewReplace.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -183,14 +187,16 @@ void viewCheckRun::sReplaceAll()
     int result = viewReplaceAll.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("replaceAllVoidedChecks", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Replacing All Voided Checks"),
+                             storedProcErrorLookup("replaceAllVoidedChecks", result),
+                             __FILE__, __LINE__);
       return;
     }
     omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);
   }
-  else if (viewReplaceAll.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Replacing All Voided Checks"),
+                                viewReplaceAll, __FILE__, __LINE__))
   {
-    systemError(this, viewReplaceAll.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -223,9 +229,9 @@ void viewCheckRun::sAltExchRate()
                     "WHERE (checkhead_id=:checkhead_id);");
   exchrateq.bindValue(":checkhead_id", _check->id());
   exchrateq.exec();
-  if (exchrateq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Alternate Exchange Rate Information"),
+                                exchrateq, __FILE__, __LINE__))
   {
-    systemError(this, exchrateq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else if (exchrateq.first())
@@ -243,9 +249,9 @@ void viewCheckRun::sAltExchRate()
     exchrateq.bindValue(":checkhead_id", _check->id());
     exchrateq.bindValue(":exchrate", rate);
     exchrateq.exec();
-    if (exchrateq.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Alternate Exchange Rate Information"),
+                                  exchrateq, __FILE__, __LINE__))
     {
-      systemError(this, exchrateq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -339,7 +345,7 @@ void viewCheckRun::sFillList(int pBankaccntid)
 
 void viewCheckRun::sFillList()
 {
-  bool checkPrint;
+  bool checkPrint=0;
   // Based on Bank Account settings allow/disallow posting of payment without
   // having printed the payment
   XSqlQuery bankRequiresPrint;
@@ -373,9 +379,9 @@ void viewCheckRun::sFillList()
   _vendorgroup->appendValue(params);
   viewFillList = mql.toQuery(params);
   _check->populate(viewFillList);
-  if (viewFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Run Information"),
+                                viewFillList, __FILE__, __LINE__))
   {
-    systemError(this, viewFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

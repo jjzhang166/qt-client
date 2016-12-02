@@ -27,6 +27,7 @@
 #include "printCheck.h"
 #include "printChecksReview.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 printChecks::printChecks(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -36,6 +37,8 @@ printChecks::printChecks(QWidget* parent, const char* name, bool modal, Qt::Wind
   connect(_bankaccnt, SIGNAL(newID(int)), this, SLOT(sHandleBankAccount(int)));
   connect(_createEFT, SIGNAL(clicked()),  this, SLOT(sCreateEFT()));
   connect(_print,     SIGNAL(clicked()),  this, SLOT(sPrint()));
+
+  _nextCheckNum->setValidator(new QIntValidator(1,999999999));
 
   _setCheckNumber = -1;
 
@@ -94,21 +97,20 @@ void printChecks::sPrint()
       printPrint.prepare("SELECT checkhead_id "
                          "FROM checkhead "
                          "WHERE ( (checkhead_bankaccnt_id=:bankaccnt_id) "
-                         "  AND   (checkhead_id <> :checkhead_id) "
                          "  AND   (checkhead_number=:nextCheckNumber));");
       printPrint.bindValue(":bankaccnt_id", _bankaccnt->id());
       printPrint.bindValue(":checkhead_id", checks.value("checkhead_id").toInt());
       printPrint.bindValue(":nextCheckNumber", countCheckNum);
       printPrint.exec();
-      if (printPrint.first())
+      if (printPrint.first() && !_metrics->boolean("ReprintPaymentNumbers"))
       {
         QMessageBox::information( this, tr("Payment Number Already Used"),
                                  tr("<p>A Payment Number has already been used.") );
         return;
       }
-      else if (printPrint.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                                    printPrint, __FILE__, __LINE__))
       {
-        systemError(this, printPrint.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
       
@@ -173,13 +175,17 @@ void printChecks::sPrint()
 
         if (!docReport.setContent(report.value("report_source").toString(), &errorMessage, &errorLine))
         {
-          systemError(this, errorMessage, __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                               tr("%1: %2")
+                               .arg(windowTitle())
+                               .arg(errorMessage),__FILE__,__LINE__);
           return;
         }
       }
       else
       {
-        systemError(this, report.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                             report, __FILE__, __LINE__);
         return;
       }
       // end getting the report definition out the database
@@ -195,14 +201,15 @@ void printChecks::sPrint()
           int result = printPrint.value("result").toInt();
           if (result < 0)
           {
-            systemError(this, storedProcErrorLookup("setNextCheckNumber", result),
-                        __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Next Check Number"),
+                                   storedProcErrorLookup("setNextCheckNumber", result),
+                                   __FILE__, __LINE__);
             return;
           }
         }
-        else if (printPrint.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                                      printPrint, __FILE__, __LINE__))
         {
-          systemError(this, printPrint.lastError().databaseText(), __FILE__, __LINE__);
           return;
         }
        firstRun = false;
@@ -213,9 +220,9 @@ void printChecks::sPrint()
               " WHERE(checkhead_id=:checkhead_id);");
     printPrint.bindValue(":checkhead_id", checks.value("checkhead_id").toInt());
     printPrint.exec();
-    if (printPrint.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                                  printPrint, __FILE__, __LINE__))
     {
-      systemError(this, printPrint.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -255,14 +262,16 @@ void printChecks::sPrint()
       qq.bindValue(":checkhead_id", checks.value("checkhead_id").toInt());
       if(!qq.exec())
       {
-        systemError(this, "Received error but will continue anyway:\n"+qq.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Received error but will continue anyway:\n %1")
+                             .arg(qq.lastError().databaseText()),
+                             qq, __FILE__, __LINE__);
       }
     }
     singleCheckPrerendered.append(doc);
   }
-  if (checks.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                                checks, __FILE__, __LINE__))
   {
-    systemError(this, checks.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -304,17 +313,18 @@ void printChecks::sPrint()
 	{
 	  int result = postCheck.value("result").toInt();
 	  if (result < 0)
-	  {
-	    systemError(this, storedProcErrorLookup("markCheckAsPrinted",
-						   result), __FILE__, __LINE__);
-	    return;
-	  }
+      {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Marking Check As Printed"),
+                               storedProcErrorLookup("markCheckAsPrinted", result),
+                               __FILE__, __LINE__);
+        return;
+      }
 	}
-	else if (postCheck.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, postCheck.lastError().databaseText(), __FILE__, __LINE__);
-	  return;
-	}
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Check"),
+                                  postCheck, __FILE__, __LINE__))
+    {
+      return;
+    }
       }
     }
     else
@@ -379,9 +389,9 @@ void printChecks::sHandleBankAccount(int pBankaccntid)
                            printHandleBankAccount.value("somerecip_eft_enabled").toBool() &&
                            printHandleBankAccount.value("numofchecks").toInt() > 0);
   }
-  else if (printHandleBankAccount.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Information"),
+                                printHandleBankAccount, __FILE__, __LINE__))
   {
-    systemError(this, printHandleBankAccount.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else // not found
@@ -469,7 +479,8 @@ void printChecks::sCreateEFT()
     {
       releasenum.exec();
       eftfile.remove();
-      systemError(this, printCreateEFT.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating EFT File"),
+                           printCreateEFT, __FILE__, __LINE__);
       return;
     }
 
@@ -485,17 +496,17 @@ void printChecks::sCreateEFT()
                      "WHERE (checkhead_ach_batch=:checkhead_ach_batch);");
       clearq.bindValue(":checkhead_ach_batch", batch);
       clearq.exec();
-      if (clearq.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Receiving ACH Confirmation"),
+                                    clearq, __FILE__, __LINE__))
       {
-        systemError(this, clearq.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
     }
     sHandleBankAccount(_bankaccnt->id());
   }
-  else if (printCreateEFT.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating EFT File"),
+                                printCreateEFT, __FILE__, __LINE__))
   {
-    systemError(this, printCreateEFT.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -514,8 +525,9 @@ void printChecks::markChecksAsPrinted(const QString pbatch)
     int result = markq.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("markCheckAsPrinted", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Marking Check As Printed"),
+                             storedProcErrorLookup("markCheckAsPrinted", result),
+                             __FILE__, __LINE__);
       return;
     }
     omfgThis->sChecksUpdated(markq.value("bankaccnt_id").toInt(), -1, true);

@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 dspCostedIndentedBOM::dspCostedIndentedBOM(QWidget* parent, const char*, Qt::WindowFlags fl)
     : dspCostedBOMBase(parent, "dspCostedIndentedBOM", fl)
@@ -63,9 +64,9 @@ void dspCostedIndentedBOM::sFillList()
     last->setText(1, tr("Standard Cost"));
     last->setText(11, qq.value("standard").toString());
   }
-  else if (qq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Indented BOM Information"),
+                                qq, __FILE__, __LINE__))
   {
-    systemError(this, qq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   list()->expandAll();

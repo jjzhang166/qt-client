@@ -22,18 +22,26 @@ class XTUPLEWIDGETS_EXPORT CustomerSelector : public QWidget, public Ui::Custome
   Q_OBJECT
 
   Q_ENUMS(CustomerSelectorState)
-
+  Q_FLAGS(CustomerSelectorState)
   Q_PROPERTY(enum CustomerSelectorState state READ state WRITE setState)
 
+
   public:
+    enum CustomerSelectorState
+    {
+      AllCust = 0x1 , SelectedCust = 0x2, SelectedGroup = 0x4, SelectedType = 0x8,  TypePattern = 0x10
+    };
+    Q_DECLARE_FLAGS(CustomerSelectorStates, CustomerSelectorState)
+
     CustomerSelector(QWidget * = 0, const char * = 0);
     virtual ~CustomerSelector();
     virtual void synchronize(CustomerSelector*);
+    virtual void populate (int selection);
+    virtual QString selectCode();
+    virtual bool isAllowedType(const int s);
 
-    enum CustomerSelectorState
-    {
-      All, Selected, SelectedGroup, SelectedType,  TypePattern
-    };
+
+
 
     Q_INVOKABLE virtual void           appendValue(ParameterList &);
     Q_INVOKABLE virtual void           bindValue(XSqlQuery &);
@@ -43,11 +51,11 @@ class XTUPLEWIDGETS_EXPORT CustomerSelector : public QWidget, public Ui::Custome
     Q_INVOKABLE virtual int            custTypeId() { return _customerTypes->id(); }
     Q_INVOKABLE virtual int            custGroupId() { return _customerGroup->id(); }
 
-    Q_INVOKABLE inline bool isAll()          { return _select->currentIndex() == All; }
-    Q_INVOKABLE inline bool isSelectedCust() { return _select->currentIndex() == Selected; }
-    Q_INVOKABLE inline bool isSelectedType() { return _select->currentIndex() == SelectedType; }
-    Q_INVOKABLE inline bool isSelectedGroup() { return _select->currentIndex() == SelectedGroup; }
-    Q_INVOKABLE inline bool isTypePattern() { return _select->currentIndex() == TypePattern; }
+    Q_INVOKABLE inline bool isAll()          { return _select->code() == "A"; }
+    Q_INVOKABLE inline bool isSelectedCust() { return _select->code() == "C"; }
+    Q_INVOKABLE inline bool isSelectedType() { return _select->code() == "T"; }
+    Q_INVOKABLE inline bool isSelectedGroup() { return _select->code() == "G"; }
+    Q_INVOKABLE inline bool isTypePattern() { return _select->code() == "P"; }
     Q_INVOKABLE virtual bool isValid();
 
   public slots:
@@ -57,6 +65,8 @@ class XTUPLEWIDGETS_EXPORT CustomerSelector : public QWidget, public Ui::Custome
     virtual void setTypePattern(const QString &p);
     virtual void setState(int p) { setState((CustomerSelectorState)p); }
     virtual void setState(enum CustomerSelectorState p);
+    virtual void setStackElement();
+    virtual void setCurrentSelection(int p) {_select->setCurrentIndex(p);}
 
   signals:
     void newTypePattern(QString);
@@ -65,10 +75,17 @@ class XTUPLEWIDGETS_EXPORT CustomerSelector : public QWidget, public Ui::Custome
     void newCustTypeId(int);
     void newCustGroupId(int);
     void updated();
+    void validCust(bool);
+    void validCustGroup(bool);
 
   protected slots:
     virtual void languageChange();
     virtual void sTypePatternFinished();
+
+  private:
+    int _allowedStates;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(CustomerSelector::CustomerSelectorStates)
 
 #endif

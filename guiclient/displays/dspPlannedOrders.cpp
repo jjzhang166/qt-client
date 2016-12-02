@@ -25,6 +25,7 @@
 #include "transferOrder.h"
 #include "workOrder.h"
 #include "parameterwidget.h"
+#include "errorReporter.h"
 
 dspPlannedOrders::dspPlannedOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPlannedOrders", fl)
@@ -287,9 +288,9 @@ void dspPlannedOrders::sDspUsageStatistics()
     if (setresp == NoError || setresp == NoError_Run)
       omfgThis->handleNewWindow(newdlg);
   }
-  else if (dspDspUsageStatistics.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspDspUsageStatistics, __FILE__, __LINE__))
   {
-    systemError(this, dspDspUsageStatistics.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

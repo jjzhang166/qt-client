@@ -15,6 +15,8 @@
 #include <QSqlError>
 #include <metasql.h>
 #include "mqlutil.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 createPlannedOrdersByPlannerCode::createPlannedOrdersByPlannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -56,9 +58,9 @@ void createPlannedOrdersByPlannerCode::sCreate(ParameterList params)
 
   MetaSQLQuery mql = mqlLoad("schedule", "load");
   createCreate = mql.toQuery(params);
-  if (createCreate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Planned Orders By Planner Code"),
+                                createCreate, __FILE__, __LINE__))
   {
-    systemError(this, createCreate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -77,9 +79,9 @@ void createPlannedOrdersByPlannerCode::sCreate(ParameterList params)
     rparams.append("itemsite_id", createCreate.value("itemsite_id"));
     MetaSQLQuery mql2 = mqlLoad("schedule", "create");
     create = mql2.toQuery(rparams);
-    if (create.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Planned Orders By Planner Code"),
+                                  create, __FILE__, __LINE__))
     {
-      systemError(this, create.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -96,14 +98,14 @@ void createPlannedOrdersByPlannerCode::sCreate(ParameterList params)
 
 bool createPlannedOrdersByPlannerCode::setParams(ParameterList &pParams)
 {
-  if (!_cutOffDate->isValid())
-  {
-    QMessageBox::warning( this, tr("Enter Cut Off Date"),
-                          tr( "You must enter a valid Cut Off Date before\n"
-                              "creating Planned Orders." ));
-    _cutOffDate->setFocus();
-    return false;
-  }
+
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(!_cutOffDate->isValid(), _cutOffDate,
+                        tr("You must enter a valid Cut Off Date before\n"
+                           "creating Planned Orders."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Enter Cut Off Date"),errors))
+      return false;
 
   pParams.append("action_name", "RunMRP");
 

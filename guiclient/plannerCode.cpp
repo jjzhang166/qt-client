@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 plannerCode::plannerCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -140,9 +141,8 @@ void plannerCode::sSave()
       _plancodeid = plannerSave.value("plancode_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Planner Code Information"),
+                           plannerSave, __FILE__, __LINE__);
       return;
     }
 
@@ -160,24 +160,25 @@ void plannerCode::sSave()
               "  FROM plancode"
               " WHERE((plancode_id != :plancode_id)"
               " AND (plancode_code = :plancode_code));");
-    plannerSave.bindValue(":plancode_id", _plancodeid); 
-    plannerSave.bindValue(":plancode_code", _code->text());
-    plannerSave.exec();
-    if(plannerSave.first())
-    {
-      QMessageBox::warning( this, tr("Cannot Save Planner Code"),
-                            tr("You may not rename this Planner code with the entered name as it is in use by another Planner code.") );
-      _code->setFocus();
-      return;
-    }
 
-    plannerSave.prepare( "UPDATE plancode "
-               "SET plancode_code=:plancode_code, plancode_name=:plancode_name,"
-               "    plancode_mpsexplosion=:plancode_mpsexplosion,"
-               "    plancode_consumefcst=:plancode_consumefcst,"
-               "    plancode_mrpexcp_resched=:plancode_mrpexcp_resched, "
-               "    plancode_mrpexcp_delete=:plancode_mrpexcp_delete "
-               "WHERE (plancode_id=:plancode_id);" );
+  plannerSave.bindValue(":plancode_id", _plancodeid); 
+  plannerSave.bindValue(":plancode_code", _code->text());
+  plannerSave.exec();
+  if(plannerSave.first())
+  {
+    QMessageBox::warning( this, tr("Cannot Save Planner Code"),
+                          tr("You may not rename this Planner code with the entered name as it is in use by another Planner code.") );
+    _code->setFocus();
+    return;
+  }
+
+  plannerSave.prepare( "UPDATE plancode "
+             "SET plancode_code=:plancode_code, plancode_name=:plancode_name,"
+             "    plancode_mpsexplosion=:plancode_mpsexplosion,"
+             "    plancode_consumefcst=:plancode_consumefcst,"
+             "    plancode_mrpexcp_resched=:plancode_mrpexcp_resched, "
+             "    plancode_mrpexcp_delete=:plancode_mrpexcp_delete "
+             "WHERE (plancode_id=:plancode_id);" );
 
   plannerSave.bindValue(":plancode_id", _plancodeid);
   plannerSave.bindValue(":plancode_code", _code->text());

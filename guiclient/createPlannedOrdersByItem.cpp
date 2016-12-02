@@ -13,6 +13,8 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSqlError>
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 createPlannedOrdersByItem::createPlannedOrdersByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -65,14 +67,14 @@ enum SetResponse createPlannedOrdersByItem::set(const ParameterList &pParams)
 void createPlannedOrdersByItem::sCreate()
 {
   XSqlQuery createCreate;
-  if (!_cutOffDate->isValid())
-  {
-    QMessageBox::warning( this, tr("Enter Cut Off Date"),
-                          tr( "You must enter a valid Cut Off Date before\n"
-                              "creating Planned Orders." ));
-    _cutOffDate->setFocus();
-    return;
-  }
+
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(!_cutOffDate->isValid(), _cutOffDate,
+                        tr("You must enter a valid Cut Off Date before\n"
+                           "creating Planned Orders."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Enter Cut Off Date"),errors))
+      return;
 
   if(!_explodeChildren->isChecked())
   {
@@ -86,9 +88,9 @@ void createPlannedOrdersByItem::sCreate()
     createCreate.bindValue(":item_id", _item->id());
     createCreate.bindValue(":warehous_id", _warehouse->id());
     createCreate.exec();
-    if (createCreate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Planned Orders By Item"),
+                                  createCreate, __FILE__, __LINE__))
     {
-      systemError(this, createCreate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -104,9 +106,9 @@ void createPlannedOrdersByItem::sCreate()
     createCreate.bindValue(":item_id", _item->id());
     createCreate.bindValue(":warehous_id", _warehouse->id());
     createCreate.exec();
-    if (createCreate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating Planned Orders By Item"),
+                                  createCreate, __FILE__, __LINE__))
     {
-      systemError(this, createCreate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }   

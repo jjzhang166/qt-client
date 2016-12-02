@@ -18,6 +18,7 @@
 #include "dspInventoryAvailability.h"
 #include "itemSite.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 dspUnbalancedQOHByClassCode::dspUnbalancedQOHByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspUnbalancedQOHByClassCode", fl)
@@ -55,14 +56,15 @@ void dspUnbalancedQOHByClassCode::sBalance()
     int result = dspBalance.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("balanceItemsite", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                             storedProcErrorLookup("balanceItemsite", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (dspBalance.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspBalance, __FILE__, __LINE__))
   {
-    systemError(this, dspBalance.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();

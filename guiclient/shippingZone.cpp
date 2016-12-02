@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 shippingZone::shippingZone(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -106,9 +107,8 @@ void shippingZone::sSave()
       _shipzoneid = shippingSave.value("shipzone_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Ship Zone Information"),
+                           shippingSave, __FILE__, __LINE__);
       return;
     }
 

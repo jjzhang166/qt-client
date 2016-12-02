@@ -23,6 +23,7 @@
 
 #include "dspAPOpenItemsByVendor.h"
 #include "submitReport.h"
+#include "errorReporter.h"
 
 dspTimePhasedOpenAPItems::dspTimePhasedOpenAPItems(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspTimePhasedOpenAPItems", fl)
@@ -215,9 +216,9 @@ void dspTimePhasedOpenAPItems::sFillCustom()
 
   dspFillCustom = mql.toQuery(params);
   list()->populate(dspFillCustom);
-  if (dspFillCustom.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                dspFillCustom, __FILE__, __LINE__))
   {
-    systemError(this, dspFillCustom.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -231,11 +232,12 @@ void dspTimePhasedOpenAPItems::sFillStd()
     return;
   dspFillStd = mql.toQuery(params);
   list()->populate(dspFillStd);
-  if (dspFillStd.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Vendor Information"),
+                                dspFillStd, __FILE__, __LINE__))
   {
-    systemError(this, dspFillStd.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
+
 }
 
 void dspTimePhasedOpenAPItems::sToggleCustom()

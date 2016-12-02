@@ -17,6 +17,7 @@
 #include <xlistbox.h>
 #include <glcluster.h>
 #include <openreports.h>
+#include "errorReporter.h"
 
 maintainBudget::maintainBudget(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -145,9 +146,9 @@ void maintainBudget::sSave()
     maintainSave.exec();
     if(maintainSave.first())
       _budgheadid = maintainSave.value("result").toInt();
-    else
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Budget Information"),
+                                  maintainSave, __FILE__, __LINE__))
     {
-      systemError(this, maintainSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -161,7 +162,8 @@ void maintainBudget::sSave()
   maintainSave.bindValue(":descrip", _descrip->text());
   if(!maintainSave.exec())
   {
-    systemError(this, maintainSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Budget Information"),
+                         maintainSave, __FILE__, __LINE__);
     return;
   }
 
@@ -170,7 +172,8 @@ void maintainBudget::sSave()
   maintainSave.bindValue(":budghead_id", _budgheadid);
   if(!maintainSave.exec())
   {
-    systemError(this, maintainSave.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Budget Information"),
+                           maintainSave, __FILE__, __LINE__);
     return;
   }
 
@@ -307,7 +310,7 @@ void maintainBudget::sAccountsRemove()
   for (int i = 0; i < selected.count(); i++)
     _accounts->takeTopLevelItem(_accounts->indexOfTopLevelItem(selected[i]));
 
-  sGenerateTable();
+  generateTable(false);
 }
 
 void maintainBudget::sPeriodsAll()
@@ -329,6 +332,11 @@ void maintainBudget::sValueChanged(QTableWidgetItem * /* item */)
 }
 
 void maintainBudget::sGenerateTable()
+{
+  generateTable(true);
+}
+
+void maintainBudget::generateTable(bool pVerbose)
 {
   XSqlQuery maintainGenerateTable;
   _generate->setFocus();
@@ -381,9 +389,12 @@ void maintainBudget::sGenerateTable()
   }
   if (periodlist.isEmpty())
   {
-    QMessageBox::critical(this, tr("Incomplete criteria"),
-                          tr("<p>Please select at least one Period "
-                             "before generating the table." ) );
+    if (pVerbose)
+    {
+      QMessageBox::critical(this, tr("Incomplete criteria"),
+                            tr("<p>Please select at least one Period "
+                               "before generating the table." ) );
+    }
     return;
   }
   
@@ -472,7 +483,7 @@ void maintainBudget::populate()
         }
       }
     }
-    sGenerateTable();
+    generateTable(false);
   }
 }
 

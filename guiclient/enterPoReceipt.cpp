@@ -26,6 +26,7 @@
 #include "mqlutil.h"
 #include "printLabelsByOrder.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 enterPoReceipt::enterPoReceipt(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -235,9 +236,9 @@ void enterPoReceipt::sPost()
       return;
     }
   }
-  else if (enterPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                enterPost, __FILE__, __LINE__))
   {
-    systemError(this, enterPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -298,8 +299,9 @@ void enterPoReceipt::sPost()
       if (result < 0 && result != -11) // ignore -11 as it just means there was no inventory
       {
         rollback.exec();
-        systemError(this, storedProcErrorLookup("postReceipt", result),
-		    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                               storedProcErrorLookup("postReceipt", result),
+                               __FILE__, __LINE__);
         return;
       }
   
@@ -325,8 +327,9 @@ void enterPoReceipt::sPost()
         issue.exec();
         if (issue.lastError().type() != QSqlError::NoError)
         {
-          systemError(this, issue.lastError().databaseText(), __FILE__, __LINE__);
           rollback.exec();
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                                issue, __FILE__, __LINE__);
           return;
         }
       }
@@ -350,8 +353,9 @@ void enterPoReceipt::sPost()
           if (issue.value("result").toInt() < 0)
           {
             rollback.exec();
-            systemError( this, storedProcErrorLookup("issueWoMaterial", issue.value("result").toInt()),
-                        __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                     storedProcErrorLookup("issueWoMaterial", issue.value("result").toInt()),
+                                     __FILE__, __LINE__);
             return;
           }
 
@@ -359,9 +363,9 @@ void enterPoReceipt::sPost()
           issue.bindValue(":itemlocseries", postLine.value("result").toInt());
           issue.exec();
         }
-        else if (issue.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                      issue, __FILE__, __LINE__))
         {
-          systemError(this, issue.lastError().databaseText(), __FILE__, __LINE__);
           rollback.exec();
           return;
         }
@@ -372,8 +376,8 @@ void enterPoReceipt::sPost()
         XSqlQuery issue;
         issue.prepare("SELECT issueToShipping('SO', coitem_id, "
                       "  roundQty(item_fractional, (recv_qty * poitem_invvenduomratio / coitem_qty_invuomratio)), "
-                      "  :itemlocseries, recv_gldistdate, invhist_id ) AS result, "
-                      "  coitem_cohead_id, cohead_holdtype "
+                      "  :itemlocseries, recv_gldistdate, invhist_id, TRUE ) AS result, "
+                      "  coitem_cohead_id, soHoldType(cohead_id) AS holdtype "
                       "FROM invhist, recv "
                       " JOIN poitem ON (poitem_id=recv_orderitem_id) "
                       " JOIN coitem ON (coitem_id=poitem_order_id AND poitem_order_type='S') "
@@ -389,12 +393,12 @@ void enterPoReceipt::sPost()
         {
           if (issue.value("result").toInt() < 0)
           {
-            rollback.exec();
-            systemError( this, storedProcErrorLookup("issueToShipping", issue.value("result").toInt()),
-                        __FILE__, __LINE__);
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                   storedProcErrorLookup("issueToShipping", issue.value("result").toInt()),
+                                   __FILE__, __LINE__);
             return;
           }
-          if (issue.value("cohead_holdtype").toString() != "N")
+          if (issue.value("holdtype").toString() != "N")
           {
             QString msg = tr("This Purchase Order is being drop shipped against "
                      "a Sales Order that is on Hold.  The Sales Order must "
@@ -418,6 +422,7 @@ void enterPoReceipt::sPost()
                          "WHERE ( (shiphead_order_type='SO') "
                          " AND (shiphead_order_id=:cohead_id) "
                          " AND (NOT shiphead_shipped) "
+                         " AND (shiphead_dropship) "
                          " AND (recv_id=:recv_id) );");
             ship.bindValue(":cohead_id", _soheadid);
             ship.bindValue(":recv_id",  qi.value("recv_id").toInt());
@@ -426,9 +431,10 @@ void enterPoReceipt::sPost()
             {
               if (ship.value("result").toInt() < 0)
               {
+                ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                       storedProcErrorLookup("shipShipment", ship.value("result").toInt()),
+                                       __FILE__, __LINE__);
                 rollback.exec();
-                systemError( this, storedProcErrorLookup("shipShipment", ship.value("result").toInt()),
-                            __FILE__, __LINE__);
                 return;
               }
               if (_metrics->boolean("BillDropShip"))
@@ -437,34 +443,34 @@ void enterPoReceipt::sPost()
                 ship.prepare("SELECT selectUninvoicedShipment(:shiphead_id);");
                 ship.bindValue(":shiphead_id", shipheadid);
                 ship.exec();
-                if (ship.lastError().type() != QSqlError::NoError)
+                if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                              ship, __FILE__, __LINE__))
                 {
                   rollback.exec();
-                  systemError(this, ship.lastError().databaseText(), __FILE__, __LINE__);
                   return;
                 }
               }
             }
-            else if (ship.lastError().type() != QSqlError::NoError)
+            else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                          ship, __FILE__, __LINE__))
             {
-              systemError(this, ship.lastError().databaseText(), __FILE__, __LINE__);
               rollback.exec();
               return;
             }
           }
         }
-        else if (issue.lastError().type() != QSqlError::NoError)
+        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                      issue, __FILE__, __LINE__))
         {
-          systemError(this, issue.lastError().databaseText(), __FILE__, __LINE__);
           rollback.exec();
           return;
         }
       }
     }
-    else if (postLine.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Receipt Information"),
+                                  postLine, __FILE__, __LINE__))
     {
       rollback.exec();
-      systemError(this, postLine.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -532,9 +538,9 @@ void enterPoReceipt::sFillList()
         _order->setFocus();
       }
     }
-    else if (enterFillList.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                  enterFillList, __FILE__, __LINE__))
     {
-      systemError(this, enterFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -565,9 +571,9 @@ void enterPoReceipt::sFillList()
     MetaSQLQuery fillm = mqlLoad("receipt", "detail");
     enterFillList = fillm.toQuery(params);
     _orderitem->populate(enterFillList,true);
-    if (enterFillList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                  enterFillList, __FILE__, __LINE__))
     {
-      systemError(this, enterFillList.lastError().databaseText(), __FILE__, __LINE__);
       connect(_order,	SIGNAL(valid(bool)),	this, SLOT(sFillList()));
       return;
     }
@@ -598,15 +604,17 @@ void enterPoReceipt::close()
       {
 	int result = enterclose.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("deleteRecvForOrder", result), __FILE__, __LINE__);
-	  return;
-	}
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling P/O Receipts"),
+                             storedProcErrorLookup("deleteRecvForOrder", result),
+                             __FILE__, __LINE__);
+      return;
+    }
       }
-      else if (enterclose.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Cancelling P/O Receipts"),
+                                    enterclose, __FILE__, __LINE__))
       {
-	systemError(this, enterclose.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
       omfgThis->sPurchaseOrderReceiptsUpdated();
     }
@@ -634,14 +642,15 @@ void enterPoReceipt::sReceiveAll()
     int result = enterReceiveAll.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("enterReceipt", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Receiving P/O Line Item(s)"),
+                             storedProcErrorLookup("enterReceipt", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  if (enterReceiveAll.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Receiving P/O Line Item(s)"),
+                                enterReceiveAll, __FILE__, __LINE__))
   {
-    systemError(this, enterReceiveAll.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -651,10 +660,10 @@ void enterPoReceipt::sReceiveAll()
 
 void enterPoReceipt::sPopulateMenu(QMenu *pMenu,  QTreeWidgetItem * /*selected*/)
 {
-  QAction *menuItem;
+  //QAction *menuItem;
   if (_orderitem->altId() != -1)
-    menuItem = pMenu->addAction(tr("Print Label..."), this, SLOT(sPrintItemLabel()));
-  menuItem = pMenu->addAction(tr("Enter Receipt..."), this, SLOT(sEnter()));
+    (void)pMenu->addAction(tr("Print Label..."), this, SLOT(sPrintItemLabel()));
+  (void)pMenu->addAction(tr("Enter Receipt..."), this, SLOT(sEnter()));
 }
 
 void enterPoReceipt::sBcFind()
@@ -692,9 +701,9 @@ void enterPoReceipt::sBcFind()
     qtytoreceive = enterBcFind.value("qty_toreceive").toDouble();
   else
   {
-    if (enterBcFind.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                  enterBcFind, __FILE__, __LINE__))
     {
-      systemError(this, enterBcFind.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     XMessageBox::message(this, QMessageBox::Warning, tr("No Match Found"),
@@ -748,9 +757,9 @@ void enterPoReceipt::sCatchPoitemid(int pPoitemid)
     _orderitem->setId(pPoitemid);
     sEnter();
   }
-  else if (enterCatchPoitemid.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                enterCatchPoitemid, __FILE__, __LINE__))
   {
-    systemError(this, enterCatchPoitemid.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -776,9 +785,9 @@ void enterPoReceipt::sCatchToitemid(int porderitemid)
     _orderitem->setId(porderitemid);
     sEnter();
   }
-  else if (enterCatchToitemid.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
+                                enterCatchToitemid, __FILE__, __LINE__))
   {
-    systemError(this, enterCatchToitemid.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

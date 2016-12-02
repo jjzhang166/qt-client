@@ -16,24 +16,31 @@
 #include <parameter.h>
 #include "ui_systemMessage.h"
 
+#include <QHash>
+
 class systemMessage : public XDialog, public Ui::systemMessage
 {
     Q_OBJECT
 
-public:
+  public:
     systemMessage(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~systemMessage();
 
-public slots:
+    static systemMessage *windowForId(int id);
+
+  public slots:
     virtual enum SetResponse set( const ParameterList & pParams );
     virtual void sClose();
     virtual void sSave();
     virtual void populate();
 
-protected slots:
+  protected slots:
     virtual void languageChange();
 
-private:
+  protected:
+    static QHash<int, systemMessage*> open;
+
+  private:
     int _mode;
     int _msguserid;
 

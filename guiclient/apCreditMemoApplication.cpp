@@ -16,6 +16,7 @@
 #include <QValidator>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 apCreditMemoApplication::apCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -75,14 +76,15 @@ void apCreditMemoApplication::sSave()
     int result = saveCMA.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("createApCreditMemoApplication",
-					      result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving AP CM Application"),
+                             storedProcErrorLookup("createAPCreditMemoApplication", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (saveCMA.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving AP CM Application"),
+                                saveCMA, __FILE__, __LINE__))
   {
-    systemError(this, saveCMA.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -130,10 +132,11 @@ void apCreditMemoApplication::populate()
     _targetPaid->setLocalValue(populateCMA.value("apopen_paid").toDouble());
     _targetBalance->setLocalValue(populateCMA.value("f_balance").toDouble());
   }
-  else if (populateCMA.lastError().type() != QSqlError::NoError)
-    systemError(this, populateCMA.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Information"),
+                                populateCMA, __FILE__, __LINE__);
 
-  populateCMA.prepare( "SELECT COALESCE(apcreditapply_curr_id,apopen_curr_id) AS curr_id,"
+      populateCMA.prepare( "SELECT COALESCE(apcreditapply_curr_id,apopen_curr_id) AS curr_id,"
 	     "       currToCurr(apopen_curr_id,"
 	     "		        COALESCE(apcreditapply_curr_id,apopen_curr_id),"
 	     "		        apopen_amount - apopen_paid, apopen_docdate) -"
@@ -151,8 +154,9 @@ void apCreditMemoApplication::populate()
 		           populateCMA.value("curr_id").toInt(),
 		           populateCMA.value("apopen_docdate").toDate(), false);
   }
-  else if (populateCMA.lastError().type() != QSqlError::NoError)
-    systemError(this, populateCMA.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Information"),
+                                populateCMA, __FILE__, __LINE__);
 
   populateCMA.prepare( "SELECT currToCurr(apcreditapply_curr_id, :curr_id, "
 	     "                  apcreditapply_amount, :effective) AS apcreditapply_amount "
@@ -166,6 +170,7 @@ void apCreditMemoApplication::populate()
   populateCMA.exec();
   if (populateCMA.first())
     _amountToApply->setLocalValue(populateCMA.value("apcreditapply_amount").toDouble());
-  else if (populateCMA.lastError().type() != QSqlError::NoError)
-    systemError(this, populateCMA.lastError().databaseText(), __FILE__, __LINE__);
+  else
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Information"),
+                                populateCMA, __FILE__, __LINE__);
 }

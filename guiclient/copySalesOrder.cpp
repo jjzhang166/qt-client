@@ -15,6 +15,7 @@
 
 #include "inputManager.h"
 #include "salesOrderList.h"
+#include "errorReporter.h"
 
 copySalesOrder::copySalesOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -88,9 +89,9 @@ void copySalesOrder::sPopulateSoInfo(int)
       _custName->setText(copyPopulateSoInfo.value("cust_name").toString());
       _custPhone->setText(copyPopulateSoInfo.value("cntct_phone").toString());
     }
-    else if (copyPopulateSoInfo.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Sales Order"),
+                                  copyPopulateSoInfo, __FILE__, __LINE__))
     {
-      systemError(this, copyPopulateSoInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -112,9 +113,9 @@ void copySalesOrder::sPopulateSoInfo(int)
     copyPopulateSoInfo.bindValue(":sohead_id", _so->id());
     copyPopulateSoInfo.exec();
     _soitem->populate(copyPopulateSoInfo);
-    if (copyPopulateSoInfo.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Sales Order"),
+                                  copyPopulateSoInfo, __FILE__, __LINE__))
     {
-      systemError(this, copyPopulateSoInfo.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -151,9 +152,9 @@ void copySalesOrder::sCopy()
       omfgThis->sSalesOrdersUpdated(soheadid);
       done(soheadid);
     }
-    else if (copyCopy.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Copying Sales Order"),
+                                  copyCopy, __FILE__, __LINE__))
     {
-      systemError(this, copyCopy.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

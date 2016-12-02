@@ -40,12 +40,10 @@ dspPricesByCustomerType::dspPricesByCustomerType(QWidget* parent, const char*, Q
   list()->addColumn(tr("Price UOM"),   _uomColumn,      Qt::AlignCenter, true,  "priceuom" );
   list()->addColumn(tr("Qty. Break"),  _qtyColumn,      Qt::AlignRight,  true,  "f_qtybreak" );
   list()->addColumn(tr("Price"),       _priceColumn,    Qt::AlignRight,  true,  "price" );
-  list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   true,  "currConcat" );
+  list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   !omfgThis->singleCurrency(),  "currConcat" );
   list()->addColumn(tr("Ext. Cost"),   _costColumn,     Qt::AlignRight,  true,  "f_cost" );
   list()->addColumn(tr("Mar. %"),      _prcntColumn,    Qt::AlignRight,  true,  "f_margin" );
 
-  if (omfgThis->singleCurrency())
-    list()->hideColumn(CURR_COL);
   sHandleCosts(_showCosts->isChecked());
 }
 

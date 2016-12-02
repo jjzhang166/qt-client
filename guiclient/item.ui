@@ -340,6 +340,9 @@ to be bound by its terms.</comment>
                 <height>0</height>
                </size>
               </property>
+              <property name="format">
+               <enum>CurrDisplay::PurchPrice</enum>
+              </property>
               <property name="currencyEditable" stdset="0">
                <bool>false</bool>
               </property>
@@ -556,7 +559,7 @@ to be bound by its terms.</comment>
       <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="gridLayout_23">
           <item row="0" column="0" colspan="2">
            <widget class="QLabel" name="_prodcatLit">
             <property name="text">
@@ -1583,6 +1586,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>

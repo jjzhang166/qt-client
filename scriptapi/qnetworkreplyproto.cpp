@@ -12,14 +12,80 @@
 
 #include <QNetworkReply>
 
+QScriptValue NetworkReplyNetworkErrorToScriptValue(QScriptEngine *engine, const QNetworkReply::NetworkError &item)
+{
+  return engine->newVariant(item);
+}
+void NetworkReplyNetworkErrorFromScriptValue(const QScriptValue &obj, QNetworkReply::NetworkError &item)
+{
+  item = (QNetworkReply::NetworkError)obj.toInt32();
+}
+
+QScriptValue QNetworkReplyToScriptValue(QScriptEngine *engine, QNetworkReply* const &item)
+{
+  return engine->newQObject(item);
+}
+void QNetworkReplyFromScriptValue(const QScriptValue &obj, QNetworkReply* &item)
+{
+  item = qobject_cast<QNetworkReply*>(obj.toQObject());
+}
+
 void setupQNetworkReplyProto(QScriptEngine *engine)
 {
-  QScriptValue replyproto = engine->newQObject(new QNetworkReplyProto(engine));
-  engine->setDefaultPrototype(qMetaTypeId<QNetworkReply*>(), replyproto);
+  qScriptRegisterMetaType(engine, QNetworkReplyToScriptValue, QNetworkReplyFromScriptValue);
+  QScriptValue::PropertyFlags permanent = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+
+  QScriptValue proto = engine->newQObject(new QNetworkReplyProto(engine));
+  engine->setDefaultPrototype(qMetaTypeId<QNetworkReply*>(), proto);
+
+  qScriptRegisterMetaType(engine, NetworkReplyNetworkErrorToScriptValue, NetworkReplyNetworkErrorFromScriptValue);
+  proto.setProperty("NoError", QScriptValue(engine, QNetworkReply::NoError), permanent);
+  proto.setProperty("ConnectionRefusedError", QScriptValue(engine, QNetworkReply::ConnectionRefusedError), permanent);
+  proto.setProperty("RemoteHostClosedError", QScriptValue(engine, QNetworkReply::RemoteHostClosedError), permanent);
+  proto.setProperty("HostNotFoundError", QScriptValue(engine, QNetworkReply::HostNotFoundError), permanent);
+  proto.setProperty("TimeoutError", QScriptValue(engine, QNetworkReply::TimeoutError), permanent);
+  proto.setProperty("OperationCanceledError", QScriptValue(engine, QNetworkReply::OperationCanceledError), permanent);
+  proto.setProperty("SslHandshakeFailedError", QScriptValue(engine, QNetworkReply::SslHandshakeFailedError), permanent);
+  proto.setProperty("TemporaryNetworkFailureError", QScriptValue(engine, QNetworkReply::TemporaryNetworkFailureError), permanent);
+#if QT_VERSION >= 0x050000
+  proto.setProperty("NetworkSessionFailedError", QScriptValue(engine, QNetworkReply::NetworkSessionFailedError), permanent);
+  proto.setProperty("BackgroundRequestNotAllowedError", QScriptValue(engine, QNetworkReply::BackgroundRequestNotAllowedError), permanent);
+#endif
+  // Not in Qt 5.5 //proto.setProperty("TooManyRedirectsError", QScriptValue(engine, QNetworkReply::TooManyRedirectsError), permanent);
+  // Not in Qt 5.5 //proto.setProperty("InsecureRedirectError", QScriptValue(engine, QNetworkReply::InsecureRedirectError), permanent);
+  proto.setProperty("ProxyConnectionRefusedError", QScriptValue(engine, QNetworkReply::ProxyConnectionRefusedError), permanent);
+  proto.setProperty("ProxyConnectionClosedError", QScriptValue(engine, QNetworkReply::ProxyConnectionClosedError), permanent);
+  proto.setProperty("ProxyNotFoundError", QScriptValue(engine, QNetworkReply::ProxyNotFoundError), permanent);
+  proto.setProperty("ProxyTimeoutError", QScriptValue(engine, QNetworkReply::ProxyTimeoutError), permanent);
+  proto.setProperty("ProxyAuthenticationRequiredError", QScriptValue(engine, QNetworkReply::ProxyAuthenticationRequiredError), permanent);
+  proto.setProperty("ContentAccessDenied", QScriptValue(engine, QNetworkReply::ContentAccessDenied), permanent);
+  proto.setProperty("ContentOperationNotPermittedError", QScriptValue(engine, QNetworkReply::ContentOperationNotPermittedError), permanent);
+  proto.setProperty("ContentNotFoundError", QScriptValue(engine, QNetworkReply::ContentNotFoundError), permanent);
+  proto.setProperty("AuthenticationRequiredError", QScriptValue(engine, QNetworkReply::AuthenticationRequiredError), permanent);
+  proto.setProperty("ContentReSendError", QScriptValue(engine, QNetworkReply::ContentReSendError), permanent);
+#if QT_VERSION >= 0x050000
+  proto.setProperty("ContentConflictError", QScriptValue(engine, QNetworkReply::ContentConflictError), permanent);
+  proto.setProperty("ContentGoneError", QScriptValue(engine, QNetworkReply::ContentGoneError), permanent);
+  proto.setProperty("InternalServerError", QScriptValue(engine, QNetworkReply::InternalServerError), permanent);
+  proto.setProperty("OperationNotImplementedError", QScriptValue(engine, QNetworkReply::OperationNotImplementedError), permanent);
+  proto.setProperty("ServiceUnavailableError", QScriptValue(engine, QNetworkReply::ServiceUnavailableError), permanent);
+#endif
+  proto.setProperty("ProtocolUnknownError", QScriptValue(engine, QNetworkReply::ProtocolUnknownError), permanent);
+  proto.setProperty("ProtocolInvalidOperationError", QScriptValue(engine, QNetworkReply::ProtocolInvalidOperationError), permanent);
+  proto.setProperty("UnknownNetworkError", QScriptValue(engine, QNetworkReply::UnknownNetworkError), permanent);
+  proto.setProperty("UnknownProxyError", QScriptValue(engine, QNetworkReply::UnknownProxyError), permanent);
+  proto.setProperty("UnknownContentError", QScriptValue(engine, QNetworkReply::UnknownContentError), permanent);
+  proto.setProperty("ProtocolFailure", QScriptValue(engine, QNetworkReply::ProtocolFailure), permanent);
+#if QT_VERSION >= 0x050000
+  proto.setProperty("UnknownServerError", QScriptValue(engine, QNetworkReply::UnknownServerError), permanent);
+#endif
 }
 
 QNetworkReplyProto::QNetworkReplyProto(QObject *parent)
   : QObject(parent)
+{
+}
+QNetworkReplyProto::~QNetworkReplyProto()
 {
 }
 
@@ -45,7 +111,7 @@ void QNetworkReplyProto::close()
     item->close();
 }
 
-int QNetworkReplyProto::error() const
+QNetworkReply::NetworkError QNetworkReplyProto::error() const
 {
   QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
   if (item)
@@ -53,13 +119,14 @@ int QNetworkReplyProto::error() const
   return (QNetworkReply::UnknownNetworkError);
 }
 
+
 bool QNetworkReplyProto::hasRawHeader(const QByteArray &headerName) const
 {
   QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
   if (item)
     return item->hasRawHeader(headerName);
   return false;
-}    
+}
 
 QVariant QNetworkReplyProto::header(QNetworkRequest::KnownHeaders header) const
 {
@@ -67,6 +134,36 @@ QVariant QNetworkReplyProto::header(QNetworkRequest::KnownHeaders header) const
   if (item)
     return item->header(header);
   return QVariant();
+}
+
+void QNetworkReplyProto::ignoreSslErrors()
+{
+  QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
+  if (item)
+    item->ignoreSslErrors();
+}
+
+void QNetworkReplyProto::ignoreSslErrors(const QList<QSslError> & errors)
+{
+  QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
+  if (item)
+    item->ignoreSslErrors(errors);
+}
+
+bool QNetworkReplyProto::isFinished() const
+{
+  QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
+  if (item)
+    return item->isFinished();
+  return false;
+}
+
+bool QNetworkReplyProto::isRunning() const
+{
+  QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
+  if (item)
+    return item->isRunning();
+  return false;
 }
 
 QNetworkAccessManager *QNetworkReplyProto::manager() const
@@ -89,7 +186,7 @@ QByteArray QNetworkReplyProto::rawHeader(const QByteArray &headerName) const
 {
   QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
   if (item)
-    item->rawHeader(headerName);
+    return item->rawHeader(headerName);
   return QByteArray();
 }
 
@@ -100,6 +197,17 @@ QList<QByteArray> QNetworkReplyProto::rawHeaderList() const
     return item->rawHeaderList();
   return QList<QByteArray>();
 }
+
+/*
+// TODO: How to expose this?
+const QList<RawHeaderPair> & QNetworkReplyProto::rawHeaderPairs() const
+{
+  QNetworkReply *item = qscriptvalue_cast<QNetworkReply*>(thisObject());
+  if (item)
+    return item->rawHeaderPairs();
+  return *(const QList<RawHeaderPair>);
+}
+*/
 
 qint64 QNetworkReplyProto::readBufferSize() const
 {
@@ -139,7 +247,7 @@ QSslConfiguration QNetworkReplyProto::sslConfiguration() const
     return item->sslConfiguration();
   return QSslConfiguration();
 }
-#endif 
+#endif
 
 QUrl QNetworkReplyProto::url() const
 {

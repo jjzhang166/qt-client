@@ -89,7 +89,7 @@ class XSqlTableModelProto : public QObject, public QScriptable
     Q_INVOKABLE void            setRelation(int column, const QSqlRelation &relation);
     Q_INVOKABLE void            setSort(int column, int order);
     //setSupportedDragActions deprecated in Qt5
-    #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+    #if QT_VERSION < 0x050000
     Q_INVOKABLE void            setSupportedDragActions(int actions);
     #endif
     Q_INVOKABLE void            setTable(const QString &tableName, int keyColumns);

@@ -41,6 +41,13 @@ dspQOH::dspQOH(QWidget* parent, const char*, Qt::WindowFlags fl)
   _showGroupInt->addButton(_showPositive);
   _showGroupInt->addButton(_showNegative);
 
+  QString qryABC = QString( "SELECT  'A', '%1' UNION "
+                            "SELECT  'B', '%2' UNION "
+                            "SELECT  'C', '%3' ORDER BY 1;")
+      .arg(tr("A Class"))
+      .arg(tr("B Class"))
+      .arg(tr("C Class"));
+
   parameterWidget()->appendComboBox(tr("Class Code"), "classcode_id", XComboBox::ClassCodes);
   parameterWidget()->append(tr("Class Code Pattern"), "classcode_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Cost Category"), "costcat_id", XComboBox::CostCategories);
@@ -48,6 +55,9 @@ dspQOH::dspQOH(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
   parameterWidget()->appendComboBox(tr("Item Group"), "itemgrp_id", XComboBox::ItemGroups);
   parameterWidget()->append(tr("Item Group Pattern"), "itemgrp_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("ABC Class"), "abc_class",
+                           ParameterWidget::Multiselect, QVariant(), false,
+                           qryABC);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
   if (_metrics->boolean("EnableAsOfQOH"))
@@ -60,6 +70,7 @@ dspQOH::dspQOH(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Description"),        -1,          Qt::AlignLeft,   true,  "itemdescrip"   );
   list()->addColumn(tr("Class Code"),         _itemColumn, Qt::AlignLeft,   true,  "classcode_code"   );
   list()->addColumn(tr("Cost Category"),      _itemColumn, Qt::AlignLeft,   false, "costcat_code"   );
+  list()->addColumn(tr("ABC Class"),          _itemColumn, Qt::AlignLeft,   false, "itemsite_abcclass"   );
   list()->addColumn(tr("UOM"),                _uomColumn,  Qt::AlignCenter, true,  "uom_name" );
   list()->addColumn(tr("Default Location"),   _itemColumn, Qt::AlignLeft,   true,  "defaultlocation"   );
   list()->addColumn(tr("Reorder Lvl."),       _qtyColumn,  Qt::AlignRight,  true,  "reorderlevel"  );

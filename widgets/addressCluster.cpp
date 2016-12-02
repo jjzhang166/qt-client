@@ -267,7 +267,7 @@ void AddressCluster::setNumber(QString pNumber)
     return;
 }
 
-void AddressCluster::setId(const int pId)
+void AddressCluster::setId(const int pId, const QString&)
 {
   if (pId == _id)
     return;

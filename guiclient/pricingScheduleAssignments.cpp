@@ -13,8 +13,12 @@
 #include <QVariant>
 #include <QMessageBox>
 //#include <QStatusBar>
+#include <metasql.h>
 #include <openreports.h>
 #include <parameter.h>
+
+#include "errorReporter.h"
+#include "mqlutil.h"
 #include "pricingScheduleAssignment.h"
 
 /*
@@ -44,6 +48,8 @@ pricingScheduleAssignments::pricingScheduleAssignments(QWidget* parent, const ch
   _ipsass->addColumn(tr("Customer #"),       _itemColumn, Qt::AlignCenter, true, "custnumber" );
   _ipsass->addColumn(tr("Cust. Name"),       150,         Qt::AlignCenter, true, "custname" );
   _ipsass->addColumn(tr("Cust. Type"),       _itemColumn, Qt::AlignCenter, true, "custtype" );
+  _ipsass->addColumn(tr("Ship Zone"),       _itemColumn, Qt::AlignCenter, true, "shipzone" );
+  _ipsass->addColumn(tr("Sale Type"),       _itemColumn, Qt::AlignCenter, true, "saletype" );
   _ipsass->addColumn(tr("Pricing Schedule"), -1,          Qt::AlignCenter, true, "ipshead_name" );
 
   if (_privileges->check("AssignPricingSchedules"))
@@ -57,8 +63,8 @@ pricingScheduleAssignments::pricingScheduleAssignments(QWidget* parent, const ch
     _new->setEnabled(false);
     connect(_ipsass, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
-
-  sFillList();
+  
+  _listpricesched = false;
 }
 
 /*
@@ -78,6 +84,23 @@ void pricingScheduleAssignments::languageChange()
     retranslateUi(this);
 }
 
+enum SetResponse pricingScheduleAssignments::set(const ParameterList &pParams)
+{
+  bool     valid;
+  QVariant param;
+  
+  param = pParams.value("listpricesched", &valid);
+  if (valid)
+  {
+    _listpricesched = true;
+    setWindowTitle(tr("List Pricing Schedule Assignments"));
+  }
+  
+  sFillList();
+  
+  return NoError;
+}
+
 void pricingScheduleAssignments::sPrint()
 {
   orReport report("PricingScheduleAssignments");
@@ -91,6 +114,8 @@ void pricingScheduleAssignments::sNew()
 {
   ParameterList params;
   params.append("mode", "new");
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
   pricingScheduleAssignment newdlg(this, "", true);
   newdlg.set(params);
@@ -104,6 +129,8 @@ void pricingScheduleAssignments::sEdit()
   ParameterList params;
   params.append("mode", "edit");
   params.append("ipsass_id", _ipsass->id());
+  if (_listpricesched)
+    params.append("listpricesched", true);
 
   pricingScheduleAssignment newdlg(this, "", true);
   newdlg.set(params);
@@ -136,28 +163,15 @@ void pricingScheduleAssignments::sDelete()
 
 void pricingScheduleAssignments::sFillList()
 {
-  _ipsass->populate( "SELECT ipsass_id,"
-                     "       CASE WHEN (ipsass_shipto_id != -1) THEN (SELECT shipto_num FROM shiptoinfo WHERE (shipto_id=ipsass_shipto_id))"
-                     "            WHEN (COALESCE(LENGTH(ipsass_shipto_pattern), 0) > 0) THEN ipsass_shipto_pattern"
-                     "            ELSE TEXT('ANY')"
-                     "       END AS shiptonum,"
-                     "       CASE WHEN (ipsass_shipto_id != -1) THEN (SELECT cust_number FROM shiptoinfo, custinfo WHERE ((shipto_cust_id=cust_id) AND (shipto_id=ipsass_shipto_id))) "
-                     "            WHEN (ipsass_cust_id=-1) THEN TEXT('Any')"
-                     "            ELSE (SELECT cust_number FROM custinfo WHERE (cust_id=ipsass_cust_id))"
-                     "       END AS custnumber,"
-                     "       CASE WHEN (ipsass_shipto_id != -1) THEN (SELECT cust_name FROM shiptoinfo, custinfo WHERE ((shipto_cust_id=cust_id) AND (shipto_id=ipsass_shipto_id))) "
-                     "            WHEN (ipsass_cust_id=-1) THEN ''"
-                     "            ELSE (SELECT cust_name FROM custinfo WHERE (cust_id=ipsass_cust_id))"
-                     "       END AS custname,"
-                     "       CASE WHEN (ipsass_cust_id != -1) THEN TEXT('N/A')"
-                     "            WHEN (ipsass_shipto_id != -1) THEN TEXT('N/A')"
-                     "            WHEN (COALESCE(LENGTH(ipsass_shipto_pattern),0) > 0) THEN TEXT('N/A')"
-                     "            WHEN (ipsass_custtype_id=-1) THEN ipsass_custtype_pattern"
-                     "            ELSE (SELECT custtype_code FROM custtype WHERE (custtype_id=ipsass_custtype_id))"
-                     "       END AS custtype,"
-                     "       ipshead_name "
-                     "FROM ipsass, ipshead "
-                     "WHERE (ipshead_id=ipsass_ipshead_id) "
-                     "ORDER BY custname, custtype;" );
-}
+  MetaSQLQuery mql = mqlLoad("pricingScheduleAssignment", "detail");
 
+  ParameterList params;
+  if (_listpricesched)
+    params.append("listpricesched", true);
+  XSqlQuery ps = mql.toQuery(params);
+  if(!ErrorReporter::error(QtCriticalMsg, this, tr("Pricing Schedule Assignments "),
+                         ps.lastError(), __FILE__, __LINE__))
+  {
+    _ipsass->populate(ps, true);
+  }
+}

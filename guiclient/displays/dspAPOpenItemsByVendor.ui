@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>746</width>
-    <height>177</height>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,6 +50,46 @@ to be bound by its terms.</comment>
       <string/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QRadioButton" name="_docDate">
+          <property name="text">
+           <string>Document</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="_dueDate">
+          <property name="text">
+           <string>Due</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
       <item>
        <widget class="DateCluster" name="_dates">
         <property name="focusPolicy">
@@ -114,6 +154,7 @@ to be bound by its terms.</comment>
    <class>DateCluster</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>DLineEdit</class>
@@ -128,7 +169,11 @@ to be bound by its terms.</comment>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>_docDate</tabstop>
+  <tabstop>_dueDate</tabstop>
   <tabstop>_dates</tabstop>
+  <tabstop>_useDocDate</tabstop>
+  <tabstop>_useDistDate</tabstop>
   <tabstop>_asOf</tabstop>
  </tabstops>
  <resources/>

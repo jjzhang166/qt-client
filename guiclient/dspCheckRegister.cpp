@@ -24,6 +24,7 @@
 #include "guiclient.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -47,7 +48,7 @@ dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::Window
   _check->addColumn(tr("Recipient"),   -1,              Qt::AlignLeft,   true,  "description"   );
   _check->addColumn(tr("Paymt. Date") , _dateColumn,    Qt::AlignCenter, true,  "checkdate" );
   _check->addColumn(tr("Amount"),      _moneyColumn,    Qt::AlignRight,  true,  "amount"  );
-  _check->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignRight,  true,  "currAbbr"  );
+  _check->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignRight,  !omfgThis->singleCurrency(),  "currAbbr"  );
   _check->addColumn(tr("Base Amount"), _bigMoneyColumn, Qt::AlignRight,  true,  "base_amount"  );
   if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
     _check->addColumn(tr("EFT Batch"), _orderColumn,    Qt::AlignRight,  true,  "checkhead_ach_batch");
@@ -60,7 +61,6 @@ dspCheckRegister::dspCheckRegister(QWidget* parent, const char* name, Qt::Window
   _total->setPrecision(omfgThis->moneyVal());
   if (omfgThis->singleCurrency())
   {
-    _check->hideColumn("currAbbr");
     _totalCurr->hide();
   }
 }
@@ -150,9 +150,9 @@ void dspCheckRegister::sFillList()
   
   dspFillList = mql.toQuery(params);
   _check->populate(dspFillList, true);
-  if (dspFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Register Information"),
+                                dspFillList, __FILE__, __LINE__))
   {
-    systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -195,9 +195,9 @@ void dspCheckRegister::sFillList()
     _total->setDouble(dspFillList.value("amount").toDouble());
     _totalCurr->setText(dspFillList.value("currAbbr").toString());
   }
-  else if (dspFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Check Register Information"),
+                                dspFillList, __FILE__, __LINE__))
   {
-    systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -248,14 +248,15 @@ void dspCheckRegister::sVoidPosted()
       int result = dspVoidPosted.value("result").toInt();
       if (result < 0)
       {
-	systemError(this, storedProcErrorLookup("voidPostedCheck", result),
-			    __FILE__, __LINE__);
-	return;
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Posted Check"),
+                               storedProcErrorLookup("voidPostedCheck", result),
+                               __FILE__, __LINE__);
+        return;
       }
     }
-    else if (dspVoidPosted.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Voiding Posted Check"),
+                                  dspVoidPosted, __FILE__, __LINE__))
     {
-      systemError(this, dspVoidPosted.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

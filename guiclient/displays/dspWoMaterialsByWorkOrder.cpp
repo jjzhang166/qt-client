@@ -102,9 +102,7 @@ bool dspWoMaterialsByWorkOrder::setParams(ParameterList & params)
 
 void dspWoMaterialsByWorkOrder::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)
 {
-  QAction *menuItem;
-
-  menuItem = pMenu->addAction(tr("View Requirement..."), this, SLOT(sView()));
+  (void)pMenu->addAction(tr("View Requirement..."), this, SLOT(sView()));
 }
 
 void dspWoMaterialsByWorkOrder::sView()

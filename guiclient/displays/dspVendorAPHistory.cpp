@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include <xdateinputdialog.h>
 
 #include "apOpenItem.h"
 #include "voucher.h"
@@ -158,7 +159,7 @@ bool dspVendorAPHistory::setParams(ParameterList &params)
   {
     if (!_vend->isValid())
     {
-      QMessageBox::warning( this, tr("Select Number"),
+      QMessageBox::warning( this, tr("Select Vendor"),
                             tr("Please select a valid Vendor.") );
       _vend->setFocus();
       return false;
@@ -221,23 +222,32 @@ void dspVendorAPHistory::sSearchInvoiceNum()
 void dspVendorAPHistory::sVoidVoucher()
 {
   XSqlQuery dspVoidVoucher;
-  dspVoidVoucher.prepare("SELECT voidApopenVoucher(:apopen_id) AS result;");
-  dspVoidVoucher.bindValue(":apopen_id", list()->id());
-  dspVoidVoucher.exec();
-
-  if(dspVoidVoucher.first())
+  dspVoidVoucher.prepare("SELECT voidApopenVoucher(:apopen_id, :voidDate) AS result;");
+  XDateInputDialog newdlg(this, "", true);
+  ParameterList params;
+  params.append("label", tr("On what date did you void the Voucher?"));
+  params.append("default", list()->rawValue("docdate"));
+  newdlg.set(params);
+  int returnVal = newdlg.exec();
+  if (returnVal == XDialog::Accepted)
   {
-    if(dspVoidVoucher.value("result").toInt() < 0)
-      systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                         .arg(__FILE__)
-                         .arg(__LINE__)
-                         .arg(dspVoidVoucher.value("result").toInt()) );
+    QDate voidDate = newdlg.getDate();
+    dspVoidVoucher.bindValue(":apopen_id", list()->id());
+    dspVoidVoucher.bindValue(":voidDate", voidDate);
+    dspVoidVoucher.exec();
+
+    if(dspVoidVoucher.first())
+    {
+      if(dspVoidVoucher.value("result").toInt() < 0)
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                             dspVoidVoucher, __FILE__, __LINE__);
+      else
+        sFillList();
+    }
     else
-      sFillList();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
+                           dspVoidVoucher, __FILE__, __LINE__);
   }
-  else
-    ErrorReporter::error(QtCriticalMsg, this, tr("Voiding Voucher"),
-                         dspVoidVoucher, __FILE__, __LINE__);
 
 }
 
@@ -270,7 +280,8 @@ void dspVendorAPHistory::sViewVoucher()
     }
   }
   else
-    systemError( this, dspViewVoucher.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Voucher Information"),
+                       dspViewVoucher, __FILE__, __LINE__);
 }
 
 void dspVendorAPHistory::sViewGLSeries()
@@ -293,6 +304,7 @@ void dspVendorAPHistory::sViewGLSeries()
     omfgThis->handleNewWindow(newdlg);
   }
   else
-    systemError( this, dspViewGLSeries.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving GL Series Information"),
+                       dspViewGLSeries, __FILE__, __LINE__);
 }
 

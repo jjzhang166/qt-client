@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include "metasql.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 allocateARCreditMemo::allocateARCreditMemo(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -28,17 +29,11 @@ allocateARCreditMemo::allocateARCreditMemo(QWidget* parent, const char* name, bo
   _aropen->addColumn(tr("Due Date"),           _dateColumn, Qt::AlignCenter, true,  "duedate");
   _aropen->addColumn(tr("Amount"),            _moneyColumn, Qt::AlignRight,  true,  "amount");
   _aropen->addColumn(tr("Paid"),              _moneyColumn, Qt::AlignRight,  true,  "paid");
-  _aropen->addColumn(tr("Balance"),           _moneyColumn, Qt::AlignRight,  true,  "balance");
+  _aropen->addColumn(tr("Balance"),           _moneyColumn, Qt::AlignRight,  !omfgThis->singleCurrency(),  "balance");
   _aropen->addColumn(tr("This Alloc."),       _moneyColumn, Qt::AlignRight,  true,  "allocated");
   _aropen->addColumn(tr("Total Alloc."),      _moneyColumn, Qt::AlignRight,  true,  "totalallocated");
 
   connect(omfgThis, SIGNAL(creditMemosUpdated()), this, SLOT(sPopulate()));
-
-  if (omfgThis->singleCurrency())
-  {
-    _aropen->hideColumn("currAbbr");
-    _aropen->hideColumn("balance");
-  }
 
   connect(_aropen,      SIGNAL(valid(bool)),    this,           SLOT(sHandleButton()));
   connect(_allocate,	SIGNAL(clicked()),	this,           SLOT(sAllocate()));
@@ -126,10 +121,10 @@ void allocateARCreditMemo::sPopulate()
     populateCM.exec();
     if (populateCM.first())
       _coheadid = populateCM.value("cohead_id").toInt();
-    if (populateCM.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving CM Information"),
+                                  populateCM, __FILE__, __LINE__))
     {
-      systemError(this, populateCM.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+        return;
     }
   }
   // Get the list of Unallocated CM's with amount
@@ -200,10 +195,10 @@ void allocateARCreditMemo::sPopulate()
   populateCM.bindValue(":salesorder", tr("Sales Order"));
   populateCM.bindValue(":invoice", tr("Invoice"));
   populateCM.exec();
-  if (populateCM.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving CM Information"),
+                                populateCM, __FILE__, __LINE__))
   {
-      systemError(this, populateCM.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
   _aropen->populate(populateCM, false);
 }
@@ -229,9 +224,9 @@ void allocateARCreditMemo::sAllocate()
     allocCM.bindValue(":amount", amount);
     allocCM.bindValue(":curr_id", _total->id());
     allocCM.exec();
-    if (!allocCM.lastError().type() == QSqlError::NoError)
-      systemError(this, allocCM.lastError().databaseText(), __FILE__, __LINE__);
-    double newbalance = _balance->localValue() - amount;
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Allocating CM"),
+                                  allocCM, __FILE__, __LINE__);
+     double newbalance = _balance->localValue() - amount;
     _balance->setLocalValue(newbalance);
   }
   else
@@ -246,8 +241,8 @@ void allocateARCreditMemo::sAllocate()
     allocCM.bindValue(":invchead_id", _invcheadid);
     allocCM.bindValue(":aropen_id", _aropen->id());
     allocCM.exec();
-    if (!allocCM.lastError().type() == QSqlError::NoError)
-      systemError(this, allocCM.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Allocating CM"),
+                                  allocCM, __FILE__, __LINE__);
     double newbalance = _balance->localValue() + amount;
     _balance->setLocalValue(newbalance);
   }

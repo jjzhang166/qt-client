@@ -237,7 +237,7 @@ bool ImportHelper::handleFilePostImport(const QString &pfilename, bool success, 
                               tr("Trying to save backup copy.") : QString()));
       if (filetreatment == "Delete")
       {
-        filetreatment == "Rename";
+        filetreatment = "Rename";
         suffix = DEFAULT_ERR_SUFFIX;
       }
     }

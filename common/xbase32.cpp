@@ -41,7 +41,7 @@ QString XBase32Encode(QIODevice & iod) {
 
     char _in[5];
     unsigned char in[5];
-    char out[8];
+    signed char out[8];
     qint64 didRead = 0;
 
     while(!iod.atEnd()) {
@@ -117,7 +117,8 @@ QByteArray XBase32Decode(const QString & _source) {
     QBuffer buf(&value);
     buf.open(QIODevice::WriteOnly);
 
-    char a[8], b[8], o[5];
+    signed char a[8], b[8];
+    char o[5];
     qint64 n = 0;
     int p = 0; // current position in string
     int l = source.length(); // length of string

@@ -37,13 +37,19 @@ dspSalesOrdersByItem::dspSalesOrdersByItem(QWidget* parent, const char*, Qt::Win
 
   _item->setType(ItemLineEdit::cSold);
 
-  list()->addColumn(tr("Order #"),    _orderColumn, Qt::AlignLeft,   true,  "cohead_number"   );
-  list()->addColumn(tr("Order Date"), _dateColumn,  Qt::AlignCenter, true,  "cohead_orderdate" );
-  list()->addColumn(tr("Customer"),   -1,           Qt::AlignLeft,   true,  "cust_name"   );
-  list()->addColumn(tr("Ordered"),    _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyord"  );
-  list()->addColumn(tr("Shipped"),    _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyshipped"  );
-  list()->addColumn(tr("Returned"),   _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyreturned"  );
-  list()->addColumn(tr("Balance"),    _qtyColumn,   Qt::AlignRight,  true,  "qtybalance"  );
+  list()->addColumn(tr("Order #"),         _orderColumn, Qt::AlignLeft,   true,  "cohead_number"   );
+  list()->addColumn(tr("Order Date"),      _dateColumn,  Qt::AlignCenter, true,  "cohead_orderdate" );
+  list()->addColumn(tr("Customer"),        -1,           Qt::AlignLeft,   true,  "cust_name"   );
+  list()->addColumn(tr("Order UOM"),       _uomColumn,   Qt::AlignCenter, true,  "uom_name" );
+  list()->addColumn(tr("Ordered"),         _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyord"  );
+  list()->addColumn(tr("Shipped"),         _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyshipped"  );
+  list()->addColumn(tr("Returned"),        _qtyColumn,   Qt::AlignRight,  true,  "coitem_qtyreturned"  );
+  list()->addColumn(tr("Balance"),         _qtyColumn,   Qt::AlignRight,  true,  "qtybalance"  );
+  list()->addColumn(tr("Inv. UOM"),        _uomColumn,   Qt::AlignCenter, false, "inv_uom_name" );
+  list()->addColumn(tr("Inv. Ordered"),    _qtyColumn,   Qt::AlignRight,  false, "invqtyord"  );
+  list()->addColumn(tr("Inv. Shipped"),    _qtyColumn,   Qt::AlignRight,  false, "invqtyshipped"  );
+  list()->addColumn(tr("Inv. Returned"),   _qtyColumn,   Qt::AlignRight,  false, "invqtyreturned"  );
+  list()->addColumn(tr("Inv. Balance"),    _qtyColumn,   Qt::AlignRight,  false, "invqtybalance"  );
 
   connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillList()));
 }
@@ -187,6 +193,7 @@ bool dspSalesOrdersByItem::setParams(ParameterList &params)
   }
 
   _dates->appendValue(params);
+  params.append("orderByOrderdate", true);
   params.append("closed", tr("Closed"));
   params.append("item_id", _item->id());
 

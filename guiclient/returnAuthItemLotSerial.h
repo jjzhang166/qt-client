@@ -35,7 +35,7 @@ public slots:
 
 protected slots:
     void languageChange();
-    void closeEvent();
+    void closeEvent(QCloseEvent *);
 
 private:
     int _crmacctid;

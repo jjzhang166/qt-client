@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QVariant>
 #include <QValidator>
+#include "errorReporter.h"
 
 arCreditMemoApplication::arCreditMemoApplication(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -74,9 +75,9 @@ void arCreditMemoApplication::sSave()
   double targetBalance = 0.0;
   if(arSave.first())
     targetBalance = arSave.value("balance").toDouble();
-  else if (arSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving A/R CM Application"),
+                                arSave, __FILE__, __LINE__))
   {
-    systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if(amountToApply > targetBalance)
@@ -119,9 +120,9 @@ void arCreditMemoApplication::sSave()
   double sourceBalance = 0.0;
   if(arSave.first())
     sourceBalance = arSave.value("available").toDouble();
-  else if (arSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving A/R CM Application"),
+                                arSave, __FILE__, __LINE__))
   {
-    systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if(amountToApply > sourceBalance)
@@ -148,9 +149,9 @@ void arCreditMemoApplication::sSave()
                "WHERE (arcreditapply_id=:arcreditapply_id);" );
     arSave.bindValue(":arcreditapply_id", arcreditapplyid);
   }
-  else if (arSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving A/R CM Application"),
+                                arSave, __FILE__, __LINE__))
   {
-    systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -168,9 +169,9 @@ void arCreditMemoApplication::sSave()
   arSave.bindValue(":arcreditapply_amount", amountToApply);
   arSave.bindValue(":arcreditapply_curr_id", _amountToApply->id());
   arSave.exec();
-  if (arSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving A/R CM Application"),
+                                arSave, __FILE__, __LINE__))
   {
-    systemError(this, arSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -205,9 +206,9 @@ void arCreditMemoApplication::populate()
     _targetPending->setLocalValue(arpopulate.value("pending").toDouble());
     _targetBalance->setLocalValue(arpopulate.value("f_balance").toDouble());
   }
-  else if (arpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R CM Information"),
+                                arpopulate, __FILE__, __LINE__))
   {
-    systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -245,8 +246,8 @@ void arCreditMemoApplication::populate()
 		           arpopulate.value("curr_id").toInt(),
 		           arpopulate.value("docdate").toDate(), false);
   }
-  else if (arpopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
+  else (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R CM Information"),
+                                arpopulate, __FILE__, __LINE__));
 
   arpopulate.prepare( "SELECT currToCurr(arcreditapply_curr_id, :curr_id, "
 	     "                  arcreditapply_amount, :effective) AS arcreditapply_amount "
@@ -260,6 +261,6 @@ void arCreditMemoApplication::populate()
   arpopulate.exec();
   if (arpopulate.first())
     _amountToApply->setLocalValue(arpopulate.value("arcreditapply_amount").toDouble());
-  else if (arpopulate.lastError().type() != QSqlError::NoError)
-    systemError(this, arpopulate.lastError().databaseText(), __FILE__, __LINE__);
+  else (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving A/R CM Information"),
+                                arpopulate, __FILE__, __LINE__));
 }

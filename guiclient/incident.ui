@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>623</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -448,7 +448,7 @@ to be bound by its terms.</comment>
       <attribute name="title">
        <string>Characteristics</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
+      <layout class="QGridLayout" name="gridLayout_13">
        <item row="0" column="0">
         <widget class="CharacteristicsWidget" name="_charass"/>
        </item>

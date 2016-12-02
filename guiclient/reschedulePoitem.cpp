@@ -9,7 +9,7 @@
  */
 
 #include "reschedulePoitem.h"
-
+#include "guiErrorCheck.h"
 #include <QMessageBox>
 #include <QVariant>
 
@@ -23,6 +23,7 @@ reschedulePoitem::reschedulePoitem(QWidget* parent, const char* name, bool modal
   connect(_po, SIGNAL(valid(bool)), _poitem, SLOT(setEnabled(bool)));
   connect(_po, SIGNAL(newId(int, QString)), this, SLOT(sPopulatePoitem(int)));
   connect(_poitem, SIGNAL(newID(int)), this, SLOT(sPopulate(int)));
+  connect(_allItems, SIGNAL(clicked()), this, SLOT(sAllItems()));
 }
 
 reschedulePoitem::~reschedulePoitem()
@@ -122,19 +123,38 @@ void reschedulePoitem::sPopulate(int pPoitemid)
   }
 }
 
+void reschedulePoitem::sAllItems()
+{
+  _poitem->setVisible(!_allItems->isChecked());
+  _poitemLit->setVisible(!_allItems->isChecked());
+  _reschedule->setEnabled((_allItems->isChecked() && _po->isValid()) 
+                       || (!_allItems->isChecked() && _poitem->isValid()));
+}
+
 void reschedulePoitem::sReschedule()
 {
   XSqlQuery rescheduleReschedule;
-  if (!_new->isValid())
-  {
-    QMessageBox::critical( this, tr("Invalid Reschedule Date"),
-                           tr("<p>You must enter a reschedule due date before "
-                              "you may save this Purchase Order Item.") );
-    _new->setFocus();
-    return;
-  }
 
-  rescheduleReschedule.prepare("SELECT changePoitemDueDate(:poitem_id, :dueDate);");
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(!_new->isValid(), _new,
+                           tr("<p>You must enter a reschedule due date before "
+                              "you may save this Purchase Order.") )
+         << GuiErrorCheck(!_po->isValid(), _po,
+                           tr("<p>You must select a Purchase Order.") )
+  ;
+
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Reschedule Order"), errors))
+      return;
+
+  if (_allItems->isChecked())
+    rescheduleReschedule.prepare("SELECT changePoitemDueDate(poitem_id, :dueDate) "
+                                 "FROM poitem "
+                                 "WHERE ((poitem_pohead_id=:po_id) "
+                                 " AND   (poitem_status <> 'C'));");
+  else
+    rescheduleReschedule.prepare("SELECT changePoitemDueDate(:poitem_id, :dueDate);");
+
+  rescheduleReschedule.bindValue(":po_id", _po->id());
   rescheduleReschedule.bindValue(":poitem_id", _poitem->id());
   rescheduleReschedule.bindValue(":dueDate", _new->date());
   rescheduleReschedule.exec();

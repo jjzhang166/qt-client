@@ -20,7 +20,10 @@
 #include "storedProcErrorLookup.h"
 
 #include <parameter.h>
+#include <metasql.h>
+#include "mqlutil.h"
 
+#include "errorReporter.h"
 #include "hotkey.h"
 #include "imageList.h"
 #include "timeoutHandler.h"
@@ -39,6 +42,11 @@ userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, 
 
   if(!_privileges->check("MaintainPreferencesOthers"))
     _selectedUser->setEnabled(false);
+  if(!_privileges->check("MaintainPreferencesSelf"))
+  {
+    _currentUser->setEnabled(false);
+    _selectedUser->setChecked(true);
+  }
 
   QPushButton* apply = _buttonBox->button(QDialogButtonBox::Apply);
   connect(apply, SIGNAL(clicked()), this, SLOT(sApply()));
@@ -86,7 +94,21 @@ userPreferences::userPreferences(QWidget* parent, const char* name, bool modal, 
   _backgroundList->setMaximumWidth(25);
 #endif
 
-  _user->setType(XComboBox::Users);
+  //_user->setType(XComboBox::Users);
+  XSqlQuery userPref;
+  QString qryUser = "SELECT usr_id, usr_username, usr_username "
+                    "FROM usr "
+                    "WHERE ((true) "
+                    "<? if not exists('maintainSelf') ?> "
+                    " AND NOT (usr_username = geteffectivextuser()) "
+                    "<? endif ?>) "
+                    "ORDER BY usr_username;";
+  MetaSQLQuery mql(qryUser);
+  ParameterList params;
+  if(_privileges->check("MaintainPreferencesSelf"))
+    params.append("maintainSelf", true);
+  userPref = mql.toQuery(params);
+  _user->populate(userPref);
 
   _ellipsesAction->append(1, tr("List"));
   _ellipsesAction->append(2, tr("Search"));
@@ -115,6 +137,19 @@ void userPreferences::languageChange()
   retranslateUi(this);
 }
 
+enum SetResponse userPreferences::set(const ParameterList &pParams)
+{
+  XDialog::set(pParams);
+  QVariant  param;
+  bool      valid;
+
+  param = pParams.value("passwordReset", &valid);
+  if (valid)
+    _tab->setCurrentIndex(_tab->indexOf(_password));
+
+  return NoError;
+}
+
 void userPreferences::setBackgroundImage(int pImageid)
 {
   XSqlQuery useretBackgroundImage;
@@ -128,9 +163,9 @@ void userPreferences::setBackgroundImage(int pImageid)
     _backgroundImageid = useretBackgroundImage.value("image_id").toInt();
     _background->setText(useretBackgroundImage.value("description").toString());
   }
-  else if (useretBackgroundImage.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Background Image"),
+                                useretBackgroundImage, __FILE__, __LINE__))
   {
-    systemError(this, useretBackgroundImage.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -199,6 +234,8 @@ void userPreferences::sPopulate()
   else
     _richText->setChecked(true);
 
+  _richLimit->setValue(_pref->value("XTreeWidgetDataLimit").toDouble());
+
   _enableSpell->setChecked(_pref->boolean("SpellCheck"));
 
   //_rememberCheckBoxes->setChecked(! _pref->boolean("XCheckBox/forgetful"));
@@ -222,6 +259,7 @@ void userPreferences::sPopulate()
   _accountingToolbar->setChecked(_pref->boolean("ShowGLToolbar"));
   
   _listNumericItemsFirst->setChecked(_pref->boolean("ListNumericItemNumbersFirst"));
+  _disableWheelEvent->setChecked(_pref->boolean("DisableXComboBoxWheelEvent"));
   _ignoreTranslation->setChecked(_pref->boolean("IngoreMissingTranslationFiles"));
 
   _idleTimeout->setValue(_pref->value("IdleTimeout").toInt());
@@ -314,6 +352,7 @@ void userPreferences::sSave(bool close)
   _pref->set("PreferredWarehouse", ((_noWarehouse->isChecked()) ? -1 : _warehouse->id())  );
  
   _pref->set("ListNumericItemNumbersFirst", _listNumericItemsFirst->isChecked());
+  _pref->set("DisableXComboBoxWheelEvent", _disableWheelEvent->isChecked());
   _pref->set("IngoreMissingTranslationFiles", _ignoreTranslation->isChecked());
 
   _pref->set("IdleTimeout", _idleTimeout->value());
@@ -332,6 +371,7 @@ void userPreferences::sSave(bool close)
     _pref->set("InterfaceWindowOption", QString("TopLevel"));
     
   _pref->set("CopyListsPlainText", _plainText->isChecked());
+  _pref->set("XTreeWidgetDataLimit", QString::number(_richLimit->value()));
   _pref->set("EmailEvents", _emailEvents->isChecked());
 
   _pref->set("AlarmEventDefault", _alarmEvent->isChecked());
@@ -434,11 +474,20 @@ bool userPreferences::save()
            .arg(_username->text()) );
     userave.bindValue(":password", passwd);
     userave.exec();
-    if (userave.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving User Information"),
+                                  userave, __FILE__, __LINE__))
     {
-      systemError(this, userave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
+
+    XSqlQuery usrq;
+    usrq.prepare("SELECT setUserPreference(:username, 'PasswordResetDate', :passdate);");
+    usrq.bindValue(":username", _username->text());
+    usrq.bindValue(":passdate", QDate::currentDate());
+    usrq.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving User Account"),
+                             usrq, __FILE__, __LINE__))
+      return false;
   }
   return true;
 }
@@ -605,9 +654,9 @@ void userPreferences::sAllWarehousesToggled(int pEvnttypeid)
     userAllWarehousesToggled.bindValue(":username", _user->currentText());
   userAllWarehousesToggled.bindValue(":evnttype_id", pEvnttypeid);
   userAllWarehousesToggled.exec();
-  if (userAllWarehousesToggled.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Selecting/De-Selecting All Warehouses For Selected Event"),
+                                userAllWarehousesToggled, __FILE__, __LINE__))
   {
-    systemError(this, userAllWarehousesToggled.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -638,9 +687,9 @@ void userPreferences::sWarehouseToggled(QTreeWidgetItem *selected)
   userWarehouseToggled.bindValue(":evnttype_id", _event->id());
   userWarehouseToggled.bindValue(":warehous_id", ((XTreeWidgetItem *)selected)->id());
   userWarehouseToggled.exec();
-  if (userWarehouseToggled.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Selecting/De-Selecting Warehouse For Selected Event"),
+                                userWarehouseToggled, __FILE__, __LINE__))
   {
-    systemError(this, userWarehouseToggled.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -668,9 +717,9 @@ void userPreferences::sFillWarehouseList()
       _warehouses->topLevelItem(i)->setText(0, tr("Yes"));
     else
       _warehouses->topLevelItem(i)->setText(0, tr("No"));
-    if (userFillWarehouseList.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving User Warehouse Information"),
+                                  userFillWarehouseList, __FILE__, __LINE__))
     {
-      systemError(this, userFillWarehouseList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

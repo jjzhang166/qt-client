@@ -31,7 +31,54 @@ to be bound by its terms.</comment>
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
+    <widget class="XTreeWidget" name="_list">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="populateLinear">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <layout class="QHBoxLayout" name="_optionLayout">
+     <item>
+      <widget class="XCheckBox" name="_autoupdate">
+       <property name="text">
+        <string>Automatically Update</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="XCheckBox" name="_queryonstart">
+       <property name="text">
+        <string>Query on start</string>
+       </property>
+       <property name="forgetful">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
     <layout class="QGridLayout" name="_topLayout">
      <item row="0" column="0">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -115,7 +162,7 @@ to be bound by its terms.</comment>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="gridLayout_21">
           <property name="topMargin">
            <number>3</number>
           </property>
@@ -152,53 +199,18 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="XTreeWidget" name="_list">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+   <item row="1" column="1">
+    <spacer name="horizontalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <property name="populateLinear">
-      <bool>false</bool>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
      </property>
-     <zorder>qt_scrollarea_viewport</zorder>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <layout class="QHBoxLayout" name="_optionLayout">
-     <item>
-      <widget class="XCheckBox" name="_autoupdate">
-       <property name="text">
-        <string>Automatically Update</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="XCheckBox" name="_queryonstart">
-       <property name="text">
-        <string>Query on start</string>
-       </property>
-       <property name="forgetful">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+    </spacer>
    </item>
   </layout>
  </widget>

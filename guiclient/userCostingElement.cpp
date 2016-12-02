@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QMessageBox>
+#include "errorReporter.h"
 
 userCostingElement::userCostingElement(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -103,9 +104,8 @@ void userCostingElement::sSave()
       _costelemid = userSave.value("_costelem_id").toInt();
     else
     {
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Costing Element Information"),
+                           userSave, __FILE__, __LINE__);
       return;
     }
 

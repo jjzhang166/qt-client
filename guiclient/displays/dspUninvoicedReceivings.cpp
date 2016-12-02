@@ -17,6 +17,7 @@
 #include "enterPoitemReceipt.h"
 #include "poLiabilityDistrib.h"
 #include "postPoReturnCreditMemo.h"
+#include "errorReporter.h"
 
 dspUninvoicedReceivings::dspUninvoicedReceivings(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspUninvoicedReceivings", fl)
@@ -87,9 +88,9 @@ void dspUninvoicedReceivings::sMarkAsInvoiced()
     if (newdlg.exec() == XDialog::Rejected)
       update = false;
   }
-  else if (dspMarkAsInvoiced.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receiving Information"),
+                                dspMarkAsInvoiced, __FILE__, __LINE__))
   {
-    systemError(this, dspMarkAsInvoiced.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if (update)
@@ -99,9 +100,9 @@ void dspUninvoicedReceivings::sMarkAsInvoiced()
           "WHERE (recv_id=:recv_id); ");
     dspMarkAsInvoiced.bindValue(":recv_id",list()->id());
     dspMarkAsInvoiced.exec();
-    if (dspMarkAsInvoiced.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Receiving Information"),
+                                  dspMarkAsInvoiced, __FILE__, __LINE__))
     {
-      systemError(this, dspMarkAsInvoiced.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList();

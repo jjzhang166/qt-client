@@ -843,3 +843,136 @@ QString QWidgetProto::toString() const
   return QString();
 }
 
+bool QWidgetProto::close()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->close();
+  return false;
+}
+
+void QWidgetProto::hide()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->hide();
+}
+
+void QWidgetProto::lower()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->hide();
+}
+
+void QWidgetProto::raise()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->raise();
+}
+
+void QWidgetProto::repaint()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->repaint();
+}
+
+void QWidgetProto::setDisabled(bool disable)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setDisabled(disable);
+}
+
+void QWidgetProto::setEnabled(bool enable)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setEnabled(enable);
+}
+
+void QWidgetProto::setFocus()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setFocus();
+}
+
+void QWidgetProto::setHidden(bool hidden)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setHidden(hidden);
+}
+
+void QWidgetProto::setStyleSheet(const QString & styleSheet)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setStyleSheet(styleSheet);
+}
+
+void QWidgetProto::setVisible(bool visible)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setVisible(visible);
+}
+
+void QWidgetProto::setWindowModified(bool mod)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setWindowModified(mod);
+}
+
+void QWidgetProto::setWindowTitle(const QString & title)
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->setWindowTitle(title);
+}
+
+void QWidgetProto::show()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->show();
+}
+
+void QWidgetProto::showFullScreen()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->showFullScreen();
+}
+
+void QWidgetProto::showMaximized()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->showMaximized();
+}
+
+void QWidgetProto::showMinimized()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->showMinimized();
+}
+
+void QWidgetProto::showNormal()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->showNormal();
+}
+
+void QWidgetProto::update()
+{
+  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
+  if (item)
+    return item->update();
+}

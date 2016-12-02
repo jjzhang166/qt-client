@@ -31,6 +31,8 @@ public slots:
     virtual void sSaveClick();
     virtual void sClose();
     virtual void sItemTypeChanged( const QString & type );
+    virtual void sPopulateUOM();
+    virtual void sUOMChanged();
     virtual void populate();
     virtual void sNewSubstitute();
     virtual void sEditSubstitute();
@@ -53,6 +55,7 @@ protected slots:
 
 private:
     int _mode;
+    int _invuomid;
     int _bomitemid;
     int _sourceBomitemid;
     int _parentitemid;

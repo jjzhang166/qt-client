@@ -30,6 +30,8 @@ class taxAssignment : public XDialog, public Ui::taxAssignment
 	virtual void	sPopulateTaxCode();
 	virtual void	sAdd();
 	virtual void	sRevoke();
+        virtual void    sUpdateAutoMemo(bool);
+        virtual void    sUpdateReverseCharges(bool);
 
   protected slots:
     virtual void	languageChange();

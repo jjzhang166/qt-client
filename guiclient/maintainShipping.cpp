@@ -29,6 +29,7 @@
 #include "printShippingForm.h"
 #include "issueToShipping.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 maintainShipping::maintainShipping(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -186,8 +187,9 @@ void maintainShipping::sReturnAllOrderStock()
     if (result < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("returnCompleteShipment", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                             storedProcErrorLookup("returnCompleteShipment", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
@@ -202,7 +204,8 @@ void maintainShipping::sReturnAllOrderStock()
   else if (maintainReturnAllOrderStock.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, maintainReturnAllOrderStock.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                         maintainReturnAllOrderStock, __FILE__, __LINE__);
     return;
   }
 }
@@ -222,9 +225,9 @@ void maintainShipping::sViewOrder()
     else if (maintainViewOrder.value("shiphead_order_type").toString() == "TO")
       transferOrder::viewTransferOrder(maintainViewOrder.value("shiphead_order_id").toInt());
   }
-  else if (maintainViewOrder.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                                maintainViewOrder, __FILE__, __LINE__))
   {
-    systemError(this, maintainViewOrder.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -242,7 +245,7 @@ void maintainShipping::sPrintShippingForm()
 void maintainShipping::sIssueStock()
 {
   ParameterList params;
-  if (_ship->currentItem()->rawValue("ordertype").toString() == "SO")
+  if (_ship->currentItem()->rawValue("ordertype").toString() == "SO Item")
 	  params.append("sohead_id", _ship->id());
   else if (_ship->currentItem()->rawValue("ordertype").toString() == "TO")
     params.append("tohead_id", _ship->id());
@@ -268,8 +271,9 @@ void maintainShipping::sReturnAllLineStock()
     if (maintainReturnAllLineStock.value("result").toInt() < 0)
     {
       rollback.exec();
-      systemError(this, storedProcErrorLookup("returnItemShipments", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                             storedProcErrorLookup("returnItemShipments", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
@@ -284,7 +288,8 @@ void maintainShipping::sReturnAllLineStock()
   else if (maintainReturnAllLineStock.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, maintainReturnAllLineStock.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                         maintainReturnAllLineStock, __FILE__, __LINE__);
     return;
   }
 }
@@ -327,9 +332,9 @@ void maintainShipping::sReturnAllStock()
     if (maintainReturnAllStock.value("result").toInt() < 0)
     {
       rollback.exec();
-      systemError(this,
-		  storedProcErrorLookup("returnShipmentTransaction", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                             storedProcErrorLookup("returnShipmentTransaction", result),
+                             __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
@@ -344,7 +349,8 @@ void maintainShipping::sReturnAllStock()
   else if (maintainReturnAllStock.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, maintainReturnAllStock.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                         maintainReturnAllStock, __FILE__, __LINE__);
     return;
   }
 }
@@ -371,9 +377,9 @@ void maintainShipping::sFillList()
   maintainFillList.exec();
   _ship->populate(maintainFillList, true);
   _ship->expandAll();
-  if (maintainFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                                maintainFillList, __FILE__, __LINE__))
   {
-    systemError(this, maintainFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

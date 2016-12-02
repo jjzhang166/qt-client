@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 prepareCheckRun::prepareCheckRun(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -71,15 +72,16 @@ void prepareCheckRun::sPrint()
     int result = preparePrint.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("createChecks", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Preparing Check Run for Printing"),
+                             storedProcErrorLookup("createChecks", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (preparePrint.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Preparing Check Run for Printing"),
+                                preparePrint, __FILE__, __LINE__))
   {
-      systemError(this, preparePrint.lastError().databaseText(), __FILE__, __LINE__);
-      return;
+    return;
   }
 
   omfgThis->sChecksUpdated(_bankaccnt->id(), -1, true);

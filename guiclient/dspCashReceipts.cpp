@@ -16,10 +16,10 @@
 
 #include <datecluster.h>
 #include <openreports.h>
-#include <parameterwidget.h>
 #include "arOpenItem.h"
 #include "cashReceipt.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspCashReceipts", fl)
@@ -31,37 +31,15 @@ dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WindowFlags f
   setMetaSQLOptions("cashReceipts", "detail");
   setNewVisible(true);
   setUseAltId(true);
-  setParameterWidgetVisible(true);
-  
-  QString qryType = QString("SELECT  1, '%1' UNION "
-                            "SELECT  2, '%2' UNION "
-                            "SELECT  3, '%3' UNION "
-                            "SELECT  4, '%4' UNION "
-                            "SELECT  5, '%5' UNION "
-                            "SELECT  6, '%6' UNION "
-                            "SELECT  7, '%7' UNION "
-                            "SELECT  8, '%8' UNION "
-                            "SELECT  9, '%9' UNION "
-                            "SELECT  10, '%10'")
-  .arg(tr("Cash"))
-  .arg(tr("Check"))
-  .arg(tr("Cert. Check"))
-  .arg(tr("Master Card"))
-  .arg(tr("Visa"))
-  .arg(tr("AmEx"))
-  .arg(tr("Discover"))
-  .arg(tr("Other C/C"))
-  .arg(tr("Wire Trans."))
-  .arg(tr("Other"));
 
-  parameterWidget()->appendComboBox(tr("Funds Type"), "fundstype_id", qryType);
+  _fundsType->populate("SELECT fundstype_id, fundstype_name, fundstype_code FROM fundstype;");
 
   connect(_applications, SIGNAL(toggled(bool)), list(), SLOT(clear()));
 
   _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
   _dates->setStartDate(QDate().currentDate().addDays(-90));
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
-  
+
   list()->addColumn(tr("Number"),      _orderColumn,    Qt::AlignLeft, true,  "cashrcpt_number" );
   list()->addColumn(tr("Source"),      _itemColumn,     Qt::AlignLeft,   true,  "source" );
   list()->addColumn(tr("Cust. #"),     _orderColumn,    Qt::AlignLeft, true,  "cust_number" );
@@ -73,15 +51,16 @@ dspCashReceipts::dspCashReceipts(QWidget* parent, const char*, Qt::WindowFlags f
   list()->addColumn(tr("Amount"),      _moneyColumn, Qt::AlignRight,  true,  "applied"  );
   list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   true,  "currAbbr"   );
   list()->addColumn(tr("Base Amount"), _moneyColumn, Qt::AlignRight,  true,  "base_applied"  );
-  
+
   newAction()->setEnabled(_privileges->check("MaintainCashReceipts"));
 }
 
 bool dspCashReceipts::setParams(ParameterList &pParams)
 {
-  if (!display::setParams(pParams))
+  if (!display::setParams(pParams)) {
     return false;
-  
+  }
+
   if (!_dates->startDate().isValid())
   {
     QMessageBox::critical( this, tr("Enter Start Date"),
@@ -100,6 +79,8 @@ bool dspCashReceipts::setParams(ParameterList &pParams)
 
   _customerSelector->appendValue(pParams);
   _dates->appendValue(pParams);
+  if (_fundsType->isValid())
+    pParams.append("fundstype", _fundsType->code());
   pParams.append("creditMemo", tr("Credit Memo"));
   pParams.append("debitMemo", tr("Debit Memo"));
   pParams.append("cashdeposit", tr("Customer Deposit"));
@@ -117,7 +98,7 @@ bool dspCashReceipts::setParams(ParameterList &pParams)
   pParams.append("unapplied", tr("Customer Deposit"));
   pParams.append("unposted", tr("Unposted"));
   pParams.append("voided", tr("Voided"));
-    
+
   if (_applications->isChecked())
   {
     list()->hideColumn("cashrcpt_number");
@@ -127,49 +108,16 @@ bool dspCashReceipts::setParams(ParameterList &pParams)
     list()->showColumn("cashrcpt_number");
   pParams.append("includeFormatted");
 
-  bool valid;
-  QVariant param;
-  
-  param = pParams.value("fundstype_id", &valid);
-  if (valid)
-  {
-    int typid = param.toInt();
-    QString type;
-    
-    if (typid == 1)
-      type = "K";
-    else if (typid ==2)
-      type = "C";
-    else if (typid ==3)
-      type = "T";
-    else if (typid ==4)
-      type = "M";
-    else if (typid ==5)
-      type = "V";
-    else if (typid ==6)
-      type = "A";
-    else if (typid ==7)
-      type = "D";
-    else if (typid ==8)
-      type = "R";
-    else if (typid ==9)
-      type = "W";
-    else if (typid ==10)
-      type = "O";
-    
-    pParams.append("fundstype", type);
-  }
-  
   return true;
 }
 
 void dspCashReceipts::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 {
   QAction *menuItem = 0;
-  
+
   if (list()->id() > -1)
   {
-    // Cash Receipt              
+    // Cash Receipt
     if (!list()->currentItem()->rawValue("posted").toBool() && !list()->currentItem()->rawValue("voided").toBool())
     {
       menuItem = pMenu->addAction(tr("Edit Cash Receipt..."), this, SLOT(sEditCashrcpt()));
@@ -180,9 +128,9 @@ void dspCashReceipts::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
     menuItem->setEnabled(_privileges->check("ViewCashReceipts") || _privileges->check("MaintainCashReceipts"));
 
     if (!list()->currentItem()->rawValue("voided").toBool())
-    {      
+    {
       if (!list()->currentItem()->rawValue("posted").toBool())
-      {   
+      {
         menuItem = pMenu->addAction(tr("Post Cash Receipt"), this, SLOT(sPostCashrcpt()));
         menuItem->setEnabled(_privileges->check("PostCashReceipts"));
       }
@@ -206,7 +154,7 @@ void dspCashReceipts::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)
 }
 
 void dspCashReceipts::sEditAropen()
-{   
+{
   ParameterList params;
   params.append("mode", "edit");
   params.append("aropen_id", list()->currentItem()->id("target"));
@@ -245,7 +193,7 @@ void dspCashReceipts::sNewCashrcpt()
 }
 
 void dspCashReceipts::sEditCashrcpt()
-{    
+{
   ParameterList params;
   params.append("mode", "edit");
   params.append("cashrcpt_id", list()->currentItem()->id("source"));
@@ -276,10 +224,10 @@ void dspCashReceipts::sPostCashrcpt()
   dspPostCashrcpt.exec("SELECT fetchJournalNumber('C/R') AS journalnumber;");
   if (dspPostCashrcpt.first())
     journalNumber = dspPostCashrcpt.value("journalnumber").toInt();
-  else if (dspPostCashrcpt.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                                dspPostCashrcpt, __FILE__, __LINE__))
   {
-    systemError(this, dspPostCashrcpt.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   dspPostCashrcpt.prepare("SELECT postCashReceipt(:cashrcpt_id, :journalNumber) AS result;");
@@ -291,19 +239,21 @@ void dspCashReceipts::sPostCashrcpt()
     int result = dspPostCashrcpt.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("postCashReceipt", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                               storedProcErrorLookup("postCashReceipt", result),
+                               __FILE__, __LINE__);
       tx.exec("ROLLBACK;");
       return;
     }
   }
   else if (dspPostCashrcpt.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, dspPostCashrcpt.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
+                         dspPostCashrcpt, __FILE__, __LINE__);
     tx.exec("ROLLBACK;");
     return;
   }
-    
+
   tx.exec("COMMIT;");
   omfgThis->sCashReceiptsUpdated(list()->currentItem()->id("source"), true);
   sFillList();
@@ -318,7 +268,7 @@ void dspCashReceipts::sReversePosted()
                                      "to do this?"),
                                      QMessageBox::Yes | QMessageBox::Default,
                                      QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
-  {                     
+  {
     dspReversePosted.prepare("SELECT reverseCashReceipt(:cashrcpt_id, fetchJournalNumber('C/R')) AS result;");
     dspReversePosted.bindValue(":cashrcpt_id", list()->currentItem()->id("source"));
     dspReversePosted.exec();
@@ -327,14 +277,15 @@ void dspCashReceipts::sReversePosted()
       int result = dspReversePosted.value("result").toInt();
       if (result < 0)
       {
-        systemError(this, storedProcErrorLookup("reverseCashReceipt", result),
-                         __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Reversing Posted Cash Receipt"),
+                               storedProcErrorLookup("reverseCashReceipt", result),
+                               __FILE__, __LINE__);
         return;
       }
     }
-    else if (dspReversePosted.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Reversing Posted Cash Receipt"),
+                                  dspReversePosted, __FILE__, __LINE__))
     {
-      systemError(this, dspReversePosted.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     sFillList();

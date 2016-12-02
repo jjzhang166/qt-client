@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.1">
 <context>
     <name>ARAging</name>
     <message>
@@ -275,6 +275,37 @@ Address:</source>
     <message>
         <source>days after</source>
         <translation>días después</translation>
+    </message>
+</context>
+<context>
+    <name>ApopenLineEdit</name>
+    <message>
+        <source>Credit Memo</source>
+        <translation type="unfinished">Abono</translation>
+    </message>
+    <message>
+        <source>Credit Memos</source>
+        <translation type="unfinished">Notas de Crédito</translation>
+    </message>
+    <message>
+        <source>Debit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debit Memos</source>
+        <translation type="unfinished">Notas de Cargo</translation>
+    </message>
+    <message>
+        <source>Voucher</source>
+        <translation type="unfinished">Justificante</translation>
+    </message>
+    <message>
+        <source>A/P Open Item</source>
+        <translation type="unfinished">C/P Factura Abierta</translation>
+    </message>
+    <message>
+        <source>A/P Open Items</source>
+        <translation type="unfinished">CxP Factura Abiertas</translation>
     </message>
 </context>
 <context>
@@ -713,6 +744,10 @@ Address:</source>
     <message>
         <source>Comments</source>
         <translation type="unfinished">Comentarios</translation>
+    </message>
+    <message>
+        <source>Error Retrieving BOM Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1350,6 +1385,14 @@ Address:</source>
         <source>Project Task</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Exchange Rate</source>
+        <translation type="unfinished">Tasa de Cambio</translation>
+    </message>
+    <message>
+        <source>Rental Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfigAuthorizeDotNetProcessor</name>
@@ -1408,10 +1451,6 @@ Address:</source>
     <message>
         <source>Currency of Transactions:</source>
         <translation>Moneda de las Transacciones:</translation>
-    </message>
-    <message>
-        <source>Same as Order</source>
-        <translation>Igual que la Orden</translation>
     </message>
     <message>
         <source>Always Use:</source>
@@ -1807,10 +1846,6 @@ What would you like to do?</source>
         <translation>Seguridad Dudosa</translation>
     </message>
     <message>
-        <source>&lt;p&gt;The Certificate in %1 appears to be invalid. This may cause communication problems.</source>
-        <translation>El Certificado en %1 aparentemente no es válido. Esto podría originar problemas en la comunicación.</translation>
-    </message>
-    <message>
         <source>fully</source>
         <translation>completamente</translation>
     </message>
@@ -1834,20 +1869,12 @@ What would you like to do?</source>
         <translation>Error del programa gestor de mensajes: %1 %2 %3</translation>
     </message>
     <message>
-        <source>Invalid Certificate</source>
-        <translation>Certificado no válido</translation>
-    </message>
-    <message>
         <source>This transaction failed the Address Verification check but will be processed anyway.</source>
         <translation>En esta transacción ha fallado la verificación de Dirección, pero se va a procesar igualmente.</translation>
     </message>
     <message>
         <source>The amount to charge must be greater than 0.00.</source>
         <translation>La cantidad a cargar debe ser superior a 0,00.</translation>
-    </message>
-    <message>
-        <source>Failed to load Certificate</source>
-        <translation>No se pudo cargar el Certificado</translation>
     </message>
     <message>
         <source>Retry - system unavailable or timed out</source>
@@ -1862,24 +1889,12 @@ What would you like to do?</source>
         <translation>Confirmar Saldo Tarjeta Crédito</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Failed to load a Certificate from the PEM file %1. This may cause communication problems.</source>
-        <translation>No se ha podido cargar un Certificado desde el fichero PEM %1.</translation>
-    </message>
-    <message>
         <source>Credit Card Pre-Authorization %1 reversed</source>
         <translation>Autorización previa de Tarjeta de Crédito %1 modificada</translation>
     </message>
     <message>
         <source>Reversed</source>
         <translation>Anulado</translation>
-    </message>
-    <message>
-        <source>Could not find PEM file</source>
-        <translation>No se pudo encontrar fichero PEM</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Failed to find the PEM file %1</source>
-        <translation>No se encontró el fichero PEM %1</translation>
     </message>
     <message>
         <source>Confirm Preauthorization of Credit Card Purchase</source>
@@ -2215,10 +2230,6 @@ What would you like to do?</source>
     <message>
         <source>Inconsistent data passed to charge(): [%1] [%2]</source>
         <translation>Los datos pasados a charge() no son consistentes: [%1] [%2]</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;There are no Certificates in %1. This may cause communication problems.</source>
-        <translation>No hay Certificados en %1. Esto podría originar problemas en la comunicación.</translation>
     </message>
     <message>
         <source>This transaction failed the CVV check.</source>
@@ -2687,24 +2698,8 @@ What would you like to do?</source>
 <context>
     <name>CustomerSelector</name>
     <message>
-        <source>Select</source>
-        <translation type="unfinished">Seleccionar</translation>
-    </message>
-    <message>
-        <source>Customer Group</source>
-        <translation>Grupo de Clientes</translation>
-    </message>
-    <message>
-        <source>All Customers</source>
-        <translation>Todos los Clientes</translation>
-    </message>
-    <message>
-        <source>Customer Type Pattern</source>
-        <translation>Patrón Tipo Cliente</translation>
-    </message>
-    <message>
-        <source>Customer Type</source>
-        <translation>Tipo de Cliente</translation>
+        <source>Invalid type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3026,6 +3021,14 @@ What would you like to do?</source>
         <source>Error Getting Document Types</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Creating Document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot find the &apos;%1&apos;&apos; window to create a %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EditWatermark</name>
@@ -3046,7 +3049,7 @@ What would you like to do?</source>
         <translation type="unfinished">&amp;Guardar</translation>
     </message>
     <message>
-        <source>Invoice/Return Watermark</source>
+        <source>Edit Watermark</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3428,11 +3431,6 @@ returned %2
         <translation>.aff</translation>
     </message>
     <message>
-        <source>A Critical Error occurred at %1::%2.
-Please immediately log out and contact your Systems Adminitrator.</source>
-        <translation>Se ha producido un Error Crítico en %1::%2. Por favor, desconéctese inmediatamente y contacte con el Administrador de su Sistema.</translation>
-    </message>
-    <message>
         <source>%1 Evaluation %2 - Logged on as %3</source>
         <translation>%1 Evaluación %2 - Ingresó como %3</translation>
     </message>
@@ -3517,10 +3515,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>It appears that the you&apos;ve been disconnected from thedatabase. Select Yes to try to reconnect or No to terminate the application.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Error Relogging to the Database</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3532,6 +3526,22 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>A System Error occurred at %1::%2:
 %3</source>
         <translation type="unfinished">Se ha producido un Error del Sistema en %1::%2: %3</translation>
+    </message>
+    <message>
+        <source>Critical Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please immediately log out and contact your Systems Administrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It appears that you have been disconnected from the database. Select Yes to try to reconnect or No to terminate the application.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3669,122 +3679,22 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     </message>
 </context>
 <context>
-    <name>InputManager</name>
+    <name>InputManagerPrivate</name>
     <message>
-        <source>Scanned Purchase Order #%1.</source>
-        <translation type="unfinished">Orden de Compra Nº%1 Escaneada.</translation>
+        <source>Scanned %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanned Work Order #%1-%2.</source>
-        <translation>Orden de Trabajo nº%1-%2 Escaneado.</translation>
+        <source>Don&apos;t know how to send %1 (barcode %2, receiver %3)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Purchase Order Line #%1-%2 does not exist in the Database.</source>
-        <translation>La Linea de la Orden de Compra Nº%1-%2 no existe en la Base de Datos.</translation>
+        <source>Error Scanning %1: %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanned Purchase Order Line #%1-%2.</source>
-        <translation>Línea de la Orden de Compra Nº%1-%2 Escaneada.</translation>
-    </message>
-    <message>
-        <source>Purchase Order #%1 does not exist in the Database.</source>
-        <translation>La Orden de Compra Nº%1 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Work Order #%1-%2 does not exist in the Database.</source>
-        <translation>Orden de Trabajo nº%1-%2 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Work Order #%1-%2, Operation %3.</source>
-        <translation>Orden de Trabajo nº%1-%2 Escaneado, Operación %3.</translation>
-    </message>
-    <message>
-        <source>Work Order #%1-%2, Operation %3 does not exist in the Database.</source>
-        <translation>Orden de Trabajo nº%1-%2, Operación %3 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Sales Order #%1.</source>
-        <translation>Orden de Ventas nº%1 Escaneado.</translation>
-    </message>
-    <message>
-        <source>Sales Order #%1 does not exist in the Database.</source>
-        <translation>Orden de Ventas nº%1 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Sales Order Line #%1-%2.</source>
-        <translation>Línea nº%1-%2 de la Orden de Ventas Escaneada.</translation>
-    </message>
-    <message>
-        <source>Sales Order Line #%1-%2 does not exist in the Database.</source>
-        <translation>Línea nº%1-%2 de la Orden de Ventas no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Item %1.</source>
-        <translation>Producto %1 Escaneado.</translation>
-    </message>
-    <message>
-        <source>Item %1 does not exist in the Database.</source>
-        <translation>Producto %1 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned UPC %1 for Item %2.</source>
-        <translation>CUP %1 Escaneado para Producto %2.</translation>
-    </message>
-    <message>
-        <source>UPC Code %1 does not exist in the Database.</source>
-        <translation>Código UPC %1 no existe en la Base Datos</translation>
-    </message>
-    <message>
-        <source>Scanned Count Tag %1.</source>
-        <translation>Etiqueta de Inventario %1 escaneada.</translation>
-    </message>
-    <message>
-        <source>Scanned User %1.</source>
-        <translation>Usuario %1 Escaneado.</translation>
-    </message>
-    <message>
-        <source>User %1 not exist in the Database.</source>
-        <translation>Usuario %1 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Transfer Order #%1.</source>
-        <translation>Orden de Transferencia nº%1 Escaneada.</translation>
-    </message>
-    <message>
-        <source>Transfer Order #%1 does not exist in the Database.</source>
-        <translation>Orden de Transferencia nº%1 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Transfer Order Line #%1-%2.</source>
-        <translation>Línea nº%1-%2 de la Orden de Transferencia Escaneada.</translation>
-    </message>
-    <message>
-        <source>Transfer Order Line #%1-%2 does not exist in the Database.</source>
-        <translation>Línea nº%1-%2 de la Orden de Transferencia no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Lot/Serial # %1.</source>
-        <translation>Lote/serie nº%1 Escaneado.</translation>
-    </message>
-    <message>
-        <source>Lot/Serial # %1 does not exist in the Database.</source>
-        <translation>Lote/Serie nº%1 no existe en la Base Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Item %1, Site %2.</source>
-        <translation>Producto %1, Sede %2 Escaneado.</translation>
-    </message>
-    <message>
-        <source>Item %1, Site %2 does not exist in the Database.</source>
-        <translation>Producto %1, Sede %2 no existe en la Base de Datos.</translation>
-    </message>
-    <message>
-        <source>Scanned Site %1, Location %2.</source>
-        <translation>Sede %1, Ubicación %2, Escaneada.</translation>
-    </message>
-    <message>
-        <source>Site %1, Location %2 does not exist in the Database.</source>
-        <translation>Sede %1, Ubicación %2 no existe en la Base de Datos.</translation>
+        <source>%1 not found</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3807,6 +3717,42 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>UOM:</source>
         <translation>UM:</translation>
+    </message>
+</context>
+<context>
+    <name>ItemGroupClusterLineEdit</name>
+    <message>
+        <source>Item Group</source>
+        <translation type="unfinished">Grupo de Productos</translation>
+    </message>
+    <message>
+        <source>Item Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ItemGroupInfo</name>
+    <message>
+        <source>Name:</source>
+        <translation type="unfinished">Nombre:</translation>
+    </message>
+</context>
+<context>
+    <name>ItemGroupList</name>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
+    </message>
+</context>
+<context>
+    <name>ItemGroupSearch</name>
+    <message>
+        <source>Search through Names</source>
+        <translation type="unfinished">Buscar por Nombres</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
     </message>
 </context>
 <context>
@@ -4232,6 +4178,34 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>&lt;p&gt;The selected item has no Std. Costing information. Please see your controller to correct this situation before continuing.</source>
         <translation>&lt;p&gt; El producto seleccionado no tiene ninguna información del Cálculo de Costos Estándar. Por favor vea a su controlador para corregir esta situación antes de continuar.</translation>
     </message>
+    <message>
+        <source>Error Retrieving PO Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find Item Site for %1 (%2).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Standard Cost Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Site Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not find Item Site for %1 in %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PoitemTableModel</name>
@@ -4334,6 +4308,14 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>&lt;p&gt;There is no Item Site for this Site (%1) and Item Number (%2).</source>
         <translation>No hay ninguna Sede de Producto para esta Sede (%1) y Número de Producto (%2).</translation>
+    </message>
+    <message>
+        <source>Error Retrieving PO Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving PO Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4601,10 +4583,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Your system does not have a valid or open Accounting period for the current date. You should define the Accounting periods in &apos;Accounting | Fiscal Calendar | Accounting Periods...&apos; before posting any transactions in the system.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Your system has alternate currencies without exchange rates entered for the current date. You should define the exchange rates for these currencies in &apos;System | Setup | Exchange Rates...&apos; before posting any transactions in the system.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4614,6 +4592,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     </message>
     <message>
         <source>Error Counting Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Base Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Password Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Your company has a policy of updating passwords every %1 days.  Please change your password before logging out.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5073,10 +5063,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>ScriptToolbox</name>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation type="unfinished">No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Could not create the &apos;%1&apos; form. Either an error occurred or the specified form does not exist.</source>
         <translation>No se ha podido crear el formulario &apos;&apos;&apos;&apos;%1&apos;&apos;&apos;&apos;. Puede haberse producido un error, o bien dicho formulario no existe.</translation>
     </message>
@@ -5107,6 +5093,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>&lt;p&gt;There was an error loading the UI Form from the database.</source>
         <translation>Se ha producido un error cargando el Formulario UI desde la base de datos.</translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not initialize the printing system for multiple reports.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Opening New Window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5218,12 +5216,16 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 <context>
     <name>Sudoable</name>
     <message>
-        <source>Need Password to Install</source>
+        <source>Password:</source>
+        <translation type="unfinished">Clave:</translation>
+    </message>
+    <message>
+        <source>Password Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Password:</source>
-        <translation type="unfinished">Clave:</translation>
+        <source>Enter System Password:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5295,6 +5297,10 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Item</source>
         <translation>Producto</translation>
     </message>
+    <message>
+        <source>Error Retrieving Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UsernameLineEdit</name>
@@ -5319,6 +5325,13 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>User Name</source>
         <translation type="unfinished">Nombre de Usuario</translation>
+    </message>
+</context>
+<context>
+    <name>VendorCluster</name>
+    <message>
+        <source>Vendor #:</source>
+        <translation type="unfinished">Nº de Proveedor:</translation>
     </message>
 </context>
 <context>
@@ -5349,6 +5362,14 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Vendor</source>
         <translation>Proveedor</translation>
+    </message>
+    <message>
+        <source>Edit Number</source>
+        <translation type="unfinished">Editar Número</translation>
+    </message>
+    <message>
+        <source>Sets number for editing</source>
+        <translation type="unfinished">Fija el número para editar</translation>
     </message>
 </context>
 <context>
@@ -5659,10 +5680,6 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>No work week calendar found</source>
         <translation>Encontrado calendario de semana no laborable</translation>
     </message>
-    <message>
-        <source>&lt;p&gt;The selected Site has no work week defined. Please go to Schedule Setup and define the working days for this site.</source>
-        <translation>El Centro seleccionado no tiene semanas laborables definidas. Por favor, vaya a la Configuración de Programación y defina los días laborables para este centro.</translation>
-    </message>
 </context>
 <context>
     <name>XDateInputDialog</name>
@@ -5963,6 +5980,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Text CSV (*.csv);;Text VCF (*.vcf);;Text (*.txt);;ODF Text Document (*.odt);;HTML Document (*.html)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum data limit was encountered.  Only %1 of %2 rows could be processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Limit Reached</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>XTreeWidgetProgress</name>
@@ -5999,6 +6028,34 @@ Please immediately log out and contact your Systems Adminitrator.</source>
 %2
 %3</source>
         <translation>No se ha recibido código de aprobación %1 %2 %3</translation>
+    </message>
+    <message>
+        <source>Could not find PEM file</source>
+        <translation type="unfinished">No se pudo encontrar fichero PEM</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to find the PEM file %1</source>
+        <translation type="unfinished">No se encontró el fichero PEM %1</translation>
+    </message>
+    <message>
+        <source>Failed to load Certificate</source>
+        <translation type="unfinished">No se pudo cargar el Certificado</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;There are no Certificates in %1. This may cause communication problems.</source>
+        <translation type="unfinished">No hay Certificados en %1. Esto podría originar problemas en la comunicación.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to load a Certificate from the PEM file %1. This may cause communication problems.</source>
+        <translation type="unfinished">No se ha podido cargar un Certificado desde el fichero PEM %1.</translation>
+    </message>
+    <message>
+        <source>Invalid Certificate</source>
+        <translation type="unfinished">Certificado no válido</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The Certificate in %1 appears to be invalid. This may cause communication problems.</source>
+        <translation type="unfinished">El Certificado en %1 aparentemente no es válido. Esto podría originar problemas en la comunicación.</translation>
     </message>
 </context>
 <context>
@@ -6052,6 +6109,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     </message>
     <message>
         <source>Remove 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number</source>
+        <translation type="unfinished">Número</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished">Descripción</translation>
+    </message>
+    <message>
+        <source>Include in 1099</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6208,6 +6277,22 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Ledger Account Number</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving SubTypes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>accountNumbers</name>
@@ -6321,6 +6406,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     </message>
     <message>
         <source>&amp;Ledger Account Numbers:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Accounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SubTypes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6441,6 +6538,42 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Quarter:</source>
         <translation>Trimestre:</translation>
     </message>
+    <message>
+        <source>Error Getting Next Period Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Thawing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Opening Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Editing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Freezing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving/Updating Accounting Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Populating Accounting Period</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>accountingPeriods</name>
@@ -6548,6 +6681,34 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Fiscal Year:</source>
         <translation type="unfinished">Año Fiscal:</translation>
     </message>
+    <message>
+        <source>Error Deleting Period Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Opening Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Freezing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Thawing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Thawing Period2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Getting Periods</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>accountingYearPeriod</name>
@@ -6566,6 +6727,26 @@ Please immediately log out and contact your Systems Adminitrator.</source>
     <message>
         <source>Closed</source>
         <translation>Cerrado</translation>
+    </message>
+    <message>
+        <source>Error Saving Fiscal Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Opening Fiscal Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Changing FY Dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing FY Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Populating FY Periods</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6646,6 +6827,18 @@ Please immediately log out and contact your Systems Adminitrator.</source>
         <source>Could not Copy Fiscal Year</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting Accounting Year Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing Requested Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Opening Requested Period</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>addPoComment</name>
@@ -6719,12 +6912,6 @@ or Name</source>
         <translation>Página Web</translation>
     </message>
     <message>
-        <source>There was an error creating a new address (%).
-Check the database server log for errors.</source>
-        <translation>	
-Se produjo un error al crear una nueva dirección (%). Compruebe el servidor de base de datos de registro de errores.</translation>
-    </message>
-    <message>
         <source>Saving Shared Address</source>
         <translation>Guardando Dirección Compartida</translation>
     </message>
@@ -6771,6 +6958,19 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Account</source>
         <translation type="unfinished">Cuenta</translation>
+    </message>
+    <message>
+        <source>Error Saving Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There was an error creating a new address (%1).
+Check the database server log for errors.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Rejecting Address</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6834,6 +7034,10 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Cannot Delete Selected Address</source>
         <translation>No es posible Elimininar Dirección Seleccionada</translation>
+    </message>
+    <message>
+        <source>Error Deleting Address</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6918,6 +7122,18 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <source>You must select an Itemsite with a positive Qty on Hand before posting this transaction.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Inventory Values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Cost</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>adjustmentTrans</name>
@@ -6994,10 +7210,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <translation>No se puede Realizar el Apunte</translation>
     </message>
     <message>
-        <source>&lt;p&gt;You must enter a total cost value for the inventory to be transacted.</source>
-        <translation>Debe proporcionar el valor del coste total para poder llevarlo al inventario.</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Average cost adjustments may not result in a negative quantity on hand.</source>
         <translation>Ajustes al costo promedio puede no generar una existencia negativa.</translation>
     </message>
@@ -7036,6 +7248,26 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Notes</source>
         <translation>Notas</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a total cost value for the inventory to be transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post Transaction Cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7192,6 +7424,14 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     </message>
     <message>
         <source>Total Alloc.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving CM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Allocating CM</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7390,6 +7630,14 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <source>Amount to Apply:</source>
         <translation>Monto a Aplicar:</translation>
     </message>
+    <message>
+        <source>Error Saving AP CM Application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving AP Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>apOpenItem</name>
@@ -7410,10 +7658,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <translation>Nº Doc.</translation>
     </message>
     <message>
-        <source>You must enter document and due dates for this A/P Memo before you may set tax amounts.</source>
-        <translation>Debe proporcionar las fechas del documento y límite para esta Nota de Acreedores antes de fijar los importes de impuestos.</translation>
-    </message>
-    <message>
         <source>Apply Date</source>
         <translation>Fecha de Aplicación</translation>
     </message>
@@ -7428,10 +7672,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>The tax amount may not be greater than the total A/P Memo amount.</source>
         <translation>El importe del impuesto no puede ser mayor que el importe total de Acreedores.</translation>
-    </message>
-    <message>
-        <source>Cannot set tax amounts</source>
-        <translation>No es posible establecer las cuotas</translation>
     </message>
     <message>
         <source>Currency</source>
@@ -7452,10 +7692,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Cannot Save A/P Memo</source>
         <translation>No posible Guardar C/P Memo</translation>
-    </message>
-    <message>
-        <source>Internal Error: _docType has an invalid document type %1</source>
-        <translation>Error Interno: _docType tiene un tipo de documento no válido %1</translation>
     </message>
     <message>
         <source>A/P Open Amount Changed</source>
@@ -7538,24 +7774,8 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <translation>Saldo:</translation>
     </message>
     <message>
-        <source>Use Alternate Prepaid Account</source>
-        <translation>Use Cuenta Prepagada Alternativa</translation>
-    </message>
-    <message>
-        <source>Alternate Prepaid Account:</source>
-        <translation>Cuenta Prepagada Alternativa:</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You must enter a date for this A/P Memo before you may save it</source>
-        <translation>Debe proporcionar una fecha para este Memo de Cuenta C/P antes de salvarlo</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must enter an amount for this A/P Memo before you may save it</source>
         <translation>Debe proporcionar un monto para este Memo de Cuenta C/P antes de salvarlo</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You must choose a valid Alternate Prepaid Account Number for this A/P Memo before you may save it.</source>
-        <translation>Debe seleccionar una cuenta válida para el A/P antes de guardar.</translation>
     </message>
     <message>
         <source>&lt;p&gt;You are changing the open amount of this A/P Open Item.  If you do not post a G/L Transaction to distribute this change then the A/P Open Item total will be out of balance with the A/P Trial Balance(s). Are you sure that you want to save this change?</source>
@@ -7570,12 +7790,84 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <translation>Notas</translation>
     </message>
     <message>
-        <source>Account</source>
-        <translation>Cuenta</translation>
-    </message>
-    <message>
         <source>Applications</source>
         <translation>Aplicaciones</translation>
+    </message>
+    <message>
+        <source>Use Prepaid Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Distribution Account:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Tax Zone:</source>
+        <translation type="unfinished">Zona Fiscal:</translation>
+    </message>
+    <message>
+        <source>Print on post</source>
+        <translation type="unfinished">Imprimir tras realizar apunte</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a Document Date for this A/P Memo before you may save it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a Due Date for this A/P Memo before you may save it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must choose a valid Distribution Account Number for this A/P Memo before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Internal Error: _docType has an invalid document type of %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Returning apopenid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Due Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Initializing Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a document date for this A/P Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a due date for this A/P Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter an amount for this Payable Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Set Tax Amounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Tax Amounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Returning AP Open Tax</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7610,6 +7902,18 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     </message>
     <message>
         <source>Payments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A/P History</source>
+        <translation type="unfinished">Historial Acreedores</translation>
+    </message>
+    <message>
+        <source>Earliest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latest</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7701,6 +8005,22 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     </message>
     <message>
         <source>Error posting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Applying A/P Credit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearing Application of A/P CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Application of A/P CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving A/P Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7802,6 +8122,22 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <source>All Pending</source>
         <translation>Todos los pendientes</translation>
     </message>
+    <message>
+        <source>Error Posting A/R CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Applying A/R CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearing Application of A/R CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving A/R CM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>applyARDiscount</name>
@@ -7856,6 +8192,10 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Apply A/R Discount</source>
         <translation>Aplicar Descuento a Deudores</translation>
+    </message>
+    <message>
+        <source>Error Applying Discount</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7915,6 +8255,10 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Vendor:</source>
         <translation>Proveedor:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Discount Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8101,6 +8445,14 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <source>Balance:</source>
         <translation>Saldo:</translation>
     </message>
+    <message>
+        <source>Error Saving A/R CM Application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving A/R CM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>arOpenItem</name>
@@ -8113,16 +8465,8 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
         <translation>Tipo</translation>
     </message>
     <message>
-        <source>You must choose a valid Alternate Sales Category for this Receivable Memo before you may save it</source>
-        <translation>Debe seleccionar una Categoría Alternativa de Ventas válida  para este documento de Deudor antes de poder guardarlo</translation>
-    </message>
-    <message>
         <source>Doc. #</source>
         <translation>Nº Doc.</translation>
-    </message>
-    <message>
-        <source>You must enter an amount for this Receivable Memo before you may save it</source>
-        <translation>Debe introducir un monto para este Resumen de Deudores antes de salvarlo</translation>
     </message>
     <message>
         <source>The tax amount may not be greater than the total Receivable Memo amount.</source>
@@ -8131,10 +8475,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source>Apply Date</source>
         <translation>Fecha de Solicitud</translation>
-    </message>
-    <message>
-        <source>You must enter a date for this Receivable Memo before you may save it</source>
-        <translation>Debe introducir la fecha de este Resumen de Deudores antes de salvarlo</translation>
     </message>
     <message>
         <source>Amount</source>
@@ -8163,10 +8503,6 @@ Se produjo un error al guardar esta dirección (%1). Compruebe el servidor de ba
     <message>
         <source> - Enter Misc. Debit Memo</source>
         <translation> - Ingresar Nota de Débito Misc.</translation>
-    </message>
-    <message>
-        <source>You must enter document and due dates for this Receivable Memo before you may set tax amounts.</source>
-        <translation>Debe indicar fechas de documento y vencimiento para este Resumen de Deudores antes de fijar las cuotas.</translation>
     </message>
     <message>
         <source>Cannot set tax amounts</source>
@@ -8202,46 +8538,6 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>No</source>
         <translation>No</translation>
-    </message>
-    <message>
-        <source>Check</source>
-        <translation>Cheque</translation>
-    </message>
-    <message>
-        <source>Certified Check</source>
-        <translation>Cheque Certificado</translation>
-    </message>
-    <message>
-        <source>Master Card</source>
-        <translation>Master Card</translation>
-    </message>
-    <message>
-        <source>Visa</source>
-        <translation>Visa</translation>
-    </message>
-    <message>
-        <source>American Express</source>
-        <translation>American Express</translation>
-    </message>
-    <message>
-        <source>Discover Card</source>
-        <translation>Discover Card</translation>
-    </message>
-    <message>
-        <source>Other Credit Card</source>
-        <translation>Otra Tarjeta de Crédito</translation>
-    </message>
-    <message>
-        <source>Cash</source>
-        <translation>Efectivo</translation>
-    </message>
-    <message>
-        <source>Wire Transfer</source>
-        <translation>Transferencia Bancaria</translation>
-    </message>
-    <message>
-        <source>Other</source>
-        <translation>Otro</translation>
     </message>
     <message>
         <source>Invoice</source>
@@ -8328,10 +8624,6 @@ Are you sure that you want to save this change?</source>
         <translation>Número de Cuenta:</translation>
     </message>
     <message>
-        <source>Saving Credit Memo Failed: %1</source>
-        <translation>No se ha podido guardar la Nota de Crédito: %1</translation>
-    </message>
-    <message>
         <source>Cash Deposit</source>
         <translation>Depósito Efectivo</translation>
     </message>
@@ -8361,6 +8653,66 @@ Are you sure that you want to save this change?</source>
     </message>
     <message>
         <source>You must enter an amount for this Receivable Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Tax Zone:</source>
+        <translation type="unfinished">Zona Fiscal:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving A/R Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter an amount for this Receivable Memo before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must choose a valid Alternate Sales Category for this Receivable Memo before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting A/R %1M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling A/R %1M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Getting Next Period Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Initializing Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a document date for this Receivable Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a due date for this Receivable Memo before you may set tax amounts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Set Tax Amounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Returning AR Open Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a document date for this Receivable Memo before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a due date for this Receivable Memo before you may save it.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8563,15 +8915,23 @@ Are you sure that you want to save this change?</source>
         <translation>Tarjeta de Crédito</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
-    </message>
-    <message>
         <source>Distribution Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Changing Dist. Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8672,6 +9032,10 @@ Are you sure that you want to save this change?</source>
         <source>Finance Charge</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Assessing Finance Charges</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>assignClassCodeToPlannerCode</name>
@@ -8695,10 +9059,6 @@ Are you sure that you want to save this change?</source>
 <context>
     <name>assignItemToPlannerCode</name>
     <message>
-        <source>No Planner Code Selected</source>
-        <translation type="unfinished">No se ha seleccionado el código del planificador</translation>
-    </message>
-    <message>
         <source>Assign Item to Planner Code</source>
         <translation>Asignar Producto a Código de Planificador</translation>
     </message>
@@ -8710,6 +9070,14 @@ Are you sure that you want to save this change?</source>
         <source>&amp;Planner Code:</source>
         <translation>Código de &amp;Planificador:</translation>
     </message>
+    <message>
+        <source>You must select a valid Item before continuing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>assignLotSerial</name>
@@ -8720,10 +9088,6 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>Lot/Serial #</source>
         <translation>Nº de Serie/Lote</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
     </message>
     <message>
         <source>Serial#:</source>
@@ -8792,6 +9156,26 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>Warranty</source>
         <translation>Garantía</translation>
+    </message>
+    <message>
+        <source>Error Setting Lot/Serial Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Printing Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Printing Label</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8913,16 +9297,28 @@ Are you sure that you want to save this change?</source>
         <translation>La consulta no es válida por alguna razón </translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
-    </message>
-    <message>
         <source>[ Select how to apply the Pattern ]</source>
         <translation>[ Seleccione cómo aplicar el Patrón ]</translation>
     </message>
     <message>
         <source>Treat first row as header information</source>
         <translation>Tratar la primera línea como información de cabecera</translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient privileges to view this window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Atlas Map Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Atlas Map Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8986,10 +9382,6 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>Currency:</source>
         <translation>Monedas:</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You must enter an Immediate Origin if you choose &apos;Other&apos;.</source>
-        <translation>Debe indicar un Origen Inmediato si selecciona &apos;&apos;Otro&apos;&apos;.</translation>
     </message>
     <message>
         <source>Checking</source>
@@ -9112,8 +9504,28 @@ Are you sure that you want to save this change?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Select an Ledger Account for this Bank Account before saving it.</source>
+        <source>Error Retrieving Bank Account Information</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Bank Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Liability Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Asset Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Select a Ledger Account for this Bank Account before saving it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Post Transaction</source>
+        <translation type="unfinished">No se puede Realizar el Apunte</translation>
     </message>
 </context>
 <context>
@@ -9198,13 +9610,17 @@ Are you sure that you want to save this change?</source>
         <source>List Bank Accounts</source>
         <translation>Listar Cuentas Banco</translation>
     </message>
+    <message>
+        <source>Error Retriving Bank Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Bank Account</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>bankAdjustment</name>
-    <message>
-        <source>Cannot Post Bank Adjustment</source>
-        <translation type="unfinished">No es posible Asentar Ajuste del Banco</translation>
-    </message>
     <message>
         <source>You must enter a date before posting this Bank Adjustment.</source>
         <translation>Debe proporcionar una fecha antes de Asentar este Ajuste del Banco.</translation>
@@ -9252,6 +9668,18 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>Notes:</source>
         <translation>Notas:</translation>
+    </message>
+    <message>
+        <source>You must enter a valid fiscal period date before posting this Bank Adjustment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Bank Adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Bank Adjustment</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9334,6 +9762,10 @@ Are you sure that you want to save this change?</source>
     </message>
     <message>
         <source>Getting Adjustments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Bank Adjustment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -9421,6 +9853,10 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Deleting Adjustment Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9666,6 +10102,54 @@ Are you sure that you want to save this change?</source>
         <source>Item Job cost check</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving BOM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving BOM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error cancelling BOM Operation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting BOM Item UOMs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting UOMs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting BOM Substitute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Toggling BOM Cost Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting BOM Cost Component</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>bomList</name>
@@ -9796,6 +10280,14 @@ Are you sure that you want to save this change?</source>
         <source>List Budgets</source>
         <translation>Listar Presupuestos</translation>
     </message>
+    <message>
+        <source>Error Deleting Budget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Budget Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>buyCard</name>
@@ -9875,13 +10367,13 @@ Are you sure that you want to save this change?</source>
         <source>Unposted</source>
         <translation>Sin Asentar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>calendar</name>
-    <message>
-        <source>Calendar Name Required</source>
-        <translation type="unfinished">Se precisa un Nombre de Calendario</translation>
-    </message>
     <message>
         <source>Period</source>
         <translation>Período</translation>
@@ -9893,10 +10385,6 @@ Are you sure that you want to save this change?</source>
     <message>
         <source>Month(s)</source>
         <translation>Mes(es)</translation>
-    </message>
-    <message>
-        <source>You must enter a Calendar Name to continue.</source>
-        <translation>Debe indicar un Nombre de Calendario para continuar.</translation>
     </message>
     <message>
         <source>Period Length</source>
@@ -10018,6 +10506,30 @@ Are you sure that you want to save this change?</source>
         <source>Beginning of Current Year</source>
         <translation>Principio del Año Presente</translation>
     </message>
+    <message>
+        <source>Error Creating New Calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid Calendar Name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Calendar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Calendar Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Calendar Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>calendars</name>
@@ -10101,10 +10613,6 @@ Are you sure that you want to save this change?</source>
         <translation>No se encuentra la Cuenta Bancaria a la que apuntar esta operación. O bien no se acepta este tipo de tarjeta, o no se ha completado la configuración de Tarjeta de Crédito</translation>
     </message>
     <message>
-        <source>Account #</source>
-        <translation>Nº de Cuenta</translation>
-    </message>
-    <message>
         <source>No Bank Account</source>
         <translation>Ninguna Cuenta Bancaria</translation>
     </message>
@@ -10186,44 +10694,12 @@ Si no, pulse NO y cambie la Cuenta Bancaria en el campo ANOTAR A.</translation>
         <translation>Fecha Doc.</translation>
     </message>
     <message>
-        <source>Wire Transfer</source>
-        <translation>Transferencia Bancaria</translation>
-    </message>
-    <message>
-        <source>Master Card</source>
-        <translation>Master Card</translation>
-    </message>
-    <message>
-        <source>Cash</source>
-        <translation>Efectivo</translation>
-    </message>
-    <message>
-        <source>Check</source>
-        <translation>Cheque</translation>
-    </message>
-    <message>
         <source>Balance</source>
         <translation>Saldo</translation>
     </message>
     <message>
-        <source>Certified Check</source>
-        <translation>Cheque Certificado</translation>
-    </message>
-    <message>
         <source>Amount Applied:</source>
         <translation>Monto Aplicado:</translation>
-    </message>
-    <message>
-        <source>Discover Card</source>
-        <translation>Discover Card</translation>
-    </message>
-    <message>
-        <source>Visa</source>
-        <translation>Visa</translation>
-    </message>
-    <message>
-        <source>Other Credit Card</source>
-        <translation>Otra Tarjeta de Crédito</translation>
     </message>
     <message>
         <source>Applied</source>
@@ -10442,6 +10918,90 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <source>Exchange Rate:</source>
         <translation type="unfinished">Tasa de Cambio:</translation>
     </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Cliente</translation>
+    </message>
+    <message>
+        <source>Customer Name</source>
+        <translation type="unfinished">Nombre del Cliente</translation>
+    </message>
+    <message>
+        <source>Error populating Customer Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Loading Customer Group Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Applying Cash Receipt To Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Applying Cash Receipt To Line Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearning Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Miscellaneous Distribution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It appears that the amount received has not been specified or is equal to zero. Do you want to save the current cash receipt anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cash Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Switching Currencies</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving CC Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Alt Exch Rate Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Alt Exch Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Project #:</source>
+        <translation type="unfinished">Nº de Proyecto:</translation>
+    </message>
+    <message>
+        <source>Account</source>
+        <translation type="unfinished">Cuenta</translation>
+    </message>
 </context>
 <context>
     <name>cashReceiptItem</name>
@@ -10493,10 +11053,6 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
 <context>
     <name>cashReceiptMiscDistrib</name>
     <message>
-        <source>Enter Amount</source>
-        <translation type="unfinished">Ingresar Monto</translation>
-    </message>
-    <message>
         <source>Amount To Distribute:</source>
         <translation>Monto a Distribuir:</translation>
     </message>
@@ -10509,20 +11065,36 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <translation>Cuenta:</translation>
     </message>
     <message>
-        <source>You must select an Account to post this Miscellaneous Distribution to.</source>
-        <translation>Debe seleccionar una Cuenta para Asentar esta Distribución Miscelánea.</translation>
-    </message>
-    <message>
-        <source>Select Account</source>
-        <translation>Seleccionar Cuenta</translation>
-    </message>
-    <message>
         <source>You must enter an amount for this Miscellaneous Distribution.</source>
         <translation>Debe ingresar un monto para esta Distribución Miscelánea.</translation>
     </message>
     <message>
         <source>Miscellaneous Cash Receipt  Distribution</source>
         <translation>Distribución de Recibo de Caja Misceláneo</translation>
+    </message>
+    <message>
+        <source>Customer:</source>
+        <translation type="unfinished">Cliente:</translation>
+    </message>
+    <message>
+        <source>Error Saving Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Populating Customer Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Code:</source>
+        <translation type="unfinished">Código Impositivo:</translation>
+    </message>
+    <message>
+        <source>You must select an Account or Tax Code to post this Miscellaneous Distribution to.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Transaction</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -10663,6 +11235,14 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <source>Changing Dist. Date</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting Cash Receipt Entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Cash Receipt Entry</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>changePoitemQty</name>
@@ -10713,6 +11293,14 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
     <message>
         <source>Qty. Balance:</source>
         <translation>Balance de Cant.:</translation>
+    </message>
+    <message>
+        <source>Error Changing Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Comment</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -10781,6 +11369,22 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <source>&lt;p&gt;The new Order Quantity that you have entered does not meet the Order Parameters set for the parent Item Site for this Work Order.  In order to meet the Item Site Order Parameters the new Order Quantity must be increased to %1. Do you want to change the Order Quantity for this Work Order to %2?</source>
         <translation>La nueva Cantidad que ha introducido no es válida según los Parámetros de Pedido establecidos para la Sede de esta Orden de Trabajo. Si se desea cumplir estos Parámetros la nueva Cantidad de Pedido debe incrementarse a %1. ¿Desea modificar la Cantidad del Pedido para esta Orden de Trabajo a %2?</translation>
     </message>
+    <message>
+        <source>Error Changing Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change Work Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Comment11</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>characteristic</name>
@@ -10803,10 +11407,6 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
     <message>
         <source>Text</source>
         <translation>Texto</translation>
-    </message>
-    <message>
-        <source>Missing Name</source>
-        <translation>Falta Nombre</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -10908,6 +11508,18 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <source>Error Getting Characteristic</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Allow unique characteristic assignment only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Characteristic Option</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable To Save Characteristic</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>characteristicAssignment</name>
@@ -10967,6 +11579,10 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
         <source>You must enter a value before saving this Characteristic.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Saving Characteristic</source>
+        <translation type="unfinished">Guardando Característica</translation>
+    </message>
 </context>
 <context>
     <name>characteristicPrice</name>
@@ -11014,6 +11630,14 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
     <message>
         <source>List Price:</source>
         <translation>Precio Lista:</translation>
+    </message>
+    <message>
+        <source>Error Saving Characteristic Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Characteristic Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11072,6 +11696,10 @@ Este recibo de caja parece demasiado a aplicar al menos una de las partidas abie
     <message>
         <source>&amp;Print</source>
         <translation>Imprimir</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Characteristic Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11327,6 +11955,14 @@ You may not create duplicate Forms.</source>
         <source>&amp;Description:</source>
         <translation>Descripción:</translation>
     </message>
+    <message>
+        <source>Error Saving Check Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Format Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>checkFormats</name>
@@ -11362,13 +11998,13 @@ You may not create duplicate Forms.</source>
         <source>Description</source>
         <translation>Descripción</translation>
     </message>
+    <message>
+        <source>Error Deleting Check Format</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>classCode</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>You must enter a valid Class Code before continuing</source>
         <translation type="unfinished"></translation>
@@ -11388,6 +12024,10 @@ You may not create duplicate Forms.</source>
     <message>
         <source>&amp;Description:</source>
         <translation>Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Class Code at %1::%2.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11443,6 +12083,14 @@ You may not create duplicate Forms.</source>
     <message>
         <source>Delete &amp;Unused</source>
         <translation>Eliminar No &amp;Usados</translation>
+    </message>
+    <message>
+        <source>Error Deleting Class Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Unused Class Codes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11515,10 +12163,6 @@ You may not create duplicate Forms.</source>
         <translation>No se ha dado Salida a Productos Push</translation>
     </message>
     <message>
-        <source>Invalid date</source>
-        <translation>Fecha no válida</translation>
-    </message>
-    <message>
         <source>No Production Posted</source>
         <translation>No Producción Registrado</translation>
     </message>
@@ -11559,10 +12203,6 @@ You may not create duplicate Forms.</source>
         <translation>La Orden de Trabajo seleccionada tiene Requerimientos de Material que son dirigidas por Demanda, pero no tienen asignado ningún material. Esto probablemente signifique que la Producción se ha asignado a esta Orden de Trabajo mediante anotaciones de Operaciones. La LdM para este Elemento debería modificarse para listar las selecciones  Usado En para cada Partida de la LdM.</translation>
     </message>
     <message>
-        <source>Cannot close Work Order %1 because the Item does not appear to have an Item Type! Please check the Item definition. You may need to reset the Type and save the Item record.</source>
-        <translation>No se puede cerrar la Orden de Trabajo %1 porque el Producto no tiene un Tipo. Por favor, compruebe la definición del Producto. Puede ser necesario volver a indicar el Tipo y guardar la ficha del Producto.</translation>
-    </message>
-    <message>
         <source>Comments</source>
         <translation>Comentarios</translation>
     </message>
@@ -11573,6 +12213,18 @@ You may not create duplicate Forms.</source>
     <message>
         <source>&lt;p&gt;Work Orders for item sites with the Job cost method are posted when shipping the Sales Order they are associated with.&lt;p&gt;Are you sure you want to close this Work Order?</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot close Work Order %1 because the item does not appear to have an Item Type!  Please check the Item definition.  You may need to reset the Type and save the Item record.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Date</source>
+        <translation type="unfinished">Fecha no válida</translation>
     </message>
 </context>
 <context>
@@ -11629,10 +12281,6 @@ You may not create duplicate Forms.</source>
         <translation type="unfinished">Editable</translation>
     </message>
     <message>
-        <source>You must enter a valid Comment Type before saving this Item Type.</source>
-        <translation>Debe ingresar un Tipo de Comentario válido antes de guardar este Tipo de Producto.</translation>
-    </message>
-    <message>
         <source>&amp;Module:</source>
         <translation>Módulo:</translation>
     </message>
@@ -11661,10 +12309,6 @@ You may not create duplicate Forms.</source>
         <translation>&lt;&lt;-Eliminar Todo</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;Description:</source>
         <translation>Descripción:</translation>
     </message>
@@ -11675,6 +12319,30 @@ You may not create duplicate Forms.</source>
     <message>
         <source>&amp;Name:</source>
         <translation>Nombre:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Comment Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding Comment Type Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding All Comment Type Sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Revoking Comment Type Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Revoking All Comment Type Sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid Comment Name before saving this Comment Type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11728,6 +12396,10 @@ You may not create duplicate Forms.</source>
         <source>List Comment Types</source>
         <translation>Listar Tipos Comentario</translation>
     </message>
+    <message>
+        <source>Error Retrieving Comment Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>companies</name>
@@ -11779,20 +12451,20 @@ You may not create duplicate Forms.</source>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
     </message>
+    <message>
+        <source>Error Deleting Company</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Company Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>company</name>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must enter a Server if this is an external Company.</source>
         <translation>Debe proporcionar un Servidor si ésta es una Empresa externa.</translation>
-    </message>
-    <message>
-        <source>The Unrealized Currency Gain/Loss Account must belong to this Company.</source>
-        <translation>La Cuenta de Ganancia/Pérdida no realizada por cambio de moneda debe pertenecer a esta Empresa.</translation>
     </message>
     <message>
         <source>Number:</source>
@@ -11962,6 +12634,26 @@ Si responde \&apos;No\&apos; entonces Cancele o cambie de nuevo el Número a %3 
     </message>
     <message>
         <source>The Unassigned G/L Account must belong to this Company.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Unrealized Currency Gain/LossL Account must belong to this Company.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Company</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Company Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Connection Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Changing Currency</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -12283,6 +12975,10 @@ p, li { white-space: pre-wrap; }
         <source>Setting Credit Card Bank Accounts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving CC Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>configureCRM</name>
@@ -12439,6 +13135,10 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Days</source>
         <translation type="unfinished">Días</translation>
+    </message>
+    <message>
+        <source>Error Confirming Country Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -12809,7 +13509,7 @@ p, li { white-space: pre-wrap; }
         <source>Recurring Invoice Buffer:</source>
         <translation>Reserva de Factura Recurrente:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Foreign × Exchange Rate = Base</source>
         <translation>Divisa x  Tipo de Cambio = Base</translation>
     </message>
@@ -12829,7 +13529,7 @@ p, li { white-space: pre-wrap; }
         <source>Main Segment Size:</source>
         <translation>Tamaño del Segmento Mayor:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Base × Exchange Rate = Foreign</source>
         <translation>Base x Tipo de Cambio = Divisa</translation>
     </message>
@@ -12951,6 +13651,42 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Mark finance charges as: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post Exchange Rate changes to Change Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Next AR Memo Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Next Cash Receipt Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Finance Charge Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Next AR Memo Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Next AR Cash Receipt Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Accounting Setup Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Post Transaction</source>
+        <translation type="unfinished">No se puede Realizar el Apunte</translation>
+    </message>
+    <message>
+        <source>Allow Reprinting Payment #</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -13171,6 +13907,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Inconsistent Selection</source>
         <translation>Selección Incoherente</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Import/Export Setting Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Map</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -13415,6 +14159,22 @@ p, li { white-space: pre-wrap; }
         <source>Default Shipping Form Copies:</source>
         <translation>Copias de Formulario de Embarque Predeterminado:</translation>
     </message>
+    <message>
+        <source>Prevent Negative Qty. Inventory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Next Transfer Order Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Inventory Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Inventory Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>configureMS</name>
@@ -13491,6 +14251,10 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Start Item Search when no results found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Period</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -13952,31 +14716,7 @@ p, li { white-space: pre-wrap; }
         <translation>Fecha Actual</translation>
     </message>
     <message>
-        <source>Return # Generation:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatic, Use Return #&apos;s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatic, Use Return #&apos;s, Allow Override</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Check &apos;Approve for Billing&apos; option on Ship Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return Control</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restrict Returns to Items on their Apply-To Document</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Allocate Returns to New Sales Order on Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -14008,10 +14748,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Default Return Copies:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Shipping Charges:</source>
         <translation type="unfinished">Cargos Transporte:</translation>
     </message>
@@ -14025,6 +14761,98 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;p&gt;All existing Sales Order location reservations will be removed. Are you sure you want to continue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Credit Limit check on S/O Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Return Authorization when Crediting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple S/O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Simple S/O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cash Customer #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Require Sufficient Inventory to Ship</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print S/O Acknowledgement (Hold only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Shipping Packing List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Invoice</source>
+        <translation type="unfinished">Imprimir Factura</translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Setting Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving SO Setting Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must select a Cash Customer # if Simple S/O is enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit # Generation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic, Use Sales Credit #&apos;s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic, Use Sales Credit #&apos;s, Allow Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restrict Sales Credits to Items on their Apply-To Document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allocate Sales Credits to New Sales Order on Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use List Price Schedules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default Sales Credit Copies:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable To Apply Sales Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -14876,6 +15704,26 @@ p, li { white-space: pre-wrap; }
         <source>Account</source>
         <translation type="unfinished">Cuenta</translation>
     </message>
+    <message>
+        <source>Error Deleting Contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deselecting Contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Contact Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding Delete Action To Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Processing Requested Action</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>contacts</name>
@@ -15032,16 +15880,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Attaching Contact</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Owner</source>
         <translation type="unfinished">Propietario</translation>
-    </message>
-    <message>
-        <source>Detaching Contact</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Owner Pattern</source>
@@ -15060,7 +15900,15 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error detaching Contact from Account (%1).</source>
+        <source>Error Attaching Contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error detaching Contact from Account (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Detaching Contact</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -15272,10 +16120,6 @@ Contract Number you have specified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Only Unposted Purchase Orders may be deleted. Check the status of Purchase Order %1. If it is &apos;U&apos; then contact your system Administrator.</source>
-        <translation type="unfinished">Sólo se pueden eliminar Órdenes de Compra no registradas. Compruebe el estado de la Orden de Compra %1. Contacte con su Administrador de Sistemas si es &apos;&apos;U&apos;&apos;.</translation>
-    </message>
-    <message>
         <source>Release Purchase Order</source>
         <translation type="unfinished">Liberar Orden de Compra</translation>
     </message>
@@ -15284,7 +16128,35 @@ Contract Number you have specified.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Only Unrelease Purchase Orders may be released. Check the status of Purchase Order %1. If it is &apos;U&apos; then contact your system Administrator.</source>
+        <source>Error Retrieving Contract Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Contract Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Contract</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Only Unposted Purchase Orders may be deleted.  Check the status of Purchase Order %2.  If it is &apos;U&apos; then contact your system Administrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Only Unreleased Purchase Orders may be released.  Check the status of Purchase Order %2.  If it is &apos;U&apos; then contact your system Administrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Rejecting Contract Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -15378,6 +16250,10 @@ Contract Number you have specified.</source>
         <source>Always</source>
         <translation type="unfinished">Siempre</translation>
     </message>
+    <message>
+        <source>Error Deleting Contract</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>copyBOM</name>
@@ -15409,6 +16285,10 @@ Bill of Operations. These references cannot be copied and must be added manually
     <message>
         <source>&amp;Close</source>
         <translation>Cerrar</translation>
+    </message>
+    <message>
+        <source>Error Copying BOM</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -15446,10 +16326,6 @@ Bill of Operations. These references cannot be copied and must be added manually
         <translation>períodos</translation>
     </message>
     <message>
-        <source>Name Required</source>
-        <translation>Nombre Requerido</translation>
-    </message>
-    <message>
         <source>There was an error copying the budget. Make sure there are valid periods
 In the future to match the current periods of the budget being copied plus
 the period inteval.</source>
@@ -15458,6 +16334,10 @@ the period inteval.</source>
     <message>
         <source>Budget Name is a required field.</source>
         <translation>Nombre Presupuesto es un campo obligatorio</translation>
+    </message>
+    <message>
+        <source>Cannot Copy Budget</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -15528,6 +16408,10 @@ Please check the values of these dates.</source>
         <source>Vendor Phone:</source>
         <translation type="unfinished">Teléf. Proveedor:</translation>
     </message>
+    <message>
+        <source>Error Copying Contract</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>copyItem</name>
@@ -15546,10 +16430,6 @@ Please check the values of these dates.</source>
     <message>
         <source>&lt;p&gt;An Item with the item number &apos;%1&apos; already exists. You may not copy over an existing item.</source>
         <translation>Ya existe un Producto con el número &apos;&apos;%1&apos;&apos;. No puede realizar una copia sobre un producto existente.</translation>
-    </message>
-    <message>
-        <source>Enter Item Number</source>
-        <translation>Proporcionar Número del Producto</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -15695,6 +16575,22 @@ Please check the values of these dates.</source>
         <source>Filling Item Site</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Copying Item Site</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Copying Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished">Siguiente</translation>
+    </message>
+    <message>
+        <source>Missing Target Item Number</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>copyPurchaseOrder</name>
@@ -15765,6 +16661,10 @@ Please check the values of these dates.</source>
     <message>
         <source>Use latest Item Sources and Prices</source>
         <translation>Usar Fuentes y Precios del último Producto</translation>
+    </message>
+    <message>
+        <source>Error Copying Purchase Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -15872,6 +16772,10 @@ Please check the values of these dates.</source>
         <source>Schedule Dates</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Copying Sales Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>copyTransferOrder</name>
@@ -15919,6 +16823,10 @@ Please check the values of these dates.</source>
         <source>Copy Transfer Order</source>
         <translation>Copiar Orden Transferencia</translation>
     </message>
+    <message>
+        <source>Error Copying Transfer Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>correctProductionPosting</name>
@@ -15941,10 +16849,6 @@ Please check the values of these dates.</source>
     <message>
         <source>Cannot Post Correction</source>
         <translation>No es posible Contabilizar Corrección</translation>
-    </message>
-    <message>
-        <source>The Quantity to correct must be less than or equal to the Quantity already Posted.</source>
-        <translation>La Cantidad a corregir debe ser menor o igual que la cantidad previamente apuntada</translation>
     </message>
     <message>
         <source>Backflush &amp;Materials</source>
@@ -15971,10 +16875,6 @@ Please check the values of these dates.</source>
         <translation>No puede registrar una corrección a una Orden de Trabajo para una Sede de Productos con método de coste por Trabajos. En su lugar debe ajustar las cantidades enviadas.</translation>
     </message>
     <message>
-        <source>Invalid date</source>
-        <translation>Fecha no válida</translation>
-    </message>
-    <message>
         <source>Transaction &amp;Date:</source>
         <translation>&amp;Fecha Transacción:</translation>
     </message>
@@ -15997,6 +16897,22 @@ Please check the values of these dates.</source>
     <message>
         <source>Qty. Ordered:</source>
         <translation>Cant. Ordenada:</translation>
+    </message>
+    <message>
+        <source>You may not post a correction to a Work Order for a Item Site with a quantity on hand less than the correction quantity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Production Correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Quantity to correct must be less than or equal to the Quantity already posted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Post Transaction</source>
+        <translation type="unfinished">No se puede Realizar el Apunte</translation>
     </message>
 </context>
 <context>
@@ -16076,6 +16992,10 @@ Please check the values of these dates.</source>
     <message>
         <source>List Cost Categories</source>
         <translation>Listar Categoría Costo</translation>
+    </message>
+    <message>
+        <source>Error Deleting Cost Category</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -16207,6 +17127,18 @@ Please check the values of these dates.</source>
     <message>
         <source>&lt;p&gt;You must select a Transfer Order Liability Clearing Account before saving.</source>
         <translation>Debe seleccionar una Cuenta de Compensación de Pasivo de la Orden de Traspaso antes de Guardar.</translation>
+    </message>
+    <message>
+        <source>Error Creating New Cost Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Cost Category Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cost Category Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -16367,6 +17299,11 @@ Please verify the Serial # of the Count Slip you are entering.</source>
         <source>...</source>
         <translation>...</translation>
     </message>
+    <message>
+        <source>This Serial # exists in a different Site.
+Please verify the Serial # of the Count Slip you are entering.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>countTag</name>
@@ -16467,6 +17404,14 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <source>Current Comments:</source>
         <translation>Comentarios Actuales:</translation>
     </message>
+    <message>
+        <source>Error Saving Count Tag Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Count Tag Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>countTagList</name>
@@ -16505,6 +17450,10 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
     <message>
         <source>S&amp;earch for:</source>
         <translation>&amp;Buscar por:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Count Tag Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -16565,6 +17514,14 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <source>&amp;Edit</source>
         <translation>Editar</translation>
     </message>
+    <message>
+        <source>Error Deleting Country</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Country Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>country</name>
@@ -16619,6 +17576,14 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
     <message>
         <source>Currency Number:</source>
         <translation>Número Moneda:</translation>
+    </message>
+    <message>
+        <source>Error Saving Country Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Country Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -16726,6 +17691,10 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <source>Create Count Tags by Parameter List/Site</source>
         <translation>Crear Etiquetas de Inventario por Centro/Lista de Parámetros</translation>
     </message>
+    <message>
+        <source>Error Saving Count Tag Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>createCycleCountTags</name>
@@ -16785,6 +17754,89 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <source>Create Cycle Count Tags</source>
         <translation>Crear Etiquetas de Inventario Cíclicas</translation>
     </message>
+    <message>
+        <source>Error Creating Cycle Count Tags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cycle Count Tag Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>createFiscalYear</name>
+    <message>
+        <source>Create Accounting Period(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You do not have permission to create Fiscal Years and Accounting Periods. Please ask an administrator to create them or grant you the &lt;span style=&quot; font-style:italic;&quot;&gt;MaintainAccountingPeriods&lt;/span&gt; privilege.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is no Fiscal Year to put a new period in. Please choose one of the other options above.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Day of the Fiscal Year:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type of Fiscal Year:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is no Fiscal Year to copy. Please choose one of the other options above.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished">Guardar</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancelar</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Your system does not have a valid or open Accounting Period for the current date. You should define account periods before posting any transactions in the system.&lt;/p&gt;&lt;p&gt;Please select one of the options below, fill in the necessary data, and click &lt;span style=&quot; font-weight:600;&quot;&gt;Save&lt;/span&gt;. If you &lt;span style=&quot; font-weight:600;&quot;&gt;Cancel&lt;/span&gt;, you will need to create accounting periods with &lt;span style=&quot; font-weight:600;&quot;&gt;Accounting&lt;/span&gt; &amp;gt; &lt;span style=&quot; font-weight:600;&quot;&gt;Fiscal Calendar&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new accounting period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new Fiscal Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy an existing Fiscal Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Monthly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quarterly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy Fiscal Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving</source>
+        <translation type="unfinished">Error guardando</translation>
+    </message>
 </context>
 <context>
     <name>createInvoices</name>
@@ -16803,6 +17855,14 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
     <message>
         <source>&amp;Create Invoices</source>
         <translation>&amp;Crear Facturas</translation>
+    </message>
+    <message>
+        <source>Error Creating Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Invoices</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -16956,10 +18016,6 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <source>Cannot Create Item Sites</source>
-        <translation>No se pudieron crear Sedes de Productos</translation>
-    </message>
-    <message>
         <source>&amp;Site:</source>
         <translation>&amp;Centro:</translation>
     </message>
@@ -17080,10 +18136,6 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <translation>Debe seleccionar un Método de Coste para este Centro de Producto antes de poder guardarlo.</translation>
     </message>
     <message>
-        <source>Select a Site</source>
-        <translation>Seleccionar un Centro</translation>
-    </message>
-    <message>
         <source>Cannot Save Item Site</source>
         <translation>No se pudo Guardar Sede de Producto</translation>
     </message>
@@ -17127,20 +18179,8 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
         <translation>El Número de Lote/Serie contiene espacios. ¿Desea guardarlo igualmente?</translation>
     </message>
     <message>
-        <source>Enter Quantity</source>
-        <translation>Ingresar Cantidad</translation>
-    </message>
-    <message>
-        <source>Item is Non-Fractional</source>
-        <translation>Producto no es Fraccional</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;The number entered is not valid.  Please select from the list of valid numbers.</source>
         <translation>El número indicado no es válido. Por favor, seleccione uno de la lista de números válidos.</translation>
-    </message>
-    <message>
-        <source>Enter Expiration Date</source>
-        <translation>Ingresar Fecha de Expiración</translation>
     </message>
     <message>
         <source>Enter Lot/Serial Number</source>
@@ -17173,10 +18213,6 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
     <message>
         <source>Duplicate Serial Number</source>
         <translation>Num. Serie Duplicado</translation>
-    </message>
-    <message>
-        <source>Enter Warranty Expire Date</source>
-        <translation>Indicar Fecha de Fin de la Garantía</translation>
     </message>
     <message>
         <source>&lt;p&gt;You must enter a warranty expiration date for this Lot/Serial number.</source>
@@ -17213,6 +18249,18 @@ Please verify the Count Tag Qty. and attempt to post again.</source>
     <message>
         <source>Qty To Assign:</source>
         <translation>Cant. a Asignar:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Assign Lot/Serial number</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -17258,6 +18306,10 @@ creating Planned Orders.</source>
         <source>Enter Cut Off Date</source>
         <translation>Ingresar Fecha de Corte</translation>
     </message>
+    <message>
+        <source>Error Creating Planned Orders By Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>createPlannedOrdersByPlannerCode</name>
@@ -17287,6 +18339,10 @@ creating Planned Orders.</source>
         <source>Cutoff Date:</source>
         <translation>Fecha de Corte:</translation>
     </message>
+    <message>
+        <source>Error Creating Planned Orders By Planner Code</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>createRecurringInvoices</name>
@@ -17305,6 +18361,10 @@ creating Planned Orders.</source>
     <message>
         <source>&amp;Create</source>
         <translation>&amp;Crear</translation>
+    </message>
+    <message>
+        <source>Error Creating Recurring Invoices</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -17498,6 +18558,14 @@ creating Planned Orders.</source>
         <source>The Expiration Month must be entered</source>
         <translation>Se debe proporcionar el Mes de Caducidad</translation>
     </message>
+    <message>
+        <source>Error Saving Credit Card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Card Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>creditMemo</name>
@@ -17538,10 +18606,6 @@ creating Planned Orders.</source>
         <translation>Cargo Misc.:</translation>
     </message>
     <message>
-        <source>Please select a Customer before continuing.</source>
-        <translation>Por favor, seleccione un Cliente antes de continuar.</translation>
-    </message>
-    <message>
         <source>Freight:</source>
         <translation>Flete:</translation>
     </message>
@@ -17576,10 +18640,6 @@ creating Planned Orders.</source>
     <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
-    </message>
-    <message>
-        <source>Select a Customer</source>
-        <translation>Seleccionar un Cliente</translation>
     </message>
     <message>
         <source>Shipping Zone:</source>
@@ -17624,10 +18684,6 @@ creating Planned Orders.</source>
     <message>
         <source>Status:</source>
         <translation>Estado:</translation>
-    </message>
-    <message>
-        <source>Total Less than Zero</source>
-        <translation>Total Menor que Cero</translation>
     </message>
     <message>
         <source>&lt;p&gt;Are you sure that you want to delete the current Line Item?</source>
@@ -17686,10 +18742,6 @@ creating Planned Orders.</source>
         <translation>Importe</translation>
     </message>
     <message>
-        <source>No Misc. Charge Account Number</source>
-        <translation>Ningún Número de Cuenta de Otros Cargos</translation>
-    </message>
-    <message>
         <source>Price</source>
         <translation>Precio</translation>
     </message>
@@ -17730,19 +18782,7 @@ creating Planned Orders.</source>
         <translation>El Nº de Documento ya se está utilizando. Debe proporcionar un Nº de Documento no utilizado para este Abono antes de poder guardarlo.</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
-    </message>
-    <message>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return #:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return Date:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -17750,7 +18790,63 @@ creating Planned Orders.</source>
         <translation type="unfinished">Documentos</translation>
     </message>
     <message>
-        <source>&lt;p&gt;This Return has been Posted and this cannot be modified.</source>
+        <source>Error Retrieving Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Ship To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Credit Memo Line Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Memo Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Credit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Credit Memo Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Credit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please select a Customer before continuing..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Sales Credit has been Posted and this cannot be modified.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -17825,19 +18921,23 @@ creating Planned Orders.</source>
         <translation>Acceso Denegado</translation>
     </message>
     <message>
-        <source>Return Edit List</source>
+        <source>Error Retrieving Credit Memo Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Return...</source>
+        <source>Sales Credit Edit List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Return Item...</source>
+        <source>Edit Sales Credit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You may not view or edit this Return as it references a Site for which you have not been granted privileges.</source>
+        <source>Edit Sales Credit Item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not view or edit this Sales Credit as it references a Site for which you have not been granted privileges.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -17874,10 +18974,6 @@ creating Planned Orders.</source>
     <message>
         <source>N/A</source>
         <translation>N/D</translation>
-    </message>
-    <message>
-        <source>Invalid Credit Quantity</source>
-        <translation>Cant. de Crédito Inválida</translation>
     </message>
     <message>
         <source>Qty. &amp;Returned:</source>
@@ -17964,23 +19060,95 @@ creating Planned Orders.</source>
         <translation>% Descuento (Precio Lista)</translation>
     </message>
     <message>
-        <source>Return Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return #:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You have not selected a quantity of the selected item to credit. If you wish to return a quantity to stock but not issue a Return then you should enter a Return to Stock transaction from the I/M module.  Otherwise, you must enter a quantity to credit.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Getting Returns UOMs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Getting UOMs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished">Producto</translation>
+    </message>
+    <message>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description:</source>
+        <translation type="unfinished">Descripción:</translation>
+    </message>
+    <message>
+        <source>Sales Category:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item:</source>
+        <translation type="unfinished">Artículo:</translation>
+    </message>
+    <message>
+        <source>Alternate Revenue Account:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter an Item Number for this Miscellaneous Credit Memo Item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a Item Description for this Miscellaneous Credit Memo Item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must select a Sales Category for this Miscellaneous Credit Memo Item before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Credit Memo Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Credit Memo Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Determine Item Site</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Memo Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You have not selected a quantity of the selected item to credit. If you wish to return a quantity to stock but not issue a Sales Credit then you should enter a Return to Stock transaction from the I/M module.  Otherwise, you must enter a quantity to credit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting Sales Credit UOMs</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -18225,10 +19393,6 @@ creating Planned Orders.</source>
     <message>
         <source>&lt;p&gt;Are you sure you want to convert this Customer to a Prospect and delete its Customer information?</source>
         <translation>¿Está seguro que desea convertir este Cliente en Cliente Potencial y eliminar su información de Cliente?</translation>
-    </message>
-    <message>
-        <source>Workbench...</source>
-        <translation>Herramientas...</translation>
     </message>
     <message>
         <source>Primary</source>
@@ -18659,6 +19823,18 @@ creating Planned Orders.</source>
         <source>Error deleting Account</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Create Date on or After</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Date on or Before</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Date</source>
+        <translation type="unfinished">Fecha de Creación</translation>
+    </message>
 </context>
 <context>
     <name>currencies</name>
@@ -18738,6 +19914,18 @@ creating Planned Orders.</source>
         <source>Getting Currencies</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Currency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Rate Comments:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>currenciesDialog</name>
@@ -18751,19 +19939,6 @@ creating Planned Orders.</source>
     <message>
         <source>Currency</source>
         <translation type="unfinished">Moneda</translation>
-    </message>
-    <message>
-        <source>Symbol or Abbreviation Required</source>
-        <translation>Símbolo o abreviación es obligatorio</translation>
-    </message>
-    <message>
-        <source>Either the currency symbol or abbreviation must be supplied.
-(Both would be better.)</source>
-        <translation>Debe indicarse el símbolo o la abreviatura de la moneda. (Mejor ambos.)</translation>
-    </message>
-    <message>
-        <source>Name Required</source>
-        <translation>Nombre Requerido</translation>
     </message>
     <message>
         <source>Currency name is required.</source>
@@ -18781,10 +19956,6 @@ ISO abbreviations are exactly 3 characters long.</source>
     <message>
         <source>Set Base Currency?</source>
         <translation>¿Definir Monada Base?</translation>
-    </message>
-    <message>
-        <source>Abbreviation Too Long</source>
-        <translation>Abreviatura Muy Larga</translation>
     </message>
     <message>
         <source>You cannot change the base currency after it is set.  Are you sure you want %1 to be the base currency?</source>
@@ -18806,6 +19977,23 @@ ISO abbreviations are exactly 3 characters long.</source>
         <source>Abbreviation:</source>
         <translation>Abreviatura:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Either the currency symbol or abbreviation must be supplied.
+(Both would be better).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Currency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>currencyConversion</name>
@@ -18816,10 +20004,6 @@ ISO abbreviations are exactly 3 characters long.</source>
     <message>
         <source>Exchange Rate:</source>
         <translation>Tasa de Cambio:</translation>
-    </message>
-    <message>
-        <source>No Rate Specified</source>
-        <translation>No se ha especificado Tasa de Cambio</translation>
     </message>
     <message>
         <source>Currency Exchange Rate</source>
@@ -18843,18 +20027,6 @@ Please check the values of these dates.</source>
         <translation>Monedas:</translation>
     </message>
     <message>
-        <source>Missing Currency</source>
-        <translation>Falta Moneda</translation>
-    </message>
-    <message>
-        <source>Invalid Date Order</source>
-        <translation>Fecha Orden Inválida</translation>
-    </message>
-    <message>
-        <source>Missing Start Date</source>
-        <translation>Falta Fecha de Inicio</translation>
-    </message>
-    <message>
         <source>Please specify a currency for this exchange rate.</source>
         <translation>Por favor especifique una moneda para esta tasa de cambio.</translation>
     </message>
@@ -18863,17 +20035,17 @@ Please check the values of these dates.</source>
         <translation>Por favor especifique Fecha de Inicio para esta tasa de cambio.</translation>
     </message>
     <message>
-        <source>Missing End Date</source>
-        <translation>Falta Fecha Final</translation>
-    </message>
-    <message>
-        <source>Please specify an End Date for this exchange rate. </source>
-        <translation>Por favor especifique Fecha Final para esta tasa de cambio. </translation>
-    </message>
-    <message>
         <source>The Start Date for this exchange rate is later than the End Date.
 Please check the values of these dates.</source>
         <translation>La Fecha Inicial de este tipo de cambio es posterior a la Fecha Final. Por favor, compruebe los valores de estas fechas.</translation>
+    </message>
+    <message>
+        <source>Please specify an End Date for this exchange rate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Currency Conversion</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -18990,6 +20162,14 @@ Please check the values of these dates.</source>
         <source>List Currency Exchange Rates</source>
         <translation>Listar Tasas Cambio Monedas</translation>
     </message>
+    <message>
+        <source>Error Deleting Currency Exchange Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Currency Exchange Rates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>currencySelect</name>
@@ -19020,6 +20200,10 @@ Please check the values of these dates.</source>
     <message>
         <source>Country:</source>
         <translation>Pais:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Currency Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -19164,6 +20348,22 @@ Please check the values of these dates.</source>
         <source>CRM</source>
         <translation>CRM</translation>
     </message>
+    <message>
+        <source>Error Retrieving Custom Command Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Custom Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Rejecting Custom Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Custom Command Argument</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>customCommandArgument</name>
@@ -19194,6 +20394,14 @@ Please check the values of these dates.</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>&amp;Cancelar</translation>
+    </message>
+    <message>
+        <source>Error Saving Custom Command Argument</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Custom Command Argument Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -19233,6 +20441,14 @@ Please check the values of these dates.</source>
     <message>
         <source>Package</source>
         <translation>Paquete</translation>
+    </message>
+    <message>
+        <source>Error Deleting Custom Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Custom Command Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -19364,10 +20580,6 @@ Please check the values of these dates.</source>
     <message>
         <source>Deleting Characteristic</source>
         <translation>Eliminando Característica</translation>
-    </message>
-    <message>
-        <source>Deleting Ship To</source>
-        <translation>Eliminando Destinatario</translation>
     </message>
     <message>
         <source>Delete...</source>
@@ -19614,10 +20826,6 @@ Please check the values of these dates.</source>
         <translation>Activo</translation>
     </message>
     <message>
-        <source>The customer record was automatically saved to the database. The committed changeswill not be cancelled.</source>
-        <translation>La ficha del cliente se ha guardado automáticamente en la base de datos. Los cambios confirmados no se cancelarán.</translation>
-    </message>
-    <message>
         <source>Accounting</source>
         <translation>Contabilidad</translation>
     </message>
@@ -19801,6 +21009,26 @@ Please check the values of these dates.</source>
         <source>Getting Account</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting Ship To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The customer record was automatically saved to the database. The committed changes will not be cancelled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete?</source>
+        <translation type="unfinished">¿Eliminar?</translation>
+    </message>
+    <message>
+        <source>Do you want to DELETE all characteristics related to the old Customer Type?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database Error</source>
+        <translation type="unfinished">Error en la Base de Datos</translation>
+    </message>
 </context>
 <context>
     <name>customerFormAssignment</name>
@@ -19849,7 +21077,15 @@ Please check the values of these dates.</source>
         <translation>El Tipo de Cliente especificado ya está en la base de datos.</translation>
     </message>
     <message>
-        <source>Return Form:</source>
+        <source>Error Saving Form Assignment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Form Assignment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Form:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -19912,8 +21148,16 @@ Please check the values of these dates.</source>
         <translation>Lista de Picking de O/V</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Error Deleting Form Assignment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Form Assignment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -19970,6 +21214,26 @@ Please check the values of these dates.</source>
         <source>&amp;New</source>
         <translation>Nuevo</translation>
     </message>
+    <message>
+        <source>Error Retrieving Customer Group Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Rejecting Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Customer From Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding Customer To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>customerGroups</name>
@@ -20009,13 +21273,17 @@ Please check the values of these dates.</source>
         <source>&amp;Edit</source>
         <translation>Editar</translation>
     </message>
+    <message>
+        <source>Delete?</source>
+        <translation type="unfinished">¿Eliminar?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete this Customer Group?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>customerType</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>You have entered a duplicate Code for this Customer Type. Please select a different Code before saving.</source>
         <translation>Ha indicado un Código duplicado para este Tipo de Cliente. Por favor, seleccione un Código diferente antes de guardarlo.</translation>
@@ -20023,10 +21291,6 @@ Please check the values of these dates.</source>
     <message>
         <source>You must enter a valid Code for this Customer Type before creating it.</source>
         <translation>Debe de ingresar un Codigo Cliente Tipo valido antes de poder crear Cliente.</translation>
-    </message>
-    <message>
-        <source>Invalid Customer Type Code</source>
-        <translation>El Código de Tipo de Cliente no es válido</translation>
     </message>
     <message>
         <source>Cannot Save Customer Type</source>
@@ -20047,6 +21311,14 @@ Please check the values of these dates.</source>
     <message>
         <source>Enable Characteristics Profile</source>
         <translation>Habilitar el Perfil de Características</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Customer Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -20117,6 +21389,10 @@ Please check the values of these dates.</source>
     <message>
         <source>Customer Types:</source>
         <translation>Tipos de Clientes:</translation>
+    </message>
+    <message>
+        <source>Error Deleting Customer Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -20309,6 +21585,22 @@ Please check the values of these dates.</source>
         <source>Bill Title</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Credit Warn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hold Type</source>
+        <translation type="unfinished">Tipo Bloqueo</translation>
+    </message>
 </context>
 <context>
     <name>databaseInformation</name>
@@ -20406,6 +21698,22 @@ Please check the values of these dates.</source>
     </message>
     <message>
         <source>Enable Gapless Document Numbering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enforce User Password Reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password change every</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Days</source>
+        <translation type="unfinished">Días</translation>
+    </message>
+    <message>
+        <source>Error Getting User Data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -20519,14 +21827,16 @@ to be deleted.</source>
         <translation>Debe indicar un Nombre de Departamento</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2
-
-%3</source>
-        <translation>Se ha producido un Error de Sistema en %1::%2 %3</translation>
-    </message>
-    <message>
         <source>Department Number:</source>
         <translation>Número de Departamento:</translation>
+    </message>
+    <message>
+        <source>Error Saving Department Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Department Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -20542,12 +21852,6 @@ to be deleted.</source>
     <message>
         <source>Close</source>
         <translation>Cerrar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2
-
-%3</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2 %3</translation>
     </message>
     <message>
         <source>Edit</source>
@@ -20576,6 +21880,10 @@ to be deleted.</source>
     <message>
         <source>List Departments</source>
         <translation>Listar Departamentos</translation>
+    </message>
+    <message>
+        <source>Error Deleting Department</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -20706,6 +22014,18 @@ to be deleted.</source>
     <message>
         <source>The report %1 does not exist.</source>
         <translation>El informe %1 no existe.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expand All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Collapse All</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -20915,7 +22235,11 @@ to be deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Distribute Default Location</source>
+        <source>Error Retrieving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Item Site Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -20981,6 +22305,14 @@ to be deleted.</source>
     <message>
         <source>&amp;Distribute</source>
         <translation>&amp;Distribuir</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Location Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not distribute more than one of the same serial controlled item.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -21299,6 +22631,14 @@ to be deleted.</source>
         <source>Debit</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving AP Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving AP Voucher Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspAPOpenItemsByVendor</name>
@@ -21447,6 +22787,22 @@ This Item is already selected for payment.</source>
     <message>
         <source>Checking Privileges</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document</source>
+        <translation type="unfinished">Documento</translation>
+    </message>
+    <message>
+        <source>Due</source>
+        <translation type="unfinished">Vencimiento</translation>
+    </message>
+    <message>
+        <source>Print...</source>
+        <translation type="unfinished">Imprimir...</translation>
+    </message>
+    <message>
+        <source>Apply Credit Memo...</source>
+        <translation type="unfinished">Aplicar Abono...</translation>
     </message>
 </context>
 <context>
@@ -21651,6 +23007,14 @@ This Item is already selected for payment.</source>
         <source>A/P Check</source>
         <translation>CxP Cheque</translation>
     </message>
+    <message>
+        <source>Error Retrieving AR Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving AR Debit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspAROpenItems</name>
@@ -21719,10 +23083,6 @@ This Item is already selected for payment.</source>
         <translation>Fecha de Vencimiento</translation>
     </message>
     <message>
-        <source>Could not post Invoice #%1 into a closed period.</source>
-        <translation>No se ha podido contabilizar la Factura Nº%1 en un período cerrado.</translation>
-    </message>
-    <message>
         <source>View Receivable Item...</source>
         <translation>Ver Posición de Deudores...</translation>
     </message>
@@ -21746,11 +23106,6 @@ Would you like to post it anyway?</source>
     <message>
         <source>Amount</source>
         <translation>Monto</translation>
-    </message>
-    <message>
-        <source>A System Error occurred posting Invoice #%1.
-%2</source>
-        <translation>Se ha producido un Error del Sistema contabilizando Factura Nº%1 %2</translation>
     </message>
     <message>
         <source>Access Denied</source>
@@ -21781,11 +23136,6 @@ Would you like to post it anyway?</source>
         <translation>No se puede reembolsar por Tarjeta de Crédito</translation>
     </message>
     <message>
-        <source>System Error posting Invoice #%1
-%2</source>
-        <translation>Error de Sistema contabilizando Factura Nº%1 %2</translation>
-    </message>
-    <message>
         <source>Post...</source>
         <translation>Contabilizar...</translation>
     </message>
@@ -21814,10 +23164,6 @@ Would you like to post it anyway?</source>
         <translation>¿Está seguro que desea eliminar las Facturas seleccionadas?</translation>
     </message>
     <message>
-        <source>Void Posted Credit Memo...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Customer Deposit</source>
         <translation>Depósito de Cliente</translation>
     </message>
@@ -21839,11 +23185,6 @@ Would you like to post it anyway?</source>
     </message>
     <message>
         <source>Void Posted Invoice?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A System Error occurred voiding Invoice.
-%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -21897,10 +23238,6 @@ Would you like to post it anyway?</source>
     <message>
         <source>Deposit</source>
         <translation type="unfinished">Depósito</translation>
-    </message>
-    <message>
-        <source>Could not post Invoice #%1 because of a missing exchange rate.</source>
-        <translation>No se ha podido contabilizar la Factura Nº%1 porque falta un tipo de cambio.</translation>
     </message>
     <message>
         <source>Both</source>
@@ -22019,11 +23356,6 @@ Would you like to post it anyway?</source>
         <translation>Transacción Cancelada</translation>
     </message>
     <message>
-        <source>Error deleting Invoice %1
-</source>
-        <translation>Error eliminando Factura %1</translation>
-    </message>
-    <message>
         <source>Only Items with Incidents</source>
         <translation>Sólo Productos con Incidencias</translation>
     </message>
@@ -22036,74 +23368,94 @@ Would you like to post it anyway?</source>
         <translation>Tarjeta de Crédito</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
-    </message>
-    <message>
         <source>Open Customer...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Return...</source>
+        <source>Error Retrieving AR Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>View Return...</source>
+        <source>Delete Selected Credit Memos?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Selected Returns?</source>
+        <source>&lt;p&gt;Are you sure that you want to delete the selected Credit Memos?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Are you sure that you want to delete the selected Returns?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not delete Return.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error deleting Return %1
+        <source>Error Deleting Credit Memo %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Void Posted Return?</source>
+        <source>Error Deleting Invoice %1
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;This Return has already been posted. Are you sure you want to void it?</source>
+        <source>Void Posted Credit Memo?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Void Return</source>
+        <source>&lt;p&gt;This Credit Memo has already been posted. Are you sure you want to void it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A System Error occurred voiding Return.
-%1</source>
+        <source>Error Voiding Credit Memo %1
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Return Date</source>
+        <source>Void Memo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Post Return</source>
+        <source>Error Voiding Invoice %1
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not post Return #%1 because of a missing exchange rate.</source>
+        <source>Credit Memo Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A System Error occurred posting Return#%1.
+        <source>Error Posting Credit Memo %1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post Credit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Credit Memo#%1.
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You may not view or edit this Return as it references a Site for which you have not been granted privileges.</source>
+        <source>Error Posting Invoice#%1.
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not view or edit this Credit Memo as it references a Site for which you have not been granted privileges.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Sales Credit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Void Posted Sales Credit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View Sales Credit...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -22197,10 +23549,6 @@ Would you like to post it anyway?</source>
 <context>
     <name>dspBOMBase</name>
     <message>
-        <source>You must specify a valid item.</source>
-        <translation type="unfinished">Debe indicar un producto válido.</translation>
-    </message>
-    <message>
         <source>Show &amp;Future Components</source>
         <translation>Mostrar Componentes &amp;Futuros</translation>
     </message>
@@ -22221,10 +23569,6 @@ Would you like to post it anyway?</source>
         <translation>Lista de Materiales</translation>
     </message>
     <message>
-        <source>Invalid Item</source>
-        <translation>Elemento no válido</translation>
-    </message>
-    <message>
         <source>Always</source>
         <translation>Siempre</translation>
     </message>
@@ -22239,6 +23583,14 @@ Would you like to post it anyway?</source>
     <message>
         <source>View...</source>
         <translation>Ver...</translation>
+    </message>
+    <message>
+        <source>Enter a valid Item Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid item number.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -22387,6 +23739,10 @@ Would you like to post it anyway?</source>
         <source>Currency</source>
         <translation type="unfinished">Moneda</translation>
     </message>
+    <message>
+        <source>Error Retrieving Packing List Batch Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspBankrecHistory</name>
@@ -22478,6 +23834,10 @@ Would you like to post it anyway?</source>
         <source>Date Posted:</source>
         <translation>Fecha Asentado:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Bank Rec Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspBillingSelections</name>
@@ -22500,10 +23860,6 @@ Would you like to post it anyway?</source>
     <message>
         <source>Billing List:</source>
         <translation>Lista de Facturación:</translation>
-    </message>
-    <message>
-        <source>Cannot Create one or more Invoices</source>
-        <translation>No se pueden crear una o más Facturas</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
@@ -22562,10 +23918,6 @@ Would you like to post it anyway?</source>
         <translation>Nº Pedido</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2, Error #%3.</source>
-        <translation>Se ha producido un Error de Sistema en %1::%2, Error Nº%3.</translation>
-    </message>
-    <message>
         <source>&amp;Yes</source>
         <translation>Sí</translation>
     </message>
@@ -22578,9 +23930,11 @@ Would you like to post it anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The Ledger Account Assignments for the selected Invoice are not configured correctly.
-Because of this, G/L Transactions cannot be created for this Invoices.
-You must contact your Systems Administrator to have this corrected before you may Create this Invoice.</source>
+        <source>Error Posting Billing Selection(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Billing Selection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -22720,6 +24074,26 @@ You must contact your Systems Administrator to have this corrected before you ma
     </message>
     <message>
         <source>Margin %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer P/O Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cust. P/O #</source>
+        <translation type="unfinished"># O/C Clien.</translation>
+    </message>
+    <message>
+        <source>Order Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line Status</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -22943,6 +24317,14 @@ You must contact your Systems Administrator to have this corrected before you ma
     <message>
         <source>Margin %</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer P/O Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cust. P/O #</source>
+        <translation type="unfinished"># O/C Clien.</translation>
     </message>
 </context>
 <context>
@@ -23213,8 +24595,20 @@ You must contact your Systems Administrator to have this corrected before you ma
         <translation>Cliente</translation>
     </message>
     <message>
-        <source>Funds Type</source>
+        <source>Funds Type:</source>
         <translation type="unfinished">Tipo de Fondos:</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished">Todos</translation>
+    </message>
+    <message>
+        <source>Error Posting Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Reversing Posted Cash Receipt</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -23351,6 +24745,14 @@ You must contact your Systems Administrator to have this corrected before you ma
         <source>Void Posted Payment...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Check Register Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Voiding Posted Check</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspCostedBOMBase</name>
@@ -23461,6 +24863,10 @@ You must contact your Systems Administrator to have this corrected before you ma
         <source>Costed Indented Bill of Materials</source>
         <translation>Lista de Materiales valorados por Niveles</translation>
     </message>
+    <message>
+        <source>Error Retrieving Indented BOM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspCostedSingleLevelBOM</name>
@@ -23475,6 +24881,10 @@ You must contact your Systems Administrator to have this corrected before you ma
     <message>
         <source>Standard Cost</source>
         <translation>Costo Estándar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving BOM Cost Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -23896,6 +25306,22 @@ You must contact your Systems Administrator to have this corrected before you ma
         <source>&amp;Highlight Tag when Variance % Exceeds</source>
         <translation>Resaltar Etiqueta cuando el % de Desviación Supere</translation>
     </message>
+    <message>
+        <source>Error Retrieving Inventory Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Count Tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Count Slip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Count Tag Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspCountTagsBase</name>
@@ -24146,6 +25572,10 @@ You must contact your Systems Administrator to have this corrected before you ma
     <message>
         <source>Document #</source>
         <translation>Nº Documento</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Card Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -24488,6 +25918,10 @@ You must contact your Systems Administrator to have this corrected before you ma
         <source>Latest</source>
         <translation>Último</translation>
     </message>
+    <message>
+        <source>Active:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspDetailedInventoryHistoryByLotSerial</name>
@@ -24630,6 +26064,54 @@ You must contact your Systems Administrator to have this corrected before you ma
     <message>
         <source>Expiration</source>
         <translation type="unfinished">Vencimiento</translation>
+    </message>
+    <message>
+        <source>Customer #/Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ShipTo Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ShipTo Line1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ShipTo Line2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ShipTo Line3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>City/State/Zip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Country</source>
+        <translation type="unfinished">País</translation>
+    </message>
+    <message>
+        <source>Contact</source>
+        <translation type="unfinished">Contacto</translation>
+    </message>
+    <message>
+        <source>Contact Phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contact Fax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Contact Email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation type="unfinished">Teléfono</translation>
     </message>
 </context>
 <context>
@@ -25147,6 +26629,10 @@ Total</source>
         <source>Difference %</source>
         <translation>Diferencia %</translation>
     </message>
+    <message>
+        <source>Error Retrieving Financial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspFreightPricesByCustomer</name>
@@ -25531,6 +27017,14 @@ Total</source>
         <source>Invalid Date Range</source>
         <translation>Rango de Fecha no válido</translation>
     </message>
+    <message>
+        <source>Error Retrieving GL Series Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting GL Series Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspGLTransactions</name>
@@ -25713,6 +27207,30 @@ Total</source>
     <message>
         <source>Equity</source>
         <translation>Patrimonio</translation>
+    </message>
+    <message>
+        <source>Document Type</source>
+        <translation type="unfinished">Tipo de Documento</translation>
+    </message>
+    <message>
+        <source>Journal # Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transaction Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Trial Balance Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving GL Transaction Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating GL Account Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -26086,6 +27604,26 @@ Total</source>
         <source>Available QOH</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>A Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ABC Class</source>
+        <translation type="unfinished">Clase ABC</translation>
+    </message>
+    <message>
+        <source>Reserved</source>
+        <translation type="unfinished">Reservado</translation>
+    </message>
 </context>
 <context>
     <name>dspInventoryAvailabilityByCustomerType</name>
@@ -26136,11 +27674,6 @@ Total</source>
     <message>
         <source>This Reserve</source>
         <translation>Esta Reserva</translation>
-    </message>
-    <message>
-        <source>Error
-</source>
-        <translation>Error</translation>
     </message>
     <message>
         <source>Only Show Shortages</source>
@@ -26196,6 +27729,14 @@ Total</source>
     </message>
     <message>
         <source>Print Packing List...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Item Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -26310,16 +27851,19 @@ Total</source>
         <translation>Reservar Ajuste de Líneas</translation>
     </message>
     <message>
-        <source>Error
-</source>
-        <translation>Error</translation>
-    </message>
-    <message>
         <source>Use Reservation Netting</source>
         <translation>Usar Mallado de Reservas</translation>
     </message>
     <message>
         <source>Available QOH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Item Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -26608,6 +28152,22 @@ Total</source>
         <source>View Work Order Information...</source>
         <translation>Ver Información de la Orden de Trabajo…</translation>
     </message>
+    <message>
+        <source>A Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ABC Class</source>
+        <translation type="unfinished">Clase ABC</translation>
+    </message>
 </context>
 <context>
     <name>dspInventoryLocator</name>
@@ -26818,6 +28378,10 @@ Total</source>
         <source>Base Amount</source>
         <translation>Monto Base</translation>
     </message>
+    <message>
+        <source>Error Retrieving Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspInvoiceRegister</name>
@@ -26941,6 +28505,14 @@ Total</source>
         <source>Credit Memo Not Found</source>
         <translation>Nota de Crédito no se encontró</translation>
     </message>
+    <message>
+        <source>Error Retrieving Invoicing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspItemCostDetail</name>
@@ -27003,6 +28575,10 @@ Total</source>
     <message>
         <source>Show Actual Costs</source>
         <translation>Mostrar Costes Reales</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Cost Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -27170,10 +28746,6 @@ Total</source>
         <translation>Asentar Costos Reales…</translation>
     </message>
     <message>
-        <source>Only Show &amp;Zero Cost Items</source>
-        <translation>Mostrar sólo los Productos con Costo &amp;Cero</translation>
-    </message>
-    <message>
         <source>Std. Cost</source>
         <translation>Costo Estdr.</translation>
     </message>
@@ -27184,6 +28756,46 @@ Total</source>
     <message>
         <source>UOM</source>
         <translation>UM</translation>
+    </message>
+    <message>
+        <source>Only Show Zero Last Actual Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only Show &amp;Zero Standard Cost Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item Types</source>
+        <translation type="unfinished">Tipos de Productos</translation>
+    </message>
+    <message>
+        <source>Outside Service</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchased</source>
+        <translation type="unfinished">Comprado</translation>
+    </message>
+    <message>
+        <source>Planning</source>
+        <translation type="unfinished">Planificación</translation>
+    </message>
+    <message>
+        <source>All Others</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manufactured</source>
+        <translation type="unfinished">Fabricado</translation>
+    </message>
+    <message>
+        <source>Costing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item Type</source>
+        <translation type="unfinished">Tipo de Producto</translation>
     </message>
 </context>
 <context>
@@ -27398,6 +29010,10 @@ Total</source>
     </message>
     <message>
         <source>Expires End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -27759,6 +29375,10 @@ Total</source>
     <message>
         <source>Allocations</source>
         <translation>Asignaciones</translation>
+    </message>
+    <message>
+        <source>Error Printing MRP Detail</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -28124,10 +29744,6 @@ Total</source>
         <translation>Producto Componente</translation>
     </message>
     <message>
-        <source>Invalid W/O</source>
-        <translation>O/T no válida</translation>
-    </message>
-    <message>
         <source>Post Date</source>
         <translation>Fecha de Asiento</translation>
     </message>
@@ -28178,6 +29794,10 @@ Total</source>
     <message>
         <source>Material Usage Variance by Work Order</source>
         <translation>Desviación en el Consumo de Materiales por Orden de Trabajo</translation>
+    </message>
+    <message>
+        <source>Work Order Required</source>
+        <translation type="unfinished">Se precisa una Orden de Trabajo</translation>
     </message>
 </context>
 <context>
@@ -28253,10 +29873,6 @@ Total</source>
     <message>
         <source>Edit Purchase Order...</source>
         <translation>Editar Orden de Compra...</translation>
-    </message>
-    <message>
-        <source>You must specify a Project.</source>
-        <translation>Debe especificar un Proyecto.</translation>
     </message>
     <message>
         <source>Converted</source>
@@ -29168,6 +30784,10 @@ Total</source>
         <source>This Planned Order is firm and must be softened before editing.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspPoDeliveryDateVariancesByItem</name>
@@ -29786,6 +31406,14 @@ Total</source>
         <source>Please enter a valid Vendor Number.</source>
         <translation>Por favor, introduzca un Número de Proveedor válido.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspPoItemsByDate</name>
@@ -29961,6 +31589,14 @@ Total</source>
         <source>Running Availability...</source>
         <translation>Disponibilidad en Curso…</translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspPoItemsByItem</name>
@@ -30091,6 +31727,14 @@ Total</source>
     <message>
         <source>Please enter a valid Item Number.</source>
         <translation>Favor ingresar Número Artículo válido.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -30250,6 +31894,14 @@ Total</source>
     <message>
         <source>Closed</source>
         <translation>Cerrado</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -30909,6 +32561,14 @@ Total</source>
         <source>Use Actual Costs</source>
         <translation>Usar Costos Reales</translation>
     </message>
+    <message>
+        <source>Shipping Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspPurchaseReqsByItem</name>
@@ -31002,6 +32662,10 @@ Total</source>
     </message>
     <message>
         <source>&lt;p&gt;Purchase Request %1 could not be released.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Purchase Request(s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -31113,6 +32777,10 @@ Total</source>
     </message>
     <message>
         <source>&lt;p&gt;Purchase Request %1 could not be released.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Purchase Request(s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -31286,6 +32954,22 @@ Total</source>
         <source>Reset this Quantity to 0...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>A Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ABC Class</source>
+        <translation type="unfinished">Clase ABC</translation>
+    </message>
 </context>
 <context>
     <name>dspQOHByLocation</name>
@@ -31368,6 +33052,85 @@ Total</source>
     <message>
         <source>T/O</source>
         <translation type="unfinished">O/T</translation>
+    </message>
+</context>
+<context>
+    <name>dspQOHByZone</name>
+    <message>
+        <source>Quantities on Hand By Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Site</source>
+        <translation type="unfinished">Centro</translation>
+    </message>
+    <message>
+        <source>Item Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished">Descripción</translation>
+    </message>
+    <message>
+        <source>UOM</source>
+        <translation type="unfinished">UM</translation>
+    </message>
+    <message>
+        <source>Location</source>
+        <translation type="unfinished">Ubicación</translation>
+    </message>
+    <message>
+        <source>QOH</source>
+        <translation type="unfinished">Cantidad Disponible</translation>
+    </message>
+    <message>
+        <source>Aisle</source>
+        <translation type="unfinished">Pasillo</translation>
+    </message>
+    <message>
+        <source>Rack</source>
+        <translation type="unfinished">Estante</translation>
+    </message>
+    <message>
+        <source>Bin</source>
+        <translation type="unfinished">Sección</translation>
+    </message>
+    <message>
+        <source>View Location/Lot/Serial # Detail...</source>
+        <translation type="unfinished">Ver Detalle de Ubicación/Lote/Nº Serie...</translation>
+    </message>
+    <message>
+        <source>Transfer to another Site...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust this Quantity...</source>
+        <translation type="unfinished">Ajustar esta Cantidad...</translation>
+    </message>
+    <message>
+        <source>Reset this Quantity to 0...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Misc. Count...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issue Count Tag...</source>
+        <translation type="unfinished">Generar Etiqueta de Inventario…</translation>
+    </message>
+    <message>
+        <source>Missing Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Please select a Warehouse Zone</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -31697,6 +33460,121 @@ Total</source>
         <source>Available QOH:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>dspReturnAuthorizationsByItem</name>
+    <message>
+        <source>Return Authorization Lookup by Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Return Authorizations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Earliest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting Order Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ending Order Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Return #</source>
+        <translation type="unfinished">Nº de Devolución</translation>
+    </message>
+    <message>
+        <source>Created</source>
+        <translation type="unfinished">Creado</translation>
+    </message>
+    <message>
+        <source>Customer</source>
+        <translation type="unfinished">Cliente</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation type="unfinished">Estado</translation>
+    </message>
+    <message>
+        <source>Order UOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authorized</source>
+        <translation type="unfinished">Autorizado</translation>
+    </message>
+    <message>
+        <source>Received</source>
+        <translation type="unfinished">Recibido</translation>
+    </message>
+    <message>
+        <source>Edit...</source>
+        <translation type="unfinished">Editar...</translation>
+    </message>
+    <message>
+        <source>View...</source>
+        <translation type="unfinished">Ver...</translation>
+    </message>
+    <message>
+        <source>Item Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must specify an Item Number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dates Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must specify a valid Date range.</source>
+        <translation type="unfinished">Debe especificar un rango de fechas válido.</translation>
+    </message>
+    <message>
+        <source>Undefined</source>
+        <translation type="unfinished">Indefinido</translation>
+    </message>
+    <message>
+        <source>Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Return</source>
+        <translation type="unfinished">Devolución</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <translation type="unfinished">Reemplazar</translation>
+    </message>
+    <message>
+        <source>Service</source>
+        <translation type="unfinished">Servicio</translation>
+    </message>
+    <message>
+        <source>Substitute</source>
+        <translation type="unfinished">Sustitución</translation>
+    </message>
+    <message>
+        <source>Access Denied</source>
+        <translation type="unfinished">Acceso Denegado</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You may not view or edit this Return Authorization as it references a Site for which you have not been granted privileges.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspRunningAvailability</name>
@@ -31868,6 +33746,22 @@ Total</source>
         <source>Edit Purchase Order...</source>
         <translation type="unfinished">Editar Orden de Compra...</translation>
     </message>
+    <message>
+        <source>Reserved</source>
+        <translation type="unfinished">Reservado</translation>
+    </message>
+    <message>
+        <source>Error Saving Planned Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Planned Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspSalesHistory</name>
@@ -32035,6 +33929,14 @@ Total</source>
         <source>Margin %</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Customer P/O Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cust. P/O #</source>
+        <translation type="unfinished"># O/C Clien.</translation>
+    </message>
 </context>
 <context>
     <name>dspSalesOrderStatus</name>
@@ -32147,7 +34049,7 @@ Total</source>
     </message>
     <message>
         <source>Customer Type Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Patrón de Tipo de Cliente</translation>
     </message>
     <message>
         <source>Start Date</source>
@@ -32159,7 +34061,7 @@ Total</source>
     </message>
     <message>
         <source>P/O Number</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">O/C Número</translation>
     </message>
     <message>
         <source>Project</source>
@@ -32256,6 +34158,10 @@ Total</source>
     <message>
         <source>You may not view or edit this Sales Order as it references a Site for which you have not been granted privileges.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Created By</source>
+        <translation type="unfinished">Creado Por</translation>
     </message>
 </context>
 <context>
@@ -32372,6 +34278,30 @@ Total</source>
         <source>Copy...</source>
         <translation type="unfinished">Copiar...</translation>
     </message>
+    <message>
+        <source>Order UOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inv. UOM</source>
+        <translation type="unfinished">UM Inv.</translation>
+    </message>
+    <message>
+        <source>Inv. Ordered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inv. Shipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inv. Returned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inv. Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspShipmentsBase</name>
@@ -32482,6 +34412,10 @@ Total</source>
     <message>
         <source>Notes</source>
         <translation type="unfinished">Notas</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -32821,6 +34755,18 @@ Total</source>
         <source>Quantities on Hand</source>
         <translation>Existencias</translation>
     </message>
+    <message>
+        <source>Use Posted Costs</source>
+        <translation type="unfinished">Usar Costes Contabilizados</translation>
+    </message>
+    <message>
+        <source>Tolerance:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%</source>
+        <translation type="unfinished">%</translation>
+    </message>
 </context>
 <context>
     <name>dspStandardJournalHistory</name>
@@ -32879,6 +34825,10 @@ Total</source>
     <message>
         <source>Standard Journal History</source>
         <translation>Historial Diario Estándar</translation>
+    </message>
+    <message>
+        <source>Error Deleting GL Series Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -33145,6 +35095,14 @@ Total</source>
         <source>Summarized Backlog by Site</source>
         <translation>Resumen de Atrasos por Sede</translation>
     </message>
+    <message>
+        <source>Error Deleting Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspSummarizedBankrecHistory</name>
@@ -33206,6 +35164,10 @@ Total</source>
     </message>
     <message>
         <source>&lt;p&gt;reopenBankReconciliation failed, result=%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Reconciliation Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -33506,6 +35468,14 @@ Total</source>
         <source>Include Misc. Items</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Customer P/O Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspTax1099</name>
@@ -33567,6 +35537,50 @@ Total</source>
     </message>
     <message>
         <source>Select Vendors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number</source>
+        <translation type="unfinished">Número</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
+    </message>
+    <message>
+        <source>Tax Id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Amount</source>
+        <translation type="unfinished">Monto</translation>
+    </message>
+    <message>
+        <source>Rent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Misc.</source>
+        <translation type="unfinished">Misc.</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation type="unfinished">Dirección</translation>
+    </message>
+    <message>
+        <source>Gets 1099</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expense Number</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -33832,6 +35846,150 @@ Total</source>
         <source>Description</source>
         <translation>Descripción</translation>
     </message>
+    <message>
+        <source>Misc. Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reverse Charge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax History Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchase Freight %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Currency 
+Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchase %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>dspTaxReturn</name>
+    <message>
+        <source>Tax Return</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Authority:</source>
+        <translation type="unfinished">Autoridad Fiscal:</translation>
+    </message>
+    <message>
+        <source>Basis</source>
+        <translation type="unfinished">Base</translation>
+    </message>
+    <message>
+        <source>Document Date</source>
+        <translation type="unfinished">Fecha del Documento</translation>
+    </message>
+    <message>
+        <source>Distribution Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished">Rango de Fechas</translation>
+    </message>
+    <message>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Return:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales %1</source>
+        <translation type="unfinished">Ventas %1</translation>
+    </message>
+    <message>
+        <source>Output Tax %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchases %1</source>
+        <translation type="unfinished">Compras %1</translation>
+    </message>
+    <message>
+        <source>Input Tax %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rev. Charge %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rev. Charge Tax %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Net Tax %1</source>
+        <translation type="unfinished">Impuesto Neto %1</translation>
+    </message>
+    <message>
+        <source>You must select a Tax Authority.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid Start Date to print this report.</source>
+        <translation type="unfinished">Debe indicar una Fecha Inicial válida para imprimir este informe.</translation>
+    </message>
+    <message>
+        <source>You must enter a valid End Date to print this report.</source>
+        <translation type="unfinished">Debe indicar una Fecha Final válida para imprimir este informe.</translation>
+    </message>
+    <message>
+        <source>Cannot Execute Tax Return</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Taxable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Zero-Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchases Taxable </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchases Zero-Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reverse Charge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Return detail</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspTimePhasedAvailability</name>
@@ -34061,6 +36219,10 @@ Total</source>
         <source>Summary Report</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspTimePhasedOpenARItems</name>
@@ -34164,6 +36326,10 @@ Total</source>
         <source>Summary Report</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspTimePhasedSales</name>
@@ -34251,6 +36417,10 @@ Total</source>
         <source>Customer Group Pattern</source>
         <translation>Patrón de Grupo de Clientes</translation>
     </message>
+    <message>
+        <source>Include Misc. Items</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspTimePhasedUsageStatisticsByItem</name>
@@ -34293,6 +36463,10 @@ Total</source>
     <message>
         <source>Time-Phased Item Usage Statistics by Item</source>
         <translation>Estadísticas de Uso de Productos por Períodos por Producto</translation>
+    </message>
+    <message>
+        <source>Transfers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -34373,6 +36547,14 @@ Total</source>
         <source>Beg. Bal.</source>
         <translation>Saldo Inic.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Trial Balance Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Trial Balance Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspUnbalancedQOHByClassCode</name>
@@ -34443,6 +36625,10 @@ Total</source>
     <message>
         <source>Regular</source>
         <translation>Regular</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -34558,6 +36744,10 @@ Total</source>
         <source>Selected:</source>
         <translation>Elegido:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Receiving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspUnusedPurchasedItems</name>
@@ -34672,6 +36862,53 @@ Total</source>
         <source>Item Group</source>
         <translation>Grupo de Productos</translation>
     </message>
+    <message>
+        <source>A Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ABC Class</source>
+        <translation type="unfinished">Clase ABC</translation>
+    </message>
+</context>
+<context>
+    <name>dspUserPrivileges</name>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">Nombre de usuario</translation>
+    </message>
+    <message>
+        <source>Role</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Privilege</source>
+        <translation type="unfinished">Permiso</translation>
+    </message>
+    <message>
+        <source>Module</source>
+        <translation type="unfinished">Módulo</translation>
+    </message>
+    <message>
+        <source>Privilege Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished">Descripción</translation>
+    </message>
+    <message>
+        <source>User Privilege Audit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspValidLocationsByItem</name>
@@ -34763,10 +37000,6 @@ Total</source>
         <translation>Saldo</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2, Error #%3.</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2, Nº Error %3.</translation>
-    </message>
-    <message>
         <source>Enter End Date</source>
         <translation>Ingresar Fecha Cierre</translation>
     </message>
@@ -34789,10 +37022,6 @@ Total</source>
     <message>
         <source>View Voucher...</source>
         <translation>Ver Justificante…</translation>
-    </message>
-    <message>
-        <source>Select Number</source>
-        <translation>Seleccionar Número</translation>
     </message>
     <message>
         <source>Please enter a valid End Date.</source>
@@ -34848,6 +37077,22 @@ Total</source>
     </message>
     <message>
         <source>Voiding Voucher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Voucher Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving GL Series Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Vendor</source>
+        <translation type="unfinished">Seleccionar Proveedor</translation>
+    </message>
+    <message>
+        <source>On what date did you void the Voucher?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -35072,14 +37317,6 @@ Total</source>
         <translation>Órdenes de Trabajo:</translation>
     </message>
     <message>
-        <source>Invalid Item</source>
-        <translation>Elemento no válido</translation>
-    </message>
-    <message>
-        <source>Enter a valid Item.</source>
-        <translation>Proporcione un Producto Válido.</translation>
-    </message>
-    <message>
         <source>Latest</source>
         <translation>Ultimo</translation>
     </message>
@@ -35139,6 +37376,14 @@ Total</source>
         <source>Work Order History by Item</source>
         <translation>Historia del Orden de Trabajo por Producto</translation>
     </message>
+    <message>
+        <source>Enter a valid Item Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid item number for this report.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>dspWoHistoryByNumber</name>
@@ -35153,14 +37398,6 @@ Total</source>
     <message>
         <source>Priority</source>
         <translation>Prioridad</translation>
-    </message>
-    <message>
-        <source>You must enter a work order number for this report.</source>
-        <translation>Debe proporcionar un número de orden de trabajo para este informe.</translation>
-    </message>
-    <message>
-        <source>Invalid Work Order Number</source>
-        <translation>Número de Orden de Trabajo no válido</translation>
     </message>
     <message>
         <source>Only Show Top Level Work Orders</source>
@@ -35241,6 +37478,14 @@ Total</source>
     <message>
         <source>WIP</source>
         <translation>TEC</translation>
+    </message>
+    <message>
+        <source>Enter Work Order Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a work order pattern for this report.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -35687,19 +37932,24 @@ Total</source>
         <source>On Time</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Quote</source>
+        <translation type="unfinished">Presupuesto</translation>
+    </message>
+    <message>
+        <source>Error Deleting Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>duplicateAccountNumbers</name>
     <message>
         <source>&amp;Close</source>
         <translation type="unfinished">Cerrar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2
-
-%3</source>
-        <translation type="unfinished">Se ha producido un Error del Sistema en %1::%2. %3 {1:?} {2
-?}</translation>
     </message>
     <message>
         <source>Sub.</source>
@@ -35760,6 +38010,10 @@ Total</source>
     <message>
         <source>No Segments Selected for Change</source>
         <translation>No se han seleccionado Segmentos a Cambiar</translation>
+    </message>
+    <message>
+        <source>Error Duplicating Account Numbers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -35852,6 +38106,14 @@ Total</source>
         <source>Modify All</source>
         <translation>Modificar Todos</translation>
     </message>
+    <message>
+        <source>Error Retrieving Owner Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Changing Owner Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>empGroup</name>
@@ -35866,10 +38128,6 @@ Total</source>
     <message>
         <source>You must enter a valid Name for this Employee Group.</source>
         <translation>Debe proporcionar un Nombre válido para este Grupo de Empleados.</translation>
-    </message>
-    <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -35906,6 +38164,30 @@ Total</source>
     <message>
         <source>&amp;New</source>
         <translation>&amp;Nuevo</translation>
+    </message>
+    <message>
+        <source>Privilege Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient Privileges to View/Edit Employee Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Employee Group Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Employee Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Employee From Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding Employee To Group</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -35945,6 +38227,14 @@ Total</source>
     <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Deleting Employee Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Employee Group Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -36185,6 +38475,10 @@ Total</source>
         <source>Account...</source>
         <translation type="unfinished">Cuenta...</translation>
     </message>
+    <message>
+        <source>Error Releasing Account Number</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>employees</name>
@@ -36244,6 +38538,10 @@ Total</source>
         <source>Last</source>
         <translation>Apellido</translation>
     </message>
+    <message>
+        <source>Employee Group</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>enterMiscCount</name>
@@ -36286,6 +38584,10 @@ Total</source>
     <message>
         <source>Site:</source>
         <translation>Centro:</translation>
+    </message>
+    <message>
+        <source>Error Posting Miscellaneous Count</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -36498,16 +38800,28 @@ Total</source>
         <source>Post Canceled</source>
         <translation>Asentar Cancelado</translation>
     </message>
+    <message>
+        <source>Error Posting P/O Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving P/O Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling P/O Receipts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Receiving P/O Line Item(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>enterPoReturn</name>
     <message>
         <source>Description</source>
         <translation type="unfinished">Descripción</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;There was an error saving this address (%1). Check the database server log for errors.</source>
-        <translation>Se ha producido un error al guardar esta dirección (%1). Busque errores en el registro del servidor de la base de datos.</translation>
     </message>
     <message>
         <source>One or more line items on this P/O are closed. 
@@ -36635,6 +38949,30 @@ Would you like to automatically create a credit memo against this return?</sourc
         <source>Transaction Canceled</source>
         <translation>Transacción Cancelada</translation>
     </message>
+    <message>
+        <source>Vendor Return Authority:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting P/O Return</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: There was an error saving P/O Return Information. Check the database server log for errors.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving P/O Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving P/O Return Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>enterPoitemReceipt</name>
@@ -36747,10 +39085,6 @@ Would you like to automatically create a credit memo against this return?</sourc
         <translation>Imprimir Etiqueta</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Incomplete Parameter List: _orderitem_id=%1, _ordertype=%2, _mode=%3.</source>
-        <translation>Lista de Parámetros incompleta: _orderitem_id=%1, _ordertype=%2, _mode=%3.</translation>
-    </message>
-    <message>
         <source>Qty. Shipped:</source>
         <translation>Cant. Enviada:</translation>
     </message>
@@ -36809,6 +39143,26 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>Freight:</source>
         <translation>Flete:</translation>
+    </message>
+    <message>
+        <source>Incomplete Parameter List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1:  &lt;p&gt;_orderitem_id=%2, _ordertype=%3, _mode=%4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving P/O Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving P/O Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expense Category:</source>
+        <translation type="unfinished">Categoría de Gasto:</translation>
     </message>
 </context>
 <context>
@@ -36915,6 +39269,18 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>Reject Code:</source>
         <translation>Código Rechazo:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving P/O Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving P/O Item Information123</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Return Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -37878,6 +40244,18 @@ Would you like to automatically create a credit memo against this return?</sourc
         <source>The selected Account cannot be deleted as it has To-Do Items.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Item Costing Information - invalid or missing data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot delete the Project Type because Projects of this type exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A Project Type already exists with this number.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>errorcatorter</name>
@@ -38028,6 +40406,34 @@ Would you like to automatically create a credit memo against this return?</sourc
         <source>&amp;Selected User Account:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving S/O Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Printing Packing List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Recalling Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Event Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Removing Event Log Entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Event Log Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>expenseCategories</name>
@@ -38120,10 +40526,6 @@ Would you like to automatically create a credit memo against this return?</sourc
         <translation>&amp;Gasto:</translation>
     </message>
     <message>
-        <source>&lt;p&gt;You must specify a name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;p&gt;You must select a P/O Liability Clearing Account Number for this Expense Category before you may save it.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -38166,6 +40568,10 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>&amp;Active</source>
         <translation>&amp;Activo</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must specify a Category.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -38293,6 +40699,10 @@ Would you like to automatically create a credit memo against this return?</sourc
         <source>E&amp;xplode</source>
         <translation>E&amp;xpandir</translation>
     </message>
+    <message>
+        <source>Error Exploding Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>exportData</name>
@@ -38379,6 +40789,14 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>Processing Complete</source>
         <translation>Procesado Completo</translation>
+    </message>
+    <message>
+        <source>Error Deleting Query Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Query Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -38499,10 +40917,6 @@ Would you like to automatically create a credit memo against this return?</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window.</source>
-        <translation>No tiene suficientes permisos para ver esta ventana</translation>
-    </message>
-    <message>
         <source>You must select a valid Shipment Number for this External Shipping Record before continuing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -38582,6 +40996,14 @@ Would you like to automatically create a credit memo against this return?</sourc
         <source>Y</source>
         <translation>¿S?</translation>
     </message>
+    <message>
+        <source>Privileges Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Insufficient Privileges to View/Edit External Shipping records</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>externalShippingList</name>
@@ -38608,10 +41030,6 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>External Shipping List</source>
         <translation>Lista de Envío Externo</translation>
-    </message>
-    <message>
-        <source>You do not have sufficient privilege to view this window.</source>
-        <translation>No tiene suficientes permisos para ver esta ventana</translation>
     </message>
     <message>
         <source>Shipment Number</source>
@@ -38676,6 +41094,14 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
+    </message>
+    <message>
+        <source>Privileges Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient Privileges to View/Edit External Shipping Records</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -38772,6 +41198,11 @@ Would you like to automatically create a credit memo against this return?</sourc
     <message>
         <source>Shared</source>
         <translation>Compartido</translation>
+    </message>
+    <message>
+        <source>You are not allowed to overwrite shared filters.
+Please, change the name of the filter if you want to save its current settings.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -39036,6 +41467,10 @@ Beg&apos;ng</source>
 End</source>
         <translation>Mostrar Fin</translation>
     </message>
+    <message>
+        <source>Error Retrieving Financial Layout Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>financialLayoutColumns</name>
@@ -39138,6 +41573,14 @@ End</source>
     <message>
         <source>Full Year</source>
         <translation>Año Entero</translation>
+    </message>
+    <message>
+        <source>Error Saving Financial Column Layout Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Financial Column Layout Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -39583,10 +42026,6 @@ Are you sure you want to continue?</source>
         <translation>El nombre especificado ya se está usando. Por favor, elija otro nombre.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Financial Layouts:</source>
         <translation>Formatos Financieros:</translation>
     </message>
@@ -39597,6 +42036,14 @@ Are you sure you want to continue?</source>
     <message>
         <source>List Financial Reports</source>
         <translation>Listar Reportes Financieros</translation>
+    </message>
+    <message>
+        <source>Copy Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: An error occurred copying financial layout information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -39610,20 +42057,20 @@ Are you sure you want to continue?</source>
         <translation>Período:</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Financial Report Notes</source>
         <translation>Notas del Informe Financiero</translation>
+    </message>
+    <message>
+        <source>Error Saving Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: An error occurred saving financial report notes information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>firmPlannedOrder</name>
-    <message>
-        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
-        <translation type="unfinished">ExplodePlannedOrder ha devuelto %, indicando que se ha producido un error.</translation>
-    </message>
     <message>
         <source>Notes:</source>
         <translation>Notas:</translation>
@@ -39663,6 +42110,18 @@ Are you sure you want to continue?</source>
     <message>
         <source>&amp;Firm</source>
         <translation>&amp;Firma</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Planned Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Firmed Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Exploding Planned Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -39721,6 +42180,10 @@ Click the &quot;Fix&quot; button to try to correct database-level permissions pr
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Access Control Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>fixSerial</name>
@@ -39775,6 +42238,10 @@ Click the &quot;Fix&quot; button to try to correct database-level permissions pr
     <message>
         <source>Query</source>
         <translation>Consulta</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Column Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -39855,6 +42322,18 @@ You may not create duplicate Forms.</source>
     <message>
         <source>Production Entry Sheets</source>
         <translation>Hoja de Entrada de Producción</translation>
+    </message>
+    <message>
+        <source>Transfer Orders</source>
+        <translation type="unfinished">Ordenes Transf.</translation>
+    </message>
+    <message>
+        <source>Error Saving Form Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Form Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -40025,6 +42504,10 @@ You may not create duplicate Forms.</source>
         <source>&amp;Close</source>
         <translation>&amp;Cerrar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Freight Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>freightClass</name>
@@ -40037,10 +42520,6 @@ You may not create duplicate Forms.</source>
         <translation>Debe proporcionar una Clase de Mercancía válida antes de guardar este Tipo de Producto.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Freight &amp;Class:</source>
         <translation>&amp;Clase de Mercancía:</translation>
     </message>
@@ -40051,6 +42530,10 @@ You may not create duplicate Forms.</source>
     <message>
         <source>Freight Class</source>
         <translation>Clase de Mercancía</translation>
+    </message>
+    <message>
+        <source>Error Saving Freight Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -40106,6 +42589,14 @@ You may not create duplicate Forms.</source>
     <message>
         <source>Freight Classes:</source>
         <translation>Clases de Mercancía:</translation>
+    </message>
+    <message>
+        <source>Error Removing Selected Freight Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Unused Freight Classes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -40296,6 +42787,22 @@ You may not create duplicate Forms.</source>
         <source>Cannot Maintain G/L Series</source>
         <translation>No se puede Mantener Grupo de Mayor</translation>
     </message>
+    <message>
+        <source>Error Retrieving G/L Series Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Selected G/L Series</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Selected G/L Series</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Removing G/L Series</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>glSeriesItem</name>
@@ -40335,6 +42842,14 @@ You may not create duplicate Forms.</source>
         <source>G/L transactions are recorded in the base currency.
 Do you wish to convert %1 %2 at the rate effective on %3?</source>
         <translation>Las transacciones del Mayor se registran en la moneda base. ¿Desea convertir %1 %2 al tipo con efectividad el %3?</translation>
+    </message>
+    <message>
+        <source>Error Saving G/L Series Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving G/L Series Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -40408,6 +42923,14 @@ Do you wish to convert %1 %2 at the rate effective on %3?</source>
         <source>Document #:</source>
         <translation>Nº de Documento:</translation>
     </message>
+    <message>
+        <source>Print on Post</source>
+        <translation type="unfinished">Imprimir al Contabilizar</translation>
+    </message>
+    <message>
+        <source>Error Posting G/L Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>glTransactionDetail</name>
@@ -40475,16 +42998,8 @@ Do you wish to convert %1 %2 at the rate effective on %3?</source>
 <context>
     <name>group</name>
     <message>
-        <source>You must enter a valid Name for this Group before continuing</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Role</source>
         <translation>Rol</translation>
-    </message>
-    <message>
-        <source>Cannot Save Group</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save?</source>
@@ -40544,6 +43059,70 @@ Do you wish to convert %1 %2 at the rate effective on %3?</source>
     </message>
     <message>
         <source>Granted Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Privileges</source>
+        <translation type="unfinished">Permisos</translation>
+    </message>
+    <message>
+        <source>Assignment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users Assigned:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">Nombre de usuario</translation>
+    </message>
+    <message>
+        <source>Proper Name</source>
+        <translation type="unfinished">Nombre Propio</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Group Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid Name for this Role before continuing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Role</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Granting Privilege</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Granting Privilege </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Granting All Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Revoking Privilege</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Revoking All Privileges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Role Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Role Assignment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -40703,6 +43282,14 @@ You must reassign these Users before you may delete the selected Group.</source>
         <source>You must enter a valid Title.</source>
         <translation>Debe indicar un Tratamiento válido.</translation>
     </message>
+    <message>
+        <source>Error Saving Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Title Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>honorifics</name>
@@ -40753,6 +43340,14 @@ You must reassign these Users before you may delete the selected Group.</source>
     <message>
         <source>List Titles</source>
         <translation>Listar Títulos</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Title Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Title</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -41052,6 +43647,18 @@ The file is not an image, an unknown image format or is corrupt</source>
         <source>&amp;New</source>
         <translation>&amp;Nuevo</translation>
     </message>
+    <message>
+        <source>Display Image Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Selected Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Image Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>imageview</name>
@@ -41155,13 +43762,13 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>&amp;Implode</source>
         <translation>&amp;Contraer</translation>
     </message>
+    <message>
+        <source>Error Imploding Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>importData</name>
-    <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation type="unfinished">No tiene suficientes privilegios para ver esta ventana</translation>
-    </message>
     <message>
         <source>CSV files (*.csv *.tsv)</source>
         <translation type="unfinished"></translation>
@@ -41197,10 +43804,6 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Select File(s) to Import</source>
         <translation>Seleccionar Archivo(s) de los que Importar</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You must first set up the application to import data.</source>
-        <translation>Debe configurarse la aplicación antes de importar datos.</translation>
     </message>
     <message>
         <source>Status</source>
@@ -41261,6 +43864,34 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Automatically Update</source>
         <translation>Actualizar Automáticamente</translation>
+    </message>
+    <message>
+        <source>Privileges Violation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: You have insufficient privileges to view this window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Incomplete Setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: You must first set up the application to import data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XML Import Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV Import Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -41538,6 +44169,22 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>Getting To-Do Items</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Cancelling Incident</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Incident</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting To-Do Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentCategories</name>
@@ -41597,6 +44244,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>Incident Categories:</source>
         <translation>Categorías de Incidencias:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Incident Category Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Selected Incident Category %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentCategory</name>
@@ -41635,6 +44290,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Cannot Save Incident Category</source>
         <translation>No se puede Guardar Categoría de Incidencia</translation>
+    </message>
+    <message>
+        <source>Error Saving Incident Category Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident Category Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -41695,6 +44358,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Incident Priority Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Incident Priority</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentPriority</name>
@@ -41730,6 +44401,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>Order:</source>
         <translation>Pedido:</translation>
     </message>
+    <message>
+        <source>Error Saving Incident Priority</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident Priority Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentResolution</name>
@@ -41764,6 +44443,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Description:</source>
         <translation>Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Incident Resolution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident Resolution Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -41824,6 +44511,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>&amp;View</source>
         <translation>Ver</translation>
     </message>
+    <message>
+        <source>Error Retrieving Incident Resolution Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Incident Resolution</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentSeverities</name>
@@ -41883,6 +44578,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
         <source>&amp;View</source>
         <translation>Ver</translation>
     </message>
+    <message>
+        <source>Error Retrieving Incident Severity Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Incident Severity</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>incidentSeverity</name>
@@ -41917,6 +44620,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Description:</source>
         <translation>Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Incident Severity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident Severity Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -42047,6 +44758,14 @@ Are you sure that you want to Implode the selected Work Order?</source>
     </message>
     <message>
         <source>Priority Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation type="unfinished">Resolución</translation>
+    </message>
+    <message>
+        <source>Resolution Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -42191,11 +44910,6 @@ Are you sure that you want to Implode the selected Work Order?</source>
     <message>
         <source>Outstanding Credit:</source>
         <translation type="unfinished">Crédito Pendiente de Pago:</translation>
-    </message>
-    <message>
-        <source>Error deleting Invoice %1
-</source>
-        <translation type="unfinished">Error eliminando Factura %1</translation>
     </message>
     <message>
         <source>Delete Invoice?</source>
@@ -42395,21 +45109,91 @@ Would you like to post it anyway?</source>
         <translation type="unfinished">La Factura Nº%1 tiene un valor total de 0. ¿Desea contabilizarla de cualquier forma?</translation>
     </message>
     <message>
-        <source>System Error posting Invoice #%1
-%2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not post Invoice #%1 because of a missing exchange rate.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Post Invoices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Transaction Canceled</source>
         <translation type="unfinished">Transacción Cancelada</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Ship-To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recurring Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You have edited a recurring Invoice.
+Do you wish to change all future invoice recurrences?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Invoice Recurrence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice #%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Window:%2
+Could not post Invoice #%1 due to a missing exchange rate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Line Item From Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invoice Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Confirming Invoice Has Not Been Posted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Unused Invoice Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Tax Amounts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Credit Card Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error with Invoice Number %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -42578,6 +45362,50 @@ Would you like to post it anyway?</source>
         <source>Getting UOMs</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Invoice Line Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding New Line Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Invoice Line Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Determining Item Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Changing Quantity UOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Changing Price UOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Line Item Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>invoiceList</name>
@@ -42719,6 +45547,22 @@ Would you like to post it anyway?</source>
     <message>
         <source>Qty. Reserved:</source>
         <translation type="unfinished">Cant. Reservada:</translation>
+    </message>
+    <message>
+        <source>Error Issuing Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Production</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -42876,10 +45720,6 @@ Would you like to post it anyway?</source>
         <translation>Buscar</translation>
     </message>
     <message>
-        <source>Unrecognized order type %1</source>
-        <translation>Tipo de orden %1 no reconocido.</translation>
-    </message>
-    <message>
         <source>Site</source>
         <translation>Centro</translation>
     </message>
@@ -42924,13 +45764,37 @@ Would you like to post it anyway?</source>
         <translation type="unfinished">Reservar Ajuste de Líneas</translation>
     </message>
     <message>
-        <source>&lt;br&gt;Line Item %1</source>
-        <translation type="unfinished">Partida %1</translation>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Line Item %1
-</source>
-        <translation type="unfinished">Partida %1</translation>
+        <source>Insufficient Inventory To Ship</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Production</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Returning Stock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Window:%1:
+ Unrecognized order type %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Barcode Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -42996,16 +45860,8 @@ Would you like to post it anyway?</source>
         <translation>Inventario Insuficiente</translation>
     </message>
     <message>
-        <source>A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2, Error #%3.</source>
-        <translation>Se ha producido un Error del Sistema en issueWoMaterialBatch::%1, ID de Orden de Trabajo Nº%2, Error Nº%3.</translation>
-    </message>
-    <message>
         <source>Issue Items not on Pick List</source>
         <translation>Dar Salida a Productos no presentes en la Lista de Picking</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2.</source>
-        <translation>Se ha producido un Error del Sistema en issueWoMaterialBatch::%1, ID de Orden de Trabajo Nº%2.</translation>
     </message>
     <message>
         <source>Push</source>
@@ -43046,13 +45902,25 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
         <source>Available QOH</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Information; Work Order ID #%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Material</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Window:%1/n Error Issuing Material: Work Order ID #%2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>issueWoMaterialItem</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>Close</source>
         <translation>Cerrar</translation>
@@ -43073,10 +45941,6 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
         <translation>Dar salida a Material de la Orden de Trabajo</translation>
     </message>
     <message>
-        <source>A System Error occurred at issueWoMaterialItem::%1, Work Order ID #%2, Error #%3.</source>
-        <translation>Se ha producido un Error de Sistema en issueWoMaterialItem::%1, ID de Orden de Trabajo Nº%2, Error Nº%3.</translation>
-    </message>
-    <message>
         <source>Insufficient Inventory</source>
         <translation>Inventario Insuficiente</translation>
     </message>
@@ -43091,10 +45955,6 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
     <message>
         <source>UOM:</source>
         <translation>UM:</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at issueWoMaterialItem::%1, Work Order ID #%2.</source>
-        <translation>Se ha producido un Error de Sistema en issueWoMaterialItem::%1, ID de Orden de Trabajo Nº%2.</translation>
     </message>
     <message>
         <source>Invalid date</source>
@@ -43122,6 +45982,22 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
     </message>
     <message>
         <source>Available QOH After:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Material To Work Order #: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Work Order Material Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Material to Work Order #: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Quantity On Hand Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -43706,6 +46582,54 @@ You may edit the Item Site and deactivate it.</source>
         <source>Getting Price UOMs</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Cost Method</source>
+        <translation type="unfinished">Método de Coste</translation>
+    </message>
+    <message>
+        <source>Avg. Cost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter an Item Number before continuing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Standard</source>
+        <translation type="unfinished">Estándar</translation>
+    </message>
+    <message>
+        <source>Job</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average</source>
+        <translation type="unfinished">Promedio</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">N/D</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Item UOM Conversion Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Dleting Item UOM Conversion Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation type="unfinished">Nunca</translation>
+    </message>
 </context>
 <context>
     <name>itemAlias</name>
@@ -43881,6 +46805,10 @@ You may not create duplicate Item Aliases.</source>
         <source>Costed Indented BOM</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Single Level BOM</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemCost</name>
@@ -43931,6 +46859,18 @@ You may not create duplicate Item Aliases.</source>
     <message>
         <source>&amp;Post Cost to Standard</source>
         <translation>&amp;Asentar Costo a Estandar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Costing Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -44072,6 +47012,18 @@ You may not create duplicate Item Aliases.</source>
     </message>
     <message>
         <source>Product Catalog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show only top level groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Really delete this item group?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure you want to delete this item group?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -44427,6 +47379,30 @@ You may not create duplicate Item Aliases.</source>
         <source>Currency Exchange Rate not found.  You should correct before proceeding.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Pricing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Pricing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Item Pricing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Pricing Schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemPricingScheduleItem</name>
@@ -44618,11 +47594,6 @@ You may not create duplicate Pricing Schedule Items.</source>
         <translation>Valor</translation>
     </message>
     <message>
-        <source>The application has encountered an error and must stop editing this Pricing Schedule.
-%1</source>
-        <translation>La aplicación ha encontrado un error y debe terminar de editar la Lista de Precios. %1</translation>
-    </message>
-    <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
     </message>
@@ -44662,6 +47633,42 @@ You may not create duplicate Pricing Schedule Items.</source>
         <source>Checking Costs</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item List Price</source>
+        <translation type="unfinished">Lista Precio Producto</translation>
+    </message>
+    <message>
+        <source>List Pricing Schedule Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemPricingSchedules</name>
@@ -44670,10 +47677,6 @@ You may not create duplicate Pricing Schedule Items.</source>
         <translation type="unfinished">Esto eliminará permanentemente todas las Listas de Precios caducadas.
 
 ¿Está de acuerdo en continuar?</translation>
-    </message>
-    <message>
-        <source>Always</source>
-        <translation>Siempre</translation>
     </message>
     <message>
         <source>Delete Expired?</source>
@@ -44690,10 +47693,6 @@ You may not create duplicate Pricing Schedule Items.</source>
     <message>
         <source>Search &amp;for:</source>
         <translation>&amp;Buscar por:</translation>
-    </message>
-    <message>
-        <source>Never</source>
-        <translation>Nunca</translation>
     </message>
     <message>
         <source>Show &amp;Future Pricing Schedules</source>
@@ -44760,6 +47759,18 @@ You must delete these assignments before you may delete the selected Pricing Sch
         <source>The selected Pricing Schedule cannot be deleted as it has been assign to one or more Customers.
 You must delete these assignments before you may delete the selected Pricing Schedule.</source>
         <translation>No se puede eliminar la Lista de Precios seleccionada ya que se ha asignado a uno o más Clientes. Debe eliminar estas asignaciones antes de poder eliminar la Lista de Precios seleccionada.</translation>
+    </message>
+    <message>
+        <source>Error Copying Item Pricing Schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Item Pricing Schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pricing Schedules</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -45030,10 +48041,6 @@ Debe crear al menos una Ubicación válida para este Centro de Producto antes de
 Debe seleccionar una ubicación predeterminada a la que asignar la cantidad disponible.</translation>
     </message>
     <message>
-        <source>W/O Issue:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stock:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -45263,16 +48270,48 @@ Si contesta &apos;&apos;Sí&apos;&apos; debería corregir la Lista de Operacione
         <translation>Sistema Planificación:</translation>
     </message>
     <message>
-        <source>This Item Site has a quantity on hand and Cost Category cannot be changed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Confirm Lot/Serial?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;p&gt;This Item Site has not been marked as lot/serial enabled, yet other sites for item %1 are.
  Do you wish to continue and save the Item Site? </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issue:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Site Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving ItemSite Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This Item Site is used in an active order and cannot be changed to Job Costing Method.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This Item is used in a BOM and cannot be changed to Job Costing Method.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving ItemSite Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearing Previous ItemSite Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Item Site</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -45461,6 +48500,18 @@ Si contesta &apos;&apos;Sí&apos;&apos; debería corregir la Lista de Operacione
     <message>
         <source>Search &amp;for:</source>
         <translation>&amp;Buscar por:</translation>
+    </message>
+    <message>
+        <source>Location Controlled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Copying Item Site</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Item Site</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -45728,6 +48779,30 @@ Contract, Effective Date, Expires Date,
 Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Source Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Source Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Item Source Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Item Source Entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Contract Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemSourceList</name>
@@ -45742,10 +48817,6 @@ Vendor Item, Manfacturer Name and Manufacturer Item Number you have specified.</
     <message>
         <source>Vendor</source>
         <translation>Proveedor</translation>
-    </message>
-    <message>
-        <source>Vendor:</source>
-        <translation type="unfinished">Proveedor:</translation>
     </message>
     <message>
         <source>Vend Item#</source>
@@ -45865,6 +48936,10 @@ already exists for this Item Source.</source>
     </message>
     <message>
         <source>Wholesale Price:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Source Price Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -46128,6 +49203,10 @@ already exists for this Item Source.</source>
     <message>
         <source>Vendor #</source>
         <translation type="unfinished">Nº Proveedor</translation>
+    </message>
+    <message>
+        <source>Error Deleting Item Source Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -46428,6 +49507,10 @@ You may edit the existing Substitution but you may not create a duplicate.</sour
         <source>List Items</source>
         <translation>Listar Productos</translation>
     </message>
+    <message>
+        <source>Error Deleting Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>itemtax</name>
@@ -46502,6 +49585,14 @@ You may edit the existing Substitution but you may not create a duplicate.</sour
         <source>&lt;p&gt;You must enter a valid name for this Label Format.</source>
         <translation>Debe introducir un nombre válido para este Formato de Etiqueta.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Label Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Label Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>labelForms</name>
@@ -46540,6 +49631,33 @@ You may edit the existing Substitution but you may not create a duplicate.</sour
     <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Label Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ledgerControl</name>
+    <message>
+        <source>Ledger Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ledger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GL Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub Ledger Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Difference</source>
+        <translation type="unfinished">Diferencia</translation>
     </message>
 </context>
 <context>
@@ -46644,6 +49762,10 @@ You may edit the existing Substitution but you may not create a duplicate.</sour
         <source>None</source>
         <translation>Ninguno</translation>
     </message>
+    <message>
+        <source>Error Retrieving Recurring Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>locales</name>
@@ -46691,6 +49813,10 @@ You must reassign the Locales for these Users before you may delete the selected
     <message>
         <source>&amp;Delete</source>
         <translation>&amp;Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Locale Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -46792,10 +49918,6 @@ You must reassign the Locales for these Users before you may delete the selected
         <translation>Cerrar</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Item Number</source>
         <translation>Número de Artículo</translation>
     </message>
@@ -46812,7 +49934,19 @@ You must reassign the Locales for these Users before you may delete the selected
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Non Nettable inventory cannot be Usable inventory.</source>
+        <source>Error Retrieving Location Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Non Netable inventory cannot be Usable inventory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active</source>
+        <translation type="unfinished">Activo</translation>
+    </message>
+    <message>
+        <source>Error Deleting Location</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -46821,10 +49955,6 @@ You must reassign the Locales for these Users before you may delete the selected
     <message>
         <source>Site</source>
         <translation type="unfinished">Centro</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;The selected Location cannot be deleted as there has been Inventory Transaction History posted against it.&lt;/p&gt; </source>
-        <translation>No se puede eliminar la Ubicación seleccionada ya que tiene registrado un Historial de Transacciones de Inventario.</translation>
     </message>
     <message>
         <source>Netable</source>
@@ -46851,10 +49981,6 @@ You must reassign the Locales for these Users before you may delete the selected
         <translation>Restringido</translation>
     </message>
     <message>
-        <source>Cannot Delete Selected Location</source>
-        <translation>No se puede borrar Ubicación Seleccionada:</translation>
-    </message>
-    <message>
         <source>&amp;Print</source>
         <translation>Imprimir</translation>
     </message>
@@ -46875,20 +50001,6 @@ You must reassign the Locales for these Users before you may delete the selected
         <translation>Eliminar</translation>
     </message>
     <message>
-        <source>&lt;p&gt;There are one or more Item Sites that use the selected Location as their default Location. You must assign the default Location for all Item Sites that use the selected Location before you may delete it.&lt;/p&gt;</source>
-        <translation>Una o más Sedes usan la Ubicación seleccionada como predeterminada. Debe asignar la Ubicación predeterminada para todas las Sedes que utilizan la Ubicación seleccionada antes de poder eliminarla.</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;There is Inventory contained in the selected Location. You must move all Inventory out of the selected Location and may then set its status to inactive.&lt;/p&gt;</source>
-        <translation>Existe Inventario en la Ubicación seleccionada. Debe mover todo el Inventario de la Ubicación seleccionada para poder establecer su estado a inactivo.</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;There are one or more undistributed Location records that have been posted against the selected Locations. This probably indicates a system error.&lt;br&gt;&lt;br&gt;Please contact your Systems Adminstrator to have this resolved.&lt;/p&gt;</source>
-        <translation>Hay uno o más registros no distribuidos de Ubicaciones que se han anotado en las Ubicaciones seleccionadas. Probablemente esto indique un error del sistema.
-
-Por favor, contacte con el Administrador de su Sistema para resolverlo.</translation>
-    </message>
-    <message>
         <source>List Site Locations</source>
         <translation>Listar Ubicaciones de Sedes</translation>
     </message>
@@ -46902,6 +50014,18 @@ Por favor, contacte con el Administrador de su Sistema para resolverlo.</transla
     </message>
     <message>
         <source>Usable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active</source>
+        <translation type="unfinished">Activo</translation>
+    </message>
+    <message>
+        <source>Error Deleting Location</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -47029,25 +50153,6 @@ A continuación hay más detalles sobre el problema de conexión:
     </message>
 </context>
 <context>
-    <name>login2Options</name>
-    <message>
-        <source>&amp;Port:</source>
-        <translation type="unfinished">&amp;Puerto:</translation>
-    </message>
-    <message>
-        <source>S&amp;erver:</source>
-        <translation>S&amp;ervidor:</translation>
-    </message>
-    <message>
-        <source>&amp;Database:</source>
-        <translation>Base &amp;Datos</translation>
-    </message>
-    <message>
-        <source>Login Options</source>
-        <translation>Opciones Ingreso</translation>
-    </message>
-</context>
-<context>
     <name>lotSerial</name>
     <message>
         <source>Print Label</source>
@@ -47145,6 +50250,18 @@ A continuación hay más detalles sobre el problema de conexión:
         <source>Account#</source>
         <translation type="unfinished">Nº de Cuenta</translation>
     </message>
+    <message>
+        <source>Error Retrieving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Lot/Serial Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>lotSerialRegistration</name>
@@ -47228,20 +50345,24 @@ A continuación hay más detalles sobre el problema de conexión:
         <source>You must provide a Account.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Lot/Serial Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Lot/Serial Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>lotSerialSequence</name>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Cannot Save Sequence</source>
         <translation>No se puede Guardar Secuencia</translation>
-    </message>
-    <message>
-        <source>You may not rename this Sequence number with the entered name as it is in use by another Planner code.</source>
-        <translation>No puede renombrar este número de Secuencia con el nombre indicado porque ya está en uso en otro código de Planificador.</translation>
     </message>
     <message>
         <source>You must enter a valid Code for this Sequence.</source>
@@ -47295,6 +50416,14 @@ A continuación hay más detalles sobre el problema de conexión:
         <source>Suffix:</source>
         <translation>Sufijo:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Lot/Serial Sequence Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not rename this Sequence number with the entered name as it is already in use.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>lotSerialSequences</name>
@@ -47338,6 +50467,10 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>Lot/Serial Sequences</source>
         <translation>Secuencias Serie/Lote</translation>
+    </message>
+    <message>
+        <source>Lot/Serial Sequences:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -47433,6 +50566,10 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>&amp;Save</source>
         <translation>&amp;Guardar</translation>
+    </message>
+    <message>
+        <source>Error Saving Budget Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -47536,6 +50673,26 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>Costing &amp;Elements:</source>
         <translation>&amp;Elementos Contables:</translation>
+    </message>
+    <message>
+        <source>Error Posting Cost Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Cost Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing or Invalid Item Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item Number Required</source>
+        <translation type="unfinished">Se precisa Número de Artículo</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cost Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -47656,6 +50813,10 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <source>Notes</source>
         <translation type="unfinished">Notas</translation>
     </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>massExpireComponent</name>
@@ -47697,6 +50858,10 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     </message>
     <message>
         <source>Checking Revisions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please provide a valid Item and As Of Date.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -47755,7 +50920,15 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Replacing BOM Items</source>
+        <source>Error Replacing BOM Item(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replacing BOM Item(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please provide a valid Original Item, Replacement Item, and Effective Date.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -47858,16 +51031,28 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation>Debe proporcionar el valor del coste total para poder llevarlo al inventario.</translation>
     </message>
     <message>
-        <source>&lt;p&gt;No transaction was done because Item %1 was not found at Site %2.</source>
-        <translation>No se ha realizado ningún apunte porque el Producto %1 no se ha encontrado en la Sede %2.</translation>
-    </message>
-    <message>
         <source>Calculated</source>
         <translation>Calculado</translation>
     </message>
     <message>
         <source>Notes</source>
         <translation>Notas</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Inventory Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;No transaction was done because Item %2 was not found at Site %3.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -48344,6 +51529,22 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <source>&amp;Ledger Accounts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Print Statement by Customer &amp;Group...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Tax Return...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Info for 1099...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ledger Control</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>menuCRM</name>
@@ -48442,10 +51643,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>List Contacts</source>
         <translation>Listar Contactos</translation>
-    </message>
-    <message>
-        <source>&amp;Project Types...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Merge &amp;Accounts...</source>
@@ -48882,6 +52079,14 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <source>&amp;Quick Relocate...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Print &amp;T/O Forms...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Quantities On Hand By &amp;Zone...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>menuManufacture</name>
@@ -49244,10 +52449,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <source>&amp;Bills of Materials</source>
         <translation>&amp;Lista de Materiales</translation>
     </message>
-    <message>
-        <source>P&amp;references...</source>
-        <translation type="unfinished">P&amp;referencias...</translation>
-    </message>
 </context>
 <context>
     <name>menuPurchase</name>
@@ -49481,10 +52682,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>&amp;Workbench...</source>
         <translation>&amp;Herramientas…</translation>
-    </message>
-    <message>
-        <source>&amp;Return</source>
-        <translation>&amp;Retornar</translation>
     </message>
     <message>
         <source>Availability by &amp;Sales Order...</source>
@@ -49771,19 +52968,43 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Print &amp;Returns...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Re-Print &amp;Returns...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Return Auth.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Purge &amp;Returns...</source>
+        <source>&amp;New Simple...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Invoice...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print &amp;Sales Credits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Re-Print &amp;Sales Credits...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Pricing &amp;Schedules...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update List Pricing Schedules...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Pricing Schedule Assi&amp;gnments...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purge &amp;Sales Credits...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -49897,10 +53118,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation>&amp;Nuevo...</translation>
     </message>
     <message>
-        <source>P&amp;references...</source>
-        <translation>P&amp;referencias...</translation>
-    </message>
-    <message>
         <source>E&amp;xit xTuple ERP...</source>
         <translation>&amp;Salir de xTuple ERP...</translation>
     </message>
@@ -49915,12 +53132,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
     <message>
         <source>About...</source>
         <translation>Acerca de…</translation>
-    </message>
-    <message>
-        <source>%1
-Version %2
-%3</source>
-        <translation>%1 Versión %2 %3</translation>
     </message>
     <message>
         <source>Rescan &amp;Privileges</source>
@@ -50044,6 +53255,18 @@ Version %2
     </message>
     <message>
         <source>MarketPlace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preferences...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Privilege Audit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;%1&lt;br/&gt;Version %2&lt;br/&gt;%3&lt;/p&gt;&lt;p&gt;Built with:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;OpenRPT %4 %5&lt;/li&gt;&lt;li&gt;Qt %6&lt;/li&gt;&lt;li&gt;hunspell %7 (modified by xTuple for compiler compatibility)&lt;/li&gt;&lt;/ul&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -50267,6 +53490,42 @@ Version %2
         <source>&lt;p&gt;You must select an Expense Category for this expensed payment.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Expense Category Tax:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Tax:</source>
+        <translation type="unfinished">Impuesto:</translation>
+    </message>
+    <message>
+        <source>Tax Zone:</source>
+        <translation type="unfinished">Zona Fiscal:</translation>
+    </message>
+    <message>
+        <source>Tax Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Calculation</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>miscVoucher</name>
@@ -50407,10 +53666,6 @@ Version %2
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Getting Misc. Distributions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;New</source>
         <translation>Nuevo</translation>
     </message>
@@ -50486,6 +53741,14 @@ Version %2
         <source>Posting Voucher</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Adding Tax to Voucher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Misc Distributions</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>newForm</name>
@@ -50543,6 +53806,10 @@ Version %2
     <message>
         <source>Drop Ship</source>
         <translation type="unfinished">Envío directo</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Order Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -50683,6 +53950,26 @@ Version %2
         <source>Access Denied</source>
         <translation>Acceso Denegado</translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Cerrar</translation>
+    </message>
+    <message>
+        <source>Closing Return Auth.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Return Authorization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close...</source>
+        <translation type="unfinished">Cerrar...</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Return Authorization Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>openSalesOrders</name>
@@ -50795,10 +54082,6 @@ Version %2
         <translation>Centro</translation>
     </message>
     <message>
-        <source>P/O Number</source>
-        <translation>Número de O/C</translation>
-    </message>
-    <message>
         <source>Access Denied</source>
         <translation>Acceso Denegado</translation>
     </message>
@@ -50848,6 +54131,46 @@ Version %2
     </message>
     <message>
         <source>Margin %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shipping</source>
+        <translation type="unfinished">Embarque</translation>
+    </message>
+    <message>
+        <source>Packing</source>
+        <translation type="unfinished">Embalaje</translation>
+    </message>
+    <message>
+        <source>Return</source>
+        <translation type="unfinished">Devolución</translation>
+    </message>
+    <message>
+        <source>Customer P/O Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Project</source>
+        <translation type="unfinished">Proyecto</translation>
+    </message>
+    <message>
+        <source>Created By</source>
+        <translation type="unfinished">Creado Por</translation>
+    </message>
+    <message>
+        <source>Hold Type</source>
+        <translation type="unfinished">Tipo Bloqueo</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Packing List Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -51268,6 +54591,54 @@ Version %2
         <source>&lt;p&gt;The prospect must be manually converted to customer from either the Account or Customer windows before coverting this quote.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Opportunity Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Opportunity Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting To-Do Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving To-Do Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Converting Prospect To Customer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Converting Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Attaching Quote To Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Attaching Sales Order To Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Getting Attaching Sales Order To Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>opportunityList</name>
@@ -51403,13 +54774,33 @@ Version %2
         <source>Account</source>
         <translation type="unfinished">Cuenta</translation>
     </message>
+    <message>
+        <source>Error Deleting Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deactiving Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Activating Opportunity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Date</source>
+        <translation type="unfinished">Fecha de Creación</translation>
+    </message>
+    <message>
+        <source>Create Date on or After</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Date on or Before</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>opportunitySource</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>Invalid Name</source>
         <translation>Nombre Invalido</translation>
@@ -51429,6 +54820,14 @@ Version %2
     <message>
         <source>Opportunity Source</source>
         <translation>Origen de Oportunidad</translation>
+    </message>
+    <message>
+        <source>An Opportunity Source with this name already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Opportunity Source</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -51502,16 +54901,16 @@ You must reassign these Opportunities before you may delete the selected Opportu
         <translation>Nombre Invalido</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;Name:</source>
         <translation>Nombre:</translation>
     </message>
     <message>
         <source>Opportunity Stage</source>
         <translation>Fase de la Oportunidad</translation>
+    </message>
+    <message>
+        <source>Error Saving Opportunity Stage</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -51573,10 +54972,6 @@ You must reassign these Opportunities before you may delete the selected Opportu
         <translation type="unfinished">Nombre Invalido</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>You must enter a valid Name for this Opportunity Type.</source>
         <translation>Debe indicar un Nombre válido para este Tipo de Oportunidad.</translation>
     </message>
@@ -51591,6 +54986,10 @@ You must reassign these Opportunities before you may delete the selected Opportu
     <message>
         <source>&amp;Description:</source>
         <translation>Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Opportunity Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -51796,11 +55195,27 @@ You must reassign these Opportunities before you may delete the selected Opportu
         <translation>Habilitado</translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
+        <source>Getting Package Info</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Getting Package Info</source>
+        <source>Error Retrieving Privilege Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient privileges to view this window </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Package Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Package Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -51809,13 +55224,6 @@ You must reassign these Opportunities before you may delete the selected Opportu
     <message>
         <source>&amp;Delete</source>
         <translation type="unfinished">Eliminar</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;There was an error running the Updater program: &lt;br&gt;%1 %2&lt;br&gt;&lt;br&gt;&lt;pre&gt;%3&lt;/pre&gt;</source>
-        <translation>Se ha producido un error en el programa Actualizador:
-%1 %2
-
-&lt;pre&gt;%3&lt;/pre&gt;</translation>
     </message>
     <message>
         <source>Find Updater Application</source>
@@ -51905,6 +55313,34 @@ You must reassign these Opportunities before you may delete the selected Opportu
         <source>Version</source>
         <translation>Versión</translation>
     </message>
+    <message>
+        <source>Error Retrieving Package Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Package Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Package</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: There was an error running the Updater program: &lt;br&gt;%2 %3&lt;br&gt;&lt;br&gt;&lt;pre&gt;%4&lt;/pre&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Enabling Package</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Disabling Package</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>packingListBatch</name>
@@ -51923,10 +55359,6 @@ You must reassign these Opportunities before you may delete the selected Opportu
     <message>
         <source>Print &amp;Batch</source>
         <translation>Imprimir Lote</translation>
-    </message>
-    <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
     </message>
     <message>
         <source>Shipment #</source>
@@ -52017,10 +55449,6 @@ You must reassign these Opportunities before you may delete the selected Opportu
         <translation>Im&amp;primir Lista de &amp;Edición</translation>
     </message>
     <message>
-        <source>De&amp;lete Order</source>
-        <translation>E&amp;liminar Pedido</translation>
-    </message>
-    <message>
         <source>Return</source>
         <translation>Devolución</translation>
     </message>
@@ -52055,6 +55483,62 @@ You must reassign these Opportunities before you may delete the selected Opportu
     <message>
         <source>Site</source>
         <translation type="unfinished">Centro</translation>
+    </message>
+    <message>
+        <source>Show Orders on Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Packing Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shipping Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pack Date</source>
+        <translation type="unfinished">Fecha Empaque</translation>
+    </message>
+    <message>
+        <source>Error Printing Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearing Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding SO To Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding To Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Packing List Batch Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Packing List Batch Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -52163,10 +55647,6 @@ You must create Item Sites for these Component Items before you may explode this
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ExplodePlannedOrder returned %, indicating an error occurred.</source>
-        <translation>ExplodePlannedOrder ha devuelto %, indicando que se ha producido un error.</translation>
-    </message>
-    <message>
         <source>Site:</source>
         <translation>Centro:</translation>
     </message>
@@ -52175,8 +55655,32 @@ You must create Item Sites for these Component Items before you may explode this
         <translation>Debe introducir o seleccionar un número de Producto válido antes de crear esta Orden Previsional.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
+        <source>Error Creating Planned Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: ExplodePlannedOrder returned %2, indicating an error occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Planned Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Site Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Planned Order Number</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -52210,10 +55714,6 @@ You must create Item Sites for these Component Items before you may explode this
         <translation>No puede renombrar este código de Planificador con el nombre indicado porque ya está en uso en otro código de Planificador.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Automatically Explode Planned Orders</source>
         <translation>Expandir Automáticamente las Órdenes Previsionales</translation>
     </message>
@@ -52236,6 +55736,10 @@ You must create Item Sites for these Component Items before you may explode this
     <message>
         <source>Multiple Level Explosion</source>
         <translation>Expansión Multinivel</translation>
+    </message>
+    <message>
+        <source>Error Saving Planner Code Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -52293,10 +55797,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
 <context>
     <name>poLiabilityDistrib</name>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Amount to Distribute:</source>
         <translation>Monto a Distribuir:</translation>
     </message>
@@ -52324,16 +55824,28 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <source>You must select an Account to post the P/O Liability Distribution to.</source>
         <translation>Debe seleccionar una Cuenta en la que Distribuir ¿el Pasivo de la O/C?</translation>
     </message>
+    <message>
+        <source>Distribution Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Distribution Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must select a valid Distribution Date to post the P/O Liability Distribution to.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving GL Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postCashReceipts</name>
     <message>
         <source>Error Posting</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Journal Series</source>
@@ -52400,6 +55912,10 @@ Contact you Systems Administrator.</source>
         <source>&amp;Post</source>
         <translation>Asentar</translation>
     </message>
+    <message>
+        <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postCheck</name>
@@ -52425,6 +55941,10 @@ Contact you Systems Administrator.</source>
     </message>
     <message>
         <source>Payment #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -52464,6 +55984,14 @@ Contact you Systems Administrator.</source>
     </message>
     <message>
         <source>Print Payment Journal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Checks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Account Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -52529,6 +56057,10 @@ Contact you Systems Administrator.</source>
         <source>Post Material Costs</source>
         <translation>Registrar Costes de Material</translation>
     </message>
+    <message>
+        <source>Error Posting Costs</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postCostsByItem</name>
@@ -52543,10 +56075,6 @@ Contact you Systems Administrator.</source>
     <message>
         <source>Post Material Costs</source>
         <translation>Registrar Costes de Material</translation>
-    </message>
-    <message>
-        <source>A SystemError occurred at %1::%2</source>
-        <translation>Se ha producido un Error de Sistema en %1::%2</translation>
     </message>
     <message>
         <source>Post Lower Level Material Costs</source>
@@ -52599,6 +56127,10 @@ Contact you Systems Administrator.</source>
     <message>
         <source>&amp;Select all Costs</source>
         <translation>&amp;Selec. Todos los Costos</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cost Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -52683,18 +56215,6 @@ be posted or an error occurred trying to post the count slips.</source>
         <translation type="unfinished">Grupo del Libro Mayor</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at postCreditMemos::%1.</source>
-        <translation>Se ha producido un Error del Sistema en postCreditMemos::%1.</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at postCreditMemos::%1, Error #%2.</source>
-        <translation>Se ha producido un Error del Sistema en postCreditMemos::%1, Error Nº%2.</translation>
-    </message>
-    <message>
         <source>&amp;Post</source>
         <translation>Asentar</translation>
     </message>
@@ -52707,41 +56227,49 @@ be posted or an error occurred trying to post the count slips.</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <source>Post Returns</source>
+        <source>Error Retrieving Journal Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Post Unprinted Returns</source>
+        <source>Error Posting Credit Memo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>P&amp;rint Return Journal</source>
+        <source>Post Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No Returns to Post</source>
+        <source>Post Unprinted Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Although there are unposted Returns, there are no unposted Returns that have been printed.
-You must manually print these Returns or select &apos;Post Unprinted Returns&apos; before these Returns
+        <source>P&amp;rint Sales Credit Journal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Sales Credits to Post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Although there are unposted Sales Credits, there are no unposted Sales Credits that have been printed.
+You must manually print these Sales Credits or select &apos;Post Unprinted Sales Credits&apos; before these Sales Credits
 may be posted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>There are no Returns, printed or not, to post.
+        <source>There are no Sales Credits, printed or not, to post.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot Post one or more Returns</source>
+        <source>Cannot Post one or more Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The Ledger Account Assignments for one or more of the Returns that you are trying to post are not
-configured correctly.  Because of this, G/L Transactions cannot be posted for these Returns.
+        <source>The Ledger Account Assignments for one or more of the Sales Credits that you are trying to post are not
+configured correctly.  Because of this, G/L Transactions cannot be posted for these Sales Credits.
 You must contact your Systems Administrator to have this corrected before you may
-post these Returns.</source>
+post these Sales Credits.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -52808,10 +56336,6 @@ Would you like to post them?</source>
         <translation>No es posible Asentar una o más Facturas</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2, Error #%3.</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2, Error Nº%3.</translation>
-    </message>
-    <message>
         <source>Post Unprinted Invoices</source>
         <translation>Asentar Facturas No Imprimidas</translation>
     </message>
@@ -52832,6 +56356,10 @@ Would you like to post them?</source>
 configured correctly.  Because of this, G/L Transactions cannot be posted for these Invoices.
 You must contact your Systems Administrator to have this corrected before you may
 post these Invoices.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -52926,10 +56454,6 @@ post these Invoices.</source>
         <translation>Debe</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>Credit</source>
         <translation>Haber</translation>
     </message>
@@ -52961,6 +56485,22 @@ post these Invoices.</source>
         <source>Query</source>
         <translation>Consulta</translation>
     </message>
+    <message>
+        <source>Error Posting Journal Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Journal Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postMiscProduction</name>
@@ -52987,10 +56527,6 @@ post these Invoices.</source>
     <message>
         <source>Immediate &amp;Transfer to Site:</source>
         <translation>&amp;Traspaso Inmediato a Centro:</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at interWarehousTransfer::%1, Item Site ID #%2, Site ID #%3 to Site ID #%4.</source>
-        <translation>Se ha producido un Error del Sistema en interWarehousTransfer::%1, ID de Centro de Producto Nº%2, ID de Centro Nº%3 a ID Centro Nº%4.</translation>
     </message>
     <message>
         <source>&amp;Site:</source>
@@ -53050,6 +56586,38 @@ transfer Site is the same as the production Site.  You must manually
 transfer the production to the intended Site.</source>
         <translation>Transacción cancelada. No se puede registrar un traspaso inmediato para la producción recién registrada porque el Centro de traspaso es el mismo que el Centro de producción. Debe traspasar manualmente al Centro deseado.</translation>
     </message>
+    <message>
+        <source>Error Creating Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Itemsite not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Child Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Production</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Returning Work Order Material</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Closing Work Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: A System Error occurred at interWarehousTransfer::%2, Item Site ID #%3, Site ID #%4 to Site ID #%5.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postPoReturnCreditMemo</name>
@@ -53064,10 +56632,6 @@ transfer the production to the intended Site.</source>
     <message>
         <source>Post PO Return Credit Memo</source>
         <translation>Contabilizar Abono de Devolución de O/C</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at postPoReturnCreditMemo::%1.</source>
-        <translation>Se ha producido un Error del Sistema en postPoReturnCreditMemo::%1.</translation>
     </message>
     <message>
         <source>n/a</source>
@@ -53088,6 +56652,10 @@ transfer the production to the intended Site.</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Error Posting Credit Memo</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53192,6 +56760,18 @@ transfer the production to the intended Site.</source>
         <source>Immediate &amp;Transfer to Site:</source>
         <translation>&amp;Traspaso Inmediato a Centro:</translation>
     </message>
+    <message>
+        <source>Error Posting Production</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>postPurchaseOrder</name>
@@ -53278,16 +56858,16 @@ transfer the production to the intended Site.</source>
         <translation>&amp;Cerrar</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Reverse Journal Entries</source>
         <translation>Anular Asientos del Diario</translation>
     </message>
     <message>
         <source>&amp;Post</source>
         <translation>Contabilizar</translation>
+    </message>
+    <message>
+        <source>Error Posting Standard Journal</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53321,10 +56901,6 @@ transfer the production to the intended Site.</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Reverse Journal Entries</source>
         <translation>Anular Asientos del Diario</translation>
     </message>
@@ -53335,6 +56911,10 @@ transfer the production to the intended Site.</source>
     <message>
         <source>Cannot Post Standard Journal Group</source>
         <translation>No se puede Contabilizar Grupo de Diario Estándar</translation>
+    </message>
+    <message>
+        <source>Error Posting Standard Journal Group</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53376,17 +56956,8 @@ transfer the production to the intended Site.</source>
         <translation>No hay Justificantes a Contabilizar.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.
-%3</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2. %3</translation>
-    </message>
-    <message>
         <source>Post Vouchers</source>
         <translation>Contabilizar Justificantes</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2, Error #%3.</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2, Error Nº%3.</translation>
     </message>
     <message>
         <source>The Cost Category(s) for one or more Item Sites for the Purchase Order covered by one or more
@@ -53396,6 +56967,10 @@ A/P Account Number.  Because of this, G/L Transactions cannot be posted for thes
 You must contact your Systems Administrator to have this corrected before you may
 post Vouchers.</source>
         <translation>La(s) Categoría(s) de Coste para uno o más Centros de Producto para la Orden de Compra cubierta por uno o más de los Justificantes que está intentando contabilizar no está configurada con Desviación de Precio de Compra o Números de Cuenta de Compensación de Efectos a Pagar de la O/C, o el Proveedor de estos Justificantesno está configurado con un Número de Cuenta de Acreedores. Por este motivo, no se pueden contabilizar Transacciones en el Mayor para estos Justificantes. Debe contactar con su Administrador de Sistemas para poder corregir esto antes de poder contabilizar estos Justificantes.</translation>
+    </message>
+    <message>
+        <source>Error Posting Voucher</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53426,6 +57001,10 @@ post Vouchers.</source>
     </message>
     <message>
         <source>Payment Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Preparing Check Run for Printing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -53560,13 +57139,33 @@ post Vouchers.</source>
         <source>Wholesale Price:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Price List Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shipping Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished">Método</translation>
+    </message>
 </context>
 <context>
     <name>pricingScheduleAssignment</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>Cannot Save Pricing Schedule Assignment</source>
         <translation>No se puede Guardar Asignación de Lista de Precios</translation>
@@ -53589,7 +57188,7 @@ post Vouchers.</source>
     </message>
     <message>
         <source>Customer Type Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Patrón de Tipo de Cliente</translation>
     </message>
     <message>
         <source>Customer Ship-To</source>
@@ -53606,6 +57205,22 @@ post Vouchers.</source>
     <message>
         <source>Customer</source>
         <translation type="unfinished">Cliente</translation>
+    </message>
+    <message>
+        <source>Shipping Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Pricing Schedule Assignment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Pricing Schedule Assignment</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -53629,10 +57244,6 @@ post Vouchers.</source>
     <message>
         <source>&amp;Print</source>
         <translation>Imprimir</translation>
-    </message>
-    <message>
-        <source>Pricing Schedule Assignments:</source>
-        <translation>Asignación Código Descuento:</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -53662,6 +57273,26 @@ post Vouchers.</source>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
     </message>
+    <message>
+        <source>Ship Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pricing Schedule Assignments </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pricing Schedule Assignments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Assignments:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>printApOpenItem</name>
@@ -53671,6 +57302,26 @@ post Vouchers.</source>
     </message>
     <message>
         <source>A/P Open Item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Memo</source>
+        <translation type="unfinished">Abono</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation type="unfinished">Otro</translation>
+    </message>
+    <message>
+        <source>Voucher</source>
+        <translation type="unfinished">Justificante</translation>
+    </message>
+    <message>
+        <source>Debit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A/P Check</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -53848,6 +57499,47 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <source>&amp;Already Printed/Paid</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Check Information but will continue anyway
+ %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Voiding Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating EFT File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Receiving ACH Confirmation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving Check Information for EFT Creation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Information for EFT Creation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Marking Check as Printed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>printChecks</name>
@@ -53931,6 +57623,43 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <source>&lt;p&gt;Some but not all of the Payments in this run are for Vendors configured to receive EFT transactions. Do you want to create the EFT file anyway?&lt;p&gt;If you answer &apos;Yes&apos; then an EFT file will be created but you will have to click Print to get the remainder of the Payments in this run. If you say &apos;No&apos; then you will get a warning when you click Print asking whether you want to print Payments for EFT recipients.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Printing Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Next Check Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Received error but will continue anyway:
+ %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Marking Check As Printed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating EFT File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Receiving ACH Confirmation</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>printChecksReview</name>
@@ -53986,22 +57715,61 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <source>Payment Number</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error fetching Check Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>printChecksReviewEdit</name>
+    <message>
+        <source>Edit Payment Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Payment #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished">Guardar</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancelar</translation>
+    </message>
+    <message>
+        <source>Error fetching Check Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error setting Check Number</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>printCreditMemo</name>
     <message>
-        <source>Print Return</source>
+        <source>Memo #:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Return #:</source>
+        <source>Print Sales Credit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>printCreditMemos</name>
     <message>
-        <source>Print Returns</source>
+        <source>Print Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -54012,15 +57780,15 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation></translation>
     </message>
     <message>
-        <source>First Invoice #:</source>
-        <translation># de Primera Factura:</translation>
-    </message>
-    <message>
         <source>Print Invoice</source>
         <translation>Imprimir Factura</translation>
     </message>
     <message>
         <source>Could not post Invoice %1 because of a missing exchange rate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invoice #:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -54162,6 +57930,10 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
     <message>
         <source>Could not locate report</source>
         <translation>No se pudo localizar el reporte</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Label Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54309,10 +58081,6 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation type="unfinished">No se puede Imprimir</translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation type="unfinished">No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;Cannot find form &apos;%1&apos; for %2 %3. It cannot be printed until the Form Assignment is updated to remove references to this Form or the Form is created.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -54345,8 +58113,16 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54510,16 +58286,28 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation>Último</translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>Print Packing List Batch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>All</source>
         <translation type="unfinished">Todos</translation>
+    </message>
+    <message>
+        <source>Error Printing Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Packing List Batch Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54599,8 +58387,16 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation># de C&amp;opias:</translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Printing Purchase Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54806,10 +58602,6 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation type="unfinished">No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>No Documents to Print</source>
         <translation type="unfinished"></translation>
     </message>
@@ -54834,8 +58626,16 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54904,8 +58704,43 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation>Depósito</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>printStatementsByCustomerGroup</name>
+    <message>
+        <source>Print Statement by Customer Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Customer Group:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>As of:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invoice</source>
+        <translation type="unfinished">Factura</translation>
+    </message>
+    <message>
+        <source>Debit Memo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Memo</source>
+        <translation type="unfinished">Abono</translation>
+    </message>
+    <message>
+        <source>Deposit</source>
+        <translation type="unfinished">Depósito</translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54947,8 +58782,8 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation>A fecha :</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54959,6 +58794,10 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
     </message>
     <message>
         <source>Report Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting Transfer Order Form</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -55039,16 +58878,16 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <translation>Imprimir</translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>printWoTraveler</name>
-    <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation type="unfinished">No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
     <message>
         <source>&amp;Cancel</source>
         <translation>&amp;Cancelar</translation>
@@ -55081,16 +58920,28 @@ Si responde &apos;&apos;Sí&apos;&apos; se imprimirá un cheque. Si responde &ap
         <source>Print Work Order Label</source>
         <translation>Imprimir Etiqueta de la Orden de Trabajo</translation>
     </message>
+    <message>
+        <source>Error Retrieving Traveler Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Printing Traveler</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>productCategories</name>
     <message>
         <source>Category</source>
         <translation type="unfinished">Categoría</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Are you sure that you wish to delete all unused Product Categories?</source>
@@ -55157,6 +59008,10 @@ You must first re-assign these items before deleting the selected Product Catego
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
     </message>
+    <message>
+        <source>Error Deleting Product Category</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>productCategory</name>
@@ -55190,12 +59045,12 @@ You may not create a Product Category with this code.</source>
         <translation>Ya existe una Categoría de Producto con el código proporcionado. No puede crear una Categoría de Producto con este código.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Description:</source>
         <translation>Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Product Category Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -55249,6 +59104,14 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
         <source>You must enter a valid Number.</source>
         <translation>Debe proporcionar un Número válido.</translation>
     </message>
+    <message>
+        <source>Error Saving Profit Center Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Profit Center Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>profitCenters</name>
@@ -55287,6 +59150,14 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
     <message>
         <source>List Profit Centers</source>
         <translation>Lista Centros de Beneficios</translation>
+    </message>
+    <message>
+        <source>Error Deleting Profit Center</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Profit Center Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -55335,10 +59206,6 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
     <message>
         <source>Cannot Delete Project Task</source>
         <translation>No se puede Eliminar Tarea del Proyecto</translation>
-    </message>
-    <message>
-        <source>Notes</source>
-        <translation type="unfinished">Notas</translation>
     </message>
     <message>
         <source>You must specify a due date before saving it.</source>
@@ -55768,6 +59635,43 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
         <source>Total</source>
         <translation type="unfinished">TOTAL</translation>
     </message>
+    <message>
+        <source>&lt;Select Project Type&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Project Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Project Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Error Saving Project Information 
+ %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirmed</source>
+        <translation type="unfinished">Confirmado</translation>
+    </message>
+    <message>
+        <source>Feedback</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished">Nuevo</translation>
+    </message>
+    <message>
+        <source>Resolved</source>
+        <translation type="unfinished">Resuelto</translation>
+    </message>
 </context>
 <context>
     <name>projectCopy</name>
@@ -55866,6 +59770,14 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
         <source>You must enter a Code for this Project Type before you may save it.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting Project Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Project Type</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>projectTypes</name>
@@ -55920,6 +59832,10 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
     <message>
         <source>Active</source>
         <translation type="unfinished">Activo</translation>
+    </message>
+    <message>
+        <source>Error Deleting Project Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -56425,6 +60341,10 @@ Si responde &apos;&apos;No&apos;&apos; entonce modifique de nuevo el Número a %
         <source>Total</source>
         <translation type="unfinished">TOTAL</translation>
     </message>
+    <message>
+        <source>Error Deleting Project</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>prospect</name>
@@ -56785,10 +60705,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
         <translation>No es posible Crear O/C</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;View</source>
         <translation>Ver</translation>
     </message>
@@ -56819,10 +60735,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     <message>
         <source>Sales Order #:</source>
         <translation>Nº de Orden de Venta:</translation>
-    </message>
-    <message>
-        <source>This Purchase Order has been released. You may not set its Status back to &apos;Unreleased&apos;.</source>
-        <translation>Ya se ha lanzado esta Orden de Compra. No puede volver su Estado a &apos;&apos;No lanzada&apos;&apos;.</translation>
     </message>
     <message>
         <source>Demand Type</source>
@@ -56879,10 +60791,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     <message>
         <source>Receiving Site:</source>
         <translation>Centro Destinatario:</translation>
-    </message>
-    <message>
-        <source>Freight Total:</source>
-        <translation>Total de Flete:</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
@@ -57057,10 +60965,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
         <translation>Parcial</translation>
     </message>
     <message>
-        <source>Removing row from view failed</source>
-        <translation>Error al quitar fila de la vista</translation>
-    </message>
-    <message>
         <source>Print on Save</source>
         <translation>Imprimir al Guardar</translation>
     </message>
@@ -57130,6 +61034,62 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     </message>
     <message>
         <source>Getting Site Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total P/O Freight:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Purchase Order Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You do not have the privilege to set the status back to &apos;Unreleased&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Unreleasing Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Purchase Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Removing row from view failed. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Purchase Order Tax Zone Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calculating P/O Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not save this Purchase Order until you have selected a valid Vendor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P/O Save Detail</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -57264,10 +61224,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     <message>
         <source>Vendor UOM:</source>
         <translation>UM Proveedor:</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Invalid Due Date </source>
@@ -57448,6 +61404,26 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
         <source>Refresh Order</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Purchase Order Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Purchase Order Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P/O Tax Calculation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Breakdown</source>
+        <translation type="unfinished">Desglose de Impuestos</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Please save the Purchase Order Item before viewing the tax breakdown.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>purchaseOrderList</name>
@@ -57493,10 +61469,6 @@ Click Yes to use the existing Purchase Order otherwise a new one will be created
     <message>
         <source>Project #:</source>
         <translation type="unfinished">Nº de Proyecto:</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -57564,6 +61536,14 @@ Site before creating the Purchase Request.</source>
         <source>Cannot Save Purchase Request</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Purchase Request</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Request Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>purgeClosedWorkOrders</name>
@@ -57615,16 +61595,16 @@ Site before creating the Purchase Request.</source>
         <translation>Ingresar Fecha de Corte</translation>
     </message>
     <message>
-        <source>Purge Returns</source>
+        <source>Purge Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Return Records</source>
+        <source>Delete Sales Credit Records</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You will not be able to re-print a Return if you delete it.
-Are you sure that you want to delete the selected Returns?</source>
+        <source>You will not be able to re-print a Sales Credit if you delete it.
+Are you sure that you want to delete the selected Sales Credits?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -57796,6 +61776,22 @@ Are you sure that you want to delete the selected Invoice Records?</source>
         <source>Unable to relocate lot</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Lot Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Location Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Lot/Quantity Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Lot Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>quoteList</name>
@@ -57847,11 +61843,6 @@ Are you sure that you want to delete the selected Invoice Records?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A System Error occurred deleting Quote #%1
-%2.</source>
-        <translation>Se ha producido un Error del Sistema eliminando Presupuesto Nº%1 %2.</translation>
-    </message>
-    <message>
         <source>Open</source>
         <translation type="unfinished">Abrir</translation>
     </message>
@@ -57870,10 +61861,6 @@ Are you sure that you want to delete the selected Invoice Records?</source>
     <message>
         <source>Start Date</source>
         <translation>Fecha Inicial</translation>
-    </message>
-    <message>
-        <source>Can not Convert</source>
-        <translation>No se puede Convertir</translation>
     </message>
     <message>
         <source>Convert to Invoice...</source>
@@ -58013,6 +62000,34 @@ Are you sure that you want to delete the selected Invoice Records?</source>
     </message>
     <message>
         <source>Convert Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Convert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;One or more of the selected Quotes is being edited.  You cannot convert a Quote that is being edited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Converting Prospect To Customer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Copying Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Quote #%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -58296,6 +62311,14 @@ You must purge these records before you may delete the selected Reason Code.</so
         <source>Site:</source>
         <translation>Centro:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Reassigning Lot/Serial Number</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>reassignProductCategoryByProductCategory</name>
@@ -58312,10 +62335,6 @@ You must purge these records before you may delete the selected Reason Code.</so
         <translation>Seleccionar Categoria Producto:</translation>
     </message>
     <message>
-        <source>&lt;p&gt;You must enter a Product Category Pattern.</source>
-        <translation>Debe introducir un Patrón de Categoría de Producto</translation>
-    </message>
-    <message>
         <source>&amp;Reassign</source>
         <translation>&amp;Reasignar</translation>
     </message>
@@ -58330,6 +62349,10 @@ You must purge these records before you may delete the selected Reason Code.</so
     <message>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>You must enter a Product Category Pattern.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -58351,11 +62374,6 @@ You must purge these records before you may delete the selected Reason Code.</so
         <translation>Fecha Embarque</translation>
     </message>
     <message>
-        <source>&lt;p&gt;There is an unposted Invoice associated this Shipment.  This Invoice will be purged as part of the recall process. &lt;p&gt; OK to continue? </source>
-        <translation>Hay una factura sin contabilizar asociada a este Envío. Esta Factura se purgará como parte de un proceso de retirada.
-¿Está de acuerdo en continuar?</translation>
-    </message>
-    <message>
         <source>Shipment #</source>
         <translation>Nº de Envío</translation>
     </message>
@@ -58372,10 +62390,6 @@ You must purge these records before you may delete the selected Reason Code.</so
         <translation>Facturado</translation>
     </message>
     <message>
-        <source>Show Invoiced Orders</source>
-        <translation>Mostrar Ordenes Facturadas</translation>
-    </message>
-    <message>
         <source>You may not recall this Shipment as it references a Site for which you have not been granted privileges.</source>
         <translation>No puede retirar este Envío porque hace referencia a un Centro para el que dispone de permisos.</translation>
     </message>
@@ -58390,6 +62404,38 @@ You must purge these records before you may delete the selected Reason Code.</so
     <message>
         <source>Shipped Orders:</source>
         <translation>Ordenes Embarque:</translation>
+    </message>
+    <message>
+        <source>Show Invoiced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query</source>
+        <translation type="unfinished">Consulta</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;There is an unposted Invoice associated with this Shipment.  This Invoice will be purged as part of the recall process. &lt;p&gt; OK to continue? </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Recalling Shipment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing Parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must select a Customer if Show Invoiced is checked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must select a Date Range if Show Invoiced is checked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -58585,11 +62631,6 @@ Please correct this before continuing.</source>
         <translation>Se ha producido un error creando registros para conciliar esta cuenta. Por favor, contacte con su Administrador de Sistemas.</translation>
     </message>
     <message>
-        <source>&lt;p&gt;There was an error creating records to reconcile this account: &lt;br&gt;&lt;pre&gt;%1&lt;/pre&gt;</source>
-        <translation>Se ha producido un error creando registros para conciliar esta cuenta:
-&lt;pre&gt;%1&lt;/pre&gt;</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;No Opening Date was specified for this reconciliation. Please specify an Opening Date.</source>
         <translation>No se ha especificado una Fecha de Apertura para esta conciliación. Por favor, especifique una Fecha de Apertura.</translation>
     </message>
@@ -58599,6 +62640,26 @@ Please correct this before continuing.</source>
     </message>
     <message>
         <source>Exchange Rate/Effective Date Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Bank Reconciliation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Bank Reconcilaition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Reconciliation Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Reconciliation Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Reconcilation Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -58924,16 +62985,24 @@ You may not create duplicate Calendar Items.</source>
         <translation>¿Se han impreso correctamente todos los documentos?</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Could not initialize printing system for multiple reports.</source>
-        <translation>No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>Print Correctly?</source>
         <translation>¿Se imprimió correctamente?</translation>
     </message>
     <message>
         <source>Documents:</source>
         <translation>Documentos:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -59021,6 +63090,10 @@ You may not create duplicate Calendar Items.</source>
     <message>
         <source>&lt;p&gt;You must enter a positive Quantity before posting this Transaction.</source>
         <translation>Debe introducir una Cantidad positiva para poder anotar esta Operación.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Inventory Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -59117,7 +63190,7 @@ You may not create duplicate Calendar Items.</source>
         <translation>Fecha Doc.</translation>
     </message>
     <message>
-        <source>Re-Print Returns</source>
+        <source>Re-Print Sales Credits</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -59220,10 +63293,6 @@ Invoice Number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not initialize printing system for multiple reports.</source>
-        <translation type="unfinished">No se pudo inicializar el sistema de impresión para informes múltiples.</translation>
-    </message>
-    <message>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -59256,8 +63325,16 @@ Invoice Number:</source>
         <translation type="unfinished">Presupuesto</translation>
     </message>
     <message>
-        <source>Return</source>
-        <translation type="unfinished">Devolución</translation>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not initialize printing system for multiple reports.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -59283,10 +63360,6 @@ Invoice Number:</source>
         <translation>Re-Priorizar Orden Trabajo</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;Close</source>
         <translation>Cerrar</translation>
     </message>
@@ -59294,21 +63367,17 @@ Invoice Number:</source>
         <source>&amp;Reprioritize</source>
         <translation>&amp;Re-Priorizar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>reschedulePoitem</name>
     <message>
-        <source>Invalid Reschedule Date</source>
-        <translation type="unfinished">Fecha de Reprogramación no válida</translation>
-    </message>
-    <message>
         <source>The P/O line item you are trying to reschedule does
 not belong to an Open P/O.</source>
         <translation>La partida de la O/C que está intentando reprogramar no forma parte de una O/C Abierta.</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;You must enter a reschedule due date before you may save this Purchase Order Item.</source>
-        <translation>Debe indicar una fecha límite de la reprogramación antes de poder guardar este elemento de la Orden de Compra.</translation>
     </message>
     <message>
         <source>P/O Not Open</source>
@@ -59317,10 +63386,6 @@ not belong to an Open P/O.</source>
     <message>
         <source>Due Date:</source>
         <translation>Fecha Limite:</translation>
-    </message>
-    <message>
-        <source>Reschedule Purchase Order Item</source>
-        <translation>Reprogramar partida de Orden de Compra</translation>
     </message>
     <message>
         <source>Line Item:</source>
@@ -59341,6 +63406,26 @@ not belong to an Open P/O.</source>
     <message>
         <source>Rescheduled</source>
         <translation>Reprogramado</translation>
+    </message>
+    <message>
+        <source>Reschedule Purchase Order Item(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reschedule All Open P/O Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a reschedule due date before you may save this Purchase Order.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must select a Purchase Order.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Reschedule Order</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -59577,6 +63662,10 @@ You must Recall this Work Order before Rescheduling it.</source>
         <source>&lt;p&gt;No available lines match the specified Barcode.</source>
         <translation type="unfinished">Ningún artículo coincide con el Código de Barras especificado.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>resetQOHBalances</name>
@@ -59607,6 +63696,10 @@ You must Recall this Work Order before Rescheduling it.</source>
     <message>
         <source>&lt;p&gt;You are about to issue Adjustment Transactions for all Item Sites within the selected Site and Class Code(s) that are not Lot/Serial or Location  Controlled to adjust their QOH values to 0.&lt;br&gt;Are you sure that you want to do this?</source>
         <translation>Va a lanzar Transacciones de Ajuste para restablecer a 0 todas las Cantidades Disponibles en todos los Centros de Productos en el Centro seleccionado y para los Códigos de Clase que no sean Controlados por Ubicación o Serie/Lote. ¿Está seguro que desea hacer esto?</translation>
+    </message>
+    <message>
+        <source>Error Resetting QOH Balance</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -59672,11 +63765,19 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <source>Return:</source>
+        <source>Payment Number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Payment Number:</source>
+        <source>Error Retrieving Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -59725,6 +63826,14 @@ You must Recall this Work Order before Rescheduling it.</source>
     <message>
         <source>Qty. Registered:</source>
         <translation>Cant. Registrada:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving RA Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -60302,15 +64411,59 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Return Created</source>
+        <source>Error Retrieving RA Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;A new Return has been created and assigned #%1</source>
+        <source>Error Saving RA Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Creating R/A Return</source>
+        <source>Error Retrieving Ship To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting RA Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Receiving RA Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Sales Credit Created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;A new Sales Credit has been created and assigned #%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating R/A Sales Credit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -60668,6 +64821,58 @@ You must Recall this Work Order before Rescheduling it.</source>
         <source>Getting UOMs</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving RA Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving RA Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change Work Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating RA Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retrieving RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting RA Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>returnAuthorizationWorkbench</name>
@@ -60734,10 +64939,6 @@ You must Recall this Work Order before Rescheduling it.</source>
     <message>
         <source>Credit</source>
         <translation>Crédito</translation>
-    </message>
-    <message>
-        <source>Return</source>
-        <translation>Devolución</translation>
     </message>
     <message>
         <source>Could not find a Credit Card to use for this Credit transaction.</source>
@@ -60892,19 +65093,31 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation>Devol. Hab. para Abono:</translation>
     </message>
     <message>
-        <source>Post Returns Immediately</source>
+        <source>Error Retrieving RA Credit Memo Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Print Return</source>
+        <source>Error Retrieving RA Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Return Created</source>
+        <source>Sales Credit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;A new Return has been created and assigned #%1</source>
+        <source>Post Sales Credits Immediately</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Sales Credit Created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;A new Sales Credit has been created and assigned #%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -60923,10 +65136,6 @@ You must Recall this Work Order before Rescheduling it.</source>
         <translation>Debe indicar una fecha válida de transacción.</translation>
     </message>
     <message>
-        <source>A System Error occurred at returnWoMaterialBatch::%1, W/O ID #%2.</source>
-        <translation>Se ha producido un Error del Sistema en returnWoMaterialBatch::%1, ID O/T Nº %2.</translation>
-    </message>
-    <message>
         <source>Invalid date</source>
         <translation>Fecha no válida</translation>
     </message>
@@ -60940,10 +65149,6 @@ You must instead return each Work Order Material item individually.
     <message>
         <source>&amp;Post</source>
         <translation>Asentar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at returnWoMaterialBatch::%1, W/O ID #%2, Error #%3.</source>
-        <translation>Se ha producido un Error del Sistema en returnWoMaterialBatch::%1, ID O/T Nº %2, Error Nº %3.</translation>
     </message>
     <message>
         <source>Return Work Order Material Batch</source>
@@ -60960,6 +65165,10 @@ You must instead return each Work Order Material item individually.
     <message>
         <source>Transaction Canceled</source>
         <translation>Transacción Cancelada</translation>
+    </message>
+    <message>
+        <source>Error Returning Work Order Material Batch, W/O ID #%1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -60983,10 +65192,6 @@ You must instead return each Work Order Material item individually.
     <message>
         <source>Transaction &amp;Date:</source>
         <translation>&amp;Fecha Transacción:</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
@@ -61026,6 +65231,14 @@ You must instead return each Work Order Material item individually.
     </message>
     <message>
         <source>Available QOH After:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Item Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -61084,10 +65297,6 @@ You must instead return each Work Order Material item individually.
         <translation>No se puede Anular Grupo</translation>
     </message>
     <message>
-        <source>A System Error occurred at reverseGLSeries::%1.</source>
-        <translation>Se ha producido un Error del Sistema en reverseGLSeries::%1.</translation>
-    </message>
-    <message>
         <source>A valid distribution date must be entered before the G/L Series can be reversed.</source>
         <translation>Se debe proporcionar una fecha de distribución válida antes de poder anular el Grupo de Mayor.</translation>
     </message>
@@ -61098,6 +65307,10 @@ You must instead return each Work Order Material item individually.
     <message>
         <source>An Unknown Error was encountered while reversing the G/L Series.</source>
         <translation>Se ha producido un Error Desconocido al anular el Grupo de Mayor.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving GL Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -61135,10 +65348,6 @@ You must instead return each Work Order Material item individually.
         <translation>La Fecha Inicial no puede ser posterior a la Fecha Final.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Schedule:</source>
         <translation>Programación:</translation>
     </message>
@@ -61173,6 +65382,10 @@ You must instead return each Work Order Material item individually.
     <message>
         <source>&amp;Description:</source>
         <translation>&amp;Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sale Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -61253,15 +65466,15 @@ You must instead return each Work Order Material item individually.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sale Type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Code</source>
         <translation type="unfinished">Código</translation>
     </message>
     <message>
         <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -61387,11 +65600,31 @@ You must instead return each Work Order Material item individually.
         <translation>Centro:</translation>
     </message>
     <message>
-        <source>&amp;Return Account:</source>
+        <source>Error Retrieving Customer Type Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;You must select a Return Account for this Assignment.</source>
+        <source>Error Retrieving Product Category Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sales Account Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sales Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Sales Credit Account:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must select a Sales Credit Account for this Assignment.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -61478,7 +65711,15 @@ You must instead return each Work Order Material item individually.
         <translation>Centro</translation>
     </message>
     <message>
-        <source>Return Accnt. #</source>
+        <source>Error Deleting Sales Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Accnt. #</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -61540,10 +65781,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation>Categorías de Ventas:</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;Close</source>
         <translation>Cerrar</translation>
     </message>
@@ -61558,6 +65795,10 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
     <message>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Category</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -61787,10 +66028,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
     <message>
         <source>Commission:</source>
         <translation>Comisión:</translation>
-    </message>
-    <message>
-        <source>&lt;br&gt;Line Item %1</source>
-        <translation>Partida %1</translation>
     </message>
     <message>
         <source>Edit Line...</source>
@@ -62023,14 +66260,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
     <message>
         <source>Misc. Charge Description:</source>
         <translation>Descripcion Cargo Misc.:</translation>
-    </message>
-    <message>
-        <source>Inventory history not found</source>
-        <translation>Historial de Inventario no encontrado</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;This Customer does not use Blanket P/O Numbers and the P/O Number you entered has already been used for another Sales Order.Please verify the P/O Number and eitherenter a new P/O Number or add to theexisting Sales Order.</source>
-        <translation>Este Cliente no usa Números de O/C Globales y el Número de O/C que ha indicado ya está siendo usado en otra Orden de Venta. Por favor, verifique el Número de O/C y, o bien introduzca un Número de O/C nuevo, o añádala a la Orden de Venta existente.</translation>
     </message>
     <message>
         <source>Tax:</source>
@@ -62312,10 +66541,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation>Secuencia</translation>
     </message>
     <message>
-        <source>Could not delete Quote.</source>
-        <translation>No se pudo eliminar Presupuesto.</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;This Customer does not use Blanket P/O Numbers and the P/O Number you entered has already been used for another Sales Order. Please verify the P/O Number and either enter a new P/O Number or add to the existing Sales Order.</source>
         <translation>Este Cliente no usa Números de O/C Globales y el Número de O/C que ha indicado ya está siendo usado en otra Orden de Venta. Por favor, verifique el Número de O/C y, o bien introduzca un Número de O/C nuevo, o añádala a la Orden de Venta existente.</translation>
     </message>
@@ -62416,10 +66641,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation>No es posible Procesar Transacción de Tarjeta de Crédito</translation>
     </message>
     <message>
-        <source>Allocated Credit:</source>
-        <translation>Crédito Asignado:</translation>
-    </message>
-    <message>
         <source>Packing</source>
         <translation>Embalaje</translation>
     </message>
@@ -62474,11 +66695,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
     <message>
         <source>Res. Line Bal.</source>
         <translation>Res. Aj. Líneas</translation>
-    </message>
-    <message>
-        <source>Line Item %1
-</source>
-        <translation>Partida %1</translation>
     </message>
     <message>
         <source>&lt;p&gt;Are you sure that you want to delete the selected Line Item?</source>
@@ -62744,6 +66960,139 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <source>&lt;p&gt;Should any associated Purchase Orders be rescheduled to reflect this change?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Allocated CM/Invoice:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Order Credit Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The customer has exceeded their credit limit and this order will be placed on Credit Hold.
+Do you wish to continue saving the order?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The customer has exceeded their credit limit and you have insufficient privileges to complete this order. You will need to edit the order to ensure it falls within the credit limit or obtain a payment first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Request Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Quote Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Ship To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Quote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Quote Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not delete this Sales Order as it has one or more unshipped line items with inventory at shipping.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting At Shipping Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Card Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Return Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inventory History Not Found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cash Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Cash Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Accounts Receivable Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Accounts Receivable Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Price</source>
+        <translation type="unfinished">Precio Lista</translation>
+    </message>
+    <message>
+        <source>List Discount</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>salesOrderInformation</name>
@@ -62819,6 +67168,10 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <source>Pack Date:</source>
         <translation>Fecha Empaque:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>salesOrderItem</name>
@@ -62887,10 +67240,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
         <translation>Disponibilidad</translation>
     </message>
     <message>
-        <source>changePrQty failed</source>
-        <translation>error en changePrQty</translation>
-    </message>
-    <message>
         <source>Customer Cannot Buy at Quantity</source>
         <translation>El Cliente no puede Comprar por Cantidades</translation>
     </message>
@@ -62901,10 +67250,6 @@ Would you like to mark the selected Sales Category as inactive instead?</source>
     <message>
         <source>&lt;p&gt;This item is marked as exclusive and no qualifying price schedule was found. You may click on the price list button (...) next to the Unit Price to determine if there is a minimum quantity the selected Customer may purchase.</source>
         <translation>Este producto está marcado como exclusivo y no se ha hallado una lista de precios clasificatoria. Puede pulsar el botón de lista de precios (...) junto al Precio Unitario para determinar si hay una cantidad mínima que el Cliente seleccionado pueda comprar.</translation>
-    </message>
-    <message>
-        <source>&lt;br&gt;Line Item %1</source>
-        <translation>Partida %1</translation>
     </message>
     <message>
         <source>Tax:</source>
@@ -63072,10 +67417,6 @@ Would you like to save them now?</source>
         <translation>De&amp;talle</translation>
     </message>
     <message>
-        <source>deletePr failed</source>
-        <translation>error en deletePr</translation>
-    </message>
-    <message>
         <source>List Price:</source>
         <translation>Precio Lista:</translation>
     </message>
@@ -63184,11 +67525,6 @@ Would you like to save them now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Line Item %1
-</source>
-        <translation>Partida %1</translation>
-    </message>
-    <message>
         <source>Error with Characteristics</source>
         <translation type="unfinished"></translation>
     </message>
@@ -63233,10 +67569,6 @@ Would you like to save them now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>List Price Discount %:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Not Vouchered</source>
         <translation type="unfinished">No justificado</translation>
     </message>
@@ -63247,10 +67579,6 @@ Would you like to save them now?</source>
     <message>
         <source>Base Price</source>
         <translation type="unfinished">Precio Base</translation>
-    </message>
-    <message>
-        <source>Cust Discount %:</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Currency</source>
@@ -63444,10 +67772,6 @@ Do you want to change the Qty Ordered?</source>
     <message>
         <source>Delete Purchase Request</source>
         <translation>Eliminar Petición de Compra</translation>
-    </message>
-    <message>
-        <source>In %1:</source>
-        <translation>En %1:</translation>
     </message>
     <message>
         <source>Sales Order Item</source>
@@ -63657,10 +67981,6 @@ The quantity may not be updated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>changePoQty failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;p&gt;The Supply Order Quantity for this Line Item has changed from %1 to %2.&lt;p&gt;Should the P/R quantity for this Line Item be changed?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -63786,6 +68106,178 @@ Are you sure you want to do this?</source>
         <source>At least one child item from this kit is at shipping.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>As Of</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Time</source>
+        <translation type="unfinished">Plazo de Entrega</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Quote Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Getting Retrieving Quote Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a Quantity Ordered equal to or greater than the Quantity At Shipping.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Pricing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Reserving Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Database Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change Work Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Purchase Request Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Next Transaction ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting %1 Comment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Discount %:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prices</source>
+        <translation type="unfinished">Precios</translation>
+    </message>
+    <message>
+        <source>Customer Discount %:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sale Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modifier Amt.:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modifier %:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Schedule:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Basis:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qty. Break:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Discount Amt:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Markup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cost:</source>
+        <translation type="unfinished">Costo:</translation>
+    </message>
+    <message>
+        <source>Markup %:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Markup Amt:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nominal Price:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prices in %1:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>salesOrderList</name>
@@ -63824,6 +68316,654 @@ Are you sure you want to do this?</source>
     <message>
         <source>Scheduled</source>
         <translation>Programado</translation>
+    </message>
+</context>
+<context>
+    <name>salesOrderSimple</name>
+    <message>
+        <source>Simple Sales Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>    Ship To:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Order #:</source>
+        <translation type="unfinished">Nº Pedido:</translation>
+    </message>
+    <message>
+        <source>Customer:</source>
+        <translation type="unfinished">Cliente:</translation>
+    </message>
+    <message>
+        <source>Cust. PO #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hold Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Order</source>
+        <translation type="unfinished">Nuevo Pedido</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Line Items</source>
+        <translation type="unfinished">&amp;Partidas</translation>
+    </message>
+    <message>
+        <source>Unknown Action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qty:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total:</source>
+        <translation type="unfinished">Total:</translation>
+    </message>
+    <message>
+        <source>Balance:</source>
+        <translation type="unfinished">Saldo:</translation>
+    </message>
+    <message>
+        <source>Tax:</source>
+        <translation type="unfinished">Impuesto:</translation>
+    </message>
+    <message>
+        <source>Subtotal:</source>
+        <translation type="unfinished">Subtotal:</translation>
+    </message>
+    <message>
+        <source>Pa&amp;yment</source>
+        <translation type="unfinished">Pa&amp;go</translation>
+    </message>
+    <message>
+        <source>Credit Card</source>
+        <translation type="unfinished">Tarjeta de Crédito</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished">Nuevo</translation>
+    </message>
+    <message>
+        <source>Charge CC and Complete Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View</source>
+        <translation type="unfinished">Ver</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation type="unfinished">Monto:</translation>
+    </message>
+    <message>
+        <source>CVV Code:</source>
+        <translation type="unfinished">Código CVV:</translation>
+    </message>
+    <message>
+        <source>Cash</source>
+        <translation type="unfinished">Efectivo</translation>
+    </message>
+    <message>
+        <source>Order Total:</source>
+        <translation type="unfinished">Total Orden:</translation>
+    </message>
+    <message>
+        <source>Amount Received:</source>
+        <translation type="unfinished">Monto Recibido:</translation>
+    </message>
+    <message>
+        <source>Available Credit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Funds Type:</source>
+        <translation type="unfinished">Tipo de Fondos:</translation>
+    </message>
+    <message>
+        <source>Payment/Document #:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post to:</source>
+        <translation type="unfinished">Asentar a:</translation>
+    </message>
+    <message>
+        <source>Payment/Document Date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post Payment and Complete Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished">Producto</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished">Descripción</translation>
+    </message>
+    <message>
+        <source>Qty.</source>
+        <translation type="unfinished">Cant.</translation>
+    </message>
+    <message>
+        <source>Qty. UOM</source>
+        <translation type="unfinished">UM Cant.</translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished">Precio</translation>
+    </message>
+    <message>
+        <source>Price UOM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ext. Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sequence</source>
+        <translation type="unfinished">Secuencia</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished">Tipo</translation>
+    </message>
+    <message>
+        <source>Number</source>
+        <translation type="unfinished">Número</translation>
+    </message>
+    <message>
+        <source>Active</source>
+        <translation type="unfinished">Activo</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
+    </message>
+    <message>
+        <source>Expiration Date</source>
+        <translation type="unfinished">Fecha de Expiración</translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO ID Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Item ID Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Customer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a valid Customer before entering a payment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Over Credit Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Balance is more than the Customer&apos;s credit limit.  You must post a payment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must select a Customer for this order before you may save it.</source>
+        <translation type="unfinished">Debe seleccionar un Cliente para este orden antes de poder guardarlo.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The Total must be a positive value.</source>
+        <translation type="unfinished">El Total debe ser un valor positivo.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must create at least one Line Item for this order before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a valid Number for this order before you may save it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a Customer P/O for this Sales Order before you may save it.</source>
+        <translation type="unfinished">Debe ingresar un O/C del Cliente para este Orden de Ventas antes de poder guardarlo.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Customer does not use Blanket P/O Numbers and the P/O Number you entered has already been used for another Sales Order. Please verify the P/O Number and either enter a new P/O Number or add to the existing Sales Order.</source>
+        <translation type="unfinished">Este Cliente no usa Números de O/C Globales y el Número de O/C que ha indicado ya está siendo usado en otra Orden de Venta. Por favor, verifique el Número de O/C y, o bien introduzca un Número de O/C nuevo, o añádala a la Orden de Venta existente.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer PO Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Sales Order</source>
+        <translation type="unfinished">No es posible Guardar Orden de Ventas</translation>
+    </message>
+    <message>
+        <source>Saving Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This UOM for this Item does not allow fractional quantities. Please fix the quantity.</source>
+        <translation type="unfinished">La UM de este Producto no permite cantidades fraccionales. Por favor, corrija la cantidad.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This item is marked as exclusive and no qualifying price schedule was found. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Pricing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Sales Order Item</source>
+        <translation type="unfinished">No se puede guardar Partida de la Orden de Venta</translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Line Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating SO Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Line...</source>
+        <translation type="unfinished">Editar Línea...</translation>
+    </message>
+    <message>
+        <source>Delete Line...</source>
+        <translation type="unfinished">Borrar Fila…</translation>
+    </message>
+    <message>
+        <source>Item Workbench</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Number Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter S/O #</source>
+        <translation type="unfinished">Introducir Nº de O/V</translation>
+    </message>
+    <message>
+        <source>You must enter a S/O # for this Sales Order before you may continue.</source>
+        <translation type="unfinished">Debe indicar un Nº de O/V para esta Orden de Venta antes de poder continuar.</translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting SO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate S/O #</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must enter a unique S/O # for this Sales Order before you may continue.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected Customer on Credit Hold</source>
+        <translation type="unfinished">El Cliente seleccionado tiene Bloqueado el Crédito</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The selected Customer has been placed on a Credit Hold and you do not have privilege to create Sales Orders for Customers on Credit Hold.  The selected Customer must be taken off of Credit Hold before you may create a new Sales Order for the Customer.</source>
+        <translation type="unfinished">El Cliente seleccionado tiene Bloqueado el Crédito y no tiene premisos para crear Órdenes de Ventas para Clientes con el Crédito Bloqueado. Debe Desbloquearse el Crédito del Cliente seleccionado antes de que pueda crear una nueva Orden de Venta para el Cliente.</translation>
+    </message>
+    <message>
+        <source>Selected Customer on Credit Warning</source>
+        <translation type="unfinished">El Cliente seleccionado está en Advertencia de Crédito</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The selected Customer has been placed on a Credit Warning and you do not have privilege to create Sales Orders for Customers on Credit Warning.  The selected Customer must be taken off of Credit Warning before you may create a new Sales Order for the Customer.</source>
+        <translation type="unfinished">El Cliente seleccionado está en Advertencia de Crédito y no tiene premisos para crear Órdenes de Ventas para Clientes en Advertencia de Crédito. Debe modificar el estado de Advertencia de Crédito del Cliente seleccionado antes de que pueda crear una nueva Orden de Venta para el Cliente.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Editing Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Selected Line Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure that you want to delete the selected Line Item?</source>
+        <translation type="unfinished">¿Está seguro que desea eliminar la Partida seleccionada?</translation>
+    </message>
+    <message>
+        <source>Cannot Delete Related Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Order Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting SO Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Subtotal Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Sales Order?</source>
+        <translation type="unfinished">¿Eliminar Orden de Ventas?</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure you want to delete this Sales Order and its associated Line Items?</source>
+        <translation type="unfinished">¿Está seguro que desea eliminar este Orden de Venta y sus Partidas asociadas?</translation>
+    </message>
+    <message>
+        <source>Error Deleting Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing SO Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving SO Line ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Credit Card Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MasterCard</source>
+        <translation type="unfinished">MasterCard</translation>
+    </message>
+    <message>
+        <source>VISA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>American Express</source>
+        <translation type="unfinished">American Express</translation>
+    </message>
+    <message>
+        <source>Discover</source>
+        <translation type="unfinished">Discover</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation type="unfinished">Otro</translation>
+    </message>
+    <message>
+        <source>Credit Card Processing Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Card Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Card Processing Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Card Processing Note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Process Credit Card Transaction</source>
+        <translation type="unfinished">No es posible Procesar Transacción de Tarjeta de Crédito</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must enter a Customer P/O for this Sales Order before you may process a creditcard transaction.</source>
+        <translation type="unfinished">Debe indicar una O/C de Cliente para esta Orden de Venta antes de poder procesar una transacción con tarjeta de crédito.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Unallocated CM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Allocating CM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sufficient Inventory Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insufficient Inventory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;There is not enough Inventory to issue the amount required of Item %1 in Site %2.</source>
+        <translation type="unfinished">No hay Existencias suficientes del Producto %1 en el Centro %2 para dar salida a la cantidad requerida.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Item Number %1 in Site %2 is a Multiple Location or Lot/Serial controlled Item which is short on Inventory. This transaction cannot be completed as is. Please make sure there is sufficient Quantity on Hand before proceeding.</source>
+        <translation type="unfinished">El Número de Producto %1 en el Centro %2 es un Producto controlado por Ubicación Múltiple o Lote/Serie para el que no hay existencias suficientes. Esta transacción no se puede completar en estas circunstancias. Por favor, asegúrese de que haya suficiente Cantidad Disponible antes de continuar.</translation>
+    </message>
+    <message>
+        <source>Error Posting Production Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issue to Shipping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issue Canceled</source>
+        <translation type="unfinished">Salida Cancelada</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Inventory History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Inventory History Not Found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing to Shipping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Line Balance To Shipping Line Item %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transaction Canceled</source>
+        <translation type="unfinished">Transacción Cancelada</translation>
+    </message>
+    <message>
+        <source>Error Issuing Line Balance To Shipping
+ Line Item %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shipper Not Found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unshipped Shipper for this Sales Order cannot be found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Shipping Shipment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One or more required accounts are not set or set incorrectly. Please make sure that all your Cost Category and Sales Account Assignments are complete and correct.</source>
+        <translation type="unfinished">Una o más cuentas necesarias no se han configurado, o lo están incorrectamente. Por favor, asegúrese que todas sus Asignaciones de Cuentas de Venta y Categorías de Coste están completas y correctas.</translation>
+    </message>
+    <message>
+        <source>Error Committing Shipment Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already Invoiced</source>
+        <translation type="unfinished">Ya Facturado</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This shipment appears to have been invoiced already. It will not be selected for billing again.</source>
+        <translation type="unfinished">Parece que el envío ya se ha facturado. No se seleccionará otra vez para cobro.</translation>
+    </message>
+    <message>
+        <source>Error Selecting Shipment for Billing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Although Sales Order %2 was successfully shipped, it was not selected for billing. You must manually select this Sales Order for Billing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Billing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Although Sales Order %2 was successfully shipped and selected for billing, the Invoice was not created properly. You may need to create an Invoice manually from the Billing Selection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Although Sales Order %2 was successfully shipped selected for billing, and an Invoice was created the Invoice was not posted properly. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zero Amount Received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You cannot post a zero payment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you returning change of %1?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Overapplied?</source>
+        <translation type="unfinished">¿Sobreaplicar?</translation>
+    </message>
+    <message>
+        <source>The Cash Payment is more than the Balance.  Do you want to continue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Account Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bank Currency?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Sales Order is specified in %1 while the Bank Account is specified in %2. Do you wish to convert at the current Exchange Rate?&lt;p&gt;If not, click NO and change the Bank Account in the POST TO field.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cash Receipt Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving C/R Journal Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Cash Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Allocating Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Cash Receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Recalculating SO Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Site Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Site:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Zone:</source>
+        <translation type="unfinished">Zona Fiscal:</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>On Account</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -63890,6 +69030,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>&lt;p&gt;The Sales Rep should now have a Account, but that Account could not be found. Please check the database server log for errors.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Rep Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64027,10 +69171,6 @@ Are you sure you want to do this?</source>
         <translation>Debe seleccionar un Elemento antes de realizar este apunte.</translation>
     </message>
     <message>
-        <source>&lt;p&gt;No transaction was done because Item %1 was not found at Site %2.</source>
-        <translation>No se ha realizado ningún apunte porque el Producto %1 no se ha encontrado en la Sede %2.</translation>
-    </message>
-    <message>
         <source>&amp;Site:</source>
         <translation>Sede:</translation>
     </message>
@@ -64041,6 +69181,26 @@ Are you sure you want to do this?</source>
     <message>
         <source>Cannot Post Transaction</source>
         <translation>No se puede Realizar el Apunte</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Inventory History Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Scrap Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Transaction Not Completed Due to Item:[%2] not found at Site:[%3].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -64102,10 +69262,6 @@ Are you sure you want to do this?</source>
         <translation>Debe indicar una fecha válida de transacción.</translation>
     </message>
     <message>
-        <source>A System Error occurred scrapping material for Work Order ID #%1, Error #%2.</source>
-        <translation>Se ha producido un Error del Sistema rechazando material para la Orden de Trabajo con ID Nº%1, Error Nº%2.</translation>
-    </message>
-    <message>
         <source>You must enter a quantity of the W/O Top Level Item to Scrap.</source>
         <translation>Debe indicar una cantidad del Producto de Alto Nivel de la O/T a Rechazar.</translation>
     </message>
@@ -64122,10 +69278,16 @@ Are you sure you want to do this?</source>
         <translation>La cantidad de producto a rechazar debe ser menor o igual que la cantidad utilizada.</translation>
     </message>
     <message>
-        <source>A System Error occurred scrapping material for Work Order ID #%1
-
-%2</source>
-        <translation>Se ha producido un Error del Sistema rechazando material para la Orden de Trabajo con ID Nº%1 %2</translation>
+        <source>Error Retrieving Inventory History Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Scrapping Material</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -64277,6 +69439,18 @@ Are you sure you want to do this?</source>
     <message>
         <source>Cannot Save Account</source>
         <translation type="unfinished">No es posible Guardar Cuenta</translation>
+    </message>
+    <message>
+        <source>Extract widget names from matching screen, or present list of matching screens if multiple matches found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xtract Widgets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locking Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -64433,10 +69607,6 @@ Are you sure you want to do this?</source>
         <translation>Número</translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
-    </message>
-    <message>
         <source>Code</source>
         <translation>Código</translation>
     </message>
@@ -64463,6 +69633,18 @@ Are you sure you want to do this?</source>
     <message>
         <source>Dept.</source>
         <translation>Dept.</translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient Privileges To View This Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Employee Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -64540,6 +69722,22 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Approve Billing Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Billing Selection Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item and/or Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Billing Selection Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -64737,6 +69935,42 @@ Are you sure you want to do this?</source>
         <source>&lt;p&gt;You may not approve for billing a negative total amount</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Saving Selected Orders For Billing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Billing Selection Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Billing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipping Charge Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Unused Billing Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Freight Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>selectPayment</name>
@@ -64751,10 +69985,6 @@ Are you sure you want to do this?</source>
     <message>
         <source>&amp;Save</source>
         <translation>&amp;Guardar</translation>
-    </message>
-    <message>
-        <source>Select Payment</source>
-        <translation>Seleccionar Forma Pago</translation>
     </message>
     <message>
         <source>You must specify an amount smaller than or equal to the Balance.</source>
@@ -64854,6 +70084,14 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Balance Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Payment Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -65028,14 +70266,6 @@ Are you sure you want to do this?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Due</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Discount</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Credit Memo</source>
         <translation type="unfinished">Abono</translation>
     </message>
@@ -65064,10 +70294,6 @@ Are you sure you want to do this?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2, Error #%3.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Voiding Voucher</source>
         <translation type="unfinished"></translation>
     </message>
@@ -65085,6 +70311,26 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Applying all Credits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Clearing Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Error Clearing Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Voiding Voucher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On what date did you void the Voucher?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -65188,6 +70434,14 @@ Are you sure you want to do this?</source>
     <message>
         <source>Credit Memo</source>
         <translation type="unfinished">Abono</translation>
+    </message>
+    <message>
+        <source>Error Clearing Payment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Payment Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -65484,6 +70738,14 @@ Are you sure you want to do this?</source>
         <source>&lt;p&gt;There was an error loading the UI Form from the database.</source>
         <translation>Se ha producido un error cargando el Formulario UI desde la base de datos.</translation>
     </message>
+    <message>
+        <source>Workflow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Project Types</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>shipOrder</name>
@@ -65635,6 +70897,22 @@ Are you sure you want to do this?</source>
         <source>Approve for Billing</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving Shipping Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Shipping Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Billing Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Shipping Freight</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>shipTo</name>
@@ -65751,10 +71029,6 @@ Are you sure you want to do this?</source>
         <translation>Esta Dirección de Destinatario se emplea varias veces. ¿Qué desea hacer?</translation>
     </message>
     <message>
-        <source>&lt;p&gt;There was an error saving this address (%1). Check the database server log for errors.</source>
-        <translation>Se ha producido un error guardando esta dirección (%1). Compruebe el registro de errores del servidor de la base de datos.</translation>
-    </message>
-    <message>
         <source>None</source>
         <translation>Ninguno</translation>
     </message>
@@ -65765,6 +71039,26 @@ Are you sure you want to do this?</source>
     <message>
         <source>Documents</source>
         <translation type="unfinished">Documentos</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Ship To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Ship To Information (%1). </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Ship To Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sales Rep Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -65996,6 +71290,14 @@ You must reassigned these Customers before you may delete the selected Shipping 
         <source>You must enter a select report for this Bill of Lading Format.</source>
         <translation>Debe indicar un informe para este Formato de Carta de Porte.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Shipping Form Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Shipping Form Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>shippingForms</name>
@@ -66160,6 +71462,18 @@ You must reassign these Ship-Tos before you may delete the selected Shipping For
         <source>Return ALL Stock Issued for this Order Line to the Site...</source>
         <translation>Devolver al Centro TODAS las Existencias empleadas en esta Línea de Pedido...</translation>
     </message>
+    <message>
+        <source>Error Retrieving Shipping Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Shipping Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Returning Items From Shipment</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>shippingZone</name>
@@ -66184,16 +71498,16 @@ You must reassign these Ship-Tos before you may delete the selected Shipping For
         <translation>Debe indicar un nombre válido antes de guardar esta Zona de Expedición.</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Shipping Zone</source>
         <translation>Zona Embarque</translation>
     </message>
     <message>
         <source>&amp;Name:</source>
         <translation>Nombre:</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Ship Zone Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -66396,6 +71710,10 @@ You must reassign these Sites before deleting this Site Type.</source>
         <source>Freight Split:</source>
         <translation>Flete Partes:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>standardJournal</name>
@@ -66464,10 +71782,6 @@ You must reassign these Sites before deleting this Site Type.</source>
         <translation>&amp;Cerrar</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Name:</source>
         <translation>Nombre:</translation>
     </message>
@@ -66490,6 +71804,10 @@ You must reassign these Sites before deleting this Site Type.</source>
     <message>
         <source>You must enter a valid Name.</source>
         <translation>Debe indicar un Nombre válido.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Journal Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -66708,10 +72026,6 @@ You must reassign these Sites before deleting this Site Type.</source>
 <context>
     <name>standardJournalItem</name>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Standard Journal Item</source>
         <translation>Elemento de Diario Estándar</translation>
     </message>
@@ -66771,6 +72085,10 @@ You must reassign these Sites before deleting this Site Type.</source>
         <source>G/L transactions are recorded in the base currency.
 Do you wish to convert %1 %2 at the current rate?</source>
         <translation>Las Transacciones del Mayor se han registrado en la moneda base. ¿Desea convertir %1 %2 al tipo actual?</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Journal Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -66866,19 +72184,12 @@ Do you wish to convert %1 %2 at the current rate?</source>
         <source>Name:</source>
         <translation>Nombre:</translation>
     </message>
-</context>
-<context>
-    <name>statementByCustGroup</name>
     <message>
-        <source>Print Statement by Customer Group</source>
+        <source>Error Retrieving State Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Customer Group:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>As At:</source>
+        <source>Error Saving State Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -66939,6 +72250,10 @@ Do you wish to convert %1 %2 at the current rate?</source>
     <message>
         <source>&amp;Delete</source>
         <translation>&amp;Eliminar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving State Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -68548,13 +73863,49 @@ You must first delete the Bill of Materials for the selected target item before 
         <source>Cannot replace this voided Payment because one of its line items has been reapproved for billing and is represented on another Payment.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This Work Order is closed and cannot be changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This characteristic has been defined as unique.  You cannot use this characteristic more than once in this context.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No accounting period exists for invhist_id %1, transaction date %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average costed Item with negative balance for invhist_id %1, transaction date %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post into Inventory Balance for invhist_id=%1 was unsuccessful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not post this inventory transaction because the transaction will cause the Item Qty. on Hand to go negative which is not allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There are one or more Item Sites that use the selected Location as their default Location. You must reassign the default Location for all Item Sites that use the selected Location before you may delete it or deactivate it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is Inventory contained in the selected Location. You must move all Inventory out of the selected Location and may then set its status to inactive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There are one or more undistributed Location records that have been posted against the selected Locations. This probably indicates a system error.Please contact your Systems Adminstrator to have this resolved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Location cannot be deleted as there has been Inventory Transaction History posted against it.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>subAccntType</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>Subaccount Type</source>
         <translation>Tipo de Subcuenta</translation>
@@ -68615,6 +73966,10 @@ You may not create a Subaccount Type with this code.</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sub Account Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -68744,6 +74099,14 @@ You must reassign these Ledger Accounts before you may delete the selected G/L S
         <translation>El Numero de Subcuenta antiguo %1 podría estarse usando en Cuentas existentes. ¿Desea modificar todas las cuentas que la usan al Número de Subcuenta %2?
 Si responde &apos;&apos;No&apos;&apos; modifique el Número a su valor original %3 y Guarde de nuevo.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Sub Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sub Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>subaccounts</name>
@@ -68782,6 +74145,14 @@ Si responde &apos;&apos;No&apos;&apos; modifique el Número a su valor original 
     <message>
         <source>&amp;View</source>
         <translation>Ver</translation>
+    </message>
+    <message>
+        <source>Error Deleting Sub Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sub Account Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -68834,6 +74205,10 @@ Si responde &apos;&apos;No&apos;&apos; modifique el Número a su valor original 
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
     </message>
+    <message>
+        <source>Error Saving Scheduled Action Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>submitReport</name>
@@ -68856,10 +74231,6 @@ Si responde &apos;&apos;No&apos;&apos; modifique el Número a su valor original 
     <message>
         <source>&lt;p&gt;You must indicate an Email address to which the completed Report will be sent.</source>
         <translation>Debe indicar una dirección de Correo electrónico a la que enviar el Informe finalizado.</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Schedule Report with xTuple Connect</source>
@@ -68888,6 +74259,10 @@ Si responde &apos;&apos;No&apos;&apos; modifique el Número a su valor original 
     <message>
         <source>Document Name:</source>
         <translation>Nombre Documento:</translation>
+    </message>
+    <message>
+        <source>Error Saving Scheduled Report Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69085,10 +74460,6 @@ Account: %4</source>
         <translation>La Empresa %1 no parece tener definida una Cuenta de Pérdidas/Ganancias no realizadas. No se puede sincronizar la información de manera segura.</translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
-    </message>
-    <message>
         <source>Synchronizing Company %1 (%2)
 Forward updating trial balances...</source>
         <translation>Sincronizando Empresa %1 (%2) Actualizando ¿por adelantado? los balances de sumas y saldos...</translation>
@@ -69233,6 +74604,98 @@ Posting currency revaluation adjustments...</source>
         <source>No Corresponding Period</source>
         <translation>Ningún Período Correspondiente</translation>
     </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient privileges to view this window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Accounting Period Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Company Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Currency Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Privilege Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Metric Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Profit Center Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Profit Center Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Profit Center Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Sub Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Sub Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving GL Sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Trial Balance Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Savng Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Account Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving GL Transaction Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Account Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Trial Balance Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Trial Balance Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Forward Updating Trial Balances</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Trial Balance Sync Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Currency Revaluation Adjustments</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>sysLocale</name>
@@ -69259,10 +74722,6 @@ Posting currency revaluation adjustments...</source>
     <message>
         <source>Cannot Create Locale</source>
         <translation>No se puede Crear Región</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;.Could not translate Qt date/time formatting string %1 to PostgreSQL date/time formatting string. Error at or near character %2.</source>
-        <translation>No se ha podido traducir el formato de fecha/hora de Qt %1 al formato de fecha/hora de PostgreSQL. Error en o cerca del carácter %2.</translation>
     </message>
     <message>
         <source>Cannot Save Locale</source>
@@ -69391,6 +74850,42 @@ Posting currency revaluation adjustments...</source>
     <message>
         <source>&lt;p&gt;You must enter a Code for this Locale before you may save it.</source>
         <translation>Debe indicar un Código para esta Región antes de poder guardarlo.</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Locale Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Locale Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Locale Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Locale Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Language Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Date/Time Example Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;.Could not translate Qt date/time formatting string %2 to PostgreSQL date/time formatting string. Error at or near character %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Country Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69535,10 +75030,6 @@ Posting currency revaluation adjustments...</source>
         <translation>No se puede guardar Tarea del Proyecto</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>You must enter a valid Number.</source>
         <translation>Debe proporcionar un Número válido.</translation>
     </message>
@@ -69569,6 +75060,18 @@ Posting currency revaluation adjustments...</source>
     <message>
         <source>Documents</source>
         <translation type="unfinished">Documentos</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Project Task Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Task Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Task Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69604,6 +75107,10 @@ Posting currency revaluation adjustments...</source>
     <message>
         <source>&lt;p&gt;You must select a tax code  before you may save.</source>
         <translation>Debe seleccionar un código de impuesto antes de poder guardar.</translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Adjustment Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69653,6 +75160,50 @@ You first need to Revoke those Tax Codes.</source>
     <message>
         <source>Tax Code</source>
         <translation>Código Impositivo</translation>
+    </message>
+    <message>
+        <source>Automatically Apply to AP/AR Memos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Taxation applicable to A/P or A/R Memos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply Reverse Charges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically apply reverse VAT charges when using this assignment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Populating Tax Assignment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding Tax Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error applying Memo Application to tax assignments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error applying Reverse Charge to tax assignments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69724,6 +75275,14 @@ You first need to Revoke those Tax Codes.</source>
     <message>
         <source>View</source>
         <translation>Ver</translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -70059,7 +75618,35 @@ You first need to Revoke those Tax Codes.</source>
         <translation>Valor Flete:</translation>
     </message>
     <message>
-        <source>Return Currency:</source>
+        <source>Total P/O Freight Value:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Breakdown for Purchase Order Item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchase Item Total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Voucher Freight:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Currency:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Breakdown for Sales Credit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit Total:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -70109,6 +75696,14 @@ You first need to Revoke those Tax Codes.</source>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Class Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Class Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxClasses</name>
@@ -70152,6 +75747,10 @@ You first need to Revoke those Tax Codes.</source>
         <source>List Tax Classes</source>
         <translation>Listar Clases de Impuestos</translation>
     </message>
+    <message>
+        <source>Error Deleting Tax Class Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxCode</name>
@@ -70194,10 +75793,6 @@ You first need to Revoke those Tax Codes.</source>
     <message>
         <source>Description:</source>
         <translation>Descripción:</translation>
-    </message>
-    <message>
-        <source>No Tax Code</source>
-        <translation>Ningún Código de Impuesto</translation>
     </message>
     <message>
         <source>Calculation basis on:</source>
@@ -70296,15 +75891,31 @@ You first need to Revoke those Tax Codes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Ledger Account</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>You must select a Ledger Account for this Tax.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You must select a Distribution Ledger Account for this Tax.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Code Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Rate Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot Save Tax Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving Tax Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Rate Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -70362,6 +75973,14 @@ You first need to Revoke those Tax Codes.</source>
         <source>Always</source>
         <translation>Siempre</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Rate Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Rate Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxCodes</name>
@@ -70408,6 +76027,10 @@ You first need to Revoke those Tax Codes.</source>
     <message>
         <source>List Tax Codes</source>
         <translation>Lista Códigos Impositivos</translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Code</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -70472,6 +76095,18 @@ You first need to Revoke those Tax Codes.</source>
         <source>Amount:</source>
         <translation type="unfinished">Monto:</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Detail Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Adjustment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxRegistration</name>
@@ -70531,6 +76166,14 @@ You first need to Revoke those Tax Codes.</source>
         <source>Effectivity</source>
         <translation>Efectividad</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxRegistrations</name>
@@ -70582,16 +76225,20 @@ You first need to Revoke those Tax Codes.</source>
         <source>&amp;Delete</source>
         <translation>Eliminar</translation>
     </message>
+    <message>
+        <source>Error Deleting Tax Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Tax Registration Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxType</name>
     <message>
         <source>&amp;Close</source>
         <translation type="unfinished">&amp;Cerrar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Tax Type</source>
@@ -70634,13 +76281,13 @@ You may not create a Tax Type with this name.</source>
         <source>&lt;p&gt;You must name this Tax Type before saving it.</source>
         <translation>Deber dar un nombre a este Tipo de Impuesto antes de guardarlo.</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxTypes</name>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation type="unfinished">Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
     <message>
         <source>Tax Types:</source>
         <translation>Tipos Impuesto:</translation>
@@ -70690,6 +76337,10 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
     </message>
+    <message>
+        <source>Error Deleting Tax Type Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxZone</name>
@@ -70733,6 +76384,14 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
         <source>&amp;Save</source>
         <translation>&amp;Guardar</translation>
     </message>
+    <message>
+        <source>Error Retrieving Tax Zone Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Tax Zone Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>taxZones</name>
@@ -70771,6 +76430,10 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
     <message>
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
+    </message>
+    <message>
+        <source>Error Deleting Tax Zone Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -70860,11 +76523,11 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
         <translation>No se pueden Guardar los Términos</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
+        <source>Allow Finance Charge</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Allow Finance Charge</source>
+        <source>Error Retrieving Terms Code Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -70941,6 +76604,14 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
     <message>
         <source>List Terms</source>
         <translation>Listar Términos</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Vendor Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -71063,6 +76734,26 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
     <message>
         <source>To-Do List Item</source>
         <translation>Acción Lista Tareas</translation>
+    </message>
+    <message>
+        <source>Error Retrieving To Do Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving To Do Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Incident Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -71319,6 +77010,18 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
         <source>Account</source>
         <translation type="unfinished">Cuenta</translation>
     </message>
+    <message>
+        <source>Error Retrieving To Do Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Recurring To Do Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Recurring To Do Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>todoListCalendar</name>
@@ -71406,6 +77109,22 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
         <source>Active Only</source>
         <translation>Sólo Activos</translation>
     </message>
+    <message>
+        <source>Error Retrieving User Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting To Do Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Customer Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving To Do Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>toggleBankrecCleared</name>
@@ -71431,6 +77150,14 @@ You must first re-assign these items before deleting the selected Tax Type.</sou
     </message>
     <message>
         <source>The Effective Date must be in the date range of this Bank Reconciliation period.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Bank Reconciliation Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -71515,10 +77242,6 @@ otherwise a new one will be created.</source>
     <message>
         <source>Item</source>
         <translation>Producto</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Description</source>
@@ -71634,10 +77357,6 @@ otherwise a new one will be created.</source>
     </message>
     <message>
         <source>Error Getting Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error Getting Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -71805,15 +77524,6 @@ otherwise a new one will be created.</source>
         <translation>Orden Transferencia</translation>
     </message>
     <message>
-        <source>Line Item %1
-</source>
-        <translation>Partida %1</translation>
-    </message>
-    <message>
-        <source>Removing row from view failed</source>
-        <translation>Error al quitar fila de la vista</translation>
-    </message>
-    <message>
         <source>Scheduled Date:</source>
         <translation>Fecha Programada:</translation>
     </message>
@@ -71959,6 +77669,52 @@ otherwise a new one will be created.</source>
     </message>
     <message>
         <source>Locking Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Planned Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Transfer Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Return Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transfer Order Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Checking Item Availability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Line Item Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Line Item %1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Error Saving Quick Item Information: 
+ %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Removing row from view failed </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -72151,6 +77907,54 @@ otherwise a new one will be created.</source>
     <message>
         <source>Comments</source>
         <translation>Comentarios</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Characteristic Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving ItemSite Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Characteristic Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving BOM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting BOM Work Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transfer Order Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Cancelling Transfer Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Calculating Tax</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -72346,6 +78150,26 @@ otherwise a new one will be created.</source>
         <source>Source Site:</source>
         <translation>Centro Origen:</translation>
     </message>
+    <message>
+        <source>Error Releasing Transfer Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Transfer Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Adding To Packing List Batch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Transfer Order Form...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Transfer Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>transferTrans</name>
@@ -72414,10 +78238,6 @@ otherwise a new one will be created.</source>
         <translation>No se puede Realizar el Apunte</translation>
     </message>
     <message>
-        <source>A System Error occurred at transferTrans::%1, Item Site ID #%2, To Site ID #%3, From Site #%4.</source>
-        <translation>Se ha producido un Error del Sistema en transferTrans::%1, ID de Centro de Producto Nº%2, a ID de Centro Nº%3, desde el Centro Nº%4.</translation>
-    </message>
-    <message>
         <source>From Site:</source>
         <translation>Desde el Centro:</translation>
     </message>
@@ -72428,6 +78248,14 @@ otherwise a new one will be created.</source>
     <message>
         <source>To Site:</source>
         <translation>Al Centro:</translation>
+    </message>
+    <message>
+        <source>Error Posting Inter Warehouse Transfer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving ItemSite Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -72537,8 +78365,24 @@ otherwise a new one will be created.</source>
         <translation>Notas:</translation>
     </message>
     <message>
-        <source>&lt;p&gt;No transaction was done because either Item %1 or Item %2 was not found at Site %3.</source>
-        <translation>No se ha realizado ninguna transacción porque no se ha hallado el Producto %1 o el Producto %2 en el Centro %3.</translation>
+        <source>Error Posting Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;No transaction occurred due to either Item %2 or Item %3 was not found at Site %4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving ItemSite Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Item Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -72627,10 +78471,6 @@ otherwise a new one will be created.</source>
         <translation type="unfinished">La pantalla parece haber sido modificada. ¿Desea guardar sus cambios?</translation>
     </message>
     <message>
-        <source>Could not load .ui (%1)</source>
-        <translation>No se ha podido cargar .ui (%1)</translation>
-    </message>
-    <message>
         <source>Do you want to move this screen to the %1 package?</source>
         <translation>¿Desea mover esta pantalla al paquete %1?</translation>
     </message>
@@ -72641,10 +78481,6 @@ otherwise a new one will be created.</source>
     <message>
         <source>Move to different package?</source>
         <translation>¿Mover a un paquete diferente?</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at customCommands::%1</source>
-        <translation>Un Error del Sistema occurrió en customCommand::%1</translation>
     </message>
     <message>
         <source>&amp;New</source>
@@ -72691,21 +78527,12 @@ otherwise a new one will be created.</source>
         <translation>¿Está seguro que desea eliminar por completo el comando seleccionado?</translation>
     </message>
     <message>
-        <source>&lt;p&gt;The screen was saved to its original location but could not be moved: %1</source>
-        <translation>La pantalla se ha guardado en su ubicación original, pero no se ha podido mover: %1</translation>
-    </message>
-    <message>
         <source>&amp;Grade:</source>
         <translation>&amp;Grado</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
         <translation>Editar</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;The screen was saved to its original location but could not be moved: &lt;pre&gt;%1&lt;/pre&gt;</source>
-        <translation>La pantalla se ha guardado en su ubicación original, pero no se ha podido mover:
-&lt;pre&gt;%1&lt;/pre&gt;</translation>
     </message>
     <message>
         <source>[ Not in a Package ]</source>
@@ -72806,6 +78633,65 @@ otherwise a new one will be created.</source>
     <message>
         <source>&lt;p&gt;You must enter some source for this UI Form.</source>
         <translation>Debe indicar alguna fuente para este Formulario UI.</translation>
+    </message>
+    <message>
+        <source>Error Saving UI Form Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;The screen was saved to its original location but could not be moved: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;The screen was saved to its original location but could not be moved: &lt;pre&gt;%2&lt;/pre&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving UI Form Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not load .ui (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Selected Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>uiformchooser</name>
+    <message>
+        <source>Choose Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
+    </message>
+    <message>
+        <source>Grade</source>
+        <translation type="unfinished">Grado</translation>
+    </message>
+    <message>
+        <source>Enabled</source>
+        <translation type="unfinished">Habilitado</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished">Descripción</translation>
     </message>
 </context>
 <context>
@@ -72961,6 +78847,10 @@ otherwise a new one will be created.</source>
         <source>List Unapplied A/P Credit Memos</source>
         <translation>Listar Abonos Acreedores No Aplicados</translation>
     </message>
+    <message>
+        <source>Error Retrieving Unapplied AP Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>unappliedARCreditMemos</name>
@@ -73020,6 +78910,10 @@ otherwise a new one will be created.</source>
         <source>List Unapplied A/R Credit Memos</source>
         <translation>Listar Notas Crédito CxC No Aplicadas</translation>
     </message>
+    <message>
+        <source>Error Retrieving Unapplied AR Credit Memo Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uninvoicedShipments</name>
@@ -73069,6 +78963,10 @@ otherwise a new one will be created.</source>
     </message>
     <message>
         <source>Approve This Order for Billing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -73139,49 +79037,57 @@ otherwise a new one will be created.</source>
         <translation>Transacción Cancelada</translation>
     </message>
     <message>
-        <source>List Unposted Returns</source>
+        <source>Credit Memo Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unposted Returns:</source>
+        <source>Error Posting Credit Memo Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Return #</source>
-        <translation type="unfinished">Nº de Devolución</translation>
-    </message>
-    <message>
-        <source>Return Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Post Return</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A System Error occurred posting Return#%1.
+        <source>Error Posting Credit Memo Information: %1 
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Selected Returns?</source>
+        <source>Error Deleting Credit Memo Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Are you sure that you want to delete the selected Returns?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not delete Return.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error deleting Return %1
+        <source>Error Deleting Credit Memo Information %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You may not view or edit this Return as it references a Site for which you have not been granted privileges.</source>
+        <source>List Unposted Sales Credits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unposted Sales Credits:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sales Credit #</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post Sales Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Selected Sales Credits?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure that you want to delete the selected Sales Credits?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You may not view or edit this Sales Credit as it references a Site for which you have not been granted privileges.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -73262,6 +79168,10 @@ otherwise a new one will be created.</source>
     <message>
         <source>&amp;Print</source>
         <translation>Imprimir</translation>
+    </message>
+    <message>
+        <source>Error Retrieving G/L Transaction Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -73366,6 +79276,14 @@ otherwise a new one will be created.</source>
         <source>Getting G/L Series</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting G/L Transaction Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting G/L Transaction Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>unpostedInvoices</name>
@@ -73384,11 +79302,6 @@ otherwise a new one will be created.</source>
     <message>
         <source>P&amp;rint Journal</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>System Error posting Invoice #%1
-%2</source>
-        <translation>Error del Sistema contabilizando Factura Nº%1 %2</translation>
     </message>
     <message>
         <source>A/R</source>
@@ -73456,17 +79369,8 @@ Would you like to post it anyway?</source>
         <translation>Importe Total</translation>
     </message>
     <message>
-        <source>Could not post Invoice #%1 because of a missing exchange rate.</source>
-        <translation>No se pudo Asentar Factura #%1 porque falta una tasa de cambio.</translation>
-    </message>
-    <message>
         <source>Edit...</source>
         <translation>Editar...</translation>
-    </message>
-    <message>
-        <source>A System Error occurred posting Invoice #%1.
-%2</source>
-        <translation>Se ha producido un Error del Sistema contabilizando Factura Nº%1 %2</translation>
     </message>
     <message>
         <source>G/L Dist Date</source>
@@ -73497,11 +79401,6 @@ Would you like to post it anyway?</source>
         <translation>¿Está seguro que desea eliminar las Facturas seleccionadas?</translation>
     </message>
     <message>
-        <source>Error deleting Invoice %1
-</source>
-        <translation>Error eliminando Factura %1</translation>
-    </message>
-    <message>
         <source>Invoice Date</source>
         <translation>Fecha Factura</translation>
     </message>
@@ -73527,6 +79426,41 @@ Would you like to post it anyway?</source>
     </message>
     <message>
         <source>Margin %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Invoice Information: %1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Journal Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice Information %1
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Could not post Invoice #%1 because of a missing exchange rate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Invoice Information: %1 
+%2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -73672,6 +79606,18 @@ Would you like to post it anyway?</source>
         <source>Site</source>
         <translation>Centro</translation>
     </message>
+    <message>
+        <source>Error Deleting Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Receipt Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Shipment Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>unpostedPurchaseOrders</name>
@@ -73726,10 +79672,6 @@ Would you like to post it anyway?</source>
     <message>
         <source>Open</source>
         <translation>Abrir</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Only Unposted Purchase Orders may be deleted. Check the status of Purchase Order %1. If it is &apos;U&apos; then contact your system Administrator.</source>
-        <translation>Sólo se pueden eliminar Órdenes de Compra no registradas. Compruebe el estado de la Orden de Compra %1. Contacte con su Administrador de Sistemas si es &apos;&apos;U&apos;&apos;.</translation>
     </message>
     <message>
         <source>Unreleased</source>
@@ -73839,6 +79781,30 @@ Would you like to post it anyway?</source>
         <source>Closed</source>
         <translation type="unfinished">Cerrado</translation>
     </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: &lt;p&gt;Only Unposted Purchase Orders may be deleted. Check the status of Purchase Order %2. If it is &apos;U&apos; then contact your system Administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Releasing Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Unreleasing Purchase Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Purchase Order Forms...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uom</name>
@@ -73899,10 +79865,6 @@ Would you like to post it anyway?</source>
         <translation>No se ha introducido Nombre de la UM</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>&amp;Description:</source>
         <translation>&amp;Descripción:</translation>
     </message>
@@ -73913,6 +79875,14 @@ Would you like to post it anyway?</source>
     <message>
         <source>&amp;Name:</source>
         <translation>Nombre:</translation>
+    </message>
+    <message>
+        <source>Error Saving UOM Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting UOM Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -73950,10 +79920,6 @@ Would you like to post it anyway?</source>
         <translation>Conversión</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Fractional</source>
         <translation>Ínfimo</translation>
     </message>
@@ -73964,6 +79930,10 @@ Would you like to post it anyway?</source>
     <message>
         <source>&amp;Save</source>
         <translation>&amp;Guardar</translation>
+    </message>
+    <message>
+        <source>Error Saving UOM Conversion Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -74011,6 +79981,10 @@ Would you like to post it anyway?</source>
     <message>
         <source>&amp;Close</source>
         <translation>&amp;Cerrar</translation>
+    </message>
+    <message>
+        <source>Error Deleting UOM Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -74101,8 +80075,8 @@ Class Codes or select a Class Code from the Class Code list.</source>
         <translation>Actualizado Código de Clase ABC</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
+        <source>Error Updating ABC Class Code Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -74130,11 +80104,6 @@ Class Codes or select a Class Code from the Class Code list.</source>
     <message>
         <source>&amp;Roll Up Standard Costs</source>
         <translation>&amp;Actualizar Costos Standard</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.
-Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
-        <translation>Se ha producido un Error del Sistema en %1::%2. Valor de parámetro ilegal &apos;&apos;%3&apos;&apos; para &apos;&apos;costtype&apos;&apos;</translation>
     </message>
     <message>
         <source>Update Direct Labor Cost</source>
@@ -74176,6 +80145,19 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
         <source>Update Lower Level Direct Labor Cost</source>
         <translation>Actualizar Costes Directos de Mano de Obra en Descendientes</translation>
     </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: A System Error occurred. 
+Illegal parameter value &apos;%2&apos; for &apos;costtype&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Cost Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>updateActualCostsByItem</name>
@@ -74186,10 +80168,6 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
     <message>
         <source>&amp;Roll Up Actual Costs</source>
         <translation>&amp;Actualizar Costo Real</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>&amp;Roll Up Standard Costs</source>
@@ -74250,6 +80228,10 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
     <message>
         <source>&amp;Update</source>
         <translation>Act&amp;ualizar</translation>
+    </message>
+    <message>
+        <source>Error Updating Cost Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -74340,6 +80322,19 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
     </message>
+    <message>
+        <source>Error Loading Item Site Lead Times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Site: %1
+Item: %2 - %3</source>
+        <translation type="unfinished">Sede: %1 Producto: %2 - %3</translation>
+    </message>
+    <message>
+        <source>Error Updating Item Site Lead Times</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>updateLateCustCreditStatus</name>
@@ -74393,6 +80388,10 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Error Updating List Price Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -74674,6 +80673,30 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
         <source>Cannot Update Prices</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Updating Price Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Dropping Table Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Removing Pricing Schedule Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List Pricing Schedule Assignments</source>
+        <translation type="unfinished">Listar Asignaciones Esquemas Precios</translation>
+    </message>
 </context>
 <context>
     <name>updateReorderLevels</name>
@@ -74788,6 +80811,14 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
     <message>
         <source>&amp;Post</source>
         <translation>Asentar</translation>
+    </message>
+    <message>
+        <source>Error Updating Reorder Level Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Posting Reorder Level Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -75048,6 +81079,14 @@ Illegal parameter value &apos;%3&apos; for &apos;costtype&apos;</source>
         <source>&lt;p&gt;You have changed this User Account&apos;s Enhanced Authentication option. The password must be updated in order for this change to take full effect.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>May use the full application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>May only use Simple Sales Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>userCostingElement</name>
@@ -75085,10 +81124,6 @@ You may not create a Costing Element with this code.</source>
         <translation>Usar Elemento de Coste para Origen de Coste</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>Accept P/&amp;O Distributions</source>
         <translation>Acepta Abonos &amp;O/C</translation>
     </message>
@@ -75107,6 +81142,10 @@ You may not create a Costing Element with this code.</source>
     <message>
         <source>&amp;Close</source>
         <translation>Cerrar</translation>
+    </message>
+    <message>
+        <source>Error Saving Costing Element Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -75479,16 +81518,48 @@ Please enter both again carefully.</source>
         <source>You must enter a valid Password before you can save this User Account.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Disable ComboBox Wheel Scrolling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Setting Background Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving User Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving User Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Selecting/De-Selecting All Warehouses For Selected Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Selecting/De-Selecting Warehouse For Selected Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving User Warehouse Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> GB</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>users</name>
     <message>
         <source>Status</source>
         <translation>Estado</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
     </message>
     <message>
         <source>Active</source>
@@ -75538,6 +81609,10 @@ Please enter both again carefully.</source>
         <source>Error getting User Accounts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Retrieving User Permission Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>vendor</name>
@@ -75559,10 +81634,6 @@ Please enter both again carefully.</source>
     </message>
     <message>
         <source>Default Miscellaneous Distribution</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Getting Id</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -75632,10 +81703,6 @@ Please enter both again carefully.</source>
     <message>
         <source>Releasing Number</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Addresses</source>
-        <translation>Direcciones</translation>
     </message>
     <message>
         <source>Receives a &amp;1099</source>
@@ -75808,10 +81875,6 @@ and Purchase Order amounts</source>
         <translation>Comentarios</translation>
     </message>
     <message>
-        <source>Main</source>
-        <translation>Principal</translation>
-    </message>
-    <message>
         <source>Cannot Save Vendor</source>
         <translation>No se puede Guardar Proveedor</translation>
     </message>
@@ -75878,10 +81941,6 @@ and Purchase Order amounts</source>
     <message>
         <source>Default</source>
         <translation>predeterminado</translation>
-    </message>
-    <message>
-        <source>Alternates</source>
-        <translation>Alternativos</translation>
     </message>
     <message>
         <source>Receiving Site</source>
@@ -75952,10 +82011,6 @@ and Purchase Order amounts</source>
         <translation type="unfinished">Notas:</translation>
     </message>
     <message>
-        <source>Order Notes:</source>
-        <translation type="unfinished">Notas del Pedido:</translation>
-    </message>
-    <message>
         <source>Payments</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75983,17 +82038,124 @@ and Purchase Order amounts</source>
         <source>Could not find the Vendor information. Perhaps the Vendor and Account have been disconnected.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Configuración</translation>
+    </message>
+    <message>
+        <source>Main Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alternate Addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents</source>
+        <translation type="unfinished">Documentos</translation>
+    </message>
+    <message>
+        <source>Remarks</source>
+        <translation type="unfinished">Observaciones</translation>
+    </message>
+    <message>
+        <source>Purchase Order Notes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Orders</source>
+        <translation type="unfinished">Pedidos</translation>
+    </message>
+    <message>
+        <source>Summary</source>
+        <translation type="unfinished">Resumen</translation>
+    </message>
+    <message>
+        <source>Purchase Orders</source>
+        <translation type="unfinished">Órdenes de Compra</translation>
+    </message>
+    <message>
+        <source>Receipts and Returns</source>
+        <translation type="unfinished">Recibos y Devoluciones</translation>
+    </message>
+    <message>
+        <source>First Purchase:</source>
+        <translation type="unfinished">Primera Compra:</translation>
+    </message>
+    <message>
+        <source>Last Year&apos;s Purchases:</source>
+        <translation type="unfinished">Compras del último año:</translation>
+    </message>
+    <message>
+        <source>Most Recent Purchase:</source>
+        <translation type="unfinished">Compra más Reciente:</translation>
+    </message>
+    <message>
+        <source>YTD Purchases:</source>
+        <translation type="unfinished">Compras del año en curso:</translation>
+    </message>
+    <message>
+        <source>Backlog:</source>
+        <translation type="unfinished">Atraso:</translation>
+    </message>
+    <message>
+        <source>Open Balance:</source>
+        <translation type="unfinished">Saldo pendiente:</translation>
+    </message>
+    <message>
+        <source>Accounting</source>
+        <translation type="unfinished">Contabilidad</translation>
+    </message>
+    <message>
+        <source>Payables</source>
+        <translation type="unfinished">Acreedores</translation>
+    </message>
+    <message>
+        <source>Credit Memos</source>
+        <translation type="unfinished">Notas de Crédito</translation>
+    </message>
+    <message>
+        <source>A/P History</source>
+        <translation type="unfinished">Historial Acreedores</translation>
+    </message>
+    <message>
+        <source>Checks</source>
+        <translation type="unfinished">Cheques</translation>
+    </message>
+    <message>
+        <source>Earliest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Vendor CRM Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retreiving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting new id</source>
+        <translation type="unfinished">Obteniendo nuevo ID</translation>
+    </message>
+    <message>
+        <source>Error Deleting</source>
+        <translation type="unfinished">Error eliminando</translation>
+    </message>
 </context>
 <context>
     <name>vendorAddress</name>
     <message>
         <source>Contact</source>
         <translation type="unfinished">Contacto</translation>
-    </message>
-    <message>
-        <source>There was an error saving this address (%1).
-Check the database server log for errors.</source>
-        <translation>Se ha producido un error al guardar esta dirección (%1). Revise los errores en el registro del servidor de la base de datos.</translation>
     </message>
     <message>
         <source>&amp;Save</source>
@@ -76043,6 +82205,23 @@ Check the database server log for errors.</source>
         <source>There are multiple uses of this Vendor Address.
 What would you like to do?</source>
         <translation>Esta Dirección de Proveedor se utiliza varias veces. ¿Qué desea hacer?</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Vendor Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: There was an error saving this address (%2).
+Check the database server log for errors.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -76203,10 +82382,6 @@ What would you like to do?</source>
         <translation>Código no válido de Tipo de Proveedor</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>C&amp;ode:</source>
         <translation>Códig&amp;o:</translation>
     </message>
@@ -76221,6 +82396,10 @@ What would you like to do?</source>
     <message>
         <source>&amp;Description:</source>
         <translation>&amp;Descripción:</translation>
+    </message>
+    <message>
+        <source>Error Saving Vendor Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -76269,137 +82448,6 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
     <message>
         <source>Cannot Delete Vendor Type</source>
         <translation>No es posible Eliminar Tipo del Proveedor</translation>
-    </message>
-</context>
-<context>
-    <name>vendorWorkBench</name>
-    <message>
-        <source>A/P History</source>
-        <translation type="unfinished">Historial Acreedores</translation>
-    </message>
-    <message>
-        <source>Vendor #:</source>
-        <translation>Nº de Proveedor:</translation>
-    </message>
-    <message>
-        <source>Default Ship Via:</source>
-        <translation>Enviar Por predeterminado:</translation>
-    </message>
-    <message>
-        <source>Credit Memos</source>
-        <translation>Abonos</translation>
-    </message>
-    <message>
-        <source>Contact 2</source>
-        <translation>Contacto 2</translation>
-    </message>
-    <message>
-        <source>Earliest</source>
-        <translation>Primero</translation>
-    </message>
-    <message>
-        <source>Checks</source>
-        <translation>Cheques</translation>
-    </message>
-    <message>
-        <source>Latest</source>
-        <translation>Último</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Editar</translation>
-    </message>
-    <message>
-        <source>View</source>
-        <translation>Ver</translation>
-    </message>
-    <message>
-        <source>Receipts and Returns</source>
-        <translation>Recibos y Devoluciones</translation>
-    </message>
-    <message>
-        <source>Contacts</source>
-        <translation>Contactos</translation>
-    </message>
-    <message>
-        <source>Payables</source>
-        <translation>Acreedores</translation>
-    </message>
-    <message>
-        <source>Contact 1</source>
-        <translation>Contacto 1</translation>
-    </message>
-    <message>
-        <source>First Purchase:</source>
-        <translation>Primera Compra:</translation>
-    </message>
-    <message>
-        <source>Name:</source>
-        <translation>Nombre:</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>Nombre</translation>
-    </message>
-    <message>
-        <source>Purchase Orders</source>
-        <translation>Órdenes de Compra</translation>
-    </message>
-    <message>
-        <source>Open Balance:</source>
-        <translation>Saldo Abierto:</translation>
-    </message>
-    <message>
-        <source>You must select a valid Vendor.</source>
-        <translation>Debe seleccionar un Proveedor válido.</translation>
-    </message>
-    <message>
-        <source>Vendor Workbench</source>
-        <translation>Herramientas de Proveedores</translation>
-    </message>
-    <message>
-        <source>No Vendor Selected</source>
-        <translation>Ningún Proveedor seleccionado</translation>
-    </message>
-    <message>
-        <source>Account...</source>
-        <translation>Cuenta...</translation>
-    </message>
-    <message>
-        <source>Default Terms:</source>
-        <translation>Condiciones Predeterminadas:</translation>
-    </message>
-    <message>
-        <source>Active</source>
-        <translation>Activo</translation>
-    </message>
-    <message>
-        <source>Type:</source>
-        <translation>Tipo:</translation>
-    </message>
-    <message>
-        <source>Print</source>
-        <translation>Imprimir</translation>
-    </message>
-    <message>
-        <source>YTD Purchases:</source>
-        <translation>Compras del año en curso:</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Cerrar</translation>
-    </message>
-    <message>
-        <source>Most Recent Purchase:</source>
-        <translation>Compra más Reciente:</translation>
-    </message>
-    <message>
-        <source>Last Year&apos;s Purchases:</source>
-        <translation>Compras del último año:</translation>
-    </message>
-    <message>
-        <source>Backlog:</source>
-        <translation>Retraso:</translation>
     </message>
 </context>
 <context>
@@ -76667,6 +82715,34 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <source>Credit Memo</source>
         <translation type="unfinished">Abono</translation>
     </message>
+    <message>
+        <source>Error Voiding Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Replacing Voided Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Replacing All Voided Checks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Alternate Exchange Rate Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Alternate Exchange Rate Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Run Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>voidChecks</name>
@@ -76700,6 +82776,14 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
     </message>
     <message>
         <source>Issue Replacement Payments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Voiding Check Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Check Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -76890,10 +82974,6 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Getting Misc. Distributions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Distributing Line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -77024,6 +83104,38 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
     <message>
         <source>Documents</source>
         <translation type="unfinished">Documentos</translation>
+    </message>
+    <message>
+        <source>Freight Exp. Category:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Freight Expense Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Freight:</source>
+        <translation type="unfinished">Flete:</translation>
+    </message>
+    <message>
+        <source>Tax:</source>
+        <translation type="unfinished">Impuesto:</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;You must select an Expense Category to post the  freight value to.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calculating Voucher Tax</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving PO Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Misc Distributions</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -77229,13 +83341,36 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation>Corregir Recibo…</translation>
     </message>
     <message>
-        <source>The application has encountered an error and must stop editing this Voucher Item.
-%1</source>
-        <translation>La aplicación ha encontrado un error y debe cancelarse la edición de este Elemento del Justificante. %1</translation>
-    </message>
-    <message>
         <source>Uninvoiced Receipts and Returns</source>
         <translation type="unfinished">Recibos y Devoluciones No Facturados</translation>
+    </message>
+    <message>
+        <source>Error Retrieving Voucher Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Voucher Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Voucher Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Voucher Item Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Voucher Item Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Voucher Item Information </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tax Calculation</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -77288,10 +83423,6 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation>Seleccionar Código Impositivo</translation>
     </message>
     <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
         <source>You must select an Account to post this Miscellaneous Distribution to.</source>
         <translation>Debe de ingresar una Cuenta para Asentar esta Distribucion Miscelanea.</translation>
     </message>
@@ -77342,6 +83473,14 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
     <message>
         <source>Amount to Distribute:</source>
         <translation>Monto a Distribuir:</translation>
+    </message>
+    <message>
+        <source>Tax Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Voucher Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -77559,11 +83698,6 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
         <translation>Comentarios</translation>
     </message>
     <message>
-        <source>There was an error saving this address (%1).
-Check the database server log for errors.</source>
-        <translation>Se ha producido un error guardando esta dirección (%1). Revise los errores en el registro del servidor de la base de datos.</translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -77590,6 +83724,27 @@ Check the database server log for errors.</source>
     <message>
         <source>Site</source>
         <translation>Centro</translation>
+    </message>
+    <message>
+        <source>Transfer Order Pick List:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Warehouse Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: There was an error saving this address (%2).
+Check the database server log for errors.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Site Zone Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -77632,6 +83787,14 @@ Check the database server log for errors.</source>
     </message>
     <message>
         <source>Cannot Save Site Zone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Warehouse Site Zone Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Warehouse Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -77835,11 +83998,27 @@ that the selected Work Order does.</source>
         <translation type="unfinished">Precio:</translation>
     </message>
     <message>
-        <source>Getting Sales Order UOMs</source>
+        <source>Getting UOM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Getting UOM</source>
+        <source>-Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting WoMatl UOMs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Global UOM?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;This Global UOM Conversion is not setup for this Item.&lt;p&gt;Do you want to add this UOM conversion to this Item?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Creating Item UOM Conv</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -77940,10 +84119,6 @@ Please correct before updating this Work Order</source>
         <translation>Ha introducido una Fecha Límite no válida. Por favor, corríjala antes de actualizar esta Orden de Trabajo</translation>
     </message>
     <message>
-        <source>A System Error occurred at returnWoMaterialBatch::%1, W/O ID #%2.</source>
-        <translation>Se ha producido un Error de Sistema en returnWoMaterialBatch::%1, ID O/T Nº%2.</translation>
-    </message>
-    <message>
         <source>Item#</source>
         <translation>Nº Producto</translation>
     </message>
@@ -77954,10 +84129,6 @@ Please correct before updating this Work Order</source>
     <message>
         <source>&amp;Close</source>
         <translation>Cerrar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at returnWoMaterialBatch::%1, W/O ID #%2, Error #%3.</source>
-        <translation>Se ha producido un Error de Sistema en returnWoMaterialBatch::%1, ID O/T Nº%2, Error Nº%3.</translation>
     </message>
     <message>
         <source>Work Order #:</source>
@@ -78057,10 +84228,6 @@ Please correct before updating this Work Order</source>
         <translation>Salida de Material</translation>
     </message>
     <message>
-        <source>A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2, Error #%3.</source>
-        <translation>Se ha producido un Error de Sistema en issueWoMaterialBatch::%1, ID Orden de Trabajo Nº%2, Error Nº%3.</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Nombre</translation>
     </message>
@@ -78069,16 +84236,8 @@ Please correct before updating this Work Order</source>
         <translation>Im&amp;primir Remisiones...</translation>
     </message>
     <message>
-        <source>A System Error occurred at issueWoMaterialBatch::%1, Work Order ID #%2.</source>
-        <translation>Se ha producido un Error de Sistema en issueWoMaterialBatch::%1, ID Orden de Trabajo Nº%2.</translation>
-    </message>
-    <message>
         <source>Description</source>
         <translation>Descripción</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2, W/O ID %3.</source>
-        <translation>Se ha producido un Error de Sistema en %1::%2, ID O/T %3.</translation>
     </message>
     <message>
         <source>Comments</source>
@@ -78191,14 +84350,6 @@ Please correct before updating this Work Order</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>Cancelar</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2.</source>
-        <translation>Se produjo un Error del Sistema en %1::%2.</translation>
-    </message>
-    <message>
-        <source>A System Error occurred at %1::%2, Planned Order ID %3.</source>
-        <translation>Se ha producido un Error de Sistema en %1::%2, ID de Orden Previsional %3.</translation>
     </message>
     <message>
         <source>You have entered an invalid Qty. Ordered.
@@ -78418,6 +84569,74 @@ Please correct before creating this Work Order</source>
         <source>&lt;p&gt;This W/O Material Requirement is associated with a Child Work Order. Would you like to delete this Child Work Order now?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>A System Error Occured, Planned Order ID %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Validating Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Creating Work Order %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Updating Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Reprioritizing Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Rescheduling Work Order Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Validating Work Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change Work Order Quantity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Returning Work Order Materials: W/O #%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Issuing Work Order Materials: W/O #%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Deleting Work Order Material Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Material Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Information for WO #: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work Order Item Characteristics:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>workOrderMaterials</name>
@@ -78597,6 +84816,14 @@ Please correct before creating this Work Order</source>
         <source>Getting Pick Info</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error Deleting Work Order Material Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Work Order Material Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>xTuple</name>
@@ -78747,6 +84974,10 @@ Please correct before creating this Work Order</source>
         <source>Really revert?</source>
         <translation>¿De verdad quiere deshacer?</translation>
     </message>
+    <message>
+        <source>Error Saving UIForm Information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>xsltMap</name>
@@ -78807,8 +85038,20 @@ Please correct before creating this Work Order</source>
         <translation>Guardar</translation>
     </message>
     <message>
-        <source>You do not have sufficient privilege to view this window</source>
-        <translation>No tiene suficientes privilegios para ver esta ventana</translation>
+        <source>Permissions Violation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: Insufficient privileges to view the selected Window </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Saving Map Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error Retrieving Map Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

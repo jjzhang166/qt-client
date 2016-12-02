@@ -19,6 +19,7 @@
 #include "salesOrderItem.h"
 #include "parameterwidget.h"
 #include "printPackingList.h"
+#include "errorReporter.h"
 
 dspBacklog::dspBacklog(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspBacklog", fl)
@@ -175,9 +176,9 @@ void dspBacklog::sAddToPackingListBatch()
     dspAddToPackingListBatch.prepare("SELECT addToPackingListBatch(:sohead_id) AS result;");
     dspAddToPackingListBatch.bindValue(":sohead_id", ((XTreeWidgetItem*)(selected[i]))->id());
     dspAddToPackingListBatch.exec();
-    if (dspAddToPackingListBatch.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Packing List Batch Information"),
+                                  dspAddToPackingListBatch, __FILE__, __LINE__))
     {
-      systemError(this, dspAddToPackingListBatch.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

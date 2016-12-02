@@ -85,12 +85,10 @@ void dspTimePhasedBookings::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelect
   if (pColumn < 4)
     return;
 
-  QAction *menuItem;
-
   _column = pColumn;
 
   if (((XTreeWidgetItem *)pSelected)->id() != -1)
-    menuItem = pMenu->addAction(tr("View Bookings..."), this, SLOT(sViewBookings()));
+    (void)pMenu->addAction(tr("View Bookings..."), this, SLOT(sViewBookings()));
 }
 
 bool dspTimePhasedBookings::setParamsTP(ParameterList & params)

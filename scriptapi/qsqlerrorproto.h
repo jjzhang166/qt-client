@@ -15,20 +15,17 @@
 #include <QObject>
 #include <QtScript>
 
-/* initially only need access to the enum. save the following in case we need it
 class QString;
 
 Q_DECLARE_METATYPE(QSqlError*)
 Q_DECLARE_METATYPE(QSqlError)
-*/
+Q_DECLARE_METATYPE(enum QSqlError::ErrorType);
 
 void setupQSqlErrorProto(QScriptEngine *engine);
 
 QScriptValue QSqlErrorTypetoScriptValue(QScriptEngine *engine, const enum QSqlError::ErrorType &p);
-
 void QSqlErrorTypefromScriptValue(const QScriptValue &obj, enum QSqlError::ErrorType &p);
 
-/* initially only need access to the enum. save the following in case we need it
 QScriptValue constructQSqlError(QScriptContext *context, QScriptEngine *engine);
 
 class QSqlErrorProto : public QObject, public QScriptable
@@ -37,25 +34,21 @@ class QSqlErrorProto : public QObject, public QScriptable
 
   public:
     QSqlErrorProto(QObject *parent);
+    virtual ~QSqlErrorProto ();
 
-    QSqlError ( const QString & driverText = QString(), const QString & databaseText = QString(), ErrorType type = NoError, int number = -1 );
-    QSqlError ( const QSqlError & other );
-    ~QSqlError ();
+    Q_INVOKABLE QString                 databaseText() const;
+    Q_INVOKABLE QString                 driverText() const;
+    Q_INVOKABLE bool                    isValid() const;
 
-    Q_INVOKABLE QString   databaseText () const;
-    Q_INVOKABLE QString   driverText () const;
-    Q_INVOKABLE bool      isValid () const;
-    Q_INVOKABLE int       number () const;
-    Q_INVOKABLE void      setDatabaseText ( const QString & databaseText );
-    Q_INVOKABLE void      setDriverText ( const QString & driverText );
-    Q_INVOKABLE void      setNumber ( int number );
-    Q_INVOKABLE void      setType ( ErrorType type );
-    Q_INVOKABLE QString   text () const;
-    Q_INVOKABLE ErrorType type () const;
+#if QT_VERSION >= 0x050000
+    Q_INVOKABLE QString                 nativeErrorCode() const;
+#endif
 
-Public Functions
+    Q_INVOKABLE QString                 text() const;
+    Q_INVOKABLE QSqlError::ErrorType    type() const;
+
+    Q_INVOKABLE QString                 toString() const;
 
 };
-*/
 
 #endif

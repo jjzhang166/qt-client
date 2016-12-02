@@ -61,6 +61,13 @@ dspInventoryHistory::dspInventoryHistory(QWidget* parent, const char* name, Qt::
         .arg(tr("Adjustments and Counts"))
         .arg(tr("Scraps"));
 
+  QString qryABC = QString( "SELECT  'A', '%1' UNION "
+                            "SELECT  'B', '%2' UNION "
+                            "SELECT  'C', '%3' ORDER BY 1;")
+      .arg(tr("A Class"))
+      .arg(tr("B Class"))
+      .arg(tr("C Class"));
+
   parameterWidget()->append(tr("Start Date"), "startDate", ParameterWidget::Date, QDate::currentDate(), true);
   parameterWidget()->append(tr("End Date"),   "endDate",   ParameterWidget::Date, QDate::currentDate(), true);
   parameterWidget()->appendComboBox(tr("Class Code"), "classcode_id", XComboBox::ClassCodes);
@@ -78,6 +85,9 @@ dspInventoryHistory::dspInventoryHistory(QWidget* parent, const char* name, Qt::
   parameterWidget()->append(tr("Work Order"), "wo_id", ParameterWidget::WorkOrder);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
+  parameterWidget()->append(tr("ABC Class"), "abc_class",
+                           ParameterWidget::Multiselect, QVariant(), false,
+                           qryABC);
 
   parameterWidget()->applyDefaultFilterSet();
 

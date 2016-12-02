@@ -114,6 +114,7 @@ void prospects::sDelete()
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Error deleting"),
                            delq, __FILE__, __LINE__))
     return;
+  omfgThis->sProspectsUpdated();
 }
 
 void prospects::sPopulateMenu(QMenu * pMenu, QTreeWidgetItem *, int)

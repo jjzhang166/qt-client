@@ -2,7 +2,7 @@
 <ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
-Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
 It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>628</height>
+    <width>727</width>
+    <height>716</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,23 +25,23 @@ to be bound by its terms.</comment>
     <layout class="QVBoxLayout">
      <item>
       <layout class="QGridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="_numberLit">
-         <property name="text">
-          <string>Vendor #:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>_number</cstring>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <layout class="QHBoxLayout">
          <item>
-          <widget class="XLineEdit" name="_number"/>
+          <widget class="VendorCluster" name="_number">
+           <property name="label">
+            <string/>
+           </property>
+           <property name="nameVisible">
+            <bool>false</bool>
+           </property>
+           <property name="descriptionVisible">
+            <bool>false</bool>
+           </property>
+           <property name="canEdit">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="_vendtypeLit">
@@ -90,19 +90,6 @@ to be bound by its terms.</comment>
           </widget>
          </item>
         </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="_nameLit">
-         <property name="text">
-          <string>Name:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>_name</cstring>
-         </property>
-        </widget>
        </item>
        <item row="1" column="1">
         <layout class="QHBoxLayout">
@@ -156,6 +143,29 @@ to be bound by its terms.</comment>
           </spacer>
          </item>
         </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="_nameLit">
+         <property name="text">
+          <string>Name:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>_name</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="_numberLit">
+         <property name="text">
+          <string>Vendor #:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -233,166 +243,425 @@ to be bound by its terms.</comment>
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="generalTab">
+     <widget class="QWidget" name="settingsTab">
       <attribute name="title">
-       <string>General</string>
+       <string>Settings</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="_defaultGroup">
-             <property name="title">
-              <string>Default</string>
-             </property>
-             <layout class="QGridLayout">
-              <item row="0" column="0">
-               <widget class="QLabel" name="_defaultTermsLit">
-                <property name="text">
-                 <string>Terms:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <layout class="QHBoxLayout">
-                <item>
-                 <widget class="XComboBox" name="_defaultTerms">
-                  <property name="allowNull">
-                   <bool>true</bool>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QFrame" name="f_settingsFrame">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QRadioButton" name="_generalButton">
+            <property name="text">
+             <string>General</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_taxButton">
+            <property name="text">
+             <string>Tax</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QStackedWidget" name="_settingsStack">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="_generalPage">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QGroupBox" name="_defaultGroup">
+               <property name="title">
+                <string>Default</string>
+               </property>
+               <layout class="QGridLayout" name="_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="_defaultTermsLit">
+                  <property name="text">
+                   <string>Terms:</string>
                   </property>
-                  <property name="type">
-                   <enum>XComboBox::APTerms</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Expanding</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>61</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="_defaultShipViaLit">
-                <property name="text">
-                 <string>Ship Via:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <layout class="QHBoxLayout">
-                <item>
-                 <widget class="XLineEdit" name="_defaultShipVia"/>
-                </item>
-                <item>
-                 <spacer>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="_defaultCurrLit">
-                <property name="text">
-                 <string>Currency:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <layout class="QHBoxLayout">
-                <item>
-                 <widget class="XComboBox" name="_defaultCurr">
-                  <property name="type">
-                   <enum>XComboBox::Currencies</enum>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <spacer>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Expanding</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>141</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QGroupBox" name="_defaultFOBGroup">
-             <property name="title">
-              <string>Default FOB</string>
-             </property>
-             <layout class="QGridLayout">
-              <item row="0" column="0">
-               <layout class="QVBoxLayout">
-                <item>
-                 <layout class="QGridLayout">
-                  <item row="0" column="0" colspan="2">
-                   <widget class="QRadioButton" name="_useWarehouseFOB">
-                    <property name="text">
-                     <string>Receiving Site</string>
-                    </property>
-                    <property name="checked">
+                <item row="0" column="1">
+                 <layout class="QHBoxLayout" name="_3">
+                  <item>
+                   <widget class="XComboBox" name="_defaultTerms">
+                    <property name="allowNull">
                      <bool>true</bool>
                     </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QRadioButton" name="_useVendorFOB">
-                    <property name="text">
-                     <string>Vendor Specific:</string>
+                    <property name="type">
+                     <enum>XComboBox::APTerms</enum>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="XLineEdit" name="_vendorFOB">
-                    <property name="enabled">
-                     <bool>false</bool>
+                  <item>
+                   <spacer>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
                     </property>
-                   </widget>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>61</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </item>
-                <item>
-                 <spacer>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="_defaultShipViaLit">
+                  <property name="text">
+                   <string>Ship Via:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <layout class="QHBoxLayout" name="_4">
+                  <item>
+                   <widget class="XLineEdit" name="_defaultShipVia"/>
+                  </item>
+                  <item>
+                   <spacer>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="_defaultCurrLit">
+                  <property name="text">
+                   <string>Currency:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <layout class="QHBoxLayout" name="_5">
+                  <item>
+                   <widget class="XComboBox" name="_defaultCurr">
+                    <property name="type">
+                     <enum>XComboBox::Currencies</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>141</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="0" column="1" colspan="2">
+              <widget class="QGroupBox" name="_defaultFOBGroup">
+               <property name="title">
+                <string>Default FOB</string>
+               </property>
+               <layout class="QGridLayout" name="_6">
+                <item row="0" column="0">
+                 <layout class="QVBoxLayout" name="_7">
+                  <item>
+                   <layout class="QGridLayout" name="_8">
+                    <item row="0" column="0" colspan="2">
+                     <widget class="QRadioButton" name="_useWarehouseFOB">
+                      <property name="text">
+                       <string>Receiving Site</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QRadioButton" name="_useVendorFOB">
+                      <property name="text">
+                       <string>Vendor Specific:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="XLineEdit" name="_vendorFOB">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QGroupBox" name="_distribGroup">
+               <property name="title">
+                <string>Default Miscellaneous Distribution</string>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_5">
+                <item row="0" column="0">
+                 <widget class="QRadioButton" name="_accountSelected">
+                  <property name="text">
+                   <string>Account</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QRadioButton" name="_taxSelected">
+                  <property name="text">
+                   <string>Tax</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QGroupBox" name="_taxGroup">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_6">
+                   <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                     <item>
+                      <widget class="QLabel" name="_taxCodeLit">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Tax Code</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="XComboBox" name="_taxCode">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="allowNull">
+                        <bool>true</bool>
+                       </property>
+                       <property name="nullStr">
+                        <string>None</string>
+                       </property>
+                       <property name="type">
+                        <enum>XComboBox::TaxCodes</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QGroupBox" name="_expenseGroup">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_7">
+                   <item row="0" column="0">
+                    <widget class="ExpenseCluster" name="_expcat">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::StrongFocus</enum>
+                     </property>
+                     <property name="label">
+                      <string/>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="readonly" stdset="0">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QGroupBox" name="_accountGroup">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_8">
+                   <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                     <item>
+                      <widget class="GLCluster" name="_account">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_5">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QRadioButton" name="_expcatSelected">
+                  <property name="text">
+                   <string>Expense Category</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QGroupBox" name="_settingsGroup">
+               <property name="title">
+                <string/>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="_poItems">
+                  <property name="text">
+                   <string>Sells &amp;Purchase Order Items</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QCheckBox" name="_qualified">
+                  <property name="text">
+                   <string>&amp;Qualified</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QCheckBox" name="_restrictToItemSource">
+                  <property name="text">
+                   <string>May only Sell Items defined 
+by an Item Source</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="_match">
+                  <property name="text">
+                   <string>Check for matching Voucher 
+and Purchase Order amounts</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <spacer name="verticalSpacer">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
@@ -405,88 +674,153 @@ to be bound by its terms.</comment>
                  </spacer>
                 </item>
                </layout>
-              </item>
-             </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>17</width>
+               <height>17</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="_taxPage">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QCheckBox" name="_receives1099">
+             <property name="text">
+              <string>Receives a &amp;1099</string>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QGroupBox" name="_distribGroup">
-             <property name="title">
-              <string>Default Miscellaneous Distribution</string>
+           <item>
+            <layout class="QHBoxLayout" name="_9">
+             <property name="spacing">
+              <number>5</number>
              </property>
-             <property name="checkable">
-              <bool>false</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_5">
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="_accountSelected">
-                <property name="text">
-                 <string>Account</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QRadioButton" name="_taxSelected">
-                <property name="text">
-                 <string>Tax</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QGroupBox" name="_taxGroup">
-                <property name="title">
-                 <string/>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_6">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="_taxzoneLit">
+               <property name="text">
+                <string>Default Tax Zone:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>_taxzone</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="XComboBox" name="_taxzone">
+               <property name="allowNull">
+                <bool>true</bool>
+               </property>
+               <property name="nullStr">
+                <string>None</string>
+               </property>
+               <property name="type">
+                <enum>XComboBox::TaxZones</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="_10">
+             <item>
+              <layout class="QVBoxLayout" name="_11">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="_taxregLit">
+                 <property name="text">
+                  <string>Tax Registration Numbers:</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>_taxreg</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="_12">
+                 <item>
+                  <widget class="XTreeWidget" name="_taxreg"/>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="_13">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
                    <item>
-                    <widget class="QLabel" name="_taxCodeLit">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
-                     </property>
+                    <widget class="QPushButton" name="_newTaxreg">
                      <property name="text">
-                      <string>Tax Code</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      <string>New</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="XComboBox" name="_taxCode">
+                    <widget class="QPushButton" name="_editTaxreg">
                      <property name="enabled">
                       <bool>false</bool>
                      </property>
-                     <property name="allowNull">
-                      <bool>true</bool>
+                     <property name="text">
+                      <string>Edit</string>
                      </property>
-                     <property name="nullStr">
-                      <string>None</string>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="_viewTaxreg">
+                     <property name="enabled">
+                      <bool>false</bool>
                      </property>
-                     <property name="type">
-                      <enum>XComboBox::TaxCodes</enum>
+                     <property name="text">
+                      <string>View</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="_deleteTaxreg">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="text">
+                      <string>Delete</string>
                      </property>
                     </widget>
                    </item>
                    <item>
                     <spacer>
                      <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                      <enum>Qt::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
-                       <width>0</width>
-                       <height>20</height>
+                       <width>20</width>
+                       <height>40</height>
                       </size>
                      </property>
                     </spacer>
@@ -494,306 +828,40 @@ to be bound by its terms.</comment>
                   </layout>
                  </item>
                 </layout>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QGroupBox" name="_expenseGroup">
-                <property name="title">
-                 <string/>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_7">
-                 <item row="0" column="0">
-                  <widget class="ExpenseCluster" name="_expcat">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::StrongFocus</enum>
-                   </property>
-                   <property name="label">
-                    <string/>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="readonly" stdset="0">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QGroupBox" name="_accountGroup">
-                <property name="title">
-                 <string/>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_8">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_6">
-                   <item>
-                    <widget class="GLCluster" name="_account">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_3">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>0</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-                <zorder></zorder>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QRadioButton" name="_expcatSelected">
-                <property name="text">
-                 <string>Expense Category</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QGroupBox" name="_settingsGroup">
-             <property name="title">
-              <string/>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="_poItems">
-                <property name="text">
-                 <string>Sells &amp;Purchase Order Items</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QCheckBox" name="_qualified">
-                <property name="text">
-                 <string>&amp;Qualified</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QCheckBox" name="_restrictToItemSource">
-                <property name="text">
-                 <string>May only Sell Items defined 
-by an Item Source</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QCheckBox" name="_match">
-                <property name="text">
-                 <string>Check for matching Voucher 
-and Purchase Order amounts</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="taxTab">
-      <attribute name="title">
-       <string>Tax</string>
-      </attribute>
-      <layout class="QGridLayout">
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="_receives1099">
-         <property name="text">
-          <string>Receives a &amp;1099</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="_taxzoneLit">
-           <property name="text">
-            <string>Default Tax Zone:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="buddy">
-            <cstring>_taxzone</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="XComboBox" name="_taxzone">
-           <property name="allowNull">
-            <bool>true</bool>
-           </property>
-           <property name="nullStr">
-            <string>None</string>
-           </property>
-           <property name="type">
-            <enum>XComboBox::TaxZones</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <layout class="QHBoxLayout">
-         <item>
-          <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="_taxregLit">
-             <property name="text">
-              <string>Tax Registration Numbers:</string>
-             </property>
-             <property name="buddy">
-              <cstring>_taxreg</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout">
-             <item>
-              <widget class="XTreeWidget" name="_taxreg"/>
-             </item>
-             <item>
-              <layout class="QVBoxLayout">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QPushButton" name="_newTaxreg">
-                 <property name="text">
-                  <string>New</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="_editTaxreg">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Edit</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="_viewTaxreg">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>View</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="_deleteTaxreg">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Delete</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer>
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
               </layout>
              </item>
+             <item>
+              <spacer>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>17</width>
+               <height>144</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -849,7 +917,7 @@ and Purchase Order amounts</string>
          </layout>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="4" column="0">
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -865,22 +933,15 @@ and Purchase Order amounts</string>
          </property>
         </spacer>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="addressTab">
-      <attribute name="title">
-       <string>Addresses</string>
-      </attribute>
-      <layout class="QGridLayout">
-       <item row="0" column="0">
-        <layout class="QHBoxLayout">
+       <item row="2" column="0">
+        <layout class="QHBoxLayout" name="_14">
          <property name="spacing">
           <number>12</number>
          </property>
          <item>
           <widget class="QRadioButton" name="_mainButton">
            <property name="text">
-            <string>Main</string>
+            <string>Main Address</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -890,7 +951,7 @@ and Purchase Order amounts</string>
          <item>
           <widget class="QRadioButton" name="_altButton">
            <property name="text">
-            <string>Alternates</string>
+            <string>Alternate Addresses</string>
            </property>
           </widget>
          </item>
@@ -909,17 +970,17 @@ and Purchase Order amounts</string>
          </item>
         </layout>
        </item>
-       <item row="1" column="0">
+       <item row="3" column="0">
         <widget class="QStackedWidget" name="_addressStack">
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="page">
-          <layout class="QGridLayout">
+         <widget class="QWidget" name="_mainPage">
+          <layout class="QGridLayout" name="_15">
            <item row="0" column="0">
-            <layout class="QVBoxLayout">
+            <layout class="QVBoxLayout" name="_16">
              <item>
-              <layout class="QHBoxLayout">
+              <layout class="QHBoxLayout" name="_17">
                <item>
                 <widget class="AddressCluster" name="_address"/>
                </item>
@@ -955,10 +1016,10 @@ and Purchase Order amounts</string>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_2">
-          <layout class="QGridLayout">
+         <widget class="QWidget" name="_alternatesPage">
+          <layout class="QGridLayout" name="_18">
            <item row="0" column="0">
-            <layout class="QHBoxLayout">
+            <layout class="QHBoxLayout" name="_19">
              <item>
               <widget class="XTreeWidget" name="_vendaddr">
                <property name="sizePolicy">
@@ -970,7 +1031,7 @@ and Purchase Order amounts</string>
               </widget>
              </item>
              <item>
-              <layout class="QVBoxLayout">
+              <layout class="QVBoxLayout" name="_20">
                <property name="spacing">
                 <number>5</number>
                </property>
@@ -982,7 +1043,7 @@ and Purchase Order amounts</string>
                 </widget>
                </item>
                <item>
-                <layout class="QVBoxLayout">
+                <layout class="QVBoxLayout" name="_21">
                  <property name="spacing">
                   <number>0</number>
                  </property>
@@ -1061,34 +1122,41 @@ and Purchase Order amounts</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="commentsTab">
+     <widget class="QWidget" name="documentsTab">
       <attribute name="title">
-       <string>Comments</string>
+       <string>Documents</string>
       </attribute>
-      <layout class="QGridLayout">
-       <item row="0" column="0">
-        <widget class="Comments" name="_comments">
-         <property name="focusPolicy">
-          <enum>Qt::StrongFocus</enum>
-         </property>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="Documents" name="_documents">
          <property name="type">
-          <enum>Comments::CRMAccount</enum>
+          <enum>Documents::Vendor</enum>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="notesTab">
+     <widget class="QWidget" name="remarksTab">
       <attribute name="title">
-       <string>Notes</string>
+       <string>Remarks</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLabel" name="_notesLit">
+          <widget class="QRadioButton" name="_notesButton">
            <property name="text">
-            <string>Notes:</string>
+            <string>Notes</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="_commentsButton">
+           <property name="text">
+            <string>Comments</string>
            </property>
           </widget>
          </item>
@@ -1099,7 +1167,7 @@ and Purchase Order amounts</string>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>17</width>
              <height>20</height>
             </size>
            </property>
@@ -1108,34 +1176,393 @@ and Purchase Order amounts</string>
         </layout>
        </item>
        <item>
-        <widget class="XTextEdit" name="_notes"/>
+        <widget class="QStackedWidget" name="_remarksStack">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="_notesPage">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="_notesLit">
+               <property name="text">
+                <string>Notes:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="XTextEdit" name="_notes"/>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="_poCommentsLit">
+               <property name="text">
+                <string>Purchase Order Notes:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="XTextEdit" name="_poComments"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="_commentsPage">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="Comments" name="_comments">
+             <property name="focusPolicy">
+              <enum>Qt::StrongFocus</enum>
+             </property>
+             <property name="type">
+              <enum>Comments::CRMAccount</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="_ordersTab">
+      <attribute name="title">
+       <string>Orders</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_15">
+       <item>
+        <widget class="QFrame" name="f_ordersFrame">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <widget class="QRadioButton" name="_summaryButton">
+            <property name="text">
+             <string>Summary</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_purchaseOrdersButton">
+            <property name="text">
+             <string>Purchase Orders</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_receiptsReturnsButton">
+            <property name="text">
+             <string>Receipts and Returns</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="_poCommentsLit">
-           <property name="text">
-            <string>Order Notes:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+        <widget class="QStackedWidget" name="_ordersStack">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="_summaryPage">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QGroupBox" name="_summaryGroup">
+             <property name="title">
+              <string/>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0">
+               <widget class="QLabel" name="_firstPurchaseLit">
+                <property name="text">
+                 <string>First Purchase:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>_firstPurchase</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="DLineEdit" name="_firstPurchase">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="_lastYearsPurchasesLit">
+                <property name="text">
+                 <string>Last Year's Purchases:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="XLabel" name="_lastYearsPurchases">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="_lastPurchaseLit">
+                <property name="text">
+                 <string>Most Recent Purchase:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>_lastPurchase</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="DLineEdit" name="_lastPurchase">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="_ytdPurchasesLit">
+                <property name="text">
+                 <string>YTD Purchases:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="XLabel" name="_ytdPurchases">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="_backlogLit">
+                <property name="text">
+                 <string>Backlog:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="XLabel" name="_backlog">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="_openBalanceLit">
+                <property name="text">
+                 <string>Open Balance:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="XLabel" name="_openBalance">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="_purchaseOrdersPage">
+          <layout class="QVBoxLayout" name="verticalLayout_13"/>
+         </widget>
+         <widget class="QWidget" name="_receiptsReturnsPage">
+          <layout class="QVBoxLayout" name="verticalLayout_14"/>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="_accountingTab">
+      <attribute name="title">
+       <string>Accounting</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QFrame" name="f_accountingButtonFrame">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QRadioButton" name="_payablesButton">
+            <property name="text">
+             <string>Payables</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_creditMemosButton">
+            <property name="text">
+             <string>Credit Memos</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_apHistoryButton">
+            <property name="text">
+             <string>A/P History</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="_apChecksButton">
+            <property name="text">
+             <string>Checks</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
-        <widget class="XTextEdit" name="_poComments"/>
+        <widget class="QStackedWidget" name="_accountingStack">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="_payablesPage">
+          <layout class="QVBoxLayout" name="verticalLayout_8"/>
+         </widget>
+         <widget class="QWidget" name="_creditMemosPage">
+          <layout class="QVBoxLayout" name="verticalLayout_16"/>
+         </widget>
+         <widget class="QWidget" name="_apHistoryPage">
+          <layout class="QVBoxLayout" name="verticalLayout_17"/>
+         </widget>
+         <widget class="QWidget" name="_apChecksPage">
+          <layout class="QVBoxLayout" name="verticalLayout_18"/>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -1365,6 +1792,17 @@ and Purchase Order amounts</string>
    <header>contactcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>DLineEdit</class>
+   <extends>QWidget</extends>
+   <header>datecluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Documents</class>
+   <extends>QWidget</extends>
+   <header>documents.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpenseCluster</class>
    <extends>QWidget</extends>
    <header>expensecluster.h</header>
@@ -1375,9 +1813,19 @@ and Purchase Order amounts</string>
    <header>glcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>VendorCluster</class>
+   <extends>QWidget</extends>
+   <header>vendorcluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
@@ -1400,10 +1848,13 @@ and Purchase Order amounts</string>
  <tabstops>
   <tabstop>_number</tabstop>
   <tabstop>_vendtype</tabstop>
+  <tabstop>_crmacct</tabstop>
   <tabstop>_name</tabstop>
   <tabstop>_active</tabstop>
   <tabstop>_accountNumber</tabstop>
   <tabstop>_tabs</tabstop>
+  <tabstop>_generalButton</tabstop>
+  <tabstop>_taxButton</tabstop>
   <tabstop>_defaultTerms</tabstop>
   <tabstop>_defaultShipVia</tabstop>
   <tabstop>_defaultCurr</tabstop>
@@ -1420,11 +1871,42 @@ and Purchase Order amounts</string>
   <tabstop>_qualified</tabstop>
   <tabstop>_match</tabstop>
   <tabstop>_restrictToItemSource</tabstop>
-  <tabstop>_crmacct</tabstop>
   <tabstop>_save</tabstop>
   <tabstop>_close</tabstop>
   <tabstop>_next</tabstop>
   <tabstop>_previous</tabstop>
+  <tabstop>_contact1</tabstop>
+  <tabstop>_contact2</tabstop>
+  <tabstop>_mainButton</tabstop>
+  <tabstop>_altButton</tabstop>
+  <tabstop>_address</tabstop>
+  <tabstop>_notesButton</tabstop>
+  <tabstop>_commentsButton</tabstop>
+  <tabstop>_notes</tabstop>
+  <tabstop>_poComments</tabstop>
+  <tabstop>_summaryButton</tabstop>
+  <tabstop>_purchaseOrdersButton</tabstop>
+  <tabstop>_receiptsReturnsButton</tabstop>
+  <tabstop>_firstPurchase</tabstop>
+  <tabstop>_lastPurchase</tabstop>
+  <tabstop>_payablesButton</tabstop>
+  <tabstop>_creditMemosButton</tabstop>
+  <tabstop>_apHistoryButton</tabstop>
+  <tabstop>_apChecksButton</tabstop>
+  <tabstop>_checksButton</tabstop>
+  <tabstop>_individualName</tabstop>
+  <tabstop>_vendaddr</tabstop>
+  <tabstop>_printAddresses</tabstop>
+  <tabstop>_newAddress</tabstop>
+  <tabstop>_editAddress</tabstop>
+  <tabstop>_viewAddress</tabstop>
+  <tabstop>_deleteAddress</tabstop>
+  <tabstop>_accountType</tabstop>
+  <tabstop>_achAccountNumber</tabstop>
+  <tabstop>_individualId</tabstop>
+  <tabstop>_useACHSpecial</tabstop>
+  <tabstop>_comments</tabstop>
+  <tabstop>_routingNumber</tabstop>
   <tabstop>_receives1099</tabstop>
   <tabstop>_taxzone</tabstop>
   <tabstop>_taxreg</tabstop>
@@ -1432,27 +1914,7 @@ and Purchase Order amounts</string>
   <tabstop>_editTaxreg</tabstop>
   <tabstop>_viewTaxreg</tabstop>
   <tabstop>_deleteTaxreg</tabstop>
-  <tabstop>_contact1</tabstop>
-  <tabstop>_contact2</tabstop>
-  <tabstop>_mainButton</tabstop>
-  <tabstop>_altButton</tabstop>
-  <tabstop>_address</tabstop>
-  <tabstop>_comments</tabstop>
-  <tabstop>_poComments</tabstop>
-  <tabstop>_checksButton</tabstop>
   <tabstop>_achGroup</tabstop>
-  <tabstop>_viewAddress</tabstop>
-  <tabstop>_achAccountNumber</tabstop>
-  <tabstop>_deleteAddress</tabstop>
-  <tabstop>_editAddress</tabstop>
-  <tabstop>_individualId</tabstop>
-  <tabstop>_newAddress</tabstop>
-  <tabstop>_printAddresses</tabstop>
-  <tabstop>_routingNumber</tabstop>
-  <tabstop>_vendaddr</tabstop>
-  <tabstop>_individualName</tabstop>
-  <tabstop>_accountType</tabstop>
-  <tabstop>_useACHSpecial</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -1463,8 +1925,8 @@ and Purchase Order amounts</string>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>774</x>
-     <y>56</y>
+     <x>714</x>
+     <y>77</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
@@ -1479,12 +1941,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>561</x>
-     <y>283</y>
+     <x>547</x>
+     <y>324</y>
     </hint>
     <hint type="destinationlabel">
-     <x>741</x>
-     <y>283</y>
+     <x>669</x>
+     <y>324</y>
     </hint>
    </hints>
   </connection>
@@ -1495,12 +1957,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>219</x>
-     <y>438</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
-     <y>358</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
    </hints>
   </connection>
@@ -1511,12 +1973,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>39</x>
-     <y>235</y>
+     <x>54</x>
+     <y>467</y>
     </hint>
     <hint type="destinationlabel">
-     <x>138</x>
-     <y>264</y>
+     <x>126</x>
+     <y>467</y>
     </hint>
    </hints>
   </connection>
@@ -1527,12 +1989,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>397</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
-     <y>321</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
    </hints>
   </connection>
@@ -1543,12 +2005,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>252</x>
-     <y>467</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
-     <y>382</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
    </hints>
   </connection>
@@ -1559,12 +2021,12 @@ and Purchase Order amounts</string>
    <slot>animateClick()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>275</x>
-     <y>416</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
-     <y>334</y>
+     <x>126</x>
+     <y>260</y>
     </hint>
    </hints>
   </connection>
@@ -1575,12 +2037,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
-     <y>516</y>
+     <x>150</x>
+     <y>466</y>
     </hint>
     <hint type="destinationlabel">
-     <x>335</x>
-     <y>515</y>
+     <x>384</x>
+     <y>466</y>
     </hint>
    </hints>
   </connection>
@@ -1591,12 +2053,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
-     <y>596</y>
+     <x>150</x>
+     <y>535</y>
     </hint>
     <hint type="destinationlabel">
-     <x>453</x>
-     <y>595</y>
+     <x>412</x>
+     <y>535</y>
     </hint>
    </hints>
   </connection>
@@ -1607,12 +2069,12 @@ and Purchase Order amounts</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
-     <y>679</y>
+     <x>150</x>
+     <y>607</y>
     </hint>
     <hint type="destinationlabel">
-     <x>333</x>
-     <y>678</y>
+     <x>381</x>
+     <y>609</y>
     </hint>
    </hints>
   </connection>

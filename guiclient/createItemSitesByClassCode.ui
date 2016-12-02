@@ -14,7 +14,7 @@ to be bound by its terms.</comment>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1387,9 +1387,15 @@ to be bound by its terms.</comment>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
+   <class>LotserialseqCluster</class>
+   <extends>QWidget</extends>
+   <header>lotserialseqcluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>ParameterGroup</class>
    <extends>QGroupBox</extends>
    <header>parametergroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WComboBox</class>

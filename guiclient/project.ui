@@ -740,7 +740,7 @@ to be bound by its terms.</comment>
      </widget>
      <widget class="QWidget" name="_notesTab">
       <attribute name="title">
-       <string>Notes</string>
+       <string>Description</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="1" column="0">

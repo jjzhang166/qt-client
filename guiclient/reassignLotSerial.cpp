@@ -18,6 +18,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -26,6 +27,7 @@ reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool mod
 
     connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sFillList()));
     connect(_reassign, SIGNAL(clicked()), this, SLOT(sReassign()));
+    connect(_item, SIGNAL(warehouseIdChanged(int)), _warehouse, SLOT(setId(int)));
 
     _captive = false;
 
@@ -94,9 +96,9 @@ enum SetResponse reassignLotSerial::set(const ParameterList &pParams)
           _source->setCurrentItem(_source->topLevelItem(i));
       }
     }
-    else if (reassignet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  reassignet, __FILE__, __LINE__))
     {
-      systemError(this, reassignet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -164,14 +166,15 @@ void reassignLotSerial::sReassign()
     int result = reassignReassign.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("reassignLotSerial", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Reassigning Lot/Serial Number"),
+                             storedProcErrorLookup("reassignLotSerial", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (reassignReassign.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Reassigning Lot/Serial Number"),
+                                reassignReassign, __FILE__, __LINE__))
   {
-    systemError(this, reassignReassign.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -237,9 +240,9 @@ void reassignLotSerial::sFillList()
       reassignFillList.exec();
       _source->populate(reassignFillList);
     }
-    else if (reassignFillList.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  reassignFillList, __FILE__, __LINE__))
     {
-      systemError(this, reassignFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

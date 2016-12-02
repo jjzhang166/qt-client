@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
 
 incidentPriority::incidentPriority(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -111,9 +112,9 @@ void incidentPriority::sSave()
     incidentSave.exec("SELECT NEXTVAL('incdtpriority_incdtpriority_id_seq') AS _incdtpriority_id");
     if (incidentSave.first())
       _incdtpriorityId = incidentSave.value("_incdtpriority_id").toInt();
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Priority"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -139,9 +140,9 @@ void incidentPriority::sSave()
 			       "Incident Priority.") );
       return;
     }
-    else if (incidentSave.lastError().type() != QSqlError::NoError)
+     else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Priority"),
+                                  incidentSave, __FILE__, __LINE__))
     {
-      systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -157,9 +158,9 @@ void incidentPriority::sSave()
   incidentSave.bindValue(":incdtpriority_order", _order->value());
   incidentSave.bindValue(":incdtpriority_descrip", _descrip->toPlainText());
   incidentSave.exec();
-  if (incidentSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Incident Priority"),
+                                incidentSave, __FILE__, __LINE__))
   {
-    systemError(this, incidentSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -180,9 +181,9 @@ void incidentPriority::populate()
     _order->setValue(incidentpopulate.value("incdtpriority_order").toInt());
     _descrip->setText(incidentpopulate.value("incdtpriority_descrip").toString());
   }
-  else if (incidentpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Priority Information"),
+                                incidentpopulate, __FILE__, __LINE__))
   {
-    systemError(this, incidentpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

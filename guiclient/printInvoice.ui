@@ -32,7 +32,7 @@ to be bound by its terms.</comment>
      <item>
       <widget class="QLabel" name="_invoiceNumLit">
        <property name="text">
-        <string>First Invoice #:</string>
+        <string>Invoice #:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

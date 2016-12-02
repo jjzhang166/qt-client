@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 #include "storedProcErrorLookup.h"
 #include "unpostedGLTransactions.h"
@@ -119,9 +120,9 @@ void accountingPeriod::sHandleNumber()
   handleNumberAccounting.exec();
   if (handleNumberAccounting.first())
     _number->setValue(handleNumberAccounting.value("number").toInt());
-  else if (handleNumberAccounting.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Next Period Number"),
+                                         handleNumberAccounting, __FILE__, __LINE__))
   {
-    systemError(this, handleNumberAccounting.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -150,14 +151,15 @@ void accountingPeriod::sSave()
       _periodid = saveAccounting.value("_period_id").toInt();
       if (_periodid < 0)
       {
-	systemError(this, storedProcErrorLookup("createAccountingPeriod", _periodid),
-		    __FILE__, __LINE__);
-	return;
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Period"),
+                               storedProcErrorLookup("createAccountingPeriod", _periodid),
+                               __FILE__, __LINE__);
+          return;
       }
     }
-    else if (saveAccounting.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Period"),
+                                                       saveAccounting, __FILE__, __LINE__))
     {
-      systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }
@@ -172,16 +174,17 @@ void accountingPeriod::sSave()
       {
 	int result = saveAccounting.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("thawAccountingPeriod", result),
-		      __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Thawing Period"),
+                             storedProcErrorLookup("thawAccountingPeriod", result),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccounting.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Thawing Period"),
+                                                         saveAccounting, __FILE__, __LINE__))
       {
-	systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
     }
 
@@ -212,32 +215,33 @@ void accountingPeriod::sSave()
 	  reallyOpen = (newdlg.exec() == XDialog::Accepted);
 	}
       }
-      else if (saveAccounting.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Opening Period"),
+                                                         saveAccounting, __FILE__, __LINE__))
       {
-	systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
 
       if (reallyOpen)
       {
-	saveAccounting.prepare("SELECT openAccountingPeriod(:period_id) AS result;");
+    saveAccounting.prepare("SELECT openAccountingPeriod(:period_id) AS result;");
 	saveAccounting.bindValue(":period_id", _periodid);
 	saveAccounting.exec();
 	if (saveAccounting.first())
 	{
 	  int result = saveAccounting.value("result").toInt();
 	  if (result < 0)
-	  {
-	    systemError(this, storedProcErrorLookup("openAccountingPeriod", result),
-			__FILE__, __LINE__);
-	    return;
-	  }
+      {
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Opening Period"),
+                               storedProcErrorLookup("openAccountingPeriod", result),
+                               __FILE__, __LINE__);
+          return;
+      }
 	}
-	else if (saveAccounting.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	  return;
-	}
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Opening Period"),
+                                                       saveAccounting, __FILE__, __LINE__))
+    {
+      return;
+    }
       }
       else
 	return;
@@ -255,16 +259,17 @@ void accountingPeriod::sSave()
       {
 	int result = saveAccounting.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("changeAccountingPeriodDates", result),
-		      __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Editing Period"),
+                             storedProcErrorLookup("changeAccountingPeriodDates", result),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccounting.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Editing Period"),
+                                                         saveAccounting, __FILE__, __LINE__))
       {
-	systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
     }
 
@@ -277,16 +282,17 @@ void accountingPeriod::sSave()
       {
 	int result = saveAccounting.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("freezeAccountingPeriod", result),
-		      __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Freezing Period"),
+                             storedProcErrorLookup("freezeAccountingPeriod", _periodid),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccounting.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Freezing Period"),
+                                                         saveAccounting, __FILE__, __LINE__))
       {
-	systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
     }
 
@@ -299,16 +305,17 @@ void accountingPeriod::sSave()
       {
 	int result = saveAccounting.value("result").toInt();
 	if (result < 0)
-	{
-	  systemError(this, storedProcErrorLookup("closeAccountingPeriod", result),
-		      __FILE__, __LINE__);
-	  return;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Period"),
+                             storedProcErrorLookup("closeAccountingPeriod", result),
+                             __FILE__, __LINE__);
+        return;
+    }
       }
-      else if (saveAccounting.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Closing Period"),
+                                                         saveAccounting, __FILE__, __LINE__))
       {
-	systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
     }
   }
@@ -327,23 +334,23 @@ void accountingPeriod::sSave()
     if (saveAccounting.first())
     {
       saveAccounting.prepare("UPDATE period SET period_name=:period_name,"
-		"                  period_yearperiod_id=:yearperiod_id,"
-		"                  period_quarter=:quarter"
+        "                  period_yearperiod_id=:yearperiod_id,"
+        "                  period_quarter=:quarter"
                 " WHERE (period_id=:period_id); ");
       saveAccounting.bindValue(":period_id", _periodid);
       saveAccounting.bindValue(":period_name", _name->text());
       saveAccounting.bindValue(":yearperiod_id", _year->id());
       saveAccounting.bindValue(":quarter",	_quarter->value());
       saveAccounting.exec();
-      if (saveAccounting.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving/Updating Accounting Period"),
+                                              saveAccounting, __FILE__, __LINE__))
       {
-        systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
     }
-    else if (saveAccounting.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving/Updating Accounting Period"),
+                                            saveAccounting, __FILE__, __LINE__))
     {
-      systemError(this, saveAccounting.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     else
@@ -408,9 +415,10 @@ void accountingPeriod::populate()
     _number->setValue(populateAccounting.value("period_number").toInt());
     _quarter->setValue(populateAccounting.value("period_quarter").toInt());
   }
-  else if (populateAccounting.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Populating Accounting Period"),
+                                          populateAccounting, __FILE__, __LINE__))
   {
-    systemError(this, populateAccounting.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
+

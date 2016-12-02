@@ -25,6 +25,7 @@
 #include "creditMemo.h"
 #include "creditMemoItem.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 creditMemoEditList::creditMemoEditList(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -91,10 +92,10 @@ void creditMemoEditList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pSelected)
 {
   _orderid = _cmhead->id();
 
-  pMenu->addAction(tr("Edit Return..."), this, SLOT(sEditCreditMemo()));
+  pMenu->addAction(tr("Edit Sales Credit..."), this, SLOT(sEditCreditMemo()));
 
   if (((XTreeWidgetItem *)pSelected)->altId() != -1)
-    pMenu->addAction(tr("Edit Return Item..."), this, SLOT(sEditCreditMemoItem()));
+    pMenu->addAction(tr("Edit Sales Credit Item..."), this, SLOT(sEditCreditMemoItem()));
 }
 
 void creditMemoEditList::sFillList()
@@ -109,9 +110,9 @@ void creditMemoEditList::sFillList()
   MetaSQLQuery mql = mqlLoad("creditMemo", "editlist");
   creditFillList = mql.toQuery(params);
   _cmhead->populate(creditFillList, true);
-  if (creditFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                                creditFillList, __FILE__, __LINE__))
   {
-    systemError(this, creditFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -138,7 +139,7 @@ bool creditMemoEditList::checkSitePrivs(int ordid)
       if (!check.value("result").toBool())
       {
         QMessageBox::critical(this, tr("Access Denied"),
-                              tr("You may not view or edit this Return as it references "
+                              tr("You may not view or edit this Sales Credit as it references "
                                  "a Site for which you have not been granted privileges.")) ;
         return false;
       }

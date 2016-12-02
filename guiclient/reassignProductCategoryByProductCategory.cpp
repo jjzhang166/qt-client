@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,7 +10,8 @@
 
 #include "reassignProductCategoryByProductCategory.h"
 
-#include <QMessageBox>
+#include "guiErrorCheck.h"
+#include "metasql.h"
 
 reassignProductCategoryByProductCategory::reassignProductCategoryByProductCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -39,28 +40,30 @@ void reassignProductCategoryByProductCategory::languageChange()
 
 void reassignProductCategoryByProductCategory::sReassign()
 {
-  if ( (_productCategoryPattern->isChecked()) && (_productCategory->text().length() == 0) )
-  {
-    QMessageBox::warning(this, tr("Missing Product Category Pattern"),
-                      tr("<p>You must enter a Product Category Pattern."));
-    _productCategory->setFocus();
-    return;
-  }
-  
-  QString sql( "UPDATE item "
-               "SET item_prodcat_id=:new_prodcat_id " );
+  QList<GuiErrorCheck> errs;
+  errs << GuiErrorCheck(_productCategoryPattern->isChecked() &&
+                        _productCategory->text().trimmed().isEmpty(),
+                        _productCategory, tr("You must enter a Product Category Pattern."));
+  GuiErrorCheck::reportErrors(this, tr("Missing Product Category Pattern"), errs);
 
+  MetaSQLQuery mql("UPDATE item"
+                   "   SET item_prodcat_id=<? value('new_prodcat_id') ?>"
+                   "<? if exists('old_prodcat_id') ?>"
+                   " WHERE item_prodcat_id = <? value('old_prodcat_id') ?>"
+                   "<? elseif exists('old_prodcat_code') ?>"
+                   "  FROM prodcat"
+                   " WHERE (item_prodcat_id = prodcat_id)"
+                   "   AND (prodcat_code ~ <? value('old_prodcat_code') ?>)"
+                   "<? endif ?>"
+                   ";");
+  ParameterList params;
+  params.append("new_prodcat_id", _newProductCategory->id());
   if (_selectedProductCategory->isChecked())
-    sql += "WHERE (item_prodcat_id=:old_prodcat_id);";
+    params.append("old_prodcat_id", _productCategories->id());
   else if (_productCategoryPattern->isChecked())
-    sql += "WHERE (item_prodcat_id IN (SELECT prodcat_id FROM prodcat WHERE (prodcat_code ~ :old_prodcat_code)));";
+    params.append("old_prodcat_code", _productCategory->text());
 
-  XSqlQuery reassign;
-  reassign.prepare(sql);
-  reassign.bindValue(":new_prodcat_id", _newProductCategory->id());
-  reassign.bindValue(":old_prodcat_id", _productCategories->id());
-  reassign.bindValue(":old_prodcat_code", _productCategory->text());
-  reassign.exec();
+  XSqlQuery reassign = mql.toQuery(params);
 
   accept();
 }

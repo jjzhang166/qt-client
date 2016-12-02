@@ -20,6 +20,7 @@
 
 #include <metasql.h>
 
+#include "guiErrorCheck.h"
 #include "errorReporter.h"
 #include "taxCodeRate.h"
 
@@ -150,9 +151,9 @@ void taxCode::sDelete()
     taxDelete.bindValue(":taxrate_id", _taxitems->id());
     taxDelete.exec();
 
-    if (taxDelete.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Code Rate"),
+                                  taxDelete, __FILE__, __LINE__))
     {
-      systemError(this, taxDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -190,9 +191,9 @@ void taxCode::sFillList()
   taxFillList = mql.toQuery(params);
    
   _taxitems->populate(taxFillList);
-  if (taxFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Rate Information"),
+                                taxFillList, __FILE__, __LINE__))
   {
-    systemError(this, taxFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -295,27 +296,19 @@ enum SetResponse taxCode::set(const ParameterList &pParams)
 void taxCode::sSave()
 {
   XSqlQuery taxSave;
-  if(_code->text().trimmed().isEmpty())
-  {
-    QMessageBox::warning( this, tr("No Tax Code"),
-                          tr("You must specify a Code for this Tax.") );
-    _code->setFocus();
-    return;
-  }
-  if (!_account->isValid())
-   {
-     QMessageBox::warning( this, tr("Select Ledger Account"),
-                            tr("You must select a Ledger Account for this Tax.") );
-     _account->setFocus();
+
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(_code->text().trimmed().isEmpty(), _code, 
+                          tr("You must specify a Code for this Tax.") )
+         << GuiErrorCheck(!_account->isValid(), _account,
+                          tr("You must select a Ledger Account for this Tax.") )
+         << GuiErrorCheck(_metrics->boolean("CashBasedTax") && !_distaccount->isValid(), _distaccount,
+                          tr("You must select a Distribution Ledger Account for this Tax.") )
+  ;
+
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Tax Code"), errors))
       return;
-   }
-  if (_metrics->boolean("CashBasedTax") && !_distaccount->isValid())
-  {
-    QMessageBox::warning( this, tr("Select Ledger Account"),
-                         tr("You must select a Distribution Ledger Account for this Tax.") );
-    _distaccount->setFocus();
-    return;
-  }
+
   taxSave.prepare("SELECT tax_id"
                   "  FROM tax"
                   " WHERE((tax_id!= :tax_id)"
@@ -354,6 +347,10 @@ void taxCode::sSave()
     taxSave.bindValue(":tax_basis_tax_id", _basis->id());
   taxSave.bindValue(":tax_id", _taxid); 
   taxSave.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving Tax Code"),
+                           taxSave, __FILE__, __LINE__))
+    return;
+
   done (_taxid);
 }
 
@@ -380,7 +377,8 @@ void taxCode::sCheck()
       ph.bindValue(":tax_id", _taxid);
       ph.exec();
       if (ph.lastError().type() != QSqlError::NoError)
-        systemError(this, ph.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Rate Information"),
+                           ph, __FILE__, __LINE__);
         
       _taxid = taxCheck.value("tax_id").toInt();
       _mode = cEdit;
@@ -440,7 +438,8 @@ void taxCode::closeEvent(QCloseEvent *pEvent)
     taxcloseEvent.bindValue(":tax_id", _taxid);
     taxcloseEvent.exec();
     if (taxcloseEvent.lastError().type() != QSqlError::NoError)
-      systemError(this, taxcloseEvent.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Rate Information"),
+                         taxcloseEvent, __FILE__, __LINE__);
   }
 
   XDialog::closeEvent(pEvent);

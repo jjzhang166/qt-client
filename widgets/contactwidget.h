@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -138,7 +138,7 @@ public:
   enum Mode          { Edit, View, Select };
 
   ContactWidget(QWidget*, const char* = 0);
-  inline virtual AddressCluster* addressWidget() const { return _address; }
+  Q_INVOKABLE inline virtual AddressCluster* addressWidget() { return _address; }
   inline virtual bool    ownerVisible()   const { return _owner->isVisible(); }
   inline virtual bool    ownerEnabled()   const { return _owner->isEnabled(); }
   inline virtual bool    numberVisible()  const { return _number->isVisible(); }
@@ -220,7 +220,7 @@ public slots:
          virtual void setNumber(QString p);
   inline virtual void clearExtraClause()	        { }
          virtual void findDuplicates();
-  inline virtual void setExtraClause(const QString&)    { }
+  inline virtual void setExtraClause(const QString&, const QString&)    { }
   inline virtual void setAddress(const int p)           { _address->setId(p); }
   inline virtual void setActive(const bool p)           { _active->setChecked(p); }
          virtual void setChange(QString p);
@@ -264,10 +264,10 @@ public slots:
   virtual void	setActiveVisible(const bool);
   virtual void	setAddressVisible(const bool);
   virtual void	setEmailVisible(const bool);
-  virtual void	setId(const int);
+  virtual void	setId(const int, const QString& = QString::null);
   virtual void	setInitialsVisible(const bool);
   virtual void	setMinimalLayout(const bool);
-  virtual void	setName(const QString& p);
+  virtual void	setName(int, const QString& p);
   virtual void	setPhonesVisible(const bool);
   virtual void	setSearchAcct(const int);
   virtual void	setWebaddrVisible(const bool);

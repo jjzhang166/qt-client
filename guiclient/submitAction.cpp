@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 submitAction::submitAction(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -120,7 +121,8 @@ void submitAction::sSubmit()
     }
   }
   else if (submitSubmit.lastError().type() != QSqlError::NoError)
-    systemError(this, submitSubmit.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Scheduled Action Information"),
+                       submitSubmit, __FILE__, __LINE__);
 
   accept();
 }

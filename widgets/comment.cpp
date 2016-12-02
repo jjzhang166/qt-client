@@ -37,9 +37,10 @@
 comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl ) :
   QDialog( parent, fl )
 {
-  if(name)
+  setupUi(this);
+
+  if (name)
     setObjectName(name);
-  setWindowTitle(tr("Comment"));
   if(modal)
     setWindowModality(Qt::WindowModal);
 
@@ -47,51 +48,11 @@ comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags
   _targetId = -1;
   _mode = cNew;
 
-  if (!name)
-    setObjectName("comment");
-
-  QVBoxLayout *moreLayout = new QVBoxLayout(this);
-  moreLayout->setObjectName("moreLayout");
-
-  QHBoxLayout *commentLayout = new QHBoxLayout(this);
-  commentLayout->setObjectName("commentLayout");
-
-  QVBoxLayout *layout11  = new QVBoxLayout(this);
-  layout11->setObjectName("layout11");
-
-  QHBoxLayout *layout9   = new QHBoxLayout(this);
-  layout9->setObjectName("layout9");
-
-  QLabel *_cmnttypeLit = new QLabel(tr("Comment Type:"), this);
-  _cmnttypeLit->setObjectName("_cmnttypeLit");
-  layout9->addWidget(_cmnttypeLit);
-
-  _cmnttype = new XComboBox(false, this, "_cmnttype");
-  QSizePolicy sizep = _cmnttype->sizePolicy();
-  sizep.setHorizontalStretch(1);
-  _cmnttype->setSizePolicy(sizep);
-
-  layout9->addWidget(_cmnttype);
-  layout9->addStretch(1);
-
-  _public = new QCheckBox(tr("Public"), this);
-  _public->setObjectName("_public");
   if(!(_x_metrics && _x_metrics->boolean("CommentPublicPrivate")))
     _public->hide();
   _public->setChecked(_x_metrics && _x_metrics->boolean("CommentPublicDefault"));
 
-  layout9->addWidget(_public);
-  layout11->addLayout(layout9);
-
-  _comment = new XTextEdit( this);
-  _comment->setObjectName("_comment");
   _comment->setSpellEnable(true);
-  layout11->addWidget(_comment);
-  commentLayout->addLayout(layout11);
-
-  QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-  buttonBox->setOrientation(Qt::Vertical);
-  buttonBox->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
 
   _close = buttonBox->button(QDialogButtonBox::Cancel);
   _close->setObjectName("_close");
@@ -109,11 +70,6 @@ comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags
   _more->setObjectName("_more");
   _more->setCheckable(true);
 
-  commentLayout->addWidget(buttonBox);
-  moreLayout->addLayout(commentLayout);
-
-  _comments = new Comments(this);
-  _comments->setObjectName("_comments");
   _comments->setReadOnly(true);
   _comments->findChild<XCheckBox*>("_verbose")->setForgetful(true);
   _comments->findChild<XCheckBox*>("_verbose")->hide();
@@ -123,20 +79,13 @@ comment::comment( QWidget* parent, const char* name, bool modal, Qt::WindowFlags
   _comments->setVisible(false);
   _comments->setEditable(false);
 
-  moreLayout->addWidget(_comments);
-
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_next, SIGNAL(clicked()), this, SLOT(sNextComment()));
   connect(_prev, SIGNAL(clicked()), this, SLOT(sPrevComment()));
   connect(_more, SIGNAL(toggled(bool)), _comments, SLOT(setVisible(bool)));
 
-  setTabOrder( _cmnttype, _comment );
-  setTabOrder( _comment, _save );
-  setTabOrder( _save, _close );
-
   _sourcetype = "";
-  _cmnttype->setAllowNull(true);
 
   shortcuts::setStandardKeys(this);
 
@@ -246,6 +195,8 @@ void comment::set(const ParameterList &pParams)
         _cmnttype->setType(XComboBox::CustomerCommentTypes);
       else if (_sourcetype == "EMP")
         _cmnttype->setType(XComboBox::EmployeeCommentTypes);
+      else if (_sourcetype == "FX")
+        _cmnttype->setType(XComboBox::ExchangeRateCommentTypes);
       else if (_sourcetype == "INCDT")
         _cmnttype->setType(XComboBox::IncidentCommentTypes);
       else if (_sourcetype == "I")
@@ -280,7 +231,7 @@ void comment::set(const ParameterList &pParams)
         _cmnttype->setType(XComboBox::SalesOrderItemCommentTypes);
       else if (_sourcetype == "TA")
         _cmnttype->setType(XComboBox::TaskCommentTypes);
-      else if (_sourcetype == "TIME")
+      else if (_sourcetype == "TATC")
         _cmnttype->setType(XComboBox::TimeAttendanceCommentTypes);
       else if (_sourcetype == "TD")
         _cmnttype->setType(XComboBox::TodoItemCommentTypes);

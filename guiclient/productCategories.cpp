@@ -19,6 +19,7 @@
 #include <openreports.h>
 
 #include "productCategory.h"
+#include "errorReporter.h"
 
 productCategories::productCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -85,9 +86,8 @@ void productCategories::sDelete()
     sFillList(-1);
   }
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Product Category"),
+                       productDelete, __FILE__, __LINE__);
 }
 
 void productCategories::sNew()

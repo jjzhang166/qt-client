@@ -150,6 +150,12 @@ to be bound by its terms.</comment>
    <header>xlineedit.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>XTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>xtreewidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>_code</tabstop>

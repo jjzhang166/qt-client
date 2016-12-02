@@ -18,6 +18,7 @@
 #include <openreports.h>
 
 #include "bankAccount.h"
+#include "errorReporter.h"
 
 bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -36,10 +37,7 @@ bankAccounts::bankAccounts(QWidget* parent, const char* name, Qt::WindowFlags fl
   _bankaccnt->addColumn(tr("Type"),        _dateColumn, Qt::AlignCenter,true, "type");
   _bankaccnt->addColumn(tr("A/P"),           _ynColumn, Qt::AlignCenter,true, "bankaccnt_ap");
   _bankaccnt->addColumn(tr("A/R"),           _ynColumn, Qt::AlignCenter,true, "bankaccnt_ar");
-  _bankaccnt->addColumn(tr("Currency"),_currencyColumn, Qt::AlignCenter,true, "currabbr");
-
-  if (omfgThis->singleCurrency())
-      _bankaccnt->hideColumn("currabbr");
+  _bankaccnt->addColumn(tr("Currency"),_currencyColumn, Qt::AlignCenter,!omfgThis->singleCurrency(), "currabbr");
 
   if (_privileges->check("MaintainBankAccounts"))
   {
@@ -120,9 +118,9 @@ void bankAccounts::sFillList()
   bankFillList.bindValue(":creditcard", tr("Credit Card"));
   bankFillList.exec();
   _bankaccnt->populate(bankFillList);
-  if (bankFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retriving Bank Account Information"),
+                                bankFillList, __FILE__, __LINE__))
   {
-    systemError(this, bankFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -163,9 +161,9 @@ void bankAccounts::sDelete()
              "WHERE (bankaccnt_id=:bankaccnt_id);" );
   bankDelete.bindValue(":bankaccnt_id", _bankaccnt->id());
   bankDelete.exec();
-  if (bankDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Bank Account"),
+                                bankDelete, __FILE__, __LINE__))
   {
-    systemError(this, bankDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -302,8 +302,8 @@ void financialLayoutGroup::populate()
     else
       _add->setChecked(true);
 
-  if ((_rpttype != cAdHoc) && ((_showEndPrcnt->isChecked()) || (_showDiffPrcnt->isChecked())))
-    _showPrcnt->setChecked(true);
+    if ((_rpttype != cAdHoc) && ((_showEndPrcnt->isChecked()) || (_showDiffPrcnt->isChecked())))
+      _showPrcnt->setChecked(true);
 
     int grpid = financialpopulate.value("flgrp_prcnt_flgrp_id").toInt();
     sFillGroupList();

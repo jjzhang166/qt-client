@@ -246,7 +246,9 @@ bool printSinglecopyDocument::sPrintOneDoc(XSqlQuery *docq)
     if (orReport::beginMultiPrint(_data->_printer, userCanceled) == false)
     {
       if(!userCanceled)
-        systemError(this, tr("Could not initialize printing system for multiple reports."));
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                           tr("%1: Could not initialize printing system "
+                              "for multiple reports. ").arg(windowTitle()),__FILE__,__LINE__);
       return false;
     }
   }
@@ -286,6 +288,10 @@ bool printSinglecopyDocument::sPrintOneDoc(XSqlQuery *docq)
     emit finishedPrinting(docq->value("docid").toInt());
 
   return printedOk;
+}
+void	 printSinglecopyDocument::sPopulate(XSqlQuery*)
+{
+	sPopulate();
 }
 
 void printSinglecopyDocument::sPopulate()
@@ -371,7 +377,7 @@ void printSinglecopyDocument::setDoctype(QString doctype)
   if (doctype == "AR")
     _data->_doctypefull = tr("A/R Statement");
   else if (doctype == "CM")
-    _data->_doctypefull = tr("Return");
+    _data->_doctypefull = tr("Sales Credit");
   else if (doctype == "IN")
     _data->_doctypefull = tr("Invoice");
   else if (doctype == "L")

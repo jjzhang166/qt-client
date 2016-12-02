@@ -344,7 +344,7 @@ void ContactWidget::setChanged()
   _changed=true;
 }
 
-void ContactWidget::setId(const int pId)
+void ContactWidget::setId(const int pId, const QString&)
 {
     if (pId == _id)
 	return;
@@ -564,7 +564,7 @@ void ContactWidget::setDataWidgetMap(XDataWidgetMapper* m)
 }
 
 
-void ContactWidget::setName(const QString& p)
+void ContactWidget::setName(int, const QString& p)
 {
   int firstSpace = p.indexOf(" ");
   if (firstSpace > 0)
@@ -1137,7 +1137,7 @@ void ContactList::sFillList()
                    "  LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id)"
                    " WHERE cntct_active"
                    "<? if exists('crmacctid') ?>"
-                   " AND (cntct_crmacct_id=<? value('crmacctid') ?>)"
+                   " AND ( (crmacct_id=<? value('crmacctid') ?>) OR (crmacct_parent_id=<? value('crmacctid') ?>) )"
                    "<? endif ?>"
                    " ORDER BY cntct_last_name, cntct_first_name;");
   ParameterList params;
@@ -1305,7 +1305,7 @@ void ContactSearch::sFillList()
                    "  LEFT OUTER JOIN crmacct ON (cntct_crmacct_id = crmacct_id)"
                    " WHERE true"
                    "<? if exists('crmacctid') ?>"
-                   "  AND (cntct_crmacct_id=<? value('crmacctid') ?>)"
+                   "  AND ( (crmacct_id=<? value('crmacctid') ?>) OR (crmacct_parent_id=<? value('crmacctid') ?>) )"
                    "<? endif ?>"
                    "<? if not exists('searchInactive') ?> "
                    "  AND cntct_active "

@@ -22,6 +22,7 @@
 #include "reschedulePoitem.h"
 #include "changePoitemQty.h"
 #include "dspRunningAvailability.h"
+#include "errorReporter.h"
 
 dspPoItemsByVendor::dspPoItemsByVendor(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByVendor", fl)
@@ -170,9 +171,9 @@ void dspPoItemsByVendor::sRunningAvailability()
     newdlg->set(params);
     omfgThis->handleNewWindow(newdlg);
   }
-  else if (raq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                raq, __FILE__, __LINE__))
   {
-    systemError(this, raq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -251,9 +252,9 @@ void dspPoItemsByVendor::sCloseItem()
                  "WHERE (poitem_id=:poitem_id);" );
   closeq.bindValue(":poitem_id", list()->altId());
   closeq.exec();
-  if (closeq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                closeq, __FILE__, __LINE__))
   {
-    systemError(this, closeq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -267,9 +268,9 @@ void dspPoItemsByVendor::sOpenItem()
                  "WHERE (poitem_id=:poitem_id);" );
   openq.bindValue(":poitem_id", list()->altId());
   openq.exec();
-  if (openq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                openq, __FILE__, __LINE__))
   {
-    systemError(this, openq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -289,9 +290,9 @@ void dspPoItemsByVendor::sPopulatePo()
     poq.bindValue(":vend_id", _vendor->vendId());
     poq.exec();
     _poNumber->populate(poq);
-    if (poq.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  poq, __FILE__, __LINE__))
     {
-      systemError(this, poq.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

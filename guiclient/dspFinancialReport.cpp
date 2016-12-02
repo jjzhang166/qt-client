@@ -30,6 +30,7 @@
 #include "dspGLTransactions.h"
 #include "financialReportNotes.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 #define cFlRoot  0
 #define cFlItem  1
@@ -455,10 +456,10 @@ void dspFinancialReport::sFillListStatement()
       dspFillListStatement.bindValue(":prjid", _prjid);
       dspFillListStatement.exec();
       list()->populate(dspFillListStatement, true);
-      if (dspFillListStatement.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Information"),
+                                    dspFillListStatement, __FILE__, __LINE__))
       {
-	systemError(this, dspFillListStatement.lastError().databaseText(), __FILE__, __LINE__);
-	return;
+        return;
       }
       list()->expandAll();
     }
@@ -853,9 +854,9 @@ void dspFinancialReport::sFillListTrend()
   dspFillListTrend.bindValue(":spec", cFlSpec);
   dspFillListTrend.exec();
   list()->populate(dspFillListTrend, true);
-  if (dspFillListTrend.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Information"),
+                                dspFillListTrend, __FILE__, __LINE__))
   {
-    systemError(this, dspFillListTrend.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   list()->expandAll();
@@ -1143,13 +1144,15 @@ bool dspFinancialReport::forwardUpdate()
     int result = dspforwardUpdate.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("forwardUpdateTrialBalance", result), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Information"),
+                             storedProcErrorLookup("forwardUpdateTrialBalance", result),
+                             __FILE__, __LINE__);
       return false;
     }
   }
-  else if (dspforwardUpdate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Information"),
+                                dspforwardUpdate, __FILE__, __LINE__))
   {
-    systemError(this, dspforwardUpdate.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
   return true;

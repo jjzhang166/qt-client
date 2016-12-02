@@ -15,6 +15,7 @@
 
 #include "metasql.h"
 #include "parameter.h"
+#include "errorReporter.h"
 
 taxAssignments::taxAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
@@ -110,9 +111,9 @@ void taxAssignments::sDelete()
   taxDelete.bindValue(":taxzone_id", _taxass->id());
   taxDelete.bindValue(":taxtype_id", _taxass->altId());
   taxDelete.exec();
-  if (taxDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Tax Information"),
+                                taxDelete, __FILE__, __LINE__))
   {
-    systemError(this, taxDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -139,9 +140,9 @@ void taxAssignments::sFillList()
   MetaSQLQuery mql(sql);
   XSqlQuery r = mql.toQuery(params);
   _taxass->populate(r, true);
-  if (r.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                                r, __FILE__, __LINE__))
   {
-    systemError(this, r.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

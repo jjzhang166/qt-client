@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QValidator>
+#include "errorReporter.h"
 
 standardJournalItem::standardJournalItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -116,9 +117,8 @@ void standardJournalItem::sSave()
     if (standardSave.first())
       _stdjrnlitemid = standardSave.value("stdjrnlitem_id").toInt();
     else
-      systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Journal Information"),
+                         standardSave, __FILE__, __LINE__);
 
     standardSave.prepare( "INSERT INTO stdjrnlitem "
                "( stdjrnlitem_id, stdjrnlitem_stdjrnl_id, stdjrnlitem_accnt_id,"

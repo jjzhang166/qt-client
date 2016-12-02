@@ -21,6 +21,7 @@
 #include "dspPoItemsByVendor.h"
 #include "guiclient.h"
 #include "parameterwidget.h"
+#include "errorReporter.h"
 
 itemSources::itemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "itemSources", fl)
@@ -32,6 +33,7 @@ itemSources::itemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
   setParameterWidgetVisible(true);
   setNewVisible(true);
   setQueryOnStartEnabled(true);
+  setSearchVisible(true);
 
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
   parameterWidget()->append(tr("Vendor"), "vend_id", ParameterWidget::Vendor);
@@ -200,9 +202,9 @@ void itemSources::sDelete()
                           "WHERE (itemsrc_id=:itemsrc_id);" );
       itemDelete.bindValue(":itemsrc_id", list()->id());
       itemDelete.exec();
-      if (itemDelete.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item Source Information"),
+                                    itemDelete, __FILE__, __LINE__))
       {
-        systemError(this, itemDelete.lastError().databaseText(), __FILE__, __LINE__);
         return;
       }
 

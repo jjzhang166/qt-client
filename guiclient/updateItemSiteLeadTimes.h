@@ -11,8 +11,12 @@
 #ifndef UPDATEITEMSITELEADTIMES_H
 #define UPDATEITEMSITELEADTIMES_H
 
+#include <QProgressDialog>
+
 #include "guiclient.h"
 #include "xdialog.h"
+#include <parameter.h>
+
 #include "ui_updateItemSiteLeadTimes.h"
 
 class updateItemSiteLeadTimes : public XDialog, public Ui::updateItemSiteLeadTimes

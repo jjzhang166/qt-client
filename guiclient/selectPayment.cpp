@@ -71,9 +71,9 @@ enum SetResponse selectPayment::set(const ParameterList &pParams)
       _mode = cEdit;
       _apselectid = selectet.value("apselect_id").toInt();
     }
-    else if (selectet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                  selectet, __FILE__, __LINE__))
     {
-      systemError(this, selectet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
     else
@@ -134,7 +134,8 @@ void selectPayment::sSave()
   }
   else
   {
-    systemError(this, selectSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Payment Information"),
+                         selectSave, __FILE__, __LINE__);
     return;
   }
 
@@ -153,14 +154,15 @@ void selectPayment::sSave()
     int result = selectSave.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("selectPayment", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                             storedProcErrorLookup("selectPayment", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
   else
   {
-    ErrorReporter::error(QtCriticalMsg, this, tr("Select Payment"),
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
                          selectSave, __FILE__, __LINE__);
     return;
   }
@@ -221,9 +223,9 @@ void selectPayment::populate()
     if(selectpopulate.value("bankaccnt_id").toInt() != -1)
       _bankaccnt->setId(selectpopulate.value("bankaccnt_id").toInt());
   }
-  else if (selectpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                selectpopulate, __FILE__, __LINE__))
   {
-    systemError(this, selectpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

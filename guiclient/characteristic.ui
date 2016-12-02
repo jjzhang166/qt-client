@@ -108,6 +108,16 @@ to be bound by its terms.</comment>
        </property>
       </widget>
      </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="_unique">
+       <property name="text">
+        <string>Allow unique characteristic assignment only</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="0" column="1">
@@ -209,26 +219,6 @@ to be bound by its terms.</comment>
                    <property name="nullStr">
                     <string/>
                    </property>
-                   <item>
-                    <property name="text">
-                     <string notr="true">[Y|N]</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string notr="true">\S+</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string notr="true">[1-9]\d{0,3}</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string notr="true">[A-Z]\d{5}[1-9]</string>
-                    </property>
-                   </item>
                   </widget>
                  </item>
                 </layout>

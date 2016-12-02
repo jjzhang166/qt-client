@@ -24,6 +24,7 @@ public:
     ~itemPricingSchedules();
 
 public slots:
+    virtual SetResponse set( const ParameterList & pParams );
     virtual void sNew();
     virtual void sEdit();
     virtual void sView();
@@ -37,6 +38,9 @@ public slots:
 protected slots:
     virtual void languageChange();
 
+private:
+    bool _listpricesched;
+  
 };
 
 #endif // ITEMPRICINGSCHEDULES_H

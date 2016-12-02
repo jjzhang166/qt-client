@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,10 +7,9 @@ It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
- <exportmacro></exportmacro>
  <class>XDateInputDialog</class>
- <widget class="QDialog" name="XDateInputDialog" >
-  <property name="geometry" >
+ <widget class="QDialog" name="XDateInputDialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -18,40 +17,40 @@ to be bound by its terms.</comment>
     <height>78</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Enter a Date</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>5</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>0</number>
    </property>
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>7</number>
      </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="QLabel" name="_label" >
-       <property name="text" >
+      <widget class="QLabel" name="_label">
+       <property name="text">
         <string>Enter a date:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="DLineEdit" name="_date" />
+      <widget class="DLineEdit" name="_date"/>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -60,42 +59,42 @@ to be bound by its terms.</comment>
       </spacer>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="spacing" >
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="focusPolicy" >
+        <widget class="QPushButton" name="_close">
+         <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_ok" >
-         <property name="focusPolicy" >
+        <widget class="QPushButton" name="_ok">
+         <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>OK</string>
          </property>
         </widget>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Preferred</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>10</width>
            <height>0</height>
@@ -109,14 +108,13 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>DLineEdit</class>
-   <extends>XLineEdit</extends>
+   <extends>QWidget</extends>
    <header>datecluster.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -124,7 +122,6 @@ to be bound by its terms.</comment>
   <tabstop>_ok</tabstop>
   <tabstop>_close</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections>
   <connection>
@@ -133,11 +130,11 @@ to be bound by its terms.</comment>
    <receiver>XDateInputDialog</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -149,11 +146,11 @@ to be bound by its terms.</comment>
    <receiver>XDateInputDialog</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>481</x>
      <y>148</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>264</x>
      <y>133</y>
     </hint>

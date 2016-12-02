@@ -32,7 +32,7 @@ public:
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams);
     virtual void clear();
-    virtual void sSaveItem();
+    virtual void sUpdateItem();
     virtual void sCopyBom();
     virtual void sAddBomitem();
     virtual void sEditBomitem();
@@ -44,15 +44,21 @@ public slots:
     virtual void sEditItemsite();
     virtual void sRevokeItemsite();
     virtual void sFillItemsite();
+    virtual void sNext();
+    virtual void sCancel();
     virtual void sCopy();
     virtual void closeEvent( QCloseEvent * pEvent );
 
 protected slots:
     virtual void languageChange();
+    virtual void cancelCopy();
+    virtual bool saveItem();
 
 private:
     bool _captive;
     bool _inTransaction;
+    bool _isActive;
+    bool _committed;
     int _newitemid;
 
 };

@@ -30,7 +30,7 @@ to be bound by its terms.</comment>
          <property name="title">
           <string/>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="gridLayout_11">
           <item row="0" column="0">
            <widget class="ItemCluster" name="_item"/>
           </item>
@@ -500,7 +500,6 @@ to be bound by its terms.</comment>
               <height>100</height>
              </size>
             </property>
-            <zorder>qt_scrollarea_viewport</zorder>
            </widget>
           </item>
           <item row="0" column="1">

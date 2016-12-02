@@ -100,8 +100,8 @@ class XTUPLEWIDGETS_EXPORT ContactCluster : public VirtualCluster
       void changed();
 
     protected:
-      void addNumberWidget(ContactClusterLineEdit* pNumberWidget);
-      void setName(int segment, const QString name);
+      void addNumberWidget(VirtualClusterLineEdit* pNumberWidget);
+      void setName(int segment, const QString& name);
 
     private:
       bool _minLayout;

@@ -36,6 +36,7 @@ imageview::imageview(QWidget* parent, const char* name, bool modal, Qt::WindowFl
 
   // signals and slots connections
   connect(_fileList, SIGNAL(clicked()), this, SLOT(sFileList()));
+  connect(_descrip, SIGNAL(textChanged()), this, SLOT(sHandleButtons()));
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
 
 #ifndef Q_OS_MAC
@@ -136,6 +137,11 @@ void imageview::populate()
     __imageview.loadFromData(QUUDecode(image.value("image_data").toString()));
     _imageview->setPixmap(QPixmap::fromImage(__imageview));
   }
+}
+
+void imageview::sHandleButtons()
+{
+  _save->setEnabled(true);
 }
 
 void imageview::sSave()

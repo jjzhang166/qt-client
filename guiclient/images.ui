@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>369</width>
+    <height>207</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,11 +27,35 @@ to be bound by its terms.</comment>
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="_imageLit">
-       <property name="text">
-        <string>Images:</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="_imageLit">
+         <property name="text">
+          <string>Images:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="XCheckBox" name="_showSize">
+         <property name="text">
+          <string>Display Image Size</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="XTreeWidget" name="_image"/>
@@ -122,6 +146,11 @@ to be bound by its terms.</comment>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>XCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>xcheckbox.h</header>
+  </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>

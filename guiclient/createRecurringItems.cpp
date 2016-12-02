@@ -145,7 +145,7 @@ void createRecurringItems::sSubmit()
       submitAction newdlg(this, "", true);
       newdlg.set(params);
 
-      if(! newdlg.exec() == XDialog::Accepted)
+      if(newdlg.exec() != XDialog::Accepted)
         errors.append("Submit cancelled");
       else
         count += 1;

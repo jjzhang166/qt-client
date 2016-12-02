@@ -26,6 +26,7 @@
 #include "dspSalesHistory.h"
 #include "dspSalesOrdersByItem.h"
 #include "dspSingleLevelWhereUsed.h"
+#include "dspSingleLevelBOM.h"
 #include "item.h"
 
 #include <parameter.h>
@@ -62,6 +63,7 @@ protected:
   dspSalesHistory *_dspSalesHistory;
   dspSalesOrdersByItem *_dspSalesOrdersByItem;
   dspSingleLevelWhereUsed *_dspSingleLevelWhereUsed;
+  dspSingleLevelBOM *_dspSingleLevelBOM;
   item *_itemMaster;
 
 };

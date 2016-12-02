@@ -16,6 +16,7 @@
 
 #include <metasql.h>
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 createCountTagsByParameterList::createCountTagsByParameterList(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -105,9 +106,9 @@ void createCountTagsByParameterList::sCreate()
     if (createq.value(0).toInt() > 0)
       count++;
   }
-  if (createq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Count Tag Information"),
+                                createq, __FILE__, __LINE__))
   {
-    systemError(this, createq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -129,7 +130,8 @@ void createCountTagsByParameterList::sPopulateLocations()
              "            ELSE formatLocationName(location_id)"
              "       END AS locationname "
              "FROM location "
-             "WHERE (location_warehous_id=:warehous_id) "
+             "WHERE ((location_warehous_id=:warehous_id) "
+             " AND   (location_active) ) "
              "ORDER BY locationname;" );
   createPopulateLocations.bindValue(":warehous_id", _warehouse->id());
   createPopulateLocations.exec();

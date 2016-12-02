@@ -31,6 +31,7 @@ dspBriefSalesHistory::dspBriefSalesHistory(QWidget* parent, const char*, Qt::Win
   parameterWidget()->append(tr("Ship Start Date"), "shipStartDate", ParameterWidget::Date);
   parameterWidget()->append(tr("Ship End Date"),   "shipEndDate",   ParameterWidget::Date);
   parameterWidget()->append(tr("Customer"),   "cust_id",   ParameterWidget::Customer);
+  parameterWidget()->append(tr("Customer P/O Number"), "poNumber", ParameterWidget::Text);
   parameterWidget()->append(tr("Customer Ship-to"),   "shipto_id",   ParameterWidget::Shipto);
   parameterWidget()->appendComboBox(tr("Customer Group"), "custgrp_id", XComboBox::CustomerGroups);
   parameterWidget()->append(tr("Customer Group Pattern"), "custgrp_pattern", ParameterWidget::Text);
@@ -52,6 +53,7 @@ dspBriefSalesHistory::dspBriefSalesHistory(QWidget* parent, const char*, Qt::Win
   list()->addColumn(tr("Name"),                -1,              Qt::AlignLeft,   true,  "cust_name"   );
   list()->addColumn(tr("Cust. Type"),          _orderColumn,    Qt::AlignLeft,   true,  "custtype_code"   );
   list()->addColumn(tr("Doc. #"),              _orderColumn,    Qt::AlignLeft,   true,  "cohist_ordernumber"   );
+  list()->addColumn(tr("Cust. P/O #"),         _orderColumn,    Qt::AlignLeft,   false, "cohist_ponumber");
   list()->addColumn(tr("Invoice #"),           _orderColumn,    Qt::AlignLeft,   true,  "invoicenumber"   );
   list()->addColumn(tr("Ord. Date"),           _dateColumn,     Qt::AlignCenter, true,  "cohist_orderdate" );
   list()->addColumn(tr("Invc. Date"),          _dateColumn,     Qt::AlignCenter, true,  "cohist_invcdate" );
@@ -86,10 +88,10 @@ bool dspBriefSalesHistory::setParams(ParameterList & params)
 
 void dspBriefSalesHistory::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem*, int)
 {
-  QAction *menuItem;
+  //QAction *menuItem;
 
   if (list()->id() > -1)
-    menuItem = pMenu->addAction(tr("View Sales Detail..."), this, SLOT(sViewHistory()));
+    (void)pMenu->addAction(tr("View Sales Detail..."), this, SLOT(sViewHistory()));
 
 }
 

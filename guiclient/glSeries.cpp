@@ -17,6 +17,7 @@
 #include "glSeriesItem.h"
 #include "storedProcErrorLookup.h"
 #include "submitAction.h"
+#include "errorReporter.h"
 
 #define cPostStandardJournal 0x10
 
@@ -113,9 +114,9 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
       _docnumber->setText(glet.value("glseries_docnumber").toString());
       _notes->setText(glet.value("glseries_notes").toString());
     }
-    else if (glet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                  glet, __FILE__, __LINE__))
     {
-      systemError(this, glet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
     sFillList();
@@ -141,10 +142,10 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
       glet.exec("SELECT fetchGLSequence() AS glsequence;");
       if (glet.first())
         _glsequence = glet.value("glsequence").toInt();
-      else if (glet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                    glet, __FILE__, __LINE__))
       {
-	systemError(this, glet.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
     }
     else if (param.toString() == "edit")
@@ -168,10 +169,10 @@ enum SetResponse glSeries::set(const ParameterList &pParams)
                  "   AND   (glseries_sequence=:glsequence) ); ");
       glet.bindValue(":glsequence", _glsequence);
       glet.exec();
-      if (glet.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                    glet, __FILE__, __LINE__))
       {
-	systemError(this, glet.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+        return UndefinedError;
       }
       while(glet.next())
         _notes->append(glet.value("glseries_docnumber").toString() + ": " + glet.value("stdjrnl_notes").toString() + "\n\n");
@@ -259,9 +260,9 @@ void glSeries::sDelete()
              "WHERE (glseries_id=:glseries_id);" );
   glDelete.bindValue(":glseries_id", _glseries->id());
   glDelete.exec();
-  if (glDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Selected G/L Series"),
+                                glDelete, __FILE__, __LINE__))
   {
-    systemError(this, glDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -310,9 +311,9 @@ bool glSeries::update()
   glupdate.bindValue(":glseries_sequence", _glsequence);
   glupdate.bindValue(":glseries_distdate", _date->date());
   glupdate.exec();
-  if (glupdate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Selected G/L Series"),
+                                glupdate, __FILE__, __LINE__))
   {
-    systemError(this, glupdate.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -331,9 +332,9 @@ bool glSeries::update()
       return false;
     }
   }
-  else if (glupdate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Selected G/L Series"),
+                                glupdate, __FILE__, __LINE__))
   {
-    systemError(this, glupdate.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
 
@@ -381,14 +382,15 @@ void glSeries::sPost()
       int returnVal = glPost.value("return").toInt();
       if (returnVal < 0)
       {
-        systemError(this, storedProcErrorLookup("postGLSeriesNoSumm", returnVal),
-		    __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Selected G/L Series"),
+                               storedProcErrorLookup("postGLSeriesNoSumm", returnVal),
+                               __FILE__, __LINE__);
         return;
       }
     }
-    else if (glPost.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Selected G/L Series"),
+                                  glPost, __FILE__, __LINE__))
     {
-      systemError(this, glPost.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -433,7 +435,8 @@ void glSeries::reject()
       glreject.bindValue(":glsequence", _glsequence);
       glreject.exec();
       if (glreject.lastError().type() != QSqlError::NoError)
-        systemError(this, glreject.lastError().databaseText(), __FILE__, __LINE__);
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Removing G/L Series"),
+                           glreject, __FILE__, __LINE__);
     }
     else
       return;
@@ -461,15 +464,15 @@ void glSeries::sFillList()
              " AND (glseries_sequence=:glseries_sequence) );" );
   glFillList.bindValue(":glseries_sequence", _glsequence);
   glFillList.exec();
-  if (glFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                glFillList, __FILE__, __LINE__))
   {
-    systemError(this, glFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _glseries->populate(glFillList);
-  if (glFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                glFillList, __FILE__, __LINE__))
   {
-    systemError(this, glFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -499,9 +502,9 @@ void glSeries::sFillList()
     _credits->setStyleSheet(stylesheet);
     _diff->setStyleSheet(stylesheet);
   }
-  else if (glFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving G/L Series Information"),
+                                glFillList, __FILE__, __LINE__))
   {
-    systemError(this, glFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

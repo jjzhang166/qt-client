@@ -13,6 +13,7 @@
 #include <QSqlError>
 #include <QValidator>
 #include <QVariant>
+#include "errorReporter.h"
 
 firmPlannedOrder::firmPlannedOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -73,10 +74,10 @@ enum SetResponse firmPlannedOrder::set(const ParameterList &pParams)
       else if (firmet.value("planord_type").toString() == "W")
         _orderType->setText(tr("Work Order"));
     }
-    else if (firmet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Planned Order Information"),
+                                  firmet, __FILE__, __LINE__))
     {
-      systemError(this, firmet.lastError().databaseText(), __FILE__, __LINE__);
-      reject();
+        reject();
     }
   }
 
@@ -99,9 +100,9 @@ void firmPlannedOrder::sFirm()
   firmFirm.bindValue(":planord_comments", _comments->toPlainText());
   firmFirm.bindValue(":planord_id", _planordid);
   firmFirm.exec();
-  if (firmFirm.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Firmed Order Information"),
+                                firmFirm, __FILE__, __LINE__))
   {
-    systemError(this, firmFirm.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -113,15 +114,14 @@ void firmPlannedOrder::sFirm()
     double result = firmFirm.value("result").toDouble();
     if (result < 0.0)
     {
-      systemError(this, tr("ExplodePlannedOrder returned %, indicating an "
-                           "error occurred.").arg(result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Exploding Planned Order"),
+                           firmFirm, __FILE__, __LINE__);
       return;
     }
   }
-  else if (firmFirm.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Exploding Planned Order"),
+                                firmFirm, __FILE__, __LINE__))
   {
-    systemError(this, firmFirm.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

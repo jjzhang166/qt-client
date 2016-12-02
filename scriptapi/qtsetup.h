@@ -69,6 +69,9 @@ QScriptValue TextElideModetoScriptValue(QScriptEngine *engine, const enum Qt::Te
 QScriptValue TextFlagtoScriptValue(QScriptEngine *engine, const enum Qt::TextFlag &p);
 QScriptValue TextFormattoScriptValue(QScriptEngine *engine, const enum Qt::TextFormat &p);
 QScriptValue TextInteractionFlagtoScriptValue(QScriptEngine *engine, const enum Qt::TextInteractionFlag &p);
+#if QT_VERSION >= 0x050000
+QScriptValue TimerTypetoScriptValue(QScriptEngine *engine, const enum Qt::TimerType &p);
+#endif
 QScriptValue TimeSpectoScriptValue(QScriptEngine *engine, const enum Qt::TimeSpec &p);
 QScriptValue ToolBarAreatoScriptValue(QScriptEngine *engine, const enum Qt::ToolBarArea &p);
 QScriptValue ToolButtonStyletoScriptValue(QScriptEngine *engine, const enum Qt::ToolButtonStyle &p);
@@ -133,6 +136,9 @@ void TextElideModefromScriptValue(const QScriptValue &obj, enum Qt::TextElideMod
 void TextFlagfromScriptValue(const QScriptValue &obj, enum Qt::TextFlag &p);
 void TextFormatfromScriptValue(const QScriptValue &obj, enum Qt::TextFormat &p);
 void TextInteractionFlagfromScriptValue(const QScriptValue &obj, enum Qt::TextInteractionFlag &p);
+#if QT_VERSION >= 0x050000
+void TimerTypefromScriptValue(const QScriptValue &obj, enum Qt::TimerType &p);
+#endif
 void TimeSpecfromScriptValue(const QScriptValue &obj, enum Qt::TimeSpec &p);
 void ToolBarAreafromScriptValue(const QScriptValue &obj, enum Qt::ToolBarArea &p);
 void ToolButtonStylefromScriptValue(const QScriptValue &obj, enum Qt::ToolButtonStyle &p);

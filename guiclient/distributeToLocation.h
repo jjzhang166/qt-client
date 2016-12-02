@@ -41,6 +41,7 @@ private:
     double _balance;
     QString _lotSerial;
     double _availToDistribute;
+    QString _controlMethod;
 };
 
 #endif // DISTRIBUTETOLOCATION_H

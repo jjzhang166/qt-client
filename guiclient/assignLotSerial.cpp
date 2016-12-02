@@ -26,6 +26,7 @@
 
 #include <parameter.h>
 #include <openreports.h>
+#include "errorReporter.h"
 
 #define NUM_COLUMNS_BEFORE_CHARS 4
 
@@ -92,9 +93,9 @@ enum SetResponse assignLotSerial::set(const ParameterList &pParams)
     if (_itemlocSeries == -1)
     {
       assignet.exec("SELECT NEXTVAL('itemloc_series_seq') AS _itemloc_series;");
-      if (assignet.lastError().type() != QSqlError::NoError)
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
+                                    assignet, __FILE__, __LINE__))
       {
-        systemError(this, assignet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
       else
@@ -117,9 +118,9 @@ enum SetResponse assignLotSerial::set(const ParameterList &pParams)
     ild.exec();
     if (ild.first())
       _item->setItemsiteid(ild.value("itemlocdist_itemsite_id").toInt());
-    else if (ild.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
+                                  ild, __FILE__, __LINE__))
     {
-      systemError(this, ild.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
 
@@ -168,9 +169,9 @@ void assignLotSerial::sDelete()
   assignDelete.prepare( "SELECT deleteItemlocdist(:itemlocdist_id);" );
   assignDelete.bindValue(":itemlocdist_id", _itemlocdist->id());
   assignDelete.exec();
-  if (assignDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
+                                assignDelete, __FILE__, __LINE__))
   {
-    systemError(this, assignDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -185,9 +186,9 @@ void assignLotSerial::sClose()
              " AND (itemlocdist_source_id=:source_id) );" );
   assignClose.bindValue(":source_id", _itemlocdistid);
   assignClose.exec();
-  if (assignClose.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
+                                assignClose, __FILE__, __LINE__))
   {
-    systemError(this, assignClose.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -219,9 +220,9 @@ void assignLotSerial::sAssign()
   assignAssign.bindValue(":itemlocdist_series", _itemlocSeries);
   assignAssign.bindValue(":itemlocdist_id", _itemlocdistid);
   assignAssign.exec();
-  if (assignAssign.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
+                                assignAssign, __FILE__, __LINE__))
   {
-    systemError(this, assignAssign.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -244,9 +245,9 @@ void assignLotSerial::sFillList()
     openQty = assignFillList.value("qty").toDouble();
     _qtyToAssign->setDouble(openQty);
   }
-  else if (assignFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                assignFillList, __FILE__, __LINE__))
   {
-    systemError(this, assignFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -260,9 +261,9 @@ void assignLotSerial::sFillList()
     _qtyAssigned->setDouble(assignFillList.value("totalqty").toDouble());
     _qtyBalance->setDouble(openQty - assignFillList.value("totalqty").toDouble());
   }
-  else if (assignFillList.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                assignFillList, __FILE__, __LINE__))
   {
-    systemError(this, assignFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -285,9 +286,9 @@ void assignLotSerial::sFillList()
   assignFillList.bindValue(":na", "N/A");
   assignFillList.exec();
   _itemlocdist->populate(assignFillList, true);
-  if (assignFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Lot/Serial Information"),
+                                assignFillList, __FILE__, __LINE__))
   {
-    systemError(this, assignFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -320,8 +321,9 @@ void assignLotSerial::sPrint()
     if (presetPrinter.isEmpty()) {
       if (orReport::beginMultiPrint(&printer, userCanceled) == false) {
         if(!userCanceled) {
-          systemError(this, tr("<p>Could not initialize printing system for "
-                               "multiple reports."));
+          ErrorReporter::error(QtCriticalMsg, this, tr("Printing Error"),
+                               tr("%1: Could not initialize printing system for "
+                                  "multiple reports.").arg(windowTitle()),__FILE__,__LINE__);
           return;
         }
       }
@@ -348,8 +350,9 @@ void assignLotSerial::sPrint()
     }
     orReport::endMultiPrint(&printer);
   }
-  else if (qlabel.lastError().type() != QSqlError::NoError) {
-    systemError(this, qlabel.lastError().databaseText(), __FILE__, __LINE__);
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing Label"),
+                                qlabel, __FILE__, __LINE__))
+  {
     return;
   }
 }

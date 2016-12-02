@@ -1893,7 +1893,7 @@ to be bound by its terms.</comment>
         <attribute name="title">
          <string>Co&amp;mments</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayout_31">
          <item row="0" column="0">
           <widget class="Comments" name="_comments"/>
          </item>
@@ -1916,6 +1916,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>

@@ -19,6 +19,11 @@
 class QByteArray;
 
 Q_DECLARE_METATYPE(QNetworkRequest*)
+Q_DECLARE_METATYPE(enum QNetworkRequest::Attribute)
+Q_DECLARE_METATYPE(enum QNetworkRequest::CacheLoadControl)
+Q_DECLARE_METATYPE(enum QNetworkRequest::KnownHeaders)
+Q_DECLARE_METATYPE(enum QNetworkRequest::LoadControl)
+Q_DECLARE_METATYPE(enum QNetworkRequest::Priority)
 
 void setupQNetworkRequestProto(QScriptEngine *engine);
 QScriptValue constructQNetworkRequest(QScriptContext *context,

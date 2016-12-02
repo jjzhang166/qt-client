@@ -29,6 +29,7 @@ public slots:
     virtual void sPopulatePoitem(int pPoheadid);
     virtual void sPopulate(int pPoheadid);
     virtual void sReschedule();
+    virtual void sAllItems();
 
 protected slots:
     virtual void languageChange();

@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>characteristicPrice</class>
- <widget class="QDialog" name="characteristicPrice" >
-  <property name="geometry" >
+ <widget class="QDialog" name="characteristicPrice">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,57 +17,57 @@ to be bound by its terms.</comment>
     <height>176</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Characteristic Price</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
-    <widget class="QLabel" name="_characteristicLit" >
-     <property name="text" >
+  <layout class="QGridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="_characteristicLit">
+     <property name="text">
       <string>Characteristic:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
-     <property name="buddy" >
+     <property name="buddy">
       <cstring>_char</cstring>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" >
-    <widget class="XComboBox" name="_char" />
+   <item row="0" column="1">
+    <widget class="XComboBox" name="_char"/>
    </item>
-   <item rowspan="4" row="0" column="2" >
-    <layout class="QVBoxLayout" >
+   <item row="0" column="2" rowspan="4">
+    <layout class="QVBoxLayout">
      <item>
-      <widget class="QPushButton" name="_close" >
-       <property name="text" >
+      <widget class="QPushButton" name="_close">
+       <property name="text">
         <string>&amp;Cancel</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="_save" >
-       <property name="text" >
+      <widget class="QPushButton" name="_save">
+       <property name="text">
         <string>&amp;Save</string>
        </property>
-       <property name="autoDefault" >
+       <property name="autoDefault">
         <bool>true</bool>
        </property>
-       <property name="default" >
+       <property name="default">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>77</width>
          <height>16</height>
@@ -77,71 +77,71 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" >
-    <widget class="QLabel" name="_valueLit" >
-     <property name="text" >
+   <item row="1" column="0">
+    <widget class="QLabel" name="_valueLit">
+     <property name="text">
       <string>Value:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" >
-    <widget class="XComboBox" name="_value" />
+   <item row="1" column="1">
+    <widget class="XComboBox" name="_value"/>
    </item>
-   <item row="2" column="0" >
-    <widget class="QLabel" name="_priceLit" >
-     <property name="text" >
+   <item row="2" column="0">
+    <widget class="QLabel" name="_priceLit">
+     <property name="text">
       <string>Price:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" >
-    <widget class="CurrCluster" name="_price" >
-     <property name="format" >
+   <item row="2" column="1">
+    <widget class="CurrCluster" name="_price">
+     <property name="format">
       <enum>CurrDisplay::Cost</enum>
      </property>
-     <property name="currencyEditable" stdset="0" >
+     <property name="currencyEditable" stdset="0">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" >
-    <widget class="QLabel" name="_listPriceLit" >
-     <property name="text" >
+   <item row="3" column="0">
+    <widget class="QLabel" name="_listPriceLit">
+     <property name="text">
       <string>List Price:</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" >
-    <widget class="CurrCluster" name="_listPrice" >
-     <property name="format" >
+   <item row="3" column="1">
+    <widget class="CurrCluster" name="_listPrice">
+     <property name="format">
       <enum>CurrDisplay::SalesPrice</enum>
      </property>
-     <property name="currencyEditable" stdset="0" >
+     <property name="currencyEditable" stdset="0">
       <bool>false</bool>
      </property>
-     <property name="enabled" >
+     <property name="enabled">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2" >
+   <item row="4" column="0" colspan="2">
     <spacer>
-     <property name="orientation" >
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeType" >
+     <property name="sizeType">
       <enum>QSizePolicy::Expanding</enum>
      </property>
-     <property name="sizeHint" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>332</width>
        <height>16</height>
@@ -151,11 +151,17 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
+   <header>currcluster.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CurrDisplay</class>
+   <extends>QWidget</extends>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
@@ -180,11 +186,11 @@ to be bound by its terms.</comment>
    <receiver>characteristicPrice</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>370</x>
      <y>30</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>

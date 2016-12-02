@@ -26,7 +26,6 @@
 
 #include "dbtools.h"
 #include "errorReporter.h"
-#include "login2Options.h"
 #include "qmd5.h"
 #include "storedProcErrorLookup.h"
 #include "xsqlquery.h"
@@ -52,7 +51,6 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl
 
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sLogin()));
   connect(_buttonBox, SIGNAL(helpRequested()), this, SLOT(sOpenHelp()));
-  //connect(_options, SIGNAL(clicked()), this, SLOT(sOptions()));
   connect(_server, SIGNAL(editingFinished()), this, SLOT(sChangeURL()));
   connect(_database->lineEdit(), SIGNAL(editingFinished()), this, SLOT(sChangeURL()));
   connect(_port, SIGNAL(editingFinished()), this, SLOT(sChangeURL()));
@@ -345,8 +343,8 @@ void login2::sLogin()
 
   if (db.isOpen())
   {
-    QString earliest = "9.1.0",
-            latest   = "9.5.0";
+    QString earliest = "9.3.0",
+            latest   = "9.6.0";
     XSqlQuery checkVersion;   // include earliest in the range but exclude latest
     checkVersion.prepare("SELECT compareVersion(:earliest) <= 0"
                          "   AND compareVersion(:latest)   > 0 AS ok,"
@@ -421,15 +419,7 @@ void login2::sLogin()
                              "<p>This may be due to a problem with your user name, password, or server connection information. "
                              "<p>Below is more detail on the connection problem: "
                              "<p>%1" ).arg(db.lastError().text()));
-
-    if (!_captive)
-    {
-      _username->setText("");
-      _username->setFocus();
-    }
-    else
-      _password->setFocus();
-
+    _password->setFocus();
     _password->setText("");
     return;
   }
@@ -535,27 +525,6 @@ void login2::sLogin()
     _databaseURL = databaseURL;
     updateRecentOptions();
     accept();
-  }
-}
-
-void login2::sOptions()
-{
-  ParameterList params;
-  params.append("databaseURL", _databaseURL);
-
-  if (_multipleConnections)
-    params.append("dontSaveSettings");
-
-  login2Options newdlg(this, "", true);
-  newdlg.set(params);
-  if (newdlg.exec() != QDialog::Rejected)
-  {
-    updateRecentOptions();
-    _databaseURL = newdlg._databaseURL;
-    populateDatabaseInfo();
-    updateRecentOptions();
-    updateRecentOptionsActions();
-    _username->setFocus();
   }
 }
 

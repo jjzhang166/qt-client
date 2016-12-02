@@ -1,4 +1,5 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -7,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>itemSites</class>
- <widget class="QWidget" name="itemSites" >
-  <property name="geometry" >
+ <widget class="QWidget" name="itemSites">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -16,53 +17,53 @@ to be bound by its terms.</comment>
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>List Item Sites</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_4" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" name="gridLayout_3" >
-     <property name="margin" >
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="margin">
       <number>12</number>
      </property>
-     <property name="spacing" >
+     <property name="spacing">
       <number>12</number>
      </property>
-     <item row="0" column="0" >
-      <layout class="QHBoxLayout" name="horizontalLayout_2" >
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <layout class="QGridLayout" name="gridLayout_2" >
-         <item row="1" column="0" >
-          <widget class="WarehouseGroup" name="_warehouse" >
-           <property name="fixedSize" >
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="0">
+          <widget class="WarehouseGroup" name="_warehouse">
+           <property name="fixedSize">
             <bool>false</bool>
            </property>
           </widget>
          </item>
-         <item row="2" column="0" >
-          <widget class="QCheckBox" name="_showInactive" >
-           <property name="text" >
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="_showInactive">
+           <property name="text">
             <string>Show &amp;Inactive Item Sites</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0" >
-          <layout class="QHBoxLayout" name="horizontalLayout" >
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QLabel" name="_searchForLit" >
-             <property name="text" >
+            <widget class="QLabel" name="_searchForLit">
+             <property name="text">
               <string>Search &amp;for:</string>
              </property>
-             <property name="alignment" >
+             <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
-             <property name="buddy" >
+             <property name="buddy">
               <cstring>_searchFor</cstring>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="XLineEdit" name="_searchFor" />
+            <widget class="XLineEdit" name="_searchFor"/>
            </item>
           </layout>
          </item>
@@ -70,13 +71,13 @@ to be bound by its terms.</comment>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>283</width>
            <height>20</height>
@@ -85,29 +86,29 @@ to be bound by its terms.</comment>
         </spacer>
        </item>
        <item>
-        <layout class="QVBoxLayout" >
-         <property name="spacing" >
+        <layout class="QVBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
          <item>
-          <widget class="QPushButton" name="_close" >
-           <property name="text" >
+          <widget class="QPushButton" name="_close">
+           <property name="text">
             <string>&amp;Close</string>
            </property>
-           <property name="autoDefault" >
+           <property name="autoDefault">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeType" >
+           <property name="sizeType">
             <enum>QSizePolicy::Expanding</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>0</height>
@@ -119,117 +120,117 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </item>
-     <item row="2" column="0" >
-      <widget class="QFrame" name="_frame" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+     <item row="2" column="0">
+      <widget class="QFrame" name="_frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>1</verstretch>
         </sizepolicy>
        </property>
-       <property name="frameShape" >
+       <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
-       <property name="frameShadow" >
+       <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QGridLayout" name="gridLayout" >
-        <property name="margin" >
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="margin">
          <number>0</number>
         </property>
-        <property name="spacing" >
+        <property name="spacing">
          <number>0</number>
         </property>
-        <item row="0" column="0" >
-         <layout class="QVBoxLayout" >
-          <property name="spacing" >
+        <item row="0" column="0">
+         <layout class="QVBoxLayout">
+          <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="_itemSitesLit" >
-            <property name="text" >
+           <widget class="QLabel" name="_itemSitesLit">
+            <property name="text">
              <string>&amp;Item Sites:</string>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>_itemSite</cstring>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
-            <property name="spacing" >
+           <layout class="QHBoxLayout">
+            <property name="spacing">
              <number>5</number>
             </property>
             <item>
-             <widget class="XTreeWidget" name="_itemSite" />
+             <widget class="XTreeWidget" name="_itemSite"/>
             </item>
             <item>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
+             <layout class="QVBoxLayout">
+              <property name="spacing">
                <number>0</number>
               </property>
               <item>
-               <widget class="QPushButton" name="_new" >
-                <property name="text" >
+               <widget class="QPushButton" name="_new">
+                <property name="text">
                  <string>&amp;New</string>
                 </property>
-                <property name="autoDefault" >
+                <property name="autoDefault">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_edit" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_edit">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>&amp;Edit</string>
                 </property>
-                <property name="autoDefault" >
+                <property name="autoDefault">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_view" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_view">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>&amp;View</string>
                 </property>
-                <property name="autoDefault" >
+                <property name="autoDefault">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_delete" >
-                <property name="enabled" >
+               <widget class="QPushButton" name="_delete">
+                <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="text" >
+                <property name="text">
                  <string>&amp;Delete</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="_copy" >
-                <property name="text" >
+               <widget class="QPushButton" name="_copy">
+                <property name="text">
                  <string>Copy</string>
                 </property>
                </widget>
               </item>
               <item>
                <spacer>
-                <property name="orientation" >
+                <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
-                <property name="sizeType" >
+                <property name="sizeType">
                  <enum>QSizePolicy::Expanding</enum>
                 </property>
-                <property name="sizeHint" stdset="0" >
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
                   <height>115</height>
@@ -250,12 +251,13 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="5" margin="5" />
+ <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
    <class>WarehouseGroup</class>
    <extends>QGroupBox</extends>
    <header>warehousegroup.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
@@ -289,11 +291,11 @@ to be bound by its terms.</comment>
    <receiver>itemSites</receiver>
    <slot>close()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>485</x>
      <y>31</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -305,11 +307,11 @@ to be bound by its terms.</comment>
    <receiver>_view</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>31</x>
      <y>158</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>484</x>
      <y>217</y>
     </hint>

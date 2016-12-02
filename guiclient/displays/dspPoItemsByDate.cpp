@@ -25,6 +25,7 @@
 #include "purchaseOrder.h"
 #include "purchaseOrderItem.h"
 #include "reschedulePoitem.h"
+#include "errorReporter.h"
 
 dspPoItemsByDate::dspPoItemsByDate(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByDate", fl)
@@ -180,9 +181,9 @@ void dspPoItemsByDate::sRunningAvailability()
     newdlg->set(params);
     omfgThis->handleNewWindow(newdlg);
   }
-  else if (availq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                availq, __FILE__, __LINE__))
   {
-    systemError(this, availq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -261,9 +262,9 @@ void dspPoItemsByDate::sCloseItem()
                  " WHERE (poitem_id=:poitem_id);" );
   closeq.bindValue(":poitem_id", list()->altId());
   closeq.exec();
-  if (closeq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                closeq, __FILE__, __LINE__))
   {
-    systemError(this, closeq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -277,9 +278,9 @@ void dspPoItemsByDate::sOpenItem()
                 " WHERE (poitem_id=:poitem_id);" );
   openq.bindValue(":poitem_id", list()->altId());
   openq.exec();
-  if (openq.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                openq, __FILE__, __LINE__))
   {
-    systemError(this, openq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();

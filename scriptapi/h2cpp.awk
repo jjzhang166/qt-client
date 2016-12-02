@@ -32,7 +32,7 @@
   sub(/;/, "");
   print;
   print "{";
-  print " qScriptRegisterMetaType(engine, " baseclass "toScriptValue, " baseclass "fromScriptValue);"
+  print "  qScriptRegisterMetaType(engine, " baseclass "toScriptValue, " baseclass "fromScriptValue);"
   print "";
   print "  QScriptValue proto = engine->newQObject(new " protoclass "(engine));";
   print "  engine->setDefaultPrototype(qMetaTypeId<" baseclass "*>(), proto);";

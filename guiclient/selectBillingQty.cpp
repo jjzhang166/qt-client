@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 selectBillingQty::selectBillingQty(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -139,10 +140,10 @@ enum SetResponse selectBillingQty::set(const ParameterList &pParams)
 	// overwrite automatically-found values if user previously set them
 	_taxType->setId(cobill.value("cobill_taxtype_id").toInt());
    }
-   else if (cobill.lastError().type() != QSqlError::NoError)
+   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Billing Selection Information"),
+                                 cobill, __FILE__, __LINE__))
    {
-	systemError(this, cobill.lastError().databaseText(), __FILE__, __LINE__);
-	return UndefinedError;
+     return UndefinedError;
    }
    else
    {
@@ -154,11 +155,12 @@ enum SetResponse selectBillingQty::set(const ParameterList &pParams)
 
       _toBill->setSelection(0, _toBill->text().length());
   }
-  else if (soitem.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item and/or Customer Information"),
+                                soitem, __FILE__, __LINE__))
   {
-      systemError(this, soitem.lastError().databaseText(), __FILE__, __LINE__);
-      return UndefinedError;
+    return UndefinedError;
   }
+
  }
 
   return NoError;
@@ -190,14 +192,15 @@ void selectBillingQty::sSave()
     int result = select.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("selectForBilling", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Billing Selection Information"),
+                             storedProcErrorLookup("selectForBilling", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (select.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Billing Selection Information"),
+                                select, __FILE__, __LINE__))
   {
-    systemError(this, select.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -220,15 +223,16 @@ void selectBillingQty::sHandleItem()
     int result = itemq.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("getItemTaxType", result),
-		  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                             storedProcErrorLookup("getItemTaxType", result),
+                             __FILE__, __LINE__);
       return;
     }
     _taxType->setId(result);
   }
-  else if (itemq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Information"),
+                                selectHandleItem, __FILE__, __LINE__))
   {
-    systemError(this, selectHandleItem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else

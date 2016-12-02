@@ -13,31 +13,14 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>815</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>List Currencies</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QVBoxLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QLabel" name="_currenciesLit">
-       <property name="text">
-        <string>Currencies:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="XTreeWidget" name="_curr"/>
-     </item>
-    </layout>
-   </item>
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -118,10 +101,46 @@ to be bound by its terms.</comment>
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <layout class="QVBoxLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="_currenciesLit">
+       <property name="text">
+        <string>Currencies:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="XTreeWidget" name="_curr"/>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="_commentsLit">
+     <property name="text">
+      <string>Exchange Rate Comments:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="Comments" name="_FXcomments">
+     <property name="type">
+      <enum>Comments::ExchangeRate</enum>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
+  <customwidget>
+   <class>Comments</class>
+   <extends>QWidget</extends>
+   <header>comments.h</header>
+  </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>

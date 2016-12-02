@@ -14,6 +14,7 @@
 
 #include "plugins/addressclusterplugin.h"
 #include "plugins/alarmsplugin.h"
+#include "plugins/apopenclusterplugin.h"
 #include "plugins/aropenclusterplugin.h"
 #include "plugins/calendarcomboboxplugin.h"
 #include "plugins/characteristicswidgetplugin.h"
@@ -42,6 +43,7 @@
 #include "plugins/invoicelineeditplugin.h"
 #include "plugins/incidentclusterplugin.h"
 #include "plugins/itemclusterplugin.h"
+#include "plugins/itemgroupclusterplugin.h"
 #include "plugins/itemlineeditplugin.h"
 #include "plugins/lotserialclusterplugin.h"
 #include "plugins/lotserialseqclusterplugin.h"
@@ -94,6 +96,7 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
 {
   m_plugins.append(new AddressClusterPlugin(this));
   m_plugins.append(new AlarmsPlugin(this));
+  m_plugins.append(new ApopenClusterPlugin(this));
   m_plugins.append(new AropenClusterPlugin(this));
   m_plugins.append(new CalendarComboBoxPlugin(this));
   m_plugins.append(new CharacteristicsWidgetPlugin(this));
@@ -122,6 +125,7 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new InvoiceLineEditPlugin(this));
   m_plugins.append(new IncidentClusterPlugin(this));
   m_plugins.append(new ItemClusterPlugin(this));
+  m_plugins.append(new ItemGroupClusterPlugin(this));
   m_plugins.append(new ItemLineEditPlugin(this));
   m_plugins.append(new LotserialClusterPlugin(this));
   m_plugins.append(new LotserialseqClusterPlugin(this));

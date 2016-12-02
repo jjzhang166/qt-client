@@ -39,6 +39,7 @@ protected slots:
 private:
     int _mode;
     int _ipsassid;
+    bool _listpricesched;
 
 };
 

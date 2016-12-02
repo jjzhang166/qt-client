@@ -18,6 +18,7 @@
 #include <metasql.h>
 #include "mqlutil.h"
 #include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 #include "priceList.h"
 #include "taxDetail.h"
@@ -32,20 +33,22 @@ creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt
   _listPrices->setMaximumWidth(25);
 #endif
 
-  connect(_discountFromSale, SIGNAL(editingFinished()), this, SLOT(sCalculateFromDiscount()));
-  connect(_extendedPrice, SIGNAL(valueChanged()), this, SLOT(sCalculateTax()));
-  connect(_item,	  SIGNAL(newId(int)),     this, SLOT(sPopulateItemInfo()));
-  connect(_warehouse,	  SIGNAL(newID(int)),     this, SLOT(sPopulateItemsiteInfo()));
-  connect(_listPrices,	  SIGNAL(clicked()),      this, SLOT(sListPrices()));
-  connect(_netUnitPrice,  SIGNAL(valueChanged()), this, SLOT(sCalculateDiscountPrcnt()));
-  connect(_netUnitPrice,  SIGNAL(valueChanged()), this, SLOT(sCalculateExtendedPrice()));
-  connect(_netUnitPrice,  SIGNAL(idChanged(int)), this, SLOT(sPriceGroup()));
-  connect(_qtyToCredit,	  SIGNAL(textChanged(const QString&)), this, SLOT(sCalculateExtendedPrice()));
-  connect(_save,	  SIGNAL(clicked()),      this, SLOT(sSave()));
-  connect(_taxLit, SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
-  connect(_taxType,	  SIGNAL(newID(int)),	  this, SLOT(sCalculateTax()));
-  connect(_qtyUOM, SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
-  connect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
+  connect(_discountFromSale, SIGNAL(editingFinished()),              this, SLOT(sCalculateFromDiscount()));
+  connect(_extendedPrice,    SIGNAL(valueChanged()),                 this, SLOT(sCalculateTax()));
+  connect(_item,	     SIGNAL(newId(int)),                     this, SLOT(sPopulateItemInfo()));
+  connect(_warehouse,	     SIGNAL(newID(int)),                     this, SLOT(sPopulateItemsiteInfo()));
+  connect(_listPrices,	     SIGNAL(clicked()),                      this, SLOT(sListPrices()));
+  connect(_netUnitPrice,     SIGNAL(valueChanged()),                 this, SLOT(sCalculateDiscountPrcnt()));
+  connect(_netUnitPrice,     SIGNAL(valueChanged()),                 this, SLOT(sCalculateExtendedPrice()));
+  connect(_netUnitPrice,     SIGNAL(idChanged(int)),                 this, SLOT(sPriceGroup()));
+  connect(_qtyToCredit,	     SIGNAL(textChanged(const QString&)),    this, SLOT(sCalculateExtendedPrice()));
+  connect(_save,	     SIGNAL(clicked()),                      this, SLOT(sSave()));
+  connect(_taxLit,           SIGNAL(leftClickedURL(const QString&)), this, SLOT(sTaxDetail()));
+  connect(_taxType,	     SIGNAL(newID(int)),	             this, SLOT(sCalculateTax()));
+  connect(_qtyUOM,           SIGNAL(newID(int)),                     this, SLOT(sQtyUOMChanged()));
+  connect(_pricingUOM,       SIGNAL(newID(int)),                     this, SLOT(sPriceUOMChanged()));
+  connect(_itemSelected,     SIGNAL(clicked()),                      this, SLOT(sHandleSelection()));
+  connect(_miscSelected,     SIGNAL(clicked()),                      this, SLOT(sHandleSelection()));
 
   _mode = cNew;
   _cmitemid = -1;
@@ -54,12 +57,14 @@ creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt
   _invoiceNumber = -1;
   _priceRatio = 1.0;
   _qtyShippedCache = 0.0;
+  _listPriceCache = 0.0;
   _shiptoid = -1;
   _taxzoneid	= -1;
   _qtyinvuomratio = 1.0;
   _priceinvuomratio = 1.0;
   _invuomid = -1;
   _saved = false;
+  _revAccnt->setType(0x08);
 
   _qtyToCredit->setValidator(omfgThis->qtyVal());
   _qtyReturned->setValidator(omfgThis->qtyVal());
@@ -68,6 +73,7 @@ creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt
   _discountFromSale->setValidator(new XDoubleValidator(-9999, 100, 2, this));
 
   _taxType->setEnabled(_privileges->check("OverrideTax"));
+  _revAccnt->setEnabled(_privileges->check("CreditMemoItemAccountOverride"));
 
   //If not multi-warehouse hide whs control
   if (!_metrics->boolean("MultiWhs"))
@@ -76,17 +82,18 @@ creditMemoItem::creditMemoItem(QWidget* parent, const char* name, bool modal, Qt
     _warehouse->hide();
   }
 
+  _item->setFocus();
   adjustSize();
 }
 
 creditMemoItem::~creditMemoItem()
 {
-    // no need to delete child widgets, Qt does it all for us
+  // no need to delete child widgets, Qt does it all for us
 }
 
 void creditMemoItem::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
 enum SetResponse creditMemoItem::set(const ParameterList &pParams)
@@ -96,6 +103,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
   QVariant param;
   bool     valid;
   bool     vrestrict = false;
+
 
   param = pParams.value("cmhead_id", &valid);
   if (valid)
@@ -122,9 +130,9 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
       _netUnitPrice->setEffective(creditet.value("cmhead_docdate").toDate());
       _rsnCode->setId(creditet.value("cmhead_rsncode_id").toInt());
     }
-    else if (creditet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                                  creditet, __FILE__, __LINE__))
     {
-      systemError(this, creditet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -150,10 +158,10 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
       creditet.exec();
       if (creditet.first())
         _lineNumber->setText(creditet.value("n_linenumber").toString());
-      else if (creditet.lastError().type() == QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                                    creditet, __FILE__, __LINE__))
       {
-	      systemError(this, creditet.lastError().databaseText(), __FILE__, __LINE__);
-	      return UndefinedError;
+        return UndefinedError;
       }
 
       connect(_discountFromSale, SIGNAL(editingFinished()), this, SLOT(sCalculateFromDiscount()));
@@ -175,6 +183,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
 
       _item->setReadOnly(true);
       _warehouse->setEnabled(false);
+      _miscGroup->setEnabled(false);
       _qtyReturned->setEnabled(false);
       _qtyToCredit->setEnabled(false);
       _netUnitPrice->setEnabled(false);
@@ -182,6 +191,7 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
       _comments->setReadOnly(true);
       _taxType->setEnabled(false);
       _rsnCode->setEnabled(false);
+      _revAccnt->setEnabled(false);
 
       _save->hide();
       _close->setText(tr("&Close"));
@@ -209,28 +219,35 @@ enum SetResponse creditMemoItem::set(const ParameterList &pParams)
 
 void creditMemoItem::sSave()
 {
-  XSqlQuery creditSave;
-  if (_qtyToCredit->toDouble() == 0.0)
-  {
-    QMessageBox::warning(this, tr("Invalid Credit Quantity"),
-                         tr("<p>You have not selected a quantity of the "
+  QList<GuiErrorCheck> errors;
+  errors << GuiErrorCheck(_qtyToCredit->toDouble() == 0.0, _qtyToCredit,
+                          tr("<p>You have not selected a quantity of the "
 			    "selected item to credit. If you wish to return a "
-			    "quantity to stock but not issue a Return "
+			    "quantity to stock but not issue a Sales Credit "
 			    "then you should enter a Return to Stock "
 			    "transaction from the I/M module.  Otherwise, you "
-			    "must enter a quantity to credit." ));
-    _qtyToCredit->setFocus();
+			    "must enter a quantity to credit."))
+         << GuiErrorCheck(!_itemSelected->isChecked() && !_itemNumber->text().length(), _itemNumber,
+                          tr("<p>You must enter an Item Number for this Miscellaneous Credit Memo Item before you may save it."))
+         << GuiErrorCheck(!_itemSelected->isChecked() && !_itemDescrip->toPlainText().length(), _itemDescrip,
+                          tr("<p>You must enter a Item Description for this Miscellaneous Credit Memo Item before you may save it."))
+         << GuiErrorCheck(!_itemSelected->isChecked() && !_salescat->isValid(), _salescat,
+                          tr("<p>You must select a Sales Category for this Miscellaneous Credit Memo Item before you may save it."))
+  ;
+  if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Credit Memo Item"), errors))
     return;
-  }
+
+  XSqlQuery getItemSite;
+  XSqlQuery creditSave;
 
   if (_mode == cNew)
   {
     creditSave.exec("SELECT NEXTVAL('cmitem_cmitem_id_seq') AS _cmitem_id");
     if (creditSave.first())
       _cmitemid  = creditSave.value("_cmitem_id").toInt();
-    else if (creditSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Credit Memo Item Information"),
+                                  creditSave, __FILE__, __LINE__))
     {
-      systemError(this, creditSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -239,17 +256,16 @@ void creditMemoItem::sSave()
                "  cmitem_qtyreturned, cmitem_qtycredit, cmitem_updateinv,"
                "  cmitem_qty_uom_id, cmitem_qty_invuomratio,"
                "  cmitem_price_uom_id, cmitem_price_invuomratio,"
-               "  cmitem_unitprice, cmitem_taxtype_id,"
-               "  cmitem_comments, cmitem_rsncode_id ) "
-               "SELECT :cmitem_id, :cmhead_id, :cmitem_linenumber, itemsite_id,"
+               "  cmitem_unitprice, cmitem_listprice, cmitem_taxtype_id,"
+               "  cmitem_comments, cmitem_rsncode_id, "
+               "  cmitem_number, cmitem_descrip, cmitem_salescat_id, cmitem_rev_accnt_id ) "
+               "SELECT :cmitem_id, :cmhead_id, :cmitem_linenumber, :itemsite_id,"
                "       :cmitem_qtyreturned, :cmitem_qtycredit, :cmitem_updateinv,"
                "       :qty_uom_id, :qty_invuomratio,"
                "       :price_uom_id, :price_invuomratio,"
-               "       :cmitem_unitprice, :cmitem_taxtype_id,"
-	             "       :cmitem_comments, :cmitem_rsncode_id "
-               "FROM itemsite "
-               "WHERE ( (itemsite_item_id=:item_id)"
-               " AND (itemsite_warehous_id=:warehous_id) );" );
+               "       :cmitem_unitprice, :cmitem_listprice, :cmitem_taxtype_id,"
+               "       :cmitem_comments, :cmitem_rsncode_id, "
+               "       :cmitem_number, :cmitem_descrip, :cmitem_salescat_id, :cmitem_rev_accnt_id ;");
   }
   else
     creditSave.prepare( "UPDATE cmitem "
@@ -263,7 +279,11 @@ void creditMemoItem::sSave()
                "    cmitem_unitprice=:cmitem_unitprice,"
                "    cmitem_taxtype_id=:cmitem_taxtype_id,"
                "    cmitem_comments=:cmitem_comments,"
-               "    cmitem_rsncode_id=:cmitem_rsncode_id "
+               "    cmitem_rsncode_id=:cmitem_rsncode_id, "
+               "    cmitem_number=:cmitem_number, "
+               "    cmitem_descrip=:cmitem_descrip, "
+               "    cmitem_salescat_id=:cmitem_salescat_id, "
+               "    cmitem_rev_accnt_id=:cmitem_rev_accnt_id "
                "WHERE (cmitem_id=:cmitem_id);" );
 
   creditSave.bindValue(":cmitem_id", _cmitemid);
@@ -272,21 +292,49 @@ void creditMemoItem::sSave()
   creditSave.bindValue(":cmitem_qtyreturned", _qtyReturned->toDouble());
   creditSave.bindValue(":cmitem_qtycredit", _qtyToCredit->toDouble());
   creditSave.bindValue(":cmitem_updateinv", QVariant(_updateInv->isChecked()));
-  creditSave.bindValue(":qty_uom_id", _qtyUOM->id());
+  if(!_miscSelected->isChecked())
+    creditSave.bindValue(":qty_uom_id", _qtyUOM->id());
   creditSave.bindValue(":qty_invuomratio", _qtyinvuomratio);
-  creditSave.bindValue(":price_uom_id", _pricingUOM->id());
+  if(!_miscSelected->isChecked())
+    creditSave.bindValue(":price_uom_id", _pricingUOM->id());
   creditSave.bindValue(":price_invuomratio", _priceinvuomratio);
   creditSave.bindValue(":cmitem_unitprice", _netUnitPrice->localValue());
+  creditSave.bindValue(":cmitem_listprice", _listPrice->baseValue());
   if (_taxType->isValid())
     creditSave.bindValue(":cmitem_taxtype_id",	_taxType->id());
   creditSave.bindValue(":cmitem_comments", _comments->toPlainText());
   creditSave.bindValue(":cmitem_rsncode_id", _rsnCode->id());
-  creditSave.bindValue(":item_id", _item->id());
-  creditSave.bindValue(":warehous_id", _warehouse->id());
-  creditSave.exec();
-  if (creditSave.lastError().type() != QSqlError::NoError)
+  if (_itemSelected->isChecked())
   {
-    systemError(this, creditSave.lastError().databaseText(), __FILE__, __LINE__);
+    getItemSite.prepare("SELECT itemsite_id FROM itemsite "
+                        "WHERE ((itemsite_item_id=:item_id) "
+                        " AND   (itemsite_warehous_id=:warehous_id));");
+    getItemSite.bindValue(":item_id", _item->id());
+    getItemSite.bindValue(":warehous_id", _warehouse->id());
+    getItemSite.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Determine Item Site"),
+                             getItemSite, __FILE__, __LINE__))
+    {
+      return;
+    }
+    else
+    {
+       if (getItemSite.first())
+         creditSave.bindValue(":itemsite_id", getItemSite.value("itemsite_id").toInt());
+    }
+  }
+  else
+  {
+    creditSave.bindValue(":cmitem_number", _itemNumber->text());
+    creditSave.bindValue(":cmitem_descrip", _itemDescrip->toPlainText());
+    creditSave.bindValue(":cmitem_salescat_id", _salescat->id());
+  }
+  if (_revAccnt->id() > 0)
+    creditSave.bindValue(":cmitem_rev_accnt_id", _revAccnt->id());
+  creditSave.exec();
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Credit Memo Item Information"),
+                                creditSave, __FILE__, __LINE__))
+  {
     return;
   }
 
@@ -296,48 +344,21 @@ void creditMemoItem::sSave()
 void creditMemoItem::sPopulateItemInfo()
 {
   // Get list of active, valid Selling UOMs
-  MetaSQLQuery muom = mqlLoad("uoms", "item");
-
-  ParameterList params;
-  params.append("uomtype", "Selling");
-  params.append("item_id", _item->id());
-
-  // Also have to factor UOMs previously used on Return now inactive
-  if (_cmitemid != -1)
-  {
-    XSqlQuery cmuom;
-    cmuom.prepare("SELECT cmitem_qty_uom_id, cmitem_price_uom_id "
-                "  FROM cmitem"
-                " WHERE(cmitem_id=:cmitem_id);");
-    cmuom.bindValue(":cmitem_id", _cmitemid);
-    cmuom.exec();
-    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Returns UOMs"),
-                         cmuom, __FILE__, __LINE__))
-      return;
-    else if (cmuom.first())
-    {
-      params.append("uom_id", cmuom.value("cmitem_qty_uom_id"));
-      params.append("uom_id2", cmuom.value("cmitem_price_uom_id"));
-    }
-  }
-  XSqlQuery uom = muom.toQuery(params);
-  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
-                         uom, __FILE__, __LINE__))
-    return;
-
-  _qtyUOM->populate(uom);
-  _pricingUOM->populate(uom);
+  sPopulateUOM();
 
   XSqlQuery item;
   item.prepare( "SELECT item_inv_uom_id, item_price_uom_id,"
                 "       iteminvpricerat(item_id) AS iteminvpricerat,"
-                "       item_listprice, "
+                "       listPrice(item_id, :cust_id, :shipto_id, :whsid) AS listprice,"
                 "       stdCost(item_id) AS f_cost,"
-		"       getItemTaxType(item_id, :taxzone) AS taxtype_id "
+		            "       getItemTaxType(item_id, :taxzone) AS taxtype_id "
                 "  FROM item"
                 " WHERE (item_id=:item_id);" );
   item.bindValue(":item_id", _item->id());
   item.bindValue(":taxzone", _taxzoneid);
+  item.bindValue(":whsid",   _warehouse->id());
+  item.bindValue(":cust_id", _custid);
+  item.bindValue(":shipto_id", _shiptoid);
   item.exec();
   if (item.first())
   {
@@ -349,30 +370,31 @@ void creditMemoItem::sPopulateItemInfo()
     _qtyinvuomratio = 1.0;
     _ratio=item.value("iteminvpricerat").toDouble();
     // {_listPrice,_unitCost}->setBaseValue() because they're stored in base
-    _listPrice->setBaseValue(item.value("item_listprice").toDouble());
+    _listPriceCache = item.value("listprice").toDouble();
+    _listPrice->setBaseValue(_listPriceCache);
     _unitCost->setBaseValue(item.value("f_cost").toDouble());
     _taxType->setId(item.value("taxtype_id").toInt());
   }
-  else if (item.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Item Information"),
+                                item, __FILE__, __LINE__))
   {
-    systemError(this, item.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
   if (_invoiceNumber != -1)
   {
     XSqlQuery cmitem;
-    cmitem.prepare( "SELECT invcitem_warehous_id,"
-                    "       invcitem_qty_uom_id, invcitem_qty_invuomratio,"
-                    "       invcitem_price_uom_id, invcitem_price_invuomratio,"
-                    "       invcitem_billed * invcitem_qty_invuomratio AS f_billed,"
-                    "       currToCurr(invchead_curr_id, :curr_id, "
-		    "                  invcitem_price / invcitem_price_invuomratio, invchead_invcdate) AS invcitem_price_local "
-                    "FROM invchead, invcitem "
-                    "WHERE ( (invcitem_invchead_id=invchead_id)"
-                    " AND (invchead_invcnumber=text(:invoiceNumber))"
-                    " AND (invcitem_item_id=:item_id) ) "
-                    "LIMIT 1;" );
+    cmitem.prepare("SELECT invcitem_warehous_id,"
+                   "       invcitem_qty_uom_id, invcitem_qty_invuomratio,"
+                   "       invcitem_price_uom_id, invcitem_price_invuomratio,"
+                   "       invcitem_billed * invcitem_qty_invuomratio AS f_billed,"
+                   "       currToCurr(invchead_curr_id, :curr_id, "
+                   "                  invcitem_price / invcitem_price_invuomratio, invchead_invcdate) AS invcitem_price_local "
+                   "FROM invchead, invcitem "
+                   "WHERE ( (invcitem_invchead_id=invchead_id)"
+                   " AND (invchead_invcnumber=text(:invoiceNumber))"
+                   " AND (invcitem_item_id=:item_id) ) "
+                   "LIMIT 1;" );
     cmitem.bindValue(":invoiceNumber", _invoiceNumber);
     cmitem.bindValue(":item_id", _item->id());
     cmitem.bindValue(":curr_id", _netUnitPrice->id());
@@ -392,9 +414,9 @@ void creditMemoItem::sPopulateItemInfo()
       _qtyShippedCache = cmitem.value("f_billed").toDouble();
       _qtyShipped->setDouble(cmitem.value("f_billed").toDouble() / _qtyinvuomratio);
     }
-    else if (cmitem.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Item Information"),
+                                  cmitem, __FILE__, __LINE__))
     {
-      systemError(this, cmitem.lastError().databaseText(), __FILE__, __LINE__);
       _salePrice->clear();
       return;
     }
@@ -429,9 +451,9 @@ void creditMemoItem::sPopulateItemsiteInfo()
       _updateInv->setEnabled(true);
     }
   }
-  else if (itemsite.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Item Information"),
+                                itemsite, __FILE__, __LINE__))
   {
-    systemError(this, itemsite.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -455,8 +477,22 @@ void creditMemoItem::populate()
     _cmheadid = cmitem.value("cmitem_cmhead_id").toInt();
     _taxzoneid = cmitem.value("cmhead_taxzone_id").toInt();
     _rsnCode->setId(cmitem.value("cmitem_rsncode_id").toInt());
-    _item->setItemsiteid(cmitem.value("cmitem_itemsite_id").toInt());
-    _warehouse->setId(cmitem.value("itemsite_warehous_id").toInt());
+    _revAccnt->setId(cmitem.value("cmitem_rev_accnt_id").toInt());
+
+    if (cmitem.value("cmitem_itemsite_id").toInt() > 0)
+    {
+      _itemSelected->setChecked(true);
+      _item->setItemsiteid(cmitem.value("cmitem_itemsite_id").toInt());
+      _warehouse->setId(cmitem.value("itemsite_warehous_id").toInt());
+    }
+    else
+    {
+      _miscSelected->setChecked(true);
+      _itemNumber->setText(cmitem.value("cmitem_number"));
+      _itemDescrip->setText(cmitem.value("cmitem_descrip").toString());
+      _salescat->setId(cmitem.value("cmitem_salescat_id").toInt());
+      _qtyReturned->setEnabled(false);
+    }
     _lineNumber->setText(cmitem.value("cmitem_linenumber").toString());
     _netUnitPrice->setLocalValue(cmitem.value("cmitem_unitprice").toDouble());
     _qtyToCredit->setDouble(cmitem.value("cmitem_qtycredit").toDouble());
@@ -487,9 +523,9 @@ void creditMemoItem::populate()
     _listPrices->setEnabled(true);
     _saved=true;
   }
-  else if (cmitem.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Item Information"),
+                                cmitem, __FILE__, __LINE__))
   {
-    systemError(this, cmitem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -541,98 +577,21 @@ void creditMemoItem::sPriceGroup()
 
 void creditMemoItem::sListPrices()
 {
-  XSqlQuery creditListPrices;
-  creditListPrices.prepare( "SELECT currToCurr(ipshead_curr_id, :curr_id, ipsprice_price, :effective) AS price"
-             "       FROM ipsass, ipshead, ipsprice "
-             "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (ipsass_cust_id=:cust_id)"
-             "        AND (COALESCE(LENGTH(ipsass_shipto_pattern), 0) = 0)"
-             "        AND (CURRENT_DATE BETWEEN ipshead_effective AND (ipshead_expires - 1) ) )"
-
-             "       UNION SELECT ipsprice_price AS price"
-             "       FROM ipsass, ipshead, ipsprice "
-             "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (ipsass_shipto_id=:shipto_id)"
-             "        AND (ipsass_shipto_id != -1)"
-             "        AND (CURRENT_DATE BETWEEN ipshead_effective AND (ipshead_expires - 1)) )"
-
-             "       UNION SELECT ipsprice_price AS price"
-             "       FROM ipsass, ipshead, ipsprice, custinfo "
-             "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (ipsass_custtype_id=cust_custtype_id)"
-             "        AND (cust_id=:cust_id)"
-             "        AND (CURRENT_DATE BETWEEN ipshead_effective AND (ipshead_expires - 1)) )"
-
-             "       UNION SELECT ipsprice_price AS price"
-             "       FROM ipsass, ipshead, ipsprice, custtype, custinfo "
-             "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (coalesce(length(ipsass_custtype_pattern), 0) > 0)"
-             "        AND (custtype_code ~ ipsass_custtype_pattern)"
-             "        AND (cust_custtype_id=custtype_id)"
-             "        AND (cust_id=:cust_id)"
-             "        AND (CURRENT_DATE BETWEEN ipshead_effective AND (ipshead_expires - 1)))"
-
-             "       UNION SELECT ipsprice_price AS price"
-             "       FROM ipsass, ipshead, ipsprice, shiptoinfo "
-             "       WHERE ( (ipsass_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (shipto_id=:shipto_id)"
-             "        AND (COALESCE(LENGTH(ipsass_shipto_pattern), 0) > 0)"
-             "        AND (shipto_num ~ ipsass_shipto_pattern)"
-             "        AND (ipsass_cust_id=:cust_id)"
-             "        AND (CURRENT_DATE BETWEEN ipshead_effective AND (ipshead_expires - 1)) )"
-
-             "       UNION SELECT ipsprice_price AS price"
-             "       FROM sale, ipshead, ipsprice "
-             "       WHERE ((sale_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_ipshead_id=ipshead_id)"
-             "        AND (ipsprice_item_id=:item_id)"
-             "        AND (CURRENT_DATE BETWEEN sale_startdate AND (sale_enddate - 1)) ) "
-
-             "       UNION SELECT (item_listprice - (item_listprice * cust_discntprcnt)) AS price "
-             "       FROM item, custinfo "
-             "       WHERE ( (item_sold)"
-             "        AND (NOT item_exclusive)"
-             "        AND (item_id=:item_id)"
-             "        AND (cust_id=:cust_id) );");
-  creditListPrices.bindValue(":item_id", _item->id());
-  creditListPrices.bindValue(":cust_id", _custid);
-  creditListPrices.bindValue(":shipto_id", _shiptoid);
-  creditListPrices.bindValue(":curr_id", _netUnitPrice->id());
-  creditListPrices.bindValue(":effective", _netUnitPrice->effective());
-  creditListPrices.exec();
-  if (creditListPrices.size() == 1)
+  ParameterList params;
+  params.append("cust_id", _custid);
+  params.append("shipto_id", _shiptoid);
+  params.append("item_id", _item->id());
+  params.append("warehous_id", _warehouse->id());
+  // don't params.append("qty", ...) as we don't know how many were purchased
+  params.append("curr_id", _netUnitPrice->id());
+  params.append("effective", _netUnitPrice->effective());
+  
+  priceList newdlg(this);
+  newdlg.set(params);
+  if (newdlg.exec() == XDialog::Accepted)
   {
-	creditListPrices.first();
-	_netUnitPrice->setLocalValue(creditListPrices.value("price").toDouble() * (_priceinvuomratio / _priceRatio));
-  }
-  else
-  {
-    ParameterList params;
-    params.append("cust_id", _custid);
-    params.append("shipto_id", _shiptoid);
-    params.append("item_id", _item->id());
-    params.append("warehous_id", _warehouse->id());
-    // don't params.append("qty", ...) as we don't know how many were purchased
-    params.append("curr_id", _netUnitPrice->id());
-    params.append("effective", _netUnitPrice->effective());
-
-    priceList newdlg(this);
-    newdlg.set(params);
-    if (newdlg.exec() == XDialog::Accepted)
-    {
-      _netUnitPrice->setLocalValue(newdlg._selectedPrice * (_priceinvuomratio / _priceRatio));
-      sCalculateDiscountPrcnt();
-    }
+    _netUnitPrice->setLocalValue(newdlg._selectedPrice * (_priceinvuomratio / _priceRatio));
+    sCalculateDiscountPrcnt();
   }
 }
 
@@ -649,9 +608,9 @@ void creditMemoItem::sCalculateTax()
   calcq.exec();
   if (calcq.first())
     _tax->setLocalValue(calcq.value("tax").toDouble());
-  else if (calcq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                                calcq, __FILE__, __LINE__))
   {
-    systemError(this, calcq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -685,8 +644,92 @@ void creditMemoItem::sTaxDetail()
   }
 }
 
+void creditMemoItem::sPopulateUOM()
+{
+  if (_item->id() != -1)
+  {
+    // Get list of active, valid Selling UOMs
+    MetaSQLQuery muom = mqlLoad("uoms", "item");
+    
+    ParameterList params;
+    params.append("uomtype", "Selling");
+    params.append("item_id", _item->id());
+    
+    // Include Global UOMs
+    if (_privileges->check("MaintainUOMs"))
+    {
+      params.append("includeGlobal", true);
+      params.append("global", tr("-Global"));
+    }
+    
+    // Also have to factor UOMs previously used on Sales Credit now inactive
+    if (_cmitemid != -1)
+    {
+      XSqlQuery cmuom;
+      cmuom.prepare("SELECT cmitem_qty_uom_id, cmitem_price_uom_id "
+                    "  FROM cmitem"
+                    " WHERE(cmitem_id=:cmitem_id);");
+      cmuom.bindValue(":cmitem_id", _cmitemid);
+      cmuom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting Sales Credit UOMs"),
+                               cmuom, __FILE__, __LINE__))
+        return;
+      else if (cmuom.first())
+      {
+        params.append("uom_id", cmuom.value("cmitem_qty_uom_id"));
+        params.append("uom_id2", cmuom.value("cmitem_price_uom_id"));
+      }
+    }
+    
+    XSqlQuery uom = muom.toQuery(params);
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting UOMs"),
+                             uom, __FILE__, __LINE__))
+      return;
+    
+    int saveqtyuomid = _qtyUOM->id();
+    int savepriceuomid = _pricingUOM->id();
+    disconnect(_qtyUOM,     SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
+    disconnect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
+    _qtyUOM->populate(uom);
+    _pricingUOM->populate(uom);
+    _qtyUOM->setId(saveqtyuomid);
+    _pricingUOM->setId(savepriceuomid);
+    connect(_qtyUOM,     SIGNAL(newID(int)), this, SLOT(sQtyUOMChanged()));
+    connect(_pricingUOM, SIGNAL(newID(int)), this, SLOT(sPriceUOMChanged()));
+  }
+}
+
 void creditMemoItem::sQtyUOMChanged()
 {
+  // Check for Global UOM Conversion that must be setup for Item
+  if (_qtyUOM->code() == "G")
+  {
+    if (QMessageBox::question(this, tr("Use Global UOM?"),
+                              tr("<p>This Global UOM Conversion is not setup for this Item."
+                                 "<p>Do you want to add this UOM conversion to this Item?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+    {
+      // create itemuomconv and itemuom
+      XSqlQuery adduom;
+      adduom.prepare("SELECT createItemUomConv(:item_id, :uom_id, :uom_type) AS result;");
+      adduom.bindValue(":item_id", _item->id());
+      adduom.bindValue(":uom_id", _qtyUOM->id());
+      adduom.bindValue(":uom_type", "Selling");
+      adduom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Creating Item UOM Conv"),
+                               adduom, __FILE__, __LINE__))
+        return;
+      
+      // repopulate uom comboboxes
+      sPopulateUOM();
+    }
+    else
+    {
+      _qtyUOM->setId(_invuomid);
+    }
+  }
+  
   if(_qtyUOM->id() == _invuomid)
     _qtyinvuomratio = 1.0;
   else
@@ -701,7 +744,8 @@ void creditMemoItem::sQtyUOMChanged()
     if(invuom.first())
       _qtyinvuomratio = invuom.value("ratio").toDouble();
     else
-      systemError(this, invuom.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                         invuom, __FILE__, __LINE__);
   }
 
   if(_qtyUOM->id() != _invuomid)
@@ -719,6 +763,34 @@ void creditMemoItem::sPriceUOMChanged()
   if(_pricingUOM->id() == -1 || _qtyUOM->id() == -1)
     return;
 
+  // Check for Global UOM Conversion that must be setup for Item
+  if (_pricingUOM->code() == "G")
+  {
+    if (QMessageBox::question(this, tr("Use Global UOM?"),
+                              tr("<p>This Global UOM Conversion is not setup for this Item."
+                                 "<p>Do you want to add this UOM conversion to this Item?"),
+                              QMessageBox::Yes | QMessageBox::Default,
+                              QMessageBox::No  | QMessageBox::Escape) == QMessageBox::Yes)
+    {
+      XSqlQuery adduom;
+      adduom.prepare("SELECT createItemUomConv(:item_id, :uom_id, :uom_type) AS result;");
+      adduom.bindValue(":item_id", _item->id());
+      adduom.bindValue(":uom_id", _pricingUOM->id());
+      adduom.bindValue(":uom_type", "Selling");
+      adduom.exec();
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Creating Item UOM Conv"),
+                               adduom, __FILE__, __LINE__))
+        return;
+      
+      // repopulate uom comboboxes
+      sPopulateUOM();
+    }
+    else
+    {
+      _pricingUOM->setId(_invuomid);
+    }
+  }
+  
   if(_pricingUOM->id() == _invuomid)
     _priceinvuomratio = 1.0;
   else
@@ -733,21 +805,18 @@ void creditMemoItem::sPriceUOMChanged()
     if(invuom.first())
       _priceinvuomratio = invuom.value("ratio").toDouble();
     else
-      systemError(this, invuom.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Credit Memo Information"),
+                         invuom, __FILE__, __LINE__);
   }
   _ratio=_priceinvuomratio;
 
-  updatePriceInfo();
+  _listPrice->setBaseValue(_listPriceCache * (_priceinvuomratio / _priceRatio));
 }
 
-void creditMemoItem::updatePriceInfo()
+void creditMemoItem::sHandleSelection()
 {
-  XSqlQuery item;
-  item.prepare("SELECT item_listprice"
-               "  FROM item"
-               " WHERE(item_id=:item_id);");
-  item.bindValue(":item_id", _item->id());
-  item.exec();
-  item.first();
-  _listPrice->setBaseValue(item.value("item_listprice").toDouble() * (_priceinvuomratio / _priceRatio));
+  _itemGroup->setEnabled(_itemSelected->isChecked());
+  _qtyReturned->setEnabled(_itemSelected->isChecked());
+  _updateInv->setEnabled(_itemSelected->isChecked());
+  _miscGroup->setEnabled(!_itemSelected->isChecked());
 }

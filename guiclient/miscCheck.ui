@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
-    <height>435</height>
+    <width>855</width>
+    <height>596</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,7 +111,16 @@ to be bound by its terms.</comment>
         </property>
         <widget class="QWidget" name="_vendorPage">
          <layout class="QGridLayout" name="gridLayout_4">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0">
@@ -145,7 +154,16 @@ to be bound by its terms.</comment>
         </widget>
         <widget class="QWidget" name="_custPage">
          <layout class="QGridLayout" name="gridLayout_3">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0">
@@ -179,7 +197,16 @@ to be bound by its terms.</comment>
         </widget>
         <widget class="QWidget" name="_taxauthPage">
          <layout class="QGridLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0">
@@ -267,7 +294,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item row="3" column="0" colspan="2">
        <widget class="QRadioButton" name="_applytocm">
         <property name="enabled">
          <bool>false</bool>
@@ -277,7 +304,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="2" column="2" rowspan="2">
+      <item row="3" column="2" rowspan="2">
        <widget class="AropenCluster" name="_cmCluster">
         <property name="enabled">
          <bool>false</bool>
@@ -287,14 +314,14 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QRadioButton" name="_memo">
         <property name="text">
          <string>Create Credit Memo</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <spacer>
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -306,6 +333,115 @@ to be bound by its terms.</comment>
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QGroupBox" name="_taxGroup">
+        <property name="title">
+         <string>Expense Category Tax:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="2" column="1">
+          <widget class="CurrCluster" name="_tax">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="XComboBox" name="_taxzone">
+             <property name="allowNull">
+              <bool>true</bool>
+             </property>
+             <property name="nullStr">
+              <string>None</string>
+             </property>
+             <property name="type">
+              <enum>XComboBox::TaxZones</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="XLabel" name="_taxLit">
+           <property name="text">
+            <string>Tax:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+           </property>
+           <property name="margin">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="XLabel" name="_taxzoneLit">
+           <property name="text">
+            <string>Tax Zone:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+           </property>
+           <property name="margin">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="XLabel" name="_taxtypeLit">
+           <property name="text">
+            <string>Tax Type:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="XComboBox" name="_taxtype">
+             <property name="allowNull">
+              <bool>true</bool>
+             </property>
+             <property name="type">
+              <enum>XComboBox::TaxTypes</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -443,7 +579,16 @@ to be bound by its terms.</comment>
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item row="0" column="0">
@@ -492,6 +637,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
@@ -523,6 +669,11 @@ to be bound by its terms.</comment>
    <class>XComboBox</class>
    <extends>QComboBox</extends>
    <header>xcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>

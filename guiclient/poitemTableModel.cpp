@@ -20,6 +20,7 @@
 
 #include "guiclient.h"
 #include "currcluster.h"
+#include "errorReporter.h"
 
 PoitemTableModel::PoitemTableModel(QObject * parent, QSqlDatabase db) :
   QSqlRelationalTableModel(parent, db)
@@ -125,9 +126,9 @@ void PoitemTableModel::findHeadData()
     _poheaddate   = poheadq.value("pohead_orderdate").toDate();
     _postatus	  = poheadq.value("pohead_status").toString();
   }
-  else if (poheadq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving PO Information"),
+                                poheadq, __FILE__, __LINE__))
   {
-    systemError(0, poheadq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -137,9 +138,9 @@ void PoitemTableModel::findHeadData()
     _vendid		= vendq.value("vend_id").toInt();
     _vendrestrictpurch	= vendq.value("vend_restrictpurch").toBool();
   }
-  else if (vendq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving PO Information"),
+                                vendq, __FILE__, __LINE__))
   {
-    systemError(0, vendq.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -207,7 +208,8 @@ bool PoitemTableModel::submitAll()
   else
   {
     XSqlQuery rollback("ROLLBACK;");
-    systemError(0, lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, 0, tr("Error Saving PO Information"),
+                         lastError().databaseText(), __FILE__, __LINE__);
     return returnVal;
   }
 

@@ -55,7 +55,7 @@ ParameterList printStatementsByCustomerType::getParams(XSqlQuery *docq)
   ParameterList params = printSinglecopyDocument::getParams(docq);
 
   params.append("invoice",  tr("Invoice"));
-  params.append("return",   tr("Return"));
+  params.append("return",   tr("Sales Credit"));
   params.append("debit",    tr("Debit Memo"));
   params.append("credit",   tr("Credit Memo"));
   params.append("deposit",  tr("Deposit"));

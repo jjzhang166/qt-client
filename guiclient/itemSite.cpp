@@ -258,7 +258,8 @@ enum SetResponse itemSite::set(const ParameterList &pParams)
         }
         else if (newItemsiteid.lastError().type() != QSqlError::NoError)
         {
-          systemError(this, newItemsiteid.lastError().databaseText(), __FILE__, __LINE__);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Site Information"),
+                               newItemsiteid, __FILE__, __LINE__);
         }
       }
     }
@@ -357,8 +358,6 @@ bool itemSite::sSave()
          << GuiErrorCheck(_plannerCode->id() == -1, _plannerCode,
                           tr("<p>You must select a Planner Code for this "
                              "Item Site before you may save it."))
-         << GuiErrorCheck(_mode == cEdit && _costcat->id() != _costcatid && _qohCache != 0, _costcat,
-                          tr("This Item Site has a quantity on hand and Cost Category cannot be changed."))
          << GuiErrorCheck(!_active->isChecked() && _qohCache != 0, _active,
                           tr("This Item Site has a quantity on hand and must be marked as active."))
   ;
@@ -373,6 +372,7 @@ bool itemSite::sSave()
     locationid.prepare( "SELECT location_id "
                         "FROM location "
                         "WHERE ((location_warehous_id=:warehous_id)"
+                        " AND (location_active) "
                         " AND ( (NOT location_restrict) OR"
                         "       ( (location_restrict) AND"
                         "         (location_id IN ( SELECT locitem_location_id"
@@ -444,9 +444,9 @@ bool itemSite::sSave()
                                 QMessageBox::No) == QMessageBox::No)
         return false;
     }
-    else if (itemSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving ItemSite Information"),
+                                  itemSave, __FILE__, __LINE__))
     {
-      systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
       return false;
     }
   }
@@ -481,6 +481,61 @@ bool itemSite::sSave()
       errors << GuiErrorCheck(true, _active,
                               tr("This Item Site is used in an active order and must be marked as active."));
     }
+    if (_metrics->boolean("MultiWhs"))
+    {
+      itemSave.prepare("SELECT raitem_id "
+                       "FROM raitem "
+                       "WHERE ((raitem_itemsite_id=:itemsite_id)"
+                       "  AND  (raitem_status<>'C')) "
+                       "UNION "
+                       "SELECT planord_id "
+                       "FROM planord "
+                       "WHERE (planord_itemsite_id=:itemsite_id)"
+                       "UNION "
+                       "SELECT planreq_id "
+                       "FROM planreq "
+                       "WHERE (planreq_itemsite_id=:itemsite_id)"
+                       "LIMIT 1; ");
+      itemSave.bindValue(":itemsite_id", _itemsiteid);
+      itemSave.exec();
+      if (itemSave.first())
+      {
+        errors << GuiErrorCheck(true, _active,
+                                tr("This Item Site is used in an active order and must be marked as active."));
+      }
+    }
+  }
+  
+  if(_costJob->isChecked() && !_wasCostJob)
+  {
+    itemSave.prepare("SELECT coitem_id "
+                     "FROM coitem "
+                     "WHERE ((coitem_itemsite_id=:itemsite_id)"
+                     "  AND  (coitem_status NOT IN ('X','C'))) "
+                     "UNION "
+                     "SELECT wo_id "
+                     "FROM wo "
+                     "WHERE ((wo_itemsite_id=:itemsite_id)"
+                     "  AND  (wo_status<>'C')) "
+                     "UNION "
+                     "SELECT womatl_id "
+                     "FROM womatl, wo "
+                     "WHERE ((womatl_itemsite_id=:itemsite_id)"
+                     "  AND  (wo_id=womatl_wo_id)"
+                     "  AND  (wo_status<>'C')) "
+                     "UNION "
+                     "SELECT poitem_id "
+                     "FROM poitem "
+                     "WHERE ((poitem_itemsite_id=:itemsite_id)"
+                     "  AND  (poitem_status<>'C')) "
+                     "LIMIT 1; ");
+    itemSave.bindValue(":itemsite_id", _itemsiteid);
+    itemSave.exec();
+    if (itemSave.first())
+    {
+      errors << GuiErrorCheck(true, _costJob,
+                              tr("This Item Site is used in an active order and cannot be changed to Job Costing Method."));
+    }
     
     if (_metrics->boolean("MultiWhs"))
     {
@@ -501,8 +556,24 @@ bool itemSite::sSave()
       itemSave.exec();
       if (itemSave.first())         
       { 
-        errors << GuiErrorCheck(true, _active,
-                                tr("This Item Site is used in an active order and must be marked as active."));
+        errors << GuiErrorCheck(true, _costJob,
+                                tr("This Item Site is used in an active order and cannot be changed to Job Costing Method."));
+      }
+    }
+    
+    if ((_itemType != 'P' && _itemType != 'O'))
+    {
+      itemSave.prepare("SELECT bomitem_id "
+                       "FROM bomitem "
+                       "WHERE (bomitem_item_id=:item_id) "
+                       "  AND (bomitem_expires > CURRENT_DATE)"
+                       "LIMIT 1; ");
+      itemSave.bindValue(":item_id", _item->id());
+      itemSave.exec();
+      if (itemSave.first())
+      {
+        errors << GuiErrorCheck(true, _costJob,
+                                tr("This Item is used in a BOM and cannot be changed to Job Costing Method."));
       }
     }
   }
@@ -804,11 +875,11 @@ bool itemSite::sSave()
   }
   if (_sequence->isValid())
     newItemSite.bindValue(":itemsite_lsseq_id", _sequence->id());
-  
+
   newItemSite.exec();
-  if (newItemSite.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving ItemSite Information"),
+                                newItemSite, __FILE__, __LINE__))
   {
-    systemError(this, newItemSite.lastError().databaseText(), __FILE__, __LINE__);
     return false;
   }
     
@@ -1072,6 +1143,8 @@ void itemSite::sHandleControlMethod()
     _costStd->setEnabled(false);
     _costJob->setEnabled(false);
   }
+  else if (_itemType == 'C' || _itemType == 'Y')
+    _costAvg->setEnabled(false);
   else
   {
     if(_costStd->isVisibleTo(this) && !_costAvg->isChecked() && !_costJob->isChecked())
@@ -1146,6 +1219,8 @@ void itemSite::sCacheItemType(char pItemType)
     _costStd->setEnabled(false);
     _costJob->setEnabled(false);
   }
+  else if (_itemType == 'C' || _itemType == 'Y')
+    _costAvg->setEnabled(false);
   else
   {
     if(_costStd->isVisibleTo(this) && !_costAvg->isChecked())
@@ -1244,7 +1319,7 @@ void itemSite::sCacheItemType(char pItemType)
       _createPo->setEnabled(false);
     }
 
-    if ( (_itemType == 'M') )
+    if (_itemType == 'M')
       _createWo->setEnabled(_woSupply->isChecked());
     else
     {
@@ -1274,12 +1349,14 @@ void itemSite::populateLocations()
     query.prepare( "SELECT location_id, formatLocationName(location_id) AS locationname "
                    "FROM location "
                    "WHERE ( (location_warehous_id=:warehous_id)"
-                   " AND (NOT location_restrict) ) "
+                   " AND (NOT location_restrict) "
+                   " AND (location_active) ) "
 		       
                    "UNION SELECT location_id, formatLocationName(location_id) AS locationname "
                    "FROM location, locitem "
                    "WHERE ( (location_warehous_id=:warehous_id)"
-                   " AND (location_restrict)"
+                   " AND (location_restrict) "
+                   " AND (location_active) "
                    " AND (locitem_location_id=location_id)"
                    " AND (locitem_item_id=:item_id) ) "
 		       
@@ -1351,6 +1428,7 @@ void itemSite::populate()
     else
       _perishable->setEnabled(false);
 
+    _wasCostJob = false;
     if(itemsite.value("itemsite_costmethod").toString() == "N")
       _costNone->setChecked(true);
     else if(itemsite.value("itemsite_costmethod").toString() == "A")
@@ -1358,7 +1436,10 @@ void itemSite::populate()
     else if(itemsite.value("itemsite_costmethod").toString() == "S")
       _costStd->setChecked(true);
     else if(itemsite.value("itemsite_costmethod").toString() == "J")
+    {
       _costJob->setChecked(true);
+      _wasCostJob = true;
+    }
 
     _costcat->setId(itemsite.value("itemsite_costcat_id").toInt());
     _costcatid = itemsite.value("itemsite_costcat_id").toInt();
@@ -1474,9 +1555,9 @@ void itemSite::populate()
 
     _updates = true;
   }
-  else if (itemsite.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving ItemSite Information"),
+                                itemsite, __FILE__, __LINE__))
   {
-    systemError(this, itemsite.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   emit populated();
@@ -1490,9 +1571,10 @@ void itemSite::clear()
     _itemsiteid = newItemsiteid.value("_itemsite_id").toInt();
     emit newId(_itemsiteid);
   }
-  else if (newItemsiteid.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Previous ItemSite Information"),
+                                newItemsiteid, __FILE__, __LINE__))
   {
-    systemError(this, newItemsiteid.lastError().databaseText(), __FILE__, __LINE__);
+    return;
   }
   if (_item->id() != -1)
     _item->setFocus();
@@ -1543,7 +1625,8 @@ void itemSite::sFillRestricted()
             "       (locitem_id IS NOT NULL) AS allowed"
             "  FROM location LEFT OUTER JOIN locitem"
             "         ON (locitem_location_id=location_id AND locitem_item_id=:item_id)"
-            " WHERE ((location_restrict)"
+            " WHERE ((location_restrict) "
+            "   AND  (location_active) "
             "   AND  (location_warehous_id=:warehouse_id) ) "
             "ORDER BY location_name; ");
   itemFillRestricted.bindValue(":warehouse_id", _warehouse->id());
@@ -1593,9 +1676,9 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
   whsq.exec();
   if (whsq.first())
     whs = whsq.value("warehous_code").toString();
-  else if (whsq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                whsq, __FILE__, __LINE__))
   {
-    systemError(pparent, whsq.lastError().databaseText(), __FILE__, __LINE__);
     return -100;
   }
   else
@@ -1640,11 +1723,12 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
       {
 	itemsiteid = isq.value("result").toInt();
 	if (itemsiteid < 0)
-	{
-	  systemError(pparent, storedProcErrorLookup("copyItemSite", itemsiteid),
-		      __FILE__, __LINE__);
-	  return itemsiteid;
-	}
+    {
+        ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                             storedProcErrorLookup("copyItemSite", itemsiteid),
+                             __FILE__, __LINE__);
+        return itemsiteid;
+    }
 	if (peditResult)
 	{
 	  itemSite newdlg(pparent, "", true);
@@ -1660,25 +1744,27 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
 	    {
 	      int result = isq.value("result").toInt();
 	      if (result < 0)
-	      {
-		systemError(pparent, storedProcErrorLookup("deleteItemsite", result), __FILE__, __LINE__);
-		return result;
-	      }
+          {
+            ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                   storedProcErrorLookup("deleteItemSite", result),
+                                   __FILE__, __LINE__);
+            return result;
+          }
 	    }
-	    else if (isq.lastError().type() != QSqlError::NoError)
-	    {
-	      systemError(pparent, isq.lastError().databaseText(), __FILE__, __LINE__);
-	      return -100;
-	    }
+        else if (ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                      isq, __FILE__, __LINE__))
+        {
+          return -100;
+        }
             return -1; // user cancelled
 	  }
 	}
 	return itemsiteid;
       } // end if successfully copied an itemsite
-      else if (isq.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                    isq, __FILE__, __LINE__))
       {
-	systemError(pparent, isq.lastError().databaseText(), __FILE__, __LINE__);
-	return -100;
+        return -100;
       }
     }
     else if (! isq.value("itemsite_active").toBool())
@@ -1694,11 +1780,11 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
 		  "WHERE itemsite_id=:itemsiteid;");
 	isq.bindValue(":itemsiteid", itemsiteid);
 	isq.exec();
-	if (isq.lastError().type() != QSqlError::NoError)
-	{
-	  systemError(pparent, isq.lastError().databaseText(), __FILE__, __LINE__);
-	  return -100;
-	}
+    if (ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                  isq, __FILE__, __LINE__))
+    {
+      return -100;
+    }
 	return itemsiteid;
       }
       else
@@ -1709,15 +1795,15 @@ int itemSite::createItemSite(QWidget* pparent, int pitemsiteid, int pwhsid, bool
       }
     }
   }
-  else if (isq.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Creating Item Site"),
+                                isq, __FILE__, __LINE__))
   {
-    systemError(pparent, isq.lastError().databaseText(), __FILE__, __LINE__);
     return -100;
   }
 
-  systemError(pparent, tr("<p>There was a problem checking or creating an "
-		       "Item Site for this Transfer Order Item."),
-		      __FILE__, __LINE__);
+  ErrorReporter::error(QtCriticalMsg, pparent, tr("Error Occurred"),
+                       tr("<p>There was a problem checking or creating an "
+                          "Item Site for this Transfer Order Item."),__FILE__,__LINE__);
   return -90;	// catchall: we didn't successfully find/create an itemsite
 }
 

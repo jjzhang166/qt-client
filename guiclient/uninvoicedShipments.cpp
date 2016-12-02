@@ -22,6 +22,7 @@
 #include <openreports.h>
 #include "mqlutil.h"
 #include "selectOrderForBilling.h"
+#include "errorReporter.h"
 
 uninvoicedShipments::uninvoicedShipments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -102,9 +103,9 @@ void uninvoicedShipments::sFillList()
 
   XSqlQuery qry = mql.toQuery(params);
   _shipitem->populate(qry, true);
-  if (qry.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
+                                qry, __FILE__, __LINE__))
   {
-    systemError(this, qry.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

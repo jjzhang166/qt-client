@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
+#include "errorReporter.h"
 
 /*
  *  Constructs a returnAuthItemLotSerial as a child of 'parent', with the
@@ -89,9 +90,9 @@ enum SetResponse returnAuthItemLotSerial::set(const ParameterList &pParams)
     returnet.exec();
     if (returnet.first())
       _crmacctid = returnet.value("crmacct_id").toInt();
-    else if (returnet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving RA Item Information"),
+                                  returnet, __FILE__, __LINE__))
     {
-      systemError(this, returnet.lastError().databaseText(), __FILE__, __LINE__);
       done(-1);
     }
   }
@@ -171,9 +172,9 @@ void returnAuthItemLotSerial::sSave()
   returnSave.bindValue(":ls_id", _lotSerial->id());
   returnSave.bindValue(":qty", _qtyAuth->toDouble());
   returnSave.exec();
-  if (returnSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving RA Item Information"),
+                                returnSave, __FILE__, __LINE__))
   {
-    systemError(this, returnSave.lastError().databaseText(), __FILE__, __LINE__);
     done(-1);
   }
   else
@@ -236,9 +237,9 @@ void returnAuthItemLotSerial::populate()
     _warehouseid = returnpopulate.value("itemsite_warehous_id").toInt();
     populateItemsite();
   }
-  else if (returnpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving RA Item Information"),
+                                returnpopulate, __FILE__, __LINE__))
   {
-    systemError(this, returnpopulate.lastError().databaseText(), __FILE__, __LINE__);
     done(-1);
   }
 }
@@ -260,9 +261,9 @@ void returnAuthItemLotSerial::populateItemsite()
       _qtyAuth->setDouble(1);
     }
   }
-  else if (returnpopulateItemsite.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving RA Item Information"),
+                                returnpopulateItemsite, __FILE__, __LINE__))
   {
-    systemError(this, returnpopulateItemsite.lastError().databaseText(), __FILE__, __LINE__);
     done(-1);
   }
 }
@@ -284,14 +285,14 @@ void returnAuthItemLotSerial::populateLotSerial()
     _qtyRegistered->setDouble(returnpopulateLotSerial.value("qtyregistered").toDouble());
     _qtyReceived->setDouble(0);
   }
-  else if (returnpopulateLotSerial.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving RA Item Information"),
+                                returnpopulateLotSerial, __FILE__, __LINE__))
   {
-    systemError(this, returnpopulateLotSerial.lastError().databaseText(), __FILE__, __LINE__);
     done(-1);
   }
 }
 
-void returnAuthItemLotSerial::closeEvent()
+void returnAuthItemLotSerial::closeEvent(QCloseEvent *)
 {
   done(0);
 }

@@ -47,6 +47,7 @@ private:
     int _mode;
     QDate _updated;
     QString _rejectedMsg;
+    bool _listpricesched;
 
 };
 

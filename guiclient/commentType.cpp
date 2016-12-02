@@ -15,6 +15,8 @@
 #include <QSqlError>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
+#include "guiErrorCheck.h"
 
 commentType::commentType(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -77,9 +79,8 @@ enum SetResponse commentType::set(const ParameterList &pParams)
         _cmnttypeid = commentet.value("cmnttype_id").toInt();
       else
       {
-        systemError(this, tr("A System Error occurred at %1::%2.")
-                          .arg(__FILE__)
-                          .arg(__LINE__) );
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Comment Type Information"),
+                            commentet, __FILE__, __LINE__);
       }
 
       _module->setCurrentIndex(0);
@@ -114,14 +115,14 @@ void commentType::sSaveClicked()
 bool commentType::sSave()
 {
   XSqlQuery commentSave;
-  if (_name->text().length() == 0)
-  {
-    QMessageBox::information( this, tr("Cannot Save Comment Type"),
-                             tr("You must enter a valid Comment Type before saving this Item Type.") );
-    _name->setFocus();
-    return false;
-  }
-  
+
+  QList<GuiErrorCheck>errors;
+  errors<<GuiErrorCheck(_name->text().length() == 0, _name,
+                        tr("You must enter a valid Comment Name before saving this Comment Type."));
+
+  if(GuiErrorCheck::reportErrors(this,tr("Cannot Save Comment Type"),errors))
+      return false;
+
   if (_mode == cNew)
   {
     commentSave.prepare( "INSERT INTO cmnttype "
@@ -275,9 +276,9 @@ void commentType::sAdd()
   commentAdd.bindValue(":source_id", _available->id());
   commentAdd.exec();
   // no storedProcErrorLookup because the function returns bool, not int
-  if (commentAdd.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding Comment Type Source"),
+                                commentAdd, __FILE__, __LINE__))
   {
-    systemError(this, commentAdd.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -299,14 +300,15 @@ void commentType::sAddAll()
     int result = commentAddAll.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("grantAllModuleCmnttypeSource", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding All Comment Type Sources"),
+                           storedProcErrorLookup("grantAllModuleCmnttypeSource", result),
+                           __FILE__, __LINE__);
       return;
     }
   }
-  else if (commentAddAll.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Adding All Comment Type Sources"),
+                                commentAddAll, __FILE__, __LINE__))
   {
-    systemError(this, commentAddAll.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -323,7 +325,8 @@ void commentType::sRevoke()
   // no storedProcErrorLookup because the function returns bool, not int
   if (commentRevoke.lastError().type() != QSqlError::NoError)
   {
-    systemError(this, commentRevoke.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Revoking Comment Type Source"),
+                         commentRevoke, __FILE__, __LINE__);
     return;
   }
 
@@ -342,15 +345,16 @@ void commentType::sRevokeAll()
     int result = commentRevokeAll.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("revokeAllModuleCmnttypeSource", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Revoking All Comment Type Sources"),
+                           storedProcErrorLookup("revokeAllModuleCmnttypeSource", result),
+                           __FILE__, __LINE__);
       return;
     }
   }
-  else if (commentRevokeAll.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Revoking All Comment Type Sources"),
+                                commentRevokeAll, __FILE__, __LINE__))
   {
-    systemError(this, commentRevokeAll.lastError().databaseText(), __FILE__, __LINE__);
-    return;
+      return;
   }
 
   sModuleSelected(_module->currentText());

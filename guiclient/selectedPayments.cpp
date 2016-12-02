@@ -19,6 +19,7 @@
 
 #include "selectPayment.h"
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 selectedPayments::selectedPayments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -38,11 +39,10 @@ selectedPayments::selectedPayments(QWidget* parent, const char* name, Qt::Window
   _apselect->addColumn(tr("Inv. #"),     _orderColumn, Qt::AlignRight , true, "apopen_invcnumber");
   _apselect->addColumn(tr("P/O #"),      _orderColumn, Qt::AlignRight , true, "apopen_ponumber");
   _apselect->addColumn(tr("Approved"),   _moneyColumn, Qt::AlignRight , true, "apselect_amount");
-  _apselect->addColumn(tr("Currency"),   _currencyColumn, Qt::AlignLeft,true, "currAbbr" );
+  _apselect->addColumn(tr("Currency"),   _currencyColumn, Qt::AlignLeft,!omfgThis->singleCurrency(), "currAbbr" );
   _apselect->addColumn(tr("Running (%1)").arg(CurrDisplay::baseCurrAbbr()), _bigMoneyColumn, Qt::AlignRight, true, "apselect_running_base" );
   if (omfgThis->singleCurrency())
   {
-    _apselect->hideColumn("currAbbr");
     _apselect->headerItem()->setText(8, tr("Running"));
   }
 
@@ -111,14 +111,15 @@ void selectedPayments::sClear()
     int result = selectedClear.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("clearPayment", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Payment Information"),
+                             storedProcErrorLookup("clearPayment", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (selectedClear.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Clearing Payment Information"),
+                                selectedClear, __FILE__, __LINE__))
   {
-    systemError(this, selectedClear.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -141,9 +142,9 @@ void selectedPayments::sFillList()
   MetaSQLQuery mql = mqlLoad("apOpenItems", "selectedpayments");
   selectedFillList = mql.toQuery(params);
   _apselect->populate(selectedFillList,true);
-  if (selectedFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Payment Information"),
+                                selectedFillList, __FILE__, __LINE__))
   {
-    systemError(this, selectedFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

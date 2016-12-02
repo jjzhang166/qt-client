@@ -102,7 +102,8 @@ void dspDetailedInventoryHistoryByLocation::sPopulateLocationInfo(int pLocationi
 {
   XSqlQuery qq;
   qq.prepare( "SELECT formatBoolYN(location_netable) AS netable,"
-             "       formatBoolYN(location_restrict) AS restricted "
+             "       formatBoolYN(location_restrict) AS restricted, "
+             "       formatBoolYN(location_active)   AS active "
              "FROM location, whsinfo "
              "WHERE ( (location_warehous_id=warehous_id)"
              " AND (location_id=:location_id) );" );
@@ -112,6 +113,7 @@ void dspDetailedInventoryHistoryByLocation::sPopulateLocationInfo(int pLocationi
   {
     _netable->setText(qq.value("netable").toString());
     _restricted->setText(qq.value("restricted").toString());
+    _active->setText(qq.value("active").toString());
   }
 }
 

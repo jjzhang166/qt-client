@@ -1,16 +1,18 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
-
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QSqlError>
+#include <QSslCertificate>
+#include <QSslConfiguration>
 
 #include <currcluster.h>
 
@@ -76,6 +78,52 @@ YourPayProcessor::YourPayProcessor() : CreditCardProcessor()
   _msgHash.insert( 100, tr("Received unexpected approval code %1. This "
                            "transaction has been treated as approved by "
                            "YourPay."));
+
+#ifdef Q_OS_WIN
+  _pemfile = _metrics->value("CCYPWinPathPEM");
+#elif defined Q_OS_MAC
+  _pemfile = _metrics->value("CCYPMacPathPEM");
+#elif defined Q_OS_LINUX
+  _pemfile = _metrics->value("CCYPLinPathPEM");
+#endif
+  QFile pemio(_pemfile);
+  if (! pemio.exists())
+    QMessageBox::warning(0, tr("Could not find PEM file"),
+                         tr("<p>Failed to find the PEM file %1")
+                         .arg(_pemfile));
+  else
+  {
+    QList<QSslCertificate> certlist = QSslCertificate::fromPath(_pemfile);
+    if (DEBUG) qDebug("%d certificates", certlist.size());
+    if (certlist.isEmpty())
+      QMessageBox::warning(0, tr("Failed to load Certificate"),
+                           tr("<p>There are no Certificates in %1. "
+                              "This may cause communication problems.")
+                           .arg(_pemfile));
+    else if (certlist.at(0).isNull())
+      QMessageBox::warning(0, tr("Failed to load Certificate"),
+                           tr("<p>Failed to load a Certificate from "
+                              "the PEM file %1. "
+                              "This may cause communication problems.")
+                           .arg(_pemfile));
+    else
+    {
+      QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+      QList<QSslCertificate> certs = config.caCertificates();
+      foreach(QSslCertificate c, certlist)
+      {
+        if (certificateIsValid(&c) && ! certs.contains(c))
+          certs.append(c);
+        else
+          QMessageBox::warning(0, tr("Invalid Certificate"),
+                               tr("<p>The Certificate in %1 appears to be invalid. "
+                                  "This may cause communication problems.")
+                               .arg(_pemfile));
+      }
+      config.setCaCertificates(certs);
+      QSslConfiguration::setDefaultConfiguration(config);
+    }
+  }
 }
 
 int YourPayProcessor::buildCommon(const int pccardid, const QString &pcvv, const double pamount, QDomDocument &prequest, QString pordertype)
@@ -709,21 +757,13 @@ int YourPayProcessor::doTestConfiguration()
   if (DEBUG)
     qDebug("YP:doTestConfiguration()");
 
-#ifdef Q_OS_WIN
-   QString pemfile = _metrics->value("CCYPWinPathPEM");
-#elif defined Q_OS_DARWIN
-   QString pemfile = _metrics->value("CCYPMacPathPEM");
-#elif defined Q_OS_LINUX
-   QString pemfile = _metrics->value("CCYPLinPathPEM");
-#endif
-
-  if (pemfile.isEmpty())
+  if (_pemfile.isEmpty())
   {
     _errorMsg = errorMsg(-15);
     return -15;
   }
 
-  QFileInfo fileinfo(pemfile.toLatin1());
+  QFileInfo fileinfo(_pemfile.toLatin1());
   if (!fileinfo.isFile())
   {
     _errorMsg = errorMsg(-16).arg(fileinfo.fileName());

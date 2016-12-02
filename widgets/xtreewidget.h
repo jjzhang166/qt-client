@@ -134,6 +134,10 @@ class XTUPLEWIDGETS_EXPORT XTreeWidgetItem : public QObject, public QTreeWidgetI
     Q_INVOKABLE virtual QVariant        rawValue(const QString colname);
     Q_INVOKABLE virtual int             id(const QString);
 
+    Q_INVOKABLE virtual void            setDate(int pColIdx, const QVariant pDate);
+    Q_INVOKABLE virtual void            setNumber(int pColIdx, const QVariant pValue, const QString pRole);
+    Q_INVOKABLE virtual bool            setNumericRole(int pColIdx, const QString pRole);
+
     virtual bool operator               <(const XTreeWidgetItem &other) const;
     virtual bool operator               ==(const XTreeWidgetItem &other) const;
 
@@ -261,6 +265,7 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     void  sCopyVisibleToClipboard();
     void  sCopyRowToClipboard();
     void  sCopyCellToClipboard();
+    void  sCopyColumnToClipboard();
     void  sSearch(const QString&);
 
   signals:

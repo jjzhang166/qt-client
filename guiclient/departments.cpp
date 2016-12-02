@@ -18,6 +18,7 @@
 
 #include <openreports.h>
 #include "department.h"
+#include "errorReporter.h"
 
 departments::departments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -118,10 +119,8 @@ void departments::sDelete()
     departmentsDelete.bindValue(":dept_id", _deptList->id());
     departmentsDelete.exec();
     if (departmentsDelete.lastError().type() != QSqlError::NoError)
-	systemError(this, tr("A System Error occurred at %1::%2\n\n%3")
-			    .arg(__FILE__)
-			    .arg(__LINE__)
-			    .arg(departmentsDelete.lastError().databaseText()));
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Department"),
+                         departmentsDelete, __FILE__, __LINE__);
     sFillList();
 }
 

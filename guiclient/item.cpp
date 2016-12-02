@@ -171,7 +171,7 @@ item::item(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _itemsrc->addColumn(tr("Vendor Item"), _itemColumn, Qt::AlignLeft, true, "itemsrc_vend_item_number" );
   _itemsrc->addColumn(tr("Manufacturer"), _itemColumn, Qt::AlignLeft, true, "itemsrc_manuf_name" );
   _itemsrc->addColumn(tr("Manuf. Item#"), _itemColumn, Qt::AlignLeft, true, "itemsrc_manuf_item_number" );
-  _itemsrc->addColumn(tr("Default"),      _dateColumn,   Qt::AlignCenter, true, "default");
+  _itemsrc->addColumn(tr("Default"),      _dateColumn,   Qt::AlignCenter, true, "itemsrc_default");
 
   _itemalias->addColumn(tr("Alias Number"),    _itemColumn, Qt::AlignLeft,   true, "itemalias_number"  );
   _itemalias->addColumn(tr("Account"),         _itemColumn, Qt::AlignLeft,   true, "crmacct_name"  );
@@ -190,7 +190,9 @@ item::item(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _itemSite->addColumn(tr("Active"),        _dateColumn, Qt::AlignCenter, true, "itemsite_active" );
   _itemSite->addColumn(tr("Site"),          _whsColumn,  Qt::AlignCenter, true, "warehous_code" );
   _itemSite->addColumn(tr("Description"),   -1,          Qt::AlignLeft, true, "warehous_descrip"   );
-  _itemSite->addColumn(tr("Cntrl. Method"), _itemColumn, Qt::AlignCenter, true, "itemsite_controlmethod" );
+  _itemSite->addColumn(tr("Cntrl. Method"), _itemColumn, Qt::AlignCenter, true, "controlmethod" );
+  _itemSite->addColumn(tr("Cost Method"),   _itemColumn, Qt::AlignCenter, true, "costmethod" );
+  _itemSite->addColumn(tr("Avg. Cost"),     _moneyColumn, Qt::AlignRight, true, "avgcost" );
   _itemSite->setDragString("itemsiteid=");
 
   connect(omfgThis, SIGNAL(itemsitesUpdated()), SLOT(sFillListItemSites()));
@@ -433,6 +435,8 @@ void item::saveCore()
                           tr("You must select an Inventory Unit of Measure for this Item before continuing."))
          << GuiErrorCheck(_classcode->id() == -1, _classcode,
                           tr("You must select a Class Code before continuing."))
+         << GuiErrorCheck(_itemNumber->text().trimmed() == "", _itemNumber,
+                          tr("You must enter an Item Number before continuing."))
   ;
   
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Item"), errors))
@@ -714,9 +718,9 @@ void item::sSave()
   itemSave.exec();
   while (itemSave.next())
     knownunits.append(itemSave.value("uom_id").toString());
-  if (itemSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Information"),
+                                itemSave, __FILE__, __LINE__))
   {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -733,9 +737,9 @@ void item::sSave()
   QStringList missingunitnames;
   while (itemSave.next())
     missingunitnames.append(itemSave.value("uom_name").toString());
-  if (itemSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Information"),
+                                itemSave, __FILE__, __LINE__))
   {
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   if (missingunitnames.size() > 0)
@@ -846,7 +850,8 @@ void item::sSave()
     XSqlQuery itemTrxn;
     itemTrxn.exec("ROLLBACK;");
     _inTransaction = false;
-    systemError(this, itemSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Information"),
+                         itemSave, __FILE__, __LINE__);
     return;
   }
 
@@ -1154,13 +1159,11 @@ void item::sPopulateUOMs()
 void item::sHandleItemtype()
 {
   QString itemType = QString(*(_itemTypes + _itemtype->currentIndex()));
+
   bool pickList  = false;
   bool sold      = false;
   bool weight    = false;
   bool config    = false;
-  bool shipUOM   = false;
-  bool capUOM    = false;
-  bool planType  = false;
   bool purchased = false;
   bool freight   = false;
   
@@ -1171,9 +1174,6 @@ void item::sHandleItemtype()
     pickList = true;
     sold     = true;
     weight   = true;
-    capUOM   = true;
-    shipUOM  = true;
-    planType = true;
     purchased = true;
     freight  = true;
   }
@@ -1184,20 +1184,14 @@ void item::sHandleItemtype()
     sold     = true;
     weight   = true;
     config   = true;
-    capUOM   = true;
-    shipUOM  = true;
-    planType = true;
     purchased = true;
     freight  = true;
   }
 
-  if (itemType == "F")
-    planType = true;
-
+  // nothing to do if (itemType == "F")
+  
   if (itemType == "B")
   {
-    capUOM   = true;
-    planType = true;
     purchased = true;
     freight  = true;
   }
@@ -1207,9 +1201,6 @@ void item::sHandleItemtype()
     pickList = true;
     sold     = true;
     weight   = true;
-    capUOM   = true;
-    shipUOM  = true;
-    planType = true;
     freight  = true;
   }
 
@@ -1218,9 +1209,6 @@ void item::sHandleItemtype()
     pickList = true;
     sold     = true;
     weight   = true;
-    capUOM   = true;
-    shipUOM  = true;
-    planType = true;
     freight  = true;
   }
 
@@ -1228,8 +1216,6 @@ void item::sHandleItemtype()
   {
     sold     = true;
     weight   = true;
-    capUOM   = true;
-    shipUOM  = true;
     freight  = true;
     config   = true;
   }
@@ -1238,8 +1224,6 @@ void item::sHandleItemtype()
   {
     pickList = true;
     weight   = true;
-    capUOM   = true;
-    shipUOM  = true;
     freight  = true;
     purchased = true;
     sold = true;
@@ -1247,8 +1231,6 @@ void item::sHandleItemtype()
 
   if (itemType == "O")
   {
-    capUOM   = true;
-    planType = true;
     purchased = true;
     freight  = true;
   }
@@ -1256,7 +1238,6 @@ void item::sHandleItemtype()
   if (itemType == "A")
   {
     sold     = true;
-    planType = true;
     freight  = true;
   }
 
@@ -1741,26 +1722,21 @@ void item::sDeleteItemSite()
 void item::sFillListItemSites()
 {
   XSqlQuery itemFillListItemSites;
-  QString sql( "SELECT itemsite_id, itemsite_active,"
-               "       warehous_code, warehous_descrip, "
-               "       CASE WHEN itemsite_controlmethod='R' THEN :regular"
-               "            WHEN itemsite_controlmethod='N' THEN :none"
-               "            WHEN itemsite_controlmethod='L' THEN :lotNumber"
-               "            WHEN itemsite_controlmethod='S' THEN :serialNumber"
-               "       END AS itemsite_controlmethod "
-               "FROM itemsite, item, whsinfo "
-               "WHERE ( (itemsite_item_id=item_id)"
-               " AND (itemsite_warehous_id=warehous_id) "
-               " AND (item_id=:item_id) ) "
-               "ORDER BY item_number, warehous_code;" );
+  MetaSQLQuery mql = mqlLoad("itemSites", "detail");
 
-  itemFillListItemSites.prepare(sql);
-  itemFillListItemSites.bindValue(":item_id", _itemid);
-  itemFillListItemSites.bindValue(":regular", tr("Regular"));
-  itemFillListItemSites.bindValue(":none", tr("None"));
-  itemFillListItemSites.bindValue(":lotNumber", tr("Lot #"));
-  itemFillListItemSites.bindValue(":serialNumber", tr("Serial #"));
-  itemFillListItemSites.exec();
+  ParameterList params;
+  params.append("item_id", _itemid);
+  params.append("regular", tr("Regular"));
+  params.append("none", tr("None"));
+  params.append("lot", tr("Lot #"));
+  params.append("serial", tr("Serial #"));
+  params.append("standard", tr("Standard"));
+  params.append("job", tr("Job"));
+  params.append("average", tr("Average"));
+  params.append("na", tr("N/A"));
+  params.append("never", tr("Never"));
+
+  itemFillListItemSites  = mql.toQuery(params);
   _itemSite->populate(itemFillListItemSites);
 }
 
@@ -1810,9 +1786,9 @@ void item::sFillListItemtax()
   itemFillListItemtax.bindValue(":any", tr("Any"));
   itemFillListItemtax.exec();
   _itemtax->populate(itemFillListItemtax, _itemtax->id());
-  if (itemFillListItemtax.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information"),
+                                itemFillListItemtax, __FILE__, __LINE__))
   {
-    systemError(this, itemFillListItemtax.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -1855,14 +1831,15 @@ void item::sDeleteUOM()
     int result = itemDeleteUOM.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteItemUOMConv", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item UOM Conversion Information"),
+                             storedProcErrorLookup("deleteItemUOMConv", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (itemDeleteUOM.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Dleting Item UOM Conversion Information"),
+                                itemDeleteUOM, __FILE__, __LINE__))
   {
-    systemError(this, itemDeleteUOM.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -2086,21 +2063,9 @@ void item::sHandleRightButtons()
 void item::sFillSourceList()
 {
   XSqlQuery itemFillSourceList;
-  QString sql( "SELECT itemsrc_id, vend_number,"
-               "       vend_name, itemsrc_vend_item_number, "
-	       "       itemsrc_active, itemsrc_manuf_name, "
-               "       itemsrc_manuf_item_number, "
-			   "       CASE WHEN itemsrc_default = 'true' THEN 'Yes' "
-			   "       ELSE 'No' "
-			   "       END AS default "
-               "FROM item, vendinfo, itemsrc "
-               "WHERE ( (itemsrc_item_id=item_id)"
-               " AND (itemsrc_vend_id=vend_id)"
-	       " AND (itemsrc_item_id=<? value(\"item_id\") ?>) "
-               ") ORDER BY vend_number, vend_name;" );
+  MetaSQLQuery mql = mqlLoad("itemSources", "detail");
                
   ParameterList params;
-  MetaSQLQuery mql(sql);
   params.append("item_id", _itemid);
   itemFillSourceList = mql.toQuery(params);
   _itemsrc->populate(itemFillSourceList);

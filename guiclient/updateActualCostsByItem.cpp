@@ -12,6 +12,7 @@
 
 #include <QVariant>
 #include <QSqlError>
+#include "errorReporter.h"
 
 updateActualCostsByItem::updateActualCostsByItem(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -121,11 +122,9 @@ void updateActualCostsByItem::sUpdate()
   sql.bindValue(":updateActual",    _updateActual                   ? "t" : "f" );
 
   sql.exec();
-  if (sql.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Cost Information"),
+                                sql, __FILE__, __LINE__))
   {
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                        .arg(__FILE__)
-                        .arg(__LINE__));
     return;
   }
 

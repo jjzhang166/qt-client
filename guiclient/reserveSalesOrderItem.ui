@@ -525,7 +525,6 @@ to be bound by its terms.</comment>
             <height>100</height>
            </size>
           </property>
-          <zorder>qt_scrollarea_viewport</zorder>
          </widget>
         </item>
         <item row="0" column="1">

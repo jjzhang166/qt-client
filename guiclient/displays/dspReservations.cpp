@@ -22,6 +22,7 @@
 #include "salesOrder.h"
 #include "transferOrder.h"
 #include "workOrder.h"
+#include "errorReporter.h"
 
 dspReservations::dspReservations(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspReservations", fl)
@@ -220,9 +221,9 @@ void dspReservations::sFillList()
       _availableqoh->setDouble(dspFillList.value("availableqoh").toDouble());
       _available->setDouble(dspFillList.value("unreserved").toDouble());
     }
-    else if (dspFillList.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  dspFillList, __FILE__, __LINE__))
     {
-      systemError(this, dspFillList.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

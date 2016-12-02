@@ -336,9 +336,9 @@ void financialLayout::populate()
     _altDiff->setChecked(financialpopulate.value("flhead_usealtdiff").toBool());
     _altDiffText->setText(financialpopulate.value("flhead_altdiff").toString());
   }
-  else if (financialpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Layout Information"),
+                                financialpopulate, __FILE__, __LINE__))
   {
-    systemError(this, financialpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   
@@ -381,9 +381,9 @@ void financialLayout::sFillList()
   financialFillList.bindValue(":flhead_id", _flheadid);
   financialFillList.exec();
   _layouts->populate(financialFillList);
-  if (financialFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Financial Layout Information"),
+                                financialFillList, __FILE__, __LINE__))
   {
-    systemError(this, financialFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

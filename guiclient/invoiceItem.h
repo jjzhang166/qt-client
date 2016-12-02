@@ -40,6 +40,7 @@ public slots:
     virtual void sLookupTax();
     virtual void sPriceGroup();
     virtual void sTaxDetail();
+    virtual void sPopulateUOM();
     virtual void sQtyUOMChanged();
     virtual void sPriceUOMChanged();
     virtual void sMiscSelected(bool);
@@ -58,12 +59,14 @@ private:
     int _mode;
     int _invcheadid;
     int _custid;
+    int _shiptoid;
     int _invcitemid;
     double _priceRatioCache;
     int _taxzoneid;
     int	_invuomid;
     double _qtyinvuomratio;
     double _priceinvuomratio;
+    double _listprice;
     bool _saved;
     bool _trackqoh;
 };

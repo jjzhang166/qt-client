@@ -17,6 +17,7 @@
 
 #include "updateReorderLevels.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 updateReorderLevels::updateReorderLevels(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -126,9 +127,9 @@ void updateReorderLevels::sUpdate()
 
     MetaSQLQuery mql = mqlLoad("updateReorderLevels", method);
     updateUpdate = mql.toQuery(params);
-    if (updateUpdate.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Reorder Level Information"),
+                                  updateUpdate, __FILE__, __LINE__))
     {
-      systemError(this, updateUpdate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
 
@@ -174,9 +175,9 @@ void updateReorderLevels::sPost()
     params.append("itemsite_id",           selected[i]->id());
     params.append("itemsite_reorderlevel", selected[i]->data(7,Qt::EditRole).toDouble());
     updatePost = mql.toQuery(params);
-    if (updatePost.lastError().type() != QSqlError::NoError)
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Reorder Level Information"),
+                                  updatePost, __FILE__, __LINE__))
     {
-      systemError(this, updatePost.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     delete selected[i];

@@ -20,6 +20,7 @@
 
 #include "storedProcErrorLookup.h"
 #include "subaccount.h"
+#include "errorReporter.h"
 
 subaccounts::subaccounts(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -105,14 +106,15 @@ void subaccounts::sDelete()
     int result = subaccountsDelete.value("result").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("deleteSubaccount", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sub Account Information"),
+                             storedProcErrorLookup("deleteSubaccount", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (subaccountsDelete.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sub Account Information"),
+                                subaccountsDelete, __FILE__, __LINE__))
   {
-    systemError(this, subaccountsDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -140,9 +142,9 @@ void subaccounts::sFillList()
              "ORDER BY subaccnt_number;" );
   subaccountsFillList.exec();
   _subaccnt->populate(subaccountsFillList);
-  if (subaccountsFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Sub Account Information"),
+                                subaccountsFillList, __FILE__, __LINE__))
   {
-    systemError(this, subaccountsFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

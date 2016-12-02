@@ -18,6 +18,7 @@
 #include <metasql.h>
 #include <parameter.h>
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 updateListPricesByProductCategory::updateListPricesByProductCategory(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -62,9 +63,9 @@ void updateListPricesByProductCategory::sUpdate()
   params.append("updateBy", _updateBy->toDouble());
   _productCategory->appendValue(params);
   updateUpdate = mql.toQuery(params);
-  if (updateUpdate.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating List Price Information"),
+                                updateUpdate, __FILE__, __LINE__))
   {
-    systemError(this, updateUpdate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

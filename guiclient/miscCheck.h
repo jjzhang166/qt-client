@@ -30,10 +30,12 @@ public:
 public slots:
     virtual enum SetResponse set( const ParameterList & pParams );
     virtual void sHandleButtons();
+    virtual void sHandleTaxZone();
     virtual void sPopulateBankInfo( int pBankaccntid );
     virtual void sSave();
-	virtual void sCustomerSelected();
-	virtual void sCreditMemoSelected();
+    virtual void sCustomerSelected();
+    virtual void sCreditMemoSelected();
+    virtual void sCalculateTax();
 
 protected slots:
     virtual void languageChange();

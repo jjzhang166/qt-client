@@ -16,6 +16,7 @@
 #include <QCloseEvent>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 taxClass::taxClass(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -132,9 +133,9 @@ void taxClass::sSave()
     _taxClass->setFocus();
     return;
   }
-  else if (taxSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Class Information"),
+                                taxSave, __FILE__, __LINE__))
   {
-    systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -159,7 +160,8 @@ void taxClass::sSave()
     else if (taxSave.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Tax Class Information"),
+                           taxSave, __FILE__, __LINE__);
       return;
     }
 
@@ -176,7 +178,8 @@ void taxClass::sSave()
   if (taxSave.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Tax Class Information"),
+                         taxSave, __FILE__, __LINE__);
     return;
   }
 
@@ -199,9 +202,9 @@ void taxClass::populate()
     _description->setText(taxpopulate.value("taxclass_descrip").toString());
 	_seq->setValue(taxpopulate.value("taxclass_sequence").toInt());
   }
-  else if (taxpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Class Information"),
+                                taxpopulate, __FILE__, __LINE__))
   {
-    systemError(this, taxpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -44,6 +44,7 @@ public slots:
 protected:
     virtual void closeEvent( QCloseEvent * e );
     virtual void populate();
+    virtual void generateTable(bool);
 
 protected slots:
     virtual void languageChange();

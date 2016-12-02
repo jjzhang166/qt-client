@@ -23,6 +23,7 @@ public:
     ~printChecksReview();
 
 public slots:
+    virtual void sEdit();
     virtual void sUnmark();
     virtual void sMarkPrinted();
     virtual void sMarkVoided();

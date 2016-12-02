@@ -26,6 +26,7 @@
 #include "purchaseRequest.h"
 #include "workOrder.h"
 #include "mqlutil.h"
+#include "errorReporter.h"
 
 dspMRPDetail::dspMRPDetail(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -63,7 +64,6 @@ void dspMRPDetail::languageChange()
 
 void dspMRPDetail::sPrint()
 {
-  XSqlQuery dspPrint;
   if ( (_periods->isPeriodSelected()) && (_itemsite->id() != -1) )
   {
     XSqlQuery wsq ( QString( "SELECT mrpReport(%1, '%2') as worksetid;")
@@ -98,9 +98,9 @@ void dspMRPDetail::sPrint()
                       .arg(wsq.value("worksetid").toInt()) );
 
     }
-    else if (dspPrint.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Printing MRP Detail"),
+                                  wsq, __FILE__, __LINE__))
     {
-      systemError(this, dspPrint.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

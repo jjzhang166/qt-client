@@ -46,8 +46,18 @@ dspInventoryAvailability::dspInventoryAvailability(QWidget* parent, const char*,
   _asof->setCurrentIndex(_preferences->value(_settingsName).toInt());
   _forgetful = false;
 
+  QString qryABC = QString( "SELECT  'A', '%1' UNION "
+                            "SELECT  'B', '%2' UNION "
+                            "SELECT  'C', '%3' ORDER BY 1;")
+      .arg(tr("A Class"))
+      .arg(tr("B Class"))
+      .arg(tr("C Class"));
+
   parameterWidget()->appendComboBox(tr("Class Code"), "classcode_id", XComboBox::ClassCodes);
   parameterWidget()->append(tr("Class Code Pattern"), "classcode_pattern", ParameterWidget::Text);
+  parameterWidget()->append(tr("ABC Class"), "abc_class",
+                           ParameterWidget::Multiselect, QVariant(), false,
+                           qryABC);
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
   parameterWidget()->appendComboBox(tr("Item Group"), "itemgrp_id", XComboBox::ItemGroups);
   parameterWidget()->append(tr("Item Group Pattern"), "itemgrp_pattern", ParameterWidget::Text);
@@ -203,6 +213,9 @@ bool dspInventoryAvailability::setParams(ParameterList &params)
   if(_showShortages->isChecked())
     params.append("showShortages");
 
+  if (_metrics->boolean("EnableSOReservations"))
+    params.append("showReserved");
+  
   if(_byVendor->isChecked())
     params.append("byVend");
 
@@ -451,6 +464,7 @@ void dspInventoryAvailability::sByVendorChanged()
   list()->addColumn(tr("Description"),  -1,          Qt::AlignLeft,  true, "itemdescrip");
   list()->addColumn(tr("UOM"),          _uomColumn,  Qt::AlignCenter,true, "uom_name");
   list()->addColumn(tr("LT"),           _whsColumn,  Qt::AlignCenter,true, "itemsite_leadtime");
+  list()->addColumn(tr("ABC Class"),    -1,          Qt::AlignCenter,false, "itemsite_abcclass");
   list()->addColumn(tr("Available QOH"),_qtyColumn,  Qt::AlignRight, true, "qoh");
   list()->addColumn(tr("Allocated"),    _qtyColumn,  Qt::AlignRight, true, "allocated");
   list()->addColumn(tr("Unallocated"),  _qtyColumn,  Qt::AlignRight, true, "unallocated");
@@ -459,6 +473,8 @@ void dspInventoryAvailability::sByVendorChanged()
   list()->addColumn(tr("Reorder Lvl."), _qtyColumn,  Qt::AlignRight, true, "reorderlevel");
   list()->addColumn(tr("OUT Level"),    _qtyColumn,  Qt::AlignRight, false, "outlevel");
   list()->addColumn(tr("Available"),    _qtyColumn,  Qt::AlignRight, true, "available");
+  if (_metrics->boolean("EnableSOReservations"))
+    list()->addColumn(tr("Reserved"),   _qtyColumn,  Qt::AlignRight, true, "reserved");
 }
 
 void dspInventoryAvailability::sAsofChanged(int index)

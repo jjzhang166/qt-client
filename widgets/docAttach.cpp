@@ -138,6 +138,7 @@ docAttach::docAttach(QWidget* parent, const char* name, bool modal, Qt::WindowFl
   _save->setEnabled(false);
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
   connect(_docType,   SIGNAL(newID(int)), this, SLOT(sHandleButtons()));
+  connect(_filetitle,   SIGNAL(textChanged(QString)), this, SLOT(sHandleButtons()));
   connect(_fileList,  SIGNAL(clicked()),  this, SLOT(sFileList()));
   connect(_save,      SIGNAL(clicked()),  this, SLOT(sSave()));
 

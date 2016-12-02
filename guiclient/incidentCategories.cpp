@@ -19,6 +19,7 @@
 #include <openreports.h>
 
 #include "incidentCategory.h"
+#include "errorReporter.h"
 
 incidentCategories::incidentCategories(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -71,9 +72,9 @@ void incidentCategories::sFillList()
              "FROM incdtcat "
              "ORDER BY incdtcat_order, incdtcat_name;" );
   incidentFillList.exec();
-  if (incidentFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Category Information"),
+                                incidentFillList, __FILE__, __LINE__))
   {
-    systemError(this, incidentFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _incidentCategories->populate(incidentFillList);
@@ -86,9 +87,10 @@ void incidentCategories::sDelete()
              "WHERE (incdtcat_id=:incdtcat_id);" );
   incidentDelete.bindValue(":incdtcat_id", _incidentCategories->id());
   incidentDelete.exec();
-  if (incidentDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Selected Incident Category %1")
+                               .arg(_incidentCategories->currentItem()->text("incdtcat_name")),
+                               incidentDelete, __FILE__, __LINE__))
   {
-    systemError(this, incidentDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

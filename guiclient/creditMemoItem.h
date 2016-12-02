@@ -32,10 +32,12 @@ public slots:
     virtual void populate();
     virtual void sCalculateDiscountPrcnt();
     virtual void sCalculateFromDiscount();
+    virtual void sHandleSelection();
     virtual void sListPrices();
     virtual void sCalculateTax();
     virtual void sPriceGroup();
     virtual void sTaxDetail();
+    virtual void sPopulateUOM();
     virtual void sQtyUOMChanged();
     virtual void sPriceUOMChanged();
 
@@ -44,7 +46,6 @@ protected slots:
 
     virtual void sSave();
     virtual void sCalculateExtendedPrice();
-    virtual void updatePriceInfo();
 
 private:
     int _mode;

@@ -139,7 +139,7 @@ void opportunityTypes::sNew()
 
   opportunityType newdlg(this, "", true);
   newdlg.set(params);
-  
+
   if (newdlg.exec() != XDialog::Rejected)
     sFillList();
 }

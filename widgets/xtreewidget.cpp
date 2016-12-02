@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -212,7 +212,7 @@ XTreeWidget::~XTreeWidget()
                     (header()->sortIndicatorOrder() == Qt::AscendingOrder ? "ASC" : "DESC" );
     else
       savedString = "-1,ASC";
-      xtsettingsSetValue(_settingsName + "/sortOrder", savedString);
+    xtsettingsSetValue(_settingsName + "/sortOrder", savedString);
   }
 
   for (int i = 0; i < _roles.size(); i++)
@@ -1502,6 +1502,7 @@ void XTreeWidget::sShowMenu(const QPoint &pntThis)
       copyMenu->addAction(tr("All"),  this, SLOT(sCopyVisibleToClipboard()));
       copyMenu->addAction(tr("Row"),  this, SLOT(sCopyRowToClipboard()));
       copyMenu->addAction(tr("Cell"),  this, SLOT(sCopyCellToClipboard()));
+      copyMenu->addAction(tr("Column"),this, SLOT(sCopyColumnToClipboard()));
       _menu->addSeparator();
       _menu->addAction(tr("Export As..."),  this, SLOT(sExport()));
     }
@@ -1974,6 +1975,38 @@ QVariant XTreeWidgetItem::rawValue(const QString pName)
     return data(colIdx, Xt::RawRole);
 }
 
+void XTreeWidgetItem::setNumber(int pColumn, const QVariant pValue, const QString pNumericRole)
+{
+  setData(pColumn, Xt::RawRole, pValue);
+  if (!setNumericRole(pColumn, pNumericRole))
+  {
+    // pValue is not a valid number
+    setText(pColumn, pValue);
+  }
+}
+
+void XTreeWidgetItem::setDate(int pColumn, const QVariant pDate)
+{
+  setData(pColumn, Xt::RawRole, pDate);
+  setData(pColumn, Qt::DisplayRole, formatDate(pDate.toDate()));
+}
+
+bool XTreeWidgetItem::setNumericRole(int pColIdx, const QString pRole)
+{
+  bool canConvert = false;
+
+  if (pColIdx >= 0)
+  {
+    double value = data(pColIdx, Xt::RawRole).toDouble(&canConvert);
+
+    if (canConvert)
+    {
+      setData(pColIdx, Qt::DisplayRole, QLocale().toString(value, 'f', decimalPlaces(pRole)));
+    }
+  }
+  return canConvert;
+}
+
 /* Calculate the total for a particular XTreeWidgetItem, including any children.
    pcol is the column for which we want the total.
    prole is the value of xttotalrole for which we want the total.
@@ -2278,6 +2311,28 @@ void XTreeWidget::sCopyVisibleToClipboard()
   clipboard->setMimeData(mime);
 }
 
+void XTreeWidget::sCopyColumnToClipboard()
+{
+  QTextEdit       text;
+  QMimeData       *mime      = new QMimeData();
+  QClipboard      *clipboard = QApplication::clipboard();
+  QString opText = "";
+  XTreeWidgetItem *item = topLevelItem(0);
+  if (item)
+  {
+    for (QModelIndex idx = indexFromItem(item); idx.isValid(); idx = indexBelow(idx))
+    {
+      item = (XTreeWidgetItem *)itemFromIndex(idx);
+      if (item)
+        opText = opText + item->text(currentColumn()) + "\t\r\n";
+    }
+  }
+  text.setText(opText);
+  mime->setText(text.toPlainText());
+  mime->setHtml(text.toHtml());
+  clipboard->setMimeData(mime);
+}
+
 void XTreeWidget::sSearch(const QString &pTarget)
 {
   clearSelection();
@@ -2313,8 +2368,7 @@ QString XTreeWidget::toTxt() const
   XTreeWidgetItem *item = topLevelItem(0);
   if (item)
   {
-    QModelIndex idx = indexFromItem(item);
-    while (idx.isValid())
+    for (QModelIndex idx = indexFromItem(item); idx.isValid(); idx = indexBelow(idx))
     {
       item = (XTreeWidgetItem *)itemFromIndex(idx);
       if (item)
@@ -2327,7 +2381,6 @@ QString XTreeWidget::toTxt() const
         }
       }
       opText = opText + line + "\r\n";
-      idx    = indexBelow(idx);
     }
   }
   return opText;
@@ -2356,8 +2409,7 @@ QString XTreeWidget::toCsv() const
   XTreeWidgetItem *item = topLevelItem(0);
   if (item)
   {
-    QModelIndex idx = indexFromItem(item);
-    while (idx.isValid())
+    for (QModelIndex idx = indexFromItem(item); idx.isValid(); idx = indexBelow(idx))
     {
       colcount = 0;
       item     = (XTreeWidgetItem *)itemFromIndex(idx);
@@ -2380,7 +2432,6 @@ QString XTreeWidget::toCsv() const
         }
       }
       opText = opText + line + "\r\n";
-      idx    = indexBelow(idx);
     }
   }
   return opText;
@@ -2497,6 +2548,17 @@ QString XTreeWidget::toHtml() const
   QString font;
   int     colcnt = 0;
   int     rowcnt = 0;
+  int     row = 0;
+  double  limit = 0;
+  qlonglong maxDataCount = 0;
+  qlonglong dataCount = 0;
+
+  if (_x_preferences)
+  {
+    limit = _x_preferences->value("XTreeWidgetDataLimit").toDouble();
+    if (limit > 0)
+      maxDataCount = (qlonglong)(limit * 1e9);
+  }
 
   tableFormat.setHeaderRowCount(1);
 
@@ -2508,13 +2570,11 @@ QString XTreeWidget::toHtml() const
   XTreeWidgetItem *item = topLevelItem(0);
   if (item)
   {
-    QModelIndex idx = indexFromItem(item);
-    while (idx.isValid())
+    for (QModelIndex idx = indexFromItem(item); idx.isValid(); idx = indexBelow(idx))
     {
       item = (XTreeWidgetItem *)itemFromIndex(idx);
       if (item)
         rowcnt++;
-      idx = indexBelow(idx);
     }
   }
 
@@ -2530,14 +2590,15 @@ QString XTreeWidget::toHtml() const
       cell.setFormat(format);
       cursor->insertText(header->text(counter));
       cursor->movePosition(QTextCursor::NextCell);
+
+      dataCount += (qlonglong)(header->text(counter).size());
     }
   }
 
   item = topLevelItem(0);
   if (item)
   {
-    QModelIndex idx = indexFromItem(item);
-    while (idx.isValid())
+    for (QModelIndex idx = indexFromItem(item); idx.isValid() && (maxDataCount <= 0 || dataCount < maxDataCount); idx = indexBelow(idx), row++)
     {
       item = (XTreeWidgetItem *)itemFromIndex(idx);
       if (item)
@@ -2563,10 +2624,17 @@ QString XTreeWidget::toHtml() const
             cell.setFormat(format);
             cursor->insertText(item->text(counter));
             cursor->movePosition(QTextCursor::NextCell);
+
+            dataCount += (qlonglong)(item->text(counter).size());
           }
         }
       }
-      idx = indexBelow(idx);
+    }
+
+    if (maxDataCount > 0 && dataCount > maxDataCount)
+    {
+      QString overflowMsg = tr("Maximum data limit was encountered.  Only %1 of %2 rows could be processed.");
+      QMessageBox::warning(NULL, tr("Data Limit Reached"), overflowMsg.arg(row).arg(rowcnt));
     }
   }
   return doc->toHtml();

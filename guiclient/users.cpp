@@ -40,9 +40,8 @@ users::users(QWidget* parent, const char* name, Qt::WindowFlags fl)
   if (usersusers.first())
     _new->setEnabled(usersusers.value("cancreate").toBool());
   else
-    systemError(this, tr("A System Error occurred at %1::%2.")
-                      .arg(__FILE__)
-                      .arg(__LINE__) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving User Permission Information"),
+                       usersusers, __FILE__, __LINE__);
      
   sFillList();
 }

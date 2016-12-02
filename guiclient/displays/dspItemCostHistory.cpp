@@ -28,15 +28,9 @@ dspItemCostHistory::dspItemCostHistory(QWidget* parent, const char*, Qt::WindowF
   list()->addColumn(tr("Time"),    _timeDateColumn, Qt::AlignCenter,true, "costhist_date");
   list()->addColumn(tr("User"),         _qtyColumn, Qt::AlignCenter,true, "username");
   list()->addColumn(tr("Old"),         _costColumn, Qt::AlignRight, true, "costhist_oldcost");
-  list()->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  true, "oldcurr");
+  list()->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "oldcurr");
   list()->addColumn(tr("New"),         _costColumn, Qt::AlignRight, true, "costhist_newcost");
-  list()->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  true, "newcurr");
-
-  if (omfgThis->singleCurrency())
-  {
-    list()->hideColumn("oldcurr");
-    list()->hideColumn("newcurr");
-  }
+  list()->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "newcurr");
 }
 
 void dspItemCostHistory::languageChange()

@@ -20,6 +20,7 @@
 #include "arOpenItem.h"
 #include "creditMemo.h"
 #include "dspInvoiceInformation.h"
+#include "errorReporter.h"
 
 dspARApplications::dspARApplications(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspARApplications", fl)
@@ -94,9 +95,9 @@ void dspARApplications::sViewCreditMemo()
       newdlg.exec();
     }
   }
-  else if (dspViewCreditMemo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AR Credit Memo Information"),
+                                dspViewCreditMemo, __FILE__, __LINE__))
   {
-    systemError(this, dspViewCreditMemo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   else
@@ -127,9 +128,9 @@ void dspARApplications::sViewDebitMemo()
     newdlg.set(params);
     newdlg.exec();
   }
-  else if (dspViewDebitMemo.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AR Debit Memo Information"),
+                                dspViewDebitMemo, __FILE__, __LINE__))
   {
-    systemError(this, dspViewDebitMemo.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

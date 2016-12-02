@@ -9,64 +9,233 @@
  */
 
 #include "qbytearrayproto.h"
+#include <QScriptValueIterator>
+#include <QDataStream>
 
 static QByteArray nullBA = QByteArray();
 
-QScriptValue QByteArraytoScriptValue(QScriptEngine *engine, QByteArray* const &item)
+QScriptValue QListQByteArraytoScriptValue(QScriptEngine *engine, const QList<QByteArray> &list)
 {
-  QByteArray tmpBA = *item;
-  QVariant  *tmpVar = new QVariant(tmpBA);      // TODO: memory leak?
-  return engine->newVariant(*tmpVar);
+  QScriptValue newArray = engine->newArray();
+  for (int i = 0; i < list.size(); i += 1) {
+    newArray.setProperty(i, engine->toScriptValue(list.at(i)));
+  }
+  return newArray;
+}
+void QListQByteArrayfromScriptValue(const QScriptValue &obj, QList<QByteArray> &list)
+{
+  list = QList<QByteArray>();
+  QScriptValueIterator it(obj);
+
+  while (it.hasNext()) {
+    it.next();
+    if (it.flags() & QScriptValue::SkipInEnumeration)
+      continue;
+    QByteArray item = qscriptvalue_cast<QByteArray>(it.value());
+    list.insert(it.name().toInt(), item);
+  }
 }
 
-void QByteArrayfromScriptValue(const QScriptValue &obj, QByteArray* &item)
+// Static Public Members:
+QScriptValue fromBase64ForJS(QScriptContext* context, QScriptEngine* engine)
 {
-  item = new QByteArray(obj.toVariant().toByteArray());
+  if (context->argumentCount() == 1) {
+    QByteArray qba = QByteArray::fromBase64(context->argument(0).toString().toLocal8Bit());
+    return engine->toScriptValue(qba);
+  } else if (context->argumentCount() == 2) {
+#if QT_VERSION < 0x050000
+    QByteArray qba = QByteArray::fromBase64(context->argument(0).toString().toLocal8Bit());
+    return engine->toScriptValue(qba);
+#else
+    QByteArray::Base64Option options = static_cast<QByteArray::Base64Option>(context->argument(1).toInt32());
+    QByteArray qba = QByteArray::fromBase64(context->argument(0).toString().toLocal8Bit(), options);
+    return engine->toScriptValue(qba);
+#endif
+  }
+  return engine->undefinedValue();
 }
+
+/* TODO: Is CFData supported?
+QScriptValue fromCFDataForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromCFData(context->argument(0).toString()));
+}
+*/
+
+QScriptValue fromHexForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromHex(context->argument(0).toString().toLocal8Bit()));
+}
+
+/* TODO: Is NSData supported?
+QScriptValue fromNSDataForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromNSData(context->argument(0).toString()));
+}
+*/
+
+QScriptValue fromPercentEncodingForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromPercentEncoding(context->argument(0).toString().toLocal8Bit()));
+}
+
+/* TODO: Is CFDataRef supported?
+QScriptValue fromRawCFDataForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromRawCFData(context->argument(0).toString()));
+}
+*/
+
+QScriptValue fromRawDataForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  if (context->argumentCount() == 2) {
+    char thisArg = context->argument(0).toInt32();
+    return engine->toScriptValue(QByteArray::fromRawData(&thisArg, context->argument(1).toInt32()));
+  } else {
+    return engine->undefinedValue();
+  }
+}
+
+/* TODO: Is NSData supported?
+QScriptValue fromRawNSDataForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromRawNSData(context->argument(0).toString()));
+}
+*/
+#if QT_VERSION >= 0x050000
+QScriptValue fromStdStringForJS(QScriptContext* context, QScriptEngine* engine)
+{
+  return engine->toScriptValue(QByteArray::fromStdString(context->argument(0).toString().toStdString()));
+}
+#endif
+
+#if QT_VERSION >= 0x050000
+// enum QByteArray::Base64Option
+QScriptValue Base64OptionToScriptValue(QScriptEngine *engine, const enum QByteArray::Base64Option &p)
+{
+  return QScriptValue(engine, (int)p);
+}
+void Base64OptionFromScriptValue(const QScriptValue &obj, enum QByteArray::Base64Option &p)
+{
+  p = (enum QByteArray::Base64Option)obj.toInt32();
+}
+#endif
 
 void setupQByteArrayProto(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, QByteArraytoScriptValue, QByteArrayfromScriptValue);
+  QScriptValue::PropertyFlags permanent = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+
+#if QT_VERSION >= 0x050000
+  qScriptRegisterMetaType(engine, QListQByteArraytoScriptValue, QListQByteArrayfromScriptValue);
+#endif
 
   QScriptValue proto = engine->newQObject(new QByteArrayProto(engine));
-  engine->setDefaultPrototype(qMetaTypeId<QByteArray*>(), proto);
+  //engine->setDefaultPrototype(qMetaTypeId<QByteArray*>(), proto);
+  engine->setDefaultPrototype(qMetaTypeId<QByteArray>(), proto);
 
-  QScriptValue constructor = engine->newFunction(constructQByteArray,
-                                                 proto);
-  engine->globalObject().setProperty("QByteArray",  constructor);
+  QScriptValue constructor = engine->newFunction(constructQByteArray, proto);
+
+#if QT_VERSION >= 0x050000
+  // Static Public Members:
+  QScriptValue fromBase64 = engine->newFunction(fromBase64ForJS);
+  constructor.setProperty("fromBase64", fromBase64);
+
+  /* TODO: Is CFData supported?
+  QScriptValue fromCFData = engine->newFunction(fromCFDataForJS);
+  constructor.setProperty("fromCFData", fromCFData);
+  */
+
+  QScriptValue fromHex = engine->newFunction(fromHexForJS);
+  constructor.setProperty("fromHex", fromHex);
+
+  /* TODO: Is NSData supported?
+  QScriptValue fromNSData = engine->newFunction(fromNSDataForJS);
+  constructor.setProperty("fromNSData", fromNSData);
+  */
+
+  QScriptValue fromPercentEncoding = engine->newFunction(fromPercentEncodingForJS);
+  constructor.setProperty("fromPercentEncoding", fromPercentEncoding);
+
+  /* TODO: Is CFDataRef supported?
+  QScriptValue fromRawCFData = engine->newFunction(fromRawCFDataForJS);
+  constructor.setProperty("fromRawCFData", fromRawCFData);
+  */
+
+  QScriptValue fromRawData = engine->newFunction(fromRawDataForJS);
+  constructor.setProperty("fromRawData", fromRawData);
+
+  /* TODO: Is NSData supported?
+  QScriptValue fromRawNSData = engine->newFunction(fromRawNSDataForJS);
+  constructor.setProperty("fromRawNSData", fromRawNSData);
+  */
+
+  QScriptValue fromStdString = engine->newFunction(fromStdStringForJS);
+  constructor.setProperty("fromStdString", fromStdString);
+
+  // enum QByteArray::Base64Option
+  qScriptRegisterMetaType(engine, Base64OptionToScriptValue, Base64OptionFromScriptValue);
+  constructor.setProperty("Base64Encoding", QScriptValue(engine, QByteArray::Base64Encoding), permanent);
+  constructor.setProperty("Base64UrlEncoding", QScriptValue(engine, QByteArray::Base64UrlEncoding), permanent);
+  constructor.setProperty("KeepTrailingEquals", QScriptValue(engine, QByteArray::KeepTrailingEquals), permanent);
+  constructor.setProperty("OmitTrailingEquals", QScriptValue(engine, QByteArray::OmitTrailingEquals), permanent);
+#endif
+
+  engine->globalObject().setProperty("QByteArray", constructor);
 }
 
 QScriptValue constructQByteArray(QScriptContext *context,
                                  QScriptEngine  *engine)
 {
-  QByteArray *obj = 0;
+  QByteArray obj = 0;
 
-  if (context->argumentCount() == 0)
-    obj = new QByteArray();
+  if (context->argumentCount() == 0) {
+    obj = QByteArray();
+  } else if (context->argumentCount() == 1 &&
+             qscriptvalue_cast<QByteArray*>(context->argument(0))) {
+    obj = QByteArray(*(qscriptvalue_cast<QByteArray*>(context->argument(0))));
+  } else if (context->argumentCount() == 1 &&
+             context->argument(0).isArray()) {
+    obj = QByteArray();
 
-  else if (context->argumentCount() == 1 &&
-           qscriptvalue_cast<QByteArray*>(context->argument(0)))
-    obj = new QByteArray(*(qscriptvalue_cast<QByteArray*>(context->argument(0))));
-
-  else if (context->argumentCount() == 1 &&
-           context->argument(0).isString())
-    obj = new QByteArray(context->argument(0).toString().toLatin1().data());
-
-  else if (context->argumentCount() == 2 &&
+    QScriptValueIterator it(context->argument(0));
+    while (it.hasNext()) {
+      it.next();
+      if (it.flags() & QScriptValue::SkipInEnumeration)
+        continue;
+      quint16 uint16Value = it.value().toUInt16();
+      char ch = static_cast<char>(uint16Value);
+      obj.append(ch);
+    }
+  } else if (context->argumentCount() == 1 &&
+           context->argument(0).isString()) {
+    obj = QByteArray(context->argument(0).toString().toLatin1().data());
+  // Support `QByteArray(const char * data, int size = -1)` with integer char and no size arg.
+  } else if (context->argumentCount() == 1 &&
+           context->argument(0).isNumber()) {
+    char thisArg = context->argument(0).toInt32();
+    obj = QByteArray(&thisArg);
+  } else if (context->argumentCount() == 2 &&
            context->argument(0).isString() &&
-           context->argument(1).isNumber())
-    obj = new QByteArray(context->argument(0).toString().toLatin1().data(),
+           context->argument(1).isNumber()) {
+    obj = QByteArray(context->argument(0).toString().toLatin1().data(),
                          context->argument(1).toInt32());
-
-  else if (context->argumentCount() == 2 &&
+  } else if (context->argumentCount() == 2 &&
            context->argument(0).isNumber() &&
-           context->argument(1).isString())
-    obj = new QByteArray(context->argument(0).toInt32(),
+           context->argument(1).isString()) {
+    obj = QByteArray(context->argument(0).toInt32(),
                          context->argument(1).toString().at(0).toLatin1());
-
-  else
+  // Support `QByteArray(int size, char ch)` with integer char.
+  } else if (context->argumentCount() == 2 &&
+           context->argument(0).isNumber() &&
+           context->argument(1).isNumber()) {
+    // No way to determine `const` for `QByteArray(const char * data, int size = -1)`.
+    // So it's not supported. `QByteArray(int size, char ch)` only.
+    obj = QByteArray(context->argument(0).toInt32(),
+                         context->argument(1).toInt32());
+  } else {
     context->throwError(QScriptContext::UnknownError,
                        "could not find appropriate QByteArray constructor");
+  }
 
   return engine->toScriptValue(obj);
 }
@@ -75,8 +244,10 @@ QByteArrayProto::QByteArrayProto(QObject *parent)
     : QObject(parent)
 {
 }
+QByteArrayProto::~QByteArrayProto()
+{
+}
 
-/*
 QByteArray &QByteArrayProto::append(const QByteArray &ba)
 {
   QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
@@ -821,8 +992,9 @@ short QByteArrayProto::toShort(bool *ok, int base) const
 uint QByteArrayProto::toUInt(bool *ok, int base) const
 {
   QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
-  if (item)
+  if (item) {
     return item->toUInt(ok, base);
+  }
   return 0;
 }
 
@@ -872,7 +1044,6 @@ void QByteArrayProto::truncate(int pos)
   if (item)
     item->truncate(pos);
 }
-*/
 
 QString QByteArrayProto::toString() const
 {
@@ -880,4 +1051,321 @@ QString QByteArrayProto::toString() const
   if (item)
     return QString(*item);
   return QString();
+}
+
+// Node.js Buffer emulation helper functions.
+int QByteArrayProto::readInt16BE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 1 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    int ret;
+    qint16 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+int QByteArrayProto::readInt16LE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 1 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    int ret;
+    qint16 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+uint QByteArrayProto::readUInt16BE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 1 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    uint ret;
+    quint16 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+uint QByteArrayProto::readUInt16LE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 1 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    uint ret;
+    quint16 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+int QByteArrayProto::readInt32BE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 3 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    int ret;
+    qint32 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+int QByteArrayProto::readInt32LE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 3 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    int ret;
+    qint32 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+uint QByteArrayProto::readUInt32BE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 3 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    uint ret;
+    quint32 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::BigEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+uint QByteArrayProto::readUInt32LE(int offset, bool noAssert) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    if (!noAssert) {
+      if (!(offset + 3 < item->size())) {
+        thisObject().engine()
+          ->currentContext()
+          ->throwError(QScriptContext::RangeError, "index out of range");
+      }
+    }
+
+    uint ret;
+    quint32 tmp;
+    if (offset == 0) {
+      QDataStream ds(item, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    } else {
+      QByteArray qbaOffset = item->mid(offset);
+      QDataStream ds(&qbaOffset, QIODevice::ReadOnly);
+      ds.setByteOrder(QDataStream::LittleEndian);
+      ds >> tmp;
+    }
+
+    ret = tmp;
+    return ret;
+  }
+  return 0;
+}
+
+QString QByteArrayProto::toLatin1() const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    return QString::fromLatin1(*item);
+  }
+  return QString();
+}
+
+QString QByteArrayProto::toLocal8Bit() const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    return QString::fromLocal8Bit(*item);
+  }
+  return QString();
+}
+
+QString QByteArrayProto::toUtf8() const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    return QString::fromUtf8(*item);
+  }
+  return QString();
+}
+
+QByteArray QByteArrayProto::slice(int start, int end) const
+{
+  QByteArray *item = qscriptvalue_cast<QByteArray*>(thisObject());
+  if (item) {
+    int len = item->size();
+
+    if (start < 0) {
+      start += len;
+      if (start < 0) {
+        start = 0;
+      }
+    } else if (start > len) {
+      start = len;
+    }
+
+    if (end == 0) {
+      end = len;
+    }
+    if (end < 0) {
+      end += len;
+      if (end < 0) {
+        end = len;
+      }
+    } else if (end > len) {
+      end = len;
+    }
+
+    if (end < start) {
+      end = start;
+    }
+
+    // Perform a shallow copy of the original array to keep the shared memory pointer.
+    QByteArray newQba = QByteArray::fromRawData(item->data(), item->size());
+    // Slice the size of newQba and return the smaller QByteArray that still
+    // references the original item data in memory.
+    newQba.truncate(end);
+    return newQba.right(end - start);
+  }
+  return nullBA;
 }

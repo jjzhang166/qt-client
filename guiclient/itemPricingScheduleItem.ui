@@ -1441,6 +1441,7 @@ to be bound by its terms.</comment>
    <class>CurrCluster</class>
    <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
@@ -1485,6 +1486,7 @@ to be bound by its terms.</comment>
  <tabstops>
   <tabstop>_itemSelected</tabstop>
   <tabstop>_discountSelected</tabstop>
+  <tabstop>_markupSelected</tabstop>
   <tabstop>_freightSelected</tabstop>
   <tabstop>_item</tabstop>
   <tabstop>_tab</tabstop>
@@ -1492,12 +1494,11 @@ to be bound by its terms.</comment>
   <tabstop>_price</tabstop>
   <tabstop>_qtyUOM</tabstop>
   <tabstop>_priceUOM</tabstop>
-  <tabstop>_qtyBreakCat</tabstop>
-  <tabstop>_discount</tabstop>
-  <tabstop>_fixedAmtDiscount</tabstop>
-  <tabstop>_qtyBreakFreight</tabstop>
-  <tabstop>_priceFreight</tabstop>
-  <tabstop>_flatRateFreight</tabstop>
+  <tabstop>_charprice</tabstop>
+  <tabstop>_new</tabstop>
+  <tabstop>_edit</tabstop>
+  <tabstop>_delete</tabstop>
+  <tabstop>_buttonBox</tabstop>
   <tabstop>_perUOMFreight</tabstop>
   <tabstop>_allShipViasFreight</tabstop>
   <tabstop>_selectedShipViaFreight</tabstop>
@@ -1508,10 +1509,23 @@ to be bound by its terms.</comment>
   <tabstop>_allFreightClasses</tabstop>
   <tabstop>_selectedFreightClass</tabstop>
   <tabstop>_freightClass</tabstop>
-  <tabstop>_edit</tabstop>
-  <tabstop>_delete</tabstop>
-  <tabstop>_new</tabstop>
-  <tabstop>_charprice</tabstop>
+  <tabstop>_qtyBreakFreight</tabstop>
+  <tabstop>_priceFreight</tabstop>
+  <tabstop>_fixedAmtDiscount</tabstop>
+  <tabstop>_discount</tabstop>
+  <tabstop>_flatRateFreight</tabstop>
+  <tabstop>_qtyBreakCat</tabstop>
+  <tabstop>_dscbyItem</tabstop>
+  <tabstop>_dscbyprodcat</tabstop>
+  <tabstop>_dscitem</tabstop>
+  <tabstop>_prodcat</tabstop>
+  <tabstop>_markupbyItem</tabstop>
+  <tabstop>_markupbyprodcat</tabstop>
+  <tabstop>_markupitem</tabstop>
+  <tabstop>_markupProdcat</tabstop>
+  <tabstop>_markupQtyBreakCat</tabstop>
+  <tabstop>_markup</tabstop>
+  <tabstop>_fixedAmtMarkup</tabstop>
  </tabstops>
  <resources/>
  <connections>

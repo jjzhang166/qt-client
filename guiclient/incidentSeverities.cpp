@@ -18,6 +18,7 @@
 
 #include <openreports.h>
 #include "incidentSeverity.h"
+#include "errorReporter.h"
 
 incidentSeverities::incidentSeverities(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -71,9 +72,9 @@ void incidentSeverities::sFillList()
              "FROM incdtseverity "
              "ORDER BY incdtseverity_order, incdtseverity_name;" );
   incidentFillList.exec();
-  if (incidentFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Incident Severity Information"),
+                                incidentFillList, __FILE__, __LINE__))
   {
-    systemError(this, incidentFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   _incidentSeverities->populate(incidentFillList);
@@ -86,9 +87,9 @@ void incidentSeverities::sDelete()
              "WHERE (incdtseverity_id=:incdtseverity_id);" );
   incidentDelete.bindValue(":incdtseverity_id", _incidentSeverities->id());
   incidentDelete.exec();
-  if (incidentDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Incident Severity"),
+                                incidentDelete, __FILE__, __LINE__))
   {
-    systemError(this, incidentDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

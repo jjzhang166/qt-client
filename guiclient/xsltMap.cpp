@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 bool xsltMap::userHasPriv()
 {
@@ -27,9 +28,9 @@ int xsltMap::exec()
     return XDialog::exec();
   else
   {
-    systemError(this,
-		tr("You do not have sufficient privilege to view this window"),
-		__FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Permissions Violation"),
+                         tr("%1: Insufficient privileges to view the selected Window ")
+                         .arg(windowTitle()),__FILE__,__LINE__);
     return XDialog::Rejected;
   }
 }
@@ -168,9 +169,9 @@ void xsltMap::sSave()
     _name->setFocus();
     return;
   }
-  else if (xsltSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Map Information"),
+                                xsltSave, __FILE__, __LINE__))
   {
-    systemError(this, xsltSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -179,9 +180,9 @@ void xsltMap::sSave()
     xsltSave.exec("SELECT NEXTVAL('xsltmap_xsltmap_id_seq') AS result;");
     if (xsltSave.first())
       _xsltmapId = xsltSave.value("result").toInt();
-    else if (xsltSave.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Map Information"),
+                                  xsltSave, __FILE__, __LINE__))
     {
-      systemError(this, xsltSave.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
     xsltSave.prepare("INSERT INTO xsltmap ("
@@ -208,9 +209,9 @@ void xsltMap::sSave()
   xsltSave.bindValue(":import",  _import->text());
   xsltSave.bindValue(":export",  _export->text());
   xsltSave.exec();
-  if (xsltSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Map Information"),
+                                xsltSave, __FILE__, __LINE__))
   {
-    systemError(this, xsltSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -241,9 +242,9 @@ void xsltMap::sPopulate()
       _import->setText(xsltPopulate.value("xsltmap_import").toString());
       _export->setText(xsltPopulate.value("xsltmap_export").toString());
     }
-    else if (xsltPopulate.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Map Information"),
+                                  xsltPopulate, __FILE__, __LINE__))
     {
-      systemError(this, xsltPopulate.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

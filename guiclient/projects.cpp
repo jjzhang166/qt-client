@@ -32,6 +32,7 @@
 #include "purchaseOrder.h"
 #include "purchaseOrderItem.h"
 #include "incident.h"
+#include "errorReporter.h"
 
 #define DEBUG true
 
@@ -634,9 +635,9 @@ void projects::sDelete()
         tr("Could not delete the project for one or more reasons.\n") + errmsg);
       return;
     }
-    else if (projectsDelete.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Project"),
+                                  projectsDelete, __FILE__, __LINE__))
     {
-      systemError(this, projectsDelete.lastError().databaseText(), __FILE__, __LINE__);
       return;
     }
   }

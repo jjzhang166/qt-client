@@ -15,12 +15,21 @@
 
 #define cAcknowledge 0x80
 
+
+/* systemMessage::open is part of a window-handling experiment.
+ * set() returns Error_AlreadyOpen if there is already a window open for the given id.
+ * windowForId(id) returns the open window for the given id or 0 if no such window exists.
+ * TODO: generalize for all windows and have QHashMap<classname, QHashMap<id, window>>?
+ * This might be a better answer than the salesOrder:: funkiness
+ */
+QHash<int, systemMessage*> systemMessage::open;
+
 systemMessage::systemMessage(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
 {
   setupUi(this);
 
-  connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
+  connect(_save,  SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
 
   _scheduledDate->setNullString(tr("ASAP"));
@@ -36,11 +45,18 @@ systemMessage::systemMessage(QWidget* parent, const char* name, bool modal, Qt::
 systemMessage::~systemMessage()
 {
   // no need to delete child widgets, Qt does it all for us
+  if (_msguserid > 0)
+    open.remove(_msguserid);
 }
 
 void systemMessage::languageChange()
 {
   retranslateUi(this);
+}
+
+systemMessage *systemMessage::windowForId(int id)
+{
+  return systemMessage::open.value(id, 0);
 }
 
 enum SetResponse systemMessage::set(const ParameterList &pParams)
@@ -53,7 +69,12 @@ enum SetResponse systemMessage::set(const ParameterList &pParams)
   if (valid)
   {
     _msguserid = param.toInt();
+    if (systemMessage::open.value(_msguserid, 0))
+    {
+      return Error_AlreadyOpen;
+    }
     populate();
+    systemMessage::open.insert(_msguserid, this);
   }
 
   param = pParams.value("mode", &valid);

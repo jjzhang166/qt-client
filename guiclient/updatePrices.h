@@ -23,6 +23,7 @@ public:
   ~updatePrices();
 
 public slots:
+  virtual SetResponse set( const ParameterList & pParams );
   virtual void sUpdate();
   virtual void populate();
   virtual void sAdd();
@@ -31,11 +32,13 @@ public slots:
   virtual void sRemoveAll();
   virtual void sHandleBy(bool toggled);
   virtual void sHandleCharPrice();
-  virtual void closeEvent( QCloseEvent * pEvent );
 
 protected slots:
   virtual void languageChange();
 
+private:
+  bool _listpricesched;
+  
 };
 
 #endif // UPDATEPRICES_H

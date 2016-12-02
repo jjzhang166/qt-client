@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -29,6 +29,7 @@ dspPricesByCustomer::dspPricesByCustomer(QWidget* parent, const char*, Qt::Windo
   setUseAltId(true);
 
   connect(_showCosts, SIGNAL(toggled(bool)), this, SLOT(sHandleCosts(bool)));
+  connect(_cust, SIGNAL(newId(int)), this, SLOT(sCustChanged(int)));
 
   list()->addColumn(tr("Schedule"),    _itemColumn,     Qt::AlignLeft,   true,  "schedulename"  );
   list()->addColumn(tr("Source"),      _itemColumn,     Qt::AlignLeft,   true,  "type"  );
@@ -37,12 +38,10 @@ dspPricesByCustomer::dspPricesByCustomer(QWidget* parent, const char*, Qt::Windo
   list()->addColumn(tr("Price UOM"),   _uomColumn,      Qt::AlignCenter, true,  "priceuom");
   list()->addColumn(tr("Qty. Break"),  _qtyColumn,      Qt::AlignRight,  true,  "f_qtybreak" );
   list()->addColumn(tr("Price"),       _priceColumn,    Qt::AlignRight,  true,  "price" );
-  list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   true,  "currConcat");
+  list()->addColumn(tr("Currency"),    _currencyColumn, Qt::AlignLeft,   !omfgThis->singleCurrency(),  "currConcat");
   list()->addColumn(tr("Ext. Cost"),   _costColumn,     Qt::AlignRight,  true,  "f_cost" );
   list()->addColumn(tr("Mar. %"),      _prcntColumn,    Qt::AlignRight,  true,  "f_margin" );
 
-  if (omfgThis->singleCurrency())
-    list()->hideColumn(CURR_COL);
   sHandleCosts(_showCosts->isChecked());
 }
 
@@ -67,6 +66,15 @@ enum SetResponse dspPricesByCustomer::set(const ParameterList &pParams)
     _item->setId(param.toInt());
   
   return NoError;
+}
+
+void dspPricesByCustomer::sCustChanged(int custId)
+{
+  Q_UNUSED(custId);
+  if (!_cust->isValid())
+  {
+    list()->clear();
+  }
 }
 
 void dspPricesByCustomer::sHandleCosts(bool pShowCosts)

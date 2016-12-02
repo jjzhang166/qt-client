@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 taxAdjustment::taxAdjustment(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -116,9 +117,9 @@ void taxAdjustment::sSave()
   taxSave.bindValue(":order_id", _orderid);
   taxSave.bindValue(":date", _amount->effective());
   taxSave.exec();
-  if (taxSave.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Tax Adjustment Information"),
+                                taxSave, __FILE__, __LINE__))
   {
-    systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   done(_orderid);

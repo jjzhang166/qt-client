@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>447</width>
-    <height>415</height>
+    <width>600</width>
+    <height>492</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,6 +139,16 @@ to be bound by its terms.</comment>
       </layout>
      </item>
      <item row="0" column="5">
+      <widget class="QCheckBox" name="_active">
+       <property name="text">
+        <string>Active</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

@@ -15,6 +15,7 @@
 #include <QVariant>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 enterMiscCount::enterMiscCount(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -100,9 +101,9 @@ void enterMiscCount::sPost()
       return;
     }
   }
-  else if (enterPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Miscellaneous Count"),
+                                enterPost, __FILE__, __LINE__))
   {
-    systemError(this, enterPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -120,14 +121,15 @@ void enterMiscCount::sPost()
     int result = enterPost.value("cnttag_id").toInt();
     if (result < 0)
     {
-      systemError(this, storedProcErrorLookup("postMiscCount", result),
-                  __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Miscellaneous Count"),
+                             storedProcErrorLookup("postMiscCount", result),
+                             __FILE__, __LINE__);
       return;
     }
   }
-  else if (enterPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Miscellaneous Count"),
+                                enterPost, __FILE__, __LINE__))
   {
-    systemError(this, enterPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 

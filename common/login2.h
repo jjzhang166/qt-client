@@ -58,7 +58,6 @@ class login2 : public QDialog, public Ui::login2
     virtual void sHandleButton();
     virtual void sOpenHelp();
     virtual void sLogin();
-    virtual void sOptions();
 
   private:
     bool _captive;

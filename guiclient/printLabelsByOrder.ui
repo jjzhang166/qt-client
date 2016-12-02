@@ -1,5 +1,5 @@
-<ui version="4.0" >
- <author></author>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
 Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
@@ -8,8 +8,8 @@ version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
 to be bound by its terms.</comment>
  <class>printLabelsByOrder</class>
- <widget class="QDialog" name="printLabelsByOrder" >
-  <property name="geometry" >
+ <widget class="QDialog" name="printLabelsByOrder">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -17,70 +17,61 @@ to be bound by its terms.</comment>
     <height>190</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Print Labels by Order</string>
   </property>
-  <layout class="QHBoxLayout" >
-   <property name="spacing" >
+  <layout class="QHBoxLayout">
+   <property name="spacing">
     <number>7</number>
    </property>
-   <property name="leftMargin" >
-    <number>5</number>
-   </property>
-   <property name="topMargin" >
-    <number>5</number>
-   </property>
-   <property name="rightMargin" >
-    <number>5</number>
-   </property>
-   <property name="bottomMargin" >
+   <property name="margin">
     <number>5</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="spacing" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
        <item>
-        <widget class="OrderCluster" name="_order" />
+        <widget class="OrderCluster" name="_order"/>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>5</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>5</number>
            </property>
            <item>
-            <widget class="QLabel" name="_reportLit" >
-             <property name="text" >
+            <widget class="QLabel" name="_reportLit">
+             <property name="text">
               <string>Report Name:</string>
              </property>
-             <property name="alignment" >
+             <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
-             <property name="buddy" >
+             <property name="buddy">
               <cstring>_report</cstring>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="_labelsLit" >
-             <property name="text" >
+            <widget class="QLabel" name="_labelsLit">
+             <property name="text">
               <string>Labels:</string>
              </property>
-             <property name="alignment" >
+             <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
-             <property name="buddy" >
+             <property name="buddy">
               <cstring>_labelFrom</cstring>
              </property>
             </widget>
@@ -88,59 +79,59 @@ to be bound by its terms.</comment>
           </layout>
          </item>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>5</number>
            </property>
            <item>
-            <widget class="XComboBox" name="_report" />
+            <widget class="XComboBox" name="_report"/>
            </item>
            <item>
-            <layout class="QHBoxLayout" >
-             <property name="spacing" >
+            <layout class="QHBoxLayout">
+             <property name="spacing">
               <number>0</number>
              </property>
              <item>
-              <layout class="QHBoxLayout" >
-               <property name="spacing" >
+              <layout class="QHBoxLayout">
+               <property name="spacing">
                 <number>5</number>
                </property>
                <item>
-                <widget class="QLabel" name="_fromLit" >
-                 <property name="text" >
+                <widget class="QLabel" name="_fromLit">
+                 <property name="text">
                   <string>from</string>
                  </property>
-                 <property name="buddy" >
+                 <property name="buddy">
                   <cstring>_labelFrom</cstring>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="_labelFrom" >
-                 <property name="minimum" >
+                <widget class="QSpinBox" name="_labelFrom">
+                 <property name="minimum">
                   <number>1</number>
                  </property>
-                 <property name="maximum" >
+                 <property name="maximum">
                   <number>9999</number>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="_toLit" >
-                 <property name="text" >
+                <widget class="QLabel" name="_toLit">
+                 <property name="text">
                   <string>to</string>
                  </property>
-                 <property name="buddy" >
+                 <property name="buddy">
                   <cstring>_labelTo</cstring>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="_labelTo" >
-                 <property name="minimum" >
+                <widget class="QSpinBox" name="_labelTo">
+                 <property name="minimum">
                   <number>1</number>
                  </property>
-                 <property name="maximum" >
+                 <property name="maximum">
                   <number>9999</number>
                  </property>
                 </widget>
@@ -149,13 +140,13 @@ to be bound by its terms.</comment>
              </item>
              <item>
               <spacer>
-               <property name="orientation" >
+               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
-               <property name="sizeType" >
+               <property name="sizeType">
                 <enum>QSizePolicy::Expanding</enum>
                </property>
-               <property name="sizeHint" >
+               <property name="sizeHint" stdset="0">
                 <size>
                  <width>65</width>
                  <height>16</height>
@@ -173,13 +164,13 @@ to be bound by its terms.</comment>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>16</height>
@@ -190,19 +181,19 @@ to be bound by its terms.</comment>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Expanding</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>20</height>
@@ -211,39 +202,39 @@ to be bound by its terms.</comment>
       </spacer>
      </item>
      <item>
-      <layout class="QVBoxLayout" >
-       <property name="spacing" >
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>5</number>
        </property>
        <item>
-        <widget class="QPushButton" name="_close" >
-         <property name="text" >
+        <widget class="QPushButton" name="_close">
+         <property name="text">
           <string>Cancel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="_print" >
-         <property name="enabled" >
+        <widget class="QPushButton" name="_print">
+         <property name="enabled">
           <bool>false</bool>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>&amp;Print</string>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>20</height>
@@ -257,7 +248,7 @@ to be bound by its terms.</comment>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>OrderCluster</class>
@@ -286,11 +277,11 @@ to be bound by its terms.</comment>
    <receiver>printLabelsByOrder</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -302,11 +293,11 @@ to be bound by its terms.</comment>
    <receiver>_print</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>165</x>
      <y>42</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>375</x>
      <y>46</y>
     </hint>

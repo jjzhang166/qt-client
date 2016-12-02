@@ -22,6 +22,7 @@
 #include "purchaseOrder.h"
 #include "purchaseOrderItem.h"
 #include "reschedulePoitem.h"
+#include "errorReporter.h"
 
 dspPoItemsByItem::dspPoItemsByItem(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspPoItemsByItem", fl)
@@ -78,9 +79,9 @@ enum SetResponse dspPoItemsByItem::set(const ParameterList &pParams)
     dspet.exec();
     if (dspet.first())
       _item->setId(dspet.value("itemsrc_item_id").toInt());
-    else if (dspet.lastError().type() != QSqlError::NoError)
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                  dspet, __FILE__, __LINE__))
     {
-      systemError(this, dspet.lastError().databaseText(), __FILE__, __LINE__);
       return UndefinedError;
     }
   }
@@ -199,9 +200,9 @@ void dspPoItemsByItem::sRunningAvailability()
     newdlg->set(params);
     omfgThis->handleNewWindow(newdlg);
   }
-  else if (dspRA.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+                                dspRA, __FILE__, __LINE__))
   {
-    systemError(this, dspRA.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }
@@ -280,9 +281,9 @@ void dspPoItemsByItem::sCloseItem()
              "WHERE (poitem_id=:poitem_id);" );
   dspCloseItem.bindValue(":poitem_id", list()->altId());
   dspCloseItem.exec();
-  if (dspCloseItem.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                dspCloseItem, __FILE__, __LINE__))
   {
-    systemError(this, dspCloseItem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -296,9 +297,9 @@ void dspPoItemsByItem::sOpenItem()
              "WHERE (poitem_id=:poitem_id);" );
   dspOpenItem.bindValue(":poitem_id", list()->altId());
   dspOpenItem.exec();
-  if (dspOpenItem.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Item Information"),
+                                dspOpenItem, __FILE__, __LINE__))
   {
-    systemError(this, dspOpenItem.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();

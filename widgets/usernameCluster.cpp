@@ -167,9 +167,14 @@ UsernameCluster::UsernameCluster(QWidget * parent, const char * name)
   _name->setHidden(false);
 }
 
-void UsernameCluster::addNumberWidget(UsernameLineEdit* pNumberWidget)
+void UsernameCluster::addNumberWidget(VirtualClusterLineEdit* pNumberWidget)
 {
-    _number = pNumberWidget;
+	UsernameLineEdit *matchType = qobject_cast<UsernameLineEdit *>(pNumberWidget);
+
+	if(matchType == 0)
+	  return;
+	  
+    _number = matchType;
     if (! _number)
       return;
 

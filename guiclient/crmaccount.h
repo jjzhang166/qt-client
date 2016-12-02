@@ -64,7 +64,6 @@ protected slots:
     virtual void sCheckNumber();
     virtual void sHandleButtons();
     virtual void sHandleChildButtons();
-    virtual void sVendorInfo();
     virtual void sHandleCntctDetach(int cntctId);
 
 protected:

@@ -17,6 +17,7 @@
 #include <parameter.h>
 #include <openreports.h>
 #include "customerFormAssignment.h"
+#include "errorReporter.h"
 
 customerFormAssignments::customerFormAssignments(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -30,7 +31,7 @@ customerFormAssignments::customerFormAssignments(QWidget* parent, const char* na
 
   _custform->addColumn(tr("Customer Type"), -1, Qt::AlignCenter, true, "custtypecode");
   _custform->addColumn(tr("Invoice"),      100, Qt::AlignCenter, true, "invoice");
-  _custform->addColumn(tr("Return"),  100, Qt::AlignCenter, true, "creditmemo");
+  _custform->addColumn(tr("Sales Credit"),  100, Qt::AlignCenter, true, "creditmemo");
   _custform->addColumn(tr("Statement"),    100, Qt::AlignCenter, true, "statement");
   _custform->addColumn(tr("Quote"),        100, Qt::AlignCenter, true, "quote");
   _custform->addColumn(tr("Packing List"), 100, Qt::AlignCenter, true, "packinglist");
@@ -104,9 +105,9 @@ void customerFormAssignments::sDelete()
              "WHERE (custform_id=:custform_id);" );
   customerDelete.bindValue(":custform_id", _custform->id());
   customerDelete.exec();
-  if (customerDelete.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Form Assignment"),
+                                customerDelete, __FILE__, __LINE__))
   {
-    systemError(this, customerDelete.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -130,9 +131,9 @@ void customerFormAssignments::sFillList()
   customerFillList.bindValue(":default", tr("Default"));
   customerFillList.exec();
   _custform->populate(customerFillList);
-  if (customerFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Form Assignment Information"),
+                                customerFillList, __FILE__, __LINE__))
   {
-    systemError(this, customerFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

@@ -16,6 +16,7 @@
 #include <QCloseEvent>
 
 #include "storedProcErrorLookup.h"
+#include "errorReporter.h"
 
 taxZone::taxZone(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -131,9 +132,9 @@ void taxZone::sSave()
     _taxZone->setFocus();
     return;
   }
-  else if (taxSave.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Zone Information"),
+                                taxSave, __FILE__, __LINE__))
   {
-    systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -157,7 +158,8 @@ void taxZone::sSave()
     else if (taxSave.lastError().type() != QSqlError::NoError)
     {
       rollback.exec();
-      systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Zone Information"),
+                           taxSave, __FILE__, __LINE__);
       return;
     }
 
@@ -173,7 +175,8 @@ void taxZone::sSave()
   if (taxSave.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError(this, taxSave.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Tax Zone Information"),
+                         taxSave, __FILE__, __LINE__);
     return;
   }
 
@@ -196,9 +199,9 @@ void taxZone::populate()
     _description->setText(taxpopulate.value("taxzone_descrip").toString());
 	
   }
-  else if (taxpopulate.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Tax Zone Information"),
+                                taxpopulate, __FILE__, __LINE__))
   {
-    systemError(this, taxpopulate.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

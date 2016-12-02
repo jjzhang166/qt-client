@@ -29,7 +29,7 @@ to be bound by its terms.</comment>
      <item>
       <widget class="QLabel" name="_lotSerialSequencesLit">
        <property name="text">
-        <string>Lot/Serial Sequences</string>
+        <string>Lot/Serial Sequences:</string>
        </property>
       </widget>
      </item>

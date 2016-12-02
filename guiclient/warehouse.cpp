@@ -82,9 +82,9 @@ enum SetResponse warehouse::set(const ParameterList &pParams)
       warehouseet.exec("SELECT NEXTVAL('warehous_warehous_id_seq') AS warehous_id");
       if (warehouseet.first())
         _warehousid = warehouseet.value("warehous_id").toInt();
-      else if (warehouseet.lastError().type() != QSqlError::NoError)
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Warehouse Information"),
+                                    warehouseet, __FILE__, __LINE__))
       {
-        systemError(this, warehouseet.lastError().databaseText(), __FILE__, __LINE__);
         return UndefinedError;
       }
 
@@ -128,6 +128,7 @@ enum SetResponse warehouse::set(const ParameterList &pParams)
       _comments->setReadOnly(true);
       _transit->setEnabled(false);
       _shipform->setEnabled(false);
+      _pickList->setEnabled(false);
       _shipvia->setEnabled(false);
       _shipcomments->setEnabled(false);
 
@@ -269,9 +270,11 @@ void warehouse::sSave()
   if (saveResult < 0)   // not else-if: this is error check for CHANGE{ONE,ALL}
   {
     rollback.exec();
-    systemError(this, tr("There was an error saving this address (%1).\n"
-                         "Check the database server log for errors.")
-                      .arg(saveResult), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                         tr("%1: There was an error saving this address (%2).\n"
+                            "Check the database server log for errors.")
+                         .arg(windowTitle())
+                         .arg(saveResult),__FILE__,__LINE__);
     _address->setFocus();
     return;
   }
@@ -290,7 +293,7 @@ void warehouse::sSave()
                "  warehous_enforcearbl, warehous_usezones, "
                "  warehous_default_accnt_id, warehous_shipping_commission, "
                "  warehous_addr_id, warehous_taxzone_id, warehous_transit,"
-               "  warehous_shipform_id, warehous_shipvia_id,"
+               "  warehous_shipform_id, warehous_picklist_shipform_id, warehous_shipvia_id,"
                "  warehous_shipcomments, warehous_costcat_id, warehous_sitetype_id,"
                "  warehous_sequence ) "
                "VALUES "
@@ -305,7 +308,7 @@ void warehouse::sSave()
                "  :warehous_enforcearbl, :warehous_usezones, "
                "  :warehous_default_accnt_id, :warehous_shipping_commission, "
                "  :warehous_addr_id, :warehous_taxzone_id, :warehous_transit,"
-               "  :warehous_shipform_id, :warehous_shipvia_id,"
+               "  :warehous_shipform_id, :warehous_picklist_shipform_id, :warehous_shipvia_id,"
                "  :warehous_shipcomments, :warehous_costcat_id, :warehous_sitetype_id,"
                "  :warehous_sequence );" );
   else if (_mode == cEdit)
@@ -337,6 +340,7 @@ void warehouse::sSave()
                "    warehous_taxzone_id=:warehous_taxzone_id,"
                "    warehous_transit=:warehous_transit,"
                "    warehous_shipform_id=:warehous_shipform_id,"
+               "    warehous_picklist_shipform_id=:warehous_picklist_shipform_id,"
                "    warehous_shipvia_id=:warehous_shipvia_id,"
                "    warehous_shipcomments=:warehous_shipcomments,"
                "    warehous_costcat_id=:warehous_costcat_id, "
@@ -387,6 +391,8 @@ void warehouse::sSave()
   {
     if (_shipform->isValid())
       upsq.bindValue(":warehous_shipform_id",      _shipform->id());
+    if (_pickList->isValid())
+      upsq.bindValue(":warehous_picklist_shipform_id",  _pickList->id()); 
     if (_shipvia->isValid())
       upsq.bindValue(":warehous_shipvia_id",       _shipvia->id());
     upsq.bindValue(":warehous_shipcomments",       _shipcomments->toPlainText());
@@ -448,6 +454,7 @@ void warehouse::populate()
     _taxzone->setId(getq.value("warehous_taxzone_id").toInt());
     _transit->setChecked(getq.value("warehous_transit").toBool());
     _shipform->setId(getq.value("warehous_shipform_id").toInt());
+    _pickList->setId(getq.value("warehous_picklist_shipform_id").toInt());
     _shipvia->setId(getq.value("warehous_shipvia_id").toInt());
     _shipcomments->setText(getq.value("warehous_shipcomments").toString());
     _costcat->setId(getq.value("warehous_costcat_id").toInt());
@@ -536,9 +543,9 @@ void warehouse::sDeleteZone()
                              "the selected Site Zone." ) );
     return;
   }
-  else if (warehouseDeleteZone.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Site Zone Information"),
+                                warehouseDeleteZone, __FILE__, __LINE__))
   {
-    systemError(this, warehouseDeleteZone.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
@@ -546,9 +553,9 @@ void warehouse::sDeleteZone()
              "WHERE (whsezone_id=:whsezone_id);" );
   warehouseDeleteZone.bindValue(":whsezone_id", _whsezone->id());
   warehouseDeleteZone.exec();
-  if (warehouseDeleteZone.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Site Zone Information"),
+                                warehouseDeleteZone, __FILE__, __LINE__))
   {
-    systemError(this, warehouseDeleteZone.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
   sFillList();
@@ -564,9 +571,9 @@ void warehouse::sFillList()
   warehouseFillList.bindValue(":warehous_id", _warehousid);
   warehouseFillList.exec();
   _whsezone->populate(warehouseFillList);
-  if (warehouseFillList.lastError().type() != QSqlError::NoError)
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Warehouse Information"),
+                                warehouseFillList, __FILE__, __LINE__))
   {
-    systemError(this, warehouseFillList.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 }

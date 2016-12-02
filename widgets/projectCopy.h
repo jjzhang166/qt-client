@@ -49,7 +49,7 @@ class XTUPLEWIDGETS_EXPORT projectCopy : public QDialog
 
   private:
     unsigned int _projectId;
-    unsigned int _newProjectId;
+    int _newProjectId;
 };
 
 #endif

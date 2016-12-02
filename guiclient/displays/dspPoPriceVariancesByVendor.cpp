@@ -42,15 +42,13 @@ dspPoPriceVariancesByVendor::dspPoPriceVariancesByVendor(QWidget* parent, const 
   list()->addColumn(tr("Description"),        -1,              Qt::AlignLeft,   true,  "itemdescrip"   );
   list()->addColumn(tr("Qty."),               _qtyColumn,      Qt::AlignRight,  true,  "recv_qty"  );
   list()->addColumn(tr("Purch. Cost"),        _priceColumn,    Qt::AlignRight,  false, "recv_purchcost"  );
-  if (!omfgThis->singleCurrency())
-    list()->addColumn(tr("Purch. Curr."),       _priceColumn,    Qt::AlignRight,  false, "poCurrAbbr"  );
+  list()->addColumn(tr("Purch. Curr."),       _priceColumn,    Qt::AlignRight,  false, "poCurrAbbr"  );
   list()->addColumn(tr("Rcpt. Cost"),         _priceColumn,    Qt::AlignRight,  false, "recv_recvcost"  );
   list()->addColumn(tr("Received"),           _moneyColumn,    Qt::AlignRight,  true,  "recv_value"  );
   list()->addColumn(tr("Vouch. Cost"),        _priceColumn,    Qt::AlignRight,  false, "vouchercost"  );
   list()->addColumn(tr("Vouchered"),          _moneyColumn,    Qt::AlignRight,  true,  "voucher_value"  );
   list()->addColumn(tr("Variance"),           _moneyColumn,    Qt::AlignRight,  true,  "variance"  );
-  if (!omfgThis->singleCurrency())
-    list()->addColumn(tr("Currency"),         _currencyColumn, Qt::AlignRight,  true,  "currAbbr"  );
+  list()->addColumn(tr("Currency"),           _currencyColumn, Qt::AlignRight,  !omfgThis->singleCurrency(),  "currAbbr"  );
   list()->addColumn(tr("%"),                  _prcntColumn,    Qt::AlignRight,  true,  "varprcnt"  );
 
   _currencyGroup->setHidden(omfgThis->singleCurrency());

@@ -418,7 +418,8 @@ void Screen::setTable(QString schema, QString table)
     tablename+=table;
     if (_model->tableName() != tablename)
     {
-      _model->setTable(tablename,_keyColumns);
+      _model->setTable(tablename);
+      _model->setKeys(_keyColumns);
       _model->setEditStrategy(QSqlTableModel::OnManualSubmit);
       setDataWidgetMapper(_model);
       emit newModel(_model);

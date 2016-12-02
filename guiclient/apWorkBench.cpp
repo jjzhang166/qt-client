@@ -18,6 +18,7 @@
 #include "selectedPayments.h"
 #include "viewCheckRun.h"
 #include "unappliedAPCreditMemos.h"
+#include "dspVendorAPHistory.h"
 
 apWorkBench::apWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -68,6 +69,21 @@ apWorkBench::apWorkBench(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _vendorgroup->synchronize((VendorGroup*)(_checkRun->findChild<QWidget*>("_vendorgroup")));
   if (!_privileges->check("MaintainPayments"))
     _checkRun->setEnabled(false);
+
+  if (_privileges->check("ViewAPOpenItems"))
+  {
+    _history = new dspVendorAPHistory(this, "dspVendorAPHistory", Qt::Widget);
+    _apHistoryTab->layout()->addWidget(_history);
+    _history->setCloseVisible(false);
+    _history->findChild<QWidget*>("_vendGroup")->hide();
+    _history->findChild<DateCluster*>("_dates")->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
+    _history->findChild<DateCluster*>("_dates")->setEndNull(tr("Latest"),	  omfgThis->endOfTime(),   true);
+    VendorCluster *histvend = _history->findChild<VendorCluster*>("_vend");
+    connect(histvend, SIGNAL(newId(int)), _history,      SLOT(sFillList()));
+    connect(_vendorgroup,  SIGNAL(newVendId(int)), histvend,      SLOT(setId(int)));
+  }
+  else
+    _apHistoryTab->setEnabled(false);
 
   connect(_query, SIGNAL(clicked()), _vouchers, SLOT(sFillList()));
   connect(_query, SIGNAL(clicked()), _payables, SLOT(sFillList()));

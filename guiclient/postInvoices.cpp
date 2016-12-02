@@ -16,6 +16,7 @@
 
 #include "distributeInventory.h"
 #include <openreports.h>
+#include "errorReporter.h"
 
 postInvoices::postInvoices(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : XDialog(parent, name, modal, fl)
@@ -99,19 +100,17 @@ void postInvoices::sPost()
     else
       inclZero = true;
   }
-  else if (postPost.lastError().type() != QSqlError::NoError)
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                                postPost, __FILE__, __LINE__))
   {
-    systemError(this, postPost.lastError().databaseText(), __FILE__, __LINE__);
     return;
   }
 
   postPost.exec("SELECT fetchJournalNumber('AR-IN') AS journal;");
   if (!postPost.first())
   {
-    systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                       .arg(__FILE__)
-                       .arg(__LINE__)
-                       .arg(postPost.value("journal").toInt()) );
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                         postPost, __FILE__, __LINE__);
     return;
   }
   int journalNumber = postPost.value("journal").toInt();
@@ -142,10 +141,8 @@ void postInvoices::sPost()
     else if (result < 0)
     {
       rollback.exec();
-      systemError( this, tr("A System Error occurred at %1::%2, Error #%3.")
-                         .arg(__FILE__)
-                         .arg(__LINE__)
-                         .arg(postPost.value("result").toInt()) );
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                           postPost, __FILE__, __LINE__);
       return;
     }
     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
@@ -191,7 +188,8 @@ void postInvoices::sPost()
   else if (postPost.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
-    systemError( this, postPost.lastError().databaseText(), __FILE__, __LINE__);
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                         postPost, __FILE__, __LINE__);
     return;
   }
 

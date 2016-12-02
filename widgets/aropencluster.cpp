@@ -37,7 +37,7 @@ void AropenLineEdit::setExtraClause(const QString &clause)
   _userExtraClause = QString(clause);
 }
 
-void AropenCluster::setExtraClause(const QString &clause)
+void AropenCluster::setExtraClause(const QString &clause, const QString&)
 {
   (qobject_cast<AropenLineEdit*>(_number))->setExtraClause(clause);
 }

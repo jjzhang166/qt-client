@@ -32,6 +32,7 @@ public slots:
     virtual void sRelease();
     virtual void sUnrelease();
     virtual void sPrint();
+    virtual void sPrintForms();
     virtual void sView();
     virtual bool setParams(ParameterList &);
 };

@@ -19,6 +19,8 @@
 
 #include "parameter.h"
 
+#include <xtuplecommon.h>
+
 #ifdef Q_OS_WIN
   #ifdef MAKEDLL
     #define XTUPLEWIDGETS_EXPORT __declspec(dllexport)
