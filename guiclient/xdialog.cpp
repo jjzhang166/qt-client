@@ -118,6 +118,7 @@ void XDialog::showEvent(QShowEvent *event)
     QString objName = objectName();
     QPoint pos = xtsettingsValue(objName + "/geometry/pos").toPoint();
     QSize lsize = xtsettingsValue(objName + "/geometry/size").toSize();
+    QSize currsize = size();
 
     if(lsize.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool())
       resize(lsize);
@@ -127,6 +128,8 @@ void XDialog::showEvent(QShowEvent *event)
     QRect r(pos, size());
     if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
       move(pos);
+    else if(currsize!=size())
+      move(QPoint(1, 1));
 
     _private->_rememberPos = new QAction(tr("Remember Position"), this);
     _private->_rememberPos->setCheckable(true);

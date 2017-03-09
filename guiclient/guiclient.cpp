@@ -2116,6 +2116,7 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
   QString objName = w->objectName();
   QPoint pos = xtsettingsValue(objName + "/geometry/pos").toPoint();
   QSize size = xtsettingsValue(objName + "/geometry/size").toSize();
+  QSize currsize = w->size();
 
   if(size.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool() && (metaObject()->className() != QString("xTupleDesigner")))
     w->resize(size);
@@ -2131,6 +2132,8 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
     QRect r(pos, w->size());
     if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
       w->move(pos);
+    else if(currsize!=w->size())
+      w->move(QPoint(1, 1));
     w->show();
   }
   else
