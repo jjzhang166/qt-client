@@ -131,6 +131,23 @@ void issueWoMaterialBatch::sIssue()
     }
   }
 
+  sqlissue = ("SELECT bool_and(itemsite_qtyonhand < roundQty(item_fractional, itemuomtouom(item_id, womatl_uom_id, NULL, roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(CASE WHEN (womatl_qtyreq >= 0) THEN womatl_qtyreq - womatl_qtyiss ELSE womatl_qtyiss * -1 END))))) AS isqtyavail "
+              "FROM womatl "
+              "JOIN itemsite ON (womatl_itemsite_id = itemsite_id) "
+              "JOIN item ON (itemsite_item_id = item_id) "
+              "WHERE (fetchMetricBool('DisallowNegativeInventory') OR itemsite_costmethod='A') "
+              " AND (womatl_issuemethod IN ('S', 'M')) "
+              " <? if exists('pickItemsOnly') ?> "
+              " AND (womatl_picklist) "
+              " <? endif ?> "
+              " AND (womatl_wo_id=<? value('wo_id') ?>);");
+  mqlissue.setQuery(sqlissue);
+  issue = mqlissue.toQuery(params);
+  if (issue.first() && ! issue.value("isqtyavail").toBool() &&
+      QMessageBox::question(this, tr("Continue?"), tr("One or more items cannot be issued due to insufficient inventory. Issue all other items?"),
+                               QMessageBox::No | QMessageBox::Default, QMessageBox::Yes) == QMessageBox::No)
+        return;
+
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
@@ -140,7 +157,7 @@ void issueWoMaterialBatch::sIssue()
                 "         roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(womatl_qtyreq - womatl_qtyiss))"
                 "       ELSE"
                 "         roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(womatl_qtyiss * -1))"
-                "       END AS qty"
+                "       END AS qty, item_number"
                 "  FROM womatl, itemsite, item"
                 " WHERE((womatl_itemsite_id=itemsite_id)"
                 "   AND (itemsite_item_id=item_id)"
@@ -151,6 +168,10 @@ void issueWoMaterialBatch::sIssue()
                 "   AND (womatl_wo_id=<? value(\"wo_id\") ?>)); ");
   MetaSQLQuery mqlitems(sqlitems);
   XSqlQuery items = mqlitems.toQuery(params);
+
+  int succeeded = 0;;
+  QList<QString> failedItems;
+  QList<QString> errors;
   while(items.next())
   {
     issue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
@@ -168,13 +189,13 @@ void issueWoMaterialBatch::sIssue()
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information; Work Order ID #%1")
                              .arg(_wo->id()),
                              issue, __FILE__, __LINE__);
-        return;
+        continue;
       }
       if (distributeInventory::SeriesAdjust(issue.value("result").toInt(), this) == XDialog::Rejected)
       {
         rollback.exec();
         QMessageBox::information( this, tr("Material Issue"), tr("Transaction Canceled") );
-        return;
+        continue;
       }
 
       if (_metrics->boolean("LotSerialControl"))
@@ -198,23 +219,30 @@ void issueWoMaterialBatch::sIssue()
           rollback.exec();
           ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material"),
                                lsdetail, __FILE__, __LINE__);
-          return;
+          continue;
         }
       }
-      
+
+      succeeded++;
+      issue.exec("COMMIT;");      
     }
     else
     {
       rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
-                           tr("Window:%1/n Error Issuing Material: Work Order ID #%2")
-                           .arg(windowTitle())
-                           .arg(_wo->id()),__FILE__,__LINE__);
-      return;
+      failedItems.append(items.value("item_number").toString());
+      errors.append(issue.lastError().text());
     }
-
-    issue.exec("COMMIT;");
   }
+
+  QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
+  dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
+
+  QString details;
+  for (int i=0; i<failedItems.size(); i++)
+    details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
+  dlg.setDetailedText(details);
+
+  dlg.exec();
 
   omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
