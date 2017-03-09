@@ -807,7 +807,7 @@ const struct {
   { "editccnumber",	-5, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The length of a Discover credit card number "
 			       "has to be 16 digits."),		 0, "" },
   { "editccnumber",	-6, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The first two digits for a valid Master Card "
-			       "number must be between 51 and 55"),
+                               "number must be between 510000 and 559999 or between 222100 and 272099"),
 								 0, "" },
   { "editccnumber",	-7, QT_TRANSLATE_NOOP("storedProcErrorLookup", "The first digit for a valid Visa number must "
 			       "be 4"),				 0, "" },
