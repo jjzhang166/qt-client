@@ -137,7 +137,7 @@ itemSite::itemSite(QWidget* parent, const char* name, bool modal, Qt::WindowFlag
   
   _costAvg->setVisible(_metrics->boolean("AllowAvgCostMethod"));
   _costStd->setVisible(_metrics->boolean("AllowStdCostMethod"));
-  _costStd->setVisible(_metrics->boolean("AllowJobCostMethod"));
+  _costJob->setVisible(_metrics->boolean("AllowJobCostMethod"));
   
   adjustSize();
   
