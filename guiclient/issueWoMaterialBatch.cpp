@@ -131,7 +131,7 @@ void issueWoMaterialBatch::sIssue()
     }
   }
 
-  sqlissue = ("SELECT bool_and(itemsite_qtyonhand < roundQty(item_fractional, itemuomtouom(item_id, womatl_uom_id, NULL, roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(CASE WHEN (womatl_qtyreq >= 0) THEN womatl_qtyreq - womatl_qtyiss ELSE womatl_qtyiss * -1 END))))) AS isqtyavail "
+  sqlissue = ("SELECT bool_and(itemsite_qtyonhand >= roundQty(item_fractional, itemuomtouom(item_id, womatl_uom_id, NULL, roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(CASE WHEN (womatl_qtyreq >= 0) THEN womatl_qtyreq - womatl_qtyiss ELSE womatl_qtyiss * -1 END))))) AS isqtyavail "
               "FROM womatl "
               "JOIN itemsite ON (womatl_itemsite_id = itemsite_id) "
               "JOIN item ON (itemsite_item_id = item_id) "
@@ -234,15 +234,18 @@ void issueWoMaterialBatch::sIssue()
     }
   }
 
-  QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
-  dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
+  if (errors.size() > 0)
+  {
+    QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
+    dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
 
-  QString details;
-  for (int i=0; i<failedItems.size(); i++)
-    details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
-  dlg.setDetailedText(details);
+    QString details;
+    for (int i=0; i<failedItems.size(); i++)
+      details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
+    dlg.setDetailedText(details);
 
-  dlg.exec();
+    dlg.exec();
+  }
 
   omfgThis->sWorkOrdersUpdated(_wo->id(), true);
 
