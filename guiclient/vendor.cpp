@@ -631,7 +631,7 @@ bool vendor::sSave()
 
   params.append("vend_comments",   _notes->toPlainText());
   params.append("vend_pocomments", _poComments->toPlainText());
-  params.append("vend_shipvia",    _defaultShipVia->text());
+  params.append("vend_shipvia",    _defaultShipVia->currentText());
 
   params.append("vend_active",        QVariant(_active->isChecked()));
   params.append("vend_po",            QVariant(_poItems->isChecked()));
@@ -1381,7 +1381,7 @@ void vendor::clear()
 
   _name->clear();
   _accountNumber->clear();
-  _defaultShipVia->clear();
+  _defaultShipVia->setId(_metrics->value("DefaultShipViaId").toInt());
   _vendorFOB->clear();
   _notes->clear();
   _poComments->clear();
