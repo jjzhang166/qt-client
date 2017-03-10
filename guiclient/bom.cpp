@@ -41,7 +41,7 @@ BOM::BOM(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_showExpired, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_showFuture, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_bomitem, SIGNAL(populateMenu(QMenu*,QTreeWidgetItem*,int)), this, SLOT(sPopulateMenu(QMenu*)));
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
+  connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
   connect(_save, SIGNAL(clicked()), this, SLOT(sSave()));
   connect(_expire, SIGNAL(clicked()), this, SLOT(sExpire()));
@@ -658,12 +658,6 @@ void BOM::sFillList(int pItemid, bool)
     
     _bomitem->clear();
   }
-}
-
-void BOM::sClose()
-{
-  if(sCheckRequiredQtyPer())
-    close();
 }
 
 bool BOM::sCheckRequiredQtyPer()

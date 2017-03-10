@@ -45,7 +45,6 @@ public slots:
     virtual void sMoveDown();
     virtual void sFillList();
     virtual void sFillList( int pItemid, bool );
-    virtual void sClose();
     virtual bool sCheckRequiredQtyPer();
 
 protected slots:
