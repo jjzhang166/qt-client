@@ -235,11 +235,11 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
       _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured |
                          ItemLineEdit::cActive);
                          
+      populate();
       connect(_priority, SIGNAL(valueChanged(int)), this, SLOT(sReprioritizeParent()));
       connect(_qty, SIGNAL(editingFinished()), this, SLOT(sChangeParentQty()));
       connect(_startDate, SIGNAL(newDate(const QDate&)), this, SLOT(sRescheduleParent()));
       connect(_dueDate, SIGNAL(newDate(const QDate&)), this, SLOT(sRescheduleParent()));
-      populate();
     }
     else if (param.toString() == "view")
     {
@@ -2026,12 +2026,8 @@ void workOrder::populate()
     _oldQty = (wo.value("wo_qtyord").toDouble() * _sense);
     _qty->setDouble(wo.value("wo_qtyord").toDouble() * _sense);
     _qtyReceived->setDouble(wo.value("wo_qtyrcv").toDouble());
-    _startDate->blockSignals(true);
-    _dueDate->blockSignals(true);
     _startDate->setDate(wo.value("wo_startdate").toDate());
     _dueDate->setDate(wo.value("wo_duedate").toDate());
-    _startDate->blockSignals(false);
-    _dueDate->blockSignals(false);
     _productionNotes->setText(wo.value("wo_prodnotes").toString());
     _comments->setId(_woid);
     _documents->setId(_woid);
