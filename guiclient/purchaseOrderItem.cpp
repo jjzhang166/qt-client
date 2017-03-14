@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -526,32 +526,36 @@ void purchaseOrderItem::populate()
         _manufItemDescrip->setText(purchasepopulate.value("itemsrc_manuf_item_descrip").toString());
     }
 
-    purchasepopulate.prepare( "SELECT DISTINCT char_id, char_name,"
-                   "       COALESCE(b.charass_value, (SELECT c.charass_value FROM charass c "
-                   "                                  WHERE ((c.charass_target_type='I') "
-                   "                                   AND (c.charass_target_id=:item_id) "
-                   "                                   AND (c.charass_default) "
-                   "                                   AND (c.charass_char_id=char_id)) "
-                   "                                  LIMIT 1)) AS charass_value"
-                   "   FROM (SELECT DISTINCT char_id, char_name "
-                   "         FROM charass, char, charuse"
-                   "         WHERE ((charass_char_id=char_id)"
-                   "         AND (charuse_char_id=char_id AND charuse_target_type = 'PI') "
-                   "         AND (charass_target_type='I') "
-                   "         AND (charass_target_id=:item_id) ) "
-                   "         UNION SELECT char_id, char_type, char_name, char_order"
-                   "         FROM charass, char "
-                   "         WHERE ((charass_char_id=char_id)"
-                   "         AND  (charass_target_type = 'PI' AND charass_target_id=:poitem_id))   ) AS data "
-                   "   LEFT OUTER JOIN charass b ON ((:poitem_id=b.charass_target_id)"
-                   "                                  AND ('PI'=b.charass_target_type)"
-                   "                                  AND (b.charass_char_id=char_id))"
-                   "   LEFT OUTER JOIN item     i1 ON (i1.item_id=:item_id)"
-                   "   LEFT OUTER JOIN charass  i2 ON ((i1.item_id=i2.charass_target_id)"
-                   "                                   AND ('I'=i2.charass_target_type)"
-                   "                                   AND (i2.charass_char_id=char_id)"
-                   "                                   AND (i2.charass_default))"
-                   " ORDER BY char_name;" );
+    purchasepopulate.prepare( "SELECT char_id, char_name, "
+             "  CASE WHEN char_type < 2 THEN "
+             "    charass_value "
+             "  ELSE "
+             "    formatDate(charass_value::date) "
+             " END AS f_charass_value, "
+             "  charass_value "
+             " FROM ( "
+             " SELECT char_id, char_type, char_name, "
+             "   COALESCE(pi.charass_value,i2.charass_value) AS charass_value "
+             " FROM "
+             "   (SELECT DISTINCT char_id, char_type, char_name "
+             "    FROM charass, char, charuse "
+             "    WHERE ((charass_char_id=char_id) "
+             "    AND (charuse_char_id=char_id AND charuse_target_type='PI') "
+             "    AND (charass_target_type='I') "
+             "    AND (charass_target_id=:item_id) ) "
+             "    UNION SELECT char_id, char_type, char_name "
+             "    FROM charass, char "
+             "    WHERE ((charass_char_id=char_id) "
+             "    AND  (charass_target_type = 'PI' AND charass_target_id=:poitem_id)) ) AS data "
+             "   LEFT OUTER JOIN charass  pi ON ((:poitem_id=pi.charass_target_id) "
+             "                               AND ('PI'=pi.charass_target_type) "
+             "                               AND (pi.charass_char_id=char_id)) "
+             "   LEFT OUTER JOIN item     i1 ON (i1.item_id=:item_id) "
+             "   LEFT OUTER JOIN charass  i2 ON ((i1.item_id=i2.charass_target_id) "
+             "                               AND ('I'=i2.charass_target_type) "
+             "                               AND (i2.charass_char_id=char_id) "
+             "                               AND (i2.charass_default))) data2 "
+             " ORDER BY char_name;"  );
     purchasepopulate.bindValue(":item_id", _item->id());
     purchasepopulate.bindValue(":poitem_id", _poitemid);
     purchasepopulate.exec();
@@ -942,27 +946,36 @@ void purchaseOrderItem::sPopulateItemInfo(int pItemid)
 
         sPopulateItemsiteInfo();
 
-        item.prepare( "SELECT DISTINCT char_id, char_name,"
-                   "       COALESCE(b.charass_value, (SELECT c.charass_value FROM charass c WHERE ((c.charass_target_type='I') AND (c.charass_target_id=:item_id) AND (c.charass_default) AND (c.charass_char_id=char_id)) LIMIT 1)) AS charass_value"
-                   "   FROM (SELECT DISTINCT char_id, char_type, char_name, char_order "
-                   "         FROM charass, char, charuse"
-                   "         WHERE ((charass_char_id=char_id)"
-                   "         AND (charuse_char_id=char_id AND charuse_target_type = 'PI') "
-                   "         AND (charass_target_type='I') "
-                   "         AND (charass_target_id=:item_id) ) "
-                   "         UNION SELECT char_id, char_type, char_name, char_order"
-                   "         FROM charass, char "
-                   "         WHERE ((charass_char_id=char_id)"
-                   "         AND  (charass_target_type = 'PI' AND charass_target_id=:poitem_id))   ) AS data "
-                   "   LEFT OUTER JOIN charass b ON ((:poitem_id=b.charass_target_id)"
-                   "                                  AND ('PI'=b.charass_target_type)"
-                   "                                  AND (b.charass_char_id=char_id))"
-                   "   LEFT OUTER JOIN item     i1 ON (i1.item_id=:item_id)"
-                   "   LEFT OUTER JOIN charass  i2 ON ((i1.item_id=i2.charass_target_id)"
-                   "                                   AND ('I'=i2.charass_target_type)"
-                   "                                   AND (i2.charass_char_id=char_id)"
-                   "                                   AND (i2.charass_default))"
-                   " ORDER BY char_name;" );
+        item.prepare( "SELECT char_id, char_name, "
+             "  CASE WHEN char_type < 2 THEN "
+             "    charass_value "
+             "  ELSE "
+             "    formatDate(charass_value::date) "
+             " END AS f_charass_value, "
+             "  charass_value "
+             " FROM ( "
+             " SELECT char_id, char_type, char_name, "
+             "   COALESCE(pi.charass_value,i2.charass_value) AS charass_value "
+             " FROM "
+             "   (SELECT DISTINCT char_id, char_type, char_name "
+             "    FROM charass, char, charuse "
+             "    WHERE ((charass_char_id=char_id) "
+             "    AND (charuse_char_id=char_id AND charuse_target_type='PI') "
+             "    AND (charass_target_type='I') "
+             "    AND (charass_target_id=:item_id) ) "
+             "    UNION SELECT char_id, char_type, char_name "
+             "    FROM charass, char "
+             "    WHERE ((charass_char_id=char_id) "
+             "    AND  (charass_target_type = 'PI' AND charass_target_id=:poitem_id)) ) AS data "
+             "   LEFT OUTER JOIN charass  pi ON ((:poitem_id=pi.charass_target_id) "
+             "                               AND ('PI'=pi.charass_target_type) "
+             "                               AND (pi.charass_char_id=char_id)) "
+             "   LEFT OUTER JOIN item     i1 ON (i1.item_id=:item_id) "
+             "   LEFT OUTER JOIN charass  i2 ON ((i1.item_id=i2.charass_target_id) "
+             "                               AND ('I'=i2.charass_target_type) "
+             "                               AND (i2.charass_char_id=char_id) "
+             "                               AND (i2.charass_default))) data2 "
+             " ORDER BY char_name;"  );
         item.bindValue(":item_id", pItemid);
         item.bindValue(":poitem_id", _poitemid);
         item.exec();
