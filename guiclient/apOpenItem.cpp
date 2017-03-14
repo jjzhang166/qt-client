@@ -245,6 +245,7 @@ void apOpenItem::sSave()
                "    apopen_terms_id=:apopen_terms_id, "
 	       "    apopen_notes=:apopen_notes, "
                "    apopen_curr_id=:curr_id, "
+               "    apopen_curr_rate = currrate(:curr_id, :apopen_docdate), "
 	       "    apopen_status = :apopen_status, "
                "    apopen_taxzone_id = :apopen_taxzone_id "
                "WHERE (apopen_id=:apopen_id);" );
@@ -253,6 +254,7 @@ void apOpenItem::sSave()
   if (_apopenid != -1)
     saveOpenItem.bindValue(":apopen_id", _apopenid);
   saveOpenItem.bindValue(":apopen_docnumber", _docNumber->text());
+  saveOpenItem.bindValue(":apopen_docdate", _docDate->date());
   saveOpenItem.bindValue(":apopen_duedate", _dueDate->date());
   saveOpenItem.bindValue(":apopen_ponumber", _poNumber->text());
   saveOpenItem.bindValue(":apopen_amount", _amount->localValue());

@@ -274,6 +274,7 @@ void arOpenItem::sSave()
                "    aropen_commission_due=:aropen_commission_due, aropen_notes=:aropen_notes,"
                "    aropen_rsncode_id=:aropen_rsncode_id, "
                "    aropen_curr_id=:curr_id, "
+               "    aropen_curr_rate = currrate(:curr_id, :aropen_docdate), "
                "    aropen_taxzone_id=:taxzone "
                "WHERE (aropen_id=:aropen_id);" );
   }
