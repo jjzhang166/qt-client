@@ -136,22 +136,27 @@ void apCreditMemoApplication::populate()
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving AP Information"),
                                 populateCMA, __FILE__, __LINE__);
 
-      populateCMA.prepare( "SELECT COALESCE(apcreditapply_curr_id,apopen_curr_id) AS curr_id,"
-	     "       currToCurr(apopen_curr_id,"
-	     "		        COALESCE(apcreditapply_curr_id,apopen_curr_id),"
-	     "		        apopen_amount - apopen_paid, apopen_docdate) -"
-	     "		   COALESCE(SUM(apcreditapply_amount), 0) AS available,"
-             "       apopen_docdate "
-             "FROM apopen LEFT OUTER JOIN apcreditapply ON (apcreditapply_source_apopen_id=apopen_id) "
-             "WHERE (apopen_id=:apopen_id) "
-             "GROUP BY apopen_amount, apopen_paid, apopen_docdate,"
-	     "         apcreditapply_curr_id, apopen_curr_id;" );
+  populateCMA.prepare( "SELECT currToCurr(apopen_curr_id, :curr_id,"
+                       "                  apopen_amount - apopen_paid,"
+                       "                  apopen_docdate) -"
+                       "       COALESCE(SUM(currToCurr(apcreditapply_curr_id,"
+                       "                               :curr_id,"
+                       "                               apcreditapply_amount,"
+                       "                               apopen_docdate)), 0)"
+                       "       AS available,"
+                       "       apopen_docdate "
+                       "FROM apopen "
+                       "LEFT OUTER JOIN apcreditapply ON (apcreditapply_source_apopen_id=apopen_id) "
+                       "WHERE (apopen_id=:apopen_id) "
+                       "GROUP BY apopen_amount, apopen_paid, apopen_docdate,"
+	               "         apopen_curr_id;" );
   populateCMA.bindValue(":apopen_id", _sourceApopenid);
+  populateCMA.bindValue(":curr_id", _targetAmount->id());
   populateCMA.exec();
   if (populateCMA.first())
   {
     _availableToApply->set(populateCMA.value("available").toDouble(), 
-		           populateCMA.value("curr_id").toInt(),
+		           _targetAmount->id(),
 		           populateCMA.value("apopen_docdate").toDate(), false);
   }
   else
