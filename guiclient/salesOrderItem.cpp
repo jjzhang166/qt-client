@@ -2245,7 +2245,7 @@ void salesOrderItem::sDetermineAvailability( bool p )
         (!p) )
     return;
   
-  if (_partialsaved)
+  if (_qtyOrdered->toDouble() > 0)
     sSave(true);
 
   _availabilityLastItemid      = _item->id();
@@ -2281,16 +2281,8 @@ void salesOrderItem::sDetermineAvailability( bool p )
     params.append("qty", _availabilityQtyOrdered);
     params.append("origQtyOrd", _originalQtyOrd);
     
-    if (_partialsaved)
-    {
-      params.append("qtyOrdered", _qtyOrdered->toDouble());
-      params.append("supplyOrderQty", _supplyOrderQty->toDouble());
-    }
-    else
-    {
-      params.append("qtyOrdered", 0.0);
-      params.append("supplyOrderQty", 0.0);
-    }
+    params.append("qtyOrdered",     0); // set to 0 to fix bug 29022 with
+    params.append("supplyOrderQty", 0); // only client-side changes
     
     availability = mql.toQuery(params);
     if (availability.first())
@@ -2595,21 +2587,6 @@ void salesOrderItem::sCheckSupplyOrder()
 
 void salesOrderItem::sHandleSupplyOrder()
 {
-  /*
-  if (_createSupplyOrder->isChecked())
-    QMessageBox::critical(this, tr("Debug"),
-                          tr("sHandleSupplyOrder called with _createSupplyOrder checked."));
-  else
-    QMessageBox::critical(this, tr("Debug"),
-                          tr("sHandleSupplyOrder called with _createSupplyOrder unchecked."));
-  if (_supplyOrderId == -1)
-    QMessageBox::critical(this, tr("Debug"),
-                          tr("sHandleSupplyOrder called with _supplyOrderId=-1."));
-  else
-    QMessageBox::critical(this, tr("Debug"),
-                          tr("sHandleSupplyOrder called with _supplyOrderId set."));
-  */
-  
   if (ISQUOTE(_mode))
     return;
   
@@ -3470,6 +3447,7 @@ void salesOrderItem::sHandleSupplyOrder()
       _woIndentedList->clear();
     }
   }  // end createSupplyOrder is not checked
+  sDetermineAvailability(true);
 }
 
 void salesOrderItem::sPopulateOrderInfo()
