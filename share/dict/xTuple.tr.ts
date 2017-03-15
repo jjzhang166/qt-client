@@ -1395,6 +1395,14 @@ Address:</source>
         <source>Rental Item</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Fixed Asset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maintenance Order</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfigAuthorizeDotNetProcessor</name>
@@ -45893,11 +45901,22 @@ sure there is sufficient Quantity on Hand before proceeding.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Occurred</source>
+        <source>Continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Window:%1/n Error Issuing Material: Work Order ID #%2</source>
+        <source>One or more items cannot be issued due to insufficient inventory. Issue all other items?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Items succeeded.
+%2 Items failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item %1 failed with:
+%2
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -72337,10 +72356,6 @@ You must first delete the Bill of Materials for the selected target item before 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The first two digits for a valid Master Card number must be between 51 and 55</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This Sales Order Item cannot be deleted as it is linked to a Return Authorization.  You must resolve this conflict before you may delete this Sales Order Item.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -73866,6 +73881,10 @@ You must first delete the Bill of Materials for the selected target item before 
     </message>
     <message>
         <source>The selected Location cannot be deleted as there has been Inventory Transaction History posted against it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The first two digits for a valid Master Card number must be between 510000 and 559999 or between 222100 and 272099</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -80640,10 +80659,6 @@ Item: %2 - %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Dropping Table Information </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Error Retrieving Pricing Schedule Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -80658,6 +80673,10 @@ Item: %2 - %3</source>
     <message>
         <source>List Pricing Schedule Assignments</source>
         <translation type="unfinished">Fiyatlandırma Planı Listesi</translation>
+    </message>
+    <message>
+        <source>Error Dropping Table Information</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -83097,6 +83116,10 @@ You must reassign these Vendors before you may delete the selected Vendor Type.<
     </message>
     <message>
         <source>Error Retrieving Misc Distributions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding Tax to Voucher</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
