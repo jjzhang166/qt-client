@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -927,11 +927,11 @@ void salesOrderItem::clear()
     disconnect(_supplyWoDelete,    SIGNAL(clicked()),                    this, SLOT(sDeleteWoMatl()));
     disconnect(_supplyRollupPrices,SIGNAL(toggled(bool)),                this, SLOT(sRollupPrices()));
     disconnect(_supplyOrderQty,    SIGNAL(editingFinished()),            this, SLOT(sHandleSupplyOrder()));
-    //  disconnect(_supplyOrderDueDate,SIGNAL(newDate(const QDate &)),       this, SLOT(sHandleSupplyOrder()));
     disconnect(_supplyOverridePrice,SIGNAL(editingFinished()),           this, SLOT(sHandleSupplyOrder()));
     disconnect(_supplyDropShip,    SIGNAL(toggled(bool)),                this, SLOT(sHandleSupplyOrder()));
   }
 
+  _soitemid = -1;
   _modified = false;
   _partialsaved = false;
   _supplyOrderType = "";
@@ -947,7 +947,6 @@ void salesOrderItem::clear()
   _priceUOM->clear();
   _netUnitPrice->clear();
   _extendedPrice->clear();
-//  _scheduledDate->clear();
   _promisedDate->clear();
   _unitCost->clear();
   _invCost->clear();
@@ -998,6 +997,9 @@ void salesOrderItem::sSaveClicked()
 
 void salesOrderItem::sSave(bool pPartial)
 {
+  if (_soitemid < 0)    // prepare() will set it
+    return;
+
   XSqlQuery salesSave;
   _save->setFocus();
 
@@ -1005,27 +1007,31 @@ void salesOrderItem::sSave(bool pPartial)
   QList<GuiErrorCheck> errors;
   errors << GuiErrorCheck(!_warehouse->isValid(), _warehouse,
                           tr("<p>You must select a valid Site before saving this Sales Order Item."))
-         << GuiErrorCheck(!(_qtyOrdered->toDouble() > 0), _qtyOrdered,
-                          tr("<p>You must enter a valid Quantity Ordered before saving this Sales Order Item."))
-         << GuiErrorCheck((_qtyOrdered->toDouble() < _qtyatshipping), _qtyOrdered,
-                          tr("<p>You must enter a Quantity Ordered equal to or greater than the Quantity At Shipping."))
-         << GuiErrorCheck((_qtyOrdered->toDouble() != (double)qRound(_qtyOrdered->toDouble()) &&
-                           _qtyOrdered->validator()->inherits("QIntValidator")), _qtyOrdered,
-                          tr("This UOM for this Item does not allow fractional quantities. Please fix the quantity."))
-         << GuiErrorCheck(_netUnitPrice->isEmpty(), _netUnitPrice,
-                          tr("<p>You must enter a Price before saving this Sales Order Item."))
-         << GuiErrorCheck(_sub->isChecked() && !_subItem->isValid(), _subItem,
-                          tr("<p>You must enter a Substitute Item before saving this Sales Order Item."))
-         << GuiErrorCheck(!_scheduledDate->isValid(), _scheduledDate,
-                          tr("<p>You must enter a valid Schedule Date before saving this Sales Order Item."))
-         << GuiErrorCheck(_createSupplyOrder->isChecked() &&
-                          _item->itemType() == "M" &&
-                          _supplyWarehouse->id() == -1, _supplyWarehouse,
-                          tr("<p>Before an Order may be created, a valid Supplied at Site must be selected."))
-         << GuiErrorCheck(!_createSupplyOrder->isChecked() &&
-                          _costmethod == "J", _createSupplyOrder,
-                          tr("<p>You must create a supply order for this Job Costed Item before saving this Sales Order Item."))
-  ;
+    ;
+  if (! pPartial)
+  {
+    errors << GuiErrorCheck(!(_qtyOrdered->toDouble() > 0), _qtyOrdered,
+                            tr("<p>You must enter a valid Quantity Ordered before saving this Sales Order Item."))
+           << GuiErrorCheck((_qtyOrdered->toDouble() < _qtyatshipping), _qtyOrdered,
+                            tr("<p>You must enter a Quantity Ordered equal to or greater than the Quantity At Shipping."))
+           << GuiErrorCheck((_qtyOrdered->toDouble() != (double)qRound(_qtyOrdered->toDouble()) &&
+                             _qtyOrdered->validator()->inherits("QIntValidator")), _qtyOrdered,
+                            tr("This UOM for this Item does not allow fractional quantities. Please fix the quantity."))
+           << GuiErrorCheck(_netUnitPrice->isEmpty(), _netUnitPrice,
+                            tr("<p>You must enter a Price before saving this Sales Order Item."))
+           << GuiErrorCheck(_sub->isChecked() && !_subItem->isValid(), _subItem,
+                            tr("<p>You must enter a Substitute Item before saving this Sales Order Item."))
+           << GuiErrorCheck(!_scheduledDate->isValid(), _scheduledDate,
+                            tr("<p>You must enter a valid Schedule Date before saving this Sales Order Item."))
+           << GuiErrorCheck(_createSupplyOrder->isChecked() &&
+                            _item->itemType() == "M" &&
+                            _supplyWarehouse->id() == -1, _supplyWarehouse,
+                            tr("<p>Before an Order may be created, a valid Supplied at Site must be selected."))
+           << GuiErrorCheck(!_createSupplyOrder->isChecked() &&
+                            _costmethod == "J", _createSupplyOrder,
+                            tr("<p>You must create a supply order for this Job Costed Item before saving this Sales Order Item."))
+    ;
+  }
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Sales Order Item"), errors))
     return;
