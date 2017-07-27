@@ -394,7 +394,9 @@ bool VirtualClusterLineEdit::eventFilter(QObject *obj, QEvent *event)
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
         const QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        disconnect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
         _menu->exec(me->globalPos());
+        connect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
         return true;
     }
     default:
