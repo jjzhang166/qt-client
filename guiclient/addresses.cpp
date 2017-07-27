@@ -46,7 +46,6 @@ addresses::addresses(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Postal Code"),50,Qt::AlignLeft, true, "addr_postalcode");
 
   setupCharacteristics("ADDR");
-  parameterWidget()->applyDefaultFilterSet();
 
   if (_privileges->check("MaintainAddresses"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

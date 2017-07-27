@@ -87,7 +87,6 @@ items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Freight Class"),  _itemColumn, Qt::AlignLeft , false, "freightclass_code");
   
   setupCharacteristics("I");
-  parameterWidget()->applyDefaultFilterSet();
 
   if (_privileges->check("MaintainItemMasters"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

@@ -52,7 +52,6 @@ contacts::contacts(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("State Pattern"), "addr_state_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Postal Code Pattern"), "addr_postalcode_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
-  parameterWidget()->applyDefaultFilterSet();
 
   list()->addColumn(tr("First Name"),          80, Qt::AlignLeft,  true, "cntct_first_name");
   list()->addColumn(tr("Last Name"),          100, Qt::AlignLeft,  true, "cntct_last_name");
@@ -74,7 +73,6 @@ contacts::contacts(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   setupCharacteristics("CNTCT");
-  parameterWidget()->applyDefaultFilterSet();
 
   QToolButton * attachBtn = new QToolButton(this);
   attachBtn->setText(tr("Attach"));

@@ -51,8 +51,6 @@ dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WindowFlags f
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Customer"),            -1,              Qt::AlignLeft,   true,  "cust_name"   );
   list()->addColumn(tr("Doc. #"),              _orderColumn,    Qt::AlignLeft,   true,  "cohist_ordernumber"   );
   list()->addColumn(tr("Cust. P/O #"),         _orderColumn,    Qt::AlignLeft,  true,   "cohist_ponumber" );
@@ -167,8 +165,6 @@ enum SetResponse dspSalesHistory::set(const ParameterList &pParams)
   param = pParams.value("warehous_id", &valid);
   if (valid)
     parameterWidget()->setDefault(tr("Site"), param.toInt());
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

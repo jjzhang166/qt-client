@@ -45,8 +45,6 @@ dspBookings::dspBookings(QWidget* parent, const char*, Qt::WindowFlags fl)
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Order #"),            _orderColumn,    Qt::AlignLeft,   true,  "cohead_number"  );
   list()->addColumn(tr("Cust. P/O #"),        _orderColumn,    Qt::AlignLeft,   true,  "cohead_custponumber");
   list()->addColumn(tr("Line #"),             _seqColumn,      Qt::AlignLeft,   true,  "f_linenumber"  );
@@ -128,8 +126,6 @@ enum SetResponse dspBookings::set(const ParameterList &pParams)
   param = pParams.value("endDate", &valid);
   if (valid)
     parameterWidget()->setDefault(tr("End Date"), param.toDate());
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

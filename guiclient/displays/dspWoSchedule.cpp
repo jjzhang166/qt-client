@@ -75,8 +75,6 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Has Closed Parent Sales Order"), "woSoStatusMismatch", ParameterWidget::Exists);
   parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Work Order #"),   _orderColumn,  Qt::AlignLeft,   true,  "wonumber"   );
   list()->addColumn(tr("Parent Type"),    _orderColumn,  Qt::AlignCenter, true,  "wo_ordtype" );
   list()->addColumn(tr("Parent Order #"), _orderColumn,  Qt::AlignLeft,   true,  "parentorder" );
@@ -143,8 +141,6 @@ enum SetResponse dspWoSchedule::set(const ParameterList &pParams)
     list.append(param.toString());
     parameterWidget()->setDefault(tr("Status"), list);
   }
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

@@ -95,7 +95,6 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Corr. Country"),100, Qt::AlignLeft , false, "corr_country" );
 
   setupCharacteristics("C");
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(omfgThis, SIGNAL(customersUpdated(int, bool)), SLOT(sFillList()));
 }

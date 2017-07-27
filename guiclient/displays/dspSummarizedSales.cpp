@@ -49,8 +49,6 @@ dspSummarizedSales::dspSummarizedSales(QWidget* parent, const char*, Qt::WindowF
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   _units->append(0,tr("Base"));
   _units->append(1,tr("Local"));
 

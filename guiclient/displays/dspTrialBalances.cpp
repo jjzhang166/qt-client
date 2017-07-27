@@ -62,7 +62,6 @@ dspTrialBalances::dspTrialBalances(QWidget* parent, const char*, Qt::WindowFlags
     parameterWidget()->appendComboBox(tr("Company"), "company_id", XComboBox::Companies);
   parameterWidget()->append(tr("GL Account"), "accnt_id",  ParameterWidget::GLAccount);
   parameterWidget()->append(tr("Show Zero Amounts"), "showZero", ParameterWidget::Exists);
-  parameterWidget()->applyDefaultFilterSet();
 }
 
 void dspTrialBalances::languageChange()

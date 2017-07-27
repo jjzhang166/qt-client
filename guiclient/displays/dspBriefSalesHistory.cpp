@@ -47,8 +47,6 @@ dspBriefSalesHistory::dspBriefSalesHistory(QWidget* parent, const char*, Qt::Win
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Cust. #"),             _itemColumn,     Qt::AlignLeft,   true,  "cust_number"   );
   list()->addColumn(tr("Name"),                -1,              Qt::AlignLeft,   true,  "cust_name"   );
   list()->addColumn(tr("Cust. Type"),          _orderColumn,    Qt::AlignLeft,   true,  "custtype_code"   );
