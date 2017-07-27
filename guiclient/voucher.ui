@@ -898,7 +898,7 @@ to be bound by its terms.</comment>
        <item>
         <widget class="Documents" name="_documents">
          <property name="type">
-          <number>0</number>
+          <enum>Documents::Voucher</enum>
          </property>
         </widget>
        </item>
