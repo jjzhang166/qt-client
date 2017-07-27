@@ -1156,6 +1156,7 @@ void salesOrderItem::sSave(bool pPartial)
                       "    coitem_qty_invuomratio=:qty_invuomratio,"
                       "    coitem_unitcost=:soitem_unitcost,"
                       "    coitem_custprice=:soitem_custprice,"
+                      "    coitem_listprice=:soitem_listprice,"
                       "    coitem_pricemode=:soitem_pricemode,"
                       "    coitem_price=:soitem_price,"
                       "    coitem_price_uom_id=:price_uom_id,"
@@ -1180,6 +1181,7 @@ void salesOrderItem::sSave(bool pPartial)
     salesSave.bindValue(":qty_invuomratio", _qtyinvuomratio);
     salesSave.bindValue(":soitem_unitcost", _unitCost->localValue());
     salesSave.bindValue(":soitem_custprice", _customerPrice->localValue());
+    salesSave.bindValue(":soitem_listprice", _listPrice->localValue());
     salesSave.bindValue(":soitem_price", _netUnitPrice->localValue());
     salesSave.bindValue(":soitem_pricemode", _priceMode);
     salesSave.bindValue(":price_uom_id", _priceUOM->id());
