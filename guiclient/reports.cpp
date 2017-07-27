@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,7 +13,6 @@
 #include <QMdiArea>
 #include <QMessageBox>
 #include <QVariant>
-//#include <QWorkspace>
 
 #include <metasql.h>
 #include <mqlutil.h>
@@ -122,7 +121,7 @@ void reports::sEdit()
   if (!omfgThis->_reportHandler)
   {
     omfgThis->_reportHandler = new ReportHandler(omfgThis, "report handler");
-    if(_preferences->value("InterfaceWindowOption") != "TopLevel")
+    if(_preferences->value("InterfaceWindowOption") == "Workspace")
       omfgThis->_reportHandler->setParentWindow(omfgThis->workspace());
     omfgThis->_reportHandler->setAllowDBConnect(false);
     omfgThis->_reportHandler->setPlaceMenusOnWindows(true);
