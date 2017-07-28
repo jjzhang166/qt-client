@@ -298,7 +298,7 @@ void issueToShipping::sCatchWoid(int pWoid)
 
 void issueToShipping::sPopulateMenu(QMenu *pMenu)
 {
-  if (_metrics->boolean("EnableSOReservations"))
+  if (_metrics->boolean("EnableSOReservations") && _order->isSO())
   {
     QAction *menuItem;
     menuItem = pMenu->addAction(tr("Unreserve Stock"), this, SLOT(sUnreserveStock()));
