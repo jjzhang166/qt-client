@@ -53,9 +53,7 @@ void postCashReceipts::sPost()
     return;
   }
 
-  postPost.exec( "SELECT cashrcpt_id, cust_number FROM cashrcpt "
-                 "JOIN cashrcptitem ON cashrcpt_id=cashrcptitem_cashrcpt_id "
-                 "JOIN custinfo ON cust_id=cashrcptitem_cust_id "
+  postPost.exec( "SELECT cashrcpt_id FROM cashrcpt "
                  "WHERE ((NOT cashrcpt_posted) AND (NOT cashrcpt_void));");
   if (postPost.first())
   {
@@ -66,8 +64,7 @@ void postCashReceipts::sPost()
 
     do
     {
-      message( tr("Posting Cash Receipt #%1...")
-               .arg(postPost.value("cust_number").toString()) );
+      message( tr("Posting Cash Receipt...") );
 
       post.bindValue(":cashrcpt_id", postPost.value("cashrcpt_id"));
       post.bindValue(":journalNumber", journalNumber);
@@ -84,24 +81,21 @@ void postCashReceipts::sPost()
 
           case -5:
             QMessageBox::critical( this, tr("Cannot Post Cash Receipt"),
-                                   tr( "A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.\n"
+                                   tr( "The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.\n"
                                        "You must make a A/R Account Assignment for the Customer Type to which this Customer\n"
-                                       "is assigned for you may post this Cash Receipt." )
-                                   .arg(postPost.value("cust_number").toString())  );
+                                       "is assigned for you may post this Cash Receipt." ));
             break;
 
           case -6:
             QMessageBox::critical( this, tr("Cannot Post Cash Receipt"),
-                                   tr( "A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.\n"
-                                       "You must make a Bank Account Assignment for this Cash Receipt before you may post it." )
-                                   .arg(postPost.value("cust_number").toString())  );
+                                   tr( "The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.\n"
+                                       "You must make a Bank Account Assignment for this Cash Receipt before you may post it." ));
             break;
 
           case -7:
             QMessageBox::critical( this, tr("Cannot Post Cash Receipt"),
-                                   tr( "A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.\n"
-                                       "Contact you Systems Administrator." )
-                                   .arg(postPost.value("cust_number").toString())  );
+                                   tr( "The selected Cash Receipt cannot be posted due to an unknown error.\n"
+                                       "Contact you Systems Administrator." ));
 
           default:
             counter++;
