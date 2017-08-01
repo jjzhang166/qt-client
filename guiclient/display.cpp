@@ -452,6 +452,8 @@ void display::showEvent(QShowEvent * e)
 {
   XWidget::showEvent(e);
 
+  parameterWidget()->applyDefaultFilterSet();
+
   if (_data->_queryOnStartEnabled &&
       _data->_queryonstart->isChecked())
     emit fillList();

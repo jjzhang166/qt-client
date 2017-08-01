@@ -49,8 +49,6 @@ dspBacklog::dspBacklog(QWidget* parent, const char*, Qt::WindowFlags fl)
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   list()->addColumn(tr("S/O #/Line #"),_itemColumn, Qt::AlignLeft,  true, "coitem_linenumber");

@@ -132,8 +132,6 @@ dspGLTransactions::dspGLTransactions(QWidget* parent, const char*, Qt::WindowFla
 
   parameterWidget()->append(tr("Show Deleted"), "showDeleted", ParameterWidget::Exists);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   _sources << "None" << "A/P" << "A/R" << "G/L" << "I/M" << "P/D" << "P/O" << "S/O" << "S/R" << "W/O";
 }
 
@@ -179,8 +177,6 @@ enum SetResponse dspGLTransactions::set(const ParameterList &pParams)
       parameterWidget()->setDefault(tr("End Date"), dspet.value("period_end").toDate());
     }
   }
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

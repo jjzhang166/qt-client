@@ -88,7 +88,6 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags f
   list()->addColumn(tr("Notes"),            -1,              Qt::AlignLeft,  false, "notes");
   
   setupCharacteristics("SO");
-  parameterWidget()->applyDefaultFilterSet();
   
   if (_privileges->check("MaintainSalesOrders"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

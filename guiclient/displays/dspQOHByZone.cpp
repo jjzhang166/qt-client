@@ -74,8 +74,6 @@ SetResponse dspQOHByZone::set(const ParameterList &pParams)
   if (valid)
     parameterWidget()->setDefault(tr("Zone"), param);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   return NoError;
 }
 

@@ -50,8 +50,6 @@ todoList::todoList(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Show Completed"), "completed", ParameterWidget::Exists);
   parameterWidget()->append(tr("Show Completed Only"), "completedonly", ParameterWidget::Exists);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   connect(_opportunities, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
   connect(_todolist, SIGNAL(toggled(bool)), this,   SLOT(sFillList()));
   connect(_incidents, SIGNAL(toggled(bool)), this, SLOT(sFillList()));

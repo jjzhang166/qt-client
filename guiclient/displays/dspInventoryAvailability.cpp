@@ -160,8 +160,6 @@ enum SetResponse dspInventoryAvailability::set(const ParameterList &pParams)
   _byVendor->setForgetful(true);
   _byVendor->setChecked(false);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   if (pParams.inList("run"))
   {
     sFillList();

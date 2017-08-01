@@ -49,8 +49,6 @@ dspUsageStatistics::dspUsageStatistics(QWidget* parent, const char* name, Qt::Wi
                            ParameterWidget::Multiselect, QVariant(), false,
                            qryABC);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Site"),        _whsColumn,  Qt::AlignCenter, true,  "warehous_code" );
   list()->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft,   true,  "item_number"   );
   list()->addColumn(tr("Description"), -1,          Qt::AlignLeft,   true,  "itemdescrip"   );
@@ -94,8 +92,6 @@ enum SetResponse dspUsageStatistics::set(const ParameterList &pParams)
     parameterWidget()->setDefault(tr("End Date"), param);
   else
     parameterWidget()->setDefault(tr("End Date"), omfgThis->endOfTime());
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {
