@@ -80,7 +80,6 @@ class XTUPLEWIDGETS_EXPORT ParameterWidget : public QWidget, public Ui::Paramete
 
   protected:
     virtual void showEvent(QShowEvent *);
-    virtual void resetEmptyParameter();
 
   private:
     enum ParameterWidgetTypes _type;
