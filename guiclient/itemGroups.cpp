@@ -102,7 +102,7 @@ void itemGroups::sNew()
   ParameterList params;
   params.append("mode", "new");
 
-  itemGroup *newdlg = new itemGroup();
+  itemGroup *newdlg = new itemGroup(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
@@ -113,7 +113,7 @@ void itemGroups::sEdit()
   params.append("mode", "edit");
   params.append("itemgrp_id", _itemgrp->id());
 
-  itemGroup *newdlg = new itemGroup();
+  itemGroup *newdlg = new itemGroup(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
@@ -124,7 +124,7 @@ void itemGroups::sView()
   params.append("mode", "view");
   params.append("itemgrp_id", _itemgrp->id());
 
-  itemGroup *newdlg = new itemGroup();
+  itemGroup *newdlg = new itemGroup(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }
