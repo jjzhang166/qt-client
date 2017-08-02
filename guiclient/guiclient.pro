@@ -817,6 +817,7 @@ HEADERS = ../common/format.h                    \
           departments.h                         \
           dictionaries.h                        \
           display.h                             \
+          displayprivate.h                      \
           displayTimePhased.h                   \
           distributeInventory.h                 \
           distributeToLocation.h                \

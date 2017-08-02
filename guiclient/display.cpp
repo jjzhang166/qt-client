@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,7 +10,6 @@
 
 #include "characteristic.h"
 #include "display.h"
-#include "xlineedit.h"
 #include "ui_display.h"
 
 #include <QSqlError>
@@ -28,161 +27,120 @@
 #include <parameter.h>
 #include <previewdialog.h>
 
-#include "../scriptapi/parameterlistsetup.h"
+#include "parameterlistsetup.h"
 #include "errorReporter.h"
+#include "displayprivate.h"
 
-class displayPrivate : public Ui::display
+displayPrivate::displayPrivate(::display *parent)
+    : QObject(parent),
+      _useAltId(false),
+      _queryOnStartEnabled(false),
+      _autoUpdateEnabled(false),
+      _filterChanged(false),
+      _parent(parent)
 {
-public:
-  displayPrivate(::display * parent) : _parent(parent)
-  {
-    setupUi(_parent);
-    _parameterWidget->setVisible(false);
-    _queryonstart->hide(); // hide until query on start enabled
-    _autoupdate->hide(); // hide until auto update is enabled
-    _search->hide();
-    _searchLit->hide();
-    _listLabelFrame->setVisible(false);
-    _useAltId = false;
-    _queryOnStartEnabled = false;
-    _autoUpdateEnabled = false;
+  setupUi(_parent);
 
-    // Build Toolbar even if we hide it so we get actions
-    _newBtn = new QToolButton(_toolBar);
-    _newBtn->setObjectName("_newBtn");
-    _newBtn->setFocusPolicy(Qt::NoFocus);
-    _newAct = _toolBar->addWidget(_newBtn);
-    _newAct->setVisible(false);
+  _parameterWidget->setVisible(false);
+  _queryonstart->hide(); // hide until query on start enabled
+  _autoupdate->hide(); // hide until auto update is enabled
+  _search->hide();
+  _searchLit->hide();
+  _listLabelFrame->setVisible(false);
 
-    _closeBtn = new QToolButton(_toolBar);
-    _closeBtn->setObjectName("_closeBtn");
-    _closeBtn->setFocusPolicy(Qt::NoFocus);
-    _closeAct = _toolBar->addWidget(_closeBtn);
+  // Build Toolbar even if we hide it so we get actions
+  _newBtn = new QToolButton(_toolBar);
+  _newBtn->setObjectName("_newBtn");
+  _newBtn->setFocusPolicy(Qt::NoFocus);
+  _newAct = _toolBar->addWidget(_newBtn);
+  _newAct->setVisible(false);
 
-    _sep1 = _toolBar->addSeparator();
+  _closeBtn = new QToolButton(_toolBar);
+  _closeBtn->setObjectName("_closeBtn");
+  _closeBtn->setFocusPolicy(Qt::NoFocus);
+  _closeAct = _toolBar->addWidget(_closeBtn);
 
-    // Move parameter widget controls into toolbar
-    _moreBtn = new QToolButton(_toolBar);
-    _moreBtn->setObjectName("_moreBtn");
-    _moreBtn->setFocusPolicy(Qt::NoFocus);
-    _moreBtn->setCheckable(true);
-    _moreAct = _toolBar->addWidget(_moreBtn);
-    _moreAct->setVisible(false);
+  _sep1 = _toolBar->addSeparator();
 
-    QLabel* filterListLit = _parent->findChild<QLabel*>("_filterListLit");
-    filterListLit->setContentsMargins(3,0,3,0);
-    XComboBox* filterList = _parent->findChild<XComboBox*>("_filterList");
+  // Move parameter widget controls into toolbar
+  _moreBtn = new QToolButton(_toolBar);
+  _moreBtn->setObjectName("_moreBtn");
+  _moreBtn->setFocusPolicy(Qt::NoFocus);
+  _moreBtn->setCheckable(true);
+  _moreAct = _toolBar->addWidget(_moreBtn);
+  _moreAct->setVisible(false);
 
-    _filterLitAct = _toolBar->insertWidget(_moreAct, filterListLit);
-    _filterLitAct->setVisible(false);
+  QLabel* filterListLit = _parent->findChild<QLabel*>("_filterListLit");
+  filterListLit->setContentsMargins(3,0,3,0);
+  XComboBox* filterList = _parent->findChild<XComboBox*>("_filterList");
 
-    _filterAct = _toolBar->insertWidget(_moreAct, filterList);
-    _filterAct->setVisible(false);
+  _filterLitAct = _toolBar->insertWidget(_moreAct, filterListLit);
+  _filterLitAct->setVisible(false);
 
-    _sep2 = _toolBar->addSeparator();
-    _sep2->setVisible(false);
+  _filterAct = _toolBar->insertWidget(_moreAct, filterList);
+  _filterAct->setVisible(false);
 
-    _expandBtn = new QToolButton(_toolBar);
-    _expandBtn->setObjectName("_expandBtn");
-    _expandBtn->setFocusPolicy(Qt::NoFocus);
-    _expandAct = _toolBar->addWidget(_expandBtn);
-    _expandAct->setVisible(false);
+  _sep2 = _toolBar->addSeparator();
+  _sep2->setVisible(false);
 
-    _collapseBtn = new QToolButton(_toolBar);
-    _collapseBtn->setObjectName("_collapseBtn");
-    _collapseBtn->setFocusPolicy(Qt::NoFocus);
-    _collapseAct = _toolBar->addWidget(_collapseBtn);
-    _collapseAct->setVisible(false);
+  _expandBtn = new QToolButton(_toolBar);
+  _expandBtn->setObjectName("_expandBtn");
+  _expandBtn->setFocusPolicy(Qt::NoFocus);
+  _expandAct = _toolBar->addWidget(_expandBtn);
+  _expandAct->setVisible(false);
 
-    // Print buttons
-    _printBtn = new QToolButton(_toolBar);
-    _printBtn->setObjectName("_printBtn");
-    _printBtn->setFocusPolicy(Qt::NoFocus);
-    _printAct = _toolBar->addWidget(_printBtn);
-    _printAct->setVisible(false); // hide the print button until a reportName is set
+  _collapseBtn = new QToolButton(_toolBar);
+  _collapseBtn->setObjectName("_collapseBtn");
+  _collapseBtn->setFocusPolicy(Qt::NoFocus);
+  _collapseAct = _toolBar->addWidget(_collapseBtn);
+  _collapseAct->setVisible(false);
 
-    _previewBtn = new QToolButton(_toolBar);
-    _previewBtn->setObjectName("_previewBtn");
-    _printBtn->setFocusPolicy(Qt::NoFocus);
-    _previewAct = _toolBar->addWidget(_previewBtn);
-    _previewAct->setVisible(false); // hide the preview button until a reportName is set
-    _sep3 = _toolBar->addSeparator();
-    _sep3->setVisible(false);
+  // Print buttons
+  _printBtn = new QToolButton(_toolBar);
+  _printBtn->setObjectName("_printBtn");
+  _printBtn->setFocusPolicy(Qt::NoFocus);
+  _printAct = _toolBar->addWidget(_printBtn);
+  _printAct->setVisible(false); // hide the print button until a reportName is set
 
-    // Optional search widget in toolbar
-    _search->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    _searchAct = _toolBar->addWidget(_search);
-    _searchAct->setVisible(false);
+  _previewBtn = new QToolButton(_toolBar);
+  _previewBtn->setObjectName("_previewBtn");
+  _printBtn->setFocusPolicy(Qt::NoFocus);
+  _previewAct = _toolBar->addWidget(_previewBtn);
+  _previewAct->setVisible(false); // hide the preview button until a reportName is set
+  _sep3 = _toolBar->addSeparator();
+  _sep3->setVisible(false);
 
-    // Remaining buttons in toolbar
-    _queryBtn = new QToolButton(_toolBar);
-    _queryBtn->setObjectName("_queryBtn");
-    _queryBtn->setFocusPolicy(Qt::NoFocus);
-    _queryAct = _toolBar->addWidget(_queryBtn);
+  // Optional search widget in toolbar
+  _search->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+  _searchAct = _toolBar->addWidget(_search);
+  _searchAct->setVisible(false);
 
-    // Menu actions for query options
-    _queryMenu = new QMenu(_queryBtn);
-    _queryOnStartAct = new QAction(_queryMenu);
-    _queryOnStartAct->setCheckable(true);
-    _queryOnStartAct->setVisible(false);
-    _queryMenu->addAction(_queryOnStartAct);
+  // Remaining buttons in toolbar
+  _queryBtn = new QToolButton(_toolBar);
+  _queryBtn->setObjectName("_queryBtn");
+  _queryBtn->setFocusPolicy(Qt::NoFocus);
+  _queryAct = _toolBar->addWidget(_queryBtn);
 
-    _autoUpdateAct = new QAction(_queryMenu);
-    _autoUpdateAct->setCheckable(true);
-    _autoUpdateAct->setVisible(false);
-    _queryMenu->addAction(_autoUpdateAct);
+  // Menu actions for query options
+  _queryMenu = new QMenu(_queryBtn);
+  _queryOnStartAct = new QAction(_queryMenu);
+  _queryOnStartAct->setCheckable(true);
+  _queryOnStartAct->setVisible(false);
+  _queryMenu->addAction(_queryOnStartAct);
 
-    _parent->layout()->setContentsMargins(0,0,0,0);
-    _parent->layout()->setSpacing(0);
-  }
+  _autoUpdateAct = new QAction(_queryMenu);
+  _autoUpdateAct->setCheckable(true);
+  _autoUpdateAct->setVisible(false);
+  _queryMenu->addAction(_autoUpdateAct);
 
-  bool setParams(ParameterList &);
-  void setupCharacteristics(QStringList uses);
-  void print(ParameterList, bool, bool);
+  _parent->layout()->setContentsMargins(0,0,0,0);
+  _parent->layout()->setSpacing(0);
+}
 
-  QString reportName;
-  QString metasqlName;
-  QString metasqlGroup;
-
-  bool _useAltId;
-  bool _queryOnStartEnabled;
-  bool _autoUpdateEnabled;
-
-  QAction* _newAct;
-  QAction* _closeAct;
-  QAction* _sep1;
-  QAction* _filterLitAct;
-  QAction* _filterAct;
-  QAction* _moreAct;
-  QAction* _sep2;
-  QAction* _expandAct;
-  QAction* _collapseAct;
-  QAction* _printAct;
-  QAction* _previewAct;
-  QAction* _sep3;
-  QAction* _searchAct;
-  QAction* _queryAct;
-  QAction* _queryOnStartAct;
-  QAction* _autoUpdateAct;
-
-  QMenu* _queryMenu;
-
-  QToolButton * _newBtn;
-  QToolButton * _closeBtn;
-  QToolButton * _moreBtn;
-  QToolButton * _queryBtn;
-  QToolButton * _previewBtn;
-  QToolButton * _printBtn;
-  QToolButton * _expandBtn;
-  QToolButton * _collapseBtn;
-
-  QList<QVariant> _charidstext;
-  QList<QVariant> _charidslist;
-  QList<QVariant> _charidsdate;
-
-private:
-  ::display * _parent;
-};
+void displayPrivate::sFilterChanged()
+{
+  _filterChanged = true;
+}
 
 void displayPrivate::print(ParameterList pParams, bool showPreview, bool forceSetParams)
 {
@@ -452,7 +410,12 @@ void display::showEvent(QShowEvent * e)
 {
   XWidget::showEvent(e);
 
-  parameterWidget()->applyDefaultFilterSet();
+  // don't overwrite the user's filter when the window is minimized
+  if (! _data->_filterChanged)
+  {
+    parameterWidget()->applyDefaultFilterSet();
+    connect(parameterWidget(), SIGNAL(filterChanged()), _data, SLOT(sFilterChanged()), Qt::UniqueConnection);
+  }
 
   if (_data->_queryOnStartEnabled &&
       _data->_queryonstart->isChecked())
