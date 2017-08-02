@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include <QtScript>
 
+#include <metasql.h>
 #include <parameter.h>
 #include <xsqlquery.h>
 
@@ -100,20 +101,20 @@ void UsernameLineEdit::setUsername(const QString & pUsername)
     return;
   }
 
-  XSqlQuery query;
-  QString sql("SELECT usr_id, usr_username AS number "
-                "  FROM usr"
-                " WHERE ((usr_username ~* :username) ");
-  if(UsersActive == _type)
-    sql += " AND (usr_active)";
-  else if(UsersInactive == _type)
-    sql += " AND (NOT usr_active)";
-  sql += ") ORDER BY usr_username LIMIT 1;";
+  MetaSQLQuery usrm("SELECT usr_id"
+                    "  FROM usr"
+                    " WHERE UPPER(usr_username) = UPPER(<? value('username') ?>)"
+                    "  <? if exists('isActive') ?>  AND usr_active    <? endif ?>"
+                    "  <? if exists('isInactive') ?>AND NOT usr_active<? endif ?>"
+                    ";");
+  ParameterList params;
+  params.append("username", pUsername);
+  if (UsersActive == _type)        params.append("isActive",   true);
+  else if (UsersInactive == _type) params.append("isInactive", true);
 
-  query.prepare(sql);
-  query.bindValue(":username", QString(pUsername).prepend("^"));
+  XSqlQuery query = usrm.toQuery(params);
   query.exec();
-  if(query.first())
+  if (query.first())
     setId(query.value("usr_id").toInt());
   else
   {
@@ -173,7 +174,7 @@ void UsernameCluster::addNumberWidget(VirtualClusterLineEdit* pNumberWidget)
 
 	if(matchType == 0)
 	  return;
-	  
+
     _number = matchType;
     if (! _number)
       return;
