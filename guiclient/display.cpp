@@ -290,38 +290,41 @@ bool displayPrivate::setParams(ParameterList &params)
   params.append("char_id_date_list", _charidsdate);
 
   // Handle text based sections of clause
-  for (int i = 0; i < _charidstext.count(); i++)
+  foreach (QVariant columnid, _charidstext)
   {
-    column = QString("char%1").arg(_charidstext.at(i).toString());
+    column = QString("char%1").arg(columnid.toString());
     param = params.value(column, &valid);
     if (valid)
-      clauses.append(QString("charass_alias%1.charass_value ~* '%2'").arg(_charidstext.at(i).toString()).arg(param.toString()));
+      clauses.append(QString("charass_alias%1.charass_value ~* :char%1").arg(columnid.toString()));
   }
   // Handle text based sections of clause
-  for (int i = 0; i < _charidslist.count(); i++)
+  foreach (QVariant columnid, _charidslist)
   {
-    column = QString("char%1").arg(_charidslist.at(i).toString());
+    column = QString("char%1").arg(columnid.toString());
     param = params.value(column, &valid);
     if (valid)
     {
-      QStringList list = param.toStringList();
-      clauses.append(QString("charass_alias%1.charass_value IN ('%2') ").arg(_charidslist.at(i).toString()).arg(list.join("','")));
+      QStringList list;
+      for (int j = 0; j < param.toStringList().count(); j++)
+        list << QString(":char%1_%2").arg(columnid.toString()).arg(j);
+
+      clauses.append(QString("charass_alias%1.charass_value IN (%2) ").arg(columnid.toString()).arg(list.join(",")));
     }
   }
   // Handle date based sections of clause
-  for (int i = 0; i < _charidsdate.count(); i++)
+  foreach (QVariant columnid, _charidsdate)
   {
     // Look for start date
-    column = QString("char%1startDate").arg(_charidsdate.at(i).toString());
+    column = QString("char%1startDate").arg(columnid.toString());
     param = params.value(column, &valid);
     if (valid)
-      clauses.append(QString("charass_alias%1.charass_value::date >= '%2'").arg(_charidsdate.at(i).toString()).arg(param.toString()));
+      clauses.append(QString("charass_alias%1.charass_value::date >= :char%1startDate").arg(columnid.toString()));
 
     // Look for end date
-    column = QString("char%1endDate").arg(_charidsdate.at(i).toString());
+    column = QString("char%1endDate").arg(columnid.toString());
     param = params.value(column, &valid);
     if (valid)
-      clauses.append(QString("charass_alias%1.charass_value::date <= '%2'").arg(_charidsdate.at(i).toString()).arg(param.toString()));
+      clauses.append(QString("charass_alias%1.charass_value::date <= :char%1endDate").arg(columnid.toString()));
   }
   if (clauses.count())
     params.append("charClause", clauses.join(" AND ").prepend(" AND "));
@@ -760,7 +763,49 @@ void display::sFillList(ParameterList pParams, bool forceSetParams)
                          errorString, __FILE__, __LINE__);
     return;
   }
-  XSqlQuery xq = mql.toQuery(pParams);
+  XSqlQuery xq = mql.toQuery(pParams, QSqlDatabase(), false);
+
+  QString column;
+  QVariant param;
+  bool valid;
+
+  foreach (QVariant columnid, _data->_charidstext)
+  {
+    column = QString("char%1").arg(columnid.toString());
+    param = pParams.value(column, &valid);
+    if (valid)
+      xq.bindValue(QString(":%1").arg(column), param.toString());
+  }
+
+  foreach (QVariant columnid, _data->_charidslist)
+  {
+    column = QString("char%1").arg(columnid.toString());
+    param = pParams.value(column, &valid);
+    if (valid)
+    {
+      QStringList list = param.toStringList();
+      for (int j = 0; j < list.count(); j++)
+        xq.bindValue(QString(":%1_%2").arg(column).arg(j), list.at(j));
+    }
+  }
+
+  foreach (QVariant columnid, _data->_charidsdate)
+  {
+    // Look for start date
+    column = QString("char%1startDate").arg(columnid.toString());
+    param = pParams.value(column, &valid);
+    if (valid)
+      xq.bindValue(QString(":%1").arg(column), param.toString());
+
+    // Look for end date
+    column = QString("char%1endDate").arg(columnid.toString());
+    param = pParams.value(column, &valid);
+    if (valid)
+      xq.bindValue(QString(":%1").arg(column), param.toString());
+  }
+
+  xq.exec();
+
   _data->_list->populate(xq, itemid, _data->_useAltId);
   if (xq.lastError().type() != QSqlError::NoError)
   {
