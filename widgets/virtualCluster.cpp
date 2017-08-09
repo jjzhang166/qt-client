@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -56,7 +56,7 @@ void VirtualCluster::init()
     _grid->addItem(_hspcr, 0, _grid->columnCount() + 1);
     _orientation = Qt::Horizontal;
     setOrientation(Qt::Vertical);
-    
+
     _mapper = new XDataWidgetMapper(this);
 }
 
@@ -316,8 +316,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
         _completer->setCompletionColumn(1);
         _completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
         connect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
-        connect(_completer, SIGNAL(highlighted(QString)), this, SLOT(setText(QString)));
-        connect(_completer, SIGNAL(highlighted(const QModelIndex &)), this, SLOT(completerHighlighted(const QModelIndex &)));
+        connect(_completer, SIGNAL(activated(const QModelIndex &)), this, SLOT(completerHighlighted(const QModelIndex &)));
       }
     }
 
@@ -348,7 +347,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     _copyAct->setEnabled(false);
     connect(_copyAct, SIGNAL(triggered()), this, SLOT(sCopy()));
     addAction(_copyAct);
-  
+
     _newAct = new QAction(tr("New..."), this);
     _newAct->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
     _newAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -479,7 +478,7 @@ void VirtualClusterLineEdit::sUpdateMenu()
 
     if (!menu()->actions().contains(_copyAct))
       menu()->addAction(_copyAct);
-    
+
     if (!menu()->actions().contains(_newAct) &&
         !_newPriv.isEmpty())
       menu()->addAction(_newAct);
@@ -491,7 +490,7 @@ void VirtualClusterLineEdit::sUpdateMenu()
 
     if (menu()->actions().contains(_copyAct))
       menu()->removeAction(_copyAct);
-    
+
     if (menu()->actions().contains(_newAct))
       menu()->removeAction(_newAct);
   }
@@ -572,7 +571,8 @@ void VirtualClusterLineEdit::completerHighlighted(const QModelIndex & index)
   _completerId = _completer->completionModel()->data(index.sibling(index.row(), 0)).toInt();
   if (DEBUG)
     qDebug() << objectName() << "::completerHighlighted(" << index << ")"
-             << "enterd with completerId" << _completerId;
+             << "corresponds to completerId" << _completerId;
+  sParse();
 }
 
 void VirtualClusterLineEdit::sHandleNullStr()
@@ -648,7 +648,9 @@ void VirtualClusterLineEdit::setTableAndColumnNames(const char* pTabName,
 
   _hasActive = (pActiveColumn && QString(pActiveColumn).trimmed().length());
   if (_hasActive)
-    _query += QString(", %1 AS active ").arg(pActiveColumn);
+    _query += QString(", %1 AS active,"
+                      "CASE WHEN NOT %1 THEN 'grey' END AS qtforegroundrole ")
+              .arg(pActiveColumn);
 
   _query += QString("FROM %1 WHERE (true) ").arg(pTabName);
 
@@ -802,7 +804,8 @@ void VirtualClusterLineEdit::sParse()
         numQ.prepare(_query + _numClause +
 		    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                     ((_hasActive && ! _showInactive) ? _activeClause : "" ) +
-                    QString("ORDER BY %1 LIMIT 1;").arg(_numColName));
+                    QString(" ORDER BY %1 %2 LIMIT 1;")
+                            .arg(QString(_hasActive ? "active DESC," : ""), _numColName));
         numQ.bindValue(":number", "^" + stripped);
         numQ.exec();
         if (numQ.first())
@@ -864,7 +867,8 @@ void VirtualClusterLineEdit::sSearch()
       numQ.prepare(_query + _numClause +
                    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                    ((_hasActive && ! _showInactive) ? _activeClause : "" ) +
-                   QString("ORDER BY %1;").arg(_numColName));
+                   QString(" ORDER BY %1 %2 LIMIT 1;")
+                           .arg(QString(_hasActive ? "active DESC," : ""), _numColName));
       numQ.bindValue(":number", "^" + stripped);
       numQ.exec();
       if (numQ.first())
@@ -1070,7 +1074,12 @@ VirtualList::VirtualList(QWidget* pParent, Qt::WindowFlags pFlags ) :
       if (_parent->_hasDescription)
       {
 	  _listTab->addColumn(tr("Description"),  -1, Qt::AlignLeft, true, "description");
-	  _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
+      }
+
+      if (_parent->_hasActive)
+      {
+        _listTab->addColumn("Active", -1, Qt::AlignLeft, true, "active");
+        _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
       }
 
       _id = _parent->_id;
@@ -1120,8 +1129,9 @@ void VirtualList::sFillList()
 		    (_parent->_extraClause.isEmpty() ? "" :
 					    " AND " + _parent->_extraClause) +
                     ((_parent->_hasActive && ! _parent->_showInactive) ? _parent->_activeClause : "") +
-		    QString(" ORDER BY ") +
-		    QString((_parent->_hasName) ? "name" : "number"));
+                    QString(" ORDER BY %1 %2;")
+                            .arg(QString(_parent->_hasActive ? "active DESC," : ""),
+                                 QString(_parent->_hasName   ? "name"         : "number")));
     _listTab->populate(query);
 }
 
@@ -1235,6 +1245,12 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
 	  _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
       }
 
+      if (_parent->_hasActive)
+      {
+        _listTab->addColumn("Active", -1, Qt::AlignLeft, true, "active");
+        _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
+      }
+
       _searchName->setHidden(! _parent->_hasName);
       _searchDescrip->setHidden(! _parent->_hasDescription);
       _id = _parent->_id;
@@ -1285,11 +1301,11 @@ void VirtualSearch::sFillList()
         search += QString("%1~*'%2'").arg(_parent->_numColName).arg(_search->text());
     if (_parent->_hasName &&
         (_searchName->isChecked()))
-        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_nameColName).arg(_search->text()) :  
+        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_nameColName).arg(_search->text()) :
         " OR " +  QString("%1~'%2'").arg(_parent->_nameColName).arg(_search->text()));
     if (_parent->_hasDescription &&
         (_searchDescrip->isChecked()))
-        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()) :  
+        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()) :
         " OR " +  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()));
     if (!search.isEmpty())
     {
@@ -1303,9 +1319,9 @@ void VirtualSearch::sFillList()
 		    (_parent->_extraClause.isEmpty() ? "" :
 					    " AND " + _parent->_extraClause) +
                     ((_parent->_hasActive && ! _parent->_showInactive) ? _parent->_activeClause : "") +
-		    QString(" ORDER BY ") +
-		    QString((_parent->_hasName) ? "name" : "number"));
-                    
+                    QString(" ORDER BY %1 %2;")
+                            .arg(QString(_parent->_hasActive ? "active DESC," : ""),
+                                 QString(_parent->_hasName   ? "name"         : "number")));
     _listTab->populate(qry);
 }
 
@@ -1320,7 +1336,7 @@ VirtualInfo::VirtualInfo(QWidget* pParent, Qt::WindowFlags pFlags) :
     setObjectName("virtualInfo");
     setWindowTitle(_parent->_titleSingular);
     _id = _parent->_id;
-    
+
     _titleLit	= new QLabel(_parent->_titleSingular, this);
     _titleLit->setObjectName("_titleLit");
     _numberLit	= new QLabel(tr("Number:"), this);
