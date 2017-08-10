@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -19,28 +19,10 @@ class QLabel;
 class QPushButton;
 class QScriptEngine;
 
-class UsernameList;
-class UsernameSearch;
 class UsernameCluster;
 
 void setupUsernameLineEdit(QScriptEngine *engine);
 void setupUsernameCluster(QScriptEngine *engine);
-
-class XTUPLEWIDGETS_EXPORT UsernameList : public VirtualList
-{
-  Q_OBJECT
-
-public:
-  UsernameList(QWidget*, Qt::WindowFlags = 0);
-};
-
-class XTUPLEWIDGETS_EXPORT UsernameSearch : public VirtualSearch
-{
-  Q_OBJECT
-
-public:
-  UsernameSearch(QWidget*, Qt::WindowFlags = 0);
-};
 
 class XTUPLEWIDGETS_EXPORT UsernameLineEdit : public VirtualClusterLineEdit
 {
@@ -50,6 +32,7 @@ class XTUPLEWIDGETS_EXPORT UsernameLineEdit : public VirtualClusterLineEdit
 
   public:
     UsernameLineEdit(QWidget*, const char* = 0);
+    virtual ~UsernameLineEdit();
 
     enum Type {
       UsersAll = 0,
@@ -57,25 +40,16 @@ class XTUPLEWIDGETS_EXPORT UsernameLineEdit : public VirtualClusterLineEdit
       UsersInactive
     };
 
-    Q_INVOKABLE inline enum Type type() const { return _type; }
-    Q_INVOKABLE void setType(enum Type pType);
-
-    Q_INVOKABLE int id();
-    Q_INVOKABLE const QString & username();
+    Q_INVOKABLE virtual inline enum Type type() const { return _type; }
+    Q_INVOKABLE virtual void setType(enum Type pType);
+    Q_INVOKABLE virtual const QString & username();
 
   public slots:
-    void setId(const int);
-    void setUsername(const QString &);
-    void clear();
-    void sParse();
-
-  protected:
-    UsernameList* listFactory();
-    UsernameSearch* searchFactory();
+    virtual void setUsername(const QString &);
 
   private:
     enum Type _type;
-    QString _username;
+    QString  *_username;
 };
 
 class XTUPLEWIDGETS_EXPORT UsernameCluster : public VirtualCluster
@@ -94,11 +68,7 @@ class XTUPLEWIDGETS_EXPORT UsernameCluster : public VirtualCluster
 
   public slots:
     void setUsername(const QString & pUsername);
-    void setReadOnly(const bool);
     inline void setId(const int pId, const QString& = QString::null)  { static_cast<UsernameLineEdit *>(_number)->setId(pId);   }
-
-  protected:
-    void addNumberWidget(VirtualClusterLineEdit* pNumberWidget);
 };
 
 Q_DECLARE_METATYPE(UsernameLineEdit*)
