@@ -55902,13 +55902,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation type="unfinished">應收</translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
-You must make a A/R Account Assignment for the Customer Type to which this Customer
-is assigned for you may post this Cash Receipt.</source>
-        <translation>客戶#%1的現金收款無法過帳因為無法辨識應收科目.
-必須指派這客戶類型的應收科目才能過帳.</translation>
-    </message>
-    <message>
         <source>General Ledger Series</source>
         <translation>總帳交易系列</translation>
     </message>
@@ -55931,18 +55924,8 @@ the amount received. You must correct this before you may post this Cash Receipt
         <translation>系統錯誤過帳</translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
-You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
-        <translation>客戶#%1的現金收款無法過帳因為無法辨識收款銀行.必須指派這客戶類型的收款銀行才能過帳.</translation>
-    </message>
-    <message>
         <source>No Unposted Cash Receipts</source>
         <translation>沒有未過帳的現金收款</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation>客戶#%1的現金收款無法過帳因為發生未知的錯誤.聯絡你的系統管理員.</translation>
     </message>
     <message>
         <source>There are no unposted Cash Receipts to post.</source>
@@ -55965,11 +55948,27 @@ Contact you Systems Administrator.</source>
         <translation>無法過帳現金收款</translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
-        <translation>過帳現金收款%1中 ...</translation>
+        <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Posting Cash Receipts Information</source>
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
+You must make a A/R Account Assignment for the Customer Type to which this Customer
+is assigned for you may post this Cash Receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
+You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

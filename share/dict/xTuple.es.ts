@@ -55879,12 +55879,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation type="unfinished">Grupo del Libro Mayor</translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
-You must make a A/R Account Assignment for the Customer Type to which this Customer
-is assigned for you may post this Cash Receipt.</source>
-        <translation>No se puede registrar un Recibo de Caja para el Cliente Nº%1 porque no se puede determinar la Cuenta de Deudores. Debe hacer una Asignación de Cuenta de Deudores para el Tipo de Cliente al que ha asignado a este Cliente, para poder registrar este Recibo de Caja.</translation>
-    </message>
-    <message>
         <source>P&amp;rint Journal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -55897,10 +55891,6 @@ is assigned for you may post this Cash Receipt.</source>
         <translation>No es posible Asentar Recibos de Efectivo</translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
-        <translation>Contabilizando Recibo de Caja Nº%1...</translation>
-    </message>
-    <message>
         <source>There are no unposted Cash Receipts to post.</source>
         <translation>No hay Recibos de Caja sin contabilizar que contabilizar.</translation>
     </message>
@@ -55908,16 +55898,6 @@ is assigned for you may post this Cash Receipt.</source>
         <source>The selected Cash Receipt cannot be posted as the amount distributed is greater than
 the amount received. You must correct this before you may post this Cash Receipt.</source>
         <translation>No se puede contabilizar el Recibo de Caja seleccionado porque el la cantidad distribuida es mayor que la recibida. Debe corregir esto antes de poder contabilizar este Recibo de Caja.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
-You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
-        <translation>No se puede registrar un Recibo de Caja para el Cliente Nº%1 porque no se puede determinar la Cuenta de Banco. Debe hacer una Asignación de Cuenta de Banco para este Recibo de Caja antes de poder registrarlo.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation>No se puede registrar un Recibo de Caja para el Cliente Nº%1 debido a un error desconocido. Contacte con su Administrador de Sistema.</translation>
     </message>
     <message>
         <source>No Unposted Cash Receipts</source>
@@ -55933,6 +55913,26 @@ Contact you Systems Administrator.</source>
     </message>
     <message>
         <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
+You must make a A/R Account Assignment for the Customer Type to which this Customer
+is assigned for you may post this Cash Receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
+You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

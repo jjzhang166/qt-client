@@ -55956,29 +55956,8 @@ montant reçu. Vous devez corriger ceci avant que vous puissiez reporter cet Enc
         <translation>Erreur en Reportant</translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
-        <translation>Reporte Encaissement #%1...</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
-You must make a A/R Account Assignment for the Customer Type to which this Customer
-is assigned for you may post this Cash Receipt.</source>
-        <translation>Un Encaissement pour le Client #%1 ne peut pas être reporté étant donné que le Compte CC ne peut pas être déterminé. Vous devez effectuer une Affectation de Compte CC pour le Type de Client auquel ce Client est affecté avant que vous puissiez reporter cet Encaissement.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
-You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
-        <translation>Un Encaissement pour le Client #%1 ne peut être reporté étant donné que le Compte Bancaire ne peut pas être déterminé.
-Vous devez effectuer une Affectation de Compte Bancaire à cet Encaissement avant que vous puissiez le reporter.</translation>
-    </message>
-    <message>
         <source>&amp;Post</source>
         <translation>Re&amp;amp;porter</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation>Un Encaissement pour le Client #%1 ne peut pas être reporté en raison d&apos;une erreur inconnue. Communiquez avec votre Administrateur de Systèmes Informatiques.</translation>
     </message>
     <message>
         <source>No Unposted Cash Receipts</source>
@@ -55998,6 +55977,26 @@ Contact you Systems Administrator.</source>
     </message>
     <message>
         <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
+You must make a A/R Account Assignment for the Customer Type to which this Customer
+is assigned for you may post this Cash Receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
+You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
