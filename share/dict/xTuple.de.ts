@@ -56003,34 +56003,10 @@ Sie müssen diese Artikelstandorte erst neu zuweisen, bevor Sie den gewählten P
         <translation type="unfinished">Journalserie</translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
-        <translation>Verbuche Bareinnahme Nr. %1...</translation>
-    </message>
-    <message>
         <source>The selected Cash Receipt cannot be posted as the amount distributed is greater than
 the amount received. You must correct this before you may post this Cash Receipt.</source>
         <translation>Die gewählte Bareinnahme kann nicht verbucht werden, weil der verteilte Betrag größer ist
 als der erhaltende Betrag, Sie müssen dies korrigieren, bevor Sie diese Bareinnahme verbuchen können.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
-You must make a A/R Account Assignment for the Customer Type to which this Customer
-is assigned for you may post this Cash Receipt.</source>
-        <translation>Die Bareinnahme kann für diesen Kunde Nr. %1 nicht verbucht werden, weil das Forderungskonto nicht ermittelt werden kann.
-Sie müssen der Kundenart, zu der dieser Kunde gehört, ein Forderungskonto zuordnen,
-bevor Sie diese Bereinnahme verbuchen können.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
-You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
-        <translation>Die Bareinnahme kann für diesen Kunde Nr. %1 nicht verbucht werden, weil das Bankkonto nicht bestimmt werden kann.
-Sie müssen für diese Bareinnahme eine Bankkonten-Zuweisung vornehmen, bevor Sie diese Bareinnahme verbuchen können.</translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation>Die Bareinnahme für Kunde #%1 kann aufgrund eines unbekannten Fehlers nicht verbucht werden.
-Bitte Systemadministrator kontaktieren.</translation>
     </message>
     <message>
         <source>There are no unposted Cash Receipts to post.</source>
@@ -56050,6 +56026,26 @@ Bitte Systemadministrator kontaktieren.</translation>
     </message>
     <message>
         <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
+You must make a A/R Account Assignment for the Customer Type to which this Customer
+is assigned for you may post this Cash Receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
+You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

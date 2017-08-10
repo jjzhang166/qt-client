@@ -55866,18 +55866,8 @@ You must reassign these Item Sites before you may delete the selected Planner Co
 <context>
     <name>postCashReceipts</name>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
-You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
-        <translation type="unfinished">Una Recepción de Efectivo para el Cliente #%1 no puede asentarse porque la Cuenta Bancaria no puede ser determinada. Debe asignar una Cuenta Bancaria para esta Recepción de Efectivo antes de poder efectuar este asiento.</translation>
-    </message>
-    <message>
         <source>A/R</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation>Una Recepción de Efectivo para el Cliente #%1 no puede asentarse por un error desconocido. Contactar al Administrador de Sistemas.</translation>
     </message>
     <message>
         <source>General Ledger Series</source>
@@ -55921,21 +55911,31 @@ the amount received. You must correct this before you may post this Cash Receipt
         <translation>&amp;Asentar</translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
-You must make a A/R Account Assignment for the Customer Type to which this Customer
-is assigned for you may post this Cash Receipt.</source>
-        <translation>Una Recepción de Efectivo para el Cliente #%1 no puede asentarse porque la Cuenta de CxC no puede ser determinada. Debe asignar una Cuenta de CxC para el Tipo de Cliente al cual este cliente está asignado para poder efectuar este asiento.</translation>
-    </message>
-    <message>
         <source>There are no unposted Cash Receipts to post.</source>
         <translation>No hay Recepciónes de Efectivo sin asentar</translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
-        <translation>Asentando la Recepción de Efectivo #%1...</translation>
+        <source>Error Posting Cash Receipts Information</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Posting Cash Receipts Information</source>
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
+You must make a A/R Account Assignment for the Customer Type to which this Customer
+is assigned for you may post this Cash Receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
+You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

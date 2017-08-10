@@ -55882,11 +55882,6 @@ You must reassign these Item Sites before you may delete the selected Planner Co
         <translation>&amp;Boeking</translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted due to an unknown error.
-Contact you Systems Administrator.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The selected Cash Receipt cannot be posted as the amount distributed is greater than
 the amount received. You must correct this before you may post this Cash Receipt.</source>
         <translation type="unfinished"></translation>
@@ -55896,22 +55891,27 @@ the amount received. You must correct this before you may post this Cash Receipt
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Posting Cash Receipt #%1...</source>
+        <source>Error Posting Cash Receipts Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the A/R Account cannot be determined.
+        <source>Posting Cash Receipt...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected Cash Receipt cannot be posted as the A/R Account cannot be determined.
 You must make a A/R Account Assignment for the Customer Type to which this Customer
 is assigned for you may post this Cash Receipt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A Cash Receipt for Customer #%1 cannot be posted as the Bank Account cannot be determined.
+        <source>The selected Cash Receipt cannot be posted as the Bank Account cannot be determined.
 You must make a Bank Account Assignment for this Cash Receipt before you may post it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Posting Cash Receipts Information</source>
+        <source>The selected Cash Receipt cannot be posted due to an unknown error.
+Contact you Systems Administrator.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
