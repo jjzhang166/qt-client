@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -19,12 +19,12 @@
 #include <openreports.h>
 #include <parameter.h>
 
-#include "guiclient.h"
 #include "adjustmentTrans.h"
 #include "enterMiscCount.h"
 #include "transferTrans.h"
 #include "createCountTagsByItem.h"
 #include "mqlutil.h"
+#include "xtreewidget.h"
 
 dspSlowMovingInventoryByClassCode::dspSlowMovingInventoryByClassCode(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspSlowMovingInventoryByClassCode", fl)

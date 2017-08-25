@@ -308,28 +308,8 @@ void userPreferences::sSave(bool close)
 
   _pref->set("SpellCheck", _enableSpell->isChecked());
 
-  if(_enableSpell->isChecked())
-  {
-      QString langName = QLocale::languageToString(QLocale().language());
-      QString appPath = QApplication::applicationDirPath();
-      QString fullPathWithoutExt = appPath + "/" + langName;
-      QFile affFile(fullPathWithoutExt + ".aff");
-      QFile dicFile(fullPathWithoutExt + ".dic");
-      // If we don't have files for the first name lets try a more common naming convention
-      if(!(affFile.exists() && dicFile.exists()))
-      {
-        langName = QLocale().name().toLower(); // retruns lang_cntry format en_us for example
-        fullPathWithoutExt = appPath + "/" + langName;
-        affFile.setFileName(fullPathWithoutExt + tr(".aff"));
-        dicFile.setFileName(fullPathWithoutExt + tr(".dic"));
-      }
-      if(!affFile.exists() || !dicFile.exists())
-      {
-        QMessageBox::warning( this, tr("Spell Dictionary Missing"),
-                   tr("The following Hunspell files are required for spell checking: <p>")
-                   + fullPathWithoutExt + tr(".aff <p>") + fullPathWithoutExt + tr(".dic"));
-      }
-  }
+  if (_enableSpell->isChecked())
+    omfgThis->hunspell_initialize();
   
   _pref->set("ShowIMMenu", _inventoryMenu->isChecked());
   _pref->set("ShowPDMenu", _productsMenu->isChecked());

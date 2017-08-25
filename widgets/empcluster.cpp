@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -9,6 +9,12 @@
  */
 
 #include "empcluster.h"
+
+#include <QLabel>
+#include <QtScript>
+
+#include "xcheckbox.h"
+#include "xtreewidget.h"
 
 EmpCluster::EmpCluster(QWidget* pParent, const char* pName) :
     VirtualCluster(pParent, pName)
@@ -68,16 +74,6 @@ EmpSearch::EmpSearch(QWidget *pParent, Qt::WindowFlags pFlags) : VirtualSearch(p
 
 // script exposure ////////////////////////////////////////////////////////////
 
-QScriptValue EmpClusterLineEdittoScriptValue(QScriptEngine *engine, EmpClusterLineEdit* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void EmpClusterLineEditfromScriptValue(const QScriptValue &obj, EmpClusterLineEdit* &item)
-{
-  item = qobject_cast<EmpClusterLineEdit*>(obj.toQObject());
-}
-
 QScriptValue constructEmpClusterLineEdit(QScriptContext *context,
                                          QScriptEngine  *engine)
 {
@@ -96,30 +92,21 @@ QScriptValue constructEmpClusterLineEdit(QScriptContext *context,
     context->throwError(QScriptContext::UnknownError,
                         "could not find an appropriate EmpClusterLineEdit constructor");
 
+#if QT_VERSION >= 0x050000
   return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupEmpClusterLineEdit(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, EmpClusterLineEdittoScriptValue, EmpClusterLineEditfromScriptValue);
-
-  QScriptValue widget = engine->newFunction(constructEmpClusterLineEdit);
-
-//  widget.setProperty("EmpAll",     QScriptValue(engine, EmpClusterLineEdit::EmpAll),     QScriptValue::ReadOnly | QScriptValue::Undeletable);
-//  widget.setProperty("EmpActive",  QScriptValue(engine, EmpClusterLineEdit::EmpActive),  QScriptValue::ReadOnly | QScriptValue::Undeletable);
-//  widget.setProperty("EmpInactive",QScriptValue(engine, EmpClusterLineEdit::EmpInactive),QScriptValue::ReadOnly | QScriptValue::Undeletable);
-
-  engine->globalObject().setProperty("EmpClusterLineEdit", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
-}
-
-QScriptValue EmpClustertoScriptValue(QScriptEngine *engine, EmpCluster* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void EmpClusterfromScriptValue(const QScriptValue &obj, EmpCluster* &item)
-{
-  item = qobject_cast<EmpCluster*>(obj.toQObject());
+  QScriptValue::PropertyFlags ro = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+  QScriptValue widget = engine->globalObject().property("EmpClusterLineEdit");
+  if (! widget.isFunction()) {
+    widget = engine->newFunction(constructEmpClusterLineEdit);
+    engine->globalObject().setProperty("EmpClusterLineEdit", widget, ro);
+  }
 }
 
 QScriptValue constructEmpCluster(QScriptContext *context,
@@ -140,14 +127,21 @@ QScriptValue constructEmpCluster(QScriptContext *context,
     context->throwError(QScriptContext::UnknownError,
                         "could not find an appropriate EmpCluster constructor");
 
+#if QT_VERSION >= 0x050000
   return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupEmpCluster(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, EmpClustertoScriptValue, EmpClusterfromScriptValue);
+  if (! engine->globalObject().property("EmpCluster").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructEmpCluster);
+    QScriptValue meta = engine->newQMetaObject(&EmpCluster::staticMetaObject, ctor);
 
-  QScriptValue widget = engine->newFunction(constructEmpCluster);
-
-  engine->globalObject().setProperty("EmpCluster", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
+    engine->globalObject().setProperty("EmpCluster", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

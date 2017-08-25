@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -15,6 +15,7 @@
 #include <QLocale>
 #include <QMouseEvent>
 #include <QValidator>
+#include <QtScript>
 
 #include "format.h"
 
@@ -248,3 +249,32 @@ bool XLineEdit::isNull()
   return _isNull;
 }
 
+// script exposure /////////////////////////////////////////////////////////////
+
+QScriptValue constructXLineEdit(QScriptContext *context, QScriptEngine *engine)
+{
+#if QT_VERSION > 0x050000
+  XLineEdit *obj = 0;
+  if (context->argumentCount() == 1)
+    obj = new XLineEdit(qobject_cast<QWidget*>(context->argument(0).toQObject()));
+  else if (context->argumentCount() >= 2)
+    obj = new XLineEdit(qobject_cast<QWidget*>(context->argument(0).toQObject()),
+                        context->argument(1).toString().toLatin1().data());
+
+  return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
+}
+
+void setupXLineEdit(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("XLineEdit").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructXLineEdit);
+    QScriptValue meta = engine->newQMetaObject(&XLineEdit::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("XLineEdit", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
+}

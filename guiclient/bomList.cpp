@@ -157,6 +157,10 @@ void bomList::sPrint()
 void bomList::sSearch( const QString &pTarget )
 {
   _bom->clearSelection();
+
+  if(pTarget=="")
+   return; 
+
   int i;
   for (i = 0; i < _bom->topLevelItemCount(); i++)
   {

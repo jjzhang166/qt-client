@@ -117,6 +117,10 @@ void salesOrderList::set(const ParameterList &pParams)
   if (valid)
     _type = param.toInt();
 
+  param = pParams.value("exclShipped", &valid);
+  if (valid)
+    _exclShipped = param.toBool();
+
   param = pParams.value("cust_id", &valid);
   if (valid)
     _custid = param.toInt();
@@ -204,6 +208,9 @@ void salesOrderList::sFillList()
         sql += " AND ";
       sql += "(cohead_cust_id=:cust_id)";
     }
+
+    if (_exclShipped)
+      sql += " AND (NOT orderhasshipped(cohead_id)) ";
 
     sql += ")) "
            "ORDER BY cohead_number;";

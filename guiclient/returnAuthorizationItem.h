@@ -24,6 +24,8 @@ class returnAuthorizationItem : public XDialog, public Ui::returnAuthorizationIt
 public:
     returnAuthorizationItem(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~returnAuthorizationItem();
+    Q_INVOKABLE virtual int raitemId() { return _raitemid; }
+    Q_INVOKABLE virtual int coitemId() { return _coitemid; }
 
 public slots:
 	

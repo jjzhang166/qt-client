@@ -26,23 +26,17 @@ to be bound by its terms.</comment>
    </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_7">
-     <item row="0" column="0">
-      <widget class="QLabel" name="_nameLit">
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="_unique">
        <property name="text">
-        <string>Name:</string>
+        <string>Allow unique characteristic assignment only</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>_name</cstring>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="XLineEdit" name="_name"/>
-     </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="_typeLit">
        <property name="text">
         <string>Type:</string>
@@ -52,7 +46,7 @@ to be bound by its terms.</comment>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="XComboBox" name="_type">
@@ -69,6 +63,11 @@ to be bound by its terms.</comment>
          <item>
           <property name="text">
            <string>Date</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Number</string>
           </property>
          </item>
         </widget>
@@ -98,7 +97,7 @@ to be bound by its terms.</comment>
        </item>
       </layout>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QCheckBox" name="_search">
        <property name="text">
         <string>Include in searches</string>
@@ -108,13 +107,39 @@ to be bound by its terms.</comment>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="_unique">
+     <item row="0" column="0">
+      <widget class="QLabel" name="_nameLit">
        <property name="text">
-        <string>Allow unique characteristic assignment only</string>
+        <string>Name:</string>
        </property>
-       <property name="checked">
-        <bool>false</bool>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>_name</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="XLineEdit" name="_name"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="_charGroupLit">
+       <property name="text">
+        <string>Group:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="XComboBox" name="_charGroup">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="allowNull">
+        <bool>true</bool>
+       </property>
+       <property name="defaultCode">
+        <enum>XComboBox::None</enum>
        </property>
       </widget>
      </item>
@@ -313,6 +338,20 @@ to be bound by its terms.</comment>
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="_numberPage">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>No Options</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -352,6 +391,7 @@ to be bound by its terms.</comment>
  </customwidgets>
  <tabstops>
   <tabstop>_name</tabstop>
+  <tabstop>_charGroup</tabstop>
   <tabstop>_type</tabstop>
   <tabstop>_order</tabstop>
   <tabstop>_tab</tabstop>

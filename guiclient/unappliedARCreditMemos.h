@@ -22,6 +22,7 @@ class unappliedARCreditMemos : public XWidget, public Ui::unappliedARCreditMemos
 public:
     unappliedARCreditMemos(QWidget* parent = 0, const char* name = 0, Qt::WindowFlags fl = Qt::Window);
     ~unappliedARCreditMemos();
+    virtual bool setParams(ParameterList &params);
 
 public slots:
     virtual void sPrint();

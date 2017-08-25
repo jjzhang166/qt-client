@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -33,18 +33,17 @@ class XTUPLEWIDGETS_EXPORT ShipmentClusterLineEdit : public VirtualClusterLineEd
 {
     Q_OBJECT
 
-    Q_ENUMS(ShipmentType)
-    Q_ENUMS(ShipmentStatus)
-
     Q_PROPERTY(ShipmentType type READ type WRITE setType )
     Q_PROPERTY(ShipmentStatus status READ status WRITE setStatus )
 
     public:
       // TODO: make these flags instead of a simple enum?
         enum ShipmentType { All, SalesOrder, TransferOrder };
+        Q_ENUM(ShipmentType)
         ShipmentClusterLineEdit(QWidget*, const char* = 0);
         virtual ShipmentType type();
         enum ShipmentStatus { AllStatus, Shipped, Unshipped };
+        Q_ENUM(ShipmentStatus)
         virtual ShipmentStatus status();
 
     public slots:
@@ -81,5 +80,7 @@ class XTUPLEWIDGETS_EXPORT ShipmentCluster : public VirtualCluster
         virtual void setStatus(QString);
         virtual void setStatus(ShipmentClusterLineEdit::ShipmentStatus);
 };
+
+void setupShipmentClusterLineEdit(QScriptEngine *engine);
 
 #endif

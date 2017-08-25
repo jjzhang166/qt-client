@@ -103,8 +103,6 @@ enum SetResponse dspPlannedOrders::set(const ParameterList &pParams)
     parameterWidget()->setDefault(tr("Order Types"), list);
   }
 
-  parameterWidget()->applyDefaultFilterSet();
-
   if (pParams.inList("run"))
   {
     sFillList();

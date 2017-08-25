@@ -80,7 +80,8 @@ void explodeWo::sExplode()
       if (result < 0)
       {
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Exploding Work Order"),
-                               storedProcErrorLookup("explodeWo", result),
+                               storedProcErrorLookup("explodeWo", result)
+                               .arg(_wo->id() ? _wo->woNumber() : ""),
                                __FILE__, __LINE__);
         return;
       }

@@ -70,7 +70,6 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Country Pattern"), "addr_country_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Create Date on or After"), "startCreateDate", ParameterWidget::Date);
   parameterWidget()->append(tr("Create Date on or Before"),   "endCreateDate",   ParameterWidget::Date);
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(omfgThis, SIGNAL(crmAccountsUpdated(int)),     this, SLOT(sFillList()));
   connect(omfgThis, SIGNAL(customersUpdated(int, bool)), this, SLOT(sFillList()));
@@ -106,7 +105,6 @@ crmaccounts::crmaccounts(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Create Date"), _dateColumn, Qt::AlignLeft, false, "crmacct_created" );
 
   setupCharacteristics("CRMACCT");
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 

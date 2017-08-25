@@ -49,6 +49,8 @@ unappliedARCreditMemos::unappliedARCreditMemos(QWidget* parent, const char* name
   if (_privileges->check("ApplyARMemos"))
     connect(_aropen, SIGNAL(valid(bool)), _apply, SLOT(setEnabled(bool)));
 
+  connect(_customerGroup, SIGNAL(updated()), this, SLOT(sFillList()));
+
   sFillList();
 }
 
@@ -69,9 +71,18 @@ void unappliedARCreditMemos::languageChange()
   retranslateUi(this);
 }
 
+bool unappliedARCreditMemos::setParams(ParameterList &params)
+{
+  _customerGroup->appendValue(params);
+  return true;
+}
+
 void unappliedARCreditMemos::sPrint()
 {
   ParameterList params;
+  if (! setParams(params))
+    return;
+
   params.append("isReport", true);
 
   orReport report("UnappliedARCreditMemos", params);
@@ -80,7 +91,6 @@ void unappliedARCreditMemos::sPrint()
   else
     report.reportError(this);
 }
-
 
 void unappliedARCreditMemos::sNew()
 {
@@ -115,6 +125,8 @@ void unappliedARCreditMemos::sFillList()
   MetaSQLQuery mql = mqlLoad("arCreditMemos", "unapplied");
   
   ParameterList params;
+  if (! setParams(params))
+    return;
   
   XSqlQuery qry = mql.toQuery(params);
   _aropen->populate(qry);

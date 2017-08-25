@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,6 +21,7 @@
 #include "creditCard.h"
 #include "creditcardprocessor.h"
 #include "errorReporter.h"
+#include "getGLDistDate.h"
 #include "mqlutil.h"
 #include "storedProcErrorLookup.h"
 
@@ -89,7 +90,7 @@ cashReceipt::cashReceipt(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _bankaccnt->setType(XComboBox::ARBankAccounts);
   _salescat->setType(XComboBox::SalesCategoriesActive);
 
-
+  _postReceipt->setEnabled(_privileges->check("PostCashReceipts"));
 
   _aropen->addColumn(tr("Doc. Type"), -1,              Qt::AlignCenter, true, "doctype");
   _aropen->addColumn(tr("Doc. #"),    _orderColumn,    Qt::AlignCenter, true, "aropen_docnumber");
@@ -434,6 +435,7 @@ enum SetResponse cashReceipt::set(const ParameterList &pParams)
       _editCC->setEnabled(false);
       _customerSelector->setEnabled(false);
       _project->setEnabled(false);
+      _postReceipt->setVisible(false);
       disconnect(_cashrcptmisc, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
       disconnect(_cashrcptmisc, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
     }
@@ -779,11 +781,18 @@ void cashReceipt::sSave()
 
   if (save(false))
   {
+    if (_postReceipt->isChecked() && !_posted)
+    {    
+      if (!postReceipt())
+        return;
+    }
+
     omfgThis->sCashReceiptsUpdated(_cashrcptid, true);
     _cashrcptid = -1;
 
     close();
   }
+
   updateCustomerGroup();
 }
 
@@ -973,6 +982,73 @@ bool cashReceipt::save(bool partial)
   return true;
 }
 
+bool cashReceipt::postReceipt()
+{
+  XSqlQuery cashPost;
+  bool changeDate = false;
+  QDate newDate = QDate();
+  
+  if (_privileges->check("ChangeCashRecvPostDate"))
+  {
+    getGLDistDate newdlg(this, "", true);
+    newdlg.sSetDefaultLit(tr("Distribution Date"));
+    if (newdlg.exec() == XDialog::Accepted)
+    {
+      newDate = newdlg.date();
+      changeDate = (newDate.isValid());
+    }
+    else
+      return false;
+  }
+  
+  XSqlQuery tx;
+  tx.exec("BEGIN;");
+
+  XSqlQuery setDate;
+  setDate.prepare("UPDATE cashrcpt SET cashrcpt_distdate=:distdate,"
+                  "                    cashrcpt_applydate=CASE WHEN (cashrcpt_applydate < :distdate) THEN :distdate"
+                  "                                            ELSE cashrcpt_applydate END "
+                  "WHERE cashrcpt_id=:cashrcpt_id;");
+   
+  if (changeDate)
+  {
+    setDate.bindValue(":distdate",    newDate);
+    setDate.bindValue(":cashrcpt_id", _cashrcptid);
+    setDate.exec();
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Changing Dist. Date"),
+                         setDate, __FILE__, __LINE__))
+    {
+      tx.exec("ROLLBACK");
+      return false;
+    }
+  }
+  
+  cashPost.prepare("SELECT postCashReceipt(:cashrcpt_id, fetchJournalNumber('C/R')) AS result;");
+  cashPost.bindValue(":cashrcpt_id", _cashrcptid);
+  cashPost.exec();
+  if (cashPost.first())
+  {
+    int result = cashPost.value("result").toInt();
+    if (result < 0)
+    {
+      tx.exec("ROLLBACK;");
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt Entry"),
+                             storedProcErrorLookup("postCashReceipt", result),
+                             __FILE__, __LINE__);
+      return false;
+    }
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt Entry"),
+                                cashPost, __FILE__, __LINE__))
+  {
+    tx.exec("ROLLBACK");
+    return false;
+  }
+
+  tx.exec("COMMIT;");
+  return true;
+}
+
 void cashReceipt::sFillApplyList()
 {
   // Customer Group selected
@@ -1158,6 +1234,9 @@ void cashReceipt::populate()
       _balCustomerDeposit->setChecked(true);
     else
       _balCreditMemo->setChecked(true);
+
+    if(cashpopulate.value("cashrcpt_posted").toBool())
+      _postReceipt->setVisible(false);
 
     _origFunds = cashpopulate.value("cashrcpt_fundstype").toString();
     _fundsType->setCode(_origFunds);

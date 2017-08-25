@@ -18,10 +18,10 @@
 #include <metasql.h>
 
 #include "copyItem.h"
-#include "item.h"
-#include "storedProcErrorLookup.h"
-#include "parameterwidget.h"
 #include "errorReporter.h"
+#include "item.h"
+#include "parameterwidget.h"
+#include "storedProcErrorLookup.h"
 
 items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "items", fl)
@@ -80,6 +80,7 @@ items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Item Number"), _itemColumn, Qt::AlignLeft   , true, "item_number" );
   list()->addColumn(tr("Active"),      _ynColumn,   Qt::AlignCenter , true, "item_active" );
   list()->addColumn(tr("Description"), -1,          Qt::AlignLeft   , true, "item_descrip" );
+  list()->addColumn(tr("Description 2"), -1,        Qt::AlignLeft   , false, "item_descrip2" );
   list()->addColumn(tr("Class Code"),  _dateColumn, Qt::AlignLeft , true, "classcode_code");
   list()->addColumn(tr("Type"),        _itemColumn, Qt::AlignLeft , true, "f_item_type");
   list()->addColumn(tr("UOM"),         _uomColumn,  Qt::AlignLeft , true, "uom_name");
@@ -87,7 +88,6 @@ items::items(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Freight Class"),  _itemColumn, Qt::AlignLeft , false, "freightclass_code");
   
   setupCharacteristics("I");
-  parameterWidget()->applyDefaultFilterSet();
 
   if (_privileges->check("MaintainItemMasters"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
@@ -138,32 +138,23 @@ void items::sView()
 
 void items::sDelete()
 {
+  XSqlQuery itemDelete;
   if (QMessageBox::information( this, tr("Delete Item"),
                                 tr( "Are you sure that you want to delete the Item?"),
                                 tr("&Delete"), tr("&Cancel"), 0, 0, 1 ) == 0  )
   {
-    XSqlQuery qry;
-    qry.prepare("SELECT deleteItem(:item_id) AS returnVal;");
-    qry.bindValue(":item_id", list()->id());
-    qry.exec();
-    if (qry.first())
-    {
-      int returnVal = qry.value("returnVal").toInt();
-      if (returnVal < 0)
-      {
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item"),
-                               storedProcErrorLookup("deleteItem", returnVal),
-                               __FILE__, __LINE__);
-        return;
-      }
+    itemDelete.prepare("SELECT deleteItem(:item_id) AS returnVal;");
+    itemDelete.bindValue(":item_id", list()->id());
+    itemDelete.exec();
+    if (itemDelete.first())
       sFillList();
-    }
-    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item"),
-                                  qry, __FILE__, __LINE__))
+    else if (ErrorReporter::error(QtCriticalMsg, this,
+                                tr("Cannot Delete Item"),
+                                itemDelete, __FILE__, __LINE__))
     {
       return;
     }
-  }   
+  }
 }
 
 bool items::setParams(ParameterList &params)

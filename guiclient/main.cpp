@@ -131,7 +131,6 @@
 
 #include "splashconst.h"
 #include "xtsettings.h"
-#include "welcomeStub.h"
 
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(xTuplePlugin)
@@ -160,7 +159,6 @@ int main(int argc, char *argv[])
   bool    haveEnhancedAuth= false;
   bool    _enhancedAuth   = false;
   bool    havePasswd      = false;
-  bool    forceWelcomeStub= false;
 #if QT_VERSION >= 0x050000
   qInstallMessageHandler(xTupleMessageOutput);
 #else
@@ -172,12 +170,7 @@ int main(int argc, char *argv[])
   app.setApplicationName("xTuple");
   app.setApplicationVersion(_Version);
 
-#if QT_VERSION >= 0x040400
-  // This is the correct place for this call but on versions less
-  // than 4.4 it causes a crash for an unknown reason so it is
-  // called later on earlier versions.
   QCoreApplication::addLibraryPath(QString("."));
-#endif
 
 #ifndef Q_OS_MAC
   QApplication::setWindowIcon(QIcon(":/images/icon32x32.png"));
@@ -218,31 +211,9 @@ int main(int argc, char *argv[])
         if(argument.contains("=no", Qt::CaseInsensitive) || argument.contains("=false", Qt::CaseInsensitive))
           _enhancedAuth = false;
       }
-      else if (argument.contains("-forceWelcomeStub", Qt::CaseInsensitive))
-        forceWelcomeStub = true;
     }
   }
 
-  // Try and load a default translation file and install it
-  // otherwise if we are non-english inform the user that translation are available
-  bool checkLanguage = false;
-  QLocale sysl = QLocale::system();
-  QTranslator defaultTranslator(&app);
-  if (defaultTranslator.load(translationFile(sysl.name().toLower(), "default")))
-    app.installTranslator(&defaultTranslator);
-  else if(!xtsettingsValue("LanguageCheckIgnore", false).toBool() && sysl.language() != QLocale::C && sysl.language() != QLocale::English)
-    checkLanguage = translationFile(sysl.name().toLower(), "xTuple").isNull();
-  if (forceWelcomeStub || checkLanguage)
-  {
-    QTranslator * translator = new QTranslator(&app);
-    if (translator->load(translationFile(sysl.name().toLower(), "welcome/wmsg")))
-      app.installTranslator(translator);
-
-    welcomeStub wsdlg;
-    wsdlg.checkBox->setChecked(xtsettingsValue("LanguageCheckIgnore", false).toBool());
-    wsdlg.exec();
-    xtsettingsSetValue("LanguageCheckIgnore", wsdlg.checkBox->isChecked());
-  }
 
   _splash = new QSplashScreen();
   _splash->setPixmap(QPixmap(":/images/splashEmpty.png"));
@@ -291,6 +262,83 @@ int main(int argc, char *argv[])
       }
     }
   }
+//{
+  _splash->showMessage(QObject::tr("Loading Translations"), SplashTextAlignment, SplashTextColor);
+  qApp->processEvents();
+  QLocale      sysl = QLocale::system();
+  QStringList  lang;
+  XSqlQuery langq("SELECT lang_abbr2,   lang_qt_number,"
+                  "       country_abbr, country_qt_number"
+                  "  FROM usr"
+                  "  JOIN locale  ON usr_locale_id     = locale_id"
+                  "  JOIN lang    ON locale_lang_id    = lang_id"
+                  "  JOIN country ON locale_country_id = country_id"
+                  " WHERE usr_username = getEffectiveXtUser();");
+  if (langq.first())
+  {
+    QString langAbbr    = langq.value("lang_abbr2").toString();
+    QString countryAbbr = langq.value("country_abbr").toString().toUpper();
+
+    if (! langAbbr.isEmpty() && ! countryAbbr.isEmpty())
+      lang << langAbbr + "_" + countryAbbr.toLower();
+    else if (! langAbbr.isEmpty())
+      lang << langAbbr;
+
+    /* set the locale to langabbr_countryabbr, langabbr, {lang# country#}, or
+       lang#, depending on what information is available
+     */
+    if (countryAbbr == "UK")
+      countryAbbr = "GB";
+
+    if (! langAbbr.isEmpty() && ! countryAbbr.isEmpty())
+      QLocale::setDefault(QLocale(langAbbr + "_" + countryAbbr));
+    else if (! langAbbr.isEmpty())
+      QLocale::setDefault(QLocale(langAbbr));
+    else if (langq.value("lang_qt_number").toInt() &&
+             langq.value("country_qt_number").toInt())
+      QLocale::setDefault(
+          QLocale(QLocale::Language(langq.value("lang_qt_number").toInt()),
+                  QLocale::Country(langq.value("country_qt_number").toInt())));
+    else
+      QLocale::setDefault(QLocale::system());
+
+    qDebug() << "Locale set to language" << QLocale();
+  }
+  ErrorReporter::error(QtCriticalMsg, 0, QObject::tr("Error Getting Locale"),
+                       langq, __FILE__, __LINE__);
+
+  if (sysl.language() != QLocale::C && sysl.language() != QLocale::English)
+    lang << sysl.name().toLower();
+  (void)lang.removeDuplicates();
+
+  QStringList transfile;
+  transfile << "qt" << "default" << "xTuple" << "openrpt" << "reports";
+  XSqlQuery pkglist("SELECT pkghead_name"
+                    "  FROM pkghead"
+                    " WHERE packageIsEnabled(pkghead_name);");
+  while (pkglist.next())
+    transfile << pkglist.value("pkghead_name").toString();
+  ErrorReporter::error(QtCriticalMsg, 0, QObject::tr("Error Getting Extension Names"),
+                       pkglist, __FILE__, __LINE__);
+
+  bool foundxTuple = false;
+  QTranslator *translator = new QTranslator(&app);
+  foreach (QString f, transfile)
+  {
+    foreach (QString l, lang)
+    {
+      if (translator->load(translationFile(l, f)))
+      {
+        app.installTranslator(translator);
+        qDebug() << "installed" << l << f;
+        translator = new QTranslator(&app);
+        if (f == "xTuple")
+          foundxTuple = true;
+        break;
+      }
+    }
+  }
+//}
 
   _splash->showMessage(QObject::tr("Loading Database Metrics"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
@@ -535,113 +583,9 @@ int main(int argc, char *argv[])
   qApp->processEvents();
   _privileges = new Privileges();
 
-  // Load the translator and set the locale from the User's preferences
-  _splash->showMessage(QObject::tr("Loading Translation Dictionary"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
-  XSqlQuery langq("SELECT locale_lang_file,"
-                  "       lang_abbr2, lang_qt_number,"
-                  "       country_abbr, country_qt_number"
-                  "  FROM usr"
-                  "  JOIN locale ON (usr_locale_id=locale_id)"
-                  "  LEFT OUTER JOIN lang ON (locale_lang_id=lang_id)"
-                  "  LEFT OUTER JOIN country ON (locale_country_id=country_id)"
-                  " WHERE (usr_username=getEffectiveXtUser());");
-  if (langq.first())
-  {
-    QStringList files;
-    if (!langq.value("locale_lang_file").toString().isEmpty())
-      files << langq.value("locale_lang_file").toString();
 
-    QString langext;
-    if (!langq.value("lang_abbr2").toString().isEmpty() &&
-        !langq.value("country_abbr").toString().isEmpty())
-    {
-      langext = langq.value("lang_abbr2").toString() + "_" +
-                langq.value("country_abbr").toString().toLower();
-    }
-    else if (!langq.value("lang_abbr2").toString().isEmpty())
-    {
-      langext = langq.value("lang_abbr2").toString();
-    }
-
-    if(!langext.isEmpty())
-    {
-      files << "qt";
-      files << "xTuple";
-      files << "openrpt";
-      files << "reports";
-
-      XSqlQuery pkglist("SELECT pkghead_name"
-                        "  FROM pkghead"
-                        " WHERE packageIsEnabled(pkghead_name);");
-      while(pkglist.next())
-        files << pkglist.value("pkghead_name").toString();
-    }
-
-    if (files.size() > 0)
-    {
-      QStringList notfound;
-      QTranslator *translator = new QTranslator(&app);
-      for (QStringList::Iterator fit = files.begin(); fit != files.end(); ++fit)
-      {
-        if (DEBUG)
-          qDebug("looking for %s", (*fit).toLatin1().data());
-        if (translator->load(translationFile(langext, *fit)))
-        {
-          app.installTranslator(translator);
-          qDebug("installed %s", (*fit).toLatin1().data());
-          translator = new QTranslator(&app);
-        }
-        else
-        {
-          notfound << *fit;
-        }
-      }
-
-      if (! notfound.isEmpty() &&
-          !_preferences->boolean("IngoreMissingTranslationFiles"))
-        QMessageBox::warning( 0, QObject::tr("Cannot Load Dictionary"),
-                              QObject::tr("<p>The Translation Dictionaries %1 "
-                                          "cannot be loaded. Reverting "
-                                          "to the default dictionary." )
-                                       .arg(notfound.join(QObject::tr(", "))));
-    }
-
-    /* set the locale to langabbr_countryabbr, langabbr, {lang# country#}, or
-       lang#, depending on what information is available
-     */
-    QString langAbbr = langq.value("lang_abbr2").toString();
-    QString cntryAbbr = langq.value("country_abbr").toString().toUpper();
-    if(cntryAbbr == "UK")
-      cntryAbbr = "GB";
-    if (! langAbbr.isEmpty() &&
-        ! cntryAbbr.isEmpty())
-      QLocale::setDefault(QLocale(langAbbr + "_" + cntryAbbr));
-    else if (! langAbbr.isEmpty())
-      QLocale::setDefault(QLocale(langq.value("lang_abbr2").toString()));
-    else if (langq.value("lang_qt_number").toInt() &&
-             langq.value("country_qt_number").toInt())
-      QLocale::setDefault(
-          QLocale(QLocale::Language(langq.value("lang_qt_number").toInt()),
-                  QLocale::Country(langq.value("country_qt_number").toInt())));
-    else
-      QLocale::setDefault(QLocale::system());
-
-    qDebug("Locale set to language %s and country %s",
-           QLocale().languageToString(QLocale().language()).toLatin1().data(),
-           QLocale().countryToString(QLocale().country()).toLatin1().data());
-
-  }
-  else
-    ErrorReporter::error(QtCriticalMsg, 0,
-                         QObject::tr("Error Getting Locale"),
-                         langq, __FILE__, __LINE__);
-
-  qApp->processEvents();
   QString key;
-
-  // TODO: Add code to check a few locations - Hopefully done
-
   QString keypath;
   QString keyname;
   QString keytogether;
@@ -672,7 +616,6 @@ int main(int argc, char *argv[])
 
   keytogether = keypath + keyname;
 
-  // qDebug("keytogether: %s", keytogether.toLatin1().data());
   QFile keyFile(keytogether);
 
   if(keyFile.exists())
@@ -685,7 +628,6 @@ int main(int argc, char *argv[])
     }
   }
 
-  omfgThis = 0;
   omfgThis = new GUIClient(databaseURL, username);
   omfgThis->_key = key;
 

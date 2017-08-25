@@ -217,40 +217,29 @@ void dspCashReceipts::sViewCashrcpt()
 void dspCashReceipts::sPostCashrcpt()
 {
   XSqlQuery dspPostCashrcpt;
-  int journalNumber = -1;
-
   XSqlQuery tx;
   tx.exec("BEGIN;");
-  dspPostCashrcpt.exec("SELECT fetchJournalNumber('C/R') AS journalnumber;");
-  if (dspPostCashrcpt.first())
-    journalNumber = dspPostCashrcpt.value("journalnumber").toInt();
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
-                                dspPostCashrcpt, __FILE__, __LINE__))
-  {
-      return;
-  }
 
-  dspPostCashrcpt.prepare("SELECT postCashReceipt(:cashrcpt_id, :journalNumber) AS result;");
+  dspPostCashrcpt.prepare("SELECT postCashReceipt(:cashrcpt_id, fetchJournalNumber('C/R')) AS result;");
   dspPostCashrcpt.bindValue(":cashrcpt_id", list()->currentItem()->id("source"));
-  dspPostCashrcpt.bindValue(":journalNumber", journalNumber);
   dspPostCashrcpt.exec();
   if (dspPostCashrcpt.first())
   {
     int result = dspPostCashrcpt.value("result").toInt();
     if (result < 0)
     {
+      tx.exec("ROLLBACK;");
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
                                storedProcErrorLookup("postCashReceipt", result),
                                __FILE__, __LINE__);
-      tx.exec("ROLLBACK;");
       return;
     }
   }
   else if (dspPostCashrcpt.lastError().type() != QSqlError::NoError)
   {
+    tx.exec("ROLLBACK;");
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Cash Receipt"),
                          dspPostCashrcpt, __FILE__, __LINE__);
-    tx.exec("ROLLBACK;");
     return;
   }
 

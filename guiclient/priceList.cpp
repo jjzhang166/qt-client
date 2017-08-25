@@ -42,7 +42,7 @@ priceList::priceList(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _price->addColumn(tr("Currency"),     _currencyColumn, Qt::AlignLeft,  !omfgThis->singleCurrency(), "currency");
   _price->addColumn(tr("Price (in Base)"), _priceColumn, Qt::AlignRight, !omfgThis->singleCurrency(), "price");
   // column title reset in priceList::set
-  _price->addColumn(tr("Method"), 0, Qt::AlignRight, false, "method");
+  _price->addColumn(tr("Method"), -1, Qt::AlignRight, false, "method");
 
   _shiptoid = -1;
   _shiptonum = "";

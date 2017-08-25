@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,10 +10,13 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSqlError>
+#include <QSqlQueryModel>
 #include <QVBoxLayout>
+#include <QtScript>
 
 #include <metasql.h>
 #include <parameter.h>
@@ -35,62 +38,56 @@ CLineEdit::CLineEdit(QWidget *pParent, const char *pName) :
   _editMode = false;
 
   setTitles(tr("Customer"), tr("Customers"));
-  setUiName("customer");
-  setEditPriv("MaintainCustomerMasters");
-  setViewPriv("ViewCustomerMasters");
-  setNewPriv("MaintainCustomerMasters");
 
-  _query = " SELECT * FROM ( "
-           "  SELECT cust_id AS id, "
-           "         cust_number AS number, "
-           "         cust_name AS name,"
-           "         addr_line1 AS description,"
-           "         cust_active AS active, "
-           "         cust_creditstatus, "
-           "         crmacct_id, true AS iscustomer, "
-           "         addr_id, addr_active, addr_line1, addr_line2, addr_line3,"
-           "         addr_city, addr_state, addr_postalcode, addr_country,"
-           "         addr_notes, addr_number,"
-           "         cntct_id, cntct_addr_id, cntct_first_name,"
-           "         cntct_last_name, cntct_honorific, cntct_initials,"
-           "         cntct_active, cntct_phone, cntct_phone2, cntct_fax,"
-           "         cntct_email, cntct_webaddr, cntct_notes, cntct_title,"
-           "         cntct_number, cntct_middle, cntct_suffix,"
-           "         cntct_owner_username, cntct_name,"
-           "         formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street "
-           "  FROM custinfo "
-           "    LEFT OUTER JOIN cntct  ON (cust_cntct_id=cntct_id) "
-           "    LEFT OUTER JOIN addr   ON (cntct_addr_id=addr_id) "
-           "    LEFT OUTER JOIN crmacct ON (crmacct_cust_id=cust_id) "
-           "  UNION ALL "
-           "  SELECT prospect_id AS id, "
-           "         prospect_number AS number,"
-           "         prospect_name AS name,"
-           "         addr_line1 AS description,"
-           "         prospect_active AS active, "
-           "         'G' AS cust_creditstatus, "
-           "         crmacct_id, false AS iscustomer, "
-           "         addr_id, addr_active, addr_line1, addr_line2, addr_line3,"
-           "         addr_city, addr_state, addr_postalcode, addr_country,"
-           "         addr_notes, addr_number,"
-           "         cntct_id, cntct_addr_id, cntct_first_name,"
-           "         cntct_last_name, cntct_honorific, cntct_initials,"
-           "         cntct_active, cntct_phone, cntct_phone2, cntct_fax,"
-           "         cntct_email, cntct_webaddr, cntct_notes, cntct_title,"
-           "         cntct_number, cntct_middle, cntct_suffix,"
-           "         cntct_owner_username, cntct_name,"
-           "         formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street "
-           "  FROM prospect "
-           "    LEFT OUTER JOIN cntct  ON (prospect_cntct_id=cntct_id) "
-           "    LEFT OUTER JOIN addr   ON (cntct_addr_id=addr_id) "
-           "    LEFT OUTER JOIN crmacct ON (crmacct_prospect_id=prospect_id) "
-           "  ) cust "
-           "WHERE (true) ";
+  _query = "SELECT cust.*,"
+           "       addr_line1 AS description,"
+           "       addr_id, addr_active, addr_line1, addr_line2, addr_line3,"
+           "       addr_city, addr_state, addr_postalcode, addr_country,"
+           "       addr_notes, addr_number,"
+           "       cntct_id, cntct_addr_id, cntct_first_name,"
+           "       cntct_last_name, cntct_honorific, cntct_initials,"
+           "       cntct_active, cntct_phone, cntct_phone2, cntct_fax,"
+           "       cntct_email, cntct_webaddr, cntct_notes, cntct_title,"
+           "       cntct_number, cntct_middle, cntct_suffix,"
+           "       cntct_owner_username, cntct_name,"
+           "       formatAddr(addr_line1, addr_line2, addr_line3, '', '') AS street"
+           "  FROM ("
+           "    SELECT cust_id AS id,"
+           "           cust_number AS number,"
+           "           cust_name AS name,"
+           "           cust_active AS active,"
+           "           cust_creditstatus,"
+           "           crmacct_id, true AS iscustomer,"
+           "           cust_cntct_id"
+           "      FROM custinfo"
+           "      JOIN crmacct ON crmacct_cust_id = cust_id"
+           "     WHERE :number IS NULL or cust_number ~* :number"
+           "    UNION ALL"
+           "    SELECT prospect_id AS id,"
+           "           prospect_number AS number,"
+           "           prospect_name AS name,"
+           "           prospect_active AS active,"
+           "           'G' AS cust_creditstatus,"
+           "           crmacct_id, false AS iscustomer,"
+           "           prospect_cntct_id AS cust_cntct_id"
+           "      FROM prospect"
+           "      LEFT OUTER JOIN crmacct ON crmacct_prospect_id = prospect_id"
+           "     WHERE :number IS NULL or prospect_number ~* :number"
+           "  ) cust"
+           "  LEFT OUTER JOIN cntct ON cust_cntct_id = cntct_id"
+           "  LEFT OUTER JOIN addr  ON cntct_addr_id = addr_id"
+           " WHERE true ";
 
   _modeSep = 0;
   _modeAct = new QAction(tr("Edit Number"), this);
   _modeAct->setToolTip(tr("Sets number for editing"));
   _modeAct->setCheckable(true);
+
+  setUiName("customer");
+  setEditPriv("MaintainCustomerMasters");
+  setViewPriv("ViewCustomerMasters");
+  setNewPriv("MaintainCustomerMasters");
+
   connect(_modeAct, SIGNAL(triggered(bool)), this, SLOT(setEditMode(bool)));
 }
 
@@ -438,4 +435,33 @@ void CustCluster::sHandleEditMode(bool p)
     connect(number, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
   else
     disconnect(number, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+QScriptValue CLineEditTypesToScriptValue(QScriptEngine *engine,
+                                         const CLineEdit::CLineEditTypes &type)
+{
+  return QScriptValue(engine, (int)type);
+}
+
+void CLineEditTypesFromScriptValue(const QScriptValue &obj, CLineEdit::CLineEditTypes &type)
+{
+  type = (CLineEdit::CLineEditTypes)obj.toInt32();
+}
+
+void setupCLineEdit(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("CLineEdit").isObject())
+  {
+#if QT_VERSION >= 0x050500
+    qScriptRegisterMetaType(engine, CLineEditTypesToScriptValue, CLineEditTypesFromScriptValue);
+#endif
+
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&CLineEdit::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("CLineEdit", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

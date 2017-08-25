@@ -51,6 +51,7 @@ private:
     int _soheadid;
     int _type;
     int _custid;
+    bool _exclShipped;
 };
 
 #endif

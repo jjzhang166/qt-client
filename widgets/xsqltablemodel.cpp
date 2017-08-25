@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,9 +10,11 @@
 
 #include <QDate>
 #include <QSqlDriver>
+#include <QSqlError>
 #include <QSqlField>
 #include <QSqlIndex>
 #include <QSqlRelation>
+#include <QtScript>
 
 #include "format.h"
 #include "xsqlquery.h"
@@ -131,10 +133,10 @@ bool XSqlTableNode::save()
 ////////////////////////////////////////
 
 
-XSqlTableModel::XSqlTableModel(QObject *parent) : 
+XSqlTableModel::XSqlTableModel(QObject *parent) :
   QSqlRelationalTableModel(parent)
 {
-  _locales << "money" << "qty" << "curr" << "percent" << "cost" << "qtyper" 
+  _locales << "money" << "qty" << "curr" << "percent" << "cost" << "qtyper"
     << "salesprice" << "purchprice" << "uomratio" << "extprice" << "weight";
 }
 
@@ -163,7 +165,7 @@ void XSqlTableModel::clear()
 void XSqlTableModel::applyColumnRole(int column, int role, QVariant value)
 {
   QSqlQuery qry = query();
-  
+
   // Apply to the model
   qry.first();
   for (int row=0; row < qry.size(); ++row) {
@@ -191,10 +193,10 @@ void XSqlTableModel::applyColumnRoles(int row)
 }
 
 void XSqlTableModel::setColumnRole(int column, int role, const QVariant value)
-{  
+{
   QPair<QVariant, int> values;
   bool found = false;
-  
+
   // Remove any previous value for this column/role pair
   QMultiHash<int, QPair<QVariant, int> >::iterator i = _columnRoles.find(column);
   while (i != _columnRoles.end() && i.key() == column && !found) {
@@ -207,19 +209,14 @@ void XSqlTableModel::setColumnRole(int column, int role, const QVariant value)
      }
      ++i;
   }
-  
+
   // Insert new
   values.first = value;
   values.second = role;
   _columnRoles.insert(column, values);
-  
+
   // Apply
   applyColumnRole(column, role, value);
-}
-
-void XSqlTableModel::setTable(const QString &tableName)
-{
-  QSqlRelationalTableModel::setTable(tableName);
 }
 
 void XSqlTableModel::setKeys(int keyColumns)
@@ -295,7 +292,7 @@ QString XSqlTableModel::selectStatement() const
             QString relTableAlias = QString::fromLatin1("%1_%2")
                                               .arg(rel.tableName()).arg(i);
             fList.append(relTableAlias + "." + rel.displayColumn());
-            
+
             // If there are duplicate field names they must be aliased
             if (fieldNames.value(rel.displayColumn()) > 1)
                 fList.append(QString::fromLatin1(" AS %1_%2")
@@ -339,7 +336,7 @@ QVariant XSqlTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
       return QVariant();
-        
+
     switch (role) {
     case Qt::DisplayRole: {
       QVariant value = QSqlRelationalTableModel::data(index, Qt::DisplayRole);
@@ -351,7 +348,7 @@ QVariant XSqlTableModel::data(const QModelIndex &index, int role) const
       else
         return value;
     } break;
-    case Qt::EditRole: { 
+    case Qt::EditRole: {
       return QSqlRelationalTableModel::data(index);
     } break;
     case Qt::TextAlignmentRole:
@@ -365,8 +362,8 @@ QVariant XSqlTableModel::data(const QModelIndex &index, int role) const
       if (roles.contains(key))
         return roles.value(key);
     }
-    
-    return QVariant(); 
+
+    return QVariant();
 }
 
 bool XSqlTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -378,7 +375,7 @@ bool XSqlTableModel::setData(const QModelIndex &index, const QVariant &value, in
   case Qt::EditRole: {
     if (data(index, FormatRole).isValid())
       QSqlRelationalTableModel::setData(index, formatValue(value, data(index, FormatRole)), role);
-    else 
+    else
       QSqlRelationalTableModel::setData(index, value, role);
   } break;
   case FormatRole: {
@@ -564,4 +561,215 @@ bool XSqlTableModel::save()
 
   trans.exec("COMMIT");
   return true;
+}
+
+int XSqlTableModel::nodeCount() const
+{
+  return _children.count();
+}
+
+void XSqlTableModel::appendChild(XSqlTableNode *child)
+{
+  _children.append(child);
+}
+
+void XSqlTableModel::removeChild(int index)
+{
+  _children.removeAt(index);
+}
+
+QList<XSqlTableNode *>XSqlTableModel::children()
+{
+  return _children;
+}
+
+XSqlTableNode *XSqlTableModel::child(int index)
+{
+  return _children.at(index);
+}
+
+void XSqlTableModel::set(ParameterList params)
+{
+  _params = params;
+}
+
+ParameterList XSqlTableModel::parameters()
+{
+  return _params;
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+QScriptValue constructXSqlTableModel(QScriptContext * context,
+                                    QScriptEngine  *engine)
+{
+#if QT_VERSION >= 0x050000
+  XSqlTableModel *obj = 0;
+  if (context->argumentCount() == 1)
+    obj = new XSqlTableModel(context->argument(1).toQObject());
+  else
+    obj = new XSqlTableModel();
+  return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
+}
+
+void setupXSqlTableModel(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("XSqlTableModel").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructXSqlTableModel);
+    QScriptValue meta = engine->newQMetaObject(&XSqlTableModel::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("XSqlTableModel", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
+}
+
+QModelIndex XSqlTableModel::buddy(const QModelIndex &index) const
+{
+  return QSqlTableModel::buddy(index);
+}
+
+bool XSqlTableModel::canFetchMore(const QModelIndex &parent) const
+{
+  return QSqlTableModel::canFetchMore(parent);
+}
+
+int XSqlTableModel::columnCount(const QModelIndex &parent) const
+{
+  return QSqlTableModel::columnCount(parent);
+}
+
+bool XSqlTableModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+  return QSqlTableModel::dropMimeData(data, action, row, column, parent);
+}
+
+void XSqlTableModel::fetchMore(const QModelIndex &parent)
+{
+  QSqlTableModel::fetchMore(parent);
+}
+
+bool XSqlTableModel::hasIndex(int row, int column, const QModelIndex &parent) const
+{
+  return XSqlTableModel::hasIndex(row, column, parent);
+}
+
+QModelIndex XSqlTableModel::index(int row, int column, const QModelIndex &parent) const
+{
+  return QSqlTableModel::index(row, column, parent);
+}
+
+bool XSqlTableModel::insertColumn(int column, const QModelIndex &parent)
+{
+  return QSqlTableModel::insertColumn(column, parent);
+}
+
+bool XSqlTableModel::insertColumns(int column, int count, const QModelIndex &parent)
+{
+  return QSqlTableModel::insertColumns(column, count, parent);
+}
+
+bool XSqlTableModel::insertRow(int row, const QModelIndex &parent)
+{
+  return QSqlTableModel::insertRow(row, parent);
+}
+
+bool XSqlTableModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+  return QSqlTableModel::insertRows(row, count, parent);
+}
+
+QMap<int, QVariant> XSqlTableModel::itemData(const QModelIndex &index) const
+{
+  return QSqlTableModel::itemData(index);
+}
+
+QSqlError XSqlTableModel::lastError() const
+{
+  return QSqlTableModel::lastError();
+}
+
+QModelIndexList XSqlTableModel::match(const QModelIndex &start, int role, const QVariant &value, int hits, Qt::MatchFlags flags) const
+{
+  return QSqlTableModel::match(start, role, value, hits, flags);
+}
+
+QMimeData *XSqlTableModel::mimeData(const QModelIndexList &indexes) const
+{
+  return QSqlTableModel::mimeData(indexes);
+}
+
+QStringList XSqlTableModel::mimeTypes() const
+{
+  return QSqlTableModel::mimeTypes();
+}
+
+QSqlQuery XSqlTableModel::query() const
+{
+  return QSqlTableModel::query();
+}
+
+QSqlRelation XSqlTableModel::relation(int column) const
+{
+  return QSqlRelationalTableModel::relation(column);
+}
+
+QSqlTableModel *XSqlTableModel::relationModel(int column) const
+{
+  return QSqlRelationalTableModel::relationModel(column);
+}
+
+bool XSqlTableModel::removeColumn(int column, const QModelIndex &parent)
+{
+  return QSqlTableModel::removeColumn(column, parent);
+}
+
+bool XSqlTableModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+{
+  return QSqlTableModel::setHeaderData(section, orientation, value, role);
+}
+
+bool XSqlTableModel::setItemData(const QModelIndex &index, const QMap<int, QVariant> &roles)
+{
+  return QSqlTableModel::setItemData(index, roles);
+}
+
+void XSqlTableModel::setRelation(int column, const QSqlRelation &relation)
+{
+  QSqlRelationalTableModel::setRelation(column, relation);
+}
+
+void XSqlTableModel::setTable(const QString &tableName, int keyColumns)
+{
+  setTable(tableName);
+  setKeys(keyColumns);
+}
+
+QModelIndex XSqlTableModel::sibling(int row, int column, const QModelIndex &index) const
+{
+  return QSqlTableModel::sibling(row, column, index);
+}
+
+QSize XSqlTableModel::span(const QModelIndex &index) const
+{
+  return QSqlTableModel::span(index);
+}
+
+Qt::DropActions XSqlTableModel::supportedDragActions() const
+{
+  return QSqlTableModel::supportedDragActions();
+}
+
+Qt::DropActions XSqlTableModel::supportedDropActions() const
+{
+  return QSqlTableModel::supportedDropActions();
+}
+
+QString XSqlTableModel::toString() const
+{
+  return QString("[XSqlTableModel(table %1, query %2)]")
+                    .arg(tableName(), query().lastQuery().left(80));
 }

@@ -156,34 +156,13 @@ void reconcileBankaccount::sCancel()
 bool reconcileBankaccount::sSave(bool closeWhenDone)
 {
   XSqlQuery reconcileSave;
-  reconcileSave.prepare("SELECT count(*) AS num"
-            "  FROM bankrec"
+  reconcileSave.prepare("UPDATE bankrec"
+            "   SET bankrec_bankaccnt_id=:bankaccntid,"
+            "       bankrec_opendate=:startDate,"
+            "       bankrec_enddate=:endDate,"
+            "       bankrec_openbal=:openbal,"
+            "       bankrec_endbal=:endbal "
             " WHERE (bankrec_id=:bankrecid); ");
-  reconcileSave.bindValue(":bankrecid", _bankrecid);
-  reconcileSave.exec();
-  if (reconcileSave.first() && reconcileSave.value("num").toInt() > 0)
-    reconcileSave.prepare("UPDATE bankrec"
-              "   SET bankrec_bankaccnt_id=:bankaccntid,"
-              "       bankrec_opendate=:startDate,"
-              "       bankrec_enddate=:endDate,"
-              "       bankrec_openbal=:openbal,"
-              "       bankrec_endbal=:endbal "
-              " WHERE (bankrec_id=:bankrecid); ");
-  else if (reconcileSave.value("num").toInt() == 0)
-    reconcileSave.prepare("INSERT INTO bankrec "
-              "(bankrec_id, bankrec_bankaccnt_id,"
-              " bankrec_opendate, bankrec_enddate,"
-              " bankrec_openbal, bankrec_endbal) "
-              "VALUES "
-              "(:bankrecid, :bankaccntid,"
-              " :startDate, :endDate,"
-              " :openbal, :endbal); ");
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Reconciliation Information"),
-                                reconcileSave, __FILE__, __LINE__))
-  {
-    return false;
-  }
-
   reconcileSave.bindValue(":bankrecid", _bankrecid);
   reconcileSave.bindValue(":bankaccntid", _bankaccntid);
   reconcileSave.bindValue(":startDate", _startDate->date());
@@ -827,6 +806,22 @@ void reconcileBankaccount::sBankaccntChanged()
     {
       return;
     }
+
+    accntq.prepare("INSERT INTO bankrec "
+                   "(bankrec_id, bankrec_bankaccnt_id,"
+                   " bankrec_opendate, bankrec_openbal) "
+                   "VALUES "
+                   "(:bankrecid, :bankaccntid,"
+                   " :startDate, :openbal);");
+    accntq.bindValue(":bankrecid", _bankrecid);
+    accntq.bindValue(":bankaccntid", _bankaccntid);
+    accntq.bindValue(":startDate", _startDate->date());
+    accntq.bindValue(":openbal", _openBal->localValue());
+    accntq.exec();
+
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Reconciliation Information"),
+                             accntq, __FILE__, __LINE__))
+      return;
   }
 
   populate();

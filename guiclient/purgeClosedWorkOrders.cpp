@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -11,6 +11,8 @@
 #include "purgeClosedWorkOrders.h"
 
 #include <QVariant>
+
+#include "errorReporter.h"
 
 /*
  *  Constructs a purgeClosedWorkOrders as a child of 'parent', with the
@@ -69,7 +71,11 @@ void purgeClosedWorkOrders::sPurge()
     purgePurge.bindValue(":cutoffDate", _cutOffDate->date());
     purgePurge.bindValue(":whs_id", _warehouse->id());
     purgePurge.exec();
-
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                                    purgePurge, __FILE__, __LINE__))
+    {
+      return;
+    }
     _cutOffDate->clear();
     _cutOffDate->setFocus();
   }

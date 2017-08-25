@@ -24,10 +24,11 @@ scrapTrans::scrapTrans(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
   setupUi(this);
-
-  connect(_post,                 SIGNAL(clicked()), this, SLOT(sPost()));
-  connect(_qty,SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
-  connect(_warehouse,           SIGNAL(newID(int)), this, SLOT(sPopulateQOH(int)));
+  
+  connect(_post,      SIGNAL(clicked()), this, SLOT(sPost()));
+  connect(_qty,       SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
+  connect(_item,      SIGNAL(newId(int)), this, SLOT(sPopulateQOH()));
+  connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateQOH()));
 
   _captive = false;
 
@@ -126,7 +127,7 @@ enum SetResponse scrapTrans::set(const ParameterList &pParams)
 
 void scrapTrans::sPost()
 {
-  XSqlQuery scrapPost;
+  int itemlocSeries;
   struct {
     bool        condition;
     QString     msg;
@@ -151,50 +152,75 @@ void scrapTrans::sPost()
     return;
   }
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  
+  // Get parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+      parentSeries, __FILE__, __LINE__);
+    return;
+  }
 
-  scrapPost.exec("BEGIN;");	// because of possible distribution cancelations
-  scrapPost.prepare( "SELECT invScrap(itemsite_id, :qty, :docNumber,"
-             "                :comments, :date) AS result "
-             "FROM itemsite "
-             "WHERE ( (itemsite_item_id=:item_id)"
-             " AND (itemsite_warehous_id=:warehous_id) );" );
+  // If controlled item: create the parent itemlocdist record, call distributeInventory::seriesAdjust
+  if (_controlledItem)
+  {
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'SI'::TEXT, NULL, :itemlocSeries) AS result;");
+    parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+    parentItemlocdist.bindValue(":qty", _qty->toDouble() * -1);
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information(this, tr("Scrap Transaction"), tr("Transaction Canceled") );
+        return;
+      }
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                              parentItemlocdist, __FILE__, __LINE__))
+    {
+      return;
+    }
+  }
+
+  // Post inventory transaction
+  XSqlQuery scrapPost;
+  scrapPost.prepare("SELECT invScrap(:itemsite_id, :qty, :docNumber, "
+                    " :comments, :date, NULL, NULL, :itemlocSeries, TRUE) AS result;");
+  scrapPost.bindValue(":itemsite_id", _itemsiteId);
   scrapPost.bindValue(":qty", _qty->toDouble());
   scrapPost.bindValue(":docNumber", _documentNum->text());
   scrapPost.bindValue(":comments", _notes->toPlainText());
   scrapPost.bindValue(":item_id", _item->id());
   scrapPost.bindValue(":warehous_id", _warehouse->id());
   scrapPost.bindValue(":date",        _transDate->date());
+  scrapPost.bindValue(":itemlocSeries", itemlocSeries);
   scrapPost.exec();
   if (scrapPost.first())
   {
     int result = scrapPost.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
-      rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Scrap Transaction"),
-                               storedProcErrorLookup("invScrap", result),
-                               __FILE__, __LINE__);
+        scrapPost, __FILE__, __LINE__);
       return;
     }
-    else if (scrapPost.lastError().type() != QSqlError::NoError)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Scrap Transaction"),
-                           scrapPost, __FILE__, __LINE__);
-      return;
-    }
-
-    if (distributeInventory::SeriesAdjust(scrapPost.value("result").toInt(), this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information(this, tr("Scrap Transaction"),
-                               tr("Transaction Canceled") );
-      return;
-    }
-
-    scrapPost.exec("COMMIT;");
 
     if (_captive)
       close();
@@ -214,14 +240,14 @@ void scrapTrans::sPost()
   }
   else if (scrapPost.lastError().type() != QSqlError::NoError)
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Scrap Transaction"),
                          scrapPost, __FILE__, __LINE__);
     return;
   }
   else
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
                          tr("%1: Transaction Not Completed Due to Item:[%2] "
                             "not found at Site:[%3].")
@@ -231,23 +257,25 @@ void scrapTrans::sPost()
   }
 }
 
-void scrapTrans::sPopulateQOH(int pWarehousid)
+void scrapTrans::sPopulateQOH()
 {
   XSqlQuery scrapPopulateQOH;
-  if (_mode != cView)
+  if (_mode != cView && _item->isValid() && _warehouse->isValid())
   {
-    scrapPopulateQOH.prepare( "SELECT itemsite_qtyonhand "
+    scrapPopulateQOH.prepare( "SELECT itemsite_qtyonhand, itemsite_id, "
+               "  isControlledItemsite(itemsite_id) AS controlled "
                "FROM itemsite "
-               "WHERE ( (itemsite_item_id=:item_id)"
+               "WHERE ( (itemsite_item_id=:item_id) "
                " AND (itemsite_warehous_id=:warehous_id) );" );
     scrapPopulateQOH.bindValue(":item_id", _item->id());
-    scrapPopulateQOH.bindValue(":warehous_id", pWarehousid);
+    scrapPopulateQOH.bindValue(":warehous_id", _warehouse->id());
     scrapPopulateQOH.exec();
     if (scrapPopulateQOH.first())
     {
+      _itemsiteId = scrapPopulateQOH.value("itemsite_id").toInt();
+      _controlledItem = scrapPopulateQOH.value("controlled").toBool();
       _cachedQOH = scrapPopulateQOH.value("itemsite_qtyonhand").toDouble();
       _beforeQty->setDouble(scrapPopulateQOH.value("itemsite_qtyonhand").toDouble());
-
       if (_item->isFractional())
         _qty->setValidator(omfgThis->transQtyVal());
       else

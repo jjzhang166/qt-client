@@ -36,8 +36,6 @@ dspUserPrivileges::dspUserPrivileges(QWidget* parent, const char* name, Qt::Wind
   parameterWidget()->appendComboBox(tr("Role"), "role", _grpSql);
   parameterWidget()->append(tr("Privilege"), "privilege", ParameterWidget::Text);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Username"),    100,  Qt::AlignLeft, true,  "priv_username" );
   list()->addColumn(tr("Role"),        100,  Qt::AlignLeft, true,  "grp_name"      );
   list()->addColumn(tr("Module"),       -1,  Qt::AlignLeft, true,  "priv_module"   );

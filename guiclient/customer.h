@@ -52,6 +52,7 @@ public slots:
     virtual void sCheck();
     virtual bool sCheckRequired();
     virtual void sDeleteCharacteristic();
+    virtual void sDeleteCreditCard();
     virtual void sDeleteShipto();
     virtual void sDeleteTaxreg();
     virtual void sEditCharacteristic();

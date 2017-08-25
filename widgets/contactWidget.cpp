@@ -1,21 +1,22 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
+#include <QDebug>
+#include <QDesktopServices>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QVBoxLayout>
 #include <QUrl>
-#include <QDesktopServices>
-#include <QDebug>
+#include <QVBoxLayout>
+#include <QtScript>
 
 #include <metasql.h>
 
@@ -197,7 +198,7 @@ void ContactWidget::init()
     connect(_phone,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
     connect(_phone2,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
     connect(_fax,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_email,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+    connect(_email,	SIGNAL(currentTextChanged(const QString&)), this, SIGNAL(changed()));
     connect(_webaddr,	SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
     connect(_address,	SIGNAL(changed()),                   this, SIGNAL(changed()));
     connect(this,       SIGNAL(changed()),                   this, SLOT(setChanged()));
@@ -230,7 +231,6 @@ void ContactWidget::init()
     setFocusProxy(_honorific);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setLabel("");
-    _limits = 0;
     silentSetId(-1);
     setOwnerVisible(false);
     _mode = Edit;
@@ -1452,4 +1452,18 @@ bool ContactWidget::eventFilter(QObject *obj, QEvent *event)
         break;
     }
     return QObject::eventFilter(obj, event);
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+void setupContactWidget(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("ContactWidget").isObject())
+  {
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&ContactWidget::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("ContactWidget", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

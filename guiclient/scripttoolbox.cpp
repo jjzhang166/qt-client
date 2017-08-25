@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -1410,94 +1410,6 @@ void ScriptToolbox::loadQWebView(QWidget * webView, const QString & url)
   QWebView *wv = qobject_cast<QWebView*>(webView);
   if(wv)
     wv->load(p);
-}
-
-/** @internal */
-QScriptValue SetResponsetoScriptValue(QScriptEngine *engine, const enum SetResponse &sr)
-{
-  return QScriptValue(engine, (int)sr);
-}
-
-/** @internal */
-void SetResponsefromScriptValue(const QScriptValue &obj, enum SetResponse &sr)
-{
-  sr = (enum SetResponse)obj.toInt32();
-}
-
-/** @internal */
-QScriptValue ParameterGroupStatestoScriptValue(QScriptEngine *engine, const enum ParameterGroup::ParameterGroupStates &en)
-{
-  return QScriptValue(engine, (int)en);
-}
-
-/** @internal */
-void ParameterGroupStatesfromScriptValue(const QScriptValue &obj, enum ParameterGroup::ParameterGroupStates &en)
-{
-  en = (enum ParameterGroup::ParameterGroupStates)obj.toInt32();
-}
-
-/** @internal */
-QScriptValue ParameterGroupTypestoScriptValue(QScriptEngine *engine, const enum ParameterGroup::ParameterGroupTypes &en)
-{
-  return QScriptValue(engine, (int)en);
-}
-
-/** @internal */
-void ParameterGroupTypesfromScriptValue(const QScriptValue &obj, enum ParameterGroup::ParameterGroupTypes &en)
-{
-  en = (enum ParameterGroup::ParameterGroupTypes)obj.toInt32();
-}
-
-/** @internal */
-QScriptValue QtWindowModalitytoScriptValue(QScriptEngine *engine, const enum Qt::WindowModality &en)
-{
-  return QScriptValue(engine, (int)en);
-}
-
-/** @internal */
-void QtWindowModalityfromScriptValue(const QScriptValue &obj, enum Qt::WindowModality &en)
-{
-  en = (enum Qt::WindowModality)obj.toInt32();
-}
-
-/** @internal */
-QScriptValue WindowSystemtoScriptValue(QScriptEngine *engine, const enum GUIClient::WindowSystem &en)
-{
-  return QScriptValue(engine, (int)en);
-}
-
-/** @internal */
-void WindowSystemfromScriptValue(const QScriptValue &obj, enum GUIClient::WindowSystem &en)
-{
-  en = (enum GUIClient::WindowSystem)obj.toInt32();
-}
-
-/** @internal */
-QScriptValue SaveFlagstoScriptValue(QScriptEngine *engine, const enum SaveFlags &en)
-{
-  return QScriptValue(engine, (int)en);
-}
-
-/** @internal */
-void SaveFlagsfromScriptValue(const QScriptValue &obj, enum SaveFlags &en)
-{
-  if (obj.isNumber())
-    en = (enum SaveFlags)obj.toInt32();
-  else if (obj.isString())
-  {
-    if (obj.toString() == "CHECK")
-      en = CHECK;
-    else if (obj.toString() == "CHANGEONE")
-      en = CHANGEONE;
-    else if (obj.toString() == "CHANGEALL")
-      en = CHANGEALL;
-    else
-      qWarning("string %s could not be converted to SaveFlags",
-               qPrintable(obj.toString()));
-  }
-  else
-    qWarning("object %s could not be converted to SaveFlags",
-             qPrintable(obj.toString()));
 }
 
 /** @brief Save a credit card definition from a script.

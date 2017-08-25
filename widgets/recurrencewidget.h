@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,14 +16,9 @@
 
 class QScriptEngine;
 
-void setupRecurrenceWidget(QScriptEngine *engine);
-
 class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
 {
   Q_OBJECT
-
-  Q_ENUMS(RecurrencePeriod)
-  Q_ENUMS(RecurrenceChangePolicy)
 
   Q_PROPERTY(bool maxVisible       READ maxVisible       WRITE setMaxVisible DESIGNABLE false)
   Q_PROPERTY(bool endTimeVisible   READ endTimeVisible   WRITE setEndTimeVisible)
@@ -36,9 +31,11 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
     // Never must = XComboBox::id() when ! XComboBox::isValid()
     enum RecurrencePeriod
     { Never = -1, Minutely, Hourly, Daily, Weekly, Monthly, Yearly, Custom };
+    Q_ENUM(RecurrencePeriod)
 
     enum RecurrenceChangePolicy
     { NoPolicy = -1, IgnoreFuture, ChangeFuture };
+    Q_ENUM(RecurrenceChangePolicy)
                           
     RecurrenceWidget(QWidget* parent = 0, const char* name = 0);
     ~RecurrenceWidget();
@@ -53,6 +50,7 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
     Q_INVOKABLE virtual bool             isRecurring()      const;
     Q_INVOKABLE virtual int              max()              const;
     /*useprop*/ virtual bool             maxVisible()       const;
+    Q_INVOKABLE virtual QString          style()            const;
     Q_INVOKABLE virtual RecurrencePeriod minPeriod()        const;
     Q_INVOKABLE virtual bool             modified()         const;
     Q_INVOKABLE virtual int              parentId()         const;
@@ -69,8 +67,8 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
   public slots:
     virtual void clear();
     virtual bool save(bool intxn, RecurrenceChangePolicy cp, QString *msg = 0);
-    virtual void set(bool recurring = false, int frequency = 1, QString period = QString("W"), QDate startDate = QDate::currentDate(), QDate endDate = QDate(), int max = 1);
-    virtual void set(bool recurring, int frequency, QString period, QDateTime startDateTime, QDateTime endDateTime, int max);
+    virtual void set(bool recurring = false, int frequency = 1, QString period = QString("W"), QDate startDate = QDate::currentDate(), QDate endDate = QDate(), int max = 1, QString style = "KeepNone");
+    virtual void set(bool recurring, int frequency, QString period, QDateTime startDateTime, QDateTime endDateTime, int max, QString style = "KeepNone");
     virtual void setEndDate(QDate p);
     virtual void setEndDateTime(QDateTime p);
     virtual void setEndDateVisible(bool p);
@@ -79,6 +77,7 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
     virtual void setFrequency(int p);
     virtual void setMax(int p);
     virtual void setMaxVisible(bool p);
+    virtual void setStyle(QString p);
     virtual void setMinPeriod(RecurrencePeriod minPeriod);
     virtual bool setParent(int pid, QString ptype);
     virtual void setPeriod(RecurrencePeriod p);
@@ -101,6 +100,7 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
    QDateTime        _prevEndDateTime;
    int              _prevFrequency;
    int              _prevMax;
+   QString          _prevStyle;
    int              _prevParentId;
    QString          _prevParentType;
    RecurrencePeriod _prevPeriod;
@@ -111,6 +111,6 @@ class RecurrenceWidget : public QWidget, public Ui::RecurrenceWidget
 
 };
 
-Q_DECLARE_METATYPE(RecurrenceWidget*)
+void setupRecurrenceWidget(QScriptEngine *engine);
 
 #endif // RECURRENCEWIDGET_H

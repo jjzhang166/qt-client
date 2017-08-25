@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -22,12 +22,12 @@
 
 class ParameterList;
 class QFocusEvent;
+class QScriptEngine;
 class XSqlQuery;
 
 class XDateEdit : public XLineEdit
 {
   Q_OBJECT
-  Q_ENUMS   (Defaults)
   Q_PROPERTY(QDate    date            READ date        WRITE setDate)
   Q_PROPERTY(Defaults defaultDate     READ defaultDate WRITE setDefaultDate)
   Q_PROPERTY(QDate    currentDefault  READ currentDefault)
@@ -38,6 +38,7 @@ class XDateEdit : public XLineEdit
     virtual ~XDateEdit();
     
     enum Defaults     { Empty, Current, None };
+    Q_ENUM(Defaults)
 
     virtual bool      isNull();
     virtual bool      isValid();
@@ -174,6 +175,8 @@ class XTUPLEWIDGETS_EXPORT DateCluster : public QWidget
     QString   _fieldNameStart;
     QString   _fieldNameEnd;
 };
+
+void setupXDateEdit(QScriptEngine *engine);
 
 #endif
 

@@ -1632,6 +1632,13 @@ to be bound by its terms.</comment>
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="_deleteCC">
+               <property name="text">
+                <string>Delete</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="_upCC">
                <property name="text">
                 <string>Move Up</string>

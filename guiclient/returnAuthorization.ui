@@ -711,7 +711,7 @@ to be bound by its terms.</comment>
             <item>
              <widget class="QLabel" name="_custTypeLit">
               <property name="text">
-               <string>Cust. Type:</string>
+               <string>Cust. Type: </string>
               </property>
              </widget>
             </item>

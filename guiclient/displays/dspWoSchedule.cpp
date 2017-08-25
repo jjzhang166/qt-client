@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2010 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -75,8 +75,6 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Has Closed Parent Sales Order"), "woSoStatusMismatch", ParameterWidget::Exists);
   parameterWidget()->append(tr("Project"), "prj_id", ParameterWidget::Project);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->addColumn(tr("Work Order #"),   _orderColumn,  Qt::AlignLeft,   true,  "wonumber"   );
   list()->addColumn(tr("Parent Type"),    _orderColumn,  Qt::AlignCenter, true,  "wo_ordtype" );
   list()->addColumn(tr("Parent Order #"), _orderColumn,  Qt::AlignLeft,   true,  "parentorder" );
@@ -92,6 +90,11 @@ dspWoSchedule::dspWoSchedule(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Start Date"),     _dateColumn,   Qt::AlignRight,  true,  "wo_startdate"  );
   list()->addColumn(tr("Due Date"),       _dateColumn,   Qt::AlignRight,  true,  "wo_duedate"  );
   list()->addColumn(tr("Condition"),      _dateColumn,   Qt::AlignLeft,   true,  "condition"   );
+
+  list()->addColumn(tr("Wip Value"),      _bigMoneyColumn,   Qt::AlignLeft,   true,  "wo_wipvalue"   );
+  list()->addColumn(tr("Cost Est."),      _bigMoneyColumn,   Qt::AlignLeft,   true,  "plancost"   );
+  list()->addColumn(tr("Variance Est."),  _bigMoneyColumn,   Qt::AlignLeft,   true,  "wopvar"   );
+  list()->addColumn(tr("Cost Method"),    _orderColumn,   Qt::AlignLeft,   true,  "costmethod"   );
 
   if (_privileges->check("MaintainWorkOrders"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
@@ -143,8 +146,6 @@ enum SetResponse dspWoSchedule::set(const ParameterList &pParams)
     list.append(param.toString());
     parameterWidget()->setDefault(tr("Status"), list);
   }
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {
@@ -304,22 +305,13 @@ void dspWoSchedule::sDeleteWO()
     dspDeleteWO.bindValue(":wo_id", list()->id());
     dspDeleteWO.exec();
 
-    if (dspDeleteWO.first())
+    if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                         dspDeleteWO, __FILE__, __LINE__))
     {
-      int result = dspDeleteWO.value("returnVal").toInt();
-      if (result < 0)
-      {
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                               storedProcErrorLookup("deleteWo", result),
-                               __FILE__, __LINE__);
-        return;
-      }
+      return;
     }
-    else if (dspDeleteWO.lastError().type() != QSqlError::NoError)
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                         dspDeleteWO, __FILE__, __LINE__);
-
-    omfgThis->sWorkOrdersUpdated(-1, true);
+    else
+      omfgThis->sWorkOrdersUpdated(-1, true);
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
                                 dspDeleteWO, __FILE__, __LINE__))

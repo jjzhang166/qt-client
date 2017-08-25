@@ -22,6 +22,8 @@ class QWidget;
 
 #include "parameter.h"
 
+class XAbstractMessageHandler;
+
 class login2 : public QDialog, public Ui::login2
 {
   Q_OBJECT
@@ -74,6 +76,8 @@ class login2 : public QDialog, public Ui::login2
     QString _cloudDatabaseURL;
     QString _cCompany;
     QString _connAppName;
+
+    XAbstractMessageHandler* _handler;
 };
 
 #endif

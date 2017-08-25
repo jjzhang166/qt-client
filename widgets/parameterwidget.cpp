@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -364,8 +364,6 @@ void ParameterWidget::append(QString pName, QString pParam, ParameterWidgetTypes
                pType, qPrintable(pDefault.toString()),
                qPrintable(pExtraInfo));
   }
-
-  resetEmptyParameter();
 }
 
 /** @brief Add a new XComboBox-based filter to the set of available filters.
@@ -394,8 +392,6 @@ void ParameterWidget::appendComboBox(QString pName, QString pParam, int pType, Q
     pp->enabled = true;
     _params.insert(_params.count(), pp);
   }
-
-  resetEmptyParameter();
 }
 
 /** @brief Add a new XComboBox-based filter to the set of available filters.
@@ -423,35 +419,6 @@ void ParameterWidget::appendComboBox(QString pName, QString pParam, QString pQue
     pp->query = pQuery;
     pp->enabled = true;
     _params.insert(_params.count(), pp);
-  }
-
-  resetEmptyParameter();
-}
-
-/**
-  If the last parameter that has been added has not been selected, then reset it.
-  */
-void ParameterWidget::resetEmptyParameter()
-{
-  if (_filtersLayout->rowCount() > 1)
-  {
-    int id;
-    int row;
-    QLayoutItem *item;
-    XComboBox *box;
-    QToolButton *btn;
-
-    row = _filtersLayout->rowCount() - 1;
-    item = _filtersLayout->itemAtPosition(row, 0)->layout()->itemAt(0);
-    box = (XComboBox*)item->widget();
-    id = box->id();
-
-    if (id < 0) {
-      QString btnName = "button" + QString().setNum(row);
-      btn = _filterGroup->findChild<QToolButton *>(btnName);
-      btn->click();
-      addParam();
-    }
   }
 }
 
@@ -1975,36 +1942,25 @@ QScriptValue constructParameterWidget(QScriptContext *context,
     obj = new ParameterWidget(qscriptvalue_cast<QWidget*>(context->argument(0)),
                               qPrintable(context->argument(1).toString()));
 
+#if QT_VERSION >= 0x050000
   return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupParameterWidget(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, ParameterWidgettoScriptValue, ParameterWidgetfromScriptValue);
+  if (! engine->globalObject().property("ParameterWidget").isFunction())
+  {
+#if QT_VERSION >= 0x050000
+    qScriptRegisterMetaType(engine, ParameterWidgettoScriptValue, ParameterWidgetfromScriptValue);
+#endif
 
-  QScriptValue widget = engine->newFunction(constructParameterWidget);
+    QScriptValue ctor = engine->newFunction(constructParameterWidget);
+    QScriptValue meta = engine->newQMetaObject(&ParameterWidget::staticMetaObject, ctor);
 
-  widget.setProperty("Crmacct", QScriptValue(engine, ParameterWidget::Crmacct), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Customer", QScriptValue(engine, ParameterWidget::Customer), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Shipto", QScriptValue(engine, ParameterWidget::Shipto), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Vendor", QScriptValue(engine, ParameterWidget::Vendor), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("User", QScriptValue(engine, ParameterWidget::User), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Text", QScriptValue(engine, ParameterWidget::Text), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Date", QScriptValue(engine, ParameterWidget::Date), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("XComBox", QScriptValue(engine, ParameterWidget::XComBox), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Contact", QScriptValue(engine, ParameterWidget::Contact), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("GLAccount", QScriptValue(engine, ParameterWidget::GLAccount), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Multiselect", QScriptValue(engine, ParameterWidget::Multiselect), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Exists", QScriptValue(engine, ParameterWidget::Exists), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("CheckBox", QScriptValue(engine, ParameterWidget::CheckBox), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Project", QScriptValue(engine, ParameterWidget::Project), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Item", QScriptValue(engine, ParameterWidget::Item), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Employee", QScriptValue(engine, ParameterWidget::Employee), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("Site", QScriptValue(engine, ParameterWidget::Site), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("SalesOrder", QScriptValue(engine, ParameterWidget::SalesOrder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("WorkOrder", QScriptValue(engine, ParameterWidget::WorkOrder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("PurchaseOrder", QScriptValue(engine, ParameterWidget::PurchaseOrder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  widget.setProperty("TransferOrder", QScriptValue(engine, ParameterWidget::TransferOrder), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-
-  engine->globalObject().setProperty("ParameterWidget", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
+    engine->globalObject().setProperty("ParameterWidget", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

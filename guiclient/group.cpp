@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,6 +10,7 @@
 
 #include "group.h"
 
+#include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
@@ -232,11 +233,43 @@ void group::sSave()
 
   groupSave.prepare( "UPDATE grp "
              "   SET grp_name=:grp_name,"
-             "       grp_descrip=:grp_descrip "
+             "       grp_descrip=:grp_descrip, "
+             "       grp_showimmenu=:grp_showimmenu, "
+             "       grp_showpdmenu=:grp_showpdmenu, "
+             "       grp_showmsmenu=:grp_showmsmenu, "
+             "       grp_showwomenu=:grp_showwomenu, "
+             "       grp_showcrmmenu=:grp_showcrmmenu, "
+             "       grp_showpomenu=:grp_showpomenu, "
+             "       grp_showsomenu=:grp_showsomenu, "
+             "       grp_showglmenu=:grp_showglmenu, "
+             "       grp_showimtoolbar=:grp_showimtoolbar, "
+             "       grp_showpdtoolbar=:grp_showpdtoolbar, "
+             "       grp_showmstoolbar=:grp_showmstoolbar, "
+             "       grp_showwotoolbar=:grp_showwotoolbar, "
+             "       grp_showcrmtoolbar=:grp_showcrmtoolbar, "
+             "       grp_showpotoolbar=:grp_showpotoolbar, "
+             "       grp_showsotoolbar=:grp_showsotoolbar, "
+             "       grp_showgltoolbar=:grp_showgltoolbar  "
              " WHERE(grp_id=:grp_id);" );
   groupSave.bindValue(":grp_id", _grpid);
   groupSave.bindValue(":grp_name", _name->text());
   groupSave.bindValue(":grp_descrip", _description->text().trimmed());
+  groupSave.bindValue(":grp_showimmenu", _inventoryMenu->isChecked());
+  groupSave.bindValue(":grp_showpdmenu", _productsMenu->isChecked());
+  groupSave.bindValue(":grp_showmsmenu", _scheduleMenu->isChecked());
+  groupSave.bindValue(":grp_showwomenu", _manufactureMenu->isChecked());
+  groupSave.bindValue(":grp_showcrmmenu", _crmMenu2->isChecked());
+  groupSave.bindValue(":grp_showpomenu", _purchaseMenu->isChecked());
+  groupSave.bindValue(":grp_showsomenu", _salesMenu->isChecked());
+  groupSave.bindValue(":grp_showglmenu", _accountingMenu->isChecked());
+  groupSave.bindValue(":grp_showimtoolbar", _inventoryToolbar->isChecked());
+  groupSave.bindValue(":grp_showpdtoolbar", _productsToolbar->isChecked());
+  groupSave.bindValue(":grp_showmstoolbar", _scheduleToolbar->isChecked());
+  groupSave.bindValue(":grp_showwotoolbar", _manufactureToolbar->isChecked());
+  groupSave.bindValue(":grp_showcrmtoolbar", _crmToolbar2->isChecked());
+  groupSave.bindValue(":grp_showpotoolbar", _purchaseToolbar->isChecked());
+  groupSave.bindValue(":grp_showsotoolbar", _salesToolbar->isChecked());
+  groupSave.bindValue(":grp_showgltoolbar", _accountingToolbar->isChecked());
   groupSave.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Group"),
                                 groupSave, __FILE__, __LINE__))
@@ -418,7 +451,13 @@ void group::sRevokeAll()
 void group::populate()
 {
   XSqlQuery grouppopulate;
-  grouppopulate.prepare( "SELECT grp_name, grp_descrip "
+  grouppopulate.prepare( "SELECT grp_name, grp_descrip, "
+             " grp_showimmenu, grp_showpdmenu, grp_showmsmenu, "
+             " grp_showwomenu, grp_showcrmmenu, grp_showpomenu, "
+             " grp_showsomenu, grp_showglmenu, "
+             " grp_showimtoolbar, grp_showpdtoolbar, grp_showmstoolbar, "
+             " grp_showwotoolbar, grp_showcrmtoolbar, grp_showpotoolbar, "
+             " grp_showsotoolbar, grp_showgltoolbar "
              "  FROM grp "
              " WHERE(grp_id=:grp_id);" );
   grouppopulate.bindValue(":grp_id", _grpid);
@@ -427,7 +466,22 @@ void group::populate()
   {
     _name->setText(grouppopulate.value("grp_name"));
     _description->setText(grouppopulate.value("grp_descrip"));
-
+    _inventoryMenu->setChecked(grouppopulate.value("grp_showimmenu").toBool());
+    _productsMenu->setChecked(grouppopulate.value("grp_showpdmenu").toBool());
+    _scheduleMenu->setChecked(grouppopulate.value("grp_showmsmenu").toBool());
+    _manufactureMenu->setChecked(grouppopulate.value("grp_showwomenu").toBool());
+    _crmMenu2->setChecked(grouppopulate.value("grp_showcrmmenu").toBool());
+    _purchaseMenu->setChecked(grouppopulate.value("grp_showpomenu").toBool());
+    _salesMenu->setChecked(grouppopulate.value("grp_showsomenu").toBool());
+    _accountingMenu->setChecked(grouppopulate.value("grp_showglmenu").toBool());
+    _inventoryToolbar->setChecked(grouppopulate.value("grp_showimtoolbar").toBool());
+    _productsToolbar->setChecked(grouppopulate.value("grp_showpdtoolbar").toBool());
+    _scheduleToolbar->setChecked(grouppopulate.value("grp_showmstoolbar").toBool());
+    _manufactureToolbar->setChecked(grouppopulate.value("grp_showwotoolbar").toBool());
+    _crmToolbar2->setChecked(grouppopulate.value("grp_showcrmtoolbar").toBool());
+    _purchaseToolbar->setChecked(grouppopulate.value("grp_showpotoolbar").toBool());
+    _salesToolbar->setChecked(grouppopulate.value("grp_showsotoolbar").toBool());
+    _accountingToolbar->setChecked(grouppopulate.value("grp_showgltoolbar").toBool());
     grouppopulate.prepare( "SELECT priv_module "
                "FROM grppriv, priv "
                "WHERE ( (grppriv_priv_id=priv_id)"

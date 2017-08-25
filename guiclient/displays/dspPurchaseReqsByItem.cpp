@@ -49,10 +49,11 @@ dspPurchaseReqsByItem::dspPurchaseReqsByItem(QWidget* parent, const char*, Qt::W
 
   if (_privileges->check("MaintainPurchaseRequests"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));
-  else
-    newAction()->setEnabled(false);
+
+  newAction()->setEnabled(false);
   
   connect(omfgThis, SIGNAL(purchaseRequestsUpdated()), this, SLOT(sFillList()));
+  connect(_item,    SIGNAL(valid(bool)), newAction(), SLOT(setEnabled(bool)));
 }
 
 void dspPurchaseReqsByItem::languageChange()

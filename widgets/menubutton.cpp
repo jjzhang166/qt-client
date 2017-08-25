@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -166,16 +166,6 @@ void MenuButton::showEvent(QShowEvent *e)
 
 // scripting exposure /////////////////////////////////////////////////////////
 
-QScriptValue MenuButtontoScriptValue(QScriptEngine *engine, MenuButton* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void MenuButtonfromScriptValue(const QScriptValue &obj, MenuButton* &item)
-{
-  item = qobject_cast<MenuButton*>(obj.toQObject());
-}
-
 QScriptValue constructMenuButton(QScriptContext *context,
                                 QScriptEngine  *engine)
 {
@@ -192,12 +182,21 @@ QScriptValue constructMenuButton(QScriptContext *context,
     context->throwError(QScriptContext::UnknownError,
                         QString("Could not find an appropriate MenuButton constructor"));
 
+#if QT_VERSION >= 0x050000
   return engine->toScriptValue(button);
+#else
+  Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupMenuButton(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, MenuButtontoScriptValue, MenuButtonfromScriptValue);
-  QScriptValue widget = engine->newFunction(constructMenuButton);
-  engine->globalObject().setProperty("MenuButton", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  if (! engine->globalObject().property("MenuButton").isObject())
+  {
+    QScriptValue ctor = engine->newFunction(constructMenuButton);
+    QScriptValue meta = engine->newQMetaObject(&MenuButton::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("MenuButton", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

@@ -157,6 +157,10 @@ enum SetResponse transferOrderItem::set(const ParameterList &pParams)
   if (valid)
     _freight->setEffective(param.toDate());
 
+  param = pParams.value("status", &valid);
+  if (valid)
+    _status = param.toString();
+
   param = pParams.value("mode", &valid);
   if (valid)
   {
@@ -428,11 +432,12 @@ void transferOrderItem::sSave()
                "  toitem_freight, toitem_freight_curr_id ) "
                "VALUES "
 	             "( :toitem_id, :toitem_tohead_id, :toitem_linenumber,"
-               "  :toitem_item_id, 'U', :toitem_duedate,"
+               "  :toitem_item_id, COALESCE(:status, 'U'), :toitem_duedate,"
 	             "  :toitem_schedshipdate, :toitem_schedrecvdate,"
                "  :toitem_qty_ordered, :toitem_notes,"
                "  :toitem_uom, stdCost(:toitem_item_id), :toitem_prj_id,"
                "  :toitem_freight, :toitem_freight_curr_id );" );
+    transferSave.bindValue(":status", _status);
 
   }
   else if (_mode == cEdit)

@@ -56,6 +56,9 @@ dspTimePhasedOpenAPItems::~dspTimePhasedOpenAPItems()
 
 bool dspTimePhasedOpenAPItems::setParams(ParameterList &params)
 {
+  if (!display::setParams(params))
+    return false;
+
   if ((_custom->isChecked() && ! _periods->isPeriodSelected()) ||
       (!_custom->isChecked() && ! _asOf->isValid()))
   {

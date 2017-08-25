@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -41,10 +41,6 @@
 #define WSSE_NSVAL     "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
 
 // convenience function to add <ChildName>Content</ChildName> to the Parent node
-/* TODO: put this in a generic XMLCCProcessor, subclass of creditcardprocessor?
-         make a generic XMLHelper class and make CyberSourceProcessor and
-         YourPayProcessor inherit both CreditCardProcessor and XMLHelper?
- */
 
 static QDomElement createChildTextNode(QDomElement parent, QString childName, QString content)
 {

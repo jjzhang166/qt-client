@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -29,7 +29,7 @@ relocateInventory::relocateInventory(QWidget* parent, const char* name, bool mod
 
   _captive = false;
 
-  _item->setType(ItemLineEdit::cLocationControlled);
+  _item->setType(ItemLineEdit::cLocationControlled | ItemLineEdit::cActive);
   _qty->setValidator(omfgThis->transQtyVal());
 
   omfgThis->inputManager()->notify(cBCItem, this, _item, SLOT(setItemid(int)));
@@ -161,6 +161,8 @@ void relocateInventory::sHandleItem()
     _qty->setValidator(omfgThis->transQtyVal());
   else
     _qty->setValidator(new QIntValidator(this));
+
+  sFillList();
 }
 
 void relocateInventory::sMove()
@@ -251,7 +253,7 @@ void relocateInventory::sFillList()
 {
   sShowHideDefaultToTarget();
   
-  if (_item->isValid())
+  if (_item->isValid() && _warehouse->isValid())
   {
     XSqlQuery query;
     query.prepare( "SELECT itemloc.*,"

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -9,65 +9,35 @@
  */
 
 #include "qobjectproto.h"
+
 QScriptValue QObjectPointerToScriptValue(QScriptEngine *engine, QObject* const &item)
 {
   return engine->newQObject(item);
 }
+
 void QObjectPointerFromScriptValue(const QScriptValue &obj, QObject* &item)
 {
   item = qobject_cast<QObject*>(obj.toQObject());
 }
 
-// TODO: Should connect be support in Qt Script?
-/*
-QScriptValue connectForJS(QScriptContext* context, QScriptEngine* engine)
+QScriptValue QObjectPointerListToScriptValue(QScriptEngine *engine, QList<QObject*>* const &cpplist)
 {
-  if (context->argumentCount() == 3) {
-    return context->throwError("QObject.connect() with three arguments is not supported in Qt Script.");
-  } else if (context->argumentCount() == 4) {
-    QObject *sender = context->argument(0).toQObject();
-
-    if (context->argument(1).isString()) {
-      QString argSignal = context->argument(1).toString();
-      QByteArray baSignal = argSignal.toLatin1();
-      const char *signal = baSignal.data();
-      if (context->argument(3).isString()) {
-        QObject *receiver = context->argument(2).toQObject();
-        QString argMethod = context->argument(3).toString();
-        QByteArray baMethod = argMethod.toLatin1();
-        const char *method = baMethod.data();
-        return engine->toScriptValue(QObject::connect(sender, signal, receiver, method));
-      } else {
-        return context->throwError("QObject.connect() with a PointerToMemberFunction or QMetaMethod arguments are not supported in Qt Script.");
-      }
-    } else {
-      return context->throwError("QObject.connect() with a PointerToMemberFunction or QMetaMethod arguments are not supported in Qt Script.");
-    }
-  } else if (context->argumentCount() == 5) {
-    QObject *sender = context->argument(0).toQObject();
-
-    if (context->argument(1).isString()) {
-      QString argSignal = context->argument(1).toString();
-      QByteArray baSignal = argSignal.toLatin1();
-      const char *signal = baSignal.data();
-      if (context->argument(3).isString()) {
-        QObject *receiver = context->argument(2).toQObject();
-        QString argMethod = context->argument(3).toString();
-        QByteArray baMethod = argMethod.toLatin1();
-        const char *method = baMethod.data();
-        Qt::ConnectionType type = (Qt::ConnectionType)context->argument(4).toInt32();
-        return engine->toScriptValue(QObject::connect(sender, signal, receiver, method, type));
-      } else {
-        return context->throwError("QObject.connect() with a PointerToMemberFunction or QMetaMethod arguments are not supported in Qt Script.");
-      }
-    } else {
-      return context->throwError("QObject.connect() with a PointerToMemberFunction or QMetaMethod arguments are not supported in Qt Script.");
-    }
-  }
-
-  return engine->undefinedValue();
+  QScriptValue scriptlist = engine->newArray(cpplist->size());
+  for (int i = 0; i < cpplist->size(); i++)
+    scriptlist.setProperty(i, engine->newQObject(cpplist->at(i)));
+  return scriptlist;
 }
-*/
+
+void QObjectPointerListFromScriptValue(const QScriptValue &obj, QList<QObject*>* &cpplist)
+{
+  cpplist->clear();
+  int listlen = obj.property("length").toInt32();
+  for (int i = 0; i < listlen; i++)
+  {
+    QObject *tmp = qobject_cast<QObject*>(obj.property(i).toQObject());
+    cpplist->append(tmp);
+  }
+}
 
 QScriptValue disconnectForJS(QScriptContext* context, QScriptEngine* engine)
 {
@@ -100,6 +70,7 @@ QScriptValue disconnectForJS(QScriptContext* context, QScriptEngine* engine)
 void setupQObjectProto(QScriptEngine *engine)
 {
   qScriptRegisterMetaType(engine, QObjectPointerToScriptValue, QObjectPointerFromScriptValue);
+  qScriptRegisterMetaType(engine, QObjectPointerListToScriptValue, QObjectPointerListFromScriptValue);
 
   QScriptValue pointerProto = engine->newQObject(new QObjectProto(engine));
   engine->setDefaultPrototype(qMetaTypeId<QObject*>(), pointerProto);
@@ -107,11 +78,6 @@ void setupQObjectProto(QScriptEngine *engine)
   QScriptValue constructor = engine->newFunction(constructQObject, pointerProto);
   engine->globalObject().setProperty("QObject", constructor);
 
-  // TODO: Should connect be support in Qt Script?
-  /*
-  QScriptValue connect = engine->newFunction(connectForJS);
-  constructor.setProperty("connect", connect);
-  */
   QScriptValue disconnect = engine->newFunction(disconnectForJS);
   constructor.setProperty("disconnect", disconnect);
 }
@@ -214,6 +180,25 @@ bool QObjectProto::eventFilter(QObject * watched, QEvent * event)
   if (item)
     return item->eventFilter(watched, event);
   return false;
+}
+
+QList<QObject*> *QObjectProto::findChildren(const QString       &name,
+                                            Qt::FindChildOptions options,
+                                            const QString       &classname) const
+{
+  QObject *item = qscriptvalue_cast<QObject*>(thisObject());
+  QList<QObject*> *result = new QList<QObject*>();
+  if (item)
+  {
+    foreach (QObject *child, name.isEmpty() ? item->findChildren<QObject*>()
+                                            : item->findChildren<QObject*>(name, options))
+    {
+      if (classname.isEmpty() || child->inherits(classname.toLatin1().data()))
+        result->append(child);
+    }
+  }
+
+  return result;
 }
 
 // TODO: Does not work. `T` does not have a type

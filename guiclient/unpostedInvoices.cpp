@@ -52,6 +52,7 @@ unpostedInvoices::unpostedInvoices(QWidget* parent, const char* name, Qt::Window
   list()->addColumn(tr("Ship Date"),     _dateColumn,     Qt::AlignCenter, false, "invchead_shipdate" );
   list()->addColumn(tr("P/O #"),         _orderColumn,    Qt::AlignCenter, false, "invchead_ponumber" );
   list()->addColumn(tr("Total Amount"),  _bigMoneyColumn, Qt::AlignRight,  true,  "extprice" );
+  list()->addColumn(tr("Currency"),      _currencyColumn, Qt::AlignLeft,   true,  "curr" );
   list()->addColumn(tr("Margin"),        _bigMoneyColumn, Qt::AlignRight,  true,  "margin" );
   list()->addColumn(tr("Margin %"),      _prcntColumn,    Qt::AlignRight,  true,  "marginpercent");
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -166,21 +167,6 @@ void unpostedInvoices::sPrint()
 void unpostedInvoices::sPost()
 {
   XSqlQuery unpostedPost;
-  bool changeDate = false;
-  QDate newDate = QDate();
-
-  if (_privileges->check("ChangeARInvcDistDate"))
-  {
-    getGLDistDate newdlg(this, "", true);
-    newdlg.sSetDefaultLit(tr("Invoice Date"));
-    if (newdlg.exec() == XDialog::Accepted)
-    {
-      newDate = newdlg.date();
-      changeDate = (newDate.isValid());
-    }
-    else
-      return;
-  }
 
   int journal = -1;
   unpostedPost.exec("SELECT fetchJournalNumber('AR-IN') AS result;");
@@ -209,131 +195,271 @@ void unpostedInvoices::sPost()
 		"  AND  (invchead_invcdate BETWEEN curr_effective AND curr_expires));");
   // if SUM becomes dependent on curr_id then move XRATE before it in the loop
   XSqlQuery sum;
-  sum.prepare("SELECT invoicetotal(:invchead_id) AS subtotal;");
-
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  XSqlQuery post;
-  post.prepare("SELECT postInvoice(:invchead_id, :journal) AS result;");
+  sum.prepare("SELECT invoicetotal(invchead_id) AS subtotal, "
+              " invchead_invcnumber "
+              "FROM invchead "
+              "WHERE invchead_id=:invchead_id;");
 
   XSqlQuery setDate;
-  setDate.prepare("UPDATE invchead SET invchead_gldistdate=:distdate "
+  setDate.prepare("UPDATE invchead SET invchead_gldistdate=COALESCE(:distdate, invchead_invcdate) "
 		  "WHERE invchead_id=:invchead_id;");
 
   QList<XTreeWidgetItem*> selected = list()->selectedItems();
   QList<XTreeWidgetItem*> triedToClosed;
-
-  for (int i = 0; i < selected.size(); i++)
-  {
-    if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
-    {
-      int id = ((XTreeWidgetItem*)(selected[i]))->id();
-
-      // always change gldistdate.  if using invoice date then will set to null
-      //if (changeDate)
-      //{
-        setDate.bindValue(":distdate",    newDate);
-        setDate.bindValue(":invchead_id", id);
-        setDate.exec();
-        if (setDate.lastError().type() != QSqlError::NoError)
-        {
-          ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
-                               setDate, __FILE__, __LINE__);
-        }
-      //}
-    }
-  }
-
   bool tryagain = false;
   do {
-    for (int i = 0; i < selected.size(); i++)
+    bool changeDate = false;
+    QDate newDate = QDate();
+
+    if (_privileges->check("ChangeARInvcDistDate"))
     {
-      if (checkSitePrivs(((XTreeWidgetItem*)(selected[i]))->id()))
+      getGLDistDate newdlg(this, "", true);
+      newdlg.sSetDefaultLit(tr("Invoice Date"));
+      if (newdlg.exec() == XDialog::Accepted)
       {
-        int id = ((XTreeWidgetItem*)(selected[i]))->id();
+        newDate = newdlg.date();
+        changeDate = (newDate.isValid());
 
-        sum.bindValue(":invchead_id", id);
-        if (sum.exec() && sum.first() && sum.value("subtotal").toDouble() == 0)
-        {
-	      if (QMessageBox::question(this, tr("Invoice Has Value 0"),
-		      		  tr("Invoice #%1 has a total value of 0.\n"
-			     	     "Would you like to post it anyway?")
-				    .arg(selected[i]->text(0)),
-				  QMessageBox::Yes,
-				  QMessageBox::No | QMessageBox::Default)
-	      == QMessageBox::No)
-	        continue;
-        }
-        else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
-                                      sum, __FILE__, __LINE__))
-        {
-          continue;
-        }
-        else if (sum.value("subtotal").toDouble() != 0)
-        {
-	      xrate.bindValue(":invchead_id", id);
-	      xrate.exec();
-	      if (xrate.lastError().type() != QSqlError::NoError)
-	      {
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information %1\n%2")
-                                 .arg(selected[i]->text(0))
-                                 .arg(xrate.lastError().databaseText()),
-                                 xrate, __FILE__, __LINE__);
-	        continue;
-	      }
-	      else if (!xrate.first() || xrate.value("curr_rate").isNull())
-	      {
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
-                                 tr("%1: Could not post Invoice #%1 because of a missing exchange rate.")
-                                 .arg(windowTitle()),__FILE__,__LINE__);
-	        continue;
-	      }
-        }
-
-        unpostedPost.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-        post.bindValue(":invchead_id", id);
-        post.bindValue(":journal",     journal);
-        post.exec();
-        if (post.first())
-        {
-	      int result = post.value("result").toInt();
-	      if (result < 0)
+        if (changeDate)
+        { // Update the invoice gl distribution dates
+          for (int i = 0; i < selected.size(); i++)
           {
-            rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
-                                   storedProcErrorLookup("postInvoice", result),
-                                   __FILE__, __LINE__);
-            return;
+            int id = ((XTreeWidgetItem*)(selected[i]))->id();
+            if (checkSitePrivs(id))
+            {
+              setDate.bindValue(":distdate",    newDate);
+              setDate.bindValue(":invchead_id", id);
+              setDate.exec();
+              if (setDate.lastError().type() != QSqlError::NoError)
+              {
+                ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information"),
+                                     setDate, __FILE__, __LINE__);
+              }
+            }
           }
-          else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-          {
-            rollback.exec();
-            QMessageBox::information( this, tr("Post Invoices"), tr("Transaction Canceled") );
-            return;
-          }
-
-          unpostedPost.exec("COMMIT;");
         }
-        // contains() string is hard-coded in stored procedure
-        else if (post.lastError().databaseText().contains("post to closed period"))
-        {
-          rollback.exec();
-            if (changeDate)
-              triedToClosed = selected;
-            else
-              triedToClosed.append(selected[i]);
       }
-      else if (post.lastError().type() != QSqlError::NoError)
-      {
-        rollback.exec();
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice Information: %1 \n%2")
-                             .arg(selected[i]->text(0))
-                             .arg(post.lastError().databaseText()),
-                             post, __FILE__, __LINE__);
-      }
+      else
+        continue;
     }
 
+    // Loop through the invoices
+    int succeeded = 0;
+    QList<QString> failedInvoices;
+    QList<QString> errors;
+    for (int i = 0; i < selected.size(); i++)
+    {
+      int invoiceId = ((XTreeWidgetItem*)(selected[i]))->id();
+      QString invoiceNumber;
+
+      // Validate privileges
+      if (!checkSitePrivs(invoiceId))
+        continue;
+
+      // Validate total and ask user to continue if 0, validate currency and exchange rate
+      sum.bindValue(":invchead_id", invoiceId);
+      if (sum.exec() && sum.first())
+      {
+        invoiceNumber = sum.value("invchead_invcnumber").toString();
+
+        if (sum.value("subtotal").toDouble() == 0 && QMessageBox::question(this, tr("Invoice Has Value 0"),
+                tr("Invoice #%1 has a total value of 0.\n"
+                 "Would you like to post it anyway?")
+            .arg(selected[i]->text(0)),
+          QMessageBox::Yes,
+          QMessageBox::No | QMessageBox::Default)
+        == QMessageBox::No)
+          continue;
+      }
+      else if (sum.lastError().type() != QSqlError::NoError)
+      {
+        failedInvoices.append(invoiceNumber);
+        errors.append(tr("Error calculating sum. %1").arg(sum.lastError().databaseText()));
+        continue;
+      }
+      else if (sum.value("subtotal").toDouble() != 0)
+      {
+        xrate.bindValue(":invchead_id", invoiceId);
+        xrate.exec();
+        if (xrate.lastError().type() != QSqlError::NoError)
+        {
+          failedInvoices.append(invoiceNumber);
+          errors.append(tr("Error fetching currency rate. %1").arg(xrate.lastError().databaseText()));
+          continue;
+        }
+        else if (!xrate.first() || xrate.value("curr_rate").isNull())
+        {
+          failedInvoices.append(invoiceNumber);
+          errors.append(tr("%1: Could not post Invoice #%1 because of a missing exchange rate.")
+                                 .arg(windowTitle()));
+          continue;
+        }
+      }
+
+      // Check if the date is in a closed period
+      XSqlQuery closedPeriod;
+      closedPeriod.prepare("SELECT period_closed "
+                           "FROM invchead "
+                           "  JOIN period ON COALESCE(invchead_gldistdate, invchead_invcdate) BETWEEN period_start AND period_end "
+                           "WHERE invchead_id=:invchead_id;");
+      closedPeriod.bindValue(":invchead_id", invoiceId);
+      closedPeriod.exec();
+      if (!closedPeriod.first() || closedPeriod.value("period_closed").toBool())
+      {
+        failedInvoices.append(invoiceNumber);
+        if (_privileges->check("ChangePORecvPostDate"))
+        {
+          if (changeDate)
+          {
+            triedToClosed = selected;
+            break;
+          }
+          else
+            triedToClosed.append(selected[i]);
+        }
+        continue;  
+      }
+
+      // Set the series for this invoice
+      int itemlocSeries = distributeInventory::SeriesCreate(0, 0, QString(), QString());
+      if (itemlocSeries < 0)
+      {
+        failedInvoices.append(invoiceNumber);
+        errors.append(tr("Failed to create a new series for the invoice."));
+        continue;
+      }
+
+      XSqlQuery cleanup; // Stage cleanup function to be called on error
+      cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+      cleanup.bindValue(":itemlocSeries", itemlocSeries);
+
+      bool invoiceLineFailed = false;
+      bool hasControlledItems = false;
+
+      // Handle the Inventory and G/L Transactions for any billed Inventory where invcitem_updateinv is true
+      XSqlQuery items;
+      items.prepare("SELECT item_number, itemsite_id, invcitem_id, "
+                    " (invcitem_billed * invcitem_qty_invuomratio) * -1 AS qty, "
+                    " invchead_invcnumber "
+                    "FROM invchead " 
+                    " JOIN invcitem ON invcitem_invchead_id = invchead_id "
+                    "   AND invcitem_billed <> 0 " 
+                    "   AND invcitem_updateinv "
+                    " JOIN itemsite ON itemsite_item_id = invcitem_item_id " 
+                    "   AND itemsite_warehous_id = invcitem_warehous_id "
+                    " JOIN item ON item_id = invcitem_item_id "
+                    "WHERE invchead_id = :invchead_id "
+                    " AND itemsite_costmethod != 'J' "
+                    " AND (itemsite_loccntrl OR itemsite_controlmethod IN ('L', 'S')) "
+                    " AND itemsite_controlmethod != 'N' "
+                    "ORDER BY invcitem_id;");
+      items.bindValue(":invchead_id", invoiceId);
+      items.exec();
+      while (items.next())
+      {
+        int result = distributeInventory::SeriesCreate(items.value("itemsite_id").toInt(), 
+          items.value("qty").toDouble(), "IN", "SH", items.value("invcitem_id").toInt(), itemlocSeries);
+        if (result < 0)
+        {
+          cleanup.exec();
+          failedInvoices.append(invoiceNumber);
+          errors.append(tr("Error Creating itemlocdist Record for item %1").arg(items.value("item_number").toString()));
+          invoiceLineFailed = true;
+          break;
+        }
+        else if (itemlocSeries == 0) // The first time through the loop, set itemlocSeries
+          itemlocSeries = result;
+
+        hasControlledItems = true;
+      }
+
+      if (invoiceLineFailed)
+        continue;
+
+      // Distribute the items from above
+      if (hasControlledItems && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(), QDate(), true)
+        == XDialog::Rejected)
+      {
+        cleanup.exec();
+        // If it's not the last invoice in the loop, ask the user to exit loop or continue
+        if (i != (selected.size() -1))
+        {
+          if (QMessageBox::question(this,  tr("Post Invoices"),
+            tr("Posting distribution detail for invoice number %1 was cancelled but "
+               "there other invoices to Post. Continue posting the remaining invoices?")
+            .arg(invoiceNumber), 
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+          {
+            failedInvoices.append(invoiceNumber);
+            errors.append(tr("Detail Distribution Cancelled"));
+            continue;
+          }
+          else
+          {
+            failedInvoices.append(invoiceNumber);
+            errors.append(tr("Detail Distribution Cancelled"));
+            break;
+          }
+        }
+        else
+        {
+          failedInvoices.append(invoiceNumber);
+          errors.append(tr("Detail Distribution Cancelled"));
+          continue;
+        }
+      }
+
+      // Post this invoice
+      XSqlQuery rollback;
+      rollback.prepare("ROLLBACK;");
+
+      unpostedPost.exec("BEGIN;"); // TODO - remove this after postInvoice function no longer returns negative error codes
+
+      XSqlQuery post;
+      post.prepare("SELECT postInvoice(:invchead_id, :journal, :itemlocSeries, TRUE) AS result;");
+      post.bindValue(":invchead_id", invoiceId);
+      post.bindValue(":journal",     journal);
+      post.bindValue(":itemlocSeries", itemlocSeries);
+      post.exec();
+      if (post.first())
+      {
+        int result = post.value("result").toInt();
+        if (result < 0 || result != itemlocSeries)
+        {
+          rollback.exec();
+          cleanup.exec();
+          failedInvoices.append(invoiceNumber);
+          errors.append(tr("Error Posting Invoice %1").arg(storedProcErrorLookup("postInvoice", result))); 
+          continue;
+        }
+
+        unpostedPost.exec("COMMIT;");
+      }
+      else 
+      {
+        rollback.exec();
+        cleanup.exec();
+        failedInvoices.append(invoiceNumber);
+        errors.append(tr("Error Posting Invoice %1").arg(post.lastError().databaseText())); 
+        continue;
+      }
+    } // invoice loop
+
+    // Report any errors accumulated in above loop
+    if (errors.size() > 0)
+    {
+      QMessageBox dlg(QMessageBox::Critical, "Errors Posting Receipt", "", QMessageBox::Ok, this);
+      dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedInvoices.size()));
+
+      QString details;
+      for (int i=0; i<failedInvoices.size(); i++)
+        details += tr("Item %1 failed with:\n%2\n").arg(failedInvoices[i]).arg(errors[i]);
+      dlg.setDetailedText(details);
+
+      dlg.exec();
+    }
+
+    // If any date issues, restart loop
     if (triedToClosed.size() > 0)
     {
       failedPostList newdlg(this, "", true);
@@ -341,9 +467,10 @@ void unpostedInvoices::sPost()
       tryagain = (newdlg.exec() == XDialog::Accepted);
       selected = triedToClosed;
       triedToClosed.clear();
-      }
     }
-  } while (tryagain);
+    else 
+      tryagain = false;
+  } while (tryagain); 
 
   if (_printJournal->isChecked())
   {

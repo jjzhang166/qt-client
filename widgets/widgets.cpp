@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -9,6 +9,8 @@
  */
 
 #include "widgets.h"
+#include "metrics.h"
+#include "metricsenc.h"
 
 #include "xtupleplugin.h"
 
@@ -73,6 +75,7 @@
 #include "plugins/vendorclusterplugin.h"
 #include "plugins/vendorgroupplugin.h"
 #include "plugins/vendorlineeditplugin.h"
+#include "plugins/voucherclusterplugin.h"
 #include "plugins/warehousegroupplugin.h"
 #include "plugins/wcomboboxplugin.h"
 #include "plugins/woclusterplugin.h"
@@ -155,6 +158,7 @@ xTuplePlugin::xTuplePlugin(QObject * parent) : QObject(parent)
   m_plugins.append(new VendorClusterPlugin(this));
   m_plugins.append(new VendorGroupPlugin(this));
   m_plugins.append(new VendorLineEditPlugin(this));
+  m_plugins.append(new VoucherClusterPlugin(this));
   m_plugins.append(new WarehouseGroupPlugin(this));
   m_plugins.append(new WComboBoxPlugin(this));
   m_plugins.append(new WoClusterPlugin(this));
@@ -200,4 +204,58 @@ void initializePlugin(Preferences *pPreferences, Metrics *pMetrics, Privileges *
   _x_workspace = pWorkspace;
   _x_privileges = pPrivileges;
   _x_username = pUsername;
+}
+
+void setupWidgetsScriptApi(QScriptEngine *engine, GuiClientInterface *client)
+{
+
+  setupAddressCluster(engine);
+  setupAlarms(engine);
+  setupCLineEdit(engine);
+  setupCRMAcctLineEdit(engine);
+  setupComments(engine);
+  setupContactWidget(engine);
+  setupCurrDisplay(engine);
+  setupDocuments(engine);
+  setupEmpCluster(engine);
+  setupEmpClusterLineEdit(engine);
+  setupFileMoveSelector(engine);
+  setupGLCluster(engine);
+  setupItemLineEdit(engine);
+  setupOrderLineEdit(engine);
+  setupParameterGroup(engine);
+  setupParameterWidget(engine);
+  setupProjectLineEdit(engine);
+  setupQuerySet(engine);
+  setupRaLineEdit(engine);
+  setupRecurrenceWidget(engine);
+  setupRevisionLineEdit(engine);
+  setupScreen(engine);
+  setupShipmentClusterLineEdit(engine);
+  setupUsernameCluster(engine);
+  setupUsernameLineEdit(engine);
+  setupVendorGroup(engine);
+  setupVirtualCluster(engine);
+  setupWComboBox(engine);
+  setupWoCluster(engine);
+  setupWomatlCluster(engine);
+  setupXCheckBox(engine);
+  setupXComboBox(engine);
+  setupXDataWidgetMapper(engine);
+  setupXDateEdit(engine);
+  setupXDocCopySetter(engine);
+  setupXLabel(engine);
+  setupXLineEdit(engine);
+  setupXSqlTableModel(engine);
+  setupXTreeWidget(engine);
+  setupXTreeWidgetItem(engine);
+  setupXt(engine);
+
+  if (client)
+  {
+    setupParameters(engine, "metrics",      client->getMetrics());
+    setupParameters(engine, "metricsenc",   client->getMetricsenc());
+    setupParameters(engine, "preferences",  client->getPreferences());
+    setupParameters(engine, "privileges",   client->getPrivileges());
+  }
 }

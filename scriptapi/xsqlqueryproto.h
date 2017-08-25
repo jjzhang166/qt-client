@@ -1,15 +1,15 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2012 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
-#ifndef __SCRIPTQUERY_H__
-#define __SCRIPTQUERY_H__
+#ifndef __XSQLQUERYPROTO_H__
+#define __XSQLQUERYPROTO_H__
 
 #include <QObject>
 #include <QVariant>
@@ -17,9 +17,6 @@
 #include <QSqlRecord>
 
 #include <xsqlquery.h>
-
-Q_DECLARE_METATYPE(XSqlQuery*)
-Q_DECLARE_METATYPE(XSqlQuery)
 
 void setupXSqlQueryProto(QScriptEngine *engine);
 QScriptValue constructXSqlQuery(QScriptContext *context, QScriptEngine *engine);
@@ -59,4 +56,7 @@ class XSqlQueryProto : public QObject, public QScriptable
     bool previous();
 };
 
-#endif // __SCRIPTQUERY_H__
+Q_DECLARE_METATYPE(XSqlQuery*)
+Q_DECLARE_METATYPE(XSqlQuery)
+
+#endif // __XSQLQUERYPROTO_H__

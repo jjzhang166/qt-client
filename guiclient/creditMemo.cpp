@@ -321,6 +321,9 @@ void creditMemo::sSave()
 
 bool creditMemo::save()
 {
+  if(_memoNumber->text().trimmed().length() == 0)
+    return false;
+
   XSqlQuery creditave;
   creditave.prepare( "UPDATE cmhead "
 	     "SET cmhead_invcnumber=:cmhead_invcnumber, cmhead_cust_id=:cmhead_cust_id,"

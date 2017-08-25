@@ -12,30 +12,33 @@
 
 void setupXt(QScriptEngine *engine)
 {
-  QScriptValue glob = engine->newObject();
+  QScriptValue::PropertyFlags ro = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+  QScriptValue widget = engine->globalObject().property("Xt");
+  if (! widget.isObject()) {
+    widget = engine->newObject();
+    engine->globalObject().setProperty("Xt", widget, ro);
+  }
 
-  glob.setProperty("RawRole",         QScriptValue(engine, Xt::RawRole),         QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("ScaleRole",       QScriptValue(engine, Xt::ScaleRole),       QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("IdRole",          QScriptValue(engine, Xt::IdRole),          QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("RunningSetRole",  QScriptValue(engine, Xt::RunningSetRole),  QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("RunningInitRole", QScriptValue(engine, Xt::RunningInitRole), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("TotalSetRole",    QScriptValue(engine, Xt::TotalSetRole),    QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("TotalInitRole",   QScriptValue(engine, Xt::TotalInitRole),   QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("IndentRole",      QScriptValue(engine, Xt::IndentRole),      QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("DeletedRole",     QScriptValue(engine, Xt::DeletedRole),     QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  widget.setProperty("RawRole",         QScriptValue(engine, Xt::RawRole),         ro);
+  widget.setProperty("ScaleRole",       QScriptValue(engine, Xt::ScaleRole),       ro);
+  widget.setProperty("IdRole",          QScriptValue(engine, Xt::IdRole),          ro);
+  widget.setProperty("RunningSetRole",  QScriptValue(engine, Xt::RunningSetRole),  ro);
+  widget.setProperty("RunningInitRole", QScriptValue(engine, Xt::RunningInitRole), ro);
+  widget.setProperty("TotalSetRole",    QScriptValue(engine, Xt::TotalSetRole),    ro);
+  widget.setProperty("TotalInitRole",   QScriptValue(engine, Xt::TotalInitRole),   ro);
+  widget.setProperty("IndentRole",      QScriptValue(engine, Xt::IndentRole),      ro);
+  widget.setProperty("DeletedRole",     QScriptValue(engine, Xt::DeletedRole),     ro);
 
-  glob.setProperty("AllModules",         QScriptValue(engine, Xt::AllModules),      QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("AccountingModule",   QScriptValue(engine, Xt::AccountingModule),QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("SalesModule",        QScriptValue(engine, Xt::SalesModule),           QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("CRMModule",          QScriptValue(engine, Xt::CRMModule),             QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("ManufactureModule",  QScriptValue(engine, Xt::ManufactureModule),     QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("PurchaseModule",     QScriptValue(engine, Xt::PurchaseModule),        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("ScheduleModule",     QScriptValue(engine, Xt::ScheduleModule),        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("InventoryModule",    QScriptValue(engine, Xt::InventoryModule), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("ProductsModule",     QScriptValue(engine, Xt::ProductsModule),  QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  glob.setProperty("SystemModule",       QScriptValue(engine, Xt::SystemModule),    QScriptValue::ReadOnly | QScriptValue::Undeletable);
-
-  engine->globalObject().setProperty("Xt", glob, QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  widget.setProperty("AllModules",         QScriptValue(engine, Xt::AllModules),      ro);
+  widget.setProperty("AccountingModule",   QScriptValue(engine, Xt::AccountingModule),ro);
+  widget.setProperty("SalesModule",        QScriptValue(engine, Xt::SalesModule),           ro);
+  widget.setProperty("CRMModule",          QScriptValue(engine, Xt::CRMModule),             ro);
+  widget.setProperty("ManufactureModule",  QScriptValue(engine, Xt::ManufactureModule),     ro);
+  widget.setProperty("PurchaseModule",     QScriptValue(engine, Xt::PurchaseModule),        ro);
+  widget.setProperty("ScheduleModule",     QScriptValue(engine, Xt::ScheduleModule),        ro);
+  widget.setProperty("InventoryModule",    QScriptValue(engine, Xt::InventoryModule), ro);
+  widget.setProperty("ProductsModule",     QScriptValue(engine, Xt::ProductsModule),  ro);
+  widget.setProperty("SystemModule",       QScriptValue(engine, Xt::SystemModule),    ro);
 }
 
 Q_DECLARE_METATYPE(enum Xt::ItemDataRole);

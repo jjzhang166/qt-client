@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -12,6 +12,7 @@
 
 #include <QSqlError>
 #include <QVariant>
+#include <QtScript>
 
 #include "format.h"
 #include "xsqlquery.h"
@@ -245,4 +246,115 @@ QString formatUOMRatio(double value)
 QString formatPercent(double value)
 {
   return formatNumber(value * 100.0, percentscale);
+}
+
+QString formatDate(const QDate &pDate)
+{
+  return QLocale().toString(pDate, QLocale::ShortFormat);
+}
+
+static QScriptValue wrapDecimalPlaces(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return decimalPlaces(context->argument(0).toString());
+}
+
+static QScriptValue wrapFormatNumber(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatNumber(context->argument(0).toNumber(), context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatMoney(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatMoney(context->argument(0).toNumber(),
+                     context->argument(1).toInt32(),
+                     context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatCost(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatCost(context->argument(0).toNumber(), context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatExtPrice(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatExtPrice(context->argument(0).toNumber(), context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatWeight(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatWeight(context->argument(0).toNumber());
+}
+
+static QScriptValue wrapFormatQty(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatQty(context->argument(0).toNumber());
+}
+
+static QScriptValue wrapFormatQtyPer(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatQtyPer(context->argument(0).toNumber());
+}
+
+static QScriptValue wrapFormatSalesPrice(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatSalesPrice(context->argument(0).toNumber(), context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatPurchPrice(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatPurchPrice(context->argument(0).toNumber(), context->argument(1).toInt32());
+}
+
+static QScriptValue wrapFormatUOMRatio(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatUOMRatio(context->argument(0).toNumber());
+}
+
+static QScriptValue wrapFormatPercent(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatPercent(context->argument(0).toNumber());
+}
+
+static QScriptValue wrapFormatDate(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return formatDate(context->argument(0).toDateTime().date());
+}
+
+// for now, return the #RRGGBB for the named color.
+static QScriptValue wrapNamedColor(QScriptContext *context, QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  return namedColor(context->argument(0).toString()).name();
+}
+
+void setupFormat(QScriptEngine *engine)
+{
+  Q_UNUSED(engine);
+  engine->globalObject().setProperty("decimalPlaces",    engine->newFunction(wrapDecimalPlaces));
+  engine->globalObject().setProperty("formatNumber",     engine->newFunction(wrapFormatNumber));
+  engine->globalObject().setProperty("formatMoney",      engine->newFunction(wrapFormatMoney));
+  engine->globalObject().setProperty("formatCost",       engine->newFunction(wrapFormatCost));
+  engine->globalObject().setProperty("formatExtPrice",   engine->newFunction(wrapFormatExtPrice));
+  engine->globalObject().setProperty("formatWeight",     engine->newFunction(wrapFormatWeight));
+  engine->globalObject().setProperty("formatQty",        engine->newFunction(wrapFormatQty));
+  engine->globalObject().setProperty("formatQtyPer",     engine->newFunction(wrapFormatQtyPer));
+  engine->globalObject().setProperty("formatSalesPrice", engine->newFunction(wrapFormatSalesPrice));
+  engine->globalObject().setProperty("formatPurchPrice", engine->newFunction(wrapFormatPurchPrice));
+  engine->globalObject().setProperty("formatUOMRatio",   engine->newFunction(wrapFormatUOMRatio));
+  engine->globalObject().setProperty("formatPercent",    engine->newFunction(wrapFormatPercent));
+  engine->globalObject().setProperty("formatDate",       engine->newFunction(wrapFormatDate));
+  engine->globalObject().setProperty("namedColor",       engine->newFunction(wrapNamedColor));
 }

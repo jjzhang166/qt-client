@@ -114,7 +114,7 @@ to be bound by its terms.</comment>
                <property name="text">
                 <string>Credit Hold</string>
                </property>
-               <property name="checked">
+               <property name="defaultChecked">
                 <bool>true</bool>
                </property>
               </widget>
@@ -124,7 +124,7 @@ to be bound by its terms.</comment>
                <property name="text">
                 <string>Packing Hold</string>
                </property>
-               <property name="checked">
+               <property name="defaultChecked">
                 <bool>true</bool>
                </property>
               </widget>
@@ -134,7 +134,7 @@ to be bound by its terms.</comment>
                <property name="text">
                 <string>Shipping Hold</string>
                </property>
-               <property name="checked">
+               <property name="defaultChecked">
                 <bool>true</bool>
                </property>
               </widget>

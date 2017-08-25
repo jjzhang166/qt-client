@@ -29,7 +29,12 @@ public:
     Q_INVOKABLE bool    okToPost();
     Q_INVOKABLE bool    createwo();
     Q_INVOKABLE bool    closewo();
-    Q_INVOKABLE bool    transfer();
+    Q_INVOKABLE bool    deletewo();
+    Q_INVOKABLE bool    transfer(int itemlocSeries = 0);
+    Q_INVOKABLE int     handleSeriesAdjustBeforePost();
+    Q_INVOKABLE int     handleTransferSeriesAdjustBeforePost();
+    Q_INVOKABLE bool    post(int itemlocSeries = 0);
+    Q_INVOKABLE bool    returntool();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams);
@@ -40,10 +45,8 @@ protected slots:
     virtual void languageChange();
 
 private:
-    bool post();
-    bool returntool();
-  
     bool _captive;
+    bool _controlled;
     int  _sense;
     int  _itemsiteid;
     int  _woid;

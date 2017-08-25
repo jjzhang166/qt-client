@@ -2,7 +2,7 @@
 <ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
-Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
 It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,14 +13,21 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>100</height>
+    <width>650</width>
+    <height>346</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Class Code</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="0">
+    <widget class="XLabel" name="_defaultTaxLit">
+     <property name="text">
+      <string>Default Item Tax Types:</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -107,15 +114,72 @@ to be bound by its terms.</comment>
      </property>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="XTreeWidget" name="_classcodetax"/>
+   </item>
+   <item row="2" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="_newTax">
+       <property name="text">
+        <string>New</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="_editTax">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="_deleteTax">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="5" margin="5"/>
  <customwidgets>
   <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
+  </customwidget>
+  <customwidget>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>XTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>xtreewidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -140,6 +204,54 @@ to be bound by its terms.</comment>
     <hint type="destinationlabel">
      <x>199</x>
      <y>49</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_classcodetax</sender>
+   <signal>itemSelected(int)</signal>
+   <receiver>_editTax</receiver>
+   <slot>animateClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>151</x>
+     <y>557</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>676</x>
+     <y>456</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_classcodetax</sender>
+   <signal>valid(bool)</signal>
+   <receiver>_editTax</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>108</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_classcodetax</sender>
+   <signal>valid(bool)</signal>
+   <receiver>_deleteTax</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>137</y>
     </hint>
    </hints>
   </connection>

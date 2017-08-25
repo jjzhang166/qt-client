@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -14,9 +14,10 @@
 #include <QWidget>
 #include <QDateTime>
 
-class QLabel;
-class QGridLayout;
 class QDoubleValidator;
+class QGridLayout;
+class QLabel;
+class QScriptEngine;
 
 #include "widgets.h"
 #include "xcombobox.h"
@@ -31,8 +32,6 @@ class QDoubleValidator;
 class XTUPLEWIDGETS_EXPORT CurrDisplay : public QWidget
 {
   Q_OBJECT
-
-  Q_ENUMS(CurrDisplayFormats)
 
   Q_PROPERTY(double  baseValue         READ baseValue         WRITE setBaseValue)
   Q_PROPERTY(double  defaultLocalValue READ defaultLocalValue WRITE setDefaultLocalValue)
@@ -52,6 +51,7 @@ class XTUPLEWIDGETS_EXPORT CurrDisplay : public QWidget
         {
           Money, SalesPrice, PurchPrice, ExtPrice, Cost
         };
+        Q_ENUM(CurrDisplayFormats)
 
         double  defaultLocalValue()             const { return _default;            };
 	virtual bool		isZero()	const;
@@ -223,5 +223,7 @@ class XTUPLEWIDGETS_EXPORT CurrCluster : public CurrDisplay
     private:
     	QString _fieldNameCurr;
 };
+
+void setupCurrDisplay(QScriptEngine *engine);
 
 #endif

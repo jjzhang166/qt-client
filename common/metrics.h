@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -15,6 +15,8 @@
 #include <QObject>
 #include <QString>
 #include <QMap>
+
+class QScriptEngine;
 
 typedef QMap<QString, QString> MetricMap;
 
@@ -34,27 +36,27 @@ class Parameters : public QObject
     Parameters(QObject * parent = 0);
     virtual ~Parameters() {};
 
-    void load();
+    virtual void load();
 
-    QString value(const char *);
-    bool    boolean(const char *);
+    virtual QString value(const char *);
+    virtual bool    boolean(const char *);
 
-    Q_INVOKABLE void set(const char *, bool);
-    Q_INVOKABLE void set(const QString &, bool);
-    Q_INVOKABLE void set(const char *, int);
-    Q_INVOKABLE void set(const QString &, int);
-    Q_INVOKABLE void set(const char *, const QString &);
-    Q_INVOKABLE void set(const QString &, const QString &);
+    Q_INVOKABLE virtual void set(const char *, bool);
+    Q_INVOKABLE virtual void set(const QString &, bool);
+    Q_INVOKABLE virtual void set(const char *, int);
+    Q_INVOKABLE virtual void set(const QString &, int);
+    Q_INVOKABLE virtual void set(const char *, const QString &);
+    Q_INVOKABLE virtual void set(const QString &, const QString &);
 
-    QString parent(const QString &);
+    virtual QString parent(const QString &);
 
   public slots:
-    QString value(const QString &);
-    bool    boolean(const QString &);
-    void    sSetDirty(const QString &);
+    virtual QString value(const QString &);
+    virtual bool    boolean(const QString &);
+    virtual void    sSetDirty(const QString &);
 
   protected:
-    void _set(const QString &, QVariant);
+    virtual void _set(const QString &, QVariant);
 
   signals:
     void loaded();
@@ -91,6 +93,8 @@ class Privileges : public Parameters
     bool check(const QString &);
     bool isDba();
 };
+
+void setupParameters(QScriptEngine *engine, QString name, Parameters *params);
 
 #endif
 

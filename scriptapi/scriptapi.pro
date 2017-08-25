@@ -14,10 +14,7 @@ greaterThan (QT_MAJOR_VERSION, 4) {
 DBFILE = scriptapi.db
 LANGUAGE = C++
 INCLUDEPATH += $${XTUPLE_DIR}/common          $${XTUPLE_BLD}/common \
-               $${XTUPLE_DIR}/widgets         $${XTUPLE_BLD}/widgets \
-               $${XTUPLE_DIR}/widgets/tmp/lib $${XTUPLE_BLD}/widgets/tmp/lib \
-               $${XTUPLE_DIR}/scriptapi       $${XTUPLE_BLD}/scriptapi \
-
+               $${XTUPLE_DIR}/scriptapi       $${XTUPLE_BLD}/scriptapi
 
 INCLUDEPATH = $$unique(INCLUDEPATH)
 DEPENDPATH += $${INCLUDEPATH}
@@ -29,8 +26,12 @@ UI_DIR = tmp
 HEADERS += setupscriptapi.h \
     include.h \
     scriptapi_internal.h \
+    char.h \
+    engineevaluate.h \
+    jsconsole.h \
     metasqlhighlighterproto.h \
     orreportproto.h \
+    parametereditproto.h \
     parameterlistsetup.h \
     qabstractsocketproto.h \
     qactionproto.h \
@@ -41,6 +42,7 @@ HEADERS += setupscriptapi.h \
     qbytearrayproto.h \
     qcoreapplicationproto.h \
     qcryptographichashproto.h \
+    qdatawidgetmapperproto.h    \
     qdialogbuttonboxproto.h \
     qdialogsetup.h \
     qdirproto.h \
@@ -69,26 +71,26 @@ HEADERS += setupscriptapi.h \
     qdomprocessinginstructionproto.h \
     qdomtextproto.h \
     qdoublevalidatorproto.h \
-    qintvalidatorproto.h \
     qeventproto.h \
-    qfileproto.h \
     qfileinfoproto.h \
+    qfileproto.h \
     qfontproto.h \
     qformlayoutproto.h \
     qgridlayoutproto.h \
     qhostaddressproto.h \
     qhostinfoproto.h \
     qiconproto.h \
+    qintvalidatorproto.h \
     qiodeviceproto.h \
     qitemdelegateproto.h \
     qjsondocumentproto.h \
     qjsonobjectproto.h \
     qjsonvalueproto.h \
-    qlayoutproto.h \
     qlayoutitemproto.h \
+    qlayoutproto.h \
     qmainwindowproto.h \
-    qmenuproto.h \
     qmenubarproto.h \
+    qmenuproto.h \
     qmessageboxsetup.h \
     qnetworkaccessmanagerproto.h \
     qnetworkinterfaceproto.h \
@@ -96,19 +98,20 @@ HEADERS += setupscriptapi.h \
     qnetworkrequestproto.h \
     qobjectproto.h \
     qprinterproto.h \
-    qprocessproto.h     \
     qprocessenvironmentproto.h     \
+    qprocessproto.h     \
     qpushbuttonproto.h \
-    qserialportproto.h \
     qserialportinfoproto.h \
+    qserialportproto.h \
     qsizepolicyproto.h \
     qspaceritemproto.h \
-    qsqlproto.h \
     qsqldatabaseproto.h \
     qsqldriverproto.h \
     qsqlerrorproto.h \
+    qsqlproto.h \
     qsqlqueryproto.h \
     qsqlrecordproto.h \
+    qsqltablemodelproto.h \
     qsslcertificateextensionproto.h \
     qsslcertificateproto.h \
     qsslcipherproto.h \
@@ -136,8 +139,8 @@ HEADERS += setupscriptapi.h \
     quuidproto.h \
     qvalidatorproto.h \
     qwebchannelproto.h \
-    qwebelementproto.h \
     qwebelementcollectionproto.h \
+    qwebelementproto.h \
     qwebframeproto.h \
     qwebpageproto.h \
     qwebsecurityoriginproto.h \
@@ -148,44 +151,20 @@ HEADERS += setupscriptapi.h \
     qwebsocketserverproto.h       \
     qwebviewproto.h \
     qwidgetproto.h \
-    xdatawidgetmapperproto.h \
-    xsqltablemodelproto.h \
-    xsqlqueryproto.h \
-    addressclustersetup.h \
-    alarmssetup.h \
-    char.h \
-    clineeditsetup.h \
-    commentssetup.h \
-    contactwidgetsetup.h \
-    crmacctlineeditsetup.h \
-    currdisplaysetup.h \
-    documentssetup.h \
-    engineevaluate.h \
-    glclustersetup.h \
-    itemlineeditsetup.h \
-    jsconsole.h \
-    orderlineeditsetup.h \
-    parametereditproto.h \
-    parametergroupsetup.h \
-    projectlineeditsetup.h \
-    ralineeditsetup.h \
-    revisionlineeditsetup.h \
-    screensetup.h \
-    shipmentclusterlineeditsetup.h \
-    vendorgroupsetup.h \
-    wcomboboxsetup.h \
     webchanneltransport.h \
-    womatlclustersetup.h \
-    xdateeditsetup.h \
-    ../widgets/xt.h \
+    xsqlqueryproto.h \
     xvariantsetup.h \
+    xwebsync.h                    \
     xwebsync_p.h \
-    xwebsync.h
 
 SOURCES += setupscriptapi.cpp \
     include.cpp \
+    char.cpp \
+    engineevaluate.cpp \
+    jsconsole.cpp \
     metasqlhighlighterproto.cpp \
     orreportproto.cpp \
+    parametereditproto.cpp \
     parameterlistsetup.cpp \
     qabstractsocketproto.cpp \
     qactionproto.cpp \
@@ -196,6 +175,7 @@ SOURCES += setupscriptapi.cpp \
     qbytearrayproto.cpp \
     qcoreapplicationproto.cpp \
     qcryptographichashproto.cpp \
+    qdatawidgetmapperproto.cpp  \
     qdialogbuttonboxproto.cpp \
     qdialogsetup.cpp \
     qdirproto.cpp \
@@ -224,16 +204,16 @@ SOURCES += setupscriptapi.cpp \
     qdomprocessinginstructionproto.cpp \
     qdomtextproto.cpp \
     qdoublevalidatorproto.cpp \
-    qintvalidatorproto.cpp \
     qeventproto.cpp \
-    qfileproto.cpp \
     qfileinfoproto.cpp \
+    qfileproto.cpp \
     qfontproto.cpp \
     qformlayoutproto.cpp \
     qgridlayoutproto.cpp \
     qhostaddressproto.cpp \
     qhostinfoproto.cpp \
     qiconproto.cpp \
+    qintvalidatorproto.cpp \
     qiodeviceproto.cpp \
     qitemdelegateproto.cpp \
     qjsondocumentproto.cpp \
@@ -242,8 +222,8 @@ SOURCES += setupscriptapi.cpp \
     qlayoutitemproto.cpp \
     qlayoutproto.cpp \
     qmainwindowproto.cpp \
-    qmenuproto.cpp \
     qmenubarproto.cpp \
+    qmenuproto.cpp \
     qmessageboxsetup.cpp \
     qnetworkaccessmanagerproto.cpp \
     qnetworkinterfaceproto.cpp \
@@ -251,19 +231,20 @@ SOURCES += setupscriptapi.cpp \
     qnetworkrequestproto.cpp \
     qobjectproto.cpp \
     qprinterproto.cpp \
-    qprocessproto.cpp \
     qprocessenvironmentproto.cpp \
+    qprocessproto.cpp \
     qpushbuttonproto.cpp \
-    qserialportproto.cpp \
     qserialportinfoproto.cpp \
+    qserialportproto.cpp \
     qsizepolicyproto.cpp \
     qspaceritemproto.cpp \
-    qsqlproto.cpp \
     qsqldatabaseproto.cpp \
     qsqldriverproto.cpp \
     qsqlerrorproto.cpp \
+    qsqlproto.cpp \
     qsqlqueryproto.cpp \
     qsqlrecordproto.cpp \
+    qsqltablemodelproto.cpp           \
     qsslcertificateextensionproto.cpp \
     qsslcertificateproto.cpp \
     qsslcipherproto.cpp \
@@ -291,8 +272,8 @@ SOURCES += setupscriptapi.cpp \
     quuidproto.cpp \
     qvalidatorproto.cpp \
     qwebchannelproto.cpp \
-    qwebelementproto.cpp \
     qwebelementcollectionproto.cpp \
+    qwebelementproto.cpp \
     qwebframeproto.cpp \
     qwebpageproto.cpp \
     qwebsecurityoriginproto.cpp \
@@ -303,35 +284,7 @@ SOURCES += setupscriptapi.cpp \
     qwebsocketserverproto.cpp     \
     qwebviewproto.cpp \
     qwidgetproto.cpp \
-    xdatawidgetmapperproto.cpp \
-    xsqltablemodelproto.cpp \
-    xsqlqueryproto.cpp \
-    addressclustersetup.cpp \
-    alarmssetup.cpp \
-    char.cpp \
-    clineeditsetup.cpp \
-    commentssetup.cpp \
-    contactwidgetsetup.cpp \
-    crmacctlineeditsetup.cpp \
-    currdisplaysetup.cpp \
-    documentssetup.cpp \
-    engineevaluate.cpp \
-    glclustersetup.cpp \
-    itemlineeditsetup.cpp \
-    jsconsole.cpp \
-    orderlineeditsetup.cpp \
-    parametereditproto.cpp \
-    parametergroupsetup.cpp \
-    projectlineeditsetup.cpp \
-    ralineeditsetup.cpp \
-    revisionlineeditsetup.cpp \
-    screensetup.cpp \
-    shipmentclusterlineeditsetup.cpp \
-    vendorgroupsetup.cpp \
-    wcomboboxsetup.cpp \
     webchanneltransport.cpp \
-    womatlclustersetup.cpp \
-    xdateeditsetup.cpp \
-    ../widgets/xt.cpp \
+    xsqlqueryproto.cpp \
     xvariantsetup.cpp \
     xwebsync.cpp

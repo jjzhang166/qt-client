@@ -30,9 +30,11 @@ LIBS += -lopenrptcommon -lMetaSQL $${LIBDMTX} -lz
 SOURCES = applock.cpp              \
           calendarcontrol.cpp      \
           calendargraphicsitem.cpp \
-	  checkForUpdates.cpp      \
+          checkForUpdates.cpp      \
+          cmdlinemessagehandler.cpp \
           errorReporter.cpp        \
           exporthelper.cpp \
+          guimessagehandler.cpp \
           importhelper.cpp \
           format.cpp \
           graphicstextbuttonitem.cpp \
@@ -43,21 +45,26 @@ SOURCES = applock.cpp              \
           qbase64encode.cpp \
           qmd5.cpp \
           shortcuts.cpp \
+          statusbarmessagehandler.cpp \
           storedProcErrorLookup.cpp \
           tarfile.cpp \
+          xabstractmessagehandler.cpp \
           xbase32.cpp \
           xtupleproductkey.cpp \
           xtNetworkRequestManager.cpp \
           xtsettings.cpp
+
 HEADERS = applock.h              \
           calendarcontrol.h      \
           calendargraphicsitem.h \
+          cmdlinemessagehandler.h \
           checkForUpdates.h      \
           errorReporter.h        \
           exporthelper.h \
           importhelper.h \
           format.h \
           graphicstextbuttonitem.h \
+          guimessagehandler.h \
           gunzip.h \
           login2.h \
           metrics.h \
@@ -65,8 +72,10 @@ HEADERS = applock.h              \
           qbase64encode.h \
           qmd5.h \
           shortcuts.h \
+          statusbarmessagehandler.h \
           storedProcErrorLookup.h \
           tarfile.h \
+          xabstractmessagehandler.h \
           xbase32.h \
           xtupleproductkey.h \
           xtNetworkRequestManager.h \

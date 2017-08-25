@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -18,6 +18,7 @@
 
 #include "parameterwidget.h"
 #include "salesHistoryInformation.h"
+#include "xtreewidget.h"
 
 dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "dspSalesHistory", fl)
@@ -50,8 +51,6 @@ dspSalesHistory::dspSalesHistory(QWidget* parent, const char*, Qt::WindowFlags f
   parameterWidget()->append(tr("Include Misc. Items"), "includeMisc", ParameterWidget::Exists, true);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
-
-  parameterWidget()->applyDefaultFilterSet();
 
   list()->addColumn(tr("Customer"),            -1,              Qt::AlignLeft,   true,  "cust_name"   );
   list()->addColumn(tr("Doc. #"),              _orderColumn,    Qt::AlignLeft,   true,  "cohist_ordernumber"   );
@@ -167,8 +166,6 @@ enum SetResponse dspSalesHistory::set(const ParameterList &pParams)
   param = pParams.value("warehous_id", &valid);
   if (valid)
     parameterWidget()->setDefault(tr("Site"), param.toInt());
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

@@ -25,7 +25,11 @@ public:
     distributeInventory(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~distributeInventory();
 
-    static int SeriesAdjust( int pItemlocSeries, QWidget * pParent, const QString & = QString::null, const QDate & = QDate(), const QDate & = QDate() );
+    static int SeriesCreate(int itemsiteId, double qty, const QString & orderType, const QString & transType,
+        int orderitemId = 0, int itemlocSeries = 0, int itemlocdistId = 0, int invhistId = 0);
+    static int SeriesAdjust( int pItemlocSeries, QWidget * pParent, 
+        const QString & = QString::null, const QDate & = QDate(), 
+        const QDate & = QDate(), bool pPreDistributed = false );
     virtual enum SetResponse set( const ParameterList & pParams );
 
 public slots:

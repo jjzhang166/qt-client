@@ -244,7 +244,7 @@ void accountNumbers::sBuildList()
 
   if (_metrics->value("Application") != "PostBooks")
   {
-    _account->addColumn(tr("External"), _ynColumn, Qt::AlignCenter, false, "company_external");
+    _account->addColumn(tr("External"), 150, Qt::AlignCenter, false, "accnt_extref");
     _externalCol++;
   }
   else

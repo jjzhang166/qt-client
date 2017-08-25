@@ -150,15 +150,17 @@ purchaseOrder::purchaseOrder(QWidget* parent, const char* name, Qt::WindowFlags 
 
   _projectId = -1;
 
-XSqlQuery getWeightUOM;
-getWeightUOM.prepare("SELECT uom_name FROM uom WHERE (uom_item_weight);");
-getWeightUOM.exec();
-if (getWeightUOM.first())
-  {
-    QString newLabel (tr("Total Weight (%1):"));
-    _totalWeightLit->setText(newLabel.arg(getWeightUOM.value("uom_name").toString()));
-  }
+  XSqlQuery getWeightUOM;
+  getWeightUOM.prepare("SELECT uom_name FROM uom WHERE (uom_item_weight);");
+  getWeightUOM.exec();
+  if (getWeightUOM.first())
+    {
+      QString newLabel (tr("Total Weight (%1):"));
+      _totalWeightLit->setText(newLabel.arg(getWeightUOM.value("uom_name").toString()));
+    }
 
+  _purchaseType->populate("SELECT potype_id, potype_code ||' - '||potype_descr, potype_code "
+                           " FROM potype WHERE potype_active ORDER BY potype_default DESC");
 }
 
 void purchaseOrder::setPoheadid(const int pId)
@@ -233,13 +235,24 @@ enum SetResponse purchaseOrder::set(const ParameterList &pParams)
                    "       CASE WHEN(pr_order_type='S') THEN pr_order_id"
                    "            ELSE -1"
                    "       END AS parentso,"
-                   "       pr_prj_id, pr_releasenote "
+                   "       pr_prj_id, pr_releasenote, "
+                   "       stdCost(itemsite_item_id) AS stdcost "
                    "FROM pr "
+                   "JOIN itemsite ON itemsite_id=pr_itemsite_id "
                    "WHERE (pr_id=:pr_id);" );
         purchaseet.bindValue(":pr_id", _prid);
         purchaseet.exec();
         if (purchaseet.first())
         {
+          if(_metrics->boolean("RequireStdCostForPOItem") && purchaseet.value("stdcost").toDouble() == 0.0)
+          {
+            QMessageBox::critical( this, tr("Selected Item Missing Cost"),
+                    tr("<p>The selected item has no Std. Costing information. "
+                       "Please see your controller to correct this situation "
+                       "before continuing."));
+            return UndefinedError;
+          }
+
           itemsiteid = purchaseet.value("pr_itemsite_id").toInt();
           qty = purchaseet.value("pr_qtyreq").toDouble();
           dueDate = purchaseet.value("pr_duedate").toDate();
@@ -553,6 +566,7 @@ void purchaseOrder::setViewMode()
   _shiptoName->setEnabled(false);
   _shiptoAddr->setEnabled(false);
   _shipVia->setEnabled(false);
+  _purchaseType->setEnabled(false);
   _fob->setEnabled(false);
   _status->setEnabled(false);
   _notes->setEnabled(false);
@@ -754,6 +768,9 @@ void purchaseOrder::populate()
     _taxZone->setId(po.value("pohead_taxzone_id").toInt());
     _poCurrency->setId(po.value("pohead_curr_id").toInt());
     _freight->setLocalValue(po.value("pohead_freight").toDouble());
+
+   // must be after _vendor
+    _purchaseType->setId(po.value("pohead_potype_id").toInt());
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting P/O"),
                                 po, __FILE__, __LINE__))
@@ -848,6 +865,7 @@ void purchaseOrder::sSave()
              "    pohead_comments=:pohead_comments, "
              "    pohead_curr_id=:pohead_curr_id,"
              "    pohead_status=:pohead_status,"
+             "    pohead_potype_id=:pohead_potype_id,"
              "    pohead_saved=true,"
              "    pohead_vend_cntct_id=:pohead_vend_cntct_id,"
              "    pohead_vend_cntct_honorific=:pohead_vend_cntct_honorific,"
@@ -948,9 +966,15 @@ void purchaseOrder::sSave()
     purchaseSave.bindValue(":pohead_status", "O");
   else if (_status->currentIndex() == 2)
     purchaseSave.bindValue(":pohead_status", "C");
+  if (_purchaseType->id() >= 0)
+    purchaseSave.bindValue(":pohead_potype_id", _purchaseType->id());
   purchaseSave.bindValue(":pohead_dropship", QVariant(_dropShip->isChecked()));
 
   purchaseSave.exec();
+
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Purchase Order"),
+                           purchaseSave, __FILE__, __LINE__))
+    return;
  
   omfgThis->sPurchaseOrdersUpdated(_poheadid, true);
 
@@ -1216,7 +1240,8 @@ void purchaseOrder::sHandleVendor(int pVendid)
                "       cntct_phone, cntct_title, cntct_fax, cntct_email,"
                "       vend_terms_id, vend_curr_id, vend_pocomments,"
                "       vend_fobsource, vend_fob, vend_shipvia,"
-               "       vend_name,"
+               "       vend_name, COALESCE(vend_potype_id, -1) AS vend_potype_id,"
+               "       COALESCE((SELECT potype_id FROM potype WHERE potype_default),-1) AS default_potype,"
                "       COALESCE(vend_addr_id, -1) AS vendaddrid,"
                "       COALESCE(vend_taxzone_id, -1) AS vendtaxzoneid,"
                "       crmacct_id"
@@ -1260,6 +1285,11 @@ void purchaseOrder::sHandleVendor(int pVendid)
         _vendCntct->setFax(vq.value("cntct_fax").toString());
         _vendCntct->setEmailAddress(vq.value("cntct_email").toString());
       }
+
+      if (vq.value("vend_potype_id").toInt() > 0)
+        _purchaseType->setId(vq.value("vend_potype_id").toInt());
+      else if (vq.value("default_potype").toInt() > 0)
+        _purchaseType->setId(vq.value("default_potype").toInt());
 
       if (vq.value("addr_id").toInt())
       {

@@ -37,8 +37,10 @@ protected slots:
 
 private:
     int _mode;
+    int _itemsiteId;
     double _cachedQOH;
     bool _captive;
+    bool _controlledItem;
 
 };
 

@@ -122,6 +122,8 @@ void contactEmail::accept()
     // Updated
     else
     {
+      if (item->data(0,Qt::DisplayRole).toString().isEmpty())
+        continue;
       upd.bindValue(":email", item->data(0, Qt::DisplayRole));
       upd.bindValue(":cntcteml_id", item->id());
       upd.exec();

@@ -25,6 +25,7 @@ class printInvoices : public printMulticopyDocument,
 
     Q_INVOKABLE virtual ParameterList getParamsDocList();
     Q_INVOKABLE virtual ParameterList getParamsOneCopy(const int row, XSqlQuery *qry);
+    Q_INVOKABLE virtual int distributeInventory(XSqlQuery *qry);
 
   protected slots:
     virtual void languageChange();

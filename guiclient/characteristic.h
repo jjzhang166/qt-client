@@ -29,7 +29,7 @@ public:
     characteristic(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~characteristic();
 
-    enum Type { Text, List, Date };
+    enum Type { Text, List, Date, Number };
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );

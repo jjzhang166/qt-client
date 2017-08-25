@@ -77,7 +77,6 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   parameterWidget()->append(tr("Item"), "item_id", ParameterWidget::Item);
   if (_metrics->boolean("LotSerialControl"))
     parameterWidget()->append(tr("Lot/Serial Pattern"), "lspattern", ParameterWidget::Text);
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 
@@ -95,9 +94,7 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   list()->addColumn(tr("Category"),    _userColumn, Qt::AlignLeft, false, "incdtcat_name");
   list()->addColumn(tr("Severity"),    _userColumn, Qt::AlignLeft, false, "incdtseverity_name");
   list()->addColumn(tr("Priority"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_name");
-  list()->addColumn(tr("Priority Order"),    _userColumn, Qt::AlignLeft, false, "incdtpriority_order");
   list()->addColumn(tr("Resolution"),    _userColumn, Qt::AlignLeft, false, "incdtresolution_name");
-  list()->addColumn(tr("Resolution Order"),    _userColumn, Qt::AlignLeft, false, "incdtresolution_order");
   list()->addColumn(tr("Contact"),     _userColumn, Qt::AlignLeft, false, "cntct_name");
   list()->addColumn(tr("Project"),     _userColumn, Qt::AlignLeft, false, "prj_number");
   if(_metrics->boolean("IncidentsPublicPrivate"))
@@ -106,7 +103,6 @@ incidentWorkbench::incidentWorkbench(QWidget* parent, const char*, Qt::WindowFla
   list()->addColumn(tr("Lot/Serial"),   _itemColumn, Qt::AlignLeft, false, "ls_number");
 
   setupCharacteristics("INCDT");
-  parameterWidget()->applyDefaultFilterSet();
 }
 
 enum SetResponse incidentWorkbench::set(const ParameterList &pParams)

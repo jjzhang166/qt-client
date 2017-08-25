@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -778,6 +778,7 @@ void invoice::postInvoice()
 {
   XSqlQuery unpostedPost;
   int journal = -1;
+  int itemlocSeries;
   unpostedPost.exec("SELECT fetchJournalNumber('AR-IN') AS result;");
   if (unpostedPost.first())
   {
@@ -796,6 +797,7 @@ void invoice::postInvoice()
     return;
   }
 
+  // Check total invoice value, if 0 open dialog, if not 0 verify that it has a curr exchange rate 
   XSqlQuery xrate;
   xrate.prepare("SELECT curr_rate "
 		"FROM curr_rate, invchead "
@@ -805,76 +807,141 @@ void invoice::postInvoice()
   // if SUM becomes dependent on curr_id then move XRATE before it in the loop
   XSqlQuery sum;
   sum.prepare("SELECT invoicetotal(:invchead_id) AS subtotal;");
-
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  XSqlQuery post;
-  post.prepare("SELECT postInvoice(:invchead_id, :journal) AS result;");
-
   sum.bindValue(":invchead_id", _invcheadid);
   if (sum.exec() && sum.first() && sum.value("subtotal").toDouble() == 0)
   {
-     if (QMessageBox::question(this, tr("Invoice Has Value 0"),
-	      		  tr("Invoice #%1 has a total value of 0.\n"
-		     	     "Would you like to post it anyway?")
-			    .arg(_invoiceNumber->text()),
-			  QMessageBox::Yes,
-			  QMessageBox::No | QMessageBox::Default)
-	     == QMessageBox::No)
-	       return;
+    if (QMessageBox::question(this, tr("Invoice Has Value 0"),
+      tr("Invoice #%1 has a total value of 0.\n""Would you like to post it anyway?")
+      .arg(_invoiceNumber->text()), QMessageBox::Yes, QMessageBox::No | QMessageBox::Default)
+      == QMessageBox::No)
+      return;
   }
   else if (sum.lastError().type() != QSqlError::NoError)
   {
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice"),
                          sum, __FILE__, __LINE__);
+    return;
   }
   else if (sum.value("subtotal").toDouble() != 0)
   {
-     xrate.bindValue(":invchead_id", _invcheadid);
-     xrate.exec();
-     if (xrate.lastError().type() != QSqlError::NoError)
-     {
-       ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice #%1\n")
-                            .arg(_invoiceNumber->text()),
-                            xrate, __FILE__, __LINE__);
-     }
-     else if (!xrate.first() || xrate.value("curr_rate").isNull())
-     {
-       ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
-                            tr("Window:%2\nCould not post Invoice #%1 due to a missing exchange rate.")
-                            .arg(_invoiceNumber->text())
-                            .arg(windowTitle()),__FILE__,__LINE__);
-     }
+    xrate.bindValue(":invchead_id", _invcheadid);
+    xrate.exec();
+    if (xrate.lastError().type() != QSqlError::NoError)
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice #%1\n")
+                          .arg(_invoiceNumber->text()),
+                          xrate, __FILE__, __LINE__);
+      return;
+    }
+    else if (!xrate.first() || xrate.value("curr_rate").isNull())
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                          tr("Window:%2\nCould not post Invoice #%1 due to a missing exchange rate.")
+                          .arg(_invoiceNumber->text())
+                          .arg(windowTitle()),__FILE__,__LINE__);
+      return;
+    }
   }
 
-  unpostedPost.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  // Stage distribution cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+  // Get the parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+                            parentSeries, __FILE__, __LINE__);
+    return;
+  }
+
+  // Handle the Inventory and G/L Transactions for any billed Inventory where invcitem_updateinv is true
+  XSqlQuery items;
+  items.prepare("SELECT itemsite_id, invcitem_id, "
+                " (invcitem_billed * invcitem_qty_invuomratio) AS qty, "
+                " invchead_invcnumber "
+                "FROM invchead " 
+                " JOIN invcitem ON invcitem_invchead_id = invchead_id "
+                "   AND invcitem_billed <> 0 " 
+                "   AND invcitem_updateinv "
+                " JOIN itemsite ON itemsite_item_id = invcitem_item_id " 
+                "   AND itemsite_warehous_id = invcitem_warehous_id "
+                " JOIN item ON item_id = invcitem_item_id "
+                "WHERE invchead_id = :invchead_id "
+                " AND itemsite_costmethod != 'J' "
+                " AND isControlledItemsite(itemsite_id) "
+                "ORDER BY invcitem_id;");
+  items.bindValue(":invchead_id", _invcheadid);
+  items.exec();
+  while (items.next())
+  {
+    // Create the parent itemlocdist record for each line item requiring distribution, call distributeInventory::seriesAdjust
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'IN', "
+                              " :orderitemId, :itemlocSeries, NULL, NULL, 'SH');");
+    parentItemlocdist.bindValue(":itemsite_id", items.value("itemsite_id").toInt());
+    parentItemlocdist.bindValue(":qty", items.value("qty").toDouble() * -1);
+    parentItemlocdist.bindValue(":orderitemId", items.value("invcitem_id").toInt());
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (!parentItemlocdist.first())
+    {
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+        parentItemlocdist, __FILE__, __LINE__);
+      return;
+    }
+  }
+
+  // If the above query had results, call distributeInventory
+  if (items.size() > 0 && (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected))
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Post Invoices"), tr("Error Posting Invoice Item Distribution") );
+    return;
+  }
+
+  // TODO - remove this after postInvoice has had the remaining negative error codes replaced with RAISE EXCEPTIONs
+  XSqlQuery rollback;
+  rollback.prepare("ROLLBACK;");
+
+  // Post invoice
+  XSqlQuery post;
+  post.exec("BEGIN;");
+  post.prepare("SELECT postInvoice(:invchead_id, :journal, :itemlocSeries, true) AS result;");
   post.bindValue(":invchead_id", _invcheadid);
-  post.bindValue(":journal",     journal);
+  post.bindValue(":journal", journal);
+  post.bindValue(":itemlocSeries", itemlocSeries);
   post.exec();
   if (post.first())
   {
-     int result = post.value("result").toInt();
-     if (result < 0)
-     {
-       rollback.exec();
-       ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice"),
-                                storedProcErrorLookup("postInvoice", result),
-                                __FILE__, __LINE__);
-     }
-     else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-     {
-       rollback.exec();
-       QMessageBox::information( this, tr("Post Invoices"), tr("Transaction Canceled") );
-       return;
-     }
-
-     unpostedPost.exec("COMMIT;");
-   }
-   // contains() string is hard-coded in stored procedure
-   else if (post.lastError().databaseText().contains("post to closed period"))
-     rollback.exec();
-
+    int result = post.value("result").toInt();
+    if (result < 0 || result != itemlocSeries)
+    {
+      rollback.exec();
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Invoice"),
+                          storedProcErrorLookup("postInvoice", result),
+                          __FILE__, __LINE__);
+      return;
+    }
+  }
+  else if (post.lastError().type() != QSqlError::NoError)
+  {
+    rollback.exec();
+    cleanup.exec();
+    return;
+  }
+  post.exec("COMMIT;");
 }
 
 void invoice::sNew()

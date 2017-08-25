@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>385</width>
-    <height>266</height>
+    <width>452</width>
+    <height>375</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,6 +70,13 @@ to be bound by its terms.</comment>
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="_uniqueBarcodes">
+           <property name="text">
+            <string>Enforce Unique Item Bar Codes</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QGroupBox" name="_defaultGroup">
            <property name="title">
             <string>Defaults</string>
@@ -82,7 +89,7 @@ to be bound by its terms.</comment>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <layout class="QHBoxLayout" name="_2">
               <property name="spacing">
                <number>5</number>
@@ -114,6 +121,27 @@ to be bound by its terms.</comment>
                   <string>Mixed</string>
                  </property>
                 </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="XLabel" name="_freightCostElementDefaultLit">
+                <property name="text">
+                 <string>Default Cost Element for Freight:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="XComboBox" name="_freightCostElementDefault">
+                <property name="allowNull">
+                 <bool>true</bool>
+                </property>
+                <property name="defaultCode">
+                 <enum>XComboBox::None</enum>
+                </property>
                </widget>
               </item>
              </layout>
@@ -156,6 +184,18 @@ to be bound by its terms.</comment>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>XComboBox</class>
+   <extends>QComboBox</extends>
+   <header>xcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

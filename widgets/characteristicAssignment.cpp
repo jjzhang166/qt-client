@@ -12,6 +12,7 @@
 
 #include <QMessageBox>
 #include <QSqlError>
+#include <QSqlQueryModel>
 #include <QSqlRecord>
 #include <QVariant>
 #include <QRegExpValidator>
@@ -30,6 +31,7 @@
 #define CHARTEXT 0
 #define CHARLIST 1
 #define CHARDATE 2
+#define CHARNUMB 3
 
 class CharacteristicAssignmentPrivate
 {
@@ -84,6 +86,7 @@ characteristicAssignment::characteristicAssignment(QWidget* parent, const char* 
   _listpriceLit->hide();
   _listprice->hide();
   _listprice->setValidator(_d->priceVal);
+  _numberValue->setValidator(_d->priceVal);
 
   adjustSize();
 }
@@ -200,7 +203,8 @@ void characteristicAssignment::sSave()
   {
     if ( ((_stackedWidget->currentIndex() == CHARTEXT) && (_value->text().trimmed() == "")) ||
          ((_stackedWidget->currentIndex() == CHARLIST) && (_listValue->currentText() == "")) ||
-         ((_stackedWidget->currentIndex() == CHARDATE) && (_dateValue->date().toString() == "")) )
+         ((_stackedWidget->currentIndex() == CHARDATE) && (_dateValue->date().toString() == "")) ||
+         ((_stackedWidget->currentIndex() == CHARNUMB) && (_numberValue->text().trimmed() == "")) )
       {
           QMessageBox::information( this, tr("No Value Entered"),
                                     tr("You must enter a value before saving this Characteristic.") );
@@ -246,9 +250,11 @@ void characteristicAssignment::sSave()
       _charassid = characteristicSave.value("charass_id").toInt();
 
       characteristicSave.prepare( "INSERT INTO charass "
-                 "( charass_id, charass_target_id, charass_target_type, charass_char_id, charass_value, charass_price, charass_default ) "
+                 "( charass_id, charass_target_id, charass_target_type, charass_char_id, charass_value, "
+                 "  charass_price, charass_default ) "
                  "VALUES "
-                 "( :charass_id, :charass_target_id, :charass_target_type, :charass_char_id, :charass_value, :charass_price, :charass_default );" );
+                 "( :charass_id, :charass_target_id, :charass_target_type, :charass_char_id, :charass_value, "
+                 "  :charass_price, :charass_default );" );
     }
   }
   else if (_mode == cEdit)
@@ -267,6 +273,9 @@ void characteristicAssignment::sSave()
     characteristicSave.bindValue(":charass_value", _listValue->currentText());
   else if (_stackedWidget->currentIndex() == CHARDATE)
     characteristicSave.bindValue(":charass_value", _dateValue->date());
+  else if (_stackedWidget->currentIndex() == CHARNUMB)
+    characteristicSave.bindValue(":charass_value", _numberValue->text());
+
   characteristicSave.bindValue(":charass_price", _listprice->toDouble());
   characteristicSave.bindValue(":charass_default", QVariant(_default->isChecked()));
   characteristicSave.exec();
@@ -334,6 +343,8 @@ void characteristicAssignment::populate()
     }
     else if (chartype == CHARDATE)
       _dateValue->setDate(characteristicpopulate.value("charass_value").toDate());
+    else if (chartype == CHARNUMB)
+      _numberValue->setText(characteristicpopulate.value("charass_value").toString());
   }
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Getting Characteristic Assignment"),
                                 characteristicpopulate, __FILE__, __LINE__))

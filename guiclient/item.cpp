@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -118,6 +118,7 @@ item::item(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _inventoryUOM->setType(XComboBox::UOMs);
 
   _charass->addColumn(tr("Characteristic"), _itemColumn, Qt::AlignLeft, true, "char_name" );
+  _charass->addColumn(tr("Group"),          _itemColumn, Qt::AlignLeft, true, "char_group" );
   _charass->addColumn(tr("Value"),          -1,          Qt::AlignLeft, true, "charass_value" );
   _charass->addColumn(tr("Default"),        _ynColumn*2,   Qt::AlignCenter, true, "charass_default" );
   _charass->addColumn(tr("List Price"),     _priceColumn,Qt::AlignRight, true, "charass_price" );
@@ -292,7 +293,6 @@ enum SetResponse item::set(const ParameterList &pParams)
       itemet.exec("SELECT NEXTVAL('item_item_id_seq') AS item_id");
       if (itemet.first())
         _itemid = itemet.value("item_id").toInt();
-//  ToDo
 
       _comments->setId(_itemid);
       _documents->setId(_itemid);
@@ -320,6 +320,7 @@ enum SetResponse item::set(const ParameterList &pParams)
       setObjectName(QString("item edit %1").arg(_itemid));
       _mode = cEdit;
 
+      connect(_classcode, SIGNAL(newID(int)), this, SLOT(sDefaultItemTaxes()));
       connect(_charass, SIGNAL(valid(bool)), _editCharacteristic, SLOT(setEnabled(bool)));
       connect(_charass, SIGNAL(valid(bool)), _deleteCharacteristic, SLOT(setEnabled(bool)));
       connect(_uomconv, SIGNAL(valid(bool)), _editUOM, SLOT(setEnabled(bool)));
@@ -480,6 +481,7 @@ void item::saveCore()
   _elements->findChild<ItemCluster*>("_item")->setId(_itemid);
   
   sHandleRightButtons();
+  sDefaultItemTaxes();
   
   emit saved(_itemid);
 }
@@ -605,6 +607,23 @@ void item::sSave()
     {
       errors << GuiErrorCheck(true, _itemNumber,
                               tr("You may not rename this Item to the entered Item Number as it is in use by another Item."));
+    }
+  }
+
+  if (_metrics->boolean("EnforceUniqueBarcodes"))
+  {
+    itemSave.prepare( "SELECT EXISTS(SELECT 1 FROM item "
+                      "WHERE ((item_active) "
+                      "AND (item_upccode = :item_upccode) "
+                      "AND (item_id <> :item_id))) AS result;");
+    itemSave.bindValue(":item_id", _itemid);
+    itemSave.bindValue(":item_upccode", _upcCode->text());
+    itemSave.exec();
+    if (itemSave.first() && itemSave.value("result").toBool())
+    {
+      errors << GuiErrorCheck(true, _upcCode,
+                              tr("You may not use this Item Bar Code (%1) as it is used by another Item.")
+                                .arg(_upcCode->text()));
     }
   }
   
@@ -829,7 +848,8 @@ void item::sSave()
   itemSave.bindValue(":item_price_uom_id", _priceUOM->id());
   itemSave.bindValue(":item_listprice", _listprice->toDouble());
   itemSave.bindValue(":item_listcost", _listcost->toDouble());
-  itemSave.bindValue(":item_upccode", _upcCode->text());
+  if (_upcCode->text().trimmed().length() > 0)
+    itemSave.bindValue(":item_upccode", _upcCode->text());
   itemSave.bindValue(":item_active", QVariant(_active->isChecked()));
   itemSave.bindValue(":item_picklist", QVariant(_pickListItem->isChecked()));
   itemSave.bindValue(":item_fractional", QVariant(_fractional->isChecked()));
@@ -955,12 +975,10 @@ void item::sDelete()
 void item::sFillList()
 {
   XSqlQuery itemFillList;
-  itemFillList.prepare( "SELECT charass_id, char_name, "
-             " CASE WHEN char_type < 2 THEN "
-             "   charass_value "
-             " ELSE "
-             "   formatDate(charass_value::date) "
-             "END AS charass_value, "
+  itemFillList.prepare( "SELECT charass_id, char_name, char_group, "
+             "           CASE WHEN char_type = 2 THEN formatDate(charass_value::date)"
+             "                ELSE charass_value"
+             "           END AS charass_value,"
              " charass_default, "
              " charass_price, 'salesprice' AS charass_price_xtnumericrole "
              "FROM charass, char "
@@ -1166,6 +1184,7 @@ void item::sHandleItemtype()
   bool config    = false;
   bool purchased = false;
   bool freight   = false;
+  bool upc       = false;
   
   _configured->setEnabled(false);
 
@@ -1176,6 +1195,7 @@ void item::sHandleItemtype()
     weight   = true;
     purchased = true;
     freight  = true;
+    upc      = true;
   }
 
   if (itemType == "M")
@@ -1186,6 +1206,7 @@ void item::sHandleItemtype()
     config   = true;
     purchased = true;
     freight  = true;
+    upc      = true;
   }
 
   // nothing to do if (itemType == "F")
@@ -1202,6 +1223,7 @@ void item::sHandleItemtype()
     sold     = true;
     weight   = true;
     freight  = true;
+    upc      = true;
   }
 
   if (itemType == "Y")
@@ -1210,6 +1232,7 @@ void item::sHandleItemtype()
     sold     = true;
     weight   = true;
     freight  = true;
+    upc      = true;
   }
 
   if (itemType == "R")
@@ -1218,6 +1241,7 @@ void item::sHandleItemtype()
     weight   = true;
     freight  = true;
     config   = true;
+    upc      = true;
   }
 
   if (itemType == "T")
@@ -1227,6 +1251,7 @@ void item::sHandleItemtype()
     freight  = true;
     purchased = true;
     sold = true;
+    upc      = true;
   }
 
   if (itemType == "O")
@@ -1245,6 +1270,7 @@ void item::sHandleItemtype()
   {
     sold     = true;
     weight   = true;
+    upc      = true;
     _fractional->setChecked(false);
   }
   _fractional->setEnabled(itemType!="K");
@@ -1265,6 +1291,8 @@ void item::sHandleItemtype()
   _packWeight->setEnabled(weight);
 
   _freightClass->setEnabled(freight);
+
+  _upcCode->setEnabled(upc);
 
   _tab->setTabEnabled(_tab->indexOf(_sourcesTab), 
         (_privileges->check("ViewItemSources") || 
@@ -1670,53 +1698,22 @@ void item::sDeleteItemSite()
   itemDeleteItemSite.exec();
   if (itemDeleteItemSite.first())
   {
-    switch (itemDeleteItemSite.value("result").toInt())
+    int result = itemDeleteItemSite.value("result").toInt();
+    if (result < 0)
     {
-      case -1:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr( "The selected Item Site cannot be deleted as there is Inventory History posted against it.\n"
-                                  "You may edit the Item Site and deactivate it." ) );
-        return;
-
-      case -2:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr( "The selected Item Site cannot be deleted as there is Work Order History posted against it.\n"
-                                  "You may edit the Item Site and deactivate it." ) );
-        return;
-
-      case -3:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr( "The selected Item Site cannot be deleted as there is Sales History posted against it.\n"
-                                  "You may edit the Item Site and deactivate it." ) );
-        return;
-
-      case -4:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr( "The selected Item Site cannot be deleted as there is Purchasing History posted against it.\n"
-                                  "You may edit the Item Site and deactivate it." ) );
-        return;
-
-      case -5:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr( "The selected Item Site cannot be deleted as there is Planning History posted against it.\n"
-                                  "You may edit the Item Site and deactivate it." ) );
-        return;
-
-      case -9:
-        QMessageBox::warning( this, tr("Cannot Delete Item Site"),
-                              tr("The selected Item Site cannot be deleted as there is a non-zero Inventory Quantity posted againt it.") );
-        return;
-
-
-      default:
-//  ToDo
-
-      case 0:
-        sFillListItemSites();
-        break;
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item Site"),
+                             storedProcErrorLookup("deleteItemSite", result),
+                             __FILE__, __LINE__);
+      return;
     }
   }
-//  ToDo
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Item Site"),
+                                itemDeleteItemSite, __FILE__, __LINE__))
+  {
+    return;
+  }
+
+  sFillListItemSites();
 }
 
 void item::sFillListItemSites()
@@ -1735,6 +1732,7 @@ void item::sFillListItemSites()
   params.append("average", tr("Average"));
   params.append("na", tr("N/A"));
   params.append("never", tr("Never"));
+  params.append("showInactive");
 
   itemFillListItemSites  = mql.toQuery(params);
   _itemSite->populate(itemFillListItemSites);
@@ -2067,6 +2065,7 @@ void item::sFillSourceList()
                
   ParameterList params;
   params.append("item_id", _itemid);
+  params.append("showInactive", true);
   itemFillSourceList = mql.toQuery(params);
   _itemsrc->populate(itemFillSourceList);
 }
@@ -2179,3 +2178,25 @@ void item::setId(int p)
   emit newId(_itemid);
 }
 
+void item::sDefaultItemTaxes()
+{
+  XSqlQuery itemDefaultTaxes;
+  itemDefaultTaxes.prepare("INSERT INTO itemtax (itemtax_item_id, itemtax_taxzone_id, itemtax_taxtype_id) "
+                           "SELECT :item_id, classcodetax_taxzone_id, classcodetax_taxtype_id "
+                           "FROM classcodetax "
+                           "WHERE classcodetax_classcode_id = :classcode_id "
+                           "AND NOT EXISTS(SELECT 1 FROM itemtax "
+                           "               WHERE itemtax_item_id=:item_id "
+                           "               AND COALESCE(itemtax_taxtype_id,-1)=COALESCE(classcodetax_taxtype_id, -1) "
+                           "               AND COALESCE(itemtax_taxzone_id, -1)=COALESCE(classcodetax_taxzone_id,-1));");
+  itemDefaultTaxes.bindValue(":item_id", _itemid);
+  itemDefaultTaxes.bindValue(":classcode_id", _classcode->id());
+  itemDefaultTaxes.exec();
+  if (itemDefaultTaxes.lastError().type() != QSqlError::NoError)
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Item Taxes"),
+                         itemDefaultTaxes, __FILE__, __LINE__);
+    return;
+  }
+  sFillListItemtax();
+}

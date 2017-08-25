@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -73,9 +73,14 @@
 #include "splashconst.h"
 #include "scripttoolbox.h"
 #include "menubutton.h"
+#include "guiErrorCheck.h"
+#include "xtupleguiclientinterface.h"
 
+#include "include.h"
 #include "setup.h"
 #include "setupscriptapi.h"
+
+#define DEBUG false
 
 #if defined(Q_OS_WIN)
 #define NOCRYPT
@@ -273,7 +278,6 @@ void Action::init(QWidget *pParent, const char *pName, const QString &pDisplayNa
   }
 
   connect(this, SIGNAL(triggered()), pTarget, pActivateSlot);
-  //setEnabled(pEnabled);
   pAddTo->addAction(this);
 
   if(!pEnabled.isEmpty())
@@ -284,91 +288,6 @@ void Action::init(QWidget *pParent, const char *pName, const QString &pDisplayNa
     setMenuRole(QAction::NoRole);
   }
 }
-
-/** @class xTupleGuiClientInterface
-    @brief A concrete implementation of the GuiClientInterface allowing widgets
-           to request services from the main application.
-
-    The primary use of this class/interface is for individual widgets to open
-    application-level windows.
-  */
-class xTupleGuiClientInterface : public GuiClientInterface
-{
-  public:
-  QWidget* openWindow(const QString pname, ParameterList pparams, QWidget *parent = 0, Qt::WindowModality modality = Qt::NonModal, Qt::WindowFlags flags = 0)
-  {
-    ScriptToolbox toolbox(0);
-        QWidget* w = toolbox.openWindow(pname, parent, modality, flags);
-
-    if (w)
-    {
-      if (w->inherits("QDialog"))
-      {
-        XDialog* xdlg = (XDialog*)w;
-        xdlg->set(pparams);
-        w = (QWidget*)xdlg;
-        return w;
-      }
-      else if (w->inherits("XMainWindow"))
-      {
-        XMainWindow* xwind = (XMainWindow*)w;
-        xwind->set(pparams);
-        w = (QWidget*)xwind;
-        w->show();
-        return w;
-      }
-      else if (w->inherits("XWidget"))
-      {
-        XWidget* xwind = (XWidget*)w;
-        xwind->set(pparams);
-        w = (QWidget*)xwind;
-        w->show();
-        return w;
-      }
-    }
-    return 0;
-  }
-
-  QAction* findAction(const QString pname)
-  {
-   return omfgThis->findChild<QAction*>(pname);
-  }
-
-  void addDocumentWatch(QString path, int id)
-  {
-    omfgThis->addDocumentWatch(path, id);
-  }
-
-  void removeDocumentWatch(QString path)
-  {
-    omfgThis->removeDocumentWatch(path);
-  }
-
-  bool hunspell_ready()
-  {
-      return omfgThis->hunspell_ready();
-  }
-
-  int hunspell_check(const QString word)
-  {
-      return omfgThis->hunspell_check(word);
-  }
-
-  const QStringList hunspell_suggest(const QString word)
-  {
-      return omfgThis->hunspell_suggest(word);
-  }
-
-  int hunspell_add(const QString word)
-  {
-      return omfgThis->hunspell_add(word);
-  }
-
-  int hunspell_ignore(const QString word)
-  {
-      return omfgThis->hunspell_ignore(word);
-  }
-};
 
 /** @class GUIClient
 
@@ -392,35 +311,37 @@ GUIClient *omfgThis;
   */
 GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
   :
+    _eventButton(0),
+    _registerButton(0),
+    _errorButton(0),
     _databaseURL(pDatabaseURL),
     _username(pUsername),
     _menuBar(0),
-    _inputManager(0),
     _shown(false),
     _shuttingDown(false),
+    _spellCodec(0),
+    _spellChecker(0),
     _menu(0)
 {
-  XSqlQuery _GGUIClient;
+  XSqlQuery qry;
 
   __saveSizePositionEventFilter = new SaveSizePositionEventFilter(this);
 
   _splash->showMessage(tr("Initializing Internal Data"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
 
-  _showTopLevel = true;
-  if(_preferences->value("InterfaceWindowOption") == "Workspace")
-    _showTopLevel = false;
+  _showTopLevel = (_preferences->value("InterfaceWindowOption") != "Workspace");
 
-  _GGUIClient.exec("SELECT startOfTime() AS sot, endOfTime() AS eot;");
-  if (_GGUIClient.first())
+  qry.exec("SELECT startOfTime() AS sot, endOfTime() AS eot;");
+  if (qry.first())
   {
-    _startOfTime = _GGUIClient.value("sot").toDate();
-    _endOfTime = _GGUIClient.value("eot").toDate();
+    _startOfTime = qry.value("sot").toDate();
+    _endOfTime   = qry.value("eot").toDate();
   }
   else
     ErrorReporter::error(QtCriticalMsg, this, tr("Critical Error"),
                         tr("Please immediately log out and contact your "
-                           "Systems Administrator"),_GGUIClient, __FILE__, __LINE__);
+                           "Systems Administrator"), qry, __FILE__, __LINE__);
 
   /*  TODO: either separate validators for extprice, purchprice, and salesprice
             or replace every field that uses _moneyVal, _negMoneyVal, _priceVal, and _costVal
@@ -456,7 +377,6 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
 
   _workspace->setContentsMargins(0, 0, 0, 0);
 
-//  Install the InputManager
   _inputManager = new InputManager();
   qApp->installEventFilter(_inputManager);
 
@@ -467,16 +387,16 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
 
   if (_preferences->value("BackgroundImageid").toInt() > 0)
   {
-    _GGUIClient.prepare( "SELECT image_data "
-                "FROM image "
-                "WHERE (image_id=:image_id);" );
-    _GGUIClient.bindValue(":image_id", _preferences->value("BackgroundImageid").toInt());
-    _GGUIClient.exec();
-    if (_GGUIClient.first())
+    qry.prepare("SELECT image_data"
+                "  FROM image "
+                " WHERE (image_id=:image_id);");
+    qry.bindValue(":image_id", _preferences->value("BackgroundImageid").toInt());
+    qry.exec();
+    if (qry.first())
     {
       QImage background;
 
-      background.loadFromData(QUUDecode(_GGUIClient.value("image_data").toString()));
+      background.loadFromData(QUUDecode(qry.value("image_data").toString()));
       _workspace->setBackground(QBrush(QPixmap::fromImage(background)));
     }
   }
@@ -484,9 +404,6 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
   _splash->showMessage(tr("Initializing Internal Timers"), SplashTextAlignment, SplashTextColor);
   qApp->processEvents();
 
-  _eventButton = NULL;
-  _registerButton = NULL;
-  _errorButton = NULL;
   __interval = _metrics->value("updateTickInterval").toInt();
   if(__interval < 1)
     __interval = 1;
@@ -500,7 +417,9 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
 
   connect(_privileges, SIGNAL(loaded()), this, SLOT(initMenuBar()));
 
-  VirtualClusterLineEdit::_guiClientInterface = new xTupleGuiClientInterface();
+  ScriptableWidget::_guiClientInterface = new xTupleGuiClientInterface(this);
+  // the following can be removed when they all inherit from ScriptableWidget
+  VirtualClusterLineEdit::_guiClientInterface = ScriptableWidget::_guiClientInterface;
   Documents::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
   MenuButton::_guiClientInterface =  VirtualClusterLineEdit::_guiClientInterface;
   XTreeWidget::_guiClientInterface = VirtualClusterLineEdit::_guiClientInterface;
@@ -577,7 +496,7 @@ GUIClient::GUIClient(const QString &pDatabaseURL, const QString &pUsername)
     }
   }
 
-//  Populate the menu bar
+  //  Populate the menu bar
   XSqlQuery window;
   window.prepare("SELECT usr_window "
                  "  FROM usr "
@@ -912,7 +831,7 @@ void GUIClient::showEvent(QShowEvent *event)
       while(sq.next())
       {
         found_one = true;
-        QString script = scriptHandleIncludes(sq.value("script_source").toString());
+        QString script = sq.value("script_source").toString();
         if(!engine)
         {
           engine = new QScriptEngine(this);
@@ -922,6 +841,7 @@ void GUIClient::showEvent(QShowEvent *event)
             debugger->attachTo(engine);
           }
           loadScriptGlobals(engine);
+          setupInclude(engine);
         }
 
         QScriptValue result = engine->evaluate(script, "initMenu");
@@ -1000,12 +920,7 @@ void GUIClient::sReportError(const QString &pError)
     */
 void GUIClient::sTick()
 {
-  //  Check the database. TODO: why do we ignore alarms and messages?
-  XSqlQuery tickle;
-  tickle.exec( "SELECT CURRENT_DATE AS dbdate,"
-               "       hasAlarms() AS alarms,"
-               "       hasMessages() AS messages,"
-               "       hasEvents() AS events;" );
+  XSqlQuery tickle("SELECT CURRENT_DATE AS dbdate, hasEvents() AS events;" );
   if (tickle.first())
   {
     _dbDate = tickle.value("dbdate").toDate();
@@ -1032,7 +947,7 @@ void GUIClient::sTick()
           connect(_eventButton, SIGNAL(clicked()), systemMenu, SLOT(sEventManager()));
         }
       }
-      else if ( (_eventButton) && (_eventButton->isVisible()) )
+      else if (_eventButton && _eventButton->isVisible())
         _eventButton->hide();
     }
 
@@ -1043,41 +958,32 @@ void GUIClient::sTick()
       __intervalCount = 0;
     }
   }
-  else
+  else if (! QSqlDatabase::database().isOpen())
   {
-    // Check to make sure we are not in the middle of an aborted transaction
-    // before we go doing something rash.
-    if (!QSqlDatabase::database().isOpen())
+    emit dbConnectionLost();
+    if (QMessageBox::question(this, tr("Database disconnected"),
+                              tr("It appears that you have been disconnected from the "
+                                 "database. Select Yes to try to reconnect or "
+                                 "No to terminate the application."),
+                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+      qApp->quit();
+    else if (QSqlDatabase::database().open())
     {
-      if  (QMessageBox::question(this, tr("Database disconnected"),
-                                tr("It appears that you have been disconnected from the "
-                                   "database. Select Yes to try to reconnect or "
-                                   "No to terminate the application."),
-                                   QMessageBox::Yes,
-                                   QMessageBox::No | QMessageBox::Default) == QMessageBox::No)
-        qApp->quit();
-      else
+      XSqlQuery login("SELECT login(true) AS result;");
+      if (login.first())
       {
-        if (QSqlDatabase::database().open())
+        int result = login.value("result").toInt();
+        if (result < 0)
         {
-          QString loginqry ="SELECT login() AS result, CURRENT_USER AS user;";
-          XSqlQuery login( loginqry );
-          if (login.first())
-          {
-            int result = login.value("result").toInt();
-            if (result < 0)
-            {
-              QMessageBox::critical(this, tr("Error Relogging to the Database"),
-                                    storedProcErrorLookup("login", result));
-              return;
-            }
-          }
-          else if (login.lastError().type() != QSqlError::NoError)
-            QMessageBox::critical(this, tr("System Error"),
-                                  tr("A System Error occurred at %1::%2:\n%3")
-                                    .arg(__FILE__).arg(__LINE__)
-                                    .arg(login.lastError().databaseText()));
+          QMessageBox::critical(this, tr("Could not reconnect"),
+                                storedProcErrorLookup("login", result));
+          QSqlDatabase::database().close();
         }
+      }
+      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Could not reconnect"),
+                                    login, __FILE__, __LINE__))
+      {
+        QSqlDatabase::database().close();
       }
     }
   }
@@ -1609,14 +1515,6 @@ void GUIClient::sIdleTimeout()
     qApp->quit();
 }
 
-/** @deprecated systemError should be replaced with ErrorReporter::error */
-int systemError(QWidget *pParent, const QString &pMessage)
-{
-  ErrorReporter::error(QtCriticalMsg, pParent, QObject::tr("System Message"),
-                       pMessage);
-  return QMessageBox::Ok;
-}
-
 /** @deprecated systemError should be replaced with ErrorReporter::error
     @overload
  */
@@ -1721,34 +1619,33 @@ QString translationFile(QString localestr, const QString component)
 QString translationFile(QString localestr, const QString component, QString &version)
 {
   QStringList paths;
-#if QT_VERSION >= 0x050000
-  paths << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
-#else
-  //qDebug() << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-  paths << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#if QT_VERSION >= 0x050400
+  paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)
+        << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
 #endif
-  paths << "/usr/lib/postbooks/dict";
-  paths << "dict";
-  paths << "";
-  paths << "../dict";
-  paths << QApplication::applicationDirPath() + "/dict";
-  paths << QApplication::applicationDirPath();
-  paths << QApplication::applicationDirPath() + "/../dict";
 #if defined Q_OS_MAC
-  paths << QApplication::applicationDirPath() + "/../../../dict";
-  paths << QApplication::applicationDirPath() + "/../../..";
+  paths << QApplication::applicationDirPath() + "/../Resources";
+#else
+  paths << QApplication::applicationDirPath()
+        << "/usr/lib/postbooks";
 #endif
+  (void)paths.removeDuplicates();
+  for (int i = paths.length(); i > 0; i--)
+    paths.insert(i, paths.at(i - 1) + "/dict");
 
   QTranslator translator;
-  for (QStringList::Iterator pit = paths.begin(); pit != paths.end(); pit++)
+  foreach (QString dir, paths)
   {
-    QString filename = *pit + "/" + component + "." + localestr;
-    if (translator.load(filename))
+    QString filename = component + "." + localestr;
+    if (DEBUG) qDebug() << "looking for translation" << dir << filename;
+    if (translator.load(filename, dir)) // this doesn't install the translation
     {
       if (! version.isNull())
         version = translator.translate(component.toLatin1().data(), "Version");
-
-      return filename;
+      if (DEBUG)
+        qDebug() << "loadable translation" << dir << filename
+                 << "test:" << translator.translate("GUIClient", "Custom");
+      return dir + "/" + filename;
     }
   }
 
@@ -1798,7 +1695,6 @@ void GUIClient::populateCustomMenu(QMenu * menu, const QString & module)
                                 this, SLOT(sCustomCommand()), customMenu, allowed);
 
     _customCommands.insert(action, qry.value("cmd_id").toInt());
-    //actions.append(action);
   }
 }
 
@@ -2116,6 +2012,7 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
   QString objName = w->objectName();
   QPoint pos = xtsettingsValue(objName + "/geometry/pos").toPoint();
   QSize size = xtsettingsValue(objName + "/geometry/size").toSize();
+  QSize currsize = w->size();
 
   if(size.isValid() && xtsettingsValue(objName + "/geometry/rememberSize", true).toBool() && (metaObject()->className() != QString("xTupleDesigner")))
     w->resize(size);
@@ -2131,6 +2028,8 @@ void GUIClient::handleNewWindow(QWidget *w, Qt::WindowModality m, bool forceFloa
     QRect r(pos, w->size());
     if(!pos.isNull() && availableGeometry.contains(r) && xtsettingsValue(objName + "/geometry/rememberPos", true).toBool())
       w->move(pos);
+    else if(currsize!=w->size())
+      w->move(QPoint(1, 1));
     w->show();
   }
   else
@@ -2278,6 +2177,58 @@ QScriptValue distributeInventorySeriesAdjust(QScriptContext *context,
   return engine->toScriptValue(result);
 }
 
+/** @internal */
+QScriptValue SetResponsetoScriptValue(QScriptEngine *engine, const enum SetResponse &sr)
+{
+  return QScriptValue(engine, (int)sr);
+}
+
+/** @internal */
+void SetResponsefromScriptValue(const QScriptValue &obj, enum SetResponse &sr)
+{
+  sr = (enum SetResponse)obj.toInt32();
+}
+
+/** @internal */
+QScriptValue SaveFlagstoScriptValue(QScriptEngine *engine, const enum SaveFlags &en)
+{
+  return QScriptValue(engine, (int)en);
+}
+
+/** @internal */
+void SaveFlagsfromScriptValue(const QScriptValue &obj, enum SaveFlags &en)
+{
+  if (obj.isNumber())
+    en = (enum SaveFlags)obj.toInt32();
+  else if (obj.isString())
+  {
+    if (obj.toString() == "CHECK")
+      en = CHECK;
+    else if (obj.toString() == "CHANGEONE")
+      en = CHANGEONE;
+    else if (obj.toString() == "CHANGEALL")
+      en = CHANGEALL;
+    else
+      qWarning("string %s could not be converted to SaveFlags",
+               qPrintable(obj.toString()));
+  }
+  else
+    qWarning("object %s could not be converted to SaveFlags",
+             qPrintable(obj.toString()));
+}
+
+/** @internal */
+QScriptValue WindowSystemtoScriptValue(QScriptEngine *engine, const enum GUIClient::WindowSystem &en)
+{
+  return QScriptValue(engine, (int)en);
+}
+
+/** @internal */
+void WindowSystemfromScriptValue(const QScriptValue &obj, enum GUIClient::WindowSystem &en)
+{
+  en = (enum GUIClient::WindowSystem)obj.toInt32();
+}
+
 /** @brief Load JavaScript global variables into a QScriptEngine.
 
     This method loads global variables and objects such as the script
@@ -2294,10 +2245,9 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
   engine->installTranslatorFunctions();
 #endif
 
+  QScriptValue::PropertyFlags ro = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+
   qScriptRegisterMetaType(engine, SetResponsetoScriptValue, SetResponsefromScriptValue);
-  qScriptRegisterMetaType(engine, ParameterGroupTypestoScriptValue, ParameterGroupTypesfromScriptValue);
-  qScriptRegisterMetaType(engine, ParameterGroupStatestoScriptValue, ParameterGroupStatesfromScriptValue);
-  qScriptRegisterMetaType(engine, QtWindowModalitytoScriptValue, QtWindowModalityfromScriptValue);
   qScriptRegisterMetaType(engine, SaveFlagstoScriptValue, SaveFlagsfromScriptValue);
   qScriptRegisterMetaType(engine, WindowSystemtoScriptValue, WindowSystemfromScriptValue);
 
@@ -2307,48 +2257,26 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
 
   QScriptValue mainwindowval = engine->newQObject(this);
   engine->globalObject().setProperty("mainwindow", mainwindowval);
-  mainwindowval.setProperty("NoError",  QScriptValue(engine, NoError),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("NoError_Cancel",  QScriptValue(engine, NoError_Cancel),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("NoError_Run",  QScriptValue(engine, NoError_Run),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("NoError_Print",  QScriptValue(engine, NoError_Print),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("NoError_Submit",  QScriptValue(engine, NoError_Submit),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("Error_NoSetup",  QScriptValue(engine, Error_NoSetup),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("UndefinedError",  QScriptValue(engine, UndefinedError),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("NoError",         QScriptValue(engine, NoError), ro);
+  mainwindowval.setProperty("NoError_Cancel",  QScriptValue(engine, NoError_Cancel), ro);
+  mainwindowval.setProperty("NoError_Run",     QScriptValue(engine, NoError_Run), ro);
+  mainwindowval.setProperty("NoError_Print",   QScriptValue(engine, NoError_Print), ro);
+  mainwindowval.setProperty("NoError_Submit",  QScriptValue(engine, NoError_Submit), ro);
+  mainwindowval.setProperty("Error_NoSetup",   QScriptValue(engine, Error_NoSetup), ro);
+  mainwindowval.setProperty("UndefinedError",  QScriptValue(engine, UndefinedError), ro);
 
-  mainwindowval.setProperty("X11",  QScriptValue(engine, X11),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("WIN",  QScriptValue(engine, WIN),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("MAC",  QScriptValue(engine, MAC),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("QWS",  QScriptValue(engine, QWS),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("WINCE",  QScriptValue(engine, WINCE),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("S60",  QScriptValue(engine, S60),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("Unknown",  QScriptValue(engine, Unknown),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("X11",      QScriptValue(engine, X11), ro);
+  mainwindowval.setProperty("WIN",      QScriptValue(engine, WIN), ro);
+  mainwindowval.setProperty("MAC",      QScriptValue(engine, MAC), ro);
+  mainwindowval.setProperty("QWS",      QScriptValue(engine, QWS), ro);
+  mainwindowval.setProperty("WINCE",    QScriptValue(engine, WINCE), ro);
+  mainwindowval.setProperty("S60",      QScriptValue(engine, S60), ro);
+  mainwindowval.setProperty("Unknown",  QScriptValue(engine, Unknown), ro);
 
-
-  QScriptValue metricsval = engine->newQObject(_metrics);
-  engine->globalObject().setProperty("metrics", metricsval);
-
-  QScriptValue metricsencval = engine->newQObject(_metricsenc);
-  engine->globalObject().setProperty("metricsenc", metricsencval);
-
-  QScriptValue preferencesval = engine->newQObject(_preferences);
-  engine->globalObject().setProperty("preferences", preferencesval);
-
-  QScriptValue privilegesval = engine->newQObject(_privileges);
-  engine->globalObject().setProperty("privileges", privilegesval);
+  setupParameters(engine, "metrics",      _metrics);
+  setupParameters(engine, "metricsenc",   _metricsenc);
+  setupParameters(engine, "preferences",  _preferences);
+  setupParameters(engine, "privileges",   _privileges);
 
   QScriptValue settingsval = engine->newFunction(settingsValue, 2);
   engine->globalObject().setProperty("settingsValue", settingsval);
@@ -2361,57 +2289,36 @@ void GUIClient::loadScriptGlobals(QScriptEngine * engine)
 
   // TODO: when std edition is extracted, replace this with a script include()
   QScriptValue distribInvObj = engine->newFunction(distributeInventorySeriesAdjust);
-  distribInvObj.setProperty("SeriesAdjust", distribInvObj,
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  engine->globalObject().setProperty("DistributeInventory", distribInvObj);
-
-  mainwindowval.setProperty("UndefinedError",  QScriptValue(engine, UndefinedError),
-                            QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  distribInvObj.setProperty("SeriesAdjust", distribInvObj, ro);
+  engine->globalObject().setProperty("DistributeInventory", distribInvObj); 
+  mainwindowval.setProperty("UndefinedError",  QScriptValue(engine, UndefinedError), ro);
 
   // #defines from guiclient.h
-  mainwindowval.setProperty("cNew", QScriptValue(engine, cNew),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cEdit", QScriptValue(engine, cEdit),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cView", QScriptValue(engine, cView),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cCopy", QScriptValue(engine, cCopy),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cRelease", QScriptValue(engine, cRelease),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cPost", QScriptValue(engine, cPost),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cReplace", QScriptValue(engine, cReplace),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cPostedCounts", QScriptValue(engine, cPostedCounts),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cUnpostedCounts", QScriptValue(engine, cUnpostedCounts),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cAllCounts", QScriptValue(engine, cAllCounts),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cLocation", QScriptValue(engine, cLocation),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cItemloc", QScriptValue(engine, cItemloc),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransAll", QScriptValue(engine, cTransAll),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransReceipts", QScriptValue(engine, cTransReceipts),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransIssues", QScriptValue(engine, cTransIssues),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransShipments", QScriptValue(engine, cTransShipments),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransAdjCounts", QScriptValue(engine, cTransAdjCounts),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransTransfers", QScriptValue(engine, cTransTransfers),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cTransScraps", QScriptValue(engine, cTransScraps),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
-  mainwindowval.setProperty("cNoReportDefinition", QScriptValue(engine, cNoReportDefinition),
-                        QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  mainwindowval.setProperty("cNew", QScriptValue(engine, cNew), ro);
+  mainwindowval.setProperty("cEdit", QScriptValue(engine, cEdit), ro);
+  mainwindowval.setProperty("cView", QScriptValue(engine, cView), ro);
+  mainwindowval.setProperty("cCopy", QScriptValue(engine, cCopy), ro);
+  mainwindowval.setProperty("cRelease", QScriptValue(engine, cRelease), ro);
+  mainwindowval.setProperty("cPost", QScriptValue(engine, cPost), ro);
+  mainwindowval.setProperty("cReplace", QScriptValue(engine, cReplace), ro);
+  mainwindowval.setProperty("cPostedCounts", QScriptValue(engine, cPostedCounts), ro);
+  mainwindowval.setProperty("cUnpostedCounts", QScriptValue(engine, cUnpostedCounts), ro);
+  mainwindowval.setProperty("cAllCounts", QScriptValue(engine, cAllCounts), ro);
+  mainwindowval.setProperty("cLocation", QScriptValue(engine, cLocation), ro);
+  mainwindowval.setProperty("cItemloc", QScriptValue(engine, cItemloc), ro);
+  mainwindowval.setProperty("cTransAll", QScriptValue(engine, cTransAll), ro);
+  mainwindowval.setProperty("cTransReceipts", QScriptValue(engine, cTransReceipts), ro);
+  mainwindowval.setProperty("cTransIssues", QScriptValue(engine, cTransIssues), ro);
+  mainwindowval.setProperty("cTransShipments", QScriptValue(engine, cTransShipments), ro);
+  mainwindowval.setProperty("cTransAdjCounts", QScriptValue(engine, cTransAdjCounts), ro);
+  mainwindowval.setProperty("cTransTransfers", QScriptValue(engine, cTransTransfers), ro);
+  mainwindowval.setProperty("cTransScraps", QScriptValue(engine, cTransScraps), ro);
+  mainwindowval.setProperty("cNoReportDefinition", QScriptValue(engine, cNoReportDefinition), ro);
 
   setupScriptApi(engine);
+  setupWidgetsScriptApi(engine, ScriptableWidget::_guiClientInterface); // what's a better way?
   setupSetupApi(engine);
+  setupGuiErrorCheck(engine);
 
   // TODO: Make all classes work this way instead of setup* as above?
   // TODO: This interface sets this instance as the global. we can do better.
@@ -2477,53 +2384,77 @@ void GUIClient::handleDocument(QString path)
   addDocumentWatch(path, id);
 }
 
+/** @brief Initialize the spell-checking system.
+
+    Load the dictionary for the user's current language and
+    the user's personal additions.
+ */
 void GUIClient::hunspell_initialize()
 {
-    _spellReady = false;
-    QString langName = QLocale::languageToString(QLocale().language());
-    QString appPath("/usr/lib/postbooks");
-    if (! QFile::exists(appPath))
-      appPath = QApplication::applicationDirPath();
-    QString fullPathWithoutExt = appPath + "/" + langName;
-    QFile affFile(fullPathWithoutExt + tr(".aff"));
-    QFile dicFile(fullPathWithoutExt + tr(".dic"));
-    // If we don't have files for the first name lets try a more common naming convention
-    if(!(affFile.exists() && dicFile.exists()))
-    {
-      langName = QLocale().name().toLower(); // retruns lang_cntry format en_us for example
-      fullPathWithoutExt = appPath + "/" + langName;
-      affFile.setFileName(fullPathWithoutExt + tr(".aff"));
-      dicFile.setFileName(fullPathWithoutExt + tr(".dic"));
-    }
-    if(affFile.exists() && dicFile.exists())
-    {
-      _spellReady = true;
-    }
-    _spellChecker = new Hunspell(QString(fullPathWithoutExt+tr(".aff")).toLatin1(),
-                                 QString(fullPathWithoutExt+tr(".dic")).toLatin1());
+  // TODO: handle user changing languages
+  QString appPath, fullPathWithoutExt;
+  if (! _spellChecker)
+  {
+    QStringList filename;
+    filename << QLocale::languageToString(QLocale().language()) // eg English
+             << QLocale().name().toLower();                     // eg en_us
 
-    QString spell_encoding = QString(_spellChecker->get_dic_encoding());
-    _spellCodec = QTextCodec::codecForName(spell_encoding.toLocal8Bit());
-
-    QString homePath = QDir::homePath().toLatin1();
-    if(_spellReady)
+    QStringList dirname;
+#if defined Q_OS_MAC
+    dirname << QApplication::applicationDirPath() + "/../Resources/hunspell";
+#else
+    dirname << "/usr/lib/postbooks"
+            << QApplication::applicationDirPath()
+            << QApplication::applicationDirPath() + "/hunspell";
+#endif
+#if QT_VERSION >= 0x050400
+    dirname << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+#endif
+    for (int didx = 0; didx < dirname.length() && appPath.isEmpty(); didx++)
     {
-        QFile file(homePath + tr("/xTuple/user.dic"));
-        if(file.exists(homePath + tr("/xTuple/user.dic")))
+      for (int fidx = 0; fidx < filename.length() && appPath.isEmpty(); fidx++)
+      {
+        fullPathWithoutExt = dirname[didx] + "/" + filename[fidx];
+        if (DEBUG) qDebug() << "looking for spelling dictionaries" << fullPathWithoutExt;
+
+        QFile affFile(fullPathWithoutExt + ".aff");
+        QFile dicFile(fullPathWithoutExt + ".dic");
+        if (affFile.exists() && dicFile.exists())
         {
-           //open user dictionary if exists
-           _spellChecker->add_dic(QString(homePath + tr("/xTuple/user.dic")).toLatin1());
+          appPath = dirname[didx];
         }
+      }
     }
+    if (appPath.isEmpty())
+    {
+      QMessageBox::warning(this, tr("Spelling Dictionary Files Missing"),
+                           tr("<p>Could not find spell checking files named"
+                              "<ul><li>%1</li></ul> in <ul><li>%2</li></ul>.</p>")
+                             .arg(filename.join("</li><li> "), dirname.join("</li><li>")));
+    } else {
+      if (DEBUG) qDebug() << "loading" << appPath;
+      _spellChecker = new Hunspell(fullPathWithoutExt.toLatin1() + ".aff",
+                                   fullPathWithoutExt.toLatin1() + ".dic");
+
+      QString spell_encoding = QString(_spellChecker->get_dic_encoding());
+      _spellCodec = QTextCodec::codecForName(spell_encoding.toLocal8Bit());
+
+      QFile file(QDir::homePath() + "/xTuple/user.dic");
+      if (file.exists())
+      {
+        if (DEBUG) qDebug() << "loading" << file.fileName();
+        _spellChecker->add_dic(file.fileName().toLatin1());
+      }
+    }
+  }
 }
 
 void GUIClient::hunspell_uninitialize()
 {
-    delete (Hunspell *)(_spellChecker);
     QString homePath = QDir::homePath().toLatin1();
     QFile file(homePath + tr("/xTuple/user.dic"));
 
-    if(_spellReady && !_spellAddWords.isEmpty())
+    if(_spellChecker && !_spellAddWords.isEmpty())
     {
       //if user directory missing create it
       QString homePath = QDir::homePath().toLatin1();
@@ -2562,18 +2493,20 @@ void GUIClient::hunspell_uninitialize()
          }
          file.close();
       }
+      delete (Hunspell *)(_spellChecker);
+      _spellChecker = 0;
     }
 }
 
 bool GUIClient::hunspell_ready()
 {
-       return _spellReady;
+  return (_spellChecker != 0);
 }
 
 int GUIClient::hunspell_check(const QString word)
 {
-      QByteArray encodedString = _spellCodec->fromUnicode(word);
-      return _spellChecker->spell(encodedString.data());
+  QByteArray encodedString = _spellCodec->fromUnicode(word);
+  return _spellChecker->spell(encodedString.data());
 }
 
 const QStringList GUIClient::hunspell_suggest(const QString word)

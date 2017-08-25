@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>681</height>
+    <width>749</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,35 +59,6 @@ to be bound by its terms.</comment>
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="_statusLit">
-         <property name="text">
-          <string>Status:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="XComboBox" name="_status">
-         <item>
-          <property name="text">
-           <string>Concept</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>In-Process</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Complete</string>
-          </property>
-         </item>
-        </widget>
        </item>
        <item>
         <widget class="XLabel" name="_projectTypeLit">
@@ -146,7 +117,7 @@ to be bound by its terms.</comment>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="_accountLit">
         <property name="text">
          <string>Account:</string>
         </property>
@@ -210,6 +181,9 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
+      <item row="3" column="1">
+       <widget class="DeptCluster" name="_dept"/>
+      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="_assignedToLit">
         <property name="text">
@@ -217,6 +191,16 @@ to be bound by its terms.</comment>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="XLabel" name="_deptLit">
+        <property name="text">
+         <string>Department:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
         </property>
        </widget>
       </item>
@@ -229,7 +213,24 @@ to be bound by its terms.</comment>
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout_9">
-      <item row="0" column="0">
+      <item row="1" column="0">
+       <widget class="XLabel" name="_priorityLit">
+        <property name="text">
+         <string>Priority:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="XComboBox" name="_priority">
+        <property name="type">
+         <enum>XComboBox::IncidentPriority</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="_dueLit">
         <property name="text">
          <string>Due:</string>
@@ -239,7 +240,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="2" column="1">
        <widget class="DLineEdit" name="_due">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -249,7 +250,7 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="_startedLit">
         <property name="text">
          <string>Started:</string>
@@ -259,10 +260,10 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
        <widget class="DLineEdit" name="_started"/>
       </item>
-      <item row="2" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="_assignedLit">
         <property name="text">
          <string>Assigned:</string>
@@ -272,13 +273,13 @@ to be bound by its terms.</comment>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="4" column="1">
        <widget class="DLineEdit" name="_assigned"/>
       </item>
-      <item row="3" column="1">
+      <item row="5" column="1">
        <widget class="DLineEdit" name="_completed"/>
       </item>
-      <item row="3" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="_completedLit">
         <property name="text">
          <string>Completed:</string>
@@ -287,6 +288,69 @@ to be bound by its terms.</comment>
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="_statusLit">
+        <property name="text">
+         <string>Status:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="XComboBox" name="_status">
+        <item>
+         <property name="text">
+          <string>Concept</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>In-Process</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complete</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="XLabel" name="_pctComplLit">
+        <property name="text">
+         <string>Percent Complete:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="XSpinBox" name="_pctCompl">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -785,7 +849,7 @@ to be bound by its terms.</comment>
        <item>
         <widget class="Comments" name="_comments">
          <property name="type">
-          <enum>Comments::Project</enum>
+           <enum>Comments::Project</enum>
          </property>
         </widget>
        </item>
@@ -846,6 +910,11 @@ to be bound by its terms.</comment>
    <header>crmacctcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>DeptCluster</class>
+   <extends>QWidget</extends>
+   <header>deptcluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>DLineEdit</class>
    <extends>QWidget</extends>
    <header>datecluster.h</header>
@@ -888,6 +957,11 @@ to be bound by its terms.</comment>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>XSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>xspinbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>XTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
@@ -901,15 +975,19 @@ to be bound by its terms.</comment>
  </customwidgets>
  <tabstops>
   <tabstop>_number</tabstop>
-  <tabstop>_status</tabstop>
+  <tabstop>_projectType</tabstop>
   <tabstop>_name</tabstop>
   <tabstop>_crmacct</tabstop>
   <tabstop>_owner</tabstop>
   <tabstop>_assignedTo</tabstop>
+  <tabstop>_dept</tabstop>
+  <tabstop>_status</tabstop>
+  <tabstop>_priority</tabstop>
   <tabstop>_due</tabstop>
   <tabstop>_started</tabstop>
   <tabstop>_assigned</tabstop>
   <tabstop>_completed</tabstop>
+  <tabstop>_pctCompl</tabstop>
   <tabstop>_cntct</tabstop>
   <tabstop>_tab</tabstop>
   <tabstop>_so</tabstop>

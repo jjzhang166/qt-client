@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -14,6 +14,7 @@
 #include <QSqlError>
 
 #include "xsqlquery.h"
+#include "xtreewidget.h"
 
 LotserialList::LotserialList(QWidget* pParent, Qt::WindowFlags flags)
   : VirtualList(pParent, flags)
@@ -211,6 +212,22 @@ void LotserialLineEdit::sParse()
                 numQ.bindValue(":ls_id", lsid);
                 numQ.bindValue(":item_id", _itemid);
                 numQ.bindValue(":number", stripped);
+                numQ.exec();
+                if (numQ.lastError().type() != QSqlError::NoError)
+                {
+                  QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
+                                                .arg(__FILE__)
+                                                .arg(__LINE__),
+                                        numQ.lastError().databaseText());
+                  return;
+                }
+
+                numQ.prepare("INSERT INTO itemloc "
+                             "(itemloc_itemsite_id, itemloc_location_id, itemloc_qty, "
+                             "itemloc_expiration, itemloc_ls_id) "
+                             "VALUES (-1, -1, 0.0, "
+                             "endOfTime(), :ls_id);");
+                numQ.bindValue(":ls_id", lsid);
                 numQ.exec();
                 if (numQ.lastError().type() != QSqlError::NoError)
                 {

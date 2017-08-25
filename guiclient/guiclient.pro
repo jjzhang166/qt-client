@@ -7,9 +7,9 @@ QT += xml sql script scripttools network
 QT += webkit xmlpatterns printsupport webkitwidgets
 
 isEqual(QT_MAJOR_VERSION, 5) {
-  QT     += help designer uitools quick websockets webchannel serialport
+  QT     += designer uitools quick websockets webchannel serialport
 } else {
-  CONFIG += help designer uitools
+  CONFIG += designer uitools
 }
 
 TEMPLATE = app
@@ -25,6 +25,8 @@ INCLUDEPATH += ../scriptapi \
                $(CSVIMP_HEADERS)/csvimpcommon $(CSVIMP_HEADERS)/plugin
 
 DEPENDPATH  += $${INCLUDEPATH}
+
+INSTALLS = certificates dictionaries translations
 
 win32-msvc* {
   PRE_TARGETDEPS += ../lib/xtuplecommon.$${XTLIBEXT}    \
@@ -60,10 +62,10 @@ mac:!static:contains(QT_CONFIG, qt_framework) {
 }
 }
 
+OBJECTS_DIR = tmp/obj
 win32 {
   win32-msvc*:LIBS += -lshell32
   RC_FILE = rcguiclient.rc
-  OBJECTS_DIR = win_obj
   LIBS += -lz
 }
 win32-g++-4.6 {
@@ -71,14 +73,11 @@ win32-g++-4.6 {
 }
 
 unix: !macx {
- OBJECTS_DIR = unx_obj
  LIBS += -lz
 }
 
 macx {
   RC_FILE = images/icons.icns
-  #PRECOMPILED_HEADER = stable.h
-  OBJECTS_DIR = osx_obj
   QMAKE_INFO_PLIST = Info.plist
   LIBS += -lz -framework QtDesignerComponents
 }
@@ -157,6 +156,7 @@ FORMS =   absoluteCalendarItem.ui               \
           checkFormat.ui                        \
           checkFormats.ui                       \
           classCode.ui                          \
+          classCodeTax.ui                       \
           classCodes.ui                         \
           closePurchaseOrder.ui                 \
           closeWo.ui                            \
@@ -177,7 +177,6 @@ FORMS =   absoluteCalendarItem.ui               \
           configurePO.ui                        \
           configureSearchPath.ui                \
           configureSO.ui                        \
-          configureWF.ui							\
           configureWO.ui                        \
           confirmAchOK.ui                       \
           contact.ui                            \
@@ -309,7 +308,6 @@ FORMS =   absoluteCalendarItem.ui               \
           glTransactionDetail.ui        \
           group.ui                      \
           groups.ui                     \
-          helpDownload.ui               \
           honorific.ui                  \
           honorifics.ui                 \
           hotkey.ui                     \
@@ -413,6 +411,8 @@ FORMS =   absoluteCalendarItem.ui               \
           postStandardJournal.ui                \
           postStandardJournalGroup.ui           \
           postVouchers.ui                       \
+          poType.ui                             \
+          poTypes.ui                            \
           prepareCheckRun.ui                    \
           priceList.ui                          \
           pricingScheduleAssignment.ui          \
@@ -458,8 +458,8 @@ FORMS =   absoluteCalendarItem.ui               \
           profitCenters.ui                      \
           project.ui                            \
           projects.ui                           \
-	  projectType.ui			\
-	  projectTypes.ui			\
+          projectType.ui                        \
+          projectTypes.ui                       \
           prospect.ui                           \
           purchaseOrder.ui                      \
           purchaseOrderItem.ui                  \
@@ -515,7 +515,7 @@ FORMS =   absoluteCalendarItem.ui               \
           salesOrder.ui                         \
           salesOrderInformation.ui              \
           salesOrderItem.ui                     \
-          salesOrderSimple.ui                     \
+          salesOrderSimple.ui                   \
           salesRep.ui                           \
           salesReps.ui                          \
           saleType.ui                           \
@@ -646,7 +646,6 @@ FORMS =   absoluteCalendarItem.ui               \
           warehouse.ui                          \
           warehouseZone.ui                      \
           warehouses.ui                         \
-          welcomeStub.ui                        \
           woMaterialItem.ui                     \
           workOrder.ui                          \
           workOrderMaterials.ui                 \
@@ -720,6 +719,7 @@ HEADERS = ../common/format.h                    \
           checkFormat.h                 \
           checkFormats.h                \
           classCode.h                   \
+          classCodeTax.h                \
           classCodes.h                  \
           closePurchaseOrder.h          \
           closeWo.h                     \
@@ -741,7 +741,6 @@ HEADERS = ../common/format.h                    \
           configurePO.h                 \
           configureSearchPath.h         \
           configureSO.h                 \
-          configureWF.h					\
           configureWO.h                 \
           confirmAchOK.h                \
           contact.h                     \
@@ -817,6 +816,7 @@ HEADERS = ../common/format.h                    \
           departments.h                         \
           dictionaries.h                        \
           display.h                             \
+          displayprivate.h                      \
           displayTimePhased.h                   \
           distributeInventory.h                 \
           distributeToLocation.h                \
@@ -887,9 +887,6 @@ HEADERS = ../common/format.h                    \
           groups.h                      \
           guiErrorCheck.h               \
           guiclient.h                   \
-          helpDownload.h                \
-          helpView.h                    \
-          helpViewBrowser.h             \
           honorific.h                   \
           honorifics.h                  \
           hotkey.h                      \
@@ -1014,6 +1011,8 @@ HEADERS = ../common/format.h                    \
           postStandardJournal.h         \
           postStandardJournalGroup.h    \
           postVouchers.h                \
+          poType.h                      \
+          poTypes.h                     \
           prepareCheckRun.h             \
           priceList.h                   \
           pricingScheduleAssignment.h   \
@@ -1117,7 +1116,7 @@ HEADERS = ../common/format.h                    \
           salesOrder.h                          \
           salesOrderInformation.h               \
           salesOrderItem.h                      \
-          salesOrderSimple.h                     \
+          salesOrderSimple.h                    \
           salesRep.h                            \
           salesReps.h                           \
           saleType.h                            \
@@ -1259,11 +1258,9 @@ HEADERS = ../common/format.h                    \
           warehouse.h                   \
           warehouseZone.h               \
           warehouses.h                  \
-          welcomeStub.h                 \
           woMaterialItem.h              \
           workOrder.h                   \
           workOrderMaterials.h          \
-          xtHelp.h                      \
           xTupleDesigner.h              \
           xTupleDesignerActions.h       \
           xabstractconfigure.h          \
@@ -1274,9 +1271,9 @@ HEADERS = ../common/format.h                    \
           xmessagebox.h                 \
           xmessageboxmessagehandler.h   \
           xsltMap.h                     \
+          xtupleguiclientinterface.h    \
           xuiloader.h                   \
           xwidget.h                     \
-          yourpayprocessor.h            \
           zeroUncountedCountTagsByWarehouse.h \
           printStatementsByCustomerGroup.h
 
@@ -1342,6 +1339,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           checkFormat.cpp                       \
           checkFormats.cpp                      \
           classCode.cpp                         \
+          classCodeTax.cpp                      \
           classCodes.cpp                        \
           closePurchaseOrder.cpp                \
           closeWo.cpp                           \
@@ -1363,7 +1361,6 @@ SOURCES = absoluteCalendarItem.cpp              \
           configurePO.cpp                       \
           configureSearchPath.cpp               \
           configureSO.cpp                       \
-          configureWF.cpp						\
           configureWO.cpp                       \
           confirmAchOK.cpp                      \
           contact.cpp                           \
@@ -1507,9 +1504,6 @@ SOURCES = absoluteCalendarItem.cpp              \
           groups.cpp                    \
           guiErrorCheck.cpp             \
           guiclient.cpp                 \
-          helpDownload.cpp              \
-          helpView.cpp                  \
-          helpViewBrowser.cpp           \
           honorific.cpp                 \
           honorifics.cpp                \
           hotkey.cpp                    \
@@ -1634,6 +1628,8 @@ SOURCES = absoluteCalendarItem.cpp              \
           postStandardJournal.cpp               \
           postStandardJournalGroup.cpp          \
           postVouchers.cpp                      \
+          poType.cpp                            \
+          poTypes.cpp                           \
           prepareCheckRun.cpp                   \
           priceList.cpp                         \
           pricingScheduleAssignment.cpp         \
@@ -1679,8 +1675,8 @@ SOURCES = absoluteCalendarItem.cpp              \
           profitCenters.cpp                     \
           project.cpp                           \
           projects.cpp                          \
-	  projectType.cpp			\
-	  projectTypes.cpp			\
+          projectType.cpp                       \
+          projectTypes.cpp                      \
           prospect.cpp                          \
           prospects.cpp                         \
           purchaseOrder.cpp                     \
@@ -1737,7 +1733,7 @@ SOURCES = absoluteCalendarItem.cpp              \
           salesOrder.cpp                        \
           salesOrderInformation.cpp             \
           salesOrderItem.cpp                    \
-          salesOrderSimple.cpp                     \
+          salesOrderSimple.cpp                  \
           salesRep.cpp                          \
           salesReps.cpp                         \
           saleType.cpp                          \
@@ -1879,7 +1875,6 @@ SOURCES = absoluteCalendarItem.cpp              \
           warehouse.cpp                         \
           warehouseZone.cpp                     \
           warehouses.cpp                        \
-          welcomeStub.cpp                       \
           woMaterialItem.cpp                    \
           workOrder.cpp                         \
           workOrderMaterials.cpp                \
@@ -1893,10 +1888,9 @@ SOURCES = absoluteCalendarItem.cpp              \
           xmessagebox.cpp                       \
           xmessageboxmessagehandler.cpp         \
           xsltMap.cpp                           \
-          xtHelp.cpp                            \
+          xtupleguiclientinterface.cpp          \
           xuiloader.cpp                         \
           xwidget.cpp                           \
-          yourpayprocessor.cpp                  \
           zeroUncountedCountTagsByWarehouse.cpp \
           printStatementsByCustomerGroup.cpp
 
@@ -1905,3 +1899,18 @@ include( hunspell.pri )
 
 RESOURCES += guiclient.qrc $${OPENRPT_IMAGE_DIR}/OpenRPTMetaSQL.qrc
 
+macx {
+  EXTRASDIR=$$absolute_path($${DESTDIR})/xtuple.app/Contents/Resources
+} else {
+  EXTRASDIR=$$absolute_path($${DESTDIR})
+}
+
+certificates.path = $$absolute_path($${EXTRASDIR})/certificates
+certificates.files = ../share/certificates/*
+dictionaries.path = $$absolute_path($${EXTRASDIR})/hunspell
+dictionaries.files = ../hunspell/*.aff ../hunspell/*.dic
+
+TRANSLATIONS = ../share/dict/*.ts
+translations.path = $$absolute_path($${EXTRASDIR})/dict
+translations.files = $$replace(TRANSLATIONS, ts, qm)
+translations.extra = cd ../share/dict && $$dirname(QMAKE_QMAKE)/lrelease xTuple*.ts

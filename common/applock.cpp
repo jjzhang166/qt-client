@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -28,72 +28,60 @@ class AppLockPrivate
         _otherLock(false),
         _parent(parent)
     {
-      if (_mobilizedDb.isNull()) {
+      _dbIsOpen = QSqlDatabase::database().isOpen();
+      if (! _dbIsOpen)
+        return;
+
+      if (_isWebEnabled.isNull())
+      {
         XSqlQuery q("SELECT EXISTS(SELECT 1"
                     "  FROM pg_class c"
                     "  JOIN pg_namespace n ON (relnamespace = n.oid)"
                     " WHERE relname = 'lock'"
                     "   AND nspname = 'xt') AS mobilized;");
         if (q.first())
-          _mobilizedDb = q.value("mobilized");
+          _isWebEnabled = q.value("mobilized");
         else
           (void)ErrorReporter::error(QtCriticalMsg,
                                      qobject_cast<QWidget*>(parent->parent()),
                                      parent->tr("Locking Error"),
                                      q, __FILE__, __LINE__);
       }
-      XSqlQuery vq("SELECT compareversion('9.2.0') <= 0 AS isNew;");
-      if (vq.first()) {
-        _actPidCol = vq.value("isNew").toBool() ? "pid" : "procpid";
-      } else {
-        (void)ErrorReporter::error(QtCriticalMsg,
-                                   qobject_cast<QWidget*>(parent->parent()),
-                                   parent->tr("Locking Error"),
-                                   vq, __FILE__, __LINE__);
-      }
+
       updateLockStatus();
     }
 
-    void updateLockStatus() {
+    void updateLockStatus()
+    {
+      if (! _dbIsOpen || _id < 0)
+        return;
+
       XSqlQuery q;
-      if (_mobilizedDb.toBool()) {
+      if (_isWebEnabled.toBool())
         q.prepare("SELECT lock_pid = pg_backend_pid() AS mylock, lock_username"
                   "  FROM xt.lock"
                   "  JOIN pg_class c ON lock_table_oid = c.oid"
                   " WHERE relname = :table"
                   "   AND lock_record_id = :id;");
-        q.bindValue(":table", _table);
-        q.bindValue(":id",    _id);
-        q.exec();
-        if (q.first()) {
-          _myLock    = q.value("mylock").toBool();
-          _otherLock = ! _myLock;
-          _username  = q.value("lock_username").toString();
-          return;
-        }
-        else if (ErrorReporter::error(QtCriticalMsg,
-                                      qobject_cast<QWidget*>(_parent->parent()),
-                                      _parent->tr("Locking Error"),
-                                      q, __FILE__, __LINE__))
-          return;
-      }
+      else
+        q.prepare("SELECT l.pid = pg_backend_pid() AS mylock, usename AS lock_username"
+                  "  FROM pg_locks l"
+                  "  JOIN pg_class c    on classid = c.oid"
+                  "  JOIN pg_database d on database = d.oid"
+                  "  JOIN pg_stat_activity a ON l.pid = a.pid"
+                  " WHERE d.datname = current_database()"
+                  "   AND relname = :table"
+                  "   AND objid   = :id"
+                  "   AND locktype = 'advisory';");
 
-      q.prepare("SELECT l.pid = pg_backend_pid() AS mylock, usename"
-                "  FROM pg_locks l"
-                "  JOIN pg_class c    on classid = c.oid"
-                "  JOIN pg_database d on database = d.oid"
-                "  JOIN pg_stat_activity a ON l.pid = a." + _actPidCol +
-                " WHERE d.datname = current_database()"
-                "   AND relname = :table"
-                "   AND objid   = :id"
-                "   AND locktype = 'advisory';");
       q.bindValue(":table", _table);
       q.bindValue(":id",    _id);
       q.exec();
-      if (q.first()) {
+      if (q.first())
+      {
         _myLock    = q.value("mylock").toBool();
         _otherLock = ! _myLock;
-        _username  = q.value("usename").toString();
+        _username  = q.value("lock_username").toString();
         return;
       }
       else if (ErrorReporter::error(QtCriticalMsg,
@@ -101,25 +89,26 @@ class AppLockPrivate
                                     _parent->tr("Locking Error"),
                                     q, __FILE__, __LINE__))
         return;
-      else {
+      else
+      {
         _myLock = _otherLock = false;
         _username.clear();
       }
     }
 
-    QString  _actPidCol;
     QString  _error;
     int      _id;
+    bool     _dbIsOpen;
     bool     _myLock;
     bool     _otherLock;
     AppLock *_parent;
     QString  _table;
     QString  _username;
 
-    static QVariant _mobilizedDb;
+    static QVariant _isWebEnabled;
 };
 
-QVariant AppLockPrivate::_mobilizedDb;
+QVariant AppLockPrivate::_isWebEnabled;
 
 AppLock::AppLock(QObject *parent)
   : QObject(parent)
@@ -153,11 +142,14 @@ AppLock::~AppLock()
  */
 bool AppLock::acquire(AppLock::AcquireMode mode)
 {
-  if (_p->_id < 0 || _p->_table.isEmpty()) {
+  if (! _p->_dbIsOpen)
+    return false;
+
+  if (_p->_id < 0 || _p->_table.isEmpty())
+  {
     _p->_error = tr("Cannot acquire a lock without a table and record id.");
-    if (mode == Interactive) {
+    if (mode == Interactive)
       QMessageBox::critical(0, tr("Cannot Acquire Lock"), _p->_error);
-    }
     return false;
   }
 
@@ -184,12 +176,12 @@ bool AppLock::acquire(AppLock::AcquireMode mode)
     {
       _p->updateLockStatus();
       result = _p->_myLock;
-      if (_p->_otherLock) {
+      if (_p->_otherLock)
+      {
         _p->_error = tr("The record you are trying to edit is currently being "
                          "edited by another user (%1).").arg(_p->_username);
-        if (mode == Interactive) {
+        if (mode == Interactive)
           QMessageBox::critical(0, tr("Cannot Acquire Lock"), _p->_error);
-        }
       }
     }
   }
@@ -229,12 +221,13 @@ bool AppLock::isLockedOut() const
 
 bool AppLock::release()
 {
-  if (_p->_id < 0 || _p->_table.isEmpty())
+  if (_p->_id < 0 || _p->_table.isEmpty() || ! _p->_dbIsOpen)
     return true;
 
   bool released = false;
   _p->_error.clear();
-  if (_p->_myLock) {
+  if (_p->_myLock)
+  {
     XSqlQuery q;
     q.prepare("SELECT pg_advisory_unlock(CAST(oid AS INTEGER), :id) AS released"
               "  FROM pg_class"

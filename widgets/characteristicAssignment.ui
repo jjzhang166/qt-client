@@ -81,6 +81,13 @@ to be bound by its terms.</comment>
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="_numberPage">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="XLineEdit" name="_numberValue"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
      <item row="2" column="0">

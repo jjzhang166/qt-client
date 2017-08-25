@@ -69,7 +69,23 @@
 #define iJustUpdate   3
 
 salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
-  : XWidget(parent, name, fl)
+  : XWidget(parent, name, fl),
+    _saved         (false),
+    _saving        (false),
+    _calcfreight   (false),
+    _orderNumberGen(0),
+    _freightCache  (0),
+    _userEnteredOrderNumber(false),
+    _ignoreSignals (true),
+    _blanketPos    (false),
+    _usesPos       (false),
+    _captive       (false),
+    _holdOverride  (false),
+    _soheadid      (-1),
+    _numSelected   (0),
+    _custtaxzoneid (-1),
+    _taxzoneidCache(-1),
+    _crmacctid     (-1)
 {
   setupUi(this);
 
@@ -94,13 +110,11 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
   connect(_editCC,              SIGNAL(clicked()),                              this,         SLOT(sEditCreditCard()));
   connect(_new,                 SIGNAL(clicked()),                              this,         SLOT(sNew()));
   connect(_newCC,               SIGNAL(clicked()),                              this,         SLOT(sNewCreditCard()));
-  //connect(_newCust,             SIGNAL(clicked()),                              this,         SLOT(sNewCust()));
-  connect(_orderNumber,         SIGNAL(editingFinished()),                            this,         SLOT(sHandleOrderNumber()));
+  connect(_orderNumber,         SIGNAL(editingFinished()),                      this,         SLOT(sHandleOrderNumber()));
   connect(_orderNumber,         SIGNAL(textChanged(const QString &)),           this,         SLOT(sSetUserEnteredOrderNumber()));
   connect(_save,                SIGNAL(clicked()),                              this,         SLOT(sSave()));
   connect(_saveAndAdd,          SIGNAL(clicked()),                              this,         SLOT(sSaveAndAdd()));
   connect(_shippingCharges,     SIGNAL(newID(int)),                             this,         SLOT(sHandleShipchrg(int)));
-  connect(_shipVia,             SIGNAL(editTextChanged(const QString &)),           this,         SLOT(sFillItemList()));
   connect(_shipToAddr,          SIGNAL(changed()),                              this,         SLOT(sConvertShipTo()));
   connect(_shipToName,          SIGNAL(textChanged(const QString &)),           this,         SLOT(sConvertShipTo()));
   connect(_shipTo,              SIGNAL(newId(int)),                             this,         SLOT(sParseShipToNumber()));
@@ -141,25 +155,7 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
   connect(_shipToAddr,          SIGNAL(addressChanged(QString,QString,QString,QString,QString,QString, QString)),
           _shipToCntct, SLOT(setNewAddr(QString,QString,QString,QString,QString,QString, QString)));
 
-  _saved  = false;
-  _saving = false;
-
   setFreeFormShipto(false);
-
-  _soheadid          = -1;
-  _orderNumberGen    = 0;
-
-  _numSelected       = 0;
-
-  _calcfreight       = false;
-  _freightCache      = 0;
-  _taxzoneidCache    = -1;
-  _custtaxzoneid     = -1;
-  _crmacctid         =-1;
-
-  _captive       = false;
-  _holdOverride  = false;
-  _ignoreSignals = true;
 
   _holdType->append(0, tr("None"),     "N");
   _holdType->append(1, tr("Credit"),   "C");
@@ -239,7 +235,7 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
 
   sPopulateFOB(_warehouse->id());
 
-  _ignoreSignals = false;
+  _ignoreSignals = false; // don't move this to initializer section above
 
   if (!_privileges->check("ShowMarginsOnSalesOrder"))
   {
@@ -256,7 +252,6 @@ salesOrder::salesOrder(QWidget *parent, const char *name, Qt::WindowFlags fl)
     _project->hide();
   }
 
-  // If not multi-warehouse hide whs control
   if (!_metrics->boolean("MultiWhs"))
   {
     _shippingWhseLit->hide();
@@ -881,22 +876,25 @@ bool salesOrder::save(bool partial)
 //  S/O Credit Check
     if (_saving && _metrics->boolean("CreditCheckSOOnSave"))
     {
-      if (!creditLimitCheck() && _holdType->code() != "C")
+      if (!creditLimitCheck())
       {
         if (_privileges->check("CreateSOForHoldCustomer"))
         {
-          if (QMessageBox::question(this, tr("Sales Order Credit Check"),
-                          tr("<p>The customer has exceeded their credit limit "
-                             "and this order will be placed on Credit Hold.\n"
-                             "Do you wish to continue saving the order?"),
-                          QMessageBox::Yes,
-                          QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+          if(_holdType->code() != "C")
           {
-            _holdType->setCode("C");
-          }
-          else
-          {
-            return false;
+            if (QMessageBox::question(this, tr("Sales Order Credit Check"),
+                            tr("<p>The customer has exceeded their credit limit "
+                               "and this order will be placed on Credit Hold.\n"
+                               "Do you wish to continue saving the order?"),
+                            QMessageBox::Yes,
+                            QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+            {
+              _holdType->setCode("C");
+            }
+            else
+            {
+              return false;
+            }
           }
         }
         else
@@ -1300,7 +1298,9 @@ bool salesOrder::save(bool partial)
 
     if ( (_mode == cNew) || (_mode == cEdit) )
     {
+      disconnect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sHandleSalesOrderEvent(int, bool)));
       omfgThis->sSalesOrdersUpdated(_soheadid);
+      connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sHandleSalesOrderEvent(int, bool)));
       omfgThis->sProjectsUpdated(_soheadid);
     }
     else if ( (_mode == cNewQuote) || (_mode == cEditQuote) )
@@ -1626,7 +1626,7 @@ void salesOrder::sHandleOrderNumber()
   else
   {
     XSqlQuery query;
-    if ( (_mode == cNew) && (_userEnteredOrderNumber) )
+    if (_mode == cNew && _userEnteredOrderNumber)
     {
       query.prepare("SELECT deleteSO(:sohead_id, :sohead_number ::text) AS result;");
       query.bindValue(":sohead_id", _soheadid);
@@ -1673,20 +1673,10 @@ void salesOrder::sHandleOrderNumber()
       }
       else
       {
-        QString orderNumber = _orderNumber->text();
+        _orderNumber->setEnabled(false);
         if (_metrics->value("CONumberGeneration") == "O")
         {
-          query.prepare( "SELECT releaseSoNumber(:orderNumber);" );
-          query.bindValue(":orderNumber", _orderNumberGen);
-          query.exec();
-          _orderNumber->setText(orderNumber);
           _userEnteredOrderNumber = false;
-          _orderNumber->setEnabled(false);
-        }
-        else
-        {
-          _orderNumber->setText(orderNumber);
-          _orderNumber->setEnabled(false);
         }
       }
     }
@@ -1734,12 +1724,6 @@ void salesOrder::sHandleOrderNumber()
             (_metrics->value("QUNumberGeneration") == "A"))
         {
           clear();
-          if (_metrics->value("QUNumberGeneration") == "S")
-            query.prepare( "SELECT releaseSoNumber(:orderNumber);" );
-          else
-            query.prepare( "SELECT releaseQUNumber(:orderNumber);" );
-          query.bindValue(":orderNumber", _orderNumberGen);
-          query.exec();
           _orderNumber->setText(orderNumber);
           _userEnteredOrderNumber = false;
           _orderNumber->setEnabled(false);
@@ -1793,8 +1777,8 @@ void salesOrder::sPopulateCustomerInfo(int pCustid)
                 "  LEFT OUTER JOIN shiptoinfo ON ((shipto_cust_id=cust_id)"
                 "                         AND (shipto_default)) "
                 "LEFT OUTER JOIN crmacct ON (crmacct_cust_id = cust_id) "
-                "WHERE (cust_id=<? value(\"cust_id\") ?>) "
-                "<? if exists(\"isQuote\") ?>"
+                "WHERE (cust_id=<? value('cust_id') ?>) "
+                "<? if exists('isQuote') ?>"
                 "UNION "
                 "SELECT prospect_name AS cust_name, addr_id, "
                 "       prospect_salesrep_id AS cust_salesrep_id, NULL AS cust_shipchrg_id,"
@@ -1813,7 +1797,7 @@ void salesOrder::sPopulateCustomerInfo(int pCustid)
                 "  LEFT OUTER JOIN cntct  ON (prospect_cntct_id=cntct_id) "
                 "  LEFT OUTER JOIN addr   ON (cntct_addr_id=addr_id) "
                 "  LEFT OUTER JOIN crmacct ON (crmacct_prospect_id = prospect_id) "
-                "WHERE (prospect_id=<? value(\"cust_id\") ?>) "
+                "WHERE (prospect_id=<? value('cust_id') ?>) "
                 "<? endif ?>"
                 ";" );
 
@@ -2041,8 +2025,6 @@ void salesOrder::populateShipto(int pShiptoid)
 
   if (_saved)
     save(true);
-
-  sFillItemList();
 }
 
 void salesOrder::sConvertShipTo()
@@ -2063,9 +2045,6 @@ void salesOrder::sNew()
   {
     if (!save(true))
       return;
-    // TODO - why populate?
-    //else
-    //  populate();
   }
 
   // Double check some values
@@ -2102,7 +2081,6 @@ void salesOrder::sNew()
   newdlg.set(params);
 
   newdlg.exec();
-    sFillItemList();
 }
 
 void salesOrder::sCopyToShipto()
@@ -2163,7 +2141,6 @@ void salesOrder::sEdit()
 void salesOrder::sHandleButtons()
 {
   XTreeWidgetItem *selected = 0;
-  _numSelected = 0;
 
   QList<XTreeWidgetItem *> selectedlist = _soitem->selectedItems();
   _numSelected = selectedlist.size();
@@ -2512,7 +2489,7 @@ void salesOrder::populate()
 
       _cust->setId(so.value("cohead_cust_id").toInt());
 
-        setFreeFormShipto(so.value("cust_ffshipto").toBool());
+      setFreeFormShipto(so.value("cust_ffshipto").toBool());
       _blanketPos = so.value("cust_blanketpos").toBool();
 
       _warehouse->setId(so.value("cohead_warehous_id").toInt());
@@ -2720,7 +2697,7 @@ void salesOrder::populate()
 
       _cust->setId(qu.value("quhead_cust_id").toInt());
 
-        setFreeFormShipto(qu.value("cust_ffshipto").toBool());
+      setFreeFormShipto(qu.value("cust_ffshipto").toBool());
       _blanketPos = qu.value("cust_blanketpos").toBool();
 
       _warehouse->setId(qu.value("quhead_warehous_id").toInt());
@@ -3088,17 +3065,6 @@ bool salesOrder::deleteForCancel()
     else if (query.lastError().type() != QSqlError::NoError)
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Order"),
                          query, __FILE__, __LINE__);
-
-    if ((_metrics->value("CONumberGeneration") == "A") ||
-        (_metrics->value("CONumberGeneration") == "O"))
-    {
-      query.prepare( "SELECT releaseSONumber(:orderNumber);" );
-      query.bindValue(":orderNumber", _orderNumber->text());
-      query.exec();
-      if (query.lastError().type() != QSqlError::NoError)
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Sales Order"),
-                           query, __FILE__, __LINE__);
-    }
   }
   else if (_mode == cNewQuote &&
            !_captive)
@@ -3316,7 +3282,6 @@ void salesOrder::sHandleShipchrg(int pShipchrgid)
       {
         _calcfreight = _metrics->boolean("CalculateFreight");
         _freight->setEnabled(true);
-        sFillItemList();
       }
       else
       {
@@ -3416,18 +3381,16 @@ void salesOrder::sFreightDetail()
 
 void salesOrder::setFreeFormShipto(bool pFreeForm)
 {
-  _ffShipto = pFreeForm;
+  bool ffShipto = pFreeForm;
 
-  // If we are in view mode it doesn't matter as we
-  // always want these fields disabled.
-  if ( (_mode == cView) || (_mode == cViewQuote) )
-    _ffShipto = false;
+  if (_mode == cView || _mode == cViewQuote)
+    ffShipto = false;
 
-  _shipToName->setEnabled(_ffShipto);
-  _shipToAddr->setEnabled(_ffShipto);
-  _shipToCntct->setEnabled(_ffShipto);
+  _shipToName->setEnabled(ffShipto);
+  _shipToAddr->setEnabled(ffShipto);
+  _shipToCntct->setEnabled(ffShipto);
 
-  _copyToShipto->setEnabled(_ffShipto);
+  _copyToShipto->setEnabled(ffShipto);
 }
 
 void salesOrder::setViewMode()
@@ -3527,6 +3490,31 @@ bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
       return false;
     }
   }
+  
+  //ensure no line items have an associated open PO (drop shipped items)
+  XSqlQuery qtyDropshippedq;
+  qtyDropshippedq.prepare("select coalesce(bool_or((poitem_id) is not null),'f') as opendropship"
+                         "  from coitem left outer join poitem on (poitem_id=coitem_order_id)"
+                         "  where coitem_order_type = 'P'"
+                         "  and coitem_order_id is not null"
+                         "  and coitem_order_id > 0"
+                         "  and poitem_status != 'C'"
+                         "  and coitem_cohead_id=:coheadid");
+  qtyDropshippedq.bindValue(":coheadid", pId);
+  qtyDropshippedq.exec();
+  if (qtyDropshippedq.first() && qtyDropshippedq.value("opendropship").toBool())
+  {
+    QMessageBox::critical(parent, tr("Open Dropship"),
+                          tr("You may not delete this Sales Order as it "
+                             "has one or more dropshipped line items "
+                             "on a Purchase Order.")) ;
+    return false;
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, parent,
+                              tr("Getting Linked PO Items"),
+                              qtyDropshippedq, __FILE__, __LINE__))
+  return false;
+  
 
   XSqlQuery atshippingq;
   atshippingq.prepare("SELECT BOOL_OR(qtyAtShipping(coitem_id) > 0) AS atshipping"
@@ -3575,14 +3563,14 @@ bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
     delq.exec();
     if (delq.first())
     {
-      bool closeInstead = false;
+      bool cancelInstead = false;
       int result = delq.value("result").toInt();
       if (result == -1 && _privileges->check("ProcessCreditCards"))
       {
         if (QMessageBox::question(parent, tr("Cannot Delete Sales Order"),
                                    storedProcErrorLookup("deleteSo", result) +
                                    "<br>Would you like to refund the amount "
-                                   "charged and close the Sales Order instead?",
+                                   "charged and cancel the Sales Order instead?",
                                    QMessageBox::Yes | QMessageBox::Default,
                                    QMessageBox::No) == QMessageBox::Yes)
         {
@@ -3648,16 +3636,16 @@ bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
               {
                 QMessageBox::warning(parent, tr("Credit Card Processing Warning"),
                                      cardproc->errorMsg());
-                closeInstead = true;
+                cancelInstead = true;
               }
               else if (! cardproc->errorMsg().isEmpty())
               {
                 QMessageBox::information(parent, tr("Credit Card Processing Note"),
                                      cardproc->errorMsg());
-                closeInstead = true;
+                cancelInstead = true;
               }
               else
-                closeInstead = true;
+                cancelInstead = true;
             } while (ccq.next());
             else if (ErrorReporter::error(QtCriticalMsg, parent,
                                           tr("Credit Card Processing Error"),
@@ -3679,11 +3667,11 @@ bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
       {
         if ( QMessageBox::question(parent, tr("Cannot Delete Sales Order"),
                                    storedProcErrorLookup("deleteSo", result) +
-                                   "<br>Would you like to Close the selected "
+                                   "<br>Would you like to Cancel the selected "
                                    "Sales Order instead?",
                                    QMessageBox::Yes | QMessageBox::Default,
                                    QMessageBox::No) == QMessageBox::Yes)
-          closeInstead = true;
+          cancelInstead = true;
       }
       else if (result == -20)
         QMessageBox::information(parent, "Cannot Delete Purchase Order",
@@ -3696,17 +3684,18 @@ bool salesOrder::deleteSalesOrder(int pId, QWidget *parent)
         return false;
       }
 
-      if (closeInstead)
+      if (cancelInstead)
       {
-        XSqlQuery closeq;
-        closeq.prepare( "UPDATE coitem "
-                   "SET coitem_status='C' "
-                   "WHERE ((coitem_status <> 'X')"
+      	//cancel all items with a status that is not already CLOSED
+        XSqlQuery cancelq;
+        cancelq.prepare( "UPDATE coitem "
+                   "SET coitem_status='X' "
+                   "WHERE ((coitem_status <> 'C')"
                    "  AND  (coitem_cohead_id=:sohead_id));" );
-        closeq.bindValue(":sohead_id", pId);
-        closeq.exec();
-        if (ErrorReporter::error(QtCriticalMsg, parent, tr("Error Closing"),
-                                 closeq, __FILE__, __LINE__))
+        cancelq.bindValue(":sohead_id", pId);
+        cancelq.exec();
+        if (ErrorReporter::error(QtCriticalMsg, parent, tr("Error Cancelling"),
+                                 cancelq, __FILE__, __LINE__))
           return false;
       }
 
@@ -4024,8 +4013,13 @@ void salesOrder::sMoveDown()
 
 void salesOrder::sFillCcardList()
 {
-  if (ISQUOTE(_mode) || (!_metrics->boolean("CCAccept") || !_privileges->check("ProcessCreditCards")))
+  if (_cust->id() == -1 || ISQUOTE(_mode) ||
+      ! _metrics->boolean("CCAccept") || ! _privileges->check("ProcessCreditCards"))
+  {
+    _cc->clear();
     return;
+  }
+
   XSqlQuery fillSales;
   fillSales.prepare( "SELECT expireCreditCard(:cust_id, setbytea(:key));");
   fillSales.bindValue(":cust_id", _cust->id());
@@ -4211,52 +4205,29 @@ bool salesOrder::okToProcessCC()
 
 void salesOrder::sReturnStock()
 {
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
   XSqlQuery returnSales;
-  returnSales.exec("BEGIN;"); // because of possible lot, serial, or location distribution cancelations
   returnSales.prepare("SELECT returnItemShipments(:soitem_id) AS result;");
   QList<XTreeWidgetItem *> selected = _soitem->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
     returnSales.bindValue(":soitem_id", ((XTreeWidgetItem *)(selected[i]))->id());
     returnSales.exec();
-    if (returnSales.first())
+    if (returnSales.lastError().type() != QSqlError::NoError)
     {
-      int result = returnSales.value("result").toInt();
-      if (result < 0)
-      {
-        rollback.exec();
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Return Item Information"),
-                               storedProcErrorLookup("returnItemShipments", result),
-                               __FILE__, __LINE__);
-        return;
-      }
-      if (distributeInventory::SeriesAdjust(returnSales.value("result").toInt(), this) == XDialog::Rejected)
-      {
-        rollback.exec();
-        QMessageBox::information( this, tr("Return Stock"), tr("Transaction Canceled") );
-        return;
-      }
-
-    }
-    else if (returnSales.lastError().type() != QSqlError::NoError)
-    {
-      rollback.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Return Item Information"),
                            returnSales, __FILE__, __LINE__);
-      return;
+      continue;
     }
   }
 
-  returnSales.exec("COMMIT;");
-
-    sFillItemList();
+  sFillItemList();
 }
 
 void salesOrder::sIssueStock()
 {
+  if (!creditLimitCheckIssue())
+    return;
+
   bool update = false;
   QList<XTreeWidgetItem *> selected = _soitem->selectedItems();
   for (int i = 0; i < selected.size(); i++)
@@ -4286,8 +4257,10 @@ void salesOrder::sIssueStock()
 
 void salesOrder::sIssueLineBalance()
 {
+  if (!creditLimitCheckIssue())
+    return;
+
   XSqlQuery issueSales;
-  bool job = false;
   QList<XTreeWidgetItem *> selected = _soitem->selectedItems();
   for (int i = 0; i < selected.size(); i++)
   {
@@ -4295,143 +4268,272 @@ void salesOrder::sIssueLineBalance()
     if (soitem->altId() != 1 && soitem->altId() != 4)
     {
       // sufficientInventoryToShipItem assumes line balance if qty not passed
-      issueSales.prepare("SELECT itemsite_id, item_number, warehous_code, itemsite_costmethod, "
-                  "       sufficientInventoryToShipItem('SO', coitem_id) AS isqtyavail "
-                  "  FROM coitem JOIN itemsite ON (itemsite_id=coitem_itemsite_id)"
-                  "              JOIN item ON (item_id=itemsite_item_id)"
-                  "              JOIN whsinfo ON (warehous_id=itemsite_warehous_id) "
-                  " WHERE (coitem_id=:soitem_id); ");
+      issueSales.prepare("SELECT itemsite.itemsite_id, item.item_number, warehous_code, itemsite.itemsite_costmethod, "
+                         "  sufficientInventoryToShipItem('SO', coitem_id) AS isqtyavail, "
+                         "  isControlledItemsite(itemsite.itemsite_id) AS controlled, "
+                         "  isControlledItemsite(wo_itemsite_id) AS woItemControlled, "
+                         "  wo_itemsite_id, "
+                         "  calcIssueToShippingLineBalance('SO', coitem_id) AS balance, wo_id, "
+                         "  CASE WHEN wo_id IS NOT NULL THEN "
+                         "    roundQty(woitem.item_fractional, calcIssueToShippingLineBalance('SO', coitem_id) "
+                         "    * coitem_qty_invuomratio) "
+                         "  ELSE NULL END AS postprodqty "
+                         "FROM coitem JOIN itemsite ON (itemsite_id=coitem_itemsite_id) "
+                         "  JOIN item ON (item_id=itemsite_item_id) "
+                         "  JOIN whsinfo ON (warehous_id=itemsite_warehous_id) "
+                         "  LEFT OUTER JOIN wo ON coitem_id = wo_ordid AND wo_ordtype = 'S' "
+                         "  LEFT OUTER JOIN itemsite AS woitemsite ON woitemsite.itemsite_id = wo_itemsite_id "
+                         "  LEFT OUTER JOIN item AS woitem ON woitemsite.itemsite_item_id = woitem.item_id "
+                         "WHERE (coitem_id=:soitem_id);");
       issueSales.bindValue(":soitem_id", soitem->id());
       issueSales.exec();
-      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
+      if (!issueSales.first() || ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
                                     issueSales, __FILE__, __LINE__))
       {
         return;
       }
-      while (issueSales.next())
+      // Validate business logic
+      if (_requireInventory->isChecked() &&
+          issueSales.value("isqtyavail").toInt() < 0 &&
+          issueSales.value("itemsite_costmethod").toString() != "J")
       {
-        if (issueSales.value("itemsite_costmethod").toString() == "J")
-          job = true;
-
-        if (_requireInventory->isChecked() &&
-            issueSales.value("isqtyavail").toInt() < 0 &&
-            issueSales.value("itemsite_costmethod").toString() != "J")
-        {
-          QMessageBox::critical(this, tr("Insufficient Inventory"),
-                                      tr("<p>There is not enough Inventory to issue the amount required"
-                                         " of Item %1 in Site %2.")
-                                .arg(issueSales.value("item_number").toString())
-                                .arg(issueSales.value("warehous_code").toString()) );
-          return;
-        }
-      }
-
-      issueSales.prepare("SELECT itemsite_id, itemsite_costmethod, item_number, warehous_code, "
-                "       sufficientInventoryToShipItem('SO', coitem_id) AS isqtyavail "
-                "  FROM coitem JOIN itemsite ON (itemsite_id=coitem_itemsite_id)"
-                "              JOIN item ON (item_id=itemsite_item_id)"
-                "              JOIN whsinfo ON (warehous_id=itemsite_warehous_id) "
-                " WHERE ((coitem_id=:soitem_id) "
-                "   AND (NOT ((item_type = 'R') OR (itemsite_controlmethod = 'N'))) "
-                "   AND ((itemsite_controlmethod IN ('L', 'S')) OR (itemsite_loccntrl)));");
-      issueSales.bindValue(":soitem_id", soitem->id());
-      issueSales.exec();
-      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
-                                    issueSales, __FILE__, __LINE__))
-      {
+        QMessageBox::critical(this, tr("Insufficient Inventory"),
+                                    tr("<p>There is not enough Inventory to issue the amount required"
+                                       " of Item %1 in Site %2.")
+                              .arg(issueSales.value("item_number").toString())
+                              .arg(issueSales.value("warehous_code").toString()) );
         return;
       }
-      while (issueSales.next())
+      // Validate more business logic
+      if (issueSales.value("controlled").toBool() && 
+          issueSales.value("isqtyavail").toInt() < 0 && 
+          issueSales.value("itemsite_costmethod").toString() != "J")
       {
-        if (issueSales.value("isqtyavail").toInt() < 0 && issueSales.value("itemsite_costmethod").toString() != "J")
-        {
-          QMessageBox::critical(this, tr("Insufficient Inventory"),
-                                  tr("<p>Item Number %1 in Site %2 is a Multiple Location or "
-                                     "Lot/Serial controlled Item which is short on Inventory. "
-                                     "This transaction cannot be completed as is. Please make "
-                                     "sure there is sufficient Quantity on Hand before proceeding.")
-                                .arg(issueSales.value("item_number").toString())
-                                .arg(issueSales.value("warehous_code").toString()));
-          return;
-        }
+        QMessageBox::critical(this, tr("Insufficient Inventory"),
+                                tr("<p>Item Number %1 in Site %2 is a Multiple Location or "
+                                   "Lot/Serial controlled Item which is short on Inventory. "
+                                   "This transaction cannot be completed as is. Please make "
+                                   "sure there is sufficient Quantity on Hand before proceeding.")
+                              .arg(issueSales.value("item_number").toString())
+                              .arg(issueSales.value("warehous_code").toString()));
+        return;
       }
 
-      int       invhistid      = 0;
-      int       itemlocSeries  = 0;
+      double balance = issueSales.value("balance").toDouble();
+      bool jobItem = (issueSales.value("itemsite_costmethod").toString() == "J" && balance > 0);
+      bool controlled = issueSales.value("controlled").toBool();
+      bool hasControlledBackflushItems = false;
+      int itemsiteId = issueSales.value("itemsite_id").toInt();
+      int invhistid = 0;
+      int itemlocSeries = 0;
+
+      XSqlQuery parentItemlocdist;
+      XSqlQuery womatlItemlocdist;
+      XSqlQuery parentSeries;
+      XSqlQuery issue;
+      XSqlQuery cleanup;
       XSqlQuery rollback;
       rollback.prepare("ROLLBACK;");
 
-      issueSales.exec("BEGIN;"); // because of possible lot, serial, or location distribution cancelations
-      // If this is a lot/serial controlled job item, we need to post production first
-      if (job)
+      // Stage cleanup functions to be called on error
+      cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+      // Series for issueToShipping
+      parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+      parentSeries.exec();
+      if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
       {
-        XSqlQuery prod;
-        prod.prepare("SELECT postSoItemProduction(:soitem_id, now()) AS result;");
-        prod.bindValue(":soitem_id", _soitem->id());
-        prod.exec();
-        if (prod.lastError().type() != QSqlError::NoError)
+        itemlocSeries = parentSeries.value("result").toInt();
+        cleanup.bindValue(":itemlocSeries", itemlocSeries);
+      }
+      else
+      {
+        ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+          parentSeries, __FILE__, __LINE__);
+        return;
+      }
+
+      // Stage this here so that, if job item, some of the params can be overriden with WO relavant values.
+      parentItemlocdist.prepare("SELECT createItemlocdistParent(:itemsite_id, :qty, :orderType, :orderitemId, "
+        ":itemlocSeries, NULL, NULL, :transType) AS result;");
+      parentItemlocdist.bindValue(":itemsite_id", itemsiteId);
+      parentItemlocdist.bindValue(":qty", balance * -1);
+      parentItemlocdist.bindValue(":orderitemId", soitem->id());
+      parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+      parentItemlocdist.bindValue(":orderType", "SO");
+      parentItemlocdist.bindValue(":transType", "SH");
+      
+      // If this is a lot/serial controlled job item, we need to post production first
+      if (jobItem)
+      {
+        // Handle creation of itemlocdist records for each eligible backflush item (sql below from postProduction backflush handling)
+        XSqlQuery backflushItems;
+        backflushItems.prepare(
+          "SELECT item_number, item_fractional, itemsite_id, itemsite_item_id, womatl_id, womatl_wo_id, "
+          // issueMaterial qty = noNeg(expected - consumed)
+          " noNeg(((womatl_qtyfxd + ((:qty + wo_qtyrcv) * womatl_qtyper)) * (1 + womatl_scrap)) - "
+          "   (womatl_qtyiss + "
+          "   CASE WHEN (womatl_qtywipscrap >  ((womatl_qtyfxd + (:qty + wo_qtyrcv) * womatl_qtyper) * womatl_scrap)) "
+          "        THEN (womatl_qtyfxd + (:qty + wo_qtyrcv) * womatl_qtyper) * womatl_scrap "
+          "        ELSE womatl_qtywipscrap END)) AS qtyToIssue "
+          "FROM womatl, wo, itemsite, item "
+          "WHERE womatl_issuemethod IN ('L', 'M') "
+          " AND womatl_wo_id=wo_id "
+          " AND womatl_itemsite_id=itemsite_id "
+          " AND wo_ordid = :coitem_id "
+          " AND wo_ordtype = 'S' "
+          " AND itemsite_item_id=item_id "
+          " AND isControlledItemsite(itemsite_id) "
+          "ORDER BY womatl_id;");
+        backflushItems.bindValue(":qty", issueSales.value("postprodqty").toDouble());
+        backflushItems.bindValue(":coitem_id", soitem->id());
+        backflushItems.exec();
+        while (backflushItems.next())
         {
-          rollback.exec();
-          ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
-                               prod, __FILE__, __LINE__);
+          if (backflushItems.value("qtyToIssue").toDouble() > 0)
+          {
+            hasControlledBackflushItems = true;
+            womatlItemlocdist.prepare("SELECT createItemlocdistParent(:itemsite_id, roundQty(:item_fractional, itemuomtouom(:item_id, womatl_uom_id, NULL, :qty)) * -1, 'WO', womatl_wo_id, "
+                                      " :itemlocSeries, NULL, NULL, 'IM') AS result "
+                                      "FROM womatl "
+                                      "WHERE womatl_id = :womatl_id;");
+            womatlItemlocdist.bindValue(":itemsite_id", backflushItems.value("itemsite_id").toInt());
+            womatlItemlocdist.bindValue(":item_id", backflushItems.value("itemsite_item_id").toInt());
+            womatlItemlocdist.bindValue(":item_fractional", backflushItems.value("item_fractional").toBool());
+            womatlItemlocdist.bindValue(":womatl_id", backflushItems.value("womatl_id").toInt());
+            womatlItemlocdist.bindValue(":qty", backflushItems.value("qtyToIssue").toDouble());
+            womatlItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+            womatlItemlocdist.exec();
+            if (!womatlItemlocdist.first())
+            {
+              cleanup.exec();
+              QMessageBox::information( this, tr("Issue Line to Shipping"), 
+                tr("Failed to Create an itemlocdist record for work order backflushed material item %1.")
+                .arg(backflushItems.value("item_number").toString()) );
+              return;
+            }
+            else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+              womatlItemlocdist, __FILE__, __LINE__))
+            {
+              cleanup.exec();
+              return;
+            }
+          }
+        }
+
+        // If it's a controlled job item, set the relavant params
+        if (issueSales.value("woItemControlled").toBool())
+        {
+          parentItemlocdist.bindValue(":itemsite_id", issueSales.value("wo_itemsite_id").toInt());
+          parentItemlocdist.bindValue(":orderitemId", issueSales.value("wo_id").toInt());
+          parentItemlocdist.bindValue(":orderType", "WO");
+          parentItemlocdist.bindValue(":transType", "RM");
+          parentItemlocdist.bindValue(":qty", issueSales.value("postprodqty").toDouble());
+        } 
+      }
+
+      // Create the itemlocdist record if controlled item and distribute detail if controlled or controlled backflush items
+      if (controlled || (issueSales.value("woItemControlled").toBool() && jobItem) || hasControlledBackflushItems)
+      {
+        // If controlled item, execute the sql to create the parent itemlocdist record 
+        // (for WO post prod item if job, else for issue to shipping transaction).
+        if (controlled || (issueSales.value("woItemControlled").toBool() && jobItem))
+        {
+          parentItemlocdist.exec();
+          if (!parentItemlocdist.first())
+          {
+            cleanup.exec();
+            QMessageBox::information( this, tr("Issue to Shipping"), tr("Error creating itemlocdist records for controlled item") );
+            return;
+          }
+          else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                                    parentItemlocdist, __FILE__, __LINE__))
+          {
+            cleanup.exec();
+            return;
+          }
+        }
+
+        if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+          QDate(), true) == XDialog::Rejected)
+        {
+          cleanup.exec();
+          QMessageBox::information( this, tr("Issue to Shipping"), tr("Issue Canceled") );
           return;
         }
+      } 
+
+      // Wrap remaining sql in a transaction block - perform postSoItemProduction if Job item, then issue to shipping
+      issue.exec("BEGIN;");
+
+      // postSoItemProduction if Job item
+      if (jobItem)
+      {
+        XSqlQuery prod;
+        prod.prepare("SELECT postSoItemProduction(:soitem_id, now(), :itemlocSeries, TRUE) AS result;");
+        prod.bindValue(":soitem_id", soitem->id());
+        prod.bindValue(":itemlocSeries", itemlocSeries);
+        prod.exec();
         if (prod.first())
         {
-          itemlocSeries = prod.value("result").toInt();
+          int result = prod.value("result").toInt();
 
-          if (itemlocSeries < 0)
+          if (result < 0 || result != itemlocSeries)
           {
             rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
-                                   storedProcErrorLookup("postProduction", itemlocSeries),
+            cleanup.exec();
+            ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Production"),
+                                   storedProcErrorLookup("postProduction", result),
                                    __FILE__, __LINE__);
             return;
           }
-          else if (distributeInventory::SeriesAdjust(itemlocSeries, this) == XDialog::Rejected)
-          {
-            rollback.exec();
-            QMessageBox::information( this, tr("Issue to Shipping"), tr("Issue Canceled") );
-            return;
-          }
 
-          // Need to get the inventory history id so we can auto reverse the distribution when issuing
-          prod.prepare("SELECT invhist_id "
-                       "FROM invhist "
-                       "WHERE ((invhist_series = :itemlocseries) "
-                       " AND (invhist_transtype = 'RM')); ");
-          prod.bindValue(":itemlocseries", itemlocSeries);
-          prod.exec();
-          if (prod.lastError().type() != QSqlError::NoError)
+          // If controlled item, get the inventory history from post production trans. 
+          // so we can create itemlocdist records for issue to shipping transaction and auto-distribute to them in postInvTrans.
+          if (issueSales.value("woItemControlled").toBool())
           {
-            rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
-                                 prod, __FILE__, __LINE__);
-            return;
+            prod.prepare("SELECT invhist_id "
+                         "FROM invhist "
+                         "WHERE ((invhist_series = :itemlocseries) "
+                         " AND (invhist_transtype = 'RM')); ");
+            prod.bindValue(":itemlocseries" , itemlocSeries);
+            prod.exec();
+            if (prod.first())
+              invhistid = prod.value("invhist_id").toInt();
+            else
+            {
+              rollback.exec();
+              cleanup.exec();
+              ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
+                                   tr("Inventory history not found")
+                                   .arg(windowTitle()),__FILE__,__LINE__);
+              return;
+            }
           }
-          if (prod.first())
-            invhistid = prod.value("invhist_id").toInt();
-          else
-          {
-            rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Inventory History Not Found"),
-                                           prod, __FILE__, __LINE__);
-            return;
-          }
+        }
+        else
+        {
+          rollback.exec();
+          cleanup.exec();
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Production for Job Item"),
+            prod, __FILE__,__LINE__);
+          return;
         }
       }
 
-      issueSales.prepare("SELECT issueLineBalanceToShipping('SO', :soitem_id, now(), :itemlocseries, :invhist_id) AS result;");
-      ;
+      // issueToShipping instead of issueLineBalanceToShipping because we have already calculated the balance
+      issueSales.prepare("SELECT issueToShipping('SO', :soitem_id, :qty, :itemlocseries, now(), "
+                         ":invhist_id, FALSE, TRUE) AS result;");
       issueSales.bindValue(":soitem_id", soitem->id());
-      if (invhistid)
+      issueSales.bindValue(":qty", balance);
+      issueSales.bindValue(":itemlocseries", itemlocSeries);
+      if (invhistid > 0)
         issueSales.bindValue(":invhist_id", invhistid);
-      if (itemlocSeries)
-        issueSales.bindValue(":itemlocseries", itemlocSeries);
       issueSales.exec();
       if (issueSales.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
+        cleanup.exec();
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
                              issueSales, __FILE__, __LINE__);
         return;
@@ -4439,19 +4541,13 @@ void salesOrder::sIssueLineBalance()
       if (issueSales.first())
       {
         int result = issueSales.value("result").toInt();
-        if (result < 0)
+        if (result < 0 || result != itemlocSeries)
         {
           rollback.exec();
+          cleanup.exec();
           ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
                                storedProcErrorLookup("issueLineBalanceToShipping", result),
                                __FILE__, __LINE__);
-          return;
-        }
-
-        if (distributeInventory::SeriesAdjust(issueSales.value("result").toInt(), this) == XDialog::Rejected)
-        {
-          rollback.exec();
-          QMessageBox::information( this, tr("Issue to Shipping"), tr("Transaction Canceled") );
           return;
         }
 
@@ -4460,6 +4556,7 @@ void salesOrder::sIssueLineBalance()
       else
       {
         rollback.exec();
+        cleanup.exec();
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
                              issueSales, __FILE__, __LINE__);
         return;
@@ -4964,95 +5061,95 @@ void salesOrder::sRecalculatePrice()
     {
       sql ="UPDATE coitem"
            "  SET coitem_price=roundSale(itemPrice(item_id, cohead_cust_id,"
-           "                                       <? value(\"shipto_id\") ?>, coitem_qtyord,"
+           "                                       <? value('shipto_id') ?>, coitem_qtyord,"
            "                                       coitem_qty_uom_id, coitem_price_uom_id,"
            "                                       cohead_curr_id, cohead_orderdate,"
-           "                                       <? if exists(\"UseSchedDate\") ?> coitem_scheddate"
-           "                                       <? else ?> <? value(\"asOf\") ?>"
+           "                                       <? if exists('UseSchedDate') ?> coitem_scheddate"
+           "                                       <? else ?> <? value('asOf') ?>"
            "                                       <? endif ?>"
            "                                      )),"
            "      coitem_custprice=roundSale(itemPrice(item_id, cohead_cust_id,"
-           "                                           <? value(\"shipto_id\") ?>, coitem_qtyord,"
+           "                                           <? value('shipto_id') ?>, coitem_qtyord,"
            "                                           coitem_qty_uom_id, coitem_price_uom_id,"
            "                                           cohead_curr_id, cohead_orderdate,"
-           "                                           <? if exists(\"UseSchedDate\") ?> coitem_scheddate"
-           "                                           <? else ?> <? value(\"asOf\") ?>"
+           "                                           <? if exists('UseSchedDate') ?> coitem_scheddate"
+           "                                           <? else ?> <? value('asOf') ?>"
            "                                           <? endif ?>"
            "                                          )) "
            "FROM cohead, item, itemsite "
            "WHERE ( (coitem_status NOT IN ('C','X'))"
            "  AND   (coitem_subnumber=0)"
            "  AND   (NOT coitem_firm)"
-           "<? if exists(\"ignoreDiscounts\") ?>"
+           "<? if exists('ignoreDiscounts') ?>"
            "  AND   (coitem_price = coitem_custprice)"
            "<? endif ?>"
            "  AND   (itemsite_id=coitem_itemsite_id)"
            "  AND   (itemsite_item_id=item_id)"
            "  AND   (coitem_cohead_id=cohead_id)"
-           "  AND   (cohead_id=<? value(\"cohead_id\") ?>) );";
+           "  AND   (cohead_id=<? value('cohead_id') ?>) );";
       sqlchk ="SELECT MIN(itemPrice(item_id, cohead_cust_id,"
-              "                     <? value(\"shipto_id\") ?>, coitem_qtyord,"
+              "                     <? value('shipto_id') ?>, coitem_qtyord,"
               "                     coitem_qty_uom_id, coitem_price_uom_id,"
               "                     cohead_curr_id, cohead_orderdate,"
-              "                     <? if exists(\"UseSchedDate\") ?> coitem_scheddate"
-              "                     <? else ?> <? value(\"asOf\") ?>"
+              "                     <? if exists('UseSchedDate') ?> coitem_scheddate"
+              "                     <? else ?> <? value('asOf') ?>"
               "                     <? endif ?>)) AS pricechk "
               "FROM cohead, coitem, item, itemsite "
               "WHERE ( (coitem_cohead_id=cohead_id) "
               "  AND   (coitem_status NOT IN ('C','X')) "
               "  AND   (coitem_subnumber=0) "
               "  AND   (NOT coitem_firm) "
-              "<? if exists(\"ignoreDiscounts\") ?>"
+              "<? if exists('ignoreDiscounts') ?>"
               "  AND   (coitem_price = coitem_custprice) "
               "<? endif ?>"
               "  AND   (itemsite_id=coitem_itemsite_id) "
               "  AND   (itemsite_item_id=item_id) "
               "  AND   (coitem_cohead_id=cohead_id) "
-              "  AND   (cohead_id=<? value(\"cohead_id\") ?>) );";
+              "  AND   (cohead_id=<? value('cohead_id') ?>) );";
     }
     else
     {
       sql ="UPDATE quitem"
            "  SET quitem_price=roundSale(itemPrice(item_id, quhead_cust_id,"
-           "                                       <? value(\"shipto_id\") ?>, quitem_qtyord,"
+           "                                       <? value('shipto_id') ?>, quitem_qtyord,"
            "                                       quitem_qty_uom_id, quitem_price_uom_id,"
            "                                       quhead_curr_id, quhead_quotedate,"
-           "                                       <? if exists(\"UseSchedDate\") ?> quitem_scheddate"
-           "                                       <? else ?> <? value(\"asOf\") ?>"
+           "                                       <? if exists('UseSchedDate') ?> quitem_scheddate"
+           "                                       <? else ?> <? value('asOf') ?>"
            "                                       <? endif ?>"
            "                                      )),"
            "      quitem_custprice=roundSale(itemPrice(item_id, quhead_cust_id,"
-           "                                           <? value(\"shipto_id\") ?>, quitem_qtyord,"
+           "                                           <? value('shipto_id') ?>, quitem_qtyord,"
            "                                           quitem_qty_uom_id, quitem_price_uom_id,"
            "                                           quhead_curr_id, quhead_quotedate,"
-           "                                           <? if exists(\"UseSchedDate\") ?> quitem_scheddate"
-           "                                           <? else ?> <? value(\"asOf\") ?>"
+           "                                           <? if exists('UseSchedDate') ?> quitem_scheddate"
+           "                                           <? else ?> <? value('asOf') ?>"
            "                                           <? endif ?>"
            "                                          )) "
            "FROM quhead, item, itemsite "
            "WHERE ( (itemsite_id=quitem_itemsite_id)"
-           "<? if exists(\"ignoreDiscounts\") ?>"
+           "<? if exists('ignoreDiscounts') ?>"
            "  AND   (quitem_price = quitem_custprice)"
            "<? endif ?>"
            "  AND   (itemsite_item_id=item_id)"
            "  AND   (quitem_quhead_id=quhead_id)"
-           "  AND   (quhead_id=<? value(\"cohead_id\") ?>) );";
+           "  AND   (quhead_id=<? value('cohead_id') ?>) );";
       sqlchk ="SELECT MIN(itemprice(item_id, quhead_cust_id, "
-              "                     <? value(\"shipto_id\") ?>, quitem_qtyord, "
+              "                     <? value('shipto_id') ?>, quitem_qtyord, "
               "                     quitem_qty_uom_id, quitem_price_uom_id, "
               "                     quhead_curr_id,quhead_quotedate, "
-              "                     <? if exists(\"UseSchedDate\") ?> quitem_scheddate "
-              "                     <? else ?> <? value(\"asOf\") ?>"
+              "                     <? if exists('UseSchedDate') ?> quitem_scheddate "
+              "                     <? else ?> <? value('asOf') ?>"
               "                     <? endif ?>)) AS pricechk "
               "FROM quhead, quitem, item, itemsite "
               "WHERE ( (quitem_quhead_id=quhead_id) "
               "  AND   (itemsite_id=quitem_itemsite_id) "
-              "<? if exists(\"ignoreDiscounts\") ?>"
+              "<? if exists('ignoreDiscounts') ?>"
               "  AND   (quitem_price = quitem_custprice) "
               "<? endif ?>"
               "  AND   (itemsite_item_id=item_id) "
               "  AND   (quitem_quhead_id=quhead_id) "
-              "  AND   (quhead_id=<? value(\"cohead_id\") ?>) );";
+              "  AND   (quhead_id=<? value('cohead_id') ?>) );";
     }
     params.append("cohead_id", _soheadid);
     params.append("shipto_id", _shipTo->id());
@@ -5130,7 +5227,6 @@ void salesOrder::sOrderDateChanged()
 
   sRecalculatePrice();
   _orderDateCache = _orderDate->date();
-  sFillItemList();
   omfgThis->sSalesOrdersUpdated(_soheadid);
 }
 
@@ -5164,11 +5260,11 @@ void salesOrder::sShipDateChanged()
     {
       sql = "SELECT DISTINCT valid FROM ( "
             "  SELECT customerCanPurchase(itemsite_item_id, cohead_cust_id, "
-            "                             cohead_shipto_id, <? value(\"newDate\") ?>) AS valid "
+            "                             cohead_shipto_id, <? value('newDate') ?>) AS valid "
             "  FROM cohead "
             "   JOIN coitem ON (cohead_id=coitem_cohead_id) "
             "   JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
-            "   WHERE ( (cohead_id=<? value(\"cohead_id\") ?>) "
+            "   WHERE ( (cohead_id=<? value('cohead_id') ?>) "
             "   AND (coitem_status NOT IN ('C','X')) "
             "   AND (coitem_subnumber = 0))"
             ") data "
@@ -5178,11 +5274,11 @@ void salesOrder::sShipDateChanged()
     {
       sql = "SELECT DISTINCT valid FROM ( "
             "  SELECT customerCanPurchase(itemsite_item_id, quhead_cust_id, "
-            "                             quhead_shipto_id, <? value(\"newDate\") ?>) AS valid "
+            "                             quhead_shipto_id, <? value('newDate') ?>) AS valid "
             "  FROM quhead "
             "   JOIN quitem ON (quhead_id=quitem_quhead_id) "
             "   JOIN itemsite ON (quitem_itemsite_id=itemsite_id) "
-            "   WHERE (quhead_id=<? value(\"cohead_id\") ?>) "
+            "   WHERE (quhead_id=<? value('cohead_id') ?>) "
             ") data "
             "ORDER BY valid; ";
     }
@@ -5223,15 +5319,15 @@ void salesOrder::sShipDateChanged()
     // Now execute
     if (ISORDER(_mode))
     {
-      sql = "UPDATE coitem SET coitem_scheddate = <? value(\"newDate\") ?> "
+      sql = "UPDATE coitem SET coitem_scheddate = <? value('newDate') ?> "
             "FROM cohead,item,itemsite "
             "WHERE ( (coitem_status NOT IN ('C','X'))"
             "  AND (NOT coitem_firm)"
             "  AND (itemsite_id=coitem_itemsite_id) "
             "  AND (itemsite_item_id=item_id) "
-            "  AND (cohead_id=<? value(\"cohead_id\") ?>) "
+            "  AND (cohead_id=<? value('cohead_id') ?>) "
             "  AND (coitem_cohead_id=cohead_id) "
-            "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) );";
+            "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value('newDate') ?>) ) );";
 
       // Ask about work orders if applicable
       XSqlQuery wo;
@@ -5240,11 +5336,11 @@ void salesOrder::sShipDateChanged()
                  "  JOIN coitem ON (coitem_order_id=wo_id) AND (coitem_order_type='W') "
                  "  JOIN cohead ON (cohead_id=coitem_cohead_id) "
                  "  JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
-                 "WHERE ((cohead_id=<? value(\"cohead_id\") ?>) "
+                 "WHERE ((cohead_id=<? value('cohead_id') ?>) "
                  "  AND (coitem_status NOT IN ('C','X')) "
                  "  AND (NOT coitem_firm)"
                  "  AND (wo_status<>'C')"
-                 "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) );");
+                 "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value('newDate') ?>) ) );");
       MetaSQLQuery woMql(woSql);
       wo = woMql.toQuery(params);
       if(wo.first())
@@ -5257,16 +5353,16 @@ void salesOrder::sShipDateChanged()
         {
           sql = sql +
                 "SELECT changeWoDates(wo_id, "
-                "                     wo_startdate + (<? value(\"newDate\") ?> - wo_duedate),"
-                "                     <? value(\"newDate\") ?>, true) AS result "
+                "                     wo_startdate + (<? value('newDate') ?> - wo_duedate),"
+                "                     <? value('newDate') ?>, true) AS result "
                 "FROM cohead JOIN coitem ON (coitem_cohead_id=cohead_id AND coitem_order_type='W') "
                 "            JOIN wo ON (wo_id=coitem_order_id) "
                 "            JOIN itemsite ON (itemsite_id=coitem_itemsite_id) "
                 "WHERE ( (coitem_status NOT IN ('C','X'))"
                 "  AND (NOT coitem_firm)"
                 "  AND (wo_status <> 'C') "
-                "  AND (cohead_id=<? value(\"cohead_id\") ?>)"
-                "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) )";
+                "  AND (cohead_id=<? value('cohead_id') ?>)"
+                "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value('newDate') ?>) ) )";
         }
       }
 
@@ -5277,11 +5373,11 @@ void salesOrder::sShipDateChanged()
                     "  JOIN coitem ON (coitem_order_id=poitem_id) AND (coitem_order_type='P') "
                     "  JOIN cohead ON (cohead_id=coitem_cohead_id) "
                     "  JOIN itemsite ON (coitem_itemsite_id=itemsite_id) "
-                    "WHERE ((cohead_id=<? value(\"cohead_id\") ?>) "
+                    "WHERE ((cohead_id=<? value('cohead_id') ?>) "
                     "  AND (coitem_status NOT IN ('C','X')) "
                     "  AND (NOT coitem_firm)"
                     "  AND (poitem_status<>'C')"
-                    "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) );");
+                    "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value('newDate') ?>) ) );");
       MetaSQLQuery poMql(poSql);
       po = poMql.toQuery(params);
       if(po.first())
@@ -5294,27 +5390,27 @@ void salesOrder::sShipDateChanged()
         {
           sql = sql +
           "SELECT changePoitemDueDate(poitem_id, "
-          "                     <? value(\"newDate\") ?>, true) AS result "
+          "                     <? value('newDate') ?>, true) AS result "
           "FROM cohead JOIN coitem ON (coitem_cohead_id=cohead_id AND coitem_order_type='P') "
           "            JOIN poitem ON (poitem_id=coitem_order_id) "
           "            JOIN itemsite ON (itemsite_id=coitem_itemsite_id) "
           "WHERE ( (coitem_status NOT IN ('C','X'))"
           "  AND (NOT coitem_firm)"
           "  AND (poitem_status <> 'C') "
-          "  AND (cohead_id=<? value(\"cohead_id\") ?>)"
-          "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value(\"newDate\") ?>) ) )";
+          "  AND (cohead_id=<? value('cohead_id') ?>)"
+          "  AND (customerCanPurchase(itemsite_item_id, cohead_cust_id, cohead_shipto_id, <? value('newDate') ?>) ) )";
         }
       }
     }
     else
     {
-      sql = "UPDATE quitem SET quitem_scheddate = <? value(\"newDate\") ?> "
+      sql = "UPDATE quitem SET quitem_scheddate = <? value('newDate') ?> "
             "FROM quhead,item,itemsite "
             "WHERE ( (itemsite_id=quitem_itemsite_id) "
             "  AND (itemsite_item_id=item_id) "
-            "  AND (quhead_id=<? value(\"cohead_id\") ?>) "
+            "  AND (quhead_id=<? value('cohead_id') ?>) "
             "  AND (quitem_quhead_id=quhead_id) "
-            "  AND (customerCanPurchase(itemsite_item_id, quhead_cust_id, quhead_shipto_id, <? value(\"newDate\") ?>) ) );";
+            "  AND (customerCanPurchase(itemsite_item_id, quhead_cust_id, quhead_shipto_id, <? value('newDate') ?>) ) );";
     }
 
     MetaSQLQuery mql(sql);
@@ -5335,7 +5431,6 @@ void salesOrder::sShipDateChanged()
   if (_metrics->value("soPriceEffective") == "ScheduleDate")
     sRecalculatePrice();
   _shipDateCache = _shipDate->date();
-  sFillItemList();
   omfgThis->sSalesOrdersUpdated(_soheadid);
 }
 
@@ -5569,6 +5664,39 @@ bool salesOrder::creditLimitCheck()
   }
 
   return false;
+}
+
+bool salesOrder::creditLimitCheckIssue()
+{
+  if (_metrics->boolean("CreditCheckSOOnSave"))
+  {
+    if (!creditLimitCheck())
+    {
+      if (_privileges->check("CreateSOForHoldCustomer"))
+      {
+        if(_holdType->code() != "C")
+        {
+          QMessageBox::warning(this, tr("Sales Order Credit Check"),
+                               tr("<p>The customer has exceeded their credit limit "
+                                  "and this order will be placed on Credit Hold."));
+          _holdType->setCode("C");
+        }
+      }
+      else
+      {
+        QMessageBox::critical(this, tr("Sales Order Credit Check"),
+                                    tr("<p>The customer has exceeded their credit limit "
+                                       "and you have insufficient privileges to issue stock for "
+                                       "this order. You will need to edit the order to ensure "
+                                       "it falls within the credit limit or obtain a payment first."));
+        return false;
+      }
+    }
+  }
+
+  save(true);
+
+  return true;
 }
 
 void salesOrder::sHoldTypeChanged()

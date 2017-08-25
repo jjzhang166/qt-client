@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -12,11 +12,10 @@
 
 #include "qsqldatabaseproto.h"
 
+#include <QSqlDriver>
+
 /** \ingroup scriptapi
     \brief   Script Exposure of QSqlDatabase class.
-
-    \todo implement QSqlDatabase::addDatabase(QSqlDriver*, const QString &connectionName)
-    \todo implement QSqlDatabase::registerSqlDriver(const QString &, QSqlDriverCreatorBase *)
  */
 
 QScriptValue QSqlDatabasetoScriptValue(QScriptEngine *engine, QSqlDatabase const &item)
@@ -56,7 +55,6 @@ static QScriptValue qsqldatabase_addDatabase(QScriptContext *context, QScriptEng
     result = QSqlDatabase::addDatabase(context->argument(0).toString(),
                                        context->argument(1).toString());
 
-  /*
   else if (context->argumentCount() == 1 &&
            qscriptvalue_cast<QSqlDriver*>(context->argument(0)))
     result = QSqlDatabase::addDatabase(qscriptvalue_cast<QSqlDriver*>(context->argument(0)));
@@ -65,7 +63,6 @@ static QScriptValue qsqldatabase_addDatabase(QScriptContext *context, QScriptEng
            context->argument(1).isString())
     result = QSqlDatabase::addDatabase(qscriptvalue_cast<QSqlDriver*>(context->argument(0)),
                                        context->argument(1).toString());
-   */
 
   else
     context->throwError(QScriptContext::UnknownError,
@@ -80,11 +77,12 @@ static QScriptValue qsqldatabase_cloneDatabase(QScriptContext *context, QScriptE
 {
   QSqlDatabase result;
 
-  if (context->argumentCount() == 2 &&
-      // context->argument(0) is a QSqlDatabase // TODO: how do we know this?
+  if (context->argumentCount() > 0)
+    result = qscriptvalue_cast<QSqlDatabase>(context->argument(0));
+
+  if (context->argumentCount() == 2 && result.isValid() &&
       context->argument(1).isString())
-    result = QSqlDatabase::cloneDatabase(qscriptvalue_cast<QSqlDatabase>(context->argument(0)),
-                                         context->argument(1).toString());
+    result = QSqlDatabase::cloneDatabase(result, context->argument(1).toString());
 
   else
     context->throwError(QScriptContext::UnknownError,
@@ -95,8 +93,9 @@ static QScriptValue qsqldatabase_cloneDatabase(QScriptContext *context, QScriptE
   return engine->newVariant(v);
 }
 
-static QScriptValue qsqldatabase_connectionNames(QScriptContext * /*context*/, QScriptEngine *engine)
+static QScriptValue qsqldatabase_connectionNames(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(context);
   QStringList result;
 
   result = QSqlDatabase::connectionNames();
@@ -106,8 +105,9 @@ static QScriptValue qsqldatabase_connectionNames(QScriptContext * /*context*/, Q
   return engine->newVariant(v);
 }
 
-static QScriptValue qsqldatabase_contains(QScriptContext *context, QScriptEngine * /*engine*/)
+static QScriptValue qsqldatabase_contains(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(engine);
   bool result = false;
 
   if (context->argumentCount() == 1 && context->argument(0).isString())
@@ -140,8 +140,9 @@ static QScriptValue qsqldatabase_database(QScriptContext *context, QScriptEngine
   return engine->newVariant(v);
 }
 
-static QScriptValue qsqldatabase_drivers(QScriptContext * /*context*/, QScriptEngine *engine)
+static QScriptValue qsqldatabase_drivers(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(context);
   QStringList result;
 
   result = QSqlDatabase::drivers();
@@ -151,8 +152,9 @@ static QScriptValue qsqldatabase_drivers(QScriptContext * /*context*/, QScriptEn
   return engine->newVariant(v);
 }
 
-static QScriptValue qsqldatabase_isDriverAvailable(QScriptContext *context, QScriptEngine * /*engine*/)
+static QScriptValue qsqldatabase_isDriverAvailable(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(engine);
   bool result = false;
 
   if (context->argumentCount() == 1 && context->argument(0).isString())
@@ -164,21 +166,17 @@ static QScriptValue qsqldatabase_isDriverAvailable(QScriptContext *context, QScr
   return QScriptValue(result);
 }
 
-/*
 static QScriptValue qsqldatabase_registerSqlDriver(QScriptContext *context, QScriptEngine *engine)
 {
-  if (context->argumentCount() == 2)
-    QSqlDatabase::registerSqlDriver(context->argument(0).toString(), context->argument(1).toString());
-  else
-    context->throwError(QScriptContext::UnknownError,
-                        "Could not find an appropriate QSqlDatabase::registerSqlDriver()");
-
+  Q_UNUSED(engine);
+  context->throwError(QScriptContext::UnknownError,
+                      "QSqlDatabase::registerSqlDriver() is not scriptable");
   return QScriptValue();
 }
-*/
 
-static QScriptValue qsqldatabase_removeDatabase(QScriptContext *context, QScriptEngine * /*engine*/)
+static QScriptValue qsqldatabase_removeDatabase(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(engine);
   if (context->argumentCount() == 1 && context->argument(0).isString())
     QSqlDatabase::removeDatabase(context->argument(0).toString());
   else
@@ -208,7 +206,7 @@ void setupQSqlDatabaseProto(QScriptEngine *engine)
   constructor.setProperty("database",         engine->newFunction(qsqldatabase_database),         STATICPROPFLAGS);
   constructor.setProperty("drivers",          engine->newFunction(qsqldatabase_drivers),          STATICPROPFLAGS);
   constructor.setProperty("isDriverAvailable",engine->newFunction(qsqldatabase_isDriverAvailable),STATICPROPFLAGS);
-//constructor.setProperty("registerSqlDriver",engine->newFunction(qsqldatabase_registerSqlDriver),STATICPROPFLAGS);
+  constructor.setProperty("registerSqlDriver",engine->newFunction(qsqldatabase_registerSqlDriver),STATICPROPFLAGS);
   constructor.setProperty("removeDatabase",   engine->newFunction(qsqldatabase_removeDatabase),   STATICPROPFLAGS);
 
 }

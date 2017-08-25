@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -43,19 +43,23 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   // these ids must match the pages in the stack widget
   _ccCompany->append(0, "Authorize.Net", "AN");
-  _ccCompany->append(1, "YourPay",       "YP");
-  _ccCompany->append(2, "CyberSource",   "CS");
-  _ccCompany->append(3, "External",      "EXT");
+  _ccCompany->append(1, "CyberSource",   "CS");
+  _ccCompany->append(2, "External",      "EXT");
   if (_metrics->boolean("CCEnablePaymentech"))
-    _ccCompany->append(4, "Paymentech",  "PT");
+    _ccCompany->append(3, "Paymentech",  "PT");
 
   ConfigAuthorizeDotNetProcessor *an = new ConfigAuthorizeDotNetProcessor(this);
   _configcclist.append(an);
-  _ccWidgetStack->insertWidget(_ccWidgetStack->indexOf(_yourPayStack), an);
+  _ccWidgetStack->insertWidget(0, an);
 
   ConfigCyberSourceProcessor *cs = new ConfigCyberSourceProcessor(this);
   _configcclist.append(cs);
-  _ccWidgetStack->insertWidget(_ccWidgetStack->indexOf(_externalStack), cs);
+  _ccWidgetStack->insertWidget(1, cs);
+
+  if (_ccWidgetStack->indexOf(_externalStack) != 2)
+    qWarning("ConfigureCC warning: _externalStack is not in expected position 2");
+  if (_ccWidgetStack->indexOf(_paymentTechStack) != 3)
+    qWarning("ConfigureCC warning: _paymentTechStack is not in expected position 3");
 
   _ccAccept->setChecked(_metrics->boolean("CCAccept"));
   _ccTest->setChecked(_metrics->boolean("CCTest"));
@@ -82,10 +86,10 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
       _discoverBank->setId(ccbankq.value("ccbank_bankaccnt_id").toInt());
     else if (ccbankq.value("ccbank_ccard_type").toString() == "M")
       _mastercardBank->setId(ccbankq.value("ccbank_bankaccnt_id").toInt());
-    /* TODO: wait until we support paypal?
+#ifdef PAYPALIsSupported
     else if (ccbankq.value("ccbank_ccard_type").toString() == "P")
       _paypalBank->setId(ccbankq.value("ccbank_bankaccnt_id").toInt());
-    */
+#endif
     else if (ccbankq.value("ccbank_ccard_type").toString() == "V")
       _visaBank->setId(ccbankq.value("ccbank_bankaccnt_id").toInt());
     else if (ccbankq.value("ccbank_ccard_type").toString() == "O")
@@ -93,12 +97,6 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
   }
   ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving CC Information"),
                        ccbankq, __FILE__, __LINE__);
-
-  _ccYPWinPathPEM->setText(_metrics->value("CCYPWinPathPEM"));
-  _ccYPLinPathPEM->setText(_metrics->value("CCYPLinPathPEM"));
-  _ccYPMacPathPEM->setText(_metrics->value("CCYPMacPathPEM"));
-  _ccYPLinkShield->setChecked(_metrics->boolean("CCYPLinkShield"));
-  _ccYPLinkShieldMax->setValue(_metrics->value("CCYPLinkShieldMax").toInt());
 
   _confirmPreauth->setChecked(_metrics->boolean("CCConfirmPreauth"));
   _confirmCharge->setChecked(_metrics->boolean("CCConfirmCharge"));
@@ -143,21 +141,12 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _avsZIPNotMatch->setChecked(str.contains("N"));
   _avsZIPNotAvail->setChecked(str.contains("X"));
 
-  str = _metrics->value("CCTestResult");
-  if (str == "F")
-    _testsAllFail->setChecked(true);
-  else if (str == "S")
-    _testsSomeFail->setChecked(true);
-  else // if (str == "P")
-    _testsAllPass->setChecked(true);
-
   if (0 != _metricsenc)
   {
     _ccLogin->setText(_metricsenc->value("CCLogin"));
     _ccPassword->setText(_metricsenc->value("CCPassword"));
     _ccProxyLogin->setText(_metricsenc->value("CCProxyLogin"));
     _ccProxyPassword->setText(_metricsenc->value("CCProxyPassword"));
-    _ccYPStoreNum->setText(_metricsenc->value("CCYPStoreNum"));
     _ccPTDivisionNumber->setText(_metricsenc->value("CCPTDivisionNumber"));
   }
   else
@@ -166,7 +155,6 @@ configureCC::configureCC(QWidget* parent, const char* name, bool /*modal*/, Qt::
     _ccPassword->setEnabled(false);
     _ccProxyLogin->setEnabled(false);
     _ccProxyPassword->setEnabled(false);
-    _ccYPStoreNum->setEnabled(false);
     _ccPTDivisionNumber->setEnabled(false);
   }
 
@@ -224,7 +212,9 @@ bool configureCC::sSave()
               << QPair<QString, XComboBox*>("M", _mastercardBank)
               << QPair<QString, XComboBox*>("V", _visaBank)
               << QPair<QString, XComboBox*>("O", _otherBank)
-//            << QPair<QString, XComboBox*>("P", _paypalBank)
+#ifdef PAYPALIsSupported
+            << QPair<QString, XComboBox*>("P", _paypalBank)
+#endif
               ;
 
   QPair<QString, XComboBox*> bank;
@@ -241,12 +231,6 @@ bool configureCC::sSave()
       return false;
     }
   }
-
-  _metrics->set("CCYPWinPathPEM",    _ccYPWinPathPEM->text());
-  _metrics->set("CCYPLinPathPEM",    _ccYPLinPathPEM->text());
-  _metrics->set("CCYPMacPathPEM",    _ccYPMacPathPEM->text());
-  _metrics->set("CCYPLinkShield",    _ccYPLinkShield->isChecked());
-  _metrics->set("CCYPLinkShieldMax", _ccYPLinkShieldMax->text());
 
   _metrics->set("CCConfirmPreauth",       _confirmPreauth->isChecked());
   _metrics->set("CCConfirmCharge",        _confirmCharge->isChecked());
@@ -300,13 +284,6 @@ bool configureCC::sSave()
   else if (_avsZIPNotAvail->isChecked())
     _metrics->set("CCAvsZIP", QString("X"));
 
-  if(_testsAllFail->isChecked())
-    _metrics->set("CCTestResult", QString("F"));
-  else if(_testsSomeFail->isChecked())
-    _metrics->set("CCTestResult", QString("S"));
-  else if(_testsAllPass->isChecked())
-    _metrics->set("CCTestResult", QString("P"));
-
   _metrics->load();
 
   if (0 != _metricsenc)
@@ -315,7 +292,6 @@ bool configureCC::sSave()
     _metricsenc->set("CCPassword",      _ccPassword->text());
     _metricsenc->set("CCProxyLogin",    _ccProxyLogin->text());
     _metricsenc->set("CCProxyPassword", _ccProxyPassword->text());
-    _metricsenc->set("CCYPStoreNum",    _ccYPStoreNum->text());
     _metricsenc->set("CCPTDivisionNumber", _ccPTDivisionNumber->text());
 
     _metricsenc->load();

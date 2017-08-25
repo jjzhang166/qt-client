@@ -633,7 +633,7 @@ to be bound by its terms.</comment>
             </property>
             <property name="maximumSize">
              <size>
-              <width>80</width>
+              <width>100</width>
               <height>22</height>
              </size>
             </property>
@@ -672,7 +672,7 @@ to be bound by its terms.</comment>
             </property>
             <property name="maximumSize">
              <size>
-              <width>80</width>
+              <width>100</width>
               <height>22</height>
              </size>
             </property>

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -79,11 +79,7 @@ projects::projects(QWidget* parent, const char*, Qt::WindowFlags fl)
 
   connect(omfgThis, SIGNAL(projectsUpdated(int)), this, SLOT(sFillList()));
   connect(_showComplete, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-//  connect(_salesOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-//  connect(_workOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-//  connect(_purchaseOrders, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-//  connect(_incidents, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-//  connect(_showHierarchy, SIGNAL(toggled(bool)), this, SLOT(sBuildList()));
+
   _ordersGroup->hide();
 
   QString qryType = QString( "SELECT prjtype_id, prjtype_descr FROM prjtype " );
@@ -106,20 +102,19 @@ projects::projects(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Sales Order"), "cohead_id", ParameterWidget::SalesOrder);
   parameterWidget()->append(tr("Work Order"), "wo_id", ParameterWidget::WorkOrder);
   parameterWidget()->append(tr("Purchase Order"), "pohead_id", ParameterWidget::PurchaseOrder);
-  parameterWidget()->append(tr("Start Start Date"), "startStartDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Start End Date"), "startEndDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Due Start Date"), "dueStartDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Due End Date"), "dueEndDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Assigned Start Date"), "assignedStartDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Assigned End Date"), "assignedEndDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Completed Start Date"), "completedStartDate", ParameterWidget::Date, QDate::currentDate());
-  parameterWidget()->append(tr("Completed End Date"), "completedEndDate", ParameterWidget::Date, QDate::currentDate());
+  parameterWidget()->append(tr("Start Start Date"), "startStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Start End Date"), "startEndDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Due Start Date"), "dueStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Due End Date"), "dueEndDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Assigned Start Date"), "assignedStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Assigned End Date"), "assignedEndDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Completed Start Date"), "completedStartDate", ParameterWidget::Date);
+  parameterWidget()->append(tr("Completed End Date"), "completedEndDate", ParameterWidget::Date);
 
   setupCharacteristics("PROJ");
           
   _statuses << "None" << "C" << "P" << "O";
 
-//  sBuildList();
 }
 
 void projects::sBuildList()

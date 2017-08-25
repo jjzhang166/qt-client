@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,6 +21,7 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "storedProcErrorLookup.h"
+#include "userPreferences.h"
 
 user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   : XDialog(parent, name, fl)
@@ -69,6 +70,10 @@ user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
   _grantedSite->addColumn("Granted Sites",      -1, Qt::AlignLeft);
 
   _locale->setType(XComboBox::Locales);
+  XSqlQuery locq;
+  locq.exec("SELECT locale_id FROM locale WHERE locale_code='Default'");
+  if (locq.first())
+    _locale->setId(locq.value("locale_id").toInt());
 
   XSqlQuery modq;
   modq.exec( "SELECT DISTINCT priv_module FROM priv ORDER BY priv_module;" );
@@ -84,6 +89,7 @@ user::user(QWidget* parent, const char * name, Qt::WindowFlags fl)
 
   if (!_metrics->boolean("MultiWhs"))
     _tab->removeTab(_tab->indexOf(_siteTab));
+
 }
 
 user::~user()
@@ -110,7 +116,28 @@ enum SetResponse user::set(const ParameterList &pParams)
 
   param = pParams.value("username", &valid);
   if (valid)
+  {
     _cUsername = param.toString();
+    _pref = new Preferences(_cUsername);
+
+    _inventoryMenu->setChecked(_pref->boolean("ShowIMMenu"));
+    _productsMenu->setChecked(_pref->boolean("ShowPDMenu"));
+    _scheduleMenu->setChecked(_pref->boolean("ShowMSMenu"));
+    _manufactureMenu->setChecked(_pref->boolean("ShowWOMenu"));
+    _crmMenu2->setChecked(_pref->boolean("ShowCRMMenu"));
+    _purchaseMenu->setChecked(_pref->boolean("ShowPOMenu"));
+    _salesMenu->setChecked(_pref->boolean("ShowSOMenu"));
+    _accountingMenu->setChecked(_pref->boolean("ShowGLMenu"));
+
+    _inventoryToolbar->setChecked(_pref->boolean("ShowIMToolbar"));
+    _productsToolbar->setChecked(_pref->boolean("ShowPDToolbar"));
+    _scheduleToolbar->setChecked(_pref->boolean("ShowMSToolbar"));
+    _manufactureToolbar->setChecked(_pref->boolean("ShowWOToolbar"));
+    _crmToolbar2->setChecked(_pref->boolean("ShowCRMToolbar"));
+    _purchaseToolbar->setChecked(_pref->boolean("ShowPOToolbar"));
+    _salesToolbar->setChecked(_pref->boolean("ShowSOToolbar"));
+    _accountingToolbar->setChecked(_pref->boolean("ShowGLToolbar"));
+  }
 
   if (! _cUsername.isEmpty() || _crmacctid > 0)
     if (! sPopulate())
@@ -336,7 +363,23 @@ bool user::save()
             "       setUserPreference(:username, 'initials', :initials),"
             "       setUserPreference(:username, 'locale_id', text(:locale_id)),"
             "       setUserPreference(:username, 'agent', :agent),"
-            "       setUserPreference(:username, 'active', :active);");
+            "       setUserPreference(:username, 'active', :active),"
+            "       setUserPreference(:username, 'ShowIMMenu', :ShowIMMenu),"
+            "       setUserPreference(:username, 'ShowPDMenu', :ShowPDMenu),"
+            "       setUserPreference(:username, 'ShowMSMenu', :ShowMSMenu),"
+            "       setUserPreference(:username, 'ShowWOMenu', :ShowWOMenu),"
+            "       setUserPreference(:username, 'ShowCRMMenu', :ShowCRMMenu),"
+            "       setUserPreference(:username, 'ShowPOMenu', :ShowPOMenu),"
+            "       setUserPreference(:username, 'ShowSOMenu', :ShowSOMenu),"
+            "       setUserPreference(:username, 'ShowGLMenu', :ShowGLMenu),"
+            "       setUserPreference(:username, 'ShowIMToolbar', :ShowIMToolbar),"
+            "       setUserPreference(:username, 'ShowPDToolbar', :ShowPDToolbar),"
+            "       setUserPreference(:username, 'ShowMSToolbar', :ShowMSToolbar),"
+            "       setUserPreference(:username, 'ShowWOToolbar', :ShowWOToolbar),"
+            "       setUserPreference(:username, 'ShowCRMToolbar', :ShowCRMToolbar),"
+            "       setUserPreference(:username, 'ShowPOToolbar', :ShowPOToolbar),"
+            "       setUserPreference(:username, 'ShowSOToolbar', :ShowSOToolbar),"
+            "       setUserPreference(:username, 'ShowGLToolbar', :ShowGLToolbar)");
   usrq.bindValue(":username", username);
   usrq.bindValue(":export", (_exportContents->isChecked() ? "t" : "f"));
   usrq.bindValue(":enhanced", (_enhancedAuth->isChecked() ? "t" : "f"));
@@ -347,6 +390,25 @@ bool user::save()
   usrq.bindValue(":locale_id", _locale->id());
   usrq.bindValue(":agent", (_agent->isChecked() ? "t" : "f"));
   usrq.bindValue(":active", (_active->isChecked() ? "t" : "f"));
+
+  usrq.bindValue(":ShowIMMenu",  (_inventoryMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowPDMenu",  (_productsMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowMSMenu",  (_scheduleMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowWOMenu",  (_manufactureMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowCRMMenu", (_crmMenu2->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowPOMenu",  (_purchaseMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowSOMenu",  (_salesMenu->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowGLMenu",  (_accountingMenu->isChecked() ? "t" : "f"));
+ 
+  usrq.bindValue(":ShowIMToolbar",  (_inventoryToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowPDToolbar",  (_productsToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowMSToolbar",  (_scheduleToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowWOToolbar",  (_manufactureToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowCRMToolbar", (_crmToolbar2->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowPOToolbar",  (_purchaseToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowSOToolbar",  (_salesToolbar->isChecked() ? "t" : "f"));
+  usrq.bindValue(":ShowGLToolbar",  (_accountingToolbar->isChecked() ? "t" : "f"));
+
   usrq.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Saving User Account"),
                            usrq, __FILE__, __LINE__))
@@ -552,6 +614,57 @@ void user::sAddGroup()
                                 grpq, __FILE__, __LINE__))
     return;
 
+  // Get default role menus and add to user menu preferences
+  grpq.prepare("SELECT grp_showimmenu, grp_showpdmenu, grp_showmsmenu, "
+               "grp_showwomenu, grp_showcrmmenu, grp_showpomenu, "
+               "grp_showsomenu, grp_showglmenu, "
+               "grp_showimtoolbar, grp_showpdtoolbar, grp_showmstoolbar, "
+               "grp_showwotoolbar, grp_showcrmtoolbar, grp_showpotoolbar, "
+               "grp_showsotoolbar, grp_showgltoolbar "
+               "FROM grp WHERE grp_id=:grp_id;");
+  grpq.bindValue(":grp_id", _availableGroup->id());
+  grpq.exec();
+  if (grpq.first())
+  {
+    // Only switch menus on - don't switch off
+    if (grpq.value("grp_showimmenu").toBool())
+      _inventoryMenu->setChecked(true);
+    if (grpq.value("grp_showpdmenu").toBool())
+      _productsMenu->setChecked(true);
+    if (grpq.value("grp_showmsmenu").toBool())
+      _scheduleMenu->setChecked(true);
+    if (grpq.value("grp_showwomenu").toBool())
+      _manufactureMenu->setChecked(true);
+    if (grpq.value("grp_showcrmmenu").toBool())
+      _crmMenu2->setChecked(true);
+    if (grpq.value("grp_showpomenu").toBool())
+      _purchaseMenu->setChecked(true);
+    if (grpq.value("grp_showsomenu").toBool())
+      _salesMenu->setChecked(true);
+    if (grpq.value("grp_showglmenu").toBool())
+      _accountingMenu->setChecked(true);
+
+    if (grpq.value("grp_showimtoolbar").toBool()) 
+      _inventoryToolbar->setChecked(true);
+    if (grpq.value("grp_showpdtoolbar").toBool())
+      _productsToolbar->setChecked(true);
+    if (grpq.value("grp_showmstoolbar").toBool())
+      _scheduleToolbar->setChecked(true);
+    if (grpq.value("grp_showwotoolbar").toBool())
+      _manufactureToolbar->setChecked(true);
+    if (grpq.value("grp_showcrmtoolbar").toBool())
+      _crmToolbar2->setChecked(true);
+    if (grpq.value("grp_showpotoolbar").toBool())
+      _purchaseToolbar->setChecked(true);
+    if (grpq.value("grp_showsotoolbar").toBool())
+      _salesToolbar->setChecked(true);
+    if (grpq.value("grp_showgltoolbar").toBool())
+      _accountingToolbar->setChecked(true);
+  }
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Updating Group Default Menus"),
+                                grpq, __FILE__, __LINE__))
+    return;
+    
   sModuleSelected(_module->currentText());
 }
 

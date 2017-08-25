@@ -152,11 +152,12 @@ void scrapWoMaterialFromWIP::sScrap()
     return;
   }
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  int itemlocseries = 0;
+  int itemlocSeries = 0;
   int invhistid = 0;
+
+  // Stage cleanup query
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
 
   if (_scrapComponent->isChecked())
   {
@@ -167,7 +168,26 @@ void scrapWoMaterialFromWIP::sScrap()
   }
   else if (_scrapTopLevel->isChecked())
   {
+    XSqlQuery itemsite;
+    itemsite.prepare("SELECT wo_itemsite_id, wo_prj_id, itemsite_costmethod "
+                     "FROM wo "
+                     "WHERE wo_id=:woId;");
+    itemsite.bindValue(":woId", _wo->id());
+    itemsite.exec();
+    if (!itemsite.first())
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error checking balance"),
+        itemsite.lastError().databaseText(), __FILE__, __LINE__);
+      return;
+    }
 
+    if (itemsite.value("itemsite_costmethod").toString() == tr("J"))
+    {
+      QMessageBox::information( this, tr("Scrap Work Order Material"), tr("This item is Job costed and can not be scrapped.") );
+      return;
+    }
+
+    // If Post Production, invhist_id will be present, which means all distribution will be handled in the database.
     if (!_prodPosted->isChecked())
     {
       // Post production first
@@ -186,14 +206,14 @@ void scrapWoMaterialFromWIP::sScrap()
       newdlg._immediateTransfer->setForgetful(true);
       newdlg._immediateTransfer->setChecked(false);
       newdlg._immediateTransfer->setEnabled(false);
-      itemlocseries = newdlg.exec();
-      if (itemlocseries)
+      itemlocSeries = newdlg.exec();
+      if (itemlocSeries)
       {
         XSqlQuery invhist;
         invhist.prepare("SELECT invhist_id FROM invhist "
-                        "WHERE ((invhist_series=:itemlocseries) "
+                        "WHERE ((invhist_series=:itemlocSeries) "
                         " AND (invhist_transtype='RM')); ");
-        invhist.bindValue(":itemlocseries", itemlocseries);
+        invhist.bindValue(":itemlocSeries", itemlocSeries);
         invhist.exec();
         if (invhist.first())
           invhistid = invhist.value("invhist_id").toInt();
@@ -205,67 +225,62 @@ void scrapWoMaterialFromWIP::sScrap()
         }
       }
     }
+    else
+    {
+      // Generate the series and itemlocdist record (if controlled)
+      itemlocSeries = distributeInventory::SeriesCreate(itemsite.value("wo_itemsite_id").toInt(),
+        _topLevelQty->toDouble() * -1, "SI", "SI", _wo->id());
+      if (itemlocSeries <= 0)
+        return;
+      cleanup.bindValue(":itemlocSeries", itemlocSeries);
 
-    scrapScrap.prepare("SELECT invScrap(itemsite_id, :qty, formatWoNumber(wo_id), "
-              " :descrip, :date, :invhist_id, wo_prj_id) AS result"
-              " FROM wo, itemsite"
-              "  WHERE ((wo_id=:wo_id)"
-              " AND  (itemsite_id=wo_itemsite_id));");
+      // Distribute inventory
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information( this, tr("Scrap Work Order Material"), tr("Transaction Canceled") );
+        return;
+      }
+    }
+
+    scrapScrap.prepare("SELECT invScrap(:itemsite_id, :qty, formatWoNumber(:wo_id), "
+                       " :descrip, :date, :invhist_id, :wo_prj_id, :itemlocSeries, TRUE) AS result;");
+    scrapScrap.bindValue(":itemsite_id", itemsite.value("wo_itemsite_id").toInt());
     scrapScrap.bindValue(":wo_id", _wo->id());
     scrapScrap.bindValue(":qty",   _topLevelQty->toDouble());
     scrapScrap.bindValue(":descrip", tr("Top Level Item"));
     scrapScrap.bindValue(":date",  _transDate->date());
+    scrapScrap.bindValue(":wo_prj_id", itemsite.value("wo_prj_id").toInt());
+    scrapScrap.bindValue(":itemlocSeries", itemlocSeries);
     if (invhistid)
       scrapScrap.bindValue(":invhist_id", invhistid);
   }
 
-  XSqlQuery trans;
-  trans.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  // Execute either invScrap or scrapWoMaterial depending on business logic above
   scrapScrap.exec();
   if (scrapScrap.first())
   {
-    if (scrapScrap.value("result").toInt() < 0)
+    if (invhistid)
     {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Item Information"),
-                           scrapScrap, __FILE__, __LINE__);
-       return;
+      XSqlQuery post;
+      post.prepare("SELECT postitemlocseries(:itemlocSeries) AS result;");
+      post.bindValue(":itemlocSeries", itemlocSeries);
+      post.exec();
     }
+
+    if (_captive)
+      accept();
     else
     {
-      // scrapWoMaterial() returns womatlid, not itemlocSeries
-      if (_scrapTopLevel->isChecked() && !invhistid)
-      {
-        if (distributeInventory::SeriesAdjust(scrapScrap.value("result").toInt(), this) == XDialog::Rejected)
-        {
-          rollback.exec();
-          QMessageBox::information( this, tr("Scrap Work Order Material"), tr("Transaction Canceled") );
-          return;
-        }
-      }
-      else if (invhistid)
-      {
-        XSqlQuery post;
-        post.prepare("SELECT postitemlocseries(:itemlocseries) AS result;");
-        post.bindValue(":itemlocseries", itemlocseries);
-        post.exec();
-      }
-
-      scrapScrap.exec("COMMIT;");
-
-      if (_captive)
-        accept();
-      else
-      {
-        _qty->clear();
-        _wo->setId(_wo->id());
-        _womatl->setFocus();
-      }
+      _qty->clear();
+      _wo->setId(_wo->id());
+      _womatl->setFocus();
     }
   }
   else
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Scrapping Material"),
                          scrapScrap, __FILE__, __LINE__);
     return;
@@ -285,7 +300,6 @@ void scrapWoMaterialFromWIP::sHandleButtons()
   
   _scrap->setEnabled(_wo->isValid() && (
                      (_scrapTopLevel->isChecked() && _topLevelQty->toDouble()) ||
-		     (_scrapComponent->isChecked() && _qty->toDouble() &&
-		      _womatl->isValid()) ));
+         (_scrapComponent->isChecked() && _qty->toDouble() &&
+          _womatl->isValid()) ));
 }
-

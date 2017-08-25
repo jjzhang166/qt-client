@@ -57,6 +57,7 @@ private:
     QString _crmowner;
     bool _inTransaction;
     int  _mode;
+    Preferences * _pref;
 
 };
 

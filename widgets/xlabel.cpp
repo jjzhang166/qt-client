@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QValidator>
+#include <QtScript>
 
 #include "format.h"
 #include <quuencode.h>
@@ -158,4 +159,34 @@ void XLabel::setTextColor(const QString &pColorName)
   QPalette p = palette();
   p.setColor(foregroundRole(), c);
   setPalette(p);
+}
+
+// script exposure /////////////////////////////////////////////////////////////
+
+QScriptValue constructXLabel(QScriptContext *context, QScriptEngine *engine)
+{
+#if QT_VERSION > 0x050000
+  XLabel *obj = 0;
+  if (context->argumentCount() == 1)
+    obj = new XLabel(qobject_cast<QWidget*>(context->argument(0).toQObject()));
+  else if (context->argumentCount() >= 2)
+    obj = new XLabel(qobject_cast<QWidget*>(context->argument(0).toQObject()),
+                     context->argument(1).toString().toLatin1().data());
+
+  return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
+}
+
+void setupXLabel(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("XLabel").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructXLabel);
+    QScriptValue meta = engine->newQMetaObject(&XLabel::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("XLabel", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

@@ -1,19 +1,25 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
+#include "glcluster.h"
+
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QMessageBox>
+#include <QSqlQueryModel>
+#include <QtScript>
 
 #include <metasql.h>
 
-#include "glcluster.h"
+#include "xcheckbox.h"
+#include "xtreewidget.h"
 
 static QString _listAndSearchQueryString(
   "SELECT accnt_id, accnt_number, accnt_descrip, accnt_comments, accnt_profit,"
@@ -640,3 +646,16 @@ void accountSearch::sFillList()
   _listTab->populate(mql.toQuery(params), _accntid);
 }
 
+// script api //////////////////////////////////////////////////////////////////
+
+void setupGLCluster(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("GLCluster").isObject())
+  {
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&GLCluster::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("GLCluster", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
+}

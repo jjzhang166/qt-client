@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,6 +16,8 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
+#include "classCodeTax.h"
+
 
 classCode::classCode(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   : XDialog(parent, name, modal, fl)
@@ -24,9 +26,16 @@ classCode::classCode(QWidget* parent, const char* name, bool modal, Qt::WindowFl
 
 
   // signals and slots connections
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSaveAndDone()));
   connect(_classCode, SIGNAL(editingFinished()), this, SLOT(sCheck()));
   connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_newTax, SIGNAL(clicked()), this, SLOT(sNewTax()));
+  connect(_editTax, SIGNAL(clicked()), this, SLOT(sEditTax()));
+  connect(_deleteTax, SIGNAL(clicked()), this, SLOT(sDeleteTax()));
+
+  _classcodetax->addColumn(tr("Tax Type"), _itemColumn, Qt::AlignLeft, true, "taxtype_name");
+  _classcodetax->addColumn(tr("Tax Zone"),          -1, Qt::AlignLeft, true, "taxzone");
+
 }
 
 classCode::~classCode()
@@ -77,7 +86,13 @@ enum SetResponse classCode::set(const ParameterList &pParams)
   return NoError;
 }
 
-void classCode::sSave()
+void classCode::sSaveAndDone()
+{
+  if (sSave())
+    done(_classcodeid);
+}
+
+bool classCode::sSave()
 {
   XSqlQuery classSave;
 
@@ -88,7 +103,7 @@ void classCode::sSave()
      ;
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Class Code"), errors))
-    return;
+    return false;
 
   if (_mode == cEdit)
     classSave.prepare( "UPDATE classcode "
@@ -105,7 +120,7 @@ void classCode::sSave()
                         .arg(__FILE__)
                         .arg(__LINE__),
                          classSave, __FILE__, __LINE__);
-      return;
+      return false;
     }
  
     classSave.prepare( "INSERT INTO classcode "
@@ -118,8 +133,15 @@ void classCode::sSave()
   classSave.bindValue(":classcode_code", _classCode->text());
   classSave.bindValue(":classcode_descrip", _description->text());
   classSave.exec();
+  if(ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Class Code at %1::%2.")
+                        .arg(__FILE__)
+                        .arg(__LINE__),
+                         classSave, __FILE__, __LINE__))
+      return false;
 
-  done(_classcodeid);
+  _mode = cEdit;
+  return true;
+
 }
 
 void classCode::sCheck()
@@ -157,5 +179,60 @@ void classCode::populate()
     _classCode->setText(classpopulate.value("classcode_code"));
     _description->setText(classpopulate.value("classcode_descrip"));
   }
+
+  sFillListTax();
 }
 
+void classCode::sFillListTax()
+{ 
+  XSqlQuery fillListItemtax;
+  fillListItemtax.prepare("SELECT classcodetax_id, taxtype_name,"
+            "       COALESCE(taxzone_code,:any) AS taxzone"
+            "  FROM classcodetax JOIN taxtype ON (classcodetax_taxtype_id=taxtype_id)"
+            "       LEFT OUTER JOIN taxzone ON (classcodetax_taxzone_id=taxzone_id)"
+            " WHERE (classcodetax_classcode_id=:classcode_id)"
+            " ORDER BY taxtype_name;");
+  fillListItemtax.bindValue(":classcode_id", _classcodeid);
+  fillListItemtax.bindValue(":any", tr("Any"));
+  fillListItemtax.exec();
+  _classcodetax->populate(fillListItemtax);
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Information"),
+                                fillListItemtax, __FILE__, __LINE__))
+    return;
+}
+
+void classCode::sNewTax()
+{
+  if (!sSave())
+    return;
+
+  ParameterList params;
+  params.append("mode", "new");
+  params.append("classcode_id", _classcodeid);
+
+  classCodeTax newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
+  sFillListTax();
+}
+
+void classCode::sEditTax()
+{
+  ParameterList params;
+  params.append("mode", "edit");
+  params.append("classcodetax_id", _classcodetax->id());
+
+  classCodeTax newdlg(this, "", true);
+  newdlg.set(params);
+  newdlg.exec();
+  sFillListTax();
+}
+void classCode::sDeleteTax()
+{
+  XSqlQuery deleteItemtax;
+  deleteItemtax.prepare("DELETE FROM classcodetax"
+            " WHERE (classcodetax_id=:classcodetax_id);");
+  deleteItemtax.bindValue(":classcodetax_id", _classcodetax->id());
+  deleteItemtax.exec();
+  sFillListTax();
+}

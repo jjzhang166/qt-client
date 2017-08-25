@@ -426,13 +426,26 @@ to be bound by its terms.</comment>
           </property>
          </widget>
         </item>
+        <item row="6" column="0">
+          <widget class="XLabel" name="_projectLit">
+            <property name="focusPolicy">
+              <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="text">
+              <string>Project #:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignTop</set>
+            </property>
+          </widget>
+        </item>
         <item row="6" column="1">
           <widget class="ProjectCluster" name="_project">
             <property name="focusPolicy">
               <enum>Qt::StrongFocus</enum>
             </property>
             <property name="label">
-              <string>Project #:</string>
+              <string></string>
             </property>
           </widget>
         </item>
@@ -965,6 +978,13 @@ to be bound by its terms.</comment>
        <item>
         <layout class="QGridLayout">
          <item row="0" column="0">
+          <widget class="XCheckBox" name="_postReceipt">
+           <property name="text">
+            <string>Post on Save</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
           <widget class="QPushButton" name="_save">
            <property name="enabled">
             <bool>false</bool>
@@ -974,7 +994,7 @@ to be bound by its terms.</comment>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="2">
           <widget class="QPushButton" name="_close">
            <property name="text">
             <string>&amp;Cancel</string>

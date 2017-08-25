@@ -1,7 +1,7 @@
   /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -216,6 +216,8 @@ enum SetResponse project::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
+      connect(_completed,  SIGNAL(newDate(QDate)), this, SLOT(sCompletedChanged()));
+      connect(_pctCompl,  SIGNAL(valueChanged(int)), this, SLOT(sCompletedChanged()));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(itemSelected(int)), _editTask, SLOT(animateClick()));
@@ -242,6 +244,8 @@ enum SetResponse project::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
+      connect(_completed,  SIGNAL(newDate(QDate)), this, SLOT(sCompletedChanged()));
+      connect(_pctCompl,  SIGNAL(valueChanged(int)), this, SLOT(sCompletedChanged()));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(valid(bool)), this, SLOT(sHandleButtons(bool)));
       connect(_prjtask, SIGNAL(itemSelected(int)), _editTask, SLOT(animateClick()));
@@ -272,7 +276,7 @@ enum SetResponse project::set(const ParameterList &pParams)
     {
       _mode = cView;
       
-      _owner->setEnabled(false);
+      _infoGroup->setEnabled(false);
       _number->setEnabled(false);
       _status->setEnabled(false);
       _name->setEnabled(false);
@@ -280,18 +284,13 @@ enum SetResponse project::set(const ParameterList &pParams)
       _so->setEnabled(false);
       _wo->setEnabled(false);
       _po->setEnabled(false);
-      _assignedTo->setEnabled(false);
-      _crmacct->setEnabled(false);
       _cntct->setEnabled(false);
       _newTask->setEnabled(false);
       connect(_prjtask, SIGNAL(itemSelected(int)), _viewTask, SLOT(animateClick()));
       _comments->setReadOnly(true);
       _charass->setReadOnly(true);
       _documents->setReadOnly(true);
-      _started->setEnabled(false);
-      _assigned->setEnabled(false);
-      _due->setEnabled(false);
-      _completed->setEnabled(false);
+      _scheduleGroup->setEnabled(false);
       _recurring->setEnabled(false);
       _projectType->setEnabled(false);
       _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Save));
@@ -469,6 +468,7 @@ void project::populate()
     _wo->setChecked(projectpopulate.value("prj_wo").toBool());
     _po->setChecked(projectpopulate.value("prj_po").toBool());
     _assignedTo->setUsername(projectpopulate.value("prj_username").toString());
+    _dept->setId(projectpopulate.value("prj_dept_id").toInt());
     _cntct->setId(projectpopulate.value("prj_cntct_id").toInt());
     _crmacct->setId(projectpopulate.value("prj_crmacct_id").toInt());
     _started->setDate(projectpopulate.value("prj_start_date").toDate());
@@ -476,6 +476,8 @@ void project::populate()
     _due->setDate(projectpopulate.value("prj_due_date").toDate());
     _completed->setDate(projectpopulate.value("prj_completed_date").toDate());
     _projectType->setId(projectpopulate.value("prj_prjtype_id").toInt());
+    _priority->setId(projectpopulate.value("prj_priority_id").toInt());
+    _pctCompl->setValue(projectpopulate.value("prj_pct_complete").toInt());
     for (int counter = 0; counter < _status->count(); counter++)
     {
       if (QString(projectpopulate.value("prj_status").toString()[0]) == _projectStatuses[counter])
@@ -539,6 +541,14 @@ void project::sStatusChanged(const int pStatus)
   }
 }
 
+void project::sCompletedChanged()
+{
+  if (_completed->isValid())
+    _pctCompl->setValue(100);
+  if (_pctCompl->value() == 100)
+    _completed->setDate(omfgThis->dbDate());
+}
+
 void project::sCRMAcctChanged(const int newid)
 {
   _cntct->setSearchAcct(newid);
@@ -585,13 +595,15 @@ bool project::sSave(bool partial)
                "  prj_so, prj_wo, prj_po, prj_status, prj_owner_username, "
                "  prj_start_date, prj_due_date, prj_assigned_date,"
                "  prj_completed_date, prj_username, prj_recurring_prj_id,"
-               "  prj_crmacct_id, prj_cntct_id, prj_prjtype_id) "
+               "  prj_crmacct_id, prj_cntct_id, prj_prjtype_id, "
+               "  prj_dept_id, prj_priority_id, prj_pct_complete ) "
                "VALUES "
                "( :prj_id, :prj_number, :prj_name, :prj_descrip,"
                "  :prj_so, :prj_wo, :prj_po, :prj_status, :prj_owner_username,"
                "  :prj_start_date, :prj_due_date, :prj_assigned_date,"
                "  :prj_completed_date, :username, :prj_recurring_prj_id,"
-               "  :prj_crmacct_id, :prj_cntct_id, :prj_prjtype_id);" );
+               "  :prj_crmacct_id, :prj_cntct_id, :prj_prjtype_id, "
+               "  :prj_dept_id, :prj_priority_id, :prj_pct_complete );" );
   else
     projectSave.prepare( "UPDATE prj "
                "SET prj_number=:prj_number, prj_name=:prj_name, prj_descrip=:prj_descrip,"
@@ -603,7 +615,10 @@ bool project::sSave(bool partial)
                "    prj_recurring_prj_id=:prj_recurring_prj_id,"
                "    prj_crmacct_id=:prj_crmacct_id,"
                "    prj_cntct_id=:prj_cntct_id, "
-               "    prj_prjtype_id=:prj_prjtype_id "
+               "    prj_prjtype_id=:prj_prjtype_id, "
+               "    prj_dept_id=:prj_dept_id, "
+               "    prj_priority_id=:prj_priority_id, "
+               "    prj_pct_complete=:prj_pct_complete "
                "WHERE (prj_id=:prj_id);" );
 
   projectSave.bindValue(":prj_id", _prjid);
@@ -611,6 +626,9 @@ bool project::sSave(bool partial)
   projectSave.bindValue(":prj_name", _name->text());
   projectSave.bindValue(":prj_descrip", _descrip->toPlainText());
   projectSave.bindValue(":prj_status", _projectStatuses[_status->currentIndex()]);
+  projectSave.bindValue(":prj_priority_id", _priority->id());
+  if (_dept->id() > 0)
+    projectSave.bindValue(":prj_dept_id", _dept->id());
   projectSave.bindValue(":prj_so", QVariant(_so->isChecked()));
   projectSave.bindValue(":prj_wo", QVariant(_wo->isChecked()));
   projectSave.bindValue(":prj_po", QVariant(_po->isChecked()));
@@ -626,6 +644,7 @@ bool project::sSave(bool partial)
   projectSave.bindValue(":prj_due_date",	_due->date());
   projectSave.bindValue(":prj_assigned_date", _assigned->date());
   projectSave.bindValue(":prj_completed_date", _completed->date());
+  projectSave.bindValue(":prj_pct_complete", _pctCompl->value());
   if (_recurring->isRecurring())
     projectSave.bindValue(":prj_recurring_prj_id", _recurring->parentId());
 
@@ -675,6 +694,13 @@ void project::sPrintTasks()
 
 void project::sPrintOrders()
 {
+  if (!_showSo->isChecked() && !_showWo->isChecked() && !_showPo->isChecked())
+  {
+    QMessageBox::critical( this, tr("Cannot Print Orders"),
+        tr("Please first select an order type or types to print."));
+    return;
+  }
+
   ParameterList params;
 
   params.append("prj_id", _prjid);

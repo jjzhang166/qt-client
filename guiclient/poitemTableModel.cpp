@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -38,6 +38,7 @@ PoitemTableModel::PoitemTableModel(QObject * parent, QSqlDatabase db) :
 	     "       0 AS itemsrc_minordqty, 0 AS itemsrc_multordqty, "
 	     "       1 AS itemsrc_invvendoruomratio,"
 	     "       CURRENT_DATE AS earliestdate, "
+             "       taxtype_name, "
 	     "       poitem.* "
 	     "FROM pohead"
 	     "     JOIN poitem ON (poitem_pohead_id=pohead_id)"
@@ -46,13 +47,14 @@ PoitemTableModel::PoitemTableModel(QObject * parent, QSqlDatabase db) :
 	     "     LEFT OUTER JOIN whsinfo ON (itemsite_warehous_id=warehous_id)"
 	     "     LEFT OUTER JOIN prj ON (poitem_prj_id=prj_id)"
 	     "     LEFT OUTER JOIN expcat ON (poitem_expcat_id=expcat_id)"
+             "     LEFT OUTER JOIN taxtype ON (poitem_taxtype_id=taxtype_id)"
 	     );
 
   setEditStrategy(QSqlTableModel::OnManualSubmit); // OnRow?
   setSort(POITEM_LINENUMBER_COL, Qt::AscendingOrder);
 
   // insert only those columns not directly part of the poitem table
-  insertColumns(0, 7);
+  insertColumns(0, 8);
 
   setHeaderData(POITEM_LINENUMBER_COL,	Qt::Horizontal, tr("#"));
   setHeaderData(ITEM_NUMBER_COL,	Qt::Horizontal, tr("Item"));
@@ -65,6 +67,7 @@ PoitemTableModel::PoitemTableModel(QObject * parent, QSqlDatabase db) :
   setHeaderData(EXTPRICE_COL,		Qt::Horizontal, tr("Ext. Price"));
   setHeaderData(POITEM_FREIGHT_COL,	Qt::Horizontal, tr("Freight"));
   setHeaderData(POITEM_DUEDATE_COL,	Qt::Horizontal, tr("Due Date"));
+  setHeaderData(TAXTYPE_NAME_COL,       Qt::Horizontal, tr("Tax Type"));
   setHeaderData(PRJ_NUMBER_COL,		Qt::Horizontal, tr("Project #"));
   setHeaderData(EXPCAT_CODE_COL,	Qt::Horizontal, tr("Expense Cat."));
 
@@ -432,6 +435,7 @@ bool PoitemTableModel::validRow(QSqlRecord& record)
   record.remove(record.indexOf("item_number"));
   record.remove(record.indexOf("item_id"));
   record.remove(record.indexOf("pohead_number"));
+  record.remove(record.indexOf("taxtype_name"));
 
   return true;
 }

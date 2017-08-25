@@ -102,8 +102,6 @@ dspJournals::dspJournals(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Posted"), "posted", ParameterWidget::CheckBox);
   parameterWidget()->append(tr("GL Journal"), "journalnumber",    ParameterWidget::Text);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   _sources << "None" << "A/P" << "A/R" << "G/L" << "I/M" << "P/D" << "P/O" << "S/O" << "S/R" << "W/O";
 }
 
@@ -155,8 +153,6 @@ enum SetResponse dspJournals::set(const ParameterList &pParams)
       parameterWidget()->setDefault(tr("End Date"), dspet.value("period_end").toDate());
     }
   }
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
   {

@@ -33,6 +33,7 @@ dspSalesOrders::dspSalesOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
     setNewVisible(true);
   setQueryOnStartEnabled(false);
   setAutoUpdateEnabled(true);
+  setSearchVisible(true);
 
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
@@ -57,7 +58,6 @@ dspSalesOrders::dspSalesOrders(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Ship-to"),     -1,           Qt::AlignLeft,   true,  "cohead_shiptoname"   );
   list()->addColumn(tr("Cust. P/O #"), 200,          Qt::AlignLeft,   true,  "cohead_custponumber"   );
 
-  parameterWidget()->applyDefaultFilterSet();
   connect(omfgThis, SIGNAL(salesOrdersUpdated(int, bool)), this, SLOT(sFillList())  );
 }
 
@@ -93,7 +93,8 @@ void dspSalesOrders::sPopulateMenu(QMenu *menuThis, QTreeWidgetItem*, int)
 
 bool dspSalesOrders::setParams(ParameterList & params)
 {
-  parameterWidget()->appendValue(params);
+  if (!display::setParams(params))
+    return false;
   params.append("noLines", tr("No Lines"));
   params.append("closed", tr("Closed"));
   params.append("open", tr("Open"));

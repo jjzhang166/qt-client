@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -18,10 +18,7 @@
 #include <metasql.h>
 #include <openreports.h>
 
-#include "addresscluster.h"
-#include "comment.h"
 #include "crmaccount.h"
-#include "dspAPApplications.h"
 #include "dspCheckRegister.h"
 #include "dspPOsByVendor.h"
 #include "dspPoItemReceivingsByVendor.h"
@@ -29,11 +26,9 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 #include "selectPayments.h"
-#include "storedProcErrorLookup.h"
 #include "taxRegistration.h"
 #include "unappliedAPCreditMemos.h"
 #include "vendorAddress.h"
-#include "xcombobox.h"
 
 #define DEBUG false
 
@@ -229,6 +224,9 @@ vendor::vendor(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _account->setType(GLCluster::cRevenue | GLCluster::cExpense |
                     GLCluster::cAsset | GLCluster::cLiability);
 
+  _defaultPoType->populate("SELECT potype_id, potype_code ||' - '||potype_descr, potype_code "
+                           " FROM potype WHERE potype_active ORDER BY potype_default DESC");
+
   _vendid      = -1;
   _crmacctid   = -1;
   _captive     = false;
@@ -255,7 +253,6 @@ SetResponse vendor::set(const ParameterList &pParams)
   if (valid)
   {
     _number->setEditMode(true);
-//    setId(param.toInt());
     _number->setId(param.toInt());
     _captive=true;
   }
@@ -267,8 +264,10 @@ SetResponse vendor::set(const ParameterList &pParams)
     {
       _mode = cNew;
       emit newMode(_mode);
+
       
       clear();
+      _accountingTab->setEnabled(false);
 
       if (_privileges->check("MaintainVendorAddresses"))
       {
@@ -356,8 +355,8 @@ int vendor::id() const
   return _vendid;
 }
 
-/** \return one of cNew, cEdit, cView, ...
- \todo   change possible modes to an enum in guiclient.h (and add cUnknown?)
+/** @return one of cNew, cEdit, cView, ...
+    @todo   change possible modes to an enum in guiclient.h (and add cUnknown?)
  */
 int vendor::mode() const
 {
@@ -377,6 +376,7 @@ void vendor::setViewMode()
   _defaultTerms->setEnabled(false);
   _defaultShipVia->setEnabled(false);
   _defaultCurr->setEnabled(false);
+  _defaultPoType->setEnabled(false);
   _contact1->setEnabled(false);
   _contact2->setEnabled(false);
   _address->setEnabled(false);
@@ -417,8 +417,7 @@ bool vendor::sSave()
 {
   XSqlQuery vendorSave;
   QList<GuiErrorCheck> errors;
-  errors
-         << GuiErrorCheck(_number->number().trimmed().isEmpty(), _number,
+  errors << GuiErrorCheck(_number->number().trimmed().isEmpty(), _number,
                           tr("Please enter a Number for this new Vendor."))
          << GuiErrorCheck(_name->text().trimmed().isEmpty(), _name,
                           tr("Please enter a Name for this new Vendor."))
@@ -426,18 +425,6 @@ bool vendor::sSave()
                           tr("You must select a Terms code for this Vendor."))
          << GuiErrorCheck(_vendtype->id() == -1, _vendtype,
                           tr("You must select a Vendor Type for this Vendor."))
-//         << GuiErrorCheck(_accountSelected->isChecked() &&
-//                          !_account->isValid(),
-//                          _account
-//                          tr("You must select a Default Distribution Account for this Vendor."))
-//         << GuiErrorCheck(_expcatSelected->isChecked() &&
-//                          !_expcat->isValid(),
-//                          _expcat
-//                          tr("You must select a Default Distribution Expense Category for this Vendor."))
-//         << GuiErrorCheck(_taxSelected->isChecked() &&
-//                          !_taxCode->isValid(),
-//                          _taxCode
-//                          tr("You must select a Default Distribution Tax Code for this Vendor."))
          << GuiErrorCheck(_achGroup->isChecked() &&
                           ! _routingNumber->hasAcceptableInput() &&
                           !omfgThis->_key.isEmpty(),
@@ -460,19 +447,18 @@ bool vendor::sSave()
   if (_number->number().trimmed().toUpper() != _cachedNumber.toUpper())
   {
     XSqlQuery dupq;
-    dupq.prepare("SELECT vend_name "
-                 "FROM vendinfo "
-                 "WHERE (UPPER(vend_number)=UPPER(:vend_number)) "
-                 "  AND (vend_id<>:vend_id);" );
+    dupq.prepare("SELECT 1"
+                 "  FROM vendinfo"
+                 " WHERE UPPER(vend_number) = UPPER(:vend_number)"
+                 "   AND vend_id != :vend_id;");
     dupq.bindValue(":vend_number", _number->number().trimmed());
-    dupq.bindValue(":vend_id", _vendid);
+    dupq.bindValue(":vend_id",     _vendid);
     dupq.exec();
     if (dupq.first())
-      GuiErrorCheck(true, _number,
-                    tr("<p>The newly entered Vendor Number cannot be "
-                       "used as it is already used by the Vendor '%1'. "
-                       "Please correct or enter a new Vendor Number." )
-                    .arg(vendorSave.value("vend_name").toString()) );
+      errors << GuiErrorCheck(true, _number,
+                              tr("<p>The number % is already used by another "
+                                 "vendor. Please use a different vendor number.")
+                              .arg(_number->number()));
   }
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Vendor"), errors))
@@ -517,42 +503,43 @@ bool vendor::sSave()
   if (_mode == cEdit || _tempMode == cEdit)
   {
     sql = "UPDATE vendinfo "
-          "SET vend_number=<? value(\"vend_number\") ?>,"
-          "    vend_accntnum=<? value(\"vend_accntnum\") ?>,"
-          "    vend_active=<? value(\"vend_active\") ?>,"
-          "    vend_vendtype_id=<? value(\"vend_vendtype_id\") ?>,"
-          "    vend_name=<? value(\"vend_name\") ?>,"
-          "    vend_cntct1_id=<? value(\"vend_cntct1_id\") ?>,"
-          "    vend_cntct2_id=<? value(\"vend_cntct2_id\") ?>,"
-	  "    vend_addr_id=<? value(\"vend_addr_id\") ?>,"
-          "    vend_po=<? value(\"vend_po\") ?>,"
-          "    vend_restrictpurch=<? value(\"vend_restrictpurch\") ?>,"
-          "    vend_1099=<? value(\"vend_1099\") ?>,"
-          "    vend_qualified=<? value(\"vend_qualified\") ?>,"
-          "    vend_comments=<? value(\"vend_comments\") ?>,"
-          "    vend_pocomments=<? value(\"vend_pocomments\") ?>,"
-          "    vend_fobsource=<? value(\"vend_fobsource\") ?>,"
-          "    vend_fob=<? value(\"vend_fob\") ?>,"
-          "    vend_terms_id=<? value(\"vend_terms_id\") ?>,"
-          "    vend_shipvia=<? value(\"vend_shipvia\") ?>,"
-	  "    vend_curr_id=<? value(\"vend_curr_id\") ?>,"
-          "    vend_taxzone_id=<? value(\"vend_taxzone_id\") ?>,"
-          "    vend_match=<? value(\"vend_match\") ?>,"
-          "    vend_ach_enabled=<? value(\"vend_ach_enabled\") ?>,"
-          "<? if exists(\"key\") ?>"
-          "    vend_ach_routingnumber=encrypt(setbytea(<? value(\"vend_ach_routingnumber\") ?>),"
-          "                             setbytea(<? value(\"key\") ?>), 'bf'),"
-          "    vend_ach_accntnumber=encrypt(setbytea(<? value(\"vend_ach_accntnumber\") ?>),"
-          "                           setbytea(<? value(\"key\") ?>), 'bf'),"
-          "<? endif ?>"
-          "    vend_ach_use_vendinfo=<? value(\"vend_ach_use_vendinfo\") ?>,"
-          "    vend_ach_accnttype=<? value(\"vend_ach_accnttype\") ?>,"
-          "    vend_ach_indiv_number=<? value(\"vend_ach_indiv_number\") ?>,"
-          "    vend_ach_indiv_name=<? value(\"vend_ach_indiv_name\") ?>,"
-          "    vend_accnt_id=<? value(\"vend_accnt_id\") ?>,"
-          "    vend_expcat_id=<? value(\"vend_expcat_id\") ?>,"
-          "    vend_tax_id=<? value(\"vend_tax_id\") ?> "
-          "WHERE (vend_id=<? value(\"vend_id\") ?>);" ;
+          "   SET vend_number = <? value('vend_number') ?>,"
+          "       vend_accntnum = <? value('vend_accntnum') ?>,"
+          "       vend_active = <? value('vend_active') ?>,"
+          "       vend_vendtype_id = <? value('vend_vendtype_id') ?>,"
+          "       vend_name = <? value('vend_name') ?>,"
+          "       vend_cntct1_id = <? value('vend_cntct1_id') ?>,"
+          "       vend_cntct2_id = <? value('vend_cntct2_id') ?>,"
+	  "       vend_addr_id = <? value('vend_addr_id') ?>,"
+          "       vend_po = <? value('vend_po') ?>,"
+          "       vend_restrictpurch = <? value('vend_restrictpurch') ?>,"
+          "       vend_1099 = <? value('vend_1099') ?>,"
+          "       vend_qualified = <? value('vend_qualified') ?>,"
+          "       vend_comments = <? value('vend_comments') ?>,"
+          "       vend_pocomments = <? value('vend_pocomments') ?>,"
+          "       vend_fobsource = <? value('vend_fobsource') ?>,"
+          "       vend_fob = <? value('vend_fob') ?>,"
+          "       vend_terms_id = <? value('vend_terms_id') ?>,"
+          "       vend_shipvia = <? value('vend_shipvia') ?>,"
+	  "       vend_curr_id = <? value('vend_curr_id') ?>,"
+	  "       vend_potype_id = <? value('vend_potype_id') ?>,"
+          "       vend_taxzone_id = <? value('vend_taxzone_id') ?>,"
+          "       vend_match = <? value('vend_match') ?>,"
+          "       vend_ach_enabled = <? value('vend_ach_enabled') ?>,"
+          "   <? if exists('key') ?>"
+          "       vend_ach_routingnumber=encrypt(setbytea(<? value('vend_ach_routingnumber') ?>),"
+          "                                setbytea(<? value('key') ?>), 'bf'),"
+          "       vend_ach_accntnumber=encrypt(setbytea(<? value('vend_ach_accntnumber') ?>),"
+          "                              setbytea(<? value('key') ?>), 'bf'),"
+          "   <? endif ?>"
+          "       vend_ach_use_vendinfo = <? value('vend_ach_use_vendinfo') ?>,"
+          "       vend_ach_accnttype = <? value('vend_ach_accnttype') ?>,"
+          "       vend_ach_indiv_number = <? value('vend_ach_indiv_number') ?>,"
+          "       vend_ach_indiv_name = <? value('vend_ach_indiv_name') ?>,"
+          "       vend_accnt_id = <? value('vend_accnt_id') ?>,"
+          "       vend_expcat_id = <? value('vend_expcat_id') ?>,"
+          "       vend_tax_id = <? value('vend_tax_id') ?> "
+          " WHERE vend_id = <? value('vend_id') ?>;" ;
   }
   else if (_mode == cNew)
     sql = "INSERT INTO vendinfo "
@@ -562,7 +549,7 @@ bool vendor::sSave()
           "  vend_po, vend_restrictpurch,"
           "  vend_1099, vend_qualified,"
           "  vend_comments, vend_pocomments,"
-          "  vend_fobsource, vend_fob,"
+          "  vend_fobsource, vend_fob, vend_potype_id,"
           "  vend_terms_id, vend_shipvia, vend_curr_id,"
           "  vend_taxzone_id, vend_match, vend_ach_enabled,"
           "  vend_ach_routingnumber, vend_ach_accntnumber,"
@@ -571,45 +558,46 @@ bool vendor::sSave()
           "  vend_ach_indiv_name,"
           "  vend_accnt_id, vend_expcat_id, vend_tax_id) "
           "VALUES "
-          "( <? value(\"vend_id\") ?>,"
-          "  <? value(\"vend_number\") ?>,"
-          "  <? value(\"vend_accntnum\") ?>,"
-          "  <? value(\"vend_active\") ?>,"
-          "  <? value(\"vend_vendtype_id\") ?>,"
-          "  <? value(\"vend_name\") ?>,"
-          "  <? value(\"vend_cntct1_id\") ?>,"
-          "  <? value(\"vend_cntct2_id\") ?>,"
-          "  <? value(\"vend_addr_id\") ?>,"
-          "  <? value(\"vend_po\") ?>,"
-          "  <? value(\"vend_restrictpurch\") ?>,"
-          "  <? value(\"vend_1099\") ?>,"
-          "  <? value(\"vend_qualified\") ?>,"
-          "  <? value(\"vend_comments\") ?>,"
-          "  <? value(\"vend_pocomments\") ?>,"
-          "  <? value(\"vend_fobsource\") ?>,"
-          "  <? value(\"vend_fob\") ?>,"
-          "  <? value(\"vend_terms_id\") ?>,"
-          "  <? value(\"vend_shipvia\") ?>,"
-          "  <? value(\"vend_curr_id\") ?>, "
-          "  <? value(\"vend_taxzone_id\") ?>,"
-          "  <? value(\"vend_match\") ?>,"
-          "  <? value(\"vend_ach_enabled\") ?>,"
-          "<? if exists(\"key\") ?>"
-          "  encrypt(setbytea(<? value(\"vend_ach_routingnumber\") ?>),"
-          "          setbytea(<? value(\"key\") ?>), 'bf'),"
-          "  encrypt(setbytea(<? value(\"vend_ach_accntnumber\") ?>),"
-          "          setbytea(<? value(\"key\") ?>), 'bf'),"
+          "( <? value('vend_id') ?>,"
+          "  <? value('vend_number') ?>,"
+          "  <? value('vend_accntnum') ?>,"
+          "  <? value('vend_active') ?>,"
+          "  <? value('vend_vendtype_id') ?>,"
+          "  <? value('vend_name') ?>,"
+          "  <? value('vend_cntct1_id') ?>,"
+          "  <? value('vend_cntct2_id') ?>,"
+          "  <? value('vend_addr_id') ?>,"
+          "  <? value('vend_po') ?>,"
+          "  <? value('vend_restrictpurch') ?>,"
+          "  <? value('vend_1099') ?>,"
+          "  <? value('vend_qualified') ?>,"
+          "  <? value('vend_comments') ?>,"
+          "  <? value('vend_pocomments') ?>,"
+          "  <? value('vend_fobsource') ?>,"
+          "  <? value('vend_fob') ?>,"
+          "  <? value('vend_potype_id') ?>,"
+          "  <? value('vend_terms_id') ?>,"
+          "  <? value('vend_shipvia') ?>,"
+          "  <? value('vend_curr_id') ?>, "
+          "  <? value('vend_taxzone_id') ?>,"
+          "  <? value('vend_match') ?>,"
+          "  <? value('vend_ach_enabled') ?>,"
+          "<? if exists('key') ?>"
+          "  encrypt(setbytea(<? value('vend_ach_routingnumber') ?>),"
+          "          setbytea(<? value('key') ?>), 'bf'),"
+          "  encrypt(setbytea(<? value('vend_ach_accntnumber') ?>),"
+          "          setbytea(<? value('key') ?>), 'bf'),"
           "<? else ?>"
           "  '',"
           "  '',"
           "<? endif ?>"
-          "  <? value(\"vend_ach_use_vendinfo\") ?>,"
-          "  <? value(\"vend_ach_accnttype\") ?>,"
-          "  <? value(\"vend_ach_indiv_number\") ?>,"
-          "  <? value(\"vend_ach_indiv_name\") ?>,"
-          "  <? value(\"vend_accnt_id\") ?>,"
-          "  <? value(\"vend_expcat_id\") ?>,"
-          "  <? value(\"vend_tax_id\") ?> "
+          "  <? value('vend_ach_use_vendinfo') ?>,"
+          "  <? value('vend_ach_accnttype') ?>,"
+          "  <? value('vend_ach_indiv_number') ?>,"
+          "  <? value('vend_ach_indiv_name') ?>,"
+          "  <? value('vend_accnt_id') ?>,"
+          "  <? value('vend_expcat_id') ?>,"
+          "  <? value('vend_tax_id') ?> "
           "   );"  ;
 
   ParameterList params;
@@ -617,6 +605,9 @@ bool vendor::sSave()
   params.append("vend_vendtype_id", _vendtype->id());
   params.append("vend_terms_id", _defaultTerms->id());
   params.append("vend_curr_id", _defaultCurr->id());
+
+  if (_defaultPoType->id() >= 0)
+    params.append("vend_potype_id", _defaultPoType->id());
 
   params.append("vend_number",   _number->number().trimmed().toUpper());
   params.append("vend_accntnum", _accountNumber->text().trimmed());
@@ -631,7 +622,7 @@ bool vendor::sSave()
 
   params.append("vend_comments",   _notes->toPlainText());
   params.append("vend_pocomments", _poComments->toPlainText());
-  params.append("vend_shipvia",    _defaultShipVia->text());
+  params.append("vend_shipvia",    _defaultShipVia->currentText());
 
   params.append("vend_active",        QVariant(_active->isChecked()));
   params.append("vend_po",            QVariant(_poItems->isChecked()));
@@ -696,7 +687,7 @@ bool vendor::sSave()
   {
     rollback.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Vendor"),
-                         vendorSave, __FILE__, __LINE__);
+                         upsq, __FILE__, __LINE__);
     return false;
   }
 
@@ -731,7 +722,6 @@ void vendor::sSaveClicked()
   if (!sSave())
     return;
   
-//  _autoSaved=false;
   _NumberGen = -1;
   omfgThis->sVendorsUpdated();
   emit saved(_vendid);
@@ -982,6 +972,7 @@ bool vendor::sPopulate()
     _defaultTerms->setId(vendorPopulate.value("vend_terms_id").toInt());
     _defaultShipVia->setText(vendorPopulate.value("vend_shipvia").toString());
     _defaultCurr->setId(vendorPopulate.value("vend_curr_id").toInt());
+    _defaultPoType->setId(vendorPopulate.value("vend_potype_id").toInt());
     _poItems->setChecked(vendorPopulate.value("vend_po").toBool());
     _restrictToItemSource->setChecked(vendorPopulate.value("vend_restrictpurch").toBool());
     _receives1099->setChecked(vendorPopulate.value("vend_1099").toBool());
@@ -1058,7 +1049,7 @@ bool vendor::sPopulate()
                    "     LEFT OUTER JOIN pohead ON (pohead_vend_id=vend_id)"
                    "     LEFT OUTER JOIN poitem ON (poitem_pohead_id=pohead_id"
                    "                            AND poitem_status='O')"
-                   "WHERE (vend_id=<? value(\"vend_id\") ?>);");
+                   "WHERE (vend_id=<? value('vend_id') ?>);");
   
   vendorPopulate = pos.toQuery(params);
   if (vendorPopulate.first())
@@ -1081,9 +1072,9 @@ bool vendor::sPopulate()
                            "                            NOT apopen_void) "
                            "WHERE (vohead_posted"
                            "  AND (vohead_gldistdate "
-                           "       BETWEEN (<? literal(\"older\") ?>)"
-                           "           AND (<? literal(\"younger\") ?>))"
-                           "  AND (vohead_vend_id=<? value(\"vend_id\") ?>));");
+                           "       BETWEEN (<? literal('older') ?>)"
+                           "           AND (<? literal('younger') ?>))"
+                           "  AND (vohead_vend_id=<? value('vend_id') ?>));");
   params.append("older",   "DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 year'");
   params.append("younger", "DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 day'");
   vendorPopulate = purchbydate.toQuery(params);
@@ -1110,9 +1101,9 @@ bool vendor::sPopulate()
   
   MetaSQLQuery balm("SELECT COALESCE(SUM((apopen_amount-apopen_paid) / apopen_curr_rate * "
                     "  CASE WHEN (apopen_doctype IN ('D','V')) THEN 1 ELSE -1 END), 0.0) AS balance "
-                    "FROM apopen "
-                    "WHERE ((apopen_open)"
-                    "   AND (apopen_vend_id=<? value(\"vend_id\") ?>));");
+                    "  FROM apopen "
+                    " WHERE apopen_open"
+                    "   AND apopen_vend_id = <? value('vend_id') ?>;");
   vendorPopulate = balm.toQuery(params);
   if (vendorPopulate.first())
     _openBalance->setDouble(vendorPopulate.value("balance").toDouble());
@@ -1381,7 +1372,7 @@ void vendor::clear()
 
   _name->clear();
   _accountNumber->clear();
-  _defaultShipVia->clear();
+  _defaultShipVia->setId(_metrics->value("DefaultShipViaId").toInt());
   _vendorFOB->clear();
   _notes->clear();
   _poComments->clear();

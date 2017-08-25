@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -15,6 +15,11 @@
 #include "applock.h"
 #include "parameter.h"
 #include "virtualCluster.h"
+
+class QLabel;
+class QGridLayout;
+class QScriptEngine;
+class XTreeWidgetItem;
 
 class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
 {
@@ -33,6 +38,7 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
       AnyStatus = 0x00,
       Unposted  = 0x01, Open = 0x02, Closed = 0x04
     };
+    Q_ENUM(OrderStatus)
     Q_DECLARE_FLAGS(OrderStatuses, OrderStatus)
 
     enum OrderType
@@ -40,6 +46,7 @@ class XTUPLEWIDGETS_EXPORT OrderLineEdit : public VirtualClusterLineEdit
       AnyType = 0x00,
       Purchase = 0x01, Return = 0x02, Sales = 0x04, Transfer = 0x08
     };
+    Q_ENUM(OrderType)
     Q_DECLARE_FLAGS(OrderTypes, OrderType)
 
     Q_INVOKABLE virtual OrderStatuses allowedStatuses()        const;
@@ -222,5 +229,7 @@ class XTUPLEWIDGETS_EXPORT OrderSearch : public VirtualSearch
   protected slots:
     virtual void done(int);
 };
+
+void setupOrderLineEdit(QScriptEngine *engine);
 
 #endif

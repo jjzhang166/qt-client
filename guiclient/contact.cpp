@@ -339,6 +339,7 @@ enum SetResponse contact::set(const ParameterList &pParams)
       _charass->setId(_contact->id());
       _contact->setFirst("");
       _contact->setOwnerUsername(omfgThis->username());
+      _tabWidget->setTabEnabled(_tabWidget->indexOf(_usesTab), false);
     }
     else if (param.toString() == "edit")
     {

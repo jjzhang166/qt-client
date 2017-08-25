@@ -49,7 +49,6 @@ shipOrder::shipOrder(QWidget* parent, const char* name, bool modal, Qt::WindowFl
   _coitem->addColumn( tr("Qty."),        _qtyColumn,  Qt::AlignRight  , true, "shipitem_qty");
 
   sCreateToggled(_create->isChecked());
-  sHandleButtons();
   _reject = false;
 
   if (!_metrics->boolean("MultiWhs"))
@@ -697,9 +696,9 @@ void shipOrder::sHandleTo()
 
 void shipOrder::sHandleButtons()
 {
-  _select->setChecked(_order->isSO() &&
-                      _privileges->check("SelectBilling") &&
-		     _metrics->boolean("AutoSelectForBilling"));
+  _select->setChecked(_select->isChecked() ||
+                      (_privileges->check("SelectBilling") &&
+		     _metrics->boolean("AutoSelectForBilling")));
   _select->setEnabled(_order->isSO() &&
 		      _privileges->check("SelectBilling"));
   _create->setEnabled(_order->isSO() &&

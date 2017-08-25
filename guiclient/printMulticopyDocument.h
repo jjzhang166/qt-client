@@ -49,6 +49,7 @@ class printMulticopyDocument : public XDialog
 
     Q_INVOKABLE virtual void            clear();
     Q_INVOKABLE virtual XDocCopySetter *copies();
+    Q_INVOKABLE virtual int             distributeInventory(XSqlQuery *qry);
                 virtual QString         doctype();
     Q_INVOKABLE virtual ParameterList   getParamsDocList();
     Q_INVOKABLE virtual ParameterList   getParamsOneCopy(const int row, XSqlQuery *qry);
@@ -69,7 +70,7 @@ class printMulticopyDocument : public XDialog
   public slots:
     virtual void    sAddToPrintedList(XSqlQuery *docq);
     virtual bool    sMarkOnePrinted(XSqlQuery *docq);
-    virtual bool    sPostOneDoc(XSqlQuery  *docq);
+    virtual bool    sPostOneDoc(XSqlQuery  *docq, int itemlocSeries = 0);
     virtual void    sPrint();
     virtual bool    sPrintOneDoc(XSqlQuery *docq);
     virtual void    setDoctype(QString doctype);
@@ -85,7 +86,7 @@ class printMulticopyDocument : public XDialog
     void posted(int);
     void timeToMarkOnePrinted(XSqlQuery *docq);
     void timeToPrintOneDoc(XSqlQuery    *docq);
-    void timeToPostOneDoc(XSqlQuery     *docq);
+    void timeToPostOneDoc(XSqlQuery     *docq, int itemlocSeries = 0);
 
   protected slots:
     virtual void languageChange();

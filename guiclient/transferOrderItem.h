@@ -68,6 +68,7 @@ private:
     int			_toitemid;
     int			_transwhsid;
     bool    _saved;
+    QString _status;
 };
 
 #endif // TRANSFERORDERITEM_H

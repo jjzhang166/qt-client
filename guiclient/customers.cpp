@@ -43,6 +43,7 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Show Inactive"), "showInactive", ParameterWidget::Exists);
   parameterWidget()->append(tr("Customer Number Pattern"), "cust_number_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Customer Name Pattern"), "cust_name_pattern", ParameterWidget::Text);
+  parameterWidget()->appendComboBox(tr("Customer Type"), "cust_custtype_id", XComboBox::CustomerTypes);
   parameterWidget()->append(tr("Customer Type Pattern"), "custtype_code_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Contact Name Pattern"), "cntct_name_pattern", ParameterWidget::Text);
   parameterWidget()->append(tr("Phone Pattern"), "cntct_phone_pattern", ParameterWidget::Text);
@@ -95,7 +96,6 @@ customers::customers(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Corr. Country"),100, Qt::AlignLeft , false, "corr_country" );
 
   setupCharacteristics("C");
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(omfgThis, SIGNAL(customersUpdated(int, bool)), SLOT(sFillList()));
 }

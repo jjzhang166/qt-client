@@ -152,6 +152,19 @@ to be bound by its terms.</comment>
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="_query">
+           <property name="text">
+            <string>&amp;Query</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="_print">
            <property name="text">
             <string>&amp;Print</string>

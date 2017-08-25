@@ -194,6 +194,7 @@ HEADERS += displays/dspAllocations.h \
            displays/dspQuotesByItem.h \
            displays/dspReorderExceptionsByPlannerCode.h \
            displays/dspReservations.h \
+           displays/dspReturnAuthorizations.h \
            displays/dspReturnAuthorizationsByItem.h \
            displays/dspRunningAvailability.h \
            displays/dspSalesHistory.h \
@@ -327,6 +328,7 @@ SOURCES += displays/dspAllocations.cpp \
            displays/dspQuotesByItem.cpp \
            displays/dspReorderExceptionsByPlannerCode.cpp \
            displays/dspReservations.cpp \
+           displays/dspReturnAuthorizations.cpp \
            displays/dspReturnAuthorizationsByItem.cpp \
            displays/dspRunningAvailability.cpp \
            displays/dspSalesHistory.cpp \

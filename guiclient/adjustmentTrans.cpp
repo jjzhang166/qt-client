@@ -21,6 +21,8 @@
 #include "errorReporter.h"
 #include "guiErrorCheck.h"
 
+#define DEBUG false
+
 adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
 {
@@ -63,6 +65,8 @@ adjustmentTrans::adjustmentTrans(QWidget* parent, const char * name, Qt::WindowF
     _tab->removeTab(0);
 
   _item->setFocus();
+  _itemsiteId = 0;
+  _controlledItem = false;
 }
 
 adjustmentTrans::~adjustmentTrans()
@@ -166,6 +170,8 @@ enum SetResponse adjustmentTrans::set(const ParameterList &pParams)
 void adjustmentTrans::sPost()
 {
   XSqlQuery adjustmentPost;
+  XSqlQuery cleanup;  
+  int itemlocSeries = 0;
   double qty = _qty->toDouble();
   double cost = _cost->toDouble();
 
@@ -176,34 +182,72 @@ void adjustmentTrans::sPost()
   }
 
   QList<GuiErrorCheck>errors;
-     errors<<GuiErrorCheck(!_item->isValid(), _item,
-                           tr("You must select an Item before posting this transaction."))
-           <<GuiErrorCheck(_qty->text().length() == 0 || qty == 0, _qty,
-                           tr("<p>You must enter a Quantity before posting this Transaction."))
-           <<GuiErrorCheck(_costAdjust->isEnabled() && _costAdjust->isChecked() && _costManual->isChecked()
-                           && (_cost->text().length() == 0 || cost == 0), _cost,
-                           tr("<p>You must enter a total cost value for the inventory to be transaction."))
-           <<GuiErrorCheck( _costMethod == "A" && _afterQty->toDouble() < 0, _qty,
-                           tr("<p>Average cost adjustments may not result in a negative quantity on hand."));
+    errors<<GuiErrorCheck(!_item->isValid(), _item,
+      tr("You must select an Item before posting this transaction."))
+    <<GuiErrorCheck(_qty->text().length() == 0 || qty == 0, _qty,
+      tr("<p>You must enter a Quantity before posting this Transaction."))
+    <<GuiErrorCheck(_costAdjust->isEnabled() && _costAdjust->isChecked() && _costManual->isChecked()
+      && (_cost->text().length() == 0 || cost == 0), _cost,
+      tr("<p>You must enter a total cost value for the inventory to be transaction."))
+    <<GuiErrorCheck( _costMethod == "A" && _afterQty->toDouble() < 0, _qty,
+      tr("<p>Average cost adjustments may not result in a negative quantity on hand."));
 
-   if(GuiErrorCheck::reportErrors(this,tr("Cannot Post Transaction"),errors))
-     return;
+  if (GuiErrorCheck::reportErrors(this,tr("Cannot Post Transaction"),errors))
+    return;
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
+  // Get parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first())
+    itemlocSeries = parentSeries.value("result").toInt();
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+                            parentSeries, __FILE__, __LINE__))
+    return;
+  
+  if (DEBUG)
+    qDebug() << "adjustmentTrans::sPost itemlocSeries: " << itemlocSeries;
 
-  adjustmentPost.exec("BEGIN;");	// because of possible distribution cancelations
-  adjustmentPost.prepare( "SELECT invAdjustment(itemsite_id, :qty, :docNumber,"
-             "                     :comments, :date, :cost) AS result "
-             "FROM itemsite "
-             "WHERE ( (itemsite_item_id=:item_id)"
-             " AND (itemsite_warehous_id=:warehous_id) );" );
+  // Stage cleanup function to be called on error
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  cleanup.bindValue(":itemlocSeries", itemlocSeries);
+
+  // If controlled item: create the parent itemlocdist record, call distributeInventory::seriesAdjust
+  if (_controlledItem)
+  {
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'AD'::TEXT, NULL, :itemlocSeries) AS result;");
+    parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+    parentItemlocdist.bindValue(":qty", qty);
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(), QDate(), true)
+        == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information(this, tr("Inventory Adjustment"),
+                                 tr("Transaction Canceled") );
+        return;
+      }
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                              parentItemlocdist, __FILE__, __LINE__))
+    {
+      return;
+    }
+  }
+
+  // Post inventory transaction
+  adjustmentPost.prepare( "SELECT invAdjustment(:itemsite_id, :qty, :docNumber, :comments, :date, "
+                          " :cost, NULL, :itemlocSeries, true) AS result;");
   adjustmentPost.bindValue(":qty", qty);
-  adjustmentPost.bindValue(":docNumber", _documentNum->text());
+  adjustmentPost.bindValue(":docNumber",   _documentNum->text());
   adjustmentPost.bindValue(":comments",    _notes->toPlainText());
-  adjustmentPost.bindValue(":item_id", _item->id());
-  adjustmentPost.bindValue(":warehous_id", _warehouse->id());
+  adjustmentPost.bindValue(":itemsite_id", _itemsiteId);
   adjustmentPost.bindValue(":date",        _transDate->date());
+  adjustmentPost.bindValue(":itemlocSeries", itemlocSeries);
   if(!_costAdjust->isChecked())
     adjustmentPost.bindValue(":cost", 0.0);
   else if(_costManual->isChecked())
@@ -211,29 +255,7 @@ void adjustmentTrans::sPost()
   adjustmentPost.exec();
   if (adjustmentPost.first())
   {
-    int result = adjustmentPost.value("result").toInt();
-    if (result < 0)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
-                           storedProcErrorLookup("invAdjustment", result),
-                           __FILE__, __LINE__);
-    }
-    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
-                                  adjustmentPost, __FILE__, __LINE__))
-    {
-        return;
-    }
-
-    if (distributeInventory::SeriesAdjust(adjustmentPost.value("result").toInt(), this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information(this, tr("Inventory Adjustment"),
-                               tr("Transaction Canceled") );
-      return;
-    }
-
-    adjustmentPost.exec("COMMIT;");
+    // Continue to cleanup
     if (_captive)
       close();
     else
@@ -253,12 +275,12 @@ void adjustmentTrans::sPost()
   else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Transaction"),
                                 adjustmentPost, __FILE__, __LINE__))
   {
-      rollback.exec();
-      return;
+    cleanup.exec();
+    return;
   }
   else
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Post Transaction Cancelled"),
                          tr("<p>No transaction was done because Item %1 "
                             "was not found at Site %2.")
@@ -272,7 +294,10 @@ void adjustmentTrans::sPopulateQOH()
   XSqlQuery populateAdjustment;
   if (_mode != cView)
   {
-    populateAdjustment.prepare( "SELECT itemsite_freeze, itemsite_qtyonhand, itemsite_costmethod, itemsite_value "
+    populateAdjustment.prepare("SELECT itemsite_id, itemsite_freeze, itemsite_qtyonhand, "
+               "  itemsite_costmethod, itemsite_value, "
+               "  itemsite_loccntrl, "
+               "  (itemsite_controlmethod IN ('L', 'S') ) AS lscntrl "
                "FROM itemsite "
                "WHERE ( (itemsite_item_id=:item_id)"
                " AND (itemsite_warehous_id=:warehous_id));" );
@@ -283,8 +308,11 @@ void adjustmentTrans::sPopulateQOH()
     _absolute->setStyleSheet("");
     if (populateAdjustment.first())
     {
+      _itemsiteId = populateAdjustment.value("itemsite_id").toInt();
       _cachedValue = populateAdjustment.value("itemsite_value").toDouble();
       _cachedQOH = populateAdjustment.value("itemsite_qtyonhand").toDouble();
+      _controlledItem = populateAdjustment.value("lscntrl").toBool() || 
+        populateAdjustment.value("itemsite_loccntrl").toBool();
       if(_cachedQOH == 0.0)
         _costManual->setChecked(true);
       _beforeQty->setDouble(populateAdjustment.value("itemsite_qtyonhand").toDouble());
@@ -353,4 +381,3 @@ void adjustmentTrans::sCostUpdated()
   else
     _unitCost->setDouble(_cost->toDouble() / _qty->toDouble());
 }
-

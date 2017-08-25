@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,9 +21,6 @@
 #include <QtScript>
 
 class QSqlDriver;
-
-Q_DECLARE_METATYPE(QSqlDatabase*)
-Q_DECLARE_METATYPE(QSqlDatabase)
 
 void setupQSqlDatabaseProto(QScriptEngine *engine);
 QScriptValue constructQSqlDatabase(QScriptContext *context, QScriptEngine *engine);
@@ -66,5 +63,8 @@ class QSqlDatabaseProto : public QObject, public QScriptable
     Q_INVOKABLE bool         transaction();
     Q_INVOKABLE QString      userName()                      const;
 };
+
+Q_DECLARE_METATYPE(QSqlDatabase)
+Q_DECLARE_METATYPE(QSqlDatabase*)
 
 #endif

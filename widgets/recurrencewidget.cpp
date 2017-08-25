@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -37,6 +37,21 @@
   </UL>
   A recurrence with the period set to W (= week) and frequency of 3 will repeat
   once every three weeks.
+
+  In addition, there are three options for how to handle recurrences if a recurrence is missed
+  (this can happen by having the client closed when a scheduled action was supposed to occur,
+  or by having a long-running action fail to finish before another scheduled action is supposed
+  to occur).
+  If a recurrence is missed, upon running the next one will be scheduled for the  first time that
+  it would have run that is after the current time (For example, if an event is scheduled to occur
+  every 5 minutes and runs at 4:10 PM, but the application is closed at 4:11 PM and not reopened
+  until 4:53 PM, the next one will be scheduled at 4:55 PM). If there are multiple recurrences
+  scheduled in the series for times that have also past, the three ways to handle them are
+  -Keep None: Delete all of them, and schedule events from using the given interval from the current time
+  -Keep One: Delete all but the most recent, reschedule it for the current time, and schedule the rest
+   from the current time
+  -Keep All: Reschedule all passed events to the current time, and schedule the next one
+   using the interval from the current time
 
   To add a new kind of recurring event or %item, you need to change data in the
   database, stored procedures, triggers, and application code.
@@ -278,7 +293,7 @@ void RecurrenceWidget::languageChange()
   */
 void RecurrenceWidget::clear()
 {
-  set(false, 1, "W", QDateTime::currentDateTime(), _eot, 1);
+  set(false, 1, "W", QDateTime::currentDateTime(), _eot, 1, "KeepNone");
   _id             = -1;
 
   _prevParentId   = -1;
@@ -419,6 +434,17 @@ bool RecurrenceWidget::maxVisible() const
   return _max->isVisible();
 }
 
+QString RecurrenceWidget::style() const
+{
+  if (_none->isChecked())
+    return "KeepNone";
+  if (_one->isChecked())
+    return "KeepOne";
+  if (_all->isChecked())
+    return "KeepAll";
+  return "Error";
+}
+
 RecurrenceWidget::RecurrencePeriod RecurrenceWidget::minPeriod() const
 {
   return (RecurrencePeriod)_period->id(0);
@@ -434,7 +460,8 @@ bool RecurrenceWidget::modified() const
              << "endDateTime:"   << endDateTime()  << _prevEndDateTime   << "\n"
              << "max:"           << max()          << _prevMax           << "\n"
              << "_parentId:"     << _parentId      << _prevParentId      << "\n"
-             << "_parentType:"   << _parentType    << _prevParentType
+             << "_parentType:"   << _parentType    << _prevParentType    << "\n"
+             << "_style:"        << style()        << _prevStyle
              ;
 
   bool returnVal = (isRecurring()   != _prevRecurring    ||
@@ -444,7 +471,8 @@ bool RecurrenceWidget::modified() const
                     endDateTime()   != _prevEndDateTime  ||
                     max()           != _prevMax          ||
                     _parentId       != _prevParentId     ||
-                    _parentType     != _prevParentType);
+                    _parentType     != _prevParentType   ||
+                    _prevStyle      != style());
 
   return returnVal;
 }
@@ -576,7 +604,8 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
                      "  recur_freq=:recur_freq,"
                      "  recur_start=:recur_start,"
                      "  recur_end=:recur_end,"
-                     "  recur_max=:recur_max"
+                     "  recur_max=:recur_max,"
+                     "  recur_style=:recur_style"
                      " WHERE (recur_id=:recurid)"
                      " RETURNING recur_id;");
       recurq.bindValue(":recurid", _id);
@@ -587,12 +616,12 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
                      "  recur_parent_id,  recur_parent_type,"
                      "  recur_period,     recur_freq,"
                      "  recur_start,      recur_end,"
-                     "  recur_max"
+                     "  recur_max,        recur_style"
                      ") VALUES ("
                      "  :recur_parent_id, UPPER(:recur_parent_type),"
                      "  :recur_period,    :recur_freq,"
                      "  :recur_start,     :recur_end,"
-                     "  :recur_max"
+                     "  :recur_max,       :recur_style"
                      ") RETURNING recur_id;");
     }
 
@@ -604,6 +633,7 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
     if (endDate() < _eot.date())
       recurq.bindValue(":recur_end",       endDateTime());
     recurq.bindValue(":recur_max",         max());
+    recurq.bindValue(":recur_style", style());
     recurq.exec();
     if (recurq.first())
     {
@@ -616,6 +646,7 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
       _prevPeriod        = period();
       _prevRecurring     = isRecurring();
       _prevStartDateTime = startDateTime();
+      _prevStyle         = style();
     }
   }
   else // ! isRecurring()
@@ -701,34 +732,35 @@ bool RecurrenceWidget::save(bool externaltxn, RecurrenceChangePolicy cp, QString
   return true;
 }
 
-void RecurrenceWidget::set(bool recurring, int frequency, QString period, QDate startDate, QDate endDate, int max)
+void RecurrenceWidget::set(bool recurring, int frequency, QString period, QDate startDate, QDate endDate, int max, QString style)
 {
   if (DEBUG)
     qDebug() << objectName() << "::set(" << recurring << ", "
              << frequency    << ", "     << period    << ", "
              << startDate    << ", "     << endDate   << ", "
-             << max          << ") entered";
+             << max          << ", "     << style     << ") entered";
   // run from the beginning of the start date to the end of the end date
   QDateTime startDateTime(startDate);
   QDateTime endDateTime(endDate.addDays(1));
   endDateTime = endDateTime.addMSecs(-1);
 
-  set(recurring, frequency, period, startDateTime, endDateTime, max);
+  set(recurring, frequency, period, startDateTime, endDateTime, max, style);
 }
 
-void RecurrenceWidget::set(bool recurring, int frequency, QString period, QDateTime start, QDateTime end, int max)
+void RecurrenceWidget::set(bool recurring, int frequency, QString period, QDateTime start, QDateTime end, int max, QString style)
 {
   if (DEBUG)
     qDebug() << objectName() << "::set(" << recurring << ", "
              << frequency    << ", "     << period    << ", "
              << start        << ", "     << end       << ", "
-             << max          << ") entered";
+             << max          << ", "     << style     << ") entered";
   setRecurring(recurring);
   setPeriod(period);
   setFrequency(frequency);
   setStartDateTime(start);
   setEndDateTime(end);
   setMax(max);
+  setStyle(style);
 
   _prevEndDateTime   = end.isValid() ? end : _eot ;
   _prevFrequency     = frequency;
@@ -736,6 +768,7 @@ void RecurrenceWidget::set(bool recurring, int frequency, QString period, QDateT
   _prevRecurring     = recurring;
   _prevStartDateTime = start;
   _prevMax           = max;
+  _prevStyle         = style;
 }
 
 void RecurrenceWidget::setEndDate(QDate p)
@@ -789,6 +822,19 @@ void RecurrenceWidget::setMaxVisible(bool p)
   _maxLit->setVisible(p);
 }
 
+void RecurrenceWidget::setStyle(QString style)
+{
+  _none->setChecked(false);
+  _one->setChecked(false);
+  _all->setChecked(false);
+  if (style=="KeepNone")
+    _none->setChecked(true);
+  if (style=="KeepOne")
+    _one->setChecked(true);
+  if (style=="KeepAll")
+    _all->setChecked(true);
+}
+
 void RecurrenceWidget::setMinPeriod(RecurrencePeriod min)
 {
   _period->clear();
@@ -828,7 +874,8 @@ bool RecurrenceWidget::setParent(int pid, QString ptype)
         recurq.value("recur_period").toString(),
         recurq.value("recur_start").toDateTime(),
         recurq.value("recur_end").toDateTime(),
-        recurq.value("recur_max").toInt());
+        recurq.value("recur_max").toInt(),
+        recurq.value("recur_style").toString());
     _id             = recurq.value("recur_id").toInt();
     _prevParentId   = _parentId;
     _prevParentType = _parentType;
@@ -921,47 +968,28 @@ bool RecurrenceWidget::startTimeVisible() const
 
 // scripting exposure /////////////////////////////////////////////////////////
 
-QScriptValue RecurrenceWidgettoScriptValue(QScriptEngine *engine, RecurrenceWidget* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void RecurrenceWidgetfromScriptValue(const QScriptValue &obj, RecurrenceWidget* &item)
-{
-  item = qobject_cast<RecurrenceWidget*>(obj.toQObject());
-}
-
 QScriptValue constructRecurrenceWidget(QScriptContext *context,
                                        QScriptEngine  *engine)
 {
+#if QT_VERSION >= 0x050000
   QWidget *parent = (qscriptvalue_cast<QWidget*>(context->argument(0)));
   const char *objname = "_recurrenceWidget";
   if (context->argumentCount() > 1)
     objname = context->argument(1).toString().toLatin1().data();
   return engine->toScriptValue(new RecurrenceWidget(parent, objname));
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupRecurrenceWidget(QScriptEngine *engine)
 {
-  QScriptValue::PropertyFlags stdflags = QScriptValue::ReadOnly |
-                                         QScriptValue::Undeletable;
+  if (! engine->globalObject().property("RecurrenceWidget").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructRecurrenceWidget);
+    QScriptValue meta = engine->newQMetaObject(&RecurrenceWidget::staticMetaObject, ctor);
 
-  qScriptRegisterMetaType(engine, RecurrenceWidgettoScriptValue,
-                          RecurrenceWidgetfromScriptValue);
-
-  QScriptValue constructor = engine->newFunction(constructRecurrenceWidget);
-  engine->globalObject().setProperty("RecurrenceWidget", constructor, stdflags);
-
-  constructor.setProperty("Never",   QScriptValue(engine, RecurrenceWidget::Never), stdflags);
-  constructor.setProperty("Minutely",QScriptValue(engine, RecurrenceWidget::Minutely), stdflags);
-  constructor.setProperty("Hourly",  QScriptValue(engine, RecurrenceWidget::Hourly), stdflags);
-  constructor.setProperty("Daily",   QScriptValue(engine, RecurrenceWidget::Daily), stdflags);
-  constructor.setProperty("Weekly",  QScriptValue(engine, RecurrenceWidget::Weekly), stdflags);
-  constructor.setProperty("Monthly", QScriptValue(engine, RecurrenceWidget::Monthly), stdflags);
-  constructor.setProperty("Yearly",  QScriptValue(engine, RecurrenceWidget::Yearly), stdflags);
-  constructor.setProperty("Custom",  QScriptValue(engine, RecurrenceWidget::Custom), stdflags);
-
-  constructor.setProperty("NoPolicy",     QScriptValue(engine, RecurrenceWidget::NoPolicy), stdflags);
-  constructor.setProperty("IgnoreFuture", QScriptValue(engine, RecurrenceWidget::IgnoreFuture), stdflags);
-  constructor.setProperty("ChangeFuture", QScriptValue(engine, RecurrenceWidget::ChangeFuture), stdflags);
+    engine->globalObject().setProperty("RecurrenceWidget", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

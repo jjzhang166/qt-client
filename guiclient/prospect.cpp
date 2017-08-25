@@ -134,7 +134,7 @@ enum SetResponse prospect::set(const ParameterList &pParams)
   _active->setEnabled(canEdit);
   _contact->setEnabled(canEdit);
   _name->setEnabled(canEdit);
-  _newQuote->setEnabled(canEdit);
+  _newQuote->setEnabled(cEdit == _mode);
   _notes->setReadOnly(! canEdit);
   _salesrep->setEnabled(canEdit);
   _site->setEnabled(canEdit);

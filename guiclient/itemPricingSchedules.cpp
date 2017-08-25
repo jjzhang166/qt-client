@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -33,7 +33,6 @@ itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt
   connect(_searchFor, SIGNAL(textChanged(const QString&)), this, SLOT(sSearch(const QString&)));
   connect(_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(_showFuture, SIGNAL(toggled(bool)), this, SLOT(sFillList()));
-  connect(_ipshead, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
   connect(_view, SIGNAL(clicked()), this, SLOT(sView()));
   connect(_copy, SIGNAL(clicked()), this, SLOT(sCopy()));
 
@@ -44,14 +43,17 @@ itemPricingSchedules::itemPricingSchedules(QWidget* parent, const char* name, Qt
 
   if (_privileges->check("MaintainPricingSchedules"))
   {
+    _new->setEnabled(true);
     connect(_ipshead, SIGNAL(valid(bool)), _edit, SLOT(setEnabled(bool)));
     connect(_ipshead, SIGNAL(valid(bool)), _copy, SLOT(setEnabled(bool)));
     connect(_ipshead, SIGNAL(valid(bool)), _delete, SLOT(setEnabled(bool)));
-    connect(_ipshead, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
   }
   else
-  {
     _new->setEnabled(false);
+
+  if (_privileges->check("MaintainPricingSchedules ViewPricingSchedules"))
+  {
+    connect(_ipshead, SIGNAL(valid(bool)), _view, SLOT(setEnabled(bool)));
     connect(_ipshead, SIGNAL(itemSelected(int)), _view, SLOT(animateClick()));
   }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -42,41 +42,42 @@
 #define ITEMSRC_MULTORDQTY_COL		 9
 #define ITEMSRC_INVVENDORUOMRATIO_COL	10
 #define EARLIESTDATE_COL		11
-#define POITEM_ID_COL			12
-#define POITEM_STATUS_COL		13
-#define POITEM_POHEAD_ID_COL		14
-#define POITEM_LINENUMBER_COL		15
-#define POITEM_DUEDATE_COL		16
-#define POITEM_ITEMSITE_ID_COL		17
-#define POITEM_VEND_ITEM_DESCRIP_COL	18
-#define POITEM_VEND_UOM_COL		19
-#define POITEM_INVVENDUOMRATIO_COL	20
-#define POITEM_QTY_ORDERED_COL		21
-#define POITEM_QTY_RECEIVED_COL		22
-#define POITEM_QTY_RETURNED_COL		23
-#define POITEM_QTY_VOUCHERED_COL	24
-#define POITEM_UNITPRICE_COL		25
-#define POITEM_VEND_ITEM_NUMBER_COL	26
-#define POITEM_COMMENTS_COL		27
-#define POITEM_QTY_TORECEIVE_COL	28
-#define POITEM_EXPCAT_ID_COL		29
-#define POITEM_ITEMSRC_ID_COL		30
-#define POITEM_FREIGHT_COL		31
-#define POITEM_FREIGHT_RECEIVED_COL	32
-#define POITEM_FREIGHT_VOUCHERED_COL	33
-#define POITEM_PRJ_ID_COL		34
-#define POITEM_STDCOST_COL		35
-#define POITEM_BOM_REV_ID_COL           36
-#define POITEM_BOO_REV_ID_COL           37
-#define POITEM_MANUF_NAME_COL           38
-#define POITEM_MANUF_ITEM_NUMBER_COL    39
-#define POITEM_MANUF_ITEM_DESCRIP_COL   40
-#define POITEM_TAXTYPE_ID_COL           41
-#define POITEM_TAX_RECOVERABLE_COL      42
-#define POITEM_RLSD_DUEDATE_COL         43
-#define POITEM_ORDER_ID_COL             44
-#define POITEM_ORDER_TYPE_COL           45
-#define POITEM_OBJ_UUID                 46
+#define TAXTYPE_NAME_COL                12
+#define POITEM_ID_COL			13
+#define POITEM_STATUS_COL		14
+#define POITEM_POHEAD_ID_COL		15
+#define POITEM_LINENUMBER_COL		16
+#define POITEM_DUEDATE_COL		17
+#define POITEM_ITEMSITE_ID_COL		18
+#define POITEM_VEND_ITEM_DESCRIP_COL	19
+#define POITEM_VEND_UOM_COL		20
+#define POITEM_INVVENDUOMRATIO_COL	21
+#define POITEM_QTY_ORDERED_COL		22
+#define POITEM_QTY_RECEIVED_COL		23
+#define POITEM_QTY_RETURNED_COL		24
+#define POITEM_QTY_VOUCHERED_COL	25
+#define POITEM_UNITPRICE_COL		26
+#define POITEM_VEND_ITEM_NUMBER_COL	27
+#define POITEM_COMMENTS_COL		28
+#define POITEM_QTY_TORECEIVE_COL	29
+#define POITEM_EXPCAT_ID_COL		30
+#define POITEM_ITEMSRC_ID_COL		31
+#define POITEM_FREIGHT_COL		32
+#define POITEM_FREIGHT_RECEIVED_COL	33
+#define POITEM_FREIGHT_VOUCHERED_COL	34
+#define POITEM_PRJ_ID_COL		35
+#define POITEM_STDCOST_COL		36
+#define POITEM_BOM_REV_ID_COL           37
+#define POITEM_BOO_REV_ID_COL           38
+#define POITEM_MANUF_NAME_COL           39
+#define POITEM_MANUF_ITEM_NUMBER_COL    40
+#define POITEM_MANUF_ITEM_DESCRIP_COL   41
+#define POITEM_TAXTYPE_ID_COL           42
+#define POITEM_TAX_RECOVERABLE_COL      43
+#define POITEM_RLSD_DUEDATE_COL         44
+#define POITEM_ORDER_ID_COL             45
+#define POITEM_ORDER_TYPE_COL           46
+#define POITEM_OBJ_UUID                 47
 
 class PoitemTableModel : public QSqlRelationalTableModel
 {

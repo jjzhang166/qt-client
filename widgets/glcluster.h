@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -15,6 +15,9 @@
 #include "parameter.h"
 #include "projectcluster.h"
 #include <QComboBox>
+
+class QHBoxLayout;
+class XCheckBox;
 
 class XTUPLEWIDGETS_EXPORT accountList : public VirtualList
 {
@@ -116,6 +119,7 @@ class XTUPLEWIDGETS_EXPORT GLCluster : public VirtualCluster
       cRevenue    = 0x08,
       cEquity     = 0x10
     };
+    Q_ENUM(Type)
 
     Q_INVOKABLE unsigned int type()  const       { return static_cast<GLClusterLineEdit*>(_number)->type(); }
     Q_INVOKABLE void setType(unsigned int pType) { static_cast<GLClusterLineEdit*>(_number)->setType(pType); }
@@ -145,6 +149,8 @@ class XTUPLEWIDGETS_EXPORT GLCluster : public VirtualCluster
     bool             _projectVisible;
     int              _id;
 };
+
+void setupGLCluster(QScriptEngine *engine);
 
 #endif
 

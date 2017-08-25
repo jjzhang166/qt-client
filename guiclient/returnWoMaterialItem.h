@@ -34,6 +34,8 @@ protected slots:
     virtual void languageChange();
 
 private:
+    int _itemsiteId;
+    bool _controlledItem;
     bool _captive;
     double _cachedQOH;
 

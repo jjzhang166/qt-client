@@ -145,6 +145,10 @@ class salesOrderItem : public XDialog, public Ui::salesOrderItem
     QString _priceType;
     QString _priceMode;
     QString _supplyOrderType;
+    int     _itemsiteLastItemid;
+    int     _itemsiteLastWarehousid;
+    int     _itemsubsLastItemid;
+    int     _itemsubsLastWarehousid;
 
     // For holding variables for characteristic pricing
     QList<QVariant> _charVars;

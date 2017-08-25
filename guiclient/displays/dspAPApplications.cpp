@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -43,6 +43,7 @@ dspAPApplications::dspAPApplications(QWidget* parent, const char*, Qt::WindowFla
   list()->addColumn(tr("Amount"),     _moneyColumn, Qt::AlignRight, true, "apapply_amount");
   list()->addColumn(tr("Currency"),_currencyColumn, Qt::AlignLeft,  true, "currAbbr");
   list()->addColumn(tr("Amount (in %1)").arg(CurrDisplay::baseCurrAbbr()),_moneyColumn, Qt::AlignRight, true, "base_applied");
+  list()->addColumn(tr("Reversed"),      _ynColumn, Qt::AlignRight, false, "apapply_reversed");
 
 }
 
@@ -166,6 +167,25 @@ void dspAPApplications::sViewVoucher()
                        dspViewVoucher, __FILE__, __LINE__);
 }
 
+void dspAPApplications::sReverseApplication()
+{
+  XSqlQuery reverseApp;
+
+  reverseApp.prepare("SELECT reverseapapplication(:applyid)");
+  reverseApp.bindValue(":applyid", list()->id());
+  reverseApp.exec();
+  if (reverseApp.first())
+    QMessageBox::critical( this, tr("Reverse Application"),
+                           tr("A/R Application has been reversed.") );
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Reversing A/P Application"),
+                                reverseApp, __FILE__, __LINE__))
+  {
+    return;
+  }
+
+  sFillList();
+}
+
 void dspAPApplications::sPopulateMenu(QMenu* pMenu, QTreeWidgetItem*, int)
 {
   QAction *menuItem;
@@ -194,6 +214,14 @@ void dspAPApplications::sPopulateMenu(QMenu* pMenu, QTreeWidgetItem*, int)
     menuItem->setEnabled(_privileges->check("MaintainVouchers") ||
                          _privileges->check("ViewVouchers"));
   }
+
+  if (! list()->currentItem()->rawValue("apapply_reversed").toBool())
+  {
+    menuItem = pMenu->addAction(tr("Reverse Application"), this, SLOT(sReverseApplication()));
+    if (! _privileges->check("ReverseAPApplication"))
+      menuItem->setEnabled(false);
+  }
+
 }
 
 bool dspAPApplications::setParams(ParameterList & params)

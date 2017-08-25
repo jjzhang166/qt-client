@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -9,14 +9,24 @@
  */
 
 #include <QApplication>
+#include <QCompleter>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
 #include <QSqlRecord>
 #include <QStandardItemEditorCreator>
+#include <QTreeView>
+#include <QVBoxLayout>
+#include <QtScript>
 
 #include <xsqlquery.h>
 
+#include "guiclientinterface.h"
 #include "itemcluster.h"
 #include "itemAliasList.h"
+#include "xcheckbox.h"
+#include "xtreewidget.h"
 #include "xsqltablemodel.h"
 
 #define DEBUG false
@@ -937,11 +947,9 @@ ItemCluster::ItemCluster(QWidget* pParent, const char* pName) :
   ItemLineEdit* itemNumber = static_cast<ItemLineEdit* >(_number);
   connect(itemNumber, SIGNAL(aliasChanged(const QString &)), this, SIGNAL(aliasChanged(const QString &)));
   connect(itemNumber, SIGNAL(privateIdChanged(int)), this, SIGNAL(privateIdChanged(int)));
-  connect(itemNumber, SIGNAL(newId(int)), this, SIGNAL(newId(int)));
   connect(itemNumber, SIGNAL(uomChanged(const QString &)), this, SIGNAL(uomChanged(const QString &)));
   connect(itemNumber, SIGNAL(descrip1Changed(const QString &)), this, SIGNAL(descrip1Changed(const QString &)));
   connect(itemNumber, SIGNAL(descrip2Changed(const QString &)), this, SIGNAL(descrip2Changed(const QString &)));
-  connect(itemNumber, SIGNAL(valid(bool)), this, SIGNAL(valid(bool)));
   connect(itemNumber, SIGNAL(warehouseIdChanged(int)), this, SIGNAL(warehouseIdChanged(int)));
   connect(itemNumber, SIGNAL(typeChanged(const QString &)), this, SIGNAL(typeChanged(const QString &)));
   connect(itemNumber, SIGNAL(upcChanged(const QString &)), this, SIGNAL(upcChanged(const QString &)));
@@ -955,22 +963,22 @@ ItemCluster::ItemCluster(QWidget* pParent, const char* pName) :
 
 void ItemCluster::addNumberWidget(VirtualClusterLineEdit* pNumberWidget)
 {
-	VirtualClusterLineEdit *matchType = qobject_cast<VirtualClusterLineEdit *>(pNumberWidget);
+  VirtualClusterLineEdit *matchType = qobject_cast<VirtualClusterLineEdit *>(pNumberWidget);
 
-	if(matchType == 0)
-	  return;
-	  
-    _number = matchType;
-    
-    if (! _number)
-      return;
+  if(matchType == 0)
+    return;
 
-    _grid->addWidget(_number, 0, 1);
-    setFocusProxy(pNumberWidget);
+  _number = matchType;
 
-    connect(_number,	SIGNAL(newId(int)),	this,	 SIGNAL(newId(int)));
-    connect(_number,	SIGNAL(parsed()), 	this, 	 SLOT(sRefresh()));
-    connect(_number,	SIGNAL(valid(bool)),	this,	 SIGNAL(valid(bool)));
+  if (! _number)
+    return;
+
+  _grid->addWidget(_number, 0, 1);
+  setFocusProxy(pNumberWidget);
+
+  connect(_number,      SIGNAL(newId(int)),     this,    SIGNAL(newId(int)));
+  connect(_number,      SIGNAL(parsed()),       this,    SLOT(sRefresh()));
+  connect(_number,      SIGNAL(valid(bool)),    this,    SIGNAL(valid(bool)));
 }
 
 void ItemCluster::setDescriptionVisible(const bool p)
@@ -1383,4 +1391,47 @@ void itemSearch::sFillList()
   search.bindValue(":searchString", _search->text());
   search.exec();
   _listTab->populate(search, _itemid);
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+void setupItemLineEdit(QScriptEngine *engine)
+{
+  // cannot use engine->newQMetaObject because cActive goes negative
+  QScriptValue::PropertyFlags ro = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+  QScriptValue widget = engine->globalObject().property("ItemLineEdit");
+  if (! widget.isObject()) {
+    widget = engine->newObject();
+    engine->globalObject().setProperty("ItemLineEdit", widget, ro);
+  }
+
+  widget.setProperty("cUndefined",          QScriptValue(engine, ItemLineEdit::cUndefined),          ro);
+  widget.setProperty("cPurchased",          QScriptValue(engine, ItemLineEdit::cPurchased),          ro);
+  widget.setProperty("cManufactured",       QScriptValue(engine, ItemLineEdit::cManufactured),       ro);
+  widget.setProperty("cPhantom",            QScriptValue(engine, ItemLineEdit::cPhantom),            ro);
+  widget.setProperty("cBreeder",            QScriptValue(engine, ItemLineEdit::cBreeder),            ro);
+  widget.setProperty("cCoProduct",          QScriptValue(engine, ItemLineEdit::cCoProduct),          ro);
+  widget.setProperty("cByProduct",          QScriptValue(engine, ItemLineEdit::cByProduct),          ro);
+  widget.setProperty("cReference",          QScriptValue(engine, ItemLineEdit::cReference),          ro);
+  widget.setProperty("cCosting",            QScriptValue(engine, ItemLineEdit::cCosting),            ro);
+  widget.setProperty("cTooling",            QScriptValue(engine, ItemLineEdit::cTooling),            ro);
+  widget.setProperty("cOutsideProcess",     QScriptValue(engine, ItemLineEdit::cOutsideProcess),     ro);
+  widget.setProperty("cPlanning",           QScriptValue(engine, ItemLineEdit::cPlanning),           ro);
+  widget.setProperty("cKit",                QScriptValue(engine, ItemLineEdit::cKit),                ro);
+  widget.setProperty("cAllItemTypes_Mask",  QScriptValue(engine, ItemLineEdit::cAllItemTypes_Mask),  ro);
+  widget.setProperty("cPlanningMRP",        QScriptValue(engine, ItemLineEdit::cPlanningMRP),        ro);
+  widget.setProperty("cPlanningMPS",        QScriptValue(engine, ItemLineEdit::cPlanningMPS),        ro);
+  widget.setProperty("cPlanningNone",       QScriptValue(engine, ItemLineEdit::cPlanningNone),       ro);
+  widget.setProperty("cPlanningAny",        QScriptValue(engine, ItemLineEdit::cPlanningAny),        ro);
+  widget.setProperty("cItemActive",         QScriptValue(engine, ItemLineEdit::cItemActive),         ro);
+  widget.setProperty("cSold",               QScriptValue(engine, ItemLineEdit::cSold),               ro);
+  widget.setProperty("cLocationControlled", QScriptValue(engine, ItemLineEdit::cLocationControlled), ro);
+  widget.setProperty("cLotSerialControlled",QScriptValue(engine, ItemLineEdit::cLotSerialControlled),ro);
+  widget.setProperty("cDefaultLocation",    QScriptValue(engine, ItemLineEdit::cDefaultLocation),    ro);
+  widget.setProperty("cActive",             QScriptValue(engine, ItemLineEdit::cActive),             ro);
+  widget.setProperty("cGeneralManufactured",QScriptValue(engine, ItemLineEdit::cGeneralManufactured),ro);
+  widget.setProperty("cGeneralPurchased",   QScriptValue(engine, ItemLineEdit::cGeneralPurchased),   ro);
+  widget.setProperty("cGeneralComponents",  QScriptValue(engine, ItemLineEdit::cGeneralComponents),  ro);
+  widget.setProperty("cGeneralInventory",   QScriptValue(engine, ItemLineEdit::cGeneralInventory),   ro);
+  widget.setProperty("cKitComponents",      QScriptValue(engine, ItemLineEdit::cKitComponents),      ro);
 }

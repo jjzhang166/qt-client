@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -37,7 +37,7 @@ characteristics::characteristics(QWidget* parent, const char* name, Qt::WindowFl
   if (_privileges->check("MaintainCharacteristics"))
   {
     connect(_char, SIGNAL(itemSelected(int)), _edit, SLOT(animateClick()));
-    connect(_char, SIGNAL(valid(bool)),     _delete, SLOT(setEnabled(bool)));
+    connect(_char, SIGNAL(valid(bool)),       _delete, SLOT(setEnabled(bool)));
     connect(_char, SIGNAL(valid(bool)),       _edit, SLOT(setEnabled(bool)));
     connect(_char, SIGNAL(valid(bool)),       _view, SLOT(setEnabled(bool)));
   }
@@ -50,6 +50,7 @@ characteristics::characteristics(QWidget* parent, const char* name, Qt::WindowFl
 
   _char->addColumn(tr("Name"), _itemColumn, Qt::AlignLeft, true, "char_name");
   _char->addColumn(tr("Description"),   -1, Qt::AlignLeft, true, "char_notes");
+  _char->addColumn(tr("Group"),         -1, Qt::AlignLeft, true, "char_group");
 
   sFillList();
 }
@@ -130,7 +131,7 @@ void characteristics::sPrint()
 void characteristics::sFillList()
 {
   XSqlQuery characteristicsFillList;
-  characteristicsFillList.prepare("SELECT char_id, char_name, char_notes "
+  characteristicsFillList.prepare("SELECT char_id, char_name, char_notes, char_group "
             "FROM char "
             "ORDER BY char_name;");
   characteristicsFillList.exec();

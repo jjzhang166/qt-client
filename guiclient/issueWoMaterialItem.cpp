@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -135,6 +135,7 @@ void issueWoMaterialItem::sCatchItemsiteid(int pItemsiteid)
 void issueWoMaterialItem::sIssue()
 {
   XSqlQuery issueIssue;
+  int itemlocSeries;
   if (!_transDate->isValid())
   {
     QMessageBox::critical(this, tr("Invalid date"),
@@ -142,22 +143,46 @@ void issueWoMaterialItem::sIssue()
     _transDate->setFocus();
     return;
   }
+
+  // Stage distribution cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+  // Get the parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+                            parentSeries, __FILE__, __LINE__);
+    return;
+  }
   
-  issueIssue.prepare("SELECT itemsite_id, item_number, warehous_code, "
+  issueIssue.prepare("SELECT womatl_wo_id, itemsite_id, item_number, warehous_code, "
             "       (COALESCE((SELECT SUM(itemloc_qty) "
             "                    FROM itemloc "
-            "                   WHERE (itemloc_itemsite_id=itemsite_id)), 0.0) >= roundQty(item_fractional, itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, :qty))) AS isqtyavail "
+            "                   WHERE (itemloc_itemsite_id=itemsite_id)), 0.0) >= roundQty(item_fractional, itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, :qty))) AS isqtyavail, "
+            "       formatWoNumber(womatl_wo_id) AS wo_number, "
+            "       roundQty(item_fractional, itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, :qty)) * -1 AS post_qty "
             "  FROM womatl, itemsite, item, whsinfo "
             " WHERE ((womatl_itemsite_id=itemsite_id) "
             "   AND (itemsite_item_id=item_id) "
             "   AND (itemsite_warehous_id=warehous_id) "
             "   AND (NOT ((item_type = 'R') OR (itemsite_controlmethod = 'N'))) "
-            "   AND ((itemsite_controlmethod IN ('L', 'S')) OR (itemsite_loccntrl)) "
-            "   AND (womatl_id=:womatl_id)); ");
+            "   AND isControlledItemsite(itemsite_id) "
+            "   AND (womatl_id=:womatl_id)) "
+            " ORDER BY womatl_id; ");
   issueIssue.bindValue(":womatl_id", _womatl->id());
   issueIssue.bindValue(":qty", _qtyToIssue->toDouble());
   issueIssue.exec();
-  while(issueIssue.next())
+  // How could there be more than one record??
+  if (issueIssue.first())
   {
     if(!(issueIssue.value("isqtyavail").toBool()))
     {
@@ -170,33 +195,58 @@ void issueWoMaterialItem::sIssue()
           .arg(issueIssue.value("warehous_code").toString()));
       return;
     }
+
+    // Create the parent itemlocdist record for each line item requiring distribution, call distributeInventory::seriesAdjust
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'WO', "
+                              " :orderitemId, :itemlocSeries, NULL, NULL, 'IM');");
+    parentItemlocdist.bindValue(":itemsite_id", issueIssue.value("itemsite_id").toInt());
+    parentItemlocdist.bindValue(":qty", issueIssue.value("post_qty").toDouble());
+    parentItemlocdist.bindValue(":orderitemId", issueIssue.value("womatl_wo_id").toInt());
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information( this, tr("Material Issue"), tr("Detail Distribution was Cancelled") );
+        return;
+      }
+    }
+    else
+    {
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                              parentItemlocdist, __FILE__, __LINE__);
+      return;
+    }
   }
 
+  // Wrap issueWoMaterial and INSERT in a transaction in case insert fails.
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
-  issueIssue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-  issueIssue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, true, :date) AS result;");
+  // Post inventory
+  issueIssue.exec("BEGIN;");
+  issueIssue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, :itemlocSeries, true, :date, true) AS result;");
   issueIssue.bindValue(":womatl_id", _womatl->id());
   issueIssue.bindValue(":qty", _qtyToIssue->toDouble());
+  issueIssue.bindValue(":itemlocSeries", itemlocSeries);
   issueIssue.bindValue(":date",  _transDate->date());
   issueIssue.exec();
   if (issueIssue.first())
   {
     int result = issueIssue.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material To Work Order #: %1")
                            .arg(_wo->id()),
                             storedProcErrorLookup("issueWoMaterial", result),
                             __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(issueIssue.value("result").toInt(), this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Material Issue"), tr("Transaction Canceled") );
       return;
     }
 
@@ -219,22 +269,24 @@ void issueWoMaterialItem::sIssue()
       if (lsdetail.lastError().type() != QSqlError::NoError)
       {
         rollback.exec();
+        cleanup.exec();
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Updating Work Order Material Information"),
                              lsdetail, __FILE__, __LINE__);
         return;
       }
     }
-
-    issueIssue.exec("COMMIT;");
   }
   else
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Material to Work Order #: %1")
                          .arg(_wo->id()),
                          issueIssue, __FILE__, __LINE__);
     return;
   }
+
+  issueIssue.exec("COMMIT;");
 
   if (_captive)
     close();

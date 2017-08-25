@@ -89,7 +89,7 @@ void dspWoHistoryByNumber::sEdit()
   params.append("mode", "edit");
   params.append("wo_id", list()->id());
 
-  workOrder *newdlg = new workOrder();
+  workOrder *newdlg = new workOrder(this);
   newdlg->set(params);
   omfgThis->handleNewWindow(newdlg);
 }

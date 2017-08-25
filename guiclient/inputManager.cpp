@@ -109,7 +109,7 @@ InputManagerPrivate::InputManagerPrivate(InputManager *parent)
     addToEventList("TOLI", cBCTransferOrderLineItem, 1, 1, 0, "Transfer Order Line %1-%2",      "SELECT tohead_id AS id, toitem_id AS altid, toitem_item_id AS seq FROM tohead JOIN toitem ON toitem_tohead_id=tohead_id WHERE tohead_number = :f1 AND toitem_linenumber = :f2;" );
     addToEventList("ISXX", cBCItemSite,              2, 1, 0, "Item %1, Site %2",               "SELECT itemsite_id AS id, itemsite_item_id AS altid FROM itemsite JOIN item ON itemsite_item_id=item_id JOIN whsinfo ON itemsite_warehous_id = warehous_id WHERE item_number = :f1 AND warehous_code = :f2;" );
     addToEventList("ITXX", cBCItem,                  2, 0, 0, "Item %1",                        "SELECT item_id AS id FROM item WHERE item_number = :f1;" );
-    addToEventList("ITUP", cBCUPCCode,               0, 0, 0, "UPC %1 for Item %2",             "SELECT item_id, item_number FROM item WHERE item_upccode = :f1);" );
+    addToEventList("ITUP", cBCUPCCode,               0, 0, 0, "UPC %1 for Item %2",             "SELECT item_id, item_number FROM item WHERE item_upccode = :f1 AND item_active);" );
 //  addToEventList("ITEA", cBCEANCode,               0, 0, 0 );
     addToEventList("CTXX", cBCCountTag,              2, 0, 0, "Count Tag %1",                   "SELECT invcnt_id AS id FROM invcnt WHERE invcnt_tagnumber = :f1;" );
     addToEventList("LOXX", cBCLocation,              1, 2, 0, "Site %1, Location %2",           "SELECT location_id AS id FROM location JOIN whsinfo ON location_warehous_id = warehous_id WHERE warehous_code = :f1 AND location_name = :f2;" );
