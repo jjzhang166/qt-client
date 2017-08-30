@@ -11,8 +11,8 @@
 #include "version.h"
 
 QString _Name        = "xTuple ERP: %1 Edition";
-QString _Version     = "4.10.2";
-QString _dbVersion   = "4.10.2";
+QString _Version     = "4.10.3";
+QString _dbVersion   = "4.10.3";
 QString _Copyright   = "Copyright (c) 1999-2017, OpenMFG, LLC, d/b/a xTuple.";
 QString _ConnAppName = "xTuple ERP (qt-client)";
 
