@@ -36,6 +36,7 @@ public slots:
     virtual void sDataChanged();
     virtual void sDistributions();
     virtual void sDistributeLine();
+    virtual void sDistributeFreight();
     virtual void sClear();
     virtual void sDistributeAll();
     virtual void sNewMiscDistribution();
@@ -43,6 +44,7 @@ public slots:
     virtual void sDeleteMiscDistribution();
     virtual void sFillList();
     virtual void sFillMiscList();
+    virtual void sFreightDistribution(bool);
     virtual void sPopulatePoInfo();
     virtual void sPopulateDistributed();
     virtual void sPopulateBalanceDue();
@@ -58,6 +60,7 @@ public slots:
     virtual void sPopulateDueDate();
     virtual void sView();
     virtual bool saveDetail();
+    virtual void sIsDistributed();
 
 protected:
     virtual void keyPressEvent( QKeyEvent * e );
@@ -70,6 +73,7 @@ private:
     int _vendid;
     int _voheadid;
     int _mode;
+    double _frghtdistr;
 };
 
 #endif // VOUCHER_H

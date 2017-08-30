@@ -90,6 +90,7 @@ class menuSales : public QObject
     void sDspOrderLookupByItem();
     void sDspQuoteLookupByCustomer();
     void sDspQuoteLookupByItem();
+    void sDspReturnAuthLookup();
     void sDspReturnAuthLookupByItem();
     void sDspInventoryAvailability();
     void sDspInventoryAvailabilityByCustomerType();

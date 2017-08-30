@@ -191,11 +191,11 @@ void reserveSalesOrderItem::populate()
 
     if (_metrics->boolean("SOManualReservations") && (_locControl || _controlMethod == "L" || _controlMethod == "S"))
     {
-      connect(_bcReserve,       SIGNAL(clicked()), this, SLOT(sBcReserve()));
-      connect(_reserve,         SIGNAL(clicked()), this, SLOT(sReserveLocation()));
-      connect(_unreserve,       SIGNAL(clicked()), this, SLOT(sUnreserveLocation()));
-      connect(_itemloc, SIGNAL(itemSelected(int)), this, SLOT(sReserveLocation()));
-      connect(_bc,   SIGNAL(textChanged(QString)), this, SLOT(sBcChanged(QString)));
+      connect(_bcReserve,       SIGNAL(clicked()), this, SLOT(sBcReserve()), Qt::UniqueConnection);
+      connect(_reserve,         SIGNAL(clicked()), this, SLOT(sReserveLocation()), Qt::UniqueConnection);
+      connect(_unreserve,       SIGNAL(clicked()), this, SLOT(sUnreserveLocation()), Qt::UniqueConnection);
+      connect(_itemloc, SIGNAL(itemSelected(int)), this, SLOT(sReserveLocation()), Qt::UniqueConnection);
+      connect(_bc,   SIGNAL(textChanged(QString)), this, SLOT(sBcChanged(QString)), Qt::UniqueConnection);
       
       //If not lot serial control, hide info
       if (!_metrics->boolean("LotSerialControl"))

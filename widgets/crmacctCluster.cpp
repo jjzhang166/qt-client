@@ -1,12 +1,17 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
+
+#include <QDialogButtonBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QtScript>
 
 #include <metasql.h>
 
@@ -14,6 +19,7 @@
 #include "custcluster.h"
 #include "errorReporter.h"
 #include "xcombobox.h"
+#include "xtreewidget.h"
 
 /* _listAndSearchQueryString is, as you may have guessed, shared by the
    CRMAcctList and CRMAcctSearch classes. It's a big 'un and has a couple
@@ -46,23 +52,24 @@ static QString _listAndSearchQueryString(
       "      LEFT OUTER JOIN cntct ON (emp_cntct_id=cntct_id)"
       "<? elseif exists('salesrep') ?>"
       "    SELECT salesrep_id AS id,         salesrep_number AS number,"
-      "           salesrep_name AS name,     NULL AS cntct_id,"
-      "           salesrep_active AS active, NULL AS addr_id"
+      "           salesrep_name AS name,     NULL::INTEGER AS cntct_id,"
+      "           salesrep_active AS active, NULL::INTEGER AS addr_id"
       "      FROM salesrep"
       "<? elseif exists('taxauth') ?>"
       "    SELECT taxauth_id AS id,     taxauth_code AS number,"
-      "           taxauth_name AS name, NULL AS cntct_id,"
+      "           taxauth_name AS name, NULL::INTEGER AS cntct_id,"
       "           true AS active,       taxauth_addr_id AS addr_id"
       "      FROM taxauth"
       "<? elseif exists('user') ?>"
       "    SELECT usr_id AS id,           usr_username AS number,"
-      "           usr_propername AS name, NULL AS cntct_id,"
-      "           usr_active AS active,   NULL AS addr_id"
+      "           usr_propername AS name, NULL::INTEGER AS cntct_id,"
+      "           usr_active AS active,   NULL::INTEGER AS addr_id"
       "      FROM usr"
       "<? elseif exists('vendor') ?>"
       "    SELECT vend_id AS id,         vend_number AS number,"
       "           vend_name AS name,     vend_cntct1_id AS cntct_id,"
       "           vend_active AS active, COALESCE(cntct_addr_id, vend_addr_id) AS addr_id,"
+      "           vend_vendtype_id AS combo_id,"
       "           vendtype_code AS type"
       "      FROM vendinfo"
       "      JOIN vendtype ON (vend_vendtype_id=vendtype_id)"
@@ -82,6 +89,7 @@ static QString _listAndSearchQueryString(
       "<? if exists('searchString') ?>"
       "   WHERE "
       "    <? if exists('activeOnly') ?> active AND <? endif ?>"
+      "    <? if exists('combo_id') ?> combo_id = <? value('combo_id') ?> AND <? endif ?>"
       "      (false "
       "    <? if exists('searchNumber') ?>"
       "       OR (UPPER(number) ~ <? value('searchString') ?>)"
@@ -347,7 +355,8 @@ void CRMAcctList::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
   case CRMAcctLineEdit::Vend:
     setWindowTitle(tr("Search For Vendor"));
     _queryParams->append("vendor");
-    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
+    if (!(_listTab->column("type") > 0))
+      _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
     break;
 
   case CRMAcctLineEdit::CustAndProspect:
@@ -664,7 +673,8 @@ void CRMAcctSearch::setSubtype(const CRMAcctLineEdit::CRMAcctSubtype subtype)
     _searchNumber->setText(tr("Vendor Number"));
     _searchName->setText(tr("Vendor Name"));
     _addressLit->setText(tr("Main Address:"));
-    _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
+    if (!(_listTab->column("type") > 0))
+      _listTab->addColumn("Vend. Type", _itemColumn, Qt::AlignLeft, true, "type");
     break;
 
   case CRMAcctLineEdit::CustAndProspect:
@@ -774,4 +784,32 @@ void CRMAcctSearch::sFillList()
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Database Error"),
                            fillq, __FILE__, __LINE__))
     return;
+}
+
+// script exposure /////////////////////////////////////////////////////////////
+
+QScriptValue CRMAcctSubtypeToScriptValue(QScriptEngine *engine, const enum CRMAcctLineEdit::CRMAcctSubtype &val)
+{
+  return QScriptValue(engine, (int)val);
+}
+
+void CRMAcctSubtypeFromScriptValue(const QScriptValue &obj, enum CRMAcctLineEdit::CRMAcctSubtype &val)
+{
+  val = (enum CRMAcctLineEdit::CRMAcctSubtype)obj.toInt32();
+}
+
+void setupCRMAcctLineEdit(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("CRMAcctLineEdit").isObject())
+  {
+#if QT_VERSION >= 0x050500
+    qScriptRegisterMetaType(engine, CRMAcctSubtypeToScriptValue, CRMAcctSubtypeFromScriptValue);
+#endif
+
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&CRMAcctLineEdit::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("CRMAcctLineEdit", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

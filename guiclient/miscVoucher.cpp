@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -39,8 +39,6 @@ miscVoucher::miscVoucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_new,                  SIGNAL(clicked()),                      this, SLOT(sNewMiscDistribution()));
   connect(_save,                 SIGNAL(clicked()),                      this, SLOT(sSave()));
   connect(_voucherNumber,        SIGNAL(editingFinished()),              this, SLOT(sHandleVoucherNumber()));
-  connect(_taxzone,              SIGNAL(newID(int)),                     this, SLOT(sDistributionDateUpdated()));
-  connect(_distributionDate,     SIGNAL(newDate(const QDate&)),          this, SLOT(sDistributionDateUpdated()));
 
   _terms->setType(XComboBox::APTerms);
 
@@ -126,7 +124,6 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
       _invoiceDate->setEnabled(false);
       _dueDate->setEnabled(false);
       _terms->setEnabled(false);
-      _terms->setType(XComboBox::Terms);
       _vendor->setShowInactive(true);
       _invoiceNum->setEnabled(false);
       _reference->setEnabled(false);
@@ -139,7 +136,6 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
       _close->setText(tr("&Close"));
       _save->hide();
       _postVoucher->setVisible(false);
-
     }
   }
 
@@ -155,6 +151,9 @@ enum SetResponse miscVoucher::set(const ParameterList &pParams)
     _charass->setId(_voheadid);
     populate();
   }
+
+  connect(_taxzone,              SIGNAL(newID(int)),                     this, SLOT(sDistributionDateUpdated()));
+  connect(_distributionDate,     SIGNAL(newDate(const QDate&)),          this, SLOT(sDistributionDateUpdated()));
 
   return NoError;
 }
@@ -462,7 +461,8 @@ void miscVoucher::sEditMiscDistribution()
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
   {
-    sUpdateVoucherTax();
+    if (_miscDistrib->altId() != 4) // Don't auto update taxes to allow manual override
+      sUpdateVoucherTax();
     sFillMiscList();
     sPopulateDistributed();
   }

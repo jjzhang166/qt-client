@@ -125,6 +125,12 @@ void buyCard::sHandleVendor(int pVendorid)
 
 void buyCard::sHandleItemSource(int pItemsrcid)
 {
+  if (pItemsrcid < 0)
+  {
+    _poitem->clear();
+    return;
+  }
+
   XSqlQuery item;
   item.prepare( "SELECT itemsrc_vend_item_descrip, itemsrc_item_id, itemsrc_comments "
                 "FROM itemsrc "

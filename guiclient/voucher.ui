@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1033</width>
-    <height>820</height>
+    <width>1010</width>
+    <height>916</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -389,32 +389,6 @@ to be bound by its terms.</comment>
       <string/>
      </property>
      <layout class="QGridLayout">
-      <item row="6" column="0">
-       <widget class="XLabel" name="_freightExpcatLit">
-        <property name="text">
-         <string>Freight Exp. Category:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="ExpenseCluster" name="_freightExpcat">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Freight Expense Category</string>
-        </property>
-        <property name="label">
-         <string/>
-        </property>
-        <property name="descriptionVisible">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="_amountToDistributeLit">
         <property name="text">
@@ -496,42 +470,6 @@ to be bound by its terms.</comment>
         </property>
        </spacer>
       </item>
-      <item row="5" column="1">
-       <widget class="CurrCluster" name="_freight">
-        <property name="baseVisible">
-         <bool>false</bool>
-        </property>
-        <property name="currencyEditable" stdset="0">
-         <bool>false</bool>
-        </property>
-        <property name="currencyVisible">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="XLabel" name="_freightLit">
-        <property name="text">
-         <string>Freight:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <spacer name="horizontalSpacer_7">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="8" column="1">
        <widget class="CurrDisplay" name="_amountDistributed">
         <property name="minimumSize">
@@ -556,6 +494,142 @@ to be bound by its terms.</comment>
         <property name="buddy">
          <cstring>_amountDistributed</cstring>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QGroupBox" name="_freightGroup">
+        <property name="title">
+         <string>Freight</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="1">
+          <widget class="XLabel" name="_freightLit">
+           <property name="text">
+            <string>Freight:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="CurrCluster" name="_freight">
+           <property name="baseVisible">
+            <bool>false</bool>
+           </property>
+           <property name="currencyEditable" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="currencyVisible">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="4">
+          <widget class="QStackedWidget" name="_freightStack">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="page">
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="0" column="1">
+              <widget class="XLabel" name="_freightExpcatLit">
+               <property name="text">
+                <string>Freight Exp. Category:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="ExpenseCluster" name="_freightExpcat">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Freight Expense Category</string>
+               </property>
+               <property name="label">
+                <string/>
+               </property>
+               <property name="descriptionVisible">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_2">
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0">
+              <widget class="XLabel" name="_freightCostElementLit">
+               <property name="text">
+                <string>Cost Element:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="XComboBox" name="_freightCostElement"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QGroupBox" name="_freightDistrMethod">
+               <property name="title">
+                <string>Method</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QRadioButton" name="_freightDistQty">
+                  <property name="text">
+                   <string>Quantity</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="_freightDistVal">
+                  <property name="text">
+                   <string>Value</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="_freightDistWgt">
+                  <property name="text">
+                   <string>Weight</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="_distributeFreight">
+               <property name="text">
+                <string>Distribute</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QCheckBox" name="_freightDistr">
+           <property name="toolTip">
+            <string>Distribute freight cost to item cost element</string>
+           </property>
+           <property name="text">
+            <string>Distribute Freight</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -898,7 +972,7 @@ to be bound by its terms.</comment>
        <item>
         <widget class="Documents" name="_documents">
          <property name="type">
-          <number>0</number>
+          <enum>Documents::Voucher</enum>
          </property>
         </widget>
        </item>
@@ -912,67 +986,67 @@ to be bound by its terms.</comment>
  <customwidgets>
   <customwidget>
    <class>CharacteristicsWidget</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>characteristicswidget.h</header>
   </customwidget>
   <customwidget>
    <class>CurrCluster</class>
-   <extends></extends>
+   <extends>CurrDisplay</extends>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
    <class>CurrDisplay</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>currcluster.h</header>
   </customwidget>
   <customwidget>
    <class>DLineEdit</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>datecluster.h</header>
   </customwidget>
   <customwidget>
    <class>Documents</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>documents.h</header>
   </customwidget>
   <customwidget>
    <class>ExpenseCluster</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>expensecluster.h</header>
   </customwidget>
   <customwidget>
    <class>OrderCluster</class>
-   <extends></extends>
+   <extends>QWidget</extends>
    <header>ordercluster.h</header>
   </customwidget>
   <customwidget>
    <class>XComboBox</class>
-   <extends></extends>
+   <extends>QComboBox</extends>
    <header>xcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>XLabel</class>
-   <extends></extends>
+   <extends>QLabel</extends>
    <header>xlabel.h</header>
   </customwidget>
   <customwidget>
    <class>XLineEdit</class>
-   <extends></extends>
+   <extends>QLineEdit</extends>
    <header>xlineedit.h</header>
   </customwidget>
   <customwidget>
    <class>XTreeWidget</class>
-   <extends></extends>
+   <extends>QTreeWidget</extends>
    <header>xtreewidget.h</header>
   </customwidget>
   <customwidget>
    <class>XURLLabel</class>
-   <extends></extends>
+   <extends>QLabel</extends>
    <header>xurllabel.h</header>
   </customwidget>
   <customwidget>
    <class>XTextEdit</class>
-   <extends></extends>
+   <extends>QTextEdit</extends>
    <header>xtextedit.h</header>
   </customwidget>
  </customwidgets>

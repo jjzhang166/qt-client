@@ -32,7 +32,7 @@ protected slots:
 
     virtual void sHandleItem();
     virtual void sPost();
-    virtual void sPopulateFromQty( int pWarehousid );
+    virtual void sPopulateFromQty();
     virtual void sPopulateToQty( int pWarehousid );
     virtual void sUpdateQty( const QString & pQty );
 

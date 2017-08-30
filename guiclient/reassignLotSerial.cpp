@@ -25,6 +25,7 @@ reassignLotSerial::reassignLotSerial(QWidget* parent, const char* name, bool mod
 {
     setupUi(this);
 
+    connect(_item, SIGNAL(newId(int)), this, SLOT(sFillList()));
     connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sFillList()));
     connect(_reassign, SIGNAL(clicked()), this, SLOT(sReassign()));
     connect(_item, SIGNAL(warehouseIdChanged(int)), _warehouse, SLOT(setId(int)));

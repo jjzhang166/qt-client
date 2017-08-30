@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -45,6 +45,7 @@ itemSources::itemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
 
   list()->addColumn(tr("Vendor #"),             -1,        Qt::AlignLeft,   true,  "vend_number"   );
   list()->addColumn(tr("Vendor"),             -1,          Qt::AlignLeft,   true,  "vend_name"   );
+  list()->addColumn(tr("Active"),             -1,          Qt::AlignLeft,   true,  "itemsrc_active"   );
   list()->addColumn(tr("Contract #"),         _itemColumn, Qt::AlignLeft,   true,  "contrct_number"   );
   list()->addColumn(tr("Effective"),          _dateColumn, Qt::AlignCenter, true,  "itemsrc_effective"   );
   list()->addColumn(tr("Expires"),            _dateColumn, Qt::AlignCenter, true,  "itemsrc_expires"   );
@@ -56,6 +57,7 @@ itemSources::itemSources(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("UOM Ratio"),          _qtyColumn,  Qt::AlignRight,  true,  "itemsrc_invvendoruomratio"  );
   list()->addColumn(tr("Manufacturer"),       _itemColumn, Qt::AlignLeft,   false, "itemsrc_manuf_name" );
   list()->addColumn(tr("Manuf. Item#"),       _itemColumn, Qt::AlignLeft,   false, "itemsrc_manuf_item_number" );
+  list()->addColumn(tr("Default"),            -1,          Qt::AlignLeft,   true,  "itemsrc_default"   );
 
   if (_privileges->check("MaintainItemSources"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

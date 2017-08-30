@@ -23,6 +23,8 @@ class printCreditMemos : public printMulticopyDocument,
     printCreditMemos(QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0);
     ~printCreditMemos();
 
+    Q_INVOKABLE virtual int distributeInventory(XSqlQuery *qry);
+
   protected slots:
     virtual void languageChange();
     virtual void sHandleFinishedWithAll();

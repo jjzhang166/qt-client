@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -50,6 +50,7 @@ CharacteristicsWidget::CharacteristicsWidget(QWidget* parent, const char* name, 
   connect(_charass, SIGNAL(itemSelected(int)), _editCharacteristic, SLOT(animateClick()));
 
   _charass->addColumn(tr("Characteristic"), _itemColumn,   Qt::AlignLeft,   true, "char_name" );
+  _charass->addColumn(tr("Group"),          -1,            Qt::AlignLeft,   true, "char_group" );
   _charass->addColumn(tr("Value"),          -1,            Qt::AlignLeft,   true, "charass_value" );
   _charass->addColumn(tr("Default"),        _ynColumn*2,   Qt::AlignCenter, true, "charass_default" );
 
@@ -172,9 +173,9 @@ void CharacteristicsWidget::sDelete()
 void CharacteristicsWidget::sFillList()
 {
   XSqlQuery q;
-  q.prepare( "SELECT charass_id, char_name,"
-             "       CASE WHEN char_type < 2 THEN charass_value"
-             "            ELSE formatDate(charass_value::date)"
+  q.prepare( "SELECT charass_id, char_name, char_group, "
+             "       CASE WHEN char_type = 2 THEN formatDate(charass_value::date)"
+             "            ELSE charass_value"
              "       END AS charass_value,"
              "       charass_default"
              "  FROM charass JOIN char ON charass_char_id = char_id"
@@ -191,19 +192,10 @@ void CharacteristicsWidget::sFillList()
 
 // scripting exposure /////////////////////////////////////////////////////////
 
-QScriptValue CharacteristicsWidgettoScriptValue(QScriptEngine *engine, CharacteristicsWidget* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void CharacteristicsWidgetfromScriptValue(const QScriptValue &obj, CharacteristicsWidget* &item)
-{
-  item = qobject_cast<CharacteristicsWidget*>(obj.toQObject());
-}
-
 QScriptValue constructCharacteristicsWidget(QScriptContext *context,
                                             QScriptEngine  *engine)
 {
+#if QT_VERSION >= 0x050000
   QWidget *parent = (qscriptvalue_cast<QWidget*>(context->argument(0)));
   if (context->argumentCount() == 0)
     return engine->toScriptValue(new CharacteristicsWidget());
@@ -220,16 +212,19 @@ QScriptValue constructCharacteristicsWidget(QScriptContext *context,
                           context->argument(1).toString().toLatin1().data(),
                           context->argument(2).toString(),
                           context->argument(2).toInteger()));
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupCharacteristicsWidget(QScriptEngine *engine)
 {
-  QScriptValue::PropertyFlags stdflags = QScriptValue::ReadOnly |
-                                         QScriptValue::Undeletable;
+  if (! engine->globalObject().property("CharacteristicsWidget").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructCharacteristicsWidget);
+    QScriptValue meta = engine->newQMetaObject(&CharacteristicsWidget::staticMetaObject, ctor);
 
-  qScriptRegisterMetaType(engine, CharacteristicsWidgettoScriptValue,
-                          CharacteristicsWidgetfromScriptValue);
-
-  QScriptValue constructor = engine->newFunction(constructCharacteristicsWidget);
-  engine->globalObject().setProperty("CharacteristicsWidget", constructor, stdflags);
+    engine->globalObject().setProperty("CharacteristicsWidget", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

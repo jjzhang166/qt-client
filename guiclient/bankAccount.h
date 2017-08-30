@@ -32,6 +32,7 @@ public slots:
     virtual void sNameChanged(QString);
     virtual void sSave();
     virtual void populate();
+    virtual void sTogglePrefix();
 
 protected:
     QValidator *_accountValidator;

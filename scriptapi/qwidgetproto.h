@@ -1,7 +1,7 @@
 /*
  *This file is part of the xTuple ERP: PostBooks Edition, a free and
  *open source Enterprise Resource Planning software suite,
- *Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ *Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  *It is licensed to you under the Common Public Attribution License
  *version 1.0, the full text of which(including xTuple-specific Exhibits)
  *is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -18,9 +18,6 @@
 #include <QFontInfo>
 #include <QFontMetrics>
 #include <QGraphicsProxyWidget>
-#if QT_VERSION < 0x050000
-#include <QInputContext>
-#endif
 #include <QKeySequence>
 #include <QLayout>
 #include <QList>
@@ -43,13 +40,12 @@
 #include <QWidget>
 #include <QtScript>
 
-Q_DECLARE_METATYPE(QWidget*)
-//Q_DECLARE_METATYPE(QWidget)
+#include "qobjectproto.h"
 
 void setupQWidgetProto(QScriptEngine *engine);
 QScriptValue constructQWidget(QScriptContext *context, QScriptEngine *engine);
 
-class QWidgetProto : public QObject, public QScriptable
+class QWidgetProto : public QObjectProto
 {
   Q_OBJECT
 
@@ -83,12 +79,8 @@ class QWidgetProto : public QObject, public QScriptable
     Q_INVOKABLE int                   grabShortcut(const QKeySequence &key, int context = Qt::WindowShortcut);
     Q_INVOKABLE QGraphicsProxyWidget *graphicsProxyWidget() const;
 
-    //Q_INVOKABLE bool                  hasEditFocus() const;
     Q_INVOKABLE bool                  hasFocus() const;
     Q_INVOKABLE int                   heightForWidth(int w) const;
-    #if QT_VERSION < 0x050000
-    Q_INVOKABLE QInputContext        *inputContext();
-    #endif
     Q_INVOKABLE QVariant              inputMethodQuery(int query) const;
     Q_INVOKABLE void                  insertAction(QAction *before, QAction *action);
     Q_INVOKABLE void                  insertActions(QAction *before, QList<QAction *> actions);
@@ -125,7 +117,6 @@ class QWidgetProto : public QObject, public QScriptable
     Q_INVOKABLE void                  setAttribute(int attribute, bool on = true);
     Q_INVOKABLE void                  setBackgroundRole(int role);
     Q_INVOKABLE void                  setContentsMargins(int left, int top, int right, int bottom);
-    //Q_INVOKABLE void setEditFocus(bool enable);
     Q_INVOKABLE void                  setFixedHeight(int h);
     Q_INVOKABLE void                  setFixedSize(const QSize &s);
     Q_INVOKABLE void                  setFixedSize(int w, int h);
@@ -133,9 +124,6 @@ class QWidgetProto : public QObject, public QScriptable
     Q_INVOKABLE void                  setFocus(int reason);
     Q_INVOKABLE void                  setFocusProxy(QWidget *w);
     Q_INVOKABLE void                  setForegroundRole(int role);
-    #if QT_VERSION < 0x050000
-    Q_INVOKABLE void                  setInputContext(QInputContext *context);
-    #endif
     Q_INVOKABLE void                  setLayout(QLayout *layout);
     Q_INVOKABLE void                  setMask(const QBitmap &bitmap);
     Q_INVOKABLE void                  setMask(const QRegion &region);

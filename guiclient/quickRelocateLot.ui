@@ -107,8 +107,8 @@
        <property name="text">
         <string>Post</string>
        </property>
-       <property name="default">
-        <bool>true</bool>
+       <property name="enabled">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -163,8 +163,8 @@
  <tabstops>
   <tabstop>_lotSerial</tabstop>
   <tabstop>_location</tabstop>
-  <tabstop>_assign</tabstop>
   <tabstop>_cancel</tabstop>
+  <tabstop>_assign</tabstop>
   <tabstop>_warehous</tabstop>
   <tabstop>_itemloc</tabstop>
  </tabstops>

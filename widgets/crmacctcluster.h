@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -33,6 +33,7 @@ class XTUPLEWIDGETS_EXPORT CRMAcctLineEdit : public CrmClusterLineEdit
         enum CRMAcctSubtype { Crmacct, Competitor, Cust,     Employee,
                               Partner, Prospect,   SalesRep, Taxauth,
                               User,    Vend,       CustAndProspect };
+        Q_ENUM(CRMAcctSubtype)
 
 	virtual void		setSubtype(const CRMAcctSubtype);
 	virtual CRMAcctSubtype	subtype()	const;
@@ -107,13 +108,18 @@ class XTUPLEWIDGETS_EXPORT CRMAcctSearch : public VirtualSearch
 
 class XTUPLEWIDGETS_EXPORT CRMAcctCluster : public VirtualCluster
 {
-    Q_OBJECT
+  Q_OBJECT
+  Q_PROPERTY(CRMAcctLineEdit::CRMAcctSubtype subtype READ subtype WRITE setSubtype)
 
-    public:
-	CRMAcctCluster(QWidget*, const char* = 0);
-	virtual void				setSubtype(CRMAcctLineEdit::CRMAcctSubtype const);
-	virtual CRMAcctLineEdit::CRMAcctSubtype subtype() const;
+  public:
+    CRMAcctCluster(QWidget*, const char* = 0);
+    virtual CRMAcctLineEdit::CRMAcctSubtype subtype() const;
+
+  public slots:
+    virtual void setSubtype(CRMAcctLineEdit::CRMAcctSubtype const);
 
 };
+
+void setupCRMAcctLineEdit(QScriptEngine *engine);
 
 #endif

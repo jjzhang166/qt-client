@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -39,7 +39,6 @@
 #include "authorizedotnetprocessor.h"
 #include "externalccprocessor.h"
 #include "verisignprocessor.h"
-#include "yourpayprocessor.h"
 #include "paymentechprocessor.h"
 #include "cybersourceprocessor.h"
 
@@ -84,11 +83,7 @@
 
     It is the subclass' responsibility to ensure that all of the
     configuration options available on the Credit Card Configuration
-    window are implemented either here or in the subclass. An example
-    of an option that @b must be implemented in each subclass is
-    @c CCTestResult since the method for requesting error responses from
-    the credit card processing service is different for every
-    service.
+    window are implemented either here or in the subclass.
 
     In addition to subclassing CreditCardProcessor, alternate credit
     card processing services require changing
@@ -149,7 +144,6 @@
     @see CyberSourceProcessor
     @see ExternalCCProcessor
     @see PaymentechProcessor
-    @see YourPayProcessor
     @see configureCC
 
     @todo expose portions of this in the scriptapi doxygen module
@@ -281,7 +275,7 @@ CreditCardProcessor::FraudCheckResult::FraudCheckResult(QChar pcode, int /*TODO:
 
 bool CreditCardProcessor::certificateIsValid(const QSslCertificate *cert)
 {
-  if (! cert)
+  if (! cert || cert->isNull())
     return false;
 
 #if QT_VERSION >= 0x050000
@@ -354,31 +348,70 @@ CreditCardProcessor::CreditCardProcessor()
   QSslConfiguration config = QSslConfiguration::defaultConfiguration();
   config.setProtocol(QSsl::SecureProtocols);
   QList<QSslCertificate> certs = config.caCertificates();
-  QDir certDir(QApplication::applicationDirPath() + "/certificates");
-  if (DEBUG) qDebug() << "looking for certificates in" << certDir;
-  foreach (QString filename, certDir.entryList(QDir::Files | QDir::Readable)) {
-    if (DEBUG) qDebug() << "checking" << filename;
-    QFile certfile(certDir.path() + "/" + filename);
-    if (certfile.open(QIODevice::ReadOnly))
-    {
-      if (DEBUG) qDebug() << "opening" << filename;
+
+  QStringList certExtensions;
+  certExtensions << "cer"
+                 << "crt"
+                 << "der"
+                 << "key"
+                 << "p12"
+                 << "p7b"
+                 << "p7c"
+                 << "p7r"
+                 << "pem"
+                 << "pfx"
+                 << "spc";
+
+  QStringList paths;
+#if QT_VERSION >= 0x050400
+  paths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)
+        << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+#endif
+#if defined Q_OS_MAC
+  paths << (QApplication::applicationDirPath() + "/../Resources");
+#else
+  paths << QApplication::applicationDirPath()
+        << "/usr/lib/postbooks";
+#endif
+  (void)paths.removeDuplicates();
+  for (int i = paths.length(); i > 0; i--)
+    paths.insert(i, paths.at(i - 1) + "/certificates");
+
+  foreach (QString dirname, paths) {
+    QDir certDir(dirname);
+    if (! certDir.exists())
+      continue;
+
+    if (DEBUG) qDebug() << "looking for certificates in" << certDir;
+    foreach (QString filename, certDir.entryList(QDir::Files | QDir::Readable)) {
+      if (DEBUG) qDebug() << "checking" << filename;
+
+      QFile certfile(certDir.path() + "/" + filename);
       QString suffix = QFileInfo(certfile).suffix().toLower();
-      QSslCertificate *cert = new QSslCertificate(&certfile, QSsl::Pem);
-      if (! certificateIsValid(cert))
-      {
-        delete cert;
-        cert = new QSslCertificate(&certfile, QSsl::Der);
+      if (! certExtensions.contains(suffix, Qt::CaseInsensitive)) {
+        continue;
       }
-      if (certificateIsValid(cert))
+
+      if (certfile.open(QIODevice::ReadOnly))
       {
-        certs.append(*cert);
-        if (DEBUG) qDebug() << "adding certificate" << cert;
+        if (DEBUG) qDebug() << "opening" << filename;
+        QSslCertificate *cert = new QSslCertificate(&certfile, QSsl::Pem);
+        if (! certificateIsValid(cert))
+        {
+          delete cert;
+          cert = new QSslCertificate(&certfile, QSsl::Der);
+        }
+        if (certificateIsValid(cert))
+        {
+          certs.append(*cert);
+          if (DEBUG) qDebug() << "adding certificate" << cert;
+        }
+        certfile.close();
       }
+      else
+        qDebug() << "opening" << filename << "failed:" << certfile.errorString()
+                 << certfile.error();
     }
-    else
-      qDebug() << "opening" << filename << "failed:" << certfile.errorString()
-               << certfile.error();
-    certfile.close();
   }
   config.setCaCertificates(certs);
   QSslConfiguration::setDefaultConfiguration(config);
@@ -421,9 +454,6 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
   else if (pcompany == "Verisign")
     return new VerisignProcessor();
 
-  else if (pcompany == "YourPay")
-    return new YourPayProcessor();
-
   else if (pcompany == "Paymentech")
     return new PaymentechProcessor();
 
@@ -446,9 +476,6 @@ CreditCardProcessor * CreditCardProcessor::getProcessor(const QString pcompany)
 
   else if (_metrics->value("CCCompany") == "Verisign")
     processor = new VerisignProcessor();
-
-  else if ((_metrics->value("CCCompany") == "YourPay"))
-    processor = new YourPayProcessor();
 
   else if ((_metrics->value("CCCompany") == "Paymentech"))
     processor = new PaymentechProcessor();
@@ -1796,13 +1823,10 @@ int CreditCardProcessor::sendViaHTTP(const QString &prequest,
   if (isTest())
     _metrics->set("CCOrder", prequest);
 
-  /* TODO: replace references to YourPay with ! _pemfile.isEmpty()
-     http://bugreports.qt.nokia.com/browse/QTBUG-13418
+  /* http://bugreports.qt.nokia.com/browse/QTBUG-13418
      means we must use cURL to handle certificates in some Qt versions.
    */
-  if (!_metrics->boolean("CCUseCurl") &&
-     (_metrics->value("CCCompany") != "YourPay"
-      || (_metrics->value("CCCompany") == "YourPay" && QT_VERSION > 0x040600)))
+  if (!_metrics->boolean("CCUseCurl"))
   {
 #if QT_VERSION < 0x050000
     QHttp::ConnectionMode cmode = QHttp::ConnectionModeHttps;

@@ -76,7 +76,6 @@ opportunityList::opportunityList(QWidget* parent, const char*, Qt::WindowFlags f
   parameterWidget()->append(tr("Create Date on or Before"),   "endCreateDate",   ParameterWidget::Date);
 
   setupCharacteristics("OPP");
-  parameterWidget()->applyDefaultFilterSet();
 }
 
 void opportunityList::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *, int)

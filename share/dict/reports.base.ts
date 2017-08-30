@@ -6179,8 +6179,18 @@
       <translation type="unfinished"/>
     </message>
     <message>
+      <width>100</width>
+      <source>Reason Code:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
       <width>55</width>
       <source>Notes:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>90</width>
+      <source>Reason Code:</source>
       <translation type="unfinished"/>
     </message>
     <message>
@@ -21398,6 +21408,129 @@
     </message>
   </context>
   <context>
+    <name>ReturnAuthorizations</name>
+    <message>
+      <width>75</width>
+      <source>Disposition</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Authorized</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Expires</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>695</width>
+      <source>Return Authorizations</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Auth. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Authorized</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Value</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Credited</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Credited</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Status</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Expires</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Value</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Authorized</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Disposition</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Customer</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Authorized</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>80</width>
+      <source>Auth. #</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>100</width>
+      <source>Item</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>75</width>
+      <source>Total</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Page:</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <width>85</width>
+      <source>Report Date:</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>RoughCutCapacityPlanByWorkCenter</name>
     <message>
       <width>50</width>
@@ -31877,6 +32010,9 @@
       <source>Page:</source>
       <translation type="unfinished"/>
     </message>
+  </context>
+  <context>
+    <name>itemLabel</name>
   </context>
   <context>
     <name>Items</name>

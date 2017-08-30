@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -9,6 +9,10 @@
  */
 
 #include "xdatawidgetmapper.h"
+
+#include <QSqlTableModel>
+#include <QWidget>
+#include <QtScript>
 
 XDataWidgetMapper::XDataWidgetMapper(QObject *parent) : 
   QDataWidgetMapper(parent)
@@ -76,9 +80,32 @@ void XDataWidgetMapper::removeDefault(QWidget *widget)
     }
 }
 
+// script api //////////////////////////////////////////////////////////////////
 
+QScriptValue constructXDataWidgetMapper(QScriptContext *context, QScriptEngine *engine)
+{
+#if QT_VERSION >= 0x050000
+  QObject *obj = qscriptvalue_cast<QObject*>(context->argument(0));
+  XDataWidgetMapper *mapper = new XDataWidgetMapper(obj);
+  return engine->toScriptValue(mapper);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
+}
 
+void setupXDataWidgetMapper(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("XDataWidgetMapper").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructXDataWidgetMapper);
+    QScriptValue meta = engine->newQMetaObject(&XDataWidgetMapper::staticMetaObject, ctor);
 
+    engine->globalObject().setProperty("XDataWidgetMapper", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
+}
 
-
-
+QString XDataWidgetMapper::toString() const
+{
+  return QString("[XDataWidgetMapper(%1)]").arg(objectName());
+}

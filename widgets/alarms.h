@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -18,11 +18,11 @@
 
 #include "ui_alarms.h"
 
+class QScriptEngine;
+
 class XTUPLEWIDGETS_EXPORT Alarms : public QWidget, public Ui::alarms
 {
   Q_OBJECT
-
-  Q_ENUMS(AlarmSources)
 
   Q_PROPERTY(AlarmSources type READ type WRITE setType)
 
@@ -48,6 +48,8 @@ class XTUPLEWIDGETS_EXPORT Alarms : public QWidget, public Ui::alarms
       TransferOrder,	TransferOrderItem,  Vendor,
       Warehouse,	WorkOrder
     };
+    Q_ENUM(AlarmSources)
+
 
     inline int  sourceid()          { return _sourceid; }
     inline enum AlarmSources type() { return _source;   }
@@ -98,5 +100,7 @@ class XTUPLEWIDGETS_EXPORT Alarms : public QWidget, public Ui::alarms
     bool              _readOnly;
 
 };
+
+void setupAlarms(QScriptEngine *engine);
 
 #endif

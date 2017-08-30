@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -11,11 +11,12 @@
 #include "screen.h"
 
 #include <QMessageBox>
-#include <QSqlError>
-#include <QSqlField>
 #include <QScriptContext>
 #include <QScriptEngine>
 #include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlField>
+#include <QtScript>
 
 #include <openreports.h>
 #include <qmd5.h>
@@ -460,4 +461,18 @@ void Screen::unlock()
   _locked = false;
   setWidgetsEnabled(_mode != View); 
   emit lockGranted(false);
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+void setupScreen(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("Screen").isObject())
+  {
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&Screen::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("Screen", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

@@ -1,7 +1,7 @@
   /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -26,7 +26,7 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
     Q_PROPERTY(QString         schemaName            READ schemaName           WRITE setSchemaName       )
     Q_PROPERTY(QString         tableName             READ tableName            WRITE setTableName        )
     Q_PROPERTY(int             primaryKeyCoulmns     READ primaryKeyColumns    WRITE setPrimaryKeyColumns)
-    
+
     public:
       XTableView(QWidget *parent = 0);
       ~XTableView();
@@ -48,19 +48,19 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
       Q_INVOKABLE         void setTable();
       Q_INVOKABLE XDataWidgetMapper *mapper()  { return _mapper;}
       Q_INVOKABLE XSqlTableModel    *model()   { return _model;}
-            
+
     public slots:
       virtual int  rowCount();
       virtual int  rowCountVisible();
       virtual QString filter();
       virtual QVariant value(int row, int column);
-      virtual QVariant selectedValue(int column); 
+      virtual QVariant selectedValue(int column);
       virtual void insert();
       virtual QAbstractItemDelegate *itemDelegateForColumn(int column) { return QTableView::itemDelegateForColumn(column); }
       virtual QAbstractItemDelegate *itemDelegateForColumn(const QString column);
       virtual void populate(int p);
       virtual void removeSelected();
-      virtual void revertAll(); 
+      virtual void revertAll();
       virtual void save();
       virtual void select();
       virtual void selectRow(int index);
@@ -82,6 +82,8 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
       virtual void setValue(int row, int column, QVariant value);
       virtual void sShowMenu(const QPoint &);
 
+    public:
+      using QTableView::dataChanged;
     signals:
       void  dataChanged(int row, int col);
       void  newModel(XSqlTableModel *model);
@@ -89,11 +91,10 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
       void  valid(bool);
       void  saved();
       void  populateMenu(QMenu *, QModelIndex);
-      
+
     protected:
       virtual void resizeEvent(QResizeEvent*);
       virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
- //     virtual void setRelations();
 
     private slots:
       void handleDataChanged(const QModelIndex topLeft, const QModelIndex lowerRight);
@@ -105,9 +106,7 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
       void sToggleForgetfulness();
 
     private:
-  //    QSqlDatabase        *_db;
       bool                 _forgetful;
-   //   QMultiMap<QString,QString> _idMap;
       QSqlRecord           _idx;
       int                  _keyColumns;
       XDataWidgetMapper   *_mapper;
@@ -116,7 +115,6 @@ class XTUPLEWIDGETS_EXPORT XTableView : public QTableView
       int                  _resetWhichWidth;
       bool                 _resizingInProcess;
       QString              _schemaName;
-  //    QItemSelectionModel *_selectModel;
       bool                 _settingsLoaded;
       QString              _tableName;
       QString              _windowName;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -35,6 +35,7 @@ TODO:	refactor:
 #include "poitemTableModel.h"
 #include "projectcluster.h"
 #include "wcombobox.h"
+#include "xcombobox.h"
 #include "xtreewidget.h"	// for column widths
 #include "itemSourceSearch.h"
 #include "errorReporter.h"
@@ -81,12 +82,13 @@ void PoitemTableView::setModel(QAbstractItemModel* model)
 
   setColumnWidth(ITEM_NUMBER_COL,		_itemColumn);
   setColumnWidth(WAREHOUS_CODE_COL,		100); //_whsColumn too small
-  setColumnWidth(POITEM_VEND_ITEM_DESCRIP_COL, 200);
+  setColumnWidth(POITEM_VEND_ITEM_DESCRIP_COL,  200);
   setColumnWidth(POITEM_QTY_ORDERED_COL,	_qtyColumn);
   setColumnWidth(POITEM_UNITPRICE_COL,		_priceColumn);
   setColumnWidth(EXTPRICE_COL,			_moneyColumn);
   setColumnWidth(POITEM_FREIGHT_COL,		_priceColumn);
   setColumnWidth(POITEM_DUEDATE_COL,		_dateColumn);
+  setColumnWidth(TAXTYPE_NAME_COL,              100);
 #ifdef QE_NONINVENTORY
   setColumnWidth(EXPCAT_CODE_COL,		100);
 #endif
@@ -110,6 +112,7 @@ void PoitemTableView::setModel(QAbstractItemModel* model)
   header->moveSection(header->visualIndex(EXTPRICE_COL),		dest++);
   header->moveSection(header->visualIndex(POITEM_FREIGHT_COL),		dest++);
   header->moveSection(header->visualIndex(POITEM_DUEDATE_COL),		dest++);
+  header->moveSection(header->visualIndex(TAXTYPE_NAME_COL),	        dest++);
 
   // if we didn't explicitly place the logical section, hide it
   for (int i = dest; i < header->count(); i++)
@@ -258,6 +261,16 @@ QWidget *PoitemTableDelegate::createEditor(QWidget *parent,
       break;
     }
 
+    case TAXTYPE_NAME_COL:
+    {
+      XComboBox *taxtype = new XComboBox(parent);
+      taxtype->setType(XComboBox::TaxTypes);
+      taxtype->setAllowNull(true);
+      editor = taxtype;
+      editor->setObjectName("poitem_taxtype_id");
+      break;
+    }
+
 #ifdef QE_NONINVENTORY
     case EXPCAT_CODE_COL:
     {
@@ -336,6 +349,13 @@ void PoitemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &inde
       break;
     }
 
+    case TAXTYPE_NAME_COL:
+    {
+      XComboBox *taxtype = static_cast<XComboBox*>(editor);
+      taxtype->setId(model->data(model->index(index.row(), POITEM_TAXTYPE_ID_COL)).toInt());
+      break;
+    }
+
 #ifdef QE_NONINVENTORY
     case EXPCAT_CODE_COL:
     {
@@ -382,6 +402,8 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	  model->setData(model->index(index.row(), ITEMSRC_INVVENDORUOMRATIO_COL), QVariant());
 	  model->setData(model->index(index.row(), POITEM_INVVENDUOMRATIO_COL), QVariant());
 	  model->setData(model->index(index.row(), EARLIESTDATE_COL), QVariant());
+          model->setData(model->index(index.row(), POITEM_TAXTYPE_ID_COL), QVariant());
+          model->setData(model->index(index.row(), TAXTYPE_NAME_COL), QVariant());
 	}
 	else
 	{
@@ -393,8 +415,8 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	    XSqlQuery itemq;
 	    itemq.prepare("SELECT (warehous_id=:preferred) AS preferred, "
 			  "       itemsite_id, warehous_id, warehous_code "
-			  "FROM itemsite, whsinfo "
-			  "WHERE ((itemsite_item_id=:item_id)"
+                          "FROM  itemsite, whsinfo "
+                          "WHERE ((itemsite_item_id=:item_id) "
 			  "   AND (itemsite_warehous_id=warehous_id)) "
 			  "ORDER BY preferred DESC, warehous_code "
 			  "LIMIT 1;");
@@ -407,16 +429,17 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	      model->setData(model->index(index.row(), POITEM_ITEMSITE_ID_COL), itemq.value("itemsite_id").toInt());
 	      model->setData(model->index(index.row(), WAREHOUS_ID_COL), itemq.value("warehous_id").toInt());
 	      model->setData(model->index(index.row(), WAREHOUS_CODE_COL), itemq.value("warehous_code").toString());
+
 	    }
-        else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving PO Information"),
+            else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving PO Information"),
                                       itemq, __FILE__, __LINE__))
-        {
-          hitError = true;
-          break;
-        }
+            {
+              hitError = true;
+              break;
+            }
 	    else
 	    {
-          ErrorReporter::error(QtCriticalMsg, 0, tr("Error Occurred"),
+              ErrorReporter::error(QtCriticalMsg, 0, tr("Error Occurred"),
                                tr("Could not find Item Site for %1 (%2).")
                                .arg(item->itemNumber())
                                .arg(item->id()),__FILE__,__LINE__);
@@ -444,13 +467,33 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 		hitError = true;
 		break;
 	      }
-          else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Standard Cost Information"),
+              else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Standard Cost Information"),
                                         stdcostq, __FILE__, __LINE__))
-          {
-            hitError = true;
-            break;
-          }
+              {
+                hitError = true;
+                break;
+              }
 	    }
+
+            XSqlQuery taxtypeq;
+            taxtypeq.prepare( "SELECT getItemTaxType(:item_id, pohead_taxzone_id) AS taxtypeid, taxtype_name "
+                       "        FROM pohead "
+                       "        JOIN taxtype ON getItemTaxType(:item_id, pohead_taxzone_id) = taxtype_id "
+                       "        WHERE pohead_id = :pohead_id;");
+            taxtypeq.bindValue(":item_id", item->id());
+            taxtypeq.bindValue(":pohead_id", model->headId());
+            taxtypeq.exec();
+            if (taxtypeq.first())
+            {
+              model->setData(model->index(index.row(), POITEM_TAXTYPE_ID_COL), taxtypeq.value("taxtypeid").toInt());
+              model->setData(model->index(index.row(), TAXTYPE_NAME_COL), taxtypeq.value("taxtype_name").toString());
+            }
+            else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Item Information"),
+                                      taxtypeq, __FILE__, __LINE__))
+            {
+              hitError = true;
+              break;
+            }
 
 	    XSqlQuery itemsrcq;
 	    itemsrcq.prepare( "SELECT pohead_vend_id, itemsrc_id, itemsrc_vend_item_number,"
@@ -510,20 +553,20 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
 	      model->setData(model->index(index.row(), ITEMSRC_MULTORDQTY_COL), itemsrcq.value("itemsrc_multordqty").toDouble());
 	      model->setData(model->index(index.row(), ITEMSRC_INVVENDORUOMRATIO_COL), itemsrcq.value("itemsrc_invvendoruomratio").toDouble());
 	      model->setData(model->index(index.row(), POITEM_INVVENDUOMRATIO_COL), itemsrcq.value("itemsrc_invvendoruomratio").toDouble());
-          model->setData(model->index(index.row(), POITEM_MANUF_NAME_COL), itemsrcq.value("itemsrc_manuf_name").toString());
-          model->setData(model->index(index.row(), POITEM_MANUF_ITEM_NUMBER_COL), itemsrcq.value("itemsrc_manuf_item_number").toString());
-          model->setData(model->index(index.row(), POITEM_MANUF_ITEM_DESCRIP_COL), itemsrcq.value("itemsrc_manuf_item_descrip").toString());
+              model->setData(model->index(index.row(), POITEM_MANUF_NAME_COL), itemsrcq.value("itemsrc_manuf_name").toString());
+              model->setData(model->index(index.row(), POITEM_MANUF_ITEM_NUMBER_COL), itemsrcq.value("itemsrc_manuf_item_number").toString());
+              model->setData(model->index(index.row(), POITEM_MANUF_ITEM_DESCRIP_COL), itemsrcq.value("itemsrc_manuf_item_descrip").toString());
 	      model->setData(model->index(index.row(), EARLIESTDATE_COL), itemsrcq.value("earliestdate").toDate());
 
 	      if (_metrics->boolean("UseEarliestAvailDateOnPOItem"))
 		model->setData(model->index(index.row(), POITEM_DUEDATE_COL), itemsrcq.value("earliestdate").toDate());
 	    }
-        else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Item Information"),
+            else if (ErrorReporter::error(QtCriticalMsg, 0, tr("Error Retrieving Item Information"),
                                       itemsrcq, __FILE__, __LINE__))
-        {
-          hitError = true;
-          break;
-        }
+            {
+              hitError = true;
+              break;
+            }
 	  }
 	}
       }
@@ -683,6 +726,23 @@ void PoitemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *pMod
                  qPrintable(duedate->date().toString()), duedate->isNull(),
                  duedate->isValid());
 	model->setData(index, duedate->date());
+      }
+
+      break;
+    }
+
+    case TAXTYPE_NAME_COL:
+    {
+      XComboBox *taxtype = static_cast<XComboBox*>(editor);
+      if (taxtype->id() < 0)
+      {
+        model->setData(model->index(index.row(), POITEM_TAXTYPE_ID_COL), QVariant());
+        model->setData(index, QVariant());
+      }
+      else if (taxtype->id() != oldval.toInt())
+      {
+        model->setData(model->index(index.row(), POITEM_TAXTYPE_ID_COL), taxtype->id());
+        model->setData(index, taxtype->currentText());
       }
 
       break;

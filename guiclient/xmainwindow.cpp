@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,71 +21,60 @@
 
 #include "xcheckbox.h"
 #include "xtsettings.h"
-#include "guiclient.h"
 #include "scriptablePrivate.h"
 #include "shortcuts.h"
 
 #define DEBUG false
 
-//
-// XMainWindowPrivate
-//
-class XMainWindowPrivate : public ScriptablePrivate
+class XMainWindowPrivate
 {
   friend class XMainWindow;
 
   public:
     XMainWindowPrivate(XMainWindow*);
     ~XMainWindowPrivate();
-
-    XMainWindow * _parent;
-    bool _shown;
-    QAction *_action;
 };
 
-XMainWindowPrivate::XMainWindowPrivate(XMainWindow * parent) : ScriptablePrivate(false, parent), _parent(parent)
+XMainWindowPrivate::XMainWindowPrivate(XMainWindow *parent)
 {
-  _shown = false;
-  _action = 0;
+  Q_UNUSED(parent);
 }
 
 XMainWindowPrivate::~XMainWindowPrivate()
 {
-  if(_action)
-    delete _action;
 }
 
 XMainWindow::XMainWindow(QWidget * parent, Qt::WindowFlags flags)
-  : QMainWindow(parent, flags)
+  : QMainWindow(parent, flags),
+    ScriptablePrivate(parent, this),
+    _private(0)
 {
   if(!parent || !parent->isModal())
     setParent(omfgThis);
 
-  _private = new XMainWindowPrivate(this);
-
-  _private->_action = new QAction(this);
-  _private->_action->setShortcutContext(Qt::ApplicationShortcut);
-  _private->_action->setText(windowTitle());
-  _private->_action->setCheckable(true);
-  connect(_private->_action, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
+  _showMe = new QAction(this);
+  _showMe->setShortcutContext(Qt::ApplicationShortcut);
+  _showMe->setText(windowTitle());
+  _showMe->setCheckable(true);
+  connect(_showMe, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
   _forceFloat=false;
 }
 
 XMainWindow::XMainWindow(QWidget * parent, const char * name, Qt::WindowFlags flags)
-  : QMainWindow(parent, flags)
+  : QMainWindow(parent, flags),
+    ScriptablePrivate(parent, this),
+    _private(0)
 {
   if(name)
     setObjectName(name);
   if(!parent || !parent->isModal())
     setParent(omfgThis);
 
-  _private = new XMainWindowPrivate(this);
-
-  _private->_action = new QAction(this);
-  _private->_action->setShortcutContext(Qt::ApplicationShortcut);
-  _private->_action->setText(windowTitle());
-  _private->_action->setCheckable(true);
-  connect(_private->_action, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
+  _showMe = new QAction(this);
+  _showMe->setShortcutContext(Qt::ApplicationShortcut);
+  _showMe->setText(windowTitle());
+  _showMe->setCheckable(true);
+  connect(_showMe, SIGNAL(triggered(bool)), this, SLOT(showMe(bool)));
   _forceFloat = false;
 }
 
@@ -95,19 +84,17 @@ XMainWindow::~XMainWindow()
     delete _private;
 }
 
-enum SetResponse XMainWindow::set(const ParameterList &pParams)
+enum SetResponse XMainWindow::set(const ParameterList & pParams)
 {
   _lastSetParams = pParams;
-
-  _private->loadScriptEngine();
+  loadScriptEngine();
   QTimer::singleShot(0, this, SLOT(postSet()));
-
   return NoError;
 }
 
 enum SetResponse XMainWindow::postSet()
 {
-  return _private->callSet(_lastSetParams);
+  return callSet(_lastSetParams);
 }
 
 ParameterList XMainWindow::get() const
@@ -118,7 +105,7 @@ ParameterList XMainWindow::get() const
 void XMainWindow::closeEvent(QCloseEvent *event)
 {
   event->accept(); // we have no reason not to accept and let the script change it if needed
-  _private->callCloseEvent(event);
+  callCloseEvent(event);
 
   if(event->isAccepted())
   {
@@ -138,9 +125,9 @@ void XMainWindow::closeEvent(QCloseEvent *event)
 
 void XMainWindow::showEvent(QShowEvent *event)
 {
-  if(!_private->_shown)
+  if(!_shown)
   {
-    _private->_shown = true;
+    _shown = true;
 
     QRect availableGeometry = QApplication::desktop()->availableGeometry();
     if(!omfgThis->showTopLevel() && !isModal())
@@ -149,6 +136,7 @@ void XMainWindow::showEvent(QShowEvent *event)
     QString objName = objectName();
     QPoint pos = xtsettingsValue(objName + "/geometry/pos").toPoint();
     QSize lsize = xtsettingsValue(objName + "/geometry/size").toSize();
+    QSize currsize = size();
 
     setAttribute(Qt::WA_DeleteOnClose);
     if(omfgThis->showTopLevel() || isModal())
@@ -165,6 +153,8 @@ void XMainWindow::showEvent(QShowEvent *event)
 	if (DEBUG) qDebug() << "move" << pos;
         move(pos);
       }
+      else if(currsize!=size())
+        move(QPoint(1, 1));
     }
     else
     {
@@ -187,7 +177,7 @@ void XMainWindow::showEvent(QShowEvent *event)
         fw->setFocus();
     }
 
-    _private->loadScriptEngine();
+    loadScriptEngine();
 
     QList<XCheckBox*> allxcb = findChildren<XCheckBox*>();
     for (int i = 0; i < allxcb.size(); ++i)
@@ -196,27 +186,26 @@ void XMainWindow::showEvent(QShowEvent *event)
     shortcuts::setStandardKeys(this);
   }
 
-  bool blocked = _private->_action->blockSignals(true);
-  _private->_action->setChecked(true);
-  _private->_action->blockSignals(blocked);
+  bool blocked = _showMe->blockSignals(true);
+  _showMe->setChecked(true);
+  _showMe->blockSignals(blocked);
 
-  _private->callShowEvent(event);
-
+  callShowEvent(event);
   QMainWindow::showEvent(event);
 }
 
 void XMainWindow::hideEvent(QHideEvent * event)
 {
-  bool blocked = _private->_action->blockSignals(true);
-  _private->_action->setChecked(false);
-  _private->_action->blockSignals(blocked);
+  bool blocked = _showMe->blockSignals(true);
+  _showMe->setChecked(false);
+  _showMe->blockSignals(blocked);
 
   QMainWindow::hideEvent(event);
 }
 
 QAction *XMainWindow::action() const
 {
-  return _private->_action;
+  return _showMe;
 }
 
 void XMainWindow::changeEvent(QEvent *e)
@@ -224,10 +213,10 @@ void XMainWindow::changeEvent(QEvent *e)
   switch (e->type())
   {
     case QEvent::WindowTitleChange:
-        _private->_action->setText(windowTitle());
+        _showMe->setText(windowTitle());
         break;
     case QEvent::WindowIconChange:
-        _private->_action->setIcon(windowIcon());
+        _showMe->setIcon(windowIcon());
         break;
     default:
         break;
@@ -247,8 +236,6 @@ void XMainWindow::showMe(bool v)
 
 QScriptEngine *engine(XMainWindow *win)
 {
-  if(win && win->_private)
-    return win->_private->engine();
-  return 0;
+  return win ? win->engine() : 0;
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -37,12 +37,14 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags f
   setNewVisible(true);
   setQueryOnStartEnabled(true);
   setAutoUpdateEnabled(true);
+  setSearchVisible(true);
 
   _custid = -1;
   optionsWidget()->hide();
 
   _dates->setStartNull(tr("Earliest"), omfgThis->startOfTime(), true);
-  _dates->setStartDate(QDate().currentDate().addDays(-90));
+  int confDays = _metrics->value("DefaultOrderStartDays").toInt() ? : -90;
+  _dates->setStartDate(QDate().currentDate().addDays(confDays));
   _dates->setEndNull(tr("Latest"), omfgThis->endOfTime(), true);
 
   QString holdSql = QString("SELECT 0 AS code, '%1' AS desc "
@@ -88,7 +90,6 @@ openSalesOrders::openSalesOrders(QWidget* parent, const char*, Qt::WindowFlags f
   list()->addColumn(tr("Notes"),            -1,              Qt::AlignLeft,  false, "notes");
   
   setupCharacteristics("SO");
-  parameterWidget()->applyDefaultFilterSet();
   
   if (_privileges->check("MaintainSalesOrders"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

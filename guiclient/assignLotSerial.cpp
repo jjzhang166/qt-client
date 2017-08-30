@@ -151,7 +151,7 @@ void assignLotSerial::sNew()
   ParameterList params;
   params.append("itemloc_series", _itemlocSeries);
   params.append("itemlocdist_id", _itemlocdistid);
-  params.append("qtyRemaining",    _qtyBalance->text());
+  params.append("qtyRemaining",   _qtyBalance->toDouble());
 
   createLotSerial newdlg(this, "", true);
   newdlg.set(params);
@@ -213,12 +213,8 @@ void assignLotSerial::sAssign()
 
   assignAssign.prepare( "UPDATE itemlocdist "
              "SET itemlocdist_source_type='O' "
-             "WHERE (itemlocdist_series=:itemlocdist_series);"
-
-             "DELETE FROM itemlocdist "
-             "WHERE (itemlocdist_id=:itemlocdist_id);" );
+             "WHERE (itemlocdist_series=:itemlocdist_series);");
   assignAssign.bindValue(":itemlocdist_series", _itemlocSeries);
-  assignAssign.bindValue(":itemlocdist_id", _itemlocdistid);
   assignAssign.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Setting Lot/Serial Number"),
                                 assignAssign, __FILE__, __LINE__))

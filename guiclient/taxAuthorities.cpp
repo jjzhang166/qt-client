@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,6 +10,7 @@
 
 #include "taxAuthorities.h"
 
+#include <QMenu>
 #include <QMessageBox>
 #include <QSqlError>
 
@@ -18,6 +19,7 @@
 #include "errorReporter.h"
 #include "parameterwidget.h"
 #include "taxAuthority.h"
+#include "xtreewidget.h"
 
 taxAuthorities::taxAuthorities(QWidget* parent, const char*, Qt::WindowFlags fl)
   : display(parent, "taxAuthorities", fl)

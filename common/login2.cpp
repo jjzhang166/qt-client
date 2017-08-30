@@ -32,6 +32,8 @@
 #include "xtsettings.h"
 
 #include "splashconst.h"
+#include "cmdlinemessagehandler.h"
+#include "guimessagehandler.h"
 
 /* TODO: rename _nonxTupleDB to _isxTupleDB internally and
          set it based on db contents, not command line parameter input
@@ -59,6 +61,11 @@ login2::login2(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl
   //connect(_otherOption, SIGNAL(toggled(bool)), this, SLOT(sHandleButton()));
 
   _splash = 0;
+
+  GuiMessageHandler *g = new GuiMessageHandler(this);
+  g->setDestination(QtWarningMsg, this);
+  g->setDestination(QtCriticalMsg, this);
+  _handler = g;
 
   _captive = false; _nonxTupleDB = false;
   _multipleConnections = false;
@@ -177,6 +184,12 @@ int login2::set(const ParameterList &pParams, QSplashScreen *pSplash)
     _connAppName = "xTuple ERP (unknown)";
   }
 
+  if(pParams.inList("cmd"))
+  {
+    delete _handler;
+    _handler = new CmdLineMessageHandler(this);
+  }
+
   if(pParams.inList("login"))
     sLogin();
 
@@ -253,11 +266,10 @@ void login2::sLogin()
     if (_splash)
       _splash->hide();
     
-    QMessageBox::warning( this, tr("No Database Driver"),
-                          tr("<p>A connection could not be established with "
-                             "the specified Database as the Proper Database "
-                             "Drivers have not been installed. Contact your "
-                             "Systems Administator."));
+    _handler->message(QtWarningMsg, tr("<p>A connection could not be established with "
+                                       "the specified Database as the Proper Database "
+                                       "Drivers have not been installed. Contact your "
+                                       "Systems Administator."));
     
     return;
   }
@@ -267,11 +279,10 @@ void login2::sLogin()
     if (_splash)
       _splash->hide();
     
-    QMessageBox::warning(this, tr("Incomplete Connection Options"),
-                         tr("<p>One or more connection options are missing. "
-                            "Please check that you have specified the host "
-                            "name, database name, and any other required "
-                            "options.") );
+    _handler->message(QtWarningMsg, tr("<p>One or more connection options are missing. "
+                                           "Please check that you have specified the host "
+                                           "name, database name, and any other required "
+                                           "options.") );
 
     return;
   }
@@ -344,7 +355,7 @@ void login2::sLogin()
   if (db.isOpen())
   {
     QString earliest = "9.3.0",
-            latest   = "9.6.0";
+            latest   = "9.7.0";
     XSqlQuery checkVersion;   // include earliest in the range but exclude latest
     checkVersion.prepare("SELECT compareVersion(:earliest) <= 0"
                          "   AND compareVersion(:latest)   > 0 AS ok,"
@@ -353,14 +364,13 @@ void login2::sLogin()
     checkVersion.bindValue(":latest",   latest);
     checkVersion.exec();
     if (checkVersion.first() && ! checkVersion.value("ok").toBool() &&
-        QMessageBox::question(this, tr("Unsupported Database Server Version"),
-                              tr("<p>The database server is at version %1 but "
-                                 "xTuple ERP only supports from %2 up to but "
-                                 "not including %3.</p><p>Continue anyway?</p>")
-                                .arg(checkVersion.value("version").toString(),
-                                     earliest, latest),
-                              QMessageBox::Yes | QMessageBox::No,
-                              QMessageBox::No) == QMessageBox::No) {
+        _handler->question(tr("<p>The database server is at version %1 but "
+                                "xTuple ERP only supports from %2 up to but "
+                                "not including %3.</p><p>Continue anyway?</p>")
+                               .arg(checkVersion.value("version").toString(),
+                                    earliest, latest),
+                           QMessageBox::Yes | QMessageBox::No,
+                           QMessageBox::No) == QMessageBox::No) {
       if (_splash) {
         _splash->hide();
       }
@@ -374,9 +384,9 @@ void login2::sLogin()
 
       _password->setText("");
       return;
-    } else if (ErrorReporter::error(QtCriticalMsg, this,
-                                    tr("Cannot Connect to xTuple ERP Server"),
-                                    checkVersion, __FILE__, __LINE__)) {
+    } else if (checkVersion.lastError().type() != QSqlError::NoError) {
+      _handler->message(QtCriticalMsg, checkVersion.lastError().text());
+
       if (_splash)
         _splash->hide();
       db.close();
@@ -414,11 +424,10 @@ void login2::sLogin()
     
     setCursor(QCursor(Qt::ArrowCursor));
 
-    QMessageBox::critical(this, tr("Cannot Connect to xTuple ERP Server"),
-                          tr("<p>Sorry, can't connect to the specified xTuple ERP server. "
-                             "<p>This may be due to a problem with your user name, password, or server connection information. "
-                             "<p>Below is more detail on the connection problem: "
-                             "<p>%1" ).arg(db.lastError().text()));
+    _handler->message(QtCriticalMsg, tr("<p>Sorry, can't connect to the specified xTuple ERP server. "
+                                        "<p>This may be due to a problem with your user name, password, or server connection information. "
+                                        "<p>Below is more detail on the connection problem: "
+                                        "<p>%1" ).arg(db.lastError().text()));
     _password->setFocus();
     _password->setText("");
     return;
@@ -457,12 +466,9 @@ void login2::sLogin()
           _splash->hide();
         }
 
-        QString msg = QObject::tr(
-           "<p>The database \"%1\" does not appear to be a valid xTuple database.</p>"
-           "<p>Please check the database name and try again.</p>"
-        ).arg(dbName);
-
-        QMessageBox::critical(this, tr("Invalid Database"), msg, QMessageBox::Ok | QMessageBox::Escape | QMessageBox::Default);
+        _handler->message(QtCriticalMsg, tr("<p>The database \"%1\" does not appear to be a valid xTuple database.</p>"
+                                            "<p>Please check the database name and try again.</p>"
+                                           ).arg(dbName));
 
         return;
     }
@@ -482,8 +488,7 @@ void login2::sLogin()
       {
         if (_splash)
           _splash->hide();
-        QMessageBox::critical(this, tr("Error Logging In"),
-                              storedProcErrorLookup("login", result));
+        _handler->message(QtCriticalMsg, storedProcErrorLookup("login", result));
         return;
       }
       _user = login.value("user").toString();
@@ -502,21 +507,19 @@ void login2::sLogin()
     {
       if (_splash)
         _splash->hide();
-      QMessageBox::critical(this, tr("System Error"),
-                            tr("A System Error occurred at %1::%2:\n%3")
-                              .arg(__FILE__).arg(__LINE__)
-                              .arg(login.lastError().databaseText()));
+      _handler->message(QtCriticalMsg, tr("A System Error occurred at %1::%2:\n%3")
+                          .arg(__FILE__).arg(__LINE__)
+                          .arg(login.lastError().databaseText()));
     }
     else
     {
       if (_splash)
         _splash->hide();
       
-      QMessageBox::critical(this, tr("System Error"),
-                            tr("<p>An unknown error occurred at %1::%2. You may"
-                               " not log in to the specified xTuple ERP Server "
-                               "at this time.")
-                              .arg(__FILE__).arg(__LINE__));
+      _handler->message(QtCriticalMsg, tr("<p>An unknown error occurred at %1::%2. You may"
+                                         " not log in to the specified xTuple ERP Server "
+                                         "at this time.")
+                                        .arg(__FILE__).arg(__LINE__));
     }
   }
   else

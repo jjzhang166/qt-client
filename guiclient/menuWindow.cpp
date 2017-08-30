@@ -179,7 +179,10 @@ void menuWindow::sActivateWindow()
   if (wind)
   {
     if (_parent->showTopLevel())
+    {
+      wind->raise();
       wind->activateWindow();
+    }
     else
       wind->setFocus();
   }

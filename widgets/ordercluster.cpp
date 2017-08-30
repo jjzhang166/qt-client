@@ -1,19 +1,24 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
+#include <QGridLayout>
+#include <QLabel>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QtScript>
 
-#include "ordercluster.h"
 #include "errorReporter.h"
+#include "ordercluster.h"
 #include "xsqlquery.h"
+#include "xcheckbox.h"
+#include "xtreewidget.h"
 
 #define DEBUG false
 
@@ -984,4 +989,28 @@ void OrderSearch::done(int p)
 {
   selectedAtDone = _listTab->selectedItems();
   VirtualSearch::done(p);
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+void setupOrderLineEdit(QScriptEngine *engine)
+{
+  // engine->newQMetaObject approach hides the enum properties; don't know why
+  QScriptValue::PropertyFlags ro = QScriptValue::ReadOnly | QScriptValue::Undeletable;
+  QScriptValue widget = engine->globalObject().property("OrderLineEdit");
+  if (! widget.isObject()) {
+    widget = engine->newObject();
+    engine->globalObject().setProperty("OrderLineEdit", widget, ro);
+  }
+
+  widget.setProperty("AnyStatus",QScriptValue(engine, OrderLineEdit::AnyStatus),ro);
+  widget.setProperty("Unposted", QScriptValue(engine, OrderLineEdit::Unposted), ro);
+  widget.setProperty("Open",	 QScriptValue(engine, OrderLineEdit::Open),     ro);
+  widget.setProperty("Closed",	 QScriptValue(engine, OrderLineEdit::Closed),   ro);
+
+  widget.setProperty("AnyType",	QScriptValue(engine, OrderLineEdit::AnyType),   ro);
+  widget.setProperty("Purchase",QScriptValue(engine, OrderLineEdit::Purchase),  ro);
+  widget.setProperty("Return",	QScriptValue(engine, OrderLineEdit::Return),    ro);
+  widget.setProperty("Sales",	QScriptValue(engine, OrderLineEdit::Sales),     ro);
+  widget.setProperty("Transfer",QScriptValue(engine, OrderLineEdit::Transfer),  ro);
 }

@@ -47,6 +47,9 @@ unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt:
   parameterWidget()->append(tr("Vendor Type Pattern"), "vendtype_pattern", ParameterWidget::Text);
   parameterWidget()->appendComboBox(tr("Purchase Agent"), "pohead_agent_usr_id", XComboBox::Agent);
 
+  QString potypeSQL = QString("SELECT potype_id, potype_code ||' - '||potype_descr FROM potype");
+  parameterWidget()->appendComboBox(tr("Purchase Type"), "potype_id", potypeSQL);
+
   connect(omfgThis,	SIGNAL(purchaseOrdersUpdated(int, bool)),
                                               this,	SLOT(sFillList()));
 
@@ -57,6 +60,7 @@ unpostedPurchaseOrders::unpostedPurchaseOrders(QWidget* parent, const char*, Qt:
   list()->addColumn(tr("Release Date"),  _dateColumn,  Qt::AlignCenter, true, "pohead_released" );
   list()->addColumn(tr("Due Date"),      _dateColumn,  Qt::AlignCenter, true, "min_duedate" );
   list()->addColumn(tr("Status"),        _ynColumn,    Qt::AlignCenter, true, "pohead_status" );
+  list()->addColumn(tr("Purch. Type"),   _orderColumn, Qt::AlignLeft,   true, "potype_descr"   );
   list()->addColumn(tr("Printed"),       _ynColumn,    Qt::AlignCenter, true, "pohead_printed");
   list()->addColumn(tr("Total Amount"),  _moneyColumn, Qt::AlignRight,  true, "order_total" );
   list()->addColumn(tr("Vend. Type"),    _orderColumn, Qt::AlignLeft,   false,"vendtype_code" );
@@ -337,10 +341,10 @@ void unpostedPurchaseOrders::sPopulateMenu(QMenu *pMenu, QTreeWidgetItem *pItem,
 
   pMenu->addSeparator();
 
-  menuItem = pMenu->addAction(tr("Release..."), this, SLOT(sRelease()));
+  menuItem = pMenu->addAction(tr("Release"), this, SLOT(sRelease()));
   menuItem->setEnabled(_privileges->check("ReleasePurchaseOrders") &&
                        item->rawValue("pohead_status").toString() == "U");
-  menuItem = pMenu->addAction(tr("Unrelease..."), this, SLOT(sUnrelease()));
+  menuItem = pMenu->addAction(tr("Unrelease"), this, SLOT(sUnrelease()));
   menuItem->setEnabled(_privileges->check("UnreleasePurchaseOrders") &&
                        item->rawValue("pohead_status").toString() == "O");
 }

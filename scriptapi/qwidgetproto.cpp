@@ -1,7 +1,7 @@
 /*
  *This file is part of the xTuple ERP: PostBooks Edition, a free and
  *open source Enterprise Resource Planning software suite,
- *Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ *Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  *It is licensed to you under the Common Public Attribution License
  *version 1.0, the full text of which(including xTuple-specific Exhibits)
  *is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -14,7 +14,7 @@
 
 #define DEBUG false
 
-QScriptValue scriptFind(QScriptContext *context, QScriptEngine  * engine)
+QScriptValue scriptFind(QScriptContext *context, QScriptEngine *engine)
 {
 #ifndef Q_OS_WIN
   if (context->argumentCount() >= 1 &&
@@ -24,21 +24,21 @@ QScriptValue scriptFind(QScriptContext *context, QScriptEngine  * engine)
   return 0;
 }
 
-QScriptValue scriptKeyboardGrabber(QScriptContext * /*context*/,
-                                    QScriptEngine  *engine)
+QScriptValue scriptKeyboardGrabber(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(context);
   return engine->toScriptValue(QWidget::keyboardGrabber());
 }
 
-QScriptValue scriptMouseGrabber(QScriptContext * /*context*/,
-                                 QScriptEngine  *engine)
+QScriptValue scriptMouseGrabber(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(context);
   return engine->toScriptValue(QWidget::mouseGrabber());
 }
 
-QScriptValue scriptSetTabOrder(QScriptContext *context,
-                               QScriptEngine  * /*engine*/)
+QScriptValue scriptSetTabOrder(QScriptContext *context, QScriptEngine *engine)
 {
+  Q_UNUSED(engine);
   if (context->argumentCount() >= 2 &&
       qscriptvalue_cast<QWidget*>(context->argument(0)) &&
       qscriptvalue_cast<QWidget*>(context->argument(1)))
@@ -70,8 +70,7 @@ void setupQWidgetProto(QScriptEngine *engine)
   constructor.setProperty("setTabOrder",    engine->newFunction(scriptSetTabOrder));
 }
 
-QScriptValue constructQWidget(QScriptContext *context,
-                              QScriptEngine  *engine)
+QScriptValue constructQWidget(QScriptContext *context, QScriptEngine  *engine)
 {
   QWidget *obj = 0;
   if (context->argumentCount() >= 2)
@@ -85,7 +84,7 @@ QScriptValue constructQWidget(QScriptContext *context,
 }
 
 QWidgetProto::QWidgetProto(QObject *parent)
-    : QObject(parent)
+    : QObjectProto(parent)
 {
 }
 
@@ -272,16 +271,6 @@ QGraphicsProxyWidget *QWidgetProto::graphicsProxyWidget() const
   return 0;
 }
 
-/*
-bool QWidgetProto::hasEditFocus() const
-{
-  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
-  if (item)
-    return item->hasEditFocus();
-  return false;
-}
-*/
-
 bool QWidgetProto::hasFocus() const
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
@@ -297,17 +286,6 @@ int QWidgetProto::heightForWidth(int w) const
     return item->heightForWidth(w);
   return 0;
 }
-
-#if QT_VERSION < 0x050000
-QInputContext *QWidgetProto::inputContext()
-{
-  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
-  if (item)
-    return item->inputContext();
-  return 0;
-}
-#endif
-
 
 QVariant QWidgetProto::inputMethodQuery(int query) const
 {
@@ -582,15 +560,6 @@ void QWidgetProto::setContentsMargins(int left, int top, int right, int bottom)
     item->setContentsMargins(left, top, right, bottom);
 }
 
-/*
-void QWidgetProto::setEditFocus(bool enable)
-{
-  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
-  if (item)
-    item->setEditFocus(enable);
-}
-*/
-
 void QWidgetProto::setFixedHeight(int h)
 {
   QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
@@ -639,15 +608,6 @@ void QWidgetProto::setForegroundRole(int role)
   if (item)
     item->setForegroundRole((QPalette::ColorRole)role);
 }
-
-#if QT_VERSION < 0x050000
-void QWidgetProto::setInputContext(QInputContext *context)
-{
-  QWidget *item = qscriptvalue_cast<QWidget*>(thisObject());
-  if (item)
-    item->setInputContext(context);
-}
-#endif
 
 void QWidgetProto::setLayout(QLayout *layout)
 {

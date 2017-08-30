@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,26 +16,25 @@
 #include "virtualCluster.h"
 #include "crmacctcluster.h"
 
-class QLabel;
-class QPushButton;
 class QDragEnterEvent;
 class QDropEvent;
+class QLabel;
 class QMouseEvent;
+class QPushButton;
+class QScriptEngine;
 
 class CustInfo;
 
 #define __allCustomers    0x01
 #define __activeCustomers 0x02
 
-#define CREDITSTATUS    5
-#define CRMACCT_ID      6
-#define ISCUSTOMER      7
+#define CREDITSTATUS    4
+#define CRMACCT_ID      5
+#define ISCUSTOMER      6
 
 class XTUPLEWIDGETS_EXPORT CLineEdit : public VirtualClusterLineEdit
 {
   Q_OBJECT
-
-  Q_ENUMS(CLineEditTypes)
 
   Q_PROPERTY(CLineEditTypes type READ type WRITE setType )
 
@@ -50,6 +49,7 @@ class XTUPLEWIDGETS_EXPORT CLineEdit : public VirtualClusterLineEdit
       AllProspects,		ActiveProspects,
       AllCustomersAndProspects,	ActiveCustomersAndProspects
     };
+    Q_ENUM(CLineEditTypes)
 
     inline CLineEditTypes	type()	    const { return _type;       }
 
@@ -116,5 +116,7 @@ class XTUPLEWIDGETS_EXPORT CustCluster : public VirtualCluster
     void editable(bool);
     void editingFinished();
 };
+
+void setupCLineEdit(QScriptEngine *engine);
 
 #endif

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -18,8 +18,6 @@ class XTUPLEWIDGETS_EXPORT WComboBox : public XComboBox
 {
   Q_OBJECT
 
-  Q_ENUMS(WComboBoxTypes)
-
   Q_PROPERTY(WComboBoxTypes type READ type WRITE setType )
 
   public:
@@ -32,6 +30,7 @@ class XTUPLEWIDGETS_EXPORT WComboBox : public XComboBox
       POSupply, WOSupply,
       Transit, AllActiveInventory
     };
+    Q_ENUM(WComboBoxTypes)
 
     WComboBoxTypes type();
     void setType(WComboBoxTypes);
@@ -45,6 +44,7 @@ class XTUPLEWIDGETS_EXPORT WComboBox : public XComboBox
     enum WComboBoxTypes  _type;
 };
 
+void setupWComboBox(QScriptEngine *engine);
 
 #endif
 

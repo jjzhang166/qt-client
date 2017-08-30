@@ -1,166 +1,185 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
-#include <QMessageBox>
+#include "addresscluster.h"
+
 #include <QGridLayout>
+#include <QMessageBox>
 #include <QSqlError>
+#include <QPushButton>
+#include <QtScript>
 
 #include <metasql.h>
+#include <xsqlquery.h>
 
-#include "xsqlquery.h"
-#include "xcheckbox.h"
-
-#include "addresscluster.h"
 #include "errorReporter.h"
+#include "xcheckbox.h"
+#include "xtreewidget.h"
 
 #define DEBUG false
 
 void AddressCluster::init()
 {
-    _list = new QPushButton(tr("..."), this);
-    _list->setObjectName("_list");
-    _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  _list = new QPushButton(tr("..."), this);
+  _list->setObjectName("_list");
+  _list->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
 #ifndef Q_OS_MAC
-    _list->setMaximumWidth(25);
+  _list->setMaximumWidth(25);
 #else
-    _list->setMinimumWidth(60);
-    _list->setMinimumHeight(32);
+  _list->setMinimumWidth(60);
+  _list->setMinimumHeight(32);
 #endif
 
-    _titleSingular = tr("Address");
-    _titlePlural   = tr("Addresses");
-    _query = "SELECT * FROM address ";
-    _searchAcctId = -1;
+  _titleSingular = tr("Address");
+  _titlePlural   = tr("Addresses");
+  _query = "SELECT * FROM address ";
+  _searchAcctId = -1;
 
-    // handle differences between VirtualCluster and AddressCluster
-    _grid->removeWidget(_label);
-    _grid->removeWidget(_description);
-    delete _description;
-    _description = 0;
+  // handle differences between VirtualCluster and AddressCluster
+  _grid->removeWidget(_label);
+  _grid->removeWidget(_description);
+  delete _description;
+  _description = 0;
 
-    _addrChange    = new XLineEdit(this);
-    _number        = new XLineEdit(this);
-    _addrLit       = new QLabel(tr("Street\nAddress:"), this);
-    _addr1         = new XLineEdit(this);
-    _addr2         = new XLineEdit(this);
-    _addr3         = new XLineEdit(this);
-    _cityLit       = new QLabel(tr("City:"), this);
-    _city          = new XLineEdit(this);
-    _stateLit      = new QLabel(tr("State:"));
-    _state         = new XComboBox(this, "_state");
-    _postalcodeLit = new QLabel(tr("Postal:"));
-    _postalcode    = new XLineEdit(this);
-    _countryLit    = new QLabel(tr("Country:"));
-    _country       = new XComboBox(this, "_country");
-    _active        = new QCheckBox(tr("Active"), this);
-    _mapper        = new XDataWidgetMapper(this);
+  _addrChange    = new XLineEdit(this);
+  _number        = new XLineEdit(this);
+  _addrLit       = new QLabel(tr("Street\nAddress:"), this);
+  _addr1         = new XLineEdit(this);
+  _addr2         = new XLineEdit(this);
+  _addr3         = new XLineEdit(this);
+  _cityLit       = new QLabel(tr("City:"), this);
+  _city          = new XLineEdit(this);
+  _stateLit      = new QLabel(tr("State:"));
+  _state         = new XComboBox(this, "_state");
+  _postalcodeLit = new QLabel(tr("Postal:"));
+  _postalcode    = new XLineEdit(this);
+  _countryLit    = new QLabel(tr("Country:"));
+  _country       = new XComboBox(this, "_country");
+  _active        = new QCheckBox(tr("Active"), this);
+  _mapper        = new XDataWidgetMapper(this);
 
-    _addrChange->hide();
-#if defined Q_OS_MAC   
-    _city->setMinimumWidth(110);
+  _addrChange->setObjectName("_addrChange");
+  _number->setObjectName("_number");
+  _addrLit->setObjectName("_addrLit");
+  _addr1->setObjectName("_addr1");
+  _addr2->setObjectName("_addr2");
+  _addr3->setObjectName("_addr3");
+  _cityLit->setObjectName("_cityLit");
+  _city->setObjectName("_city");
+  _stateLit->setObjectName("_stateLit");
+  _postalcodeLit->setObjectName("_postalcodeLit");
+  _postalcode->setObjectName("_postalcode");
+  _countryLit->setObjectName("_countryLit");
+  _active->setObjectName("_active");
+  _mapper->setObjectName("_mapper");
+
+  _addrChange->hide();
+#if defined Q_OS_MAC
+  _city->setMinimumWidth(110);
 #else
-    _city->setMinimumWidth(85);
+  _city->setMinimumWidth(85);
 #endif
-    if (! DEBUG)
-      _number->hide();
-    _addrLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    _cityLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    _stateLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    _state->setEditable(true);
-    _state->setAllowNull(true);
-    _country->setMaximumWidth(250);
-    _country->setEditable(! (_x_metrics &&
-                             _x_metrics->boolean("StrictAddressCountry")));
-    if (DEBUG)
-      qDebug("%s::_country.isEditable() = %d",
-             (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
-             _country->isEditable());
+  if (! DEBUG)
+    _number->hide();
+  _addrLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _cityLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _stateLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _state->setEditable(true);
+  _state->setAllowNull(true);
+  _state->setMaximumWidth(250);
+  _country->setMaximumWidth(250);
+  _country->setEditable(! (_x_metrics &&
+                           _x_metrics->boolean("StrictAddressCountry")));
+  if (DEBUG)
+    qDebug("%s::_country.isEditable() = %d",
+           (objectName().isEmpty() ? "AddressCluster":qPrintable(objectName())),
+           _country->isEditable());
 
-    _postalcodeLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    _countryLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _postalcodeLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _countryLit->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-    _grid->setMargin(0);
-    _grid->setSpacing(2);
-    _grid->addWidget(_label,         0, 0, 1, -1);
-    _grid->addWidget(_addrLit,       1, 0, 3, 1);
-    _grid->addWidget(_addr1,         1, 1, 1, -1);
-    _grid->addWidget(_addr2,         2, 1, 1, -1);
-    _grid->addWidget(_addr3,         3, 1, 1, -1);
-    _grid->addWidget(_cityLit,       5, 0);
-    _grid->addWidget(_city,          5, 1);
-    _grid->addWidget(_stateLit,      5, 2);
-    _grid->addWidget(_state,         5, 3);
-    _grid->addWidget(_postalcodeLit, 5, 4);
-    _grid->addWidget(_postalcode,    5, 5, 1, 2);
-    _grid->addWidget(_countryLit,    4, 0);
-    _grid->addWidget(_country,       4, 1, 1, 3);
-    _grid->addWidget(_active,        4, 4);
+  _grid->setMargin(0);
+  _grid->setSpacing(2);
+  _grid->addWidget(_label,         0, 0, 1, -1);
+  _grid->addWidget(_addrLit,       1, 0, 3, 1);
+  _grid->addWidget(_addr1,         1, 1, 1, -1);
+  _grid->addWidget(_addr2,         2, 1, 1, -1);
+  _grid->addWidget(_addr3,         3, 1, 1, -1);
+  _grid->addWidget(_cityLit,       5, 0);
+  _grid->addWidget(_city,          5, 1);
+  _grid->addWidget(_stateLit,      5, 2);
+  _grid->addWidget(_state,         5, 3);
+  _grid->addWidget(_postalcodeLit, 5, 4);
+  _grid->addWidget(_postalcode,    5, 5, 1, 2);
+  _grid->addWidget(_countryLit,    4, 0);
+  _grid->addWidget(_country,       4, 1, 1, 3);
+  _grid->addWidget(_active,        4, 4);
 
-    QHBoxLayout* hbox = new QHBoxLayout;
-    hbox->addWidget(_list);
-    _grid->addLayout(hbox, 4, 5, 1, -1, Qt::AlignRight);
+  QHBoxLayout* hbox = new QHBoxLayout;
+  hbox->addWidget(_list);
+  _grid->addLayout(hbox, 4, 5, 1, -1, Qt::AlignRight);
 
-    _grid->setColumnStretch(0, 0);
-    _grid->setColumnStretch(1, 3);
-    _grid->setColumnStretch(2, 0);
-    _grid->setColumnStretch(3, 1);
-    _grid->setColumnStretch(4, 0);
-    _grid->setColumnStretch(5, 2);
+  _grid->setColumnStretch(0, 0);
+  _grid->setColumnStretch(1, 3);
+  _grid->setColumnStretch(2, 0);
+  _grid->setColumnStretch(3, 1);
+  _grid->setColumnStretch(4, 0);
+  _grid->setColumnStretch(5, 2);
 
 #if defined Q_OS_MAC
-    setMinimumSize(_grid->columnCount() * 60, 132);
+  setMinimumSize(_grid->columnCount() * 60, 132);
 #endif
 
-    connect(_list,      SIGNAL(clicked()), this, SLOT(sEllipses()));
-    connect(_addr1,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_addr2,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_addr3,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_city,      SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_state, SIGNAL(editTextChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_state,                      SIGNAL(newID(int)), this, SIGNAL(changed()));
-    connect(_postalcode,SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    connect(_country,SIGNAL(editTextChanged(const QString&)),this, SLOT(setCountry(const QString&)));
-    connect(_country,                    SIGNAL(newID(int)), this, SIGNAL(changed()));
-    connect(_country,                    SIGNAL(newID(int)), this, SLOT(populateStateComboBox()));
+  connect(_list,      SIGNAL(clicked()), this, SLOT(sEllipses()));
+  connect(_addr1,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_addr2,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_addr3,     SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_city,      SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_state, SIGNAL(editTextChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_state,                      SIGNAL(newID(int)), this, SIGNAL(changed()));
+  connect(_postalcode,SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+  connect(_country,SIGNAL(editTextChanged(const QString&)),this, SLOT(setCountry(const QString&)));
+  connect(_country,                    SIGNAL(newID(int)), this, SIGNAL(changed()));
+  connect(_country,                    SIGNAL(newID(int)), this, SLOT(populateStateComboBox()));
 
-    connect(_addr1, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_addr2, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_addr3, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_city, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_postalcode, SIGNAL(requestList()), this, SLOT(sList()));
-    connect(_addr1, SIGNAL(requestSearch()), this, SLOT(sSearch()));
-    connect(_addr2, SIGNAL(requestSearch()), this, SLOT(sSearch()));
-    connect(_addr3, SIGNAL(requestSearch()), this, SLOT(sSearch()));
-    connect(_city,  SIGNAL(requestSearch()), this, SLOT(sSearch()));
-    connect(_postalcode,  SIGNAL(requestSearch()), this, SLOT(sSearch()));
+  connect(_addr1, SIGNAL(requestList()), this, SLOT(sList()));
+  connect(_addr2, SIGNAL(requestList()), this, SLOT(sList()));
+  connect(_addr3, SIGNAL(requestList()), this, SLOT(sList()));
+  connect(_city, SIGNAL(requestList()), this, SLOT(sList()));
+  connect(_postalcode, SIGNAL(requestList()), this, SLOT(sList()));
+  connect(_addr1, SIGNAL(requestSearch()), this, SLOT(sSearch()));
+  connect(_addr2, SIGNAL(requestSearch()), this, SLOT(sSearch()));
+  connect(_addr3, SIGNAL(requestSearch()), this, SLOT(sSearch()));
+  connect(_city,  SIGNAL(requestSearch()), this, SLOT(sSearch()));
+  connect(_postalcode,  SIGNAL(requestSearch()), this, SLOT(sSearch()));
 
-    connect(_addr1,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
-    connect(_addr2,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
-    connect(_addr3,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
-    connect(_city,      SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
-    connect(_postalcode,SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
+  connect(_addr1,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
+  connect(_addr2,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
+  connect(_addr3,     SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
+  connect(_city,      SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
+  connect(_postalcode,SIGNAL(textChanged(QString)), this, SLOT(emitAddressChanged()));
 
-    setFocusProxy(_addr1);
-    setFocusPolicy(Qt::StrongFocus);
-    setLabel("");
-    setActiveVisible(false);
-    silentSetId(-1);
-    _list->show();
-    _mode = Edit;
+  setFocusProxy(_addr1);
+  setFocusPolicy(Qt::StrongFocus);
+  setLabel("");
+  setActiveVisible(false);
+  silentSetId(-1);
+  _list->show();
+  _mode = Edit;
 }
 
-AddressCluster::AddressCluster(QWidget* pParent, const char* pName) :
-    VirtualCluster(pParent, pName)
+AddressCluster::AddressCluster(QWidget* pParent, const char* pName)
+  : VirtualCluster(pParent, pName)
 {
-    init();
+  init();
 }
 
 void AddressCluster::populateStateComboBox()
@@ -245,7 +264,7 @@ void AddressCluster::populateCountryComboBox()
 
   _country->clear();
   XSqlQuery country;
-  country.prepare("SELECT -1, '','' AS country_name " 
+  country.prepare("SELECT -1, '','' AS country_name "
                   "UNION "
                   "SELECT country_id, country_name, country_name "
                   "FROM country ORDER BY country_name;");
@@ -272,7 +291,7 @@ void AddressCluster::setId(const int pId, const QString&)
   if (pId == _id)
     return;
   silentSetId(pId);
-  emit newId(pId);  
+  emit newId(pId);
 }
 
 void AddressCluster::silentSetId(const int pId)
@@ -318,7 +337,7 @@ void AddressCluster::silentSetId(const int pId)
            _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_city)), _city->text());
            _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_state)), _state->currentText());
            _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_postalcode)), _postalcode->text());
-           _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_country)), _country->currentText());    
+           _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_country)), _country->currentText());
         }
 
         c_number     = _number->text();
@@ -430,7 +449,7 @@ void AddressCluster::clear()
   _active->setChecked(c_active);
   _selected = false;
 }
-   
+
 void AddressCluster::setDataWidgetMap(XDataWidgetMapper* m)
 {
   m->addMapping(_addrChange , _fieldNameAddrChange,   "text", "defaultText");
@@ -447,13 +466,13 @@ void AddressCluster::setDataWidgetMap(XDataWidgetMapper* m)
   _country->setDataWidgetMap(m);
   _mapper=m;
 }
-   
+
 /*
    return +N addr_id if save is successful or if found another addr with the same info
    return  0 if there is no address to save
    return -1 if there was an error
    return -2 if there are N contacts sharing this address
-  
+
  */
 int AddressCluster::save(enum SaveFlags flag)
 {
@@ -478,10 +497,10 @@ int AddressCluster::save(enum SaveFlags flag)
                              "before saving."));
     return -3;
   }
-  
+
   XSqlQuery datamodQ;
-  datamodQ.prepare("SELECT saveAddr(:addr_id,:addr_number,:addr1,:addr2,:addr3," 
-		   ":city,:state,:postalcode,:country,:active,:notes,:flag) AS result;");
+  datamodQ.prepare("SELECT saveAddr(:addr_id,:addr_number,:addr1,:addr2,:addr3,"
+                   ":city,:state,:postalcode,:country,:active,:notes,:flag) AS result;");
   datamodQ.bindValue(":addr_id", id());
   if (!_number->text().isEmpty())
     datamodQ.bindValue(":addr_number", _number->text());
@@ -502,7 +521,7 @@ int AddressCluster::save(enum SaveFlags flag)
     datamodQ.bindValue(":flag", QString("CHANGEONE"));
   else
     return -1;
-    
+
   datamodQ.exec();
   if (datamodQ.first())
   {
@@ -538,7 +557,7 @@ void AddressCluster::check()
     tx.exec("ROLLBACK;");
     if (result == -2)
     {
-      int answer = 2;	// Cancel
+      int answer = 2; // Cancel
       answer = QMessageBox::question(this, tr("Question Saving Address"),
                   tr("<p>There are multiple Contacts sharing this Address.</p>"
                      "<p>What would you like to do?</p>"),
@@ -551,7 +570,7 @@ void AddressCluster::check()
          _addrChange->setText("CHANGEALL");
        // Make sure the mapper is aware of this change
        if (_mapper->model()->data(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_addrChange))).toString() != _addrChange->text())
-         _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_addrChange)), _addrChange->text());     
+         _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_addrChange)), _addrChange->text());
     }
     else if (result < 0)
     {
@@ -660,7 +679,7 @@ void AddressCluster::setAddrChange(QString p)
   if (_mapper->model() &&
       _mapper->model()->data(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_addrChange))).toString() != _addrChange->text())
     _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(_addrChange)), _addrChange->text());
-  
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -939,4 +958,49 @@ void AddressCluster::setMode(Mode p)
     widgets.at(i)->setEnabled(enabled);
   if (p == Select)
     _list->setEnabled(true);
+}
+
+// script exposure /////////////////////////////////////////////////////////////
+
+QScriptValue AddressClusterPointerToScriptValue(QScriptEngine *engine, AddressCluster *const &item)
+{
+  return engine->newQObject(item);
+}
+
+void AddressClusterPointerFromScriptValue(const QScriptValue &obj, AddressCluster * &item)
+{
+  item = qobject_cast<AddressCluster *>(obj.toQObject());
+}
+
+QScriptValue addressClusterConstructor(QScriptContext *context, QScriptEngine *engine)
+{
+#if QT_VERSION >= 0x050000
+  AddressCluster *obj = 0;
+
+  if (context->argumentCount() >= 2)
+    obj = new AddressCluster(qobject_cast<QWidget*>(context->argument(0).toQObject()),
+                             context->argument(1).toString().toLatin1().data());
+  else if (context->argumentCount() == 1)
+    obj = new AddressCluster(qobject_cast<QWidget*>(context->argument(0).toQObject()));
+  else
+    obj = new AddressCluster(0);
+
+  return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
+}
+
+void setupAddressCluster(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("AddressCluster").isObject())
+  {
+    qScriptRegisterMetaType(engine, AddressClusterPointerToScriptValue,     AddressClusterPointerFromScriptValue);
+
+    QScriptValue ctor = engine->newFunction(addressClusterConstructor);
+    QScriptValue meta = engine->newQMetaObject(&AddressCluster::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("AddressCluster", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

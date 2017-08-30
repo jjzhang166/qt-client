@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -39,30 +39,8 @@ enum SaveFlags
 };
 
 Q_DECLARE_METATYPE(enum SetResponse)
-Q_DECLARE_METATYPE(enum ParameterGroup::ParameterGroupStates);
-Q_DECLARE_METATYPE(enum ParameterGroup::ParameterGroupTypes);
-Q_DECLARE_METATYPE(enum Qt::WindowModality);
 Q_DECLARE_METATYPE(enum GUIClient::WindowSystem);
 Q_DECLARE_METATYPE(enum SaveFlags);
-
-
-QScriptValue SetResponsetoScriptValue(QScriptEngine *engine, const enum SetResponse &sr);
-void SetResponsefromScriptValue(const QScriptValue &obj, enum SetResponse &sr);
-
-QScriptValue ParameterGroupStatestoScriptValue(QScriptEngine *engine, const enum ParameterGroup::ParameterGroupStates &en);
-void ParameterGroupStatesfromScriptValue(const QScriptValue &obj, enum ParameterGroup::ParameterGroupStates &en);
-
-QScriptValue ParameterGroupTypestoScriptValue(QScriptEngine *engine, const enum ParameterGroup::ParameterGroupTypes &en);
-void ParameterGroupTypesfromScriptValue(const QScriptValue &obj, enum ParameterGroup::ParameterGroupTypes &en);
-
-QScriptValue QtWindowModalitytoScriptValue(QScriptEngine *engine, const enum Qt::WindowModality &en);
-void QtWindowModalityfromScriptValue(const QScriptValue &obj, enum Qt::WindowModality &en);
-
-QScriptValue WindowSystemtoScriptValue(QScriptEngine *engine, const enum GUIClient::WindowSystem &en);
-void WindowSystemfromScriptValue(const QScriptValue &obj, enum GUIClient::WindowSystem &en);
-
-QScriptValue SaveFlagstoScriptValue(QScriptEngine *engine, const enum SaveFlags &en);
-void SaveFlagsfromScriptValue(const QScriptValue &obj, enum SaveFlags &en);
 
 QString scriptHandleIncludes(QString source);
 

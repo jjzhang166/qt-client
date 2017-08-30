@@ -219,7 +219,8 @@ void woMaterialItem::sSave()
 
   if (_mode == cNew)
   {
-    woSave.prepare( "SELECT component.itemsite_id AS itemsiteid "
+    woSave.prepare( "SELECT component.itemsite_id AS itemsiteid, "
+                    "component.itemsite_costmethod AS costmethod "
                "FROM wo, itemsite AS parent, itemsite AS component "
                "WHERE ( (parent.itemsite_warehous_id=component.itemsite_warehous_id)"
                " AND (parent.itemsite_id=wo_itemsite_id)"
@@ -228,7 +229,20 @@ void woMaterialItem::sSave()
     woSave.bindValue(":item_id", _item->id());
     woSave.bindValue(":wo_id", _wo->id());
     woSave.exec();
-    if (!woSave.first())
+    if (woSave.first())
+    {
+      if (woSave.value("costmethod")=="J")
+      {
+        QMessageBox::warning( this, tr("Cannot Create W/O Material Requirement"),
+                            tr( "A W/O Material Requirement cannot be created for the selected\n"
+                                "Work Order/Item as the selected Item is Job Costed,\n"
+                                "and Work Order Component Items may not be Job Costed." ));
+        _item->setId(-1);
+        _item->setFocus();
+        return;
+      }
+    }
+    else
     {
       QMessageBox::warning( this, tr("Cannot Create W/O Material Requirement"),
                             tr( "A W/O Material Requirement cannot be created for the selected\n"

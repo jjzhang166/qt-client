@@ -276,6 +276,7 @@ void packingListBatch::sAddSO()
   XSqlQuery packingAddSO;
   ParameterList params;
   params.append("soType", cSoOpen);
+  params.append("exclShipped", true);
   _warehouse->appendValue(params);
 
   salesOrderList newdlg(this, "", true);

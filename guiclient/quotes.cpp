@@ -67,7 +67,6 @@ quotes::quotes(QWidget* parent, const char *name, Qt::WindowFlags fl)
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   setupCharacteristics("QU");
-  parameterWidget()->applyDefaultFilterSet();
 
   if (_privileges->check("MaintainQuotes"))
     connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sEdit()));

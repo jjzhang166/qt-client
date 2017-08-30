@@ -426,7 +426,34 @@ to be bound by its terms.</comment>
             </property>
            </widget>
           </item>
-          <item row="3" column="0" colspan="2">
+          <item row="3" column="0">
+           <widget class="QRadioButton" name="_useCompanyIdType">
+            <property name="text">
+             <string>Prefix Company ID with Indicator of Company ID Type</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QRadioButton" name="_usePrefix">
+            <property name="text">
+             <string>Custom Prefix:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLineEdit" name="_prefix">
+            <property name="maxLength">
+             <number>1</number>
+            </property>
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
            <widget class="QGroupBox" name="_originGroup">
             <property name="title">
              <string>Immediate Origin Name and Number</string>
@@ -510,7 +537,7 @@ to be bound by its terms.</comment>
             </property>
            </widget>
           </item>
-          <item row="3" column="2" colspan="2">
+          <item row="4" column="2" colspan="2">
            <widget class="QGroupBox" name="_destinationGroup">
             <property name="title">
              <string>Immediate Destination Name and Number</string>

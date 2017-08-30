@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -47,6 +47,8 @@
 #include "guiErrorCheck.h"
 
 #define DEBUG false
+
+static QVariant _booEnabled = QVariant();
 
 workOrder::workOrder(QWidget* parent, const char* name, Qt::WindowFlags fl)
     : XWidget(parent, name, fl)
@@ -116,7 +118,24 @@ workOrder::workOrder(QWidget* parent, const char* name, Qt::WindowFlags fl)
     _warehouse->hide();
   }
 
-  if (!_metrics->boolean("Routings"))
+  if (_booEnabled.isNull())
+  {
+    XSqlQuery boohead("SELECT 1 "
+                      "  FROM pg_class "
+                      " WHERE relname='boohead' "
+                      "   AND relkind='r';");
+
+    if (boohead.first())
+      _booEnabled = QVariant(true);
+    else
+    {
+      _booEnabled = QVariant(false);
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error checking for boohead"),
+                           boohead, __FILE__, __LINE__);
+    }
+  }
+
+  if (!_booEnabled.toBool())
   {
    _booGroup->hide();
    _showOperations->setChecked(false);
@@ -147,7 +166,7 @@ workOrder::workOrder(QWidget* parent, const char* name, Qt::WindowFlags fl)
   _woIndentedList->addColumn(tr("Received"),        _qtyColumn,     Qt::AlignRight     , true,   "qtyrcv");
   _woIndentedList->addColumn(tr("Available QOH"),   _qtyColumn,     Qt::AlignRight     , false,  "qoh");
   _woIndentedList->addColumn(tr("Short"),           _qtyColumn,     Qt::AlignRight     , false,  "short");
-  if (_metrics->boolean("Routings"))
+  if (_booEnabled.toBool())
   {
     _woIndentedList->addColumn(tr("Setup Remain."),           _qtyColumn,     Qt::AlignRight     , false,  "wodata_setup");
     _woIndentedList->addColumn(tr("Run Remain."),             _qtyColumn,     Qt::AlignRight     , false,  "wodata_run");
@@ -235,11 +254,11 @@ enum SetResponse workOrder::set(const ParameterList &pParams)
       _item->setType(ItemLineEdit::cGeneralPurchased | ItemLineEdit::cGeneralManufactured |
                          ItemLineEdit::cActive);
                          
+      populate();
       connect(_priority, SIGNAL(valueChanged(int)), this, SLOT(sReprioritizeParent()));
       connect(_qty, SIGNAL(editingFinished()), this, SLOT(sChangeParentQty()));
       connect(_startDate, SIGNAL(newDate(const QDate&)), this, SLOT(sRescheduleParent()));
       connect(_dueDate, SIGNAL(newDate(const QDate&)), this, SLOT(sRescheduleParent()));
-      populate();
     }
     else if (param.toString() == "view")
     {
@@ -712,14 +731,24 @@ void workOrder::sPopulateItemChar( int pItemid )
   {
     workPopulateItemChar.prepare( "SELECT DISTINCT char_id, char_name,"
                "       COALESCE(b.charass_value, (SELECT c.charass_value FROM charass c WHERE ((c.charass_target_type='I') AND (c.charass_target_id=:item_id) AND (c.charass_default) AND (c.charass_char_id=char_id)) LIMIT 1)) AS charass_value"
-               "  FROM charass a, char "
-               "    LEFT OUTER JOIN charass b"
-               "      ON (b.charass_target_type='W'"
-               "      AND b.charass_target_id=:wo_id"
-               "      AND b.charass_char_id=char_id) "
-               " WHERE ( (a.charass_char_id=char_id)"
-               "   AND   (a.charass_target_type='I')"
-               "   AND   (a.charass_target_id=:item_id) ) "
+               "   FROM (SELECT DISTINCT char_id, char_type, char_name, char_order "
+               "         FROM charass, char, charuse"
+               "         WHERE ((charass_char_id=char_id)"
+               "         AND (charuse_char_id=char_id AND charuse_target_type = 'W') "
+               "         AND (charass_target_type='I') "
+               "         AND (charass_target_id=:item_id) ) "
+               "         UNION SELECT char_id, char_type, char_name, char_order"
+               "         FROM charass, char "
+               "         WHERE ((charass_char_id=char_id)"
+               "         AND  (charass_target_type = 'W' AND charass_target_id=:wo_id))   ) AS data "
+               "   LEFT OUTER JOIN charass b ON ((:wo_id=b.charass_target_id)"
+               "                                  AND ('W'=b.charass_target_type)"
+               "                                  AND (b.charass_char_id=char_id))"
+               "   LEFT OUTER JOIN item     i1 ON (i1.item_id=:item_id)"
+               "   LEFT OUTER JOIN charass  i2 ON ((i1.item_id=i2.charass_target_id)"
+               "                                   AND ('I'=i2.charass_target_type)"
+               "                                   AND (i2.charass_char_id=char_id)"
+               "                                   AND (i2.charass_default))"
                " ORDER BY char_name;" );
     workPopulateItemChar.bindValue(":item_id", pItemid);
     workPopulateItemChar.bindValue(":wo_id", _woid);
@@ -867,7 +896,7 @@ void workOrder::sFillList()
 
   ParameterList params;
   params.append("wo_id", _woid);
-  params.append("showops", QVariant(_metrics->boolean("Routings") && _showOperations->isChecked()));
+  params.append("showops", QVariant(_booEnabled.toBool() && _showOperations->isChecked()));
   params.append("showmatl", QVariant(_showMaterials->isChecked()));
   params.append("showindent", QVariant(_indented->isChecked()));
   XSqlQuery workFillList = mql.toQuery(params);
@@ -1019,26 +1048,12 @@ void workOrder::sDeleteWO()
     workDeleteWO.exec();
 
     if (workDeleteWO.first())
-    {
-      int result = workDeleteWO.value("returnVal").toInt();
-      if (result < 0)
-      {
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                               storedProcErrorLookup("deleteWo", result),
-                               __FILE__, __LINE__);
-        return;
-      }
       omfgThis->sWorkOrdersUpdated(-1, true);
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+                         workDeleteWO, __FILE__, __LINE__))
+    {
+      return;
     }
-    else if (workDeleteWO.lastError().type() != QSqlError::NoError)
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                         workDeleteWO, __FILE__, __LINE__);
-
-  }
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                                workDeleteWO, __FILE__, __LINE__))
-  {
-    return;
   }
   populate();
 }
@@ -1302,7 +1317,7 @@ void workOrder::sReturnMatlBatch()
   if (!sSave())
     return;
   XSqlQuery workReturnMatlBatch;
-   workReturnMatlBatch.prepare( "SELECT wo_qtyrcv "
+  workReturnMatlBatch.prepare( "SELECT wo_qtyrcv, wo_status IN ('E', 'I') AS can_return "
              "FROM wo "
              "WHERE (wo_id=:wo_id);" );
   workReturnMatlBatch.bindValue(":wo_id", _woIndentedList->id());
@@ -1316,42 +1331,162 @@ void workOrder::sReturnMatlBatch()
                                 "and thus the material issued against it cannot be returned.\n"
                                 "You must instead return each Work Order Material item individually.\n" ) );
     }
+    else if (!workReturnMatlBatch.value("can_return").toBool())
+    {
+      QMessageBox::warning( this, tr("Cannot return Work Order Material"),
+                            tr( "Work Order must have status of Exploded or In-Process." ) );
+    }
     else
     {
-      XSqlQuery rollback;
-      rollback.prepare("ROLLBACK;");
+      // Create itemlocdist records for controlled items with qty to return
+      XSqlQuery items;
+      items.prepare("SELECT womatl_id, womatl_uom_id, womatl_qtyreq, womatl_qtyiss, womatl_issuemethod, "
+                    " CASE WHEN wo_qtyord >= 0 THEN womatl_qtyiss "
+                    "   ELSE ((womatl_qtyreq - womatl_qtyiss) * -1) "
+                    " END AS qty, "
+                    " itemsite_id, itemsite_item_id, item_number, "
+                    " isControlledItemsite(itemsite_id) AS controlled "
+                    "FROM wo, womatl, itemsite, item "
+                    "WHERE wo_id=womatl_wo_id "
+                    " AND womatl_itemsite_id=itemsite_id "
+                    " AND itemsite_item_id=item_id "
+                    " AND womatl_wo_id=:wo_id "
+                    " AND ((wo_qtyord < 0) OR (womatl_issuemethod IN ('S','M'))) "
+                    "ORDER BY womatl_id;");
+      items.bindValue(":wo_id", _woIndentedList->id());
+      items.exec();
 
-      workReturnMatlBatch.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-      workReturnMatlBatch.prepare("SELECT returnWoMaterialBatch(:wo_id) AS result;");
-      workReturnMatlBatch.bindValue(":wo_id", _woIndentedList->id());
-      workReturnMatlBatch.exec();
-      if (workReturnMatlBatch.first())
+      int succeeded = 0;
+      QList<QString> failedItems;
+      QList<QString> errors;
+      while(items.next())
       {
-        if (workReturnMatlBatch.value("result").toInt() < 0)
+        if (items.value("qty").toDouble() == 0.0)
+          continue;
+
+        int itemlocSeries;
+
+        // Stage distribution cleanup function to be called on error
+        XSqlQuery cleanup;
+        cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+        // Generate a series id to be used for itemlocdist if controlled, and for returnWoMaterial()
+        XSqlQuery parentSeries;
+        parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+        parentSeries.exec();
+        if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
         {
-          rollback.exec();
-          ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Materials: W/O #%1")
-                                                       .arg(_woIndentedList->id()),
-                                                       workReturnMatlBatch, __FILE__, __LINE__);
-          return;
+          itemlocSeries = parentSeries.value("result").toInt();
+          cleanup.bindValue(":itemlocSeries", itemlocSeries);
         }
-        else if (distributeInventory::SeriesAdjust(workReturnMatlBatch.value("result").toInt(), this) == XDialog::Rejected)
+        else
         {
-          rollback.exec();
-          QMessageBox::information( this, tr("Material Return"), tr("Transaction Canceled") );
-          return;
+          failedItems.append(items.value("item_number").toString());
+          errors.append("Failed to Retrieve the Next itemloc_series_seq");
+          continue;
         }
 
-        workReturnMatlBatch.exec("COMMIT;");
-        omfgThis->sWorkOrdersUpdated(_woIndentedList->id(), true);
+        // If controlled and backflush item has relevant qty for returnWoMaterial
+        if (items.value("controlled").toBool() && 
+           (items.value("womatl_qtyreq").toDouble() >= 0 ? 
+            items.value("womatl_qtyiss").toDouble() >= items.value("qty").toDouble() : 
+            items.value("womatl_qtyiss").toDouble() <= items.value("qty").toDouble()))
+        {
+          // Create the parent itemlocdist record for each line item requiring distribution and call distributeInventory::seriesAdjust
+          XSqlQuery parentItemlocdist;
+          parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, "
+                                    " COALESCE(itemuomtouom(:itemsite_item_id, :womatl_uom_id, NULL, :qty), :qty), "
+                                    "'WO', :orderitemId, :itemlocSeries, NULL, NULL, 'IM');");
+          parentItemlocdist.bindValue(":itemsite_id", items.value("itemsite_id").toInt());
+          parentItemlocdist.bindValue(":itemsite_item_id", items.value("itemsite_item_id").toInt());
+          parentItemlocdist.bindValue(":womatl_uom_id", items.value("womatl_uom_id").toInt());
+          parentItemlocdist.bindValue(":qty", items.value("qty").toDouble());
+          parentItemlocdist.bindValue(":orderitemId", _woIndentedList->id());
+          parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+          parentItemlocdist.exec();
+          if (parentItemlocdist.first())
+          {
+            if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+              QDate(), true) == XDialog::Rejected)
+            {
+              cleanup.exec();
+              // If it's not the last item in the loop, ask the user to exit loop or continue
+              if (items.at() != (items.size() -1))
+              {
+                if (QMessageBox::question(this,  tr("Return WO Material"),
+                tr("Posting distribution detail for item number %1 was cancelled but "
+                  "there are more items to return. Continue returning the remaining materials?")
+                .arg(items.value("item_number").toString()),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+                {
+                  failedItems.append(items.value("item_number").toString());
+                  errors.append("Detail Distribution Cancelled");
+                  continue;
+                }
+                else
+                {
+                  failedItems.append(items.value("item_number").toString());
+                  errors.append("Detail Distribution Cancelled");
+                  break;
+                }
+              }
+              else 
+              {
+                failedItems.append(items.value("item_number").toString());
+                errors.append("Detail Distribution Cancelled");
+                continue;
+              }
+            }
+          }
+          else
+          {
+            cleanup.exec();
+            failedItems.append(items.value("item_number").toString());
+            errors.append(tr("Error Creating itemlocdist Records. %1")
+              .arg(parentItemlocdist.lastError().text()));
+            continue;
+          }
+        }
+
+        XSqlQuery returnReturn;
+        returnReturn.prepare("SELECT returnWoMaterial(:womatl_id, :qty, :itemlocSeries, now(), FALSE, TRUE, TRUE) AS result;");
+        returnReturn.bindValue(":womatl_id", items.value("womatl_id").toInt());
+        returnReturn.bindValue(":qty", items.value("qty").toDouble());
+        returnReturn.bindValue(":itemlocSeries", itemlocSeries);
+        returnReturn.exec();
+        if (returnReturn.first())
+        {
+          if (returnReturn.value("result").toInt() < 0)
+          {
+            cleanup.exec();
+            failedItems.append(items.value("item_number").toString());
+            errors.append(tr("Return WO Material failed. %1")
+              .arg(returnReturn.lastError().text()));
+            continue;
+          }
+        }
+        else
+        {
+          cleanup.exec();
+          failedItems.append(items.value("item_number").toString());
+          errors.append(tr("Error Returning Work Order Material Batch. %")
+            .arg(returnReturn.lastError().text()));
+          continue;
+        }
+        succeeded++;
       }
-      else
+
+      if (errors.size() > 0)
       {
-        rollback.exec();
-        ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Materials: W/O #%1")
-                                                     .arg(_woIndentedList->id()),
-                                                     workReturnMatlBatch, __FILE__, __LINE__);
-        return;
+        QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
+        dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
+
+        QString details;
+        for (int i=0; i<failedItems.size(); i++)
+          details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
+        dlg.setDetailedText(details);
+
+        dlg.exec();
       }
     }
   }
@@ -1362,79 +1497,182 @@ void workOrder::sIssueMatlBatch()
 {
   if (!sSave())
     return;
-  XSqlQuery issue;
-  issue.prepare("SELECT itemsite_id, "
-                "       item_number, "
+  XSqlQuery items;
+  items.prepare("SELECT itemsite_id, itemsite_item_id, item_number, item_fractional, "
+                "       isControlledItemsite(itemsite_id) AS controlled, "
                 "       warehous_code, "
+                "       womatl_id, womatl_uom_id, womatl_qtyreq, womatl_qtyiss, womatl_issuemethod, "
+                "       CASE WHEN (womatl_qtyreq >= 0) THEN "
+                "         roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(womatl_qtyreq - womatl_qtyiss)) "
+                "       ELSE "
+                "         roundQty(itemuomfractionalbyuom(item_id, womatl_uom_id), noNeg(womatl_qtyiss * -1)) "
+                "       END AS qty, "
                 "       (COALESCE((SELECT SUM(itemloc_qty) "
                 "                    FROM itemloc "
                 "                   WHERE (itemloc_itemsite_id=itemsite_id)), 0.0) "
                 "        >= roundQty(item_fractional, noNeg(itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, womatl_qtyreq - womatl_qtyiss)))) AS isqtyavail "
-                "  FROM womatl, itemsite, item, whsinfo "
-                " WHERE ( (womatl_itemsite_id=itemsite_id) "
+                "  FROM wo, womatl, itemsite, item, whsinfo "
+                " WHERE ( (wo_id=womatl_wo_id) "
+                "   AND (womatl_itemsite_id=itemsite_id) "
                 "   AND (itemsite_item_id=item_id) "
                 "   AND (itemsite_warehous_id=warehous_id) "
-                "   AND (NOT ((item_type = 'R') OR (itemsite_controlmethod = 'N'))) "
                 "   AND ((itemsite_controlmethod IN ('L', 'S')) OR (itemsite_loccntrl)) "
                 "   AND (womatl_issuemethod IN ('S', 'M')) "
                 "   AND (womatl_wo_id=:wo_id)); ");
-  issue.bindValue(":wo_id", _woIndentedList->id());
-  issue.exec();
-  while(issue.next())
+  items.bindValue(":wo_id", _woIndentedList->id());
+  items.exec();
+
+  int succeeded = 0;
+  QList<QString> failedItems;
+  QList<QString> errors;
+  while (items.next())
   {
-    if(!(issue.value("isqtyavail").toBool()))
+    if (items.value("controlled").toBool() && !items.value("isqtyavail").toBool())
     {
-      QMessageBox::critical(this, tr("Insufficient Inventory"),
-        tr("Item Number %1 in Site %2 is a Multiple Location or\n"
+      failedItems.append(items.value("item_number").toString());
+      errors.append(tr("Item Number %1 in Site %2 is a Multiple Location or\n"
            "Lot/Serial controlled Item which is short on Inventory.\n"
            "This transaction cannot be completed as is. Please make\n"
            "sure there is sufficient Quantity on Hand before proceeding.")
-          .arg(issue.value("item_number").toString())
-          .arg(issue.value("warehous_code").toString()));
-      return;
+          .arg(items.value("item_number").toString())
+          .arg(items.value("warehous_code").toString()));
+      continue;
     }
-  }
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
+    if (items.value("qty").toDouble() == 0.0)
+      continue;
 
-  issue.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-  issue.prepare("SELECT issueWoMaterialBatch(:wo_id) AS result;");
-  issue.bindValue(":wo_id", _woIndentedList->id());
-  issue.exec();
+    int itemlocSeries;
 
-  if (issue.first())
-  {
-    if (issue.value("result").toInt() < 0)
+    // Stage distribution cleanup function to be called on error
+    XSqlQuery cleanup;
+    cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+    // Get the parent series id
+    XSqlQuery parentSeries;
+    parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+    parentSeries.exec();
+    if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
     {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Work Order Materials: W/O #%1")
-                                                   .arg(_woIndentedList->id()),
-                                                   issue, __FILE__, __LINE__);
-      return;
+      itemlocSeries = parentSeries.value("result").toInt();
+      cleanup.bindValue(":itemlocSeries", itemlocSeries);
     }
     else
     {
-      if (distributeInventory::SeriesAdjust(issue.value("result").toInt(), this) == XDialog::Rejected)
-      {
-        rollback.exec();
-        QMessageBox::information( this, tr("Material Issue"), tr("Transaction Canceled") );
-        return;
-      }
-
-      issue.exec("COMMIT;");
-      omfgThis->sWorkOrdersUpdated(_woIndentedList->id(), true);
+      failedItems.append(items.value("item_number").toString());
+      errors.append("Failed to Retrieve the Next itemloc_series_seq");
+      continue;
     }
+
+    // If controlled and backflush item has relevant qty for returnWoMaterial
+    if (items.value("controlled").toBool())
+    {
+      // Create the parent itemlocdist record for each line item requiring distribution and call distributeInventory::seriesAdjust
+      XSqlQuery parentItemlocdist;
+      parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, "
+                                " roundQty(:item_fractional, itemuomtouom(:itemsite_item_id, :womatl_uom_id, NULL, :qty)) * -1, "
+                                "'WO', :orderitemId, :itemlocSeries, NULL, NULL, 'IM');");
+      parentItemlocdist.bindValue(":itemsite_id", items.value("itemsite_id").toInt());
+      parentItemlocdist.bindValue(":item_fractional", items.value("item_fractional").toBool());
+      parentItemlocdist.bindValue(":itemsite_item_id", items.value("itemsite_item_id").toInt());
+      parentItemlocdist.bindValue(":womatl_uom_id", items.value("womatl_uom_id").toInt());
+      parentItemlocdist.bindValue(":qty", items.value("qty").toDouble());
+      parentItemlocdist.bindValue(":orderitemId", _woIndentedList->id());
+      parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+      parentItemlocdist.exec();
+      if (parentItemlocdist.first())
+      {
+        if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+          QDate(), true) == XDialog::Rejected)
+        {
+          cleanup.exec();
+          // If it's not the last item in the loop, ask the user to exit loop or continue
+          if (items.at() != (items.size() -1))
+          {
+            if (QMessageBox::question(this,  tr("Issue WO Material"),
+            tr("Posting distribution detail for item number %1 was cancelled but "
+              "there are more items to issue. Continue issuing the remaining materials?")
+            .arg(items.value("item_number").toString()),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+            {
+              failedItems.append(items.value("item_number").toString());
+              errors.append("Detail Distribution Cancelled");
+              continue;
+            }
+            else
+            {
+              failedItems.append(items.value("item_number").toString());
+              errors.append("Detail Distribution Cancelled");
+              break;
+            }
+          }
+          else 
+          {
+            failedItems.append(items.value("item_number").toString());
+            errors.append("Detail Distribution Cancelled");
+            continue;
+          }
+        }
+      }
+      else
+      {
+        cleanup.exec();
+        failedItems.append(items.value("item_number").toString());
+        errors.append(tr("Error Creating itemlocdist Records. %1")
+          .arg(parentItemlocdist.lastError().text()));
+        continue;
+      }
+    }
+
+    // issueWoMaterial
+    XSqlQuery issue;
+    issue.prepare("SELECT issueWoMaterial(:womatl_id, :qty, :itemlocSeries, now(), NULL::INTEGER, NULL::NUMERIC, TRUE, TRUE) AS result;");
+    issue.bindValue(":womatl_id", items.value("womatl_id").toInt());
+    issue.bindValue(":qty", items.value("qty").toDouble());
+    issue.bindValue(":itemlocSeries", itemlocSeries);
+    issue.exec();
+    if (issue.first())
+    {
+      if (issue.value("result").toInt() < 0)
+      {
+        cleanup.exec();
+        failedItems.append(items.value("item_number").toString());
+        errors.append(tr("Error issuing Work Order Material. %")
+          .arg(issue.lastError().text()));
+        continue;
+      }
+      else
+      {
+        omfgThis->sWorkOrdersUpdated(_woIndentedList->id(), true);
+        continue;
+      }
+    }
+    else
+    {
+      cleanup.exec();
+      failedItems.append(items.value("item_number").toString());
+      errors.append(tr("Error issuing Work Order Material. %")
+        .arg(issue.lastError().text()));
+      continue;
+    }
+
+    succeeded++;
   }
-  else
-  {
-    rollback.exec();
-    ErrorReporter::error(QtCriticalMsg, this, tr("Error Issuing Work Order Materials: W/O #%1")
-                                                 .arg(_woIndentedList->id()),
-                                                 issue, __FILE__, __LINE__);
-    return;
-  }
+
   populate();
+
+  if (errors.size() > 0)
+  {
+    QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
+    dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
+
+    QString details;
+    for (int i=0; i<failedItems.size(); i++)
+      details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
+    dlg.setDetailedText(details);
+
+    dlg.exec();
+  }
 }
 
 void workOrder::sIssueMatl()
@@ -1610,18 +1848,7 @@ void workOrder::sDeleteMatl()
       workDeleteMatl.prepare("SELECT deleteWo(:wo_id, true) AS result;");
       workDeleteMatl.bindValue(":wo_id", woid);
       workDeleteMatl.exec();
-      if (workDeleteMatl.first())
-      {
-        int result = workDeleteMatl.value("result").toInt();
-        if (result < 0)
-        {
-          ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
-                                 storedProcErrorLookup("deleteWo", result),
-                                 __FILE__, __LINE__);
-          return;
-        }
-      }
-      else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
+      if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Deleting Work Order Information"),
                                     workDeleteMatl, __FILE__, __LINE__))
       {
         return;
@@ -2016,12 +2243,8 @@ void workOrder::populate()
     _oldQty = (wo.value("wo_qtyord").toDouble() * _sense);
     _qty->setDouble(wo.value("wo_qtyord").toDouble() * _sense);
     _qtyReceived->setDouble(wo.value("wo_qtyrcv").toDouble());
-    _startDate->blockSignals(true);
-    _dueDate->blockSignals(true);
     _startDate->setDate(wo.value("wo_startdate").toDate());
     _dueDate->setDate(wo.value("wo_duedate").toDate());
-    _startDate->blockSignals(false);
-    _dueDate->blockSignals(false);
     _productionNotes->setText(wo.value("wo_prodnotes").toString());
     _comments->setId(_woid);
     _documents->setId(_woid);

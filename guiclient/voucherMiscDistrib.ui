@@ -2,7 +2,7 @@
 <ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
-Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
 It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,8 +13,8 @@ to be bound by its terms.</comment>
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>748</width>
-    <height>451</height>
+    <width>839</width>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@ to be bound by its terms.</comment>
         <string/>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="5" column="1">
+        <item row="7" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="XComboBox" name="_taxCode">
@@ -62,23 +62,7 @@ to be bound by its terms.</comment>
           </item>
          </layout>
         </item>
-        <item row="2" column="0">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Preferred</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="0">
+        <item row="7" column="0">
          <widget class="QRadioButton" name="_taxSelected">
           <property name="text">
            <string>Tax Code</string>
@@ -92,7 +76,7 @@ to be bound by its terms.</comment>
           </property>
          </widget>
         </item>
-        <item row="1" column="1" rowspan="2">
+        <item row="1" column="1" rowspan="3">
          <widget class="ExpenseCluster" name="_expcat">
           <property name="enabled">
            <bool>false</bool>
@@ -125,7 +109,7 @@ to be bound by its terms.</comment>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="5" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <spacer name="horizontalSpacer_2">
@@ -164,6 +148,85 @@ to be bound by its terms.</comment>
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="4" column="0">
+         <widget class="QRadioButton" name="_freightSelected">
+          <property name="text">
+           <string>Freight Distribution</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QGroupBox" name="_freightGroup">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="title">
+           <string/>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="XLabel" name="_freightVoucher">
+             <property name="toolTip">
+              <string>The originating Voucher that determines which items to distribute freight/duty to</string>
+             </property>
+             <property name="text">
+              <string>Original Voucher:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="XLabel" name="_freightCostElementLit">
+             <property name="text">
+              <string>Cost Element:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="XComboBox" name="_freightCostElement"/>
+           </item>
+           <item row="0" column="2" rowspan="2">
+            <widget class="QGroupBox" name="_freightDistrMethod">
+             <property name="title">
+              <string>Method</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <widget class="QRadioButton" name="_freightDistQty">
+                <property name="text">
+                 <string>Quantity</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="_freightDistVal">
+                <property name="text">
+                 <string>Value</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="_freightDistWgt">
+                <property name="text">
+                 <string>Weight</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="VoucherCluster" name="_origVoucher">
+             <property name="label">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -296,6 +359,11 @@ to be bound by its terms.</comment>
    <header>glcluster.h</header>
   </customwidget>
   <customwidget>
+   <class>VoucherCluster</class>
+   <extends>QWidget</extends>
+   <header>voucherCluster.h</header>
+  </customwidget>
+  <customwidget>
    <class>XCheckBox</class>
    <extends>QCheckBox</extends>
    <header>xcheckbox.h</header>
@@ -321,6 +389,8 @@ to be bound by its terms.</comment>
   <tabstop>_account</tabstop>
   <tabstop>_expcatSelected</tabstop>
   <tabstop>_expcat</tabstop>
+  <tabstop>_freightSelected</tabstop>
+  <tabstop>_freightCostElement</tabstop>
   <tabstop>_taxType</tabstop>
   <tabstop>_taxSelected</tabstop>
   <tabstop>_taxCode</tabstop>
@@ -368,6 +438,22 @@ to be bound by its terms.</comment>
    <sender>_expcatSelected</sender>
    <signal>toggled(bool)</signal>
    <receiver>_expcat</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>126</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_freightSelected</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>_freightGroup</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

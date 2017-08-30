@@ -81,7 +81,7 @@ itemPricingScheduleItem::itemPricingScheduleItem(QWidget* parent, const char* na
   _pricingRatio->setPrecision(omfgThis->percentVal());
   _stdMargin->setPrecision(omfgThis->percentVal());
   _actMargin->setPrecision(omfgThis->percentVal());
-  _item->setType(ItemLineEdit::cSold);
+  _item->setType(ItemLineEdit::cSold | ItemLineEdit::cActive);
   _zoneFreight->setType(XComboBox::ShippingZones);
   _shipViaFreight->setType(XComboBox::ShipVias);
   _freightClass->setType(XComboBox::FreightClasses);

@@ -13,7 +13,9 @@
 
 #include <QScriptEngine>
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050800
+#include <QtSql>
+#elif QT_VERSION >= 0x050000
 #include <QSql>
 #else
 #include <QtSql>

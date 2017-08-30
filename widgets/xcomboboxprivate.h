@@ -20,7 +20,34 @@
 class QLabel;
 class QPushButton;
 class XDataWidgetMapper;
-class XComboBoxEditorDescrip;
+
+class XComboBoxDescrip : public QObject
+{
+  Q_OBJECT
+
+  public:
+    XComboBoxDescrip();
+    XComboBoxDescrip(XComboBox::XComboBoxTypes pType, const QString &pUi, const QString &pPriv, const QString &pQry, const QString &pNotification, bool pEditable = true, const QString &pKey = QString(), const QString &pValue = QString());
+    virtual ~XComboBoxDescrip();
+
+    XComboBox::XComboBoxTypes type;
+    QString                   uiName;
+    QString                   privilege;
+    QString                   queryStr;
+    bool                      isDirty;
+    bool                      isEditable;
+    QString                   notification;
+
+    ParameterList             params;
+    XSqlQuery                 query;
+
+  public slots:
+    virtual void sDbConnectionLost();
+    virtual void sListen();
+
+  protected slots:
+    virtual void sNotified(const QString &pNotification);
+};
 
 class XComboBoxPrivate : public QObject
 {
@@ -29,17 +56,19 @@ class XComboBoxPrivate : public QObject
   public:
     XComboBoxPrivate(XComboBox *parent);
     virtual ~XComboBoxPrivate();
+    static QHash<XComboBox::XComboBoxTypes, XComboBoxDescrip*> typeDescrip;
 
-    int numberOfCurrencies();
+    bool inDesigner();
 
   public slots:
     void sEdit();
     void setType(XComboBox::XComboBoxTypes ptype);
+    bool addEditButton();
 
   public:
     QList<QString>                       _codes;
     enum XComboBox::Defaults             _default;
-    QMap<int, XComboBoxEditorDescrip*>   _editorMap;
+    XComboBoxDescrip                    *_descrip;
     QPushButton                         *_editButton;
     QList<int>                           _ids;
     QLabel                              *_label;
@@ -48,6 +77,10 @@ class XComboBoxPrivate : public QObject
     XComboBox                           *_parent;
     int                                  _popupCounter; // a real hack
     enum XComboBox::XComboBoxTypes       _type;
+    QWidget                             *_editor;       // custom editor
+    QByteArray                          *_slot;
+    QString                              _privilege;
+    QString                              _uiName;
 
     // the following probably belong in an abstract interface superclass
     QString            _fieldName;

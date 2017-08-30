@@ -133,6 +133,8 @@ void postJournals::sHandlePreview()
   }
 
   _sources->addColumn(tr("Entries"), _qtyColumn, Qt::AlignRight, true, "journals");
+
+  sFillList();
 }
 
 void postJournals::sHandleSelection()

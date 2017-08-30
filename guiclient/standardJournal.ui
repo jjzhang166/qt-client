@@ -2,7 +2,7 @@
 <ui version="4.0">
  <comment>This file is part of the xTuple ERP: PostBooks Edition, a free and
 open source Enterprise Resource Planning software suite,
-Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
 It is licensed to you under the Common Public Attribution License
 version 1.0, the full text of which (including xTuple-specific Exhibits)
 is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -24,7 +24,16 @@ to be bound by its terms.</comment>
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -32,15 +41,9 @@ to be bound by its terms.</comment>
      <property name="spacing">
       <number>7</number>
      </property>
-     <property name="margin">
-      <number>0</number>
-     </property>
      <item>
       <layout class="QVBoxLayout">
        <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -48,16 +51,10 @@ to be bound by its terms.</comment>
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <layout class="QVBoxLayout">
            <property name="spacing">
             <number>5</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
            </property>
            <item>
             <widget class="QLabel" name="_nameLit">
@@ -86,15 +83,9 @@ to be bound by its terms.</comment>
            <property name="spacing">
             <number>5</number>
            </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <layout class="QHBoxLayout">
              <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
               <number>0</number>
              </property>
              <item>
@@ -148,9 +139,6 @@ to be bound by its terms.</comment>
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
        <item>
         <widget class="QPushButton" name="_close">
          <property name="text">
@@ -177,9 +165,6 @@ to be bound by its terms.</comment>
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="margin">
-      <number>0</number>
-     </property>
      <item>
       <widget class="QLabel" name="_transactionsLit">
        <property name="text">
@@ -195,191 +180,17 @@ to be bound by its terms.</comment>
        <property name="spacing">
         <number>7</number>
        </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
        <item>
         <layout class="QVBoxLayout">
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <widget class="XTreeWidget" name="_stdjrnlitem"/>
          </item>
          <item>
-          <layout class="QHBoxLayout">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>27</width>
-               <height>16</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout">
-             <property name="spacing">
-              <number>5</number>
-             </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item>
-              <layout class="QVBoxLayout">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="margin">
-                <number>0</number>
-               </property>
-               <item>
-                <spacer>
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Preferred</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>10</width>
-                   <height>21</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLabel" name="_totalsLit">
-                 <property name="text">
-                  <string>Totals:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QVBoxLayout">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="margin">
-                <number>0</number>
-               </property>
-               <item>
-                <layout class="QHBoxLayout">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="margin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="_debitsLit">
-                   <property name="text">
-                    <string>Debits</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="_creditLit">
-                   <property name="text">
-                    <string>Credits</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="margin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="XLineEdit" name="_debits">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>80</width>
-                     <height>32767</height>
-                    </size>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="XLineEdit" name="_credits">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>80</width>
-                     <height>32767</height>
-                    </size>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-           <item>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="1" column="4">
             <spacer>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -395,6 +206,63 @@ to be bound by its terms.</comment>
              </property>
             </spacer>
            </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="_totalsLit">
+             <property name="text">
+              <string>Totals:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="_debitsLit">
+             <property name="text">
+              <string>Debits</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLabel" name="_creditLit">
+             <property name="text">
+              <string>Credits</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="XLabel" name="_credits">
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="XLabel" name="_debits">
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
         </layout>
@@ -404,15 +272,9 @@ to be bound by its terms.</comment>
          <property name="spacing">
           <number>0</number>
          </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
          <item>
           <layout class="QVBoxLayout">
            <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -481,9 +343,6 @@ to be bound by its terms.</comment>
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="margin">
-      <number>0</number>
-     </property>
      <item>
       <widget class="QLabel" name="_notesLit">
        <property name="text">
@@ -503,6 +362,11 @@ to be bound by its terms.</comment>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>XLabel</class>
+   <extends>QLabel</extends>
+   <header>xlabel.h</header>
+  </customwidget>
   <customwidget>
    <class>XLineEdit</class>
    <extends>QLineEdit</extends>

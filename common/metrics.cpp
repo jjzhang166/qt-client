@@ -1,21 +1,23 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
-
 #include "metrics.h"
-#include <QSqlError>
+
 #include <QSqlDatabase>
 #include <QSqlDriver>
+#include <QSqlError>
 #include <QVariant>
+#include <QtScript>
+
+#include "errorReporter.h"
 #include "xsqlquery.h"
-#include <QMessageBox>
 
 Parameters::Parameters(QObject * parent)
   : QObject(parent)
@@ -33,11 +35,10 @@ void Parameters::load()
   q.exec();
   while (q.next())
     _values[q.value("key").toString()] = q.value("value").toString();
-  if (q.lastError().type() != QSqlError::NoError) {
-    QMessageBox::critical(0, tr("Error loading %1").arg(metaObject()->className()),
-                         q.lastError().text());
+  if (ErrorReporter::error(QtCriticalMsg, 0,
+                           tr("Error loading %1").arg(metaObject()->className()),
+                           q, __FILE__, __LINE__))
     return;
-  }
 
   _dirty = false;
 
@@ -142,7 +143,6 @@ QString Parameters::parent(const QString &pValue)
   return QString::null;
 }
 
-
 Metrics::Metrics()
 {
   _notifyName = "metricsUpdated";
@@ -151,7 +151,6 @@ Metrics::Metrics()
 
   load();
 }
-
 
 Preferences::Preferences(const QString &pUsername)
 {
@@ -174,7 +173,6 @@ void Preferences::remove(const QString &pPrefName)
 
   _dirty = true;
 }
-
 
 Privileges::Privileges()
 {
@@ -247,4 +245,9 @@ bool Privileges::isDba()
              qPrintable(su.lastError().text()));
 
   return false;
+}
+
+void setupParameters(QScriptEngine *engine, QString name, Parameters *params)
+{
+  engine->globalObject().setProperty(name, engine->newQObject(params));
 }

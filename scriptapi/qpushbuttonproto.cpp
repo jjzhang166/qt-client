@@ -55,7 +55,7 @@ QScriptValue constructQPushButton(QScriptContext * context,
 }
 
 QPushButtonProto::QPushButtonProto(QObject *parent)
-    : QObject(parent)
+    : QWidgetProto(parent)
 {
 }
 

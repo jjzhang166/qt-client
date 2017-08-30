@@ -31,6 +31,7 @@ quickRelocateLot::quickRelocateLot(QWidget *parent, const char *name, bool modal
     connect(_warehous, SIGNAL(newID()), this, SLOT(sFillList()));
     connect(_assign, SIGNAL(clicked()), this, SLOT(sPost()));
     connect(_cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(_itemloc, SIGNAL(valid(bool)), _assign, SLOT(setEnabled(bool)));
 }
 
 quickRelocateLot::~quickRelocateLot()

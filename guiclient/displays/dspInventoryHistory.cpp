@@ -89,8 +89,6 @@ dspInventoryHistory::dspInventoryHistory(QWidget* parent, const char* name, Qt::
                            ParameterWidget::Multiselect, QVariant(), false,
                            qryABC);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->setRootIsDecorated(true);
   list()->addColumn(tr("Transaction Time"),_timeDateColumn, Qt::AlignLeft,  true, "invhist_transdate");
   list()->addColumn(tr("Created Time"),    _timeDateColumn, Qt::AlignLeft,  false, "invhist_created");
@@ -197,8 +195,6 @@ enum SetResponse dspInventoryHistory::set(const ParameterList &pParams)
     else if (transtype == "SC")
       parameterWidget()->setDefault(tr("Transaction Type"), 32);
   }
-
-  parameterWidget()->applyDefaultFilterSet();
 
   if (pParams.inList("run"))
     sFillList();

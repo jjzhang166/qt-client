@@ -26,6 +26,8 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::Wind
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_transmitGroup,  SIGNAL(toggled(bool)), this, SLOT(sHandleTransmitGroup()));
   connect(_type,  SIGNAL(currentIndexChanged(int)), this, SLOT(sHandleType()));
+  connect(_useCompanyIdType, SIGNAL(clicked()), this, SLOT(sTogglePrefix()));
+  connect(_usePrefix, SIGNAL(clicked()), this, SLOT(sTogglePrefix()));
 
   _nextCheckNum->setValidator(new QIntValidator(1,999999999));
 
@@ -46,30 +48,6 @@ bankAccount::bankAccount(QWidget* parent, const char* name, bool modal, Qt::Wind
                    "FROM form "
                    "WHERE form_key='Chck' "
                    "ORDER BY form_name;" );
-
-  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
-  {
-    XSqlQuery bankbankAccount;
-    bankbankAccount.prepare("SELECT fetchMetricText('ACHCompanyName') AS name, "
-                                   "fetchMetricText('ACHCompanyId') AS number;" );
-    bankbankAccount.exec();
-    if (bankbankAccount.first())
-    {
-      _useCompanyIdOrigin->setText(bankbankAccount.value("name").toString());
-
-      QString defaultOriginValue = bankbankAccount.value("number").toString();
-      defaultOriginValue.remove("-");
-      _defaultOrigin->setText(defaultOriginValue);
-    }
-    else
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Account Information"),
-                                  bankbankAccount, __FILE__, __LINE__);
-
-    if (omfgThis->_key.isEmpty())
-      _transmitTab->setEnabled(false);
-  }
-  else
-    _tab->removeTab(_tab->indexOf(_transmitTab));
 
   _bankaccntid = -1;
 }
@@ -130,6 +108,41 @@ enum SetResponse bankAccount::set(const ParameterList &pParams)
       _buttonBox->addButton(QDialogButtonBox::Close);
     }
   }
+
+  if (_metrics->boolean("ACHSupported") && _metrics->boolean("ACHEnabled"))
+  {
+    XSqlQuery bankbankAccount;
+    bankbankAccount.prepare("SELECT fetchMetricText('ACHCompanyName') AS name, "
+                                   "CASE WHEN :bankaccnt_id != -1 THEN "
+                                   "formatACHCompanyId(:bankaccnt_id) "
+                                   "ELSE formatACHCompanyId() END AS number;" );
+    bankbankAccount.bindValue(":bankaccnt_id", _bankaccntid);
+    bankbankAccount.exec();
+    if (bankbankAccount.first())
+    {
+      _useCompanyIdOrigin->setText(bankbankAccount.value("name").toString());
+      _defaultOrigin->setText(bankbankAccount.value("number").toString());
+    }
+    else
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Bank Account Information"),
+                                  bankbankAccount, __FILE__, __LINE__);
+
+    bankbankAccount.prepare("SELECT bankaccnt_ach_prefix "
+                            "FROM bankaccnt "
+                            "WHERE bankaccnt_id=:bankaccnt_id;" );
+    bankbankAccount.bindValue(":bankaccnt_id", _bankaccntid);
+    bankbankAccount.exec();
+    if (bankbankAccount.first() && bankbankAccount.value("bankaccnt_ach_prefix").toString() != "")
+    {
+      _usePrefix->setChecked(true);
+      _prefix->setEnabled(true);
+      _prefix->setText(bankbankAccount.value("bankaccnt_ach_prefix").toString());
+    }
+    if (omfgThis->_key.isEmpty())
+      _transmitTab->setEnabled(false);
+  }
+  else
+    _tab->removeTab(_tab->indexOf(_transmitTab));
 
   return NoError;
 }
@@ -280,7 +293,7 @@ void bankAccount::sSave()
                "  bankaccnt_ach_desttype, bankaccnt_ach_fed_dest,"
                "  bankaccnt_ach_destname, bankaccnt_ach_dest,"
                "  bankaccnt_ach_genchecknum, bankaccnt_ach_leadtime,"
-               "  bankaccnt_prnt_check)"
+               "  bankaccnt_ach_prefix, bankaccnt_prnt_check)"
                "VALUES "
                "( :bankaccnt_id, :bankaccnt_name, :bankaccnt_descrip,"
                "  :bankaccnt_bankname, :bankaccnt_accntnumber,"
@@ -293,7 +306,7 @@ void bankAccount::sSave()
                "  :bankaccnt_ach_desttype, :bankaccnt_ach_fed_dest,"
                "  :bankaccnt_ach_destname, :bankaccnt_ach_dest,"
                "  :bankaccnt_ach_genchecknum, :bankaccnt_ach_leadtime,"
-               "  :bankaccnt_prnt_check);" );
+               "  :bankaccnt_ach_prefix, :bankaccnt_prnt_check);" );
   }
   else if (_mode == cEdit)
     bankSave.prepare( "UPDATE bankaccnt "
@@ -320,6 +333,7 @@ void bankAccount::sSave()
                "    bankaccnt_ach_dest=:bankaccnt_ach_dest,"
                "    bankaccnt_ach_genchecknum=:bankaccnt_ach_genchecknum,"
                "    bankaccnt_ach_leadtime=:bankaccnt_ach_leadtime, "
+               "    bankaccnt_ach_prefix=:bankaccnt_ach_prefix, "
                "    bankaccnt_prnt_check=:bankaccnt_prnt_check "
                "WHERE (bankaccnt_id=:bankaccnt_id);" );
   
@@ -367,6 +381,14 @@ void bankAccount::sSave()
     bankSave.bindValue(":bankaccnt_type", "C");
   else if (_type->currentIndex() == 2)
     bankSave.bindValue(":bankaccnt_type", "R");
+
+  if (_usePrefix->isChecked())
+    if (_prefix->text() != "" && _prefix->text().at(0).unicode() < 128)
+      bankSave.bindValue(":bankaccnt_ach_prefix", _prefix->text());
+    else
+      bankSave.bindValue(":bankaccnt_ach_prefix", QString(" "));
+  else
+    bankSave.bindValue(":bankaccnt_ach_prefix", QString());
 
   bankSave.exec();
   if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving Bank Account"),
@@ -461,4 +483,12 @@ void bankAccount::sHandleType()
     _assetAccountLit->setText(tr("Liability Account"));
   else
     _assetAccountLit->setText(tr("Asset Account"));
+}
+
+void bankAccount::sTogglePrefix()
+{
+  if (_usePrefix->isChecked())
+    _prefix->setEnabled(true);
+  else
+    _prefix->setEnabled(false);
 }

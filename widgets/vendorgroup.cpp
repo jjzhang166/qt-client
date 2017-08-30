@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -10,6 +10,8 @@
 
 #include <xsqlquery.h>
 #include <parameter.h>
+
+#include <QtScript>
 
 #include "vendorgroup.h"
 
@@ -150,4 +152,18 @@ void VendorGroup::synchronize(VendorGroup *p)
   connect(this, SIGNAL(newVendId(int)),          p, SLOT(setVendId(int)));
   connect(this, SIGNAL(newVendTypeId(int)),      p, SLOT(setVendTypeId(int)));
   p->hide();
+}
+
+// script api //////////////////////////////////////////////////////////////////
+
+void setupVendorGroup(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("VendorGroup").isObject())
+  {
+    QScriptValue ctor = engine->newObject(); //engine->newFunction(scriptconstructor);
+    QScriptValue meta = engine->newQMetaObject(&VendorGroup::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("VendorGroup", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

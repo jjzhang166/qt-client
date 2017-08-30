@@ -99,59 +99,132 @@ void returnWoMaterialBatch::sReturn()
          returnReturn.value("wo_status").toString() == "R" ||
          returnReturn.value("wo_status").toString() == "I")
       {
-        XSqlQuery rollback;
-        rollback.prepare("ROLLBACK;");
-  
         XSqlQuery items;
-        items.prepare("SELECT womatl_id,"
-                      "       CASE WHEN wo_qtyord >= 0 THEN"
-                      "         womatl_qtyiss"
-                      "       ELSE"
-                      "         ((womatl_qtyreq - womatl_qtyiss) * -1)"
-                      "       END AS qty"
-                      "  FROM wo, womatl, itemsite"
+        items.prepare("SELECT womatl_id, womatl_uom_id, womatl_qtyreq, womatl_qtyiss, "
+                      " COALESCE(itemuomtouom(item_id, womatl_uom_id, NULL, "
+                      "   CASE WHEN wo_qtyord >= 0 THEN womatl_qtyiss "
+                      "        ELSE ((womatl_qtyreq - womatl_qtyiss) * -1) "
+                      "   END), "
+                      "   CASE WHEN wo_qtyord >= 0 THEN womatl_qtyiss "
+                      "        ELSE ((womatl_qtyreq - womatl_qtyiss) * -1) "
+                      "   END "
+                      " ) AS qty, "
+                      " itemsite_id, itemsite_item_id, item_number, "
+                      " isControlledItemsite(itemsite_id) AS controlled "
+                      "  FROM wo, womatl, itemsite, item"
                       " WHERE((wo_id=womatl_wo_id)"
                       "   AND (womatl_itemsite_id=itemsite_id)"
+                      "   AND (itemsite_item_id=item_id)"
                       "   AND ( (wo_qtyord < 0) OR (womatl_issuemethod IN ('S','M')) )"
-                      "   AND (womatl_wo_id=:wo_id))");
+                      "   AND (womatl_wo_id=:wo_id)) "
+                      "ORDER BY womatl_id;");
         items.bindValue(":wo_id", _wo->id());
         items.exec();
+
+        int succeeded = 0;
+        QList<QString> failedItems;
+        QList<QString> errors;
         while(items.next())
         {
-          if(items.value("qty").toDouble() == 0.0)
+          // From returnWoMaterial, skip if no valid qty to return
+          if ((items.value("qty").toDouble() == 0.0) || (items.value("womatl_qtyreq").toDouble() >= 0 ? 
+              items.value("womatl_qtyiss").toDouble() < items.value("qty").toDouble() : 
+              items.value("womatl_qtyiss").toDouble() > items.value("qty").toDouble()))
             continue;
 
-          returnReturn.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-          returnReturn.prepare("SELECT returnWoMaterial(:womatl_id, :qty, 0, :date) AS result;");
+          int itemlocSeries;
+
+          // Stage distribution cleanup function to be called on error
+          XSqlQuery cleanup;
+          cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+
+          // Get the parent series id
+          itemlocSeries = distributeInventory::SeriesCreate(items.value("itemsite_id").toInt(),
+            items.value("qty").toDouble(), "WO", "IM", _wo->id());
+          if (itemlocSeries <= 0)
+          {
+            failedItems.append(items.value("item_number").toString());
+            errors.append("distributeInventory::SeriesCreate failed");
+            continue;
+          }
+
+          cleanup.bindValue(":itemlocSeries", itemlocSeries);
+
+          // If controlled and backflush item has relevant qty for returnWoMaterial
+          if (items.value("controlled").toBool())
+          {
+            if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+              QDate(), true) == XDialog::Rejected)
+            {
+              cleanup.exec();
+              failedItems.append(items.value("item_number").toString());
+              errors.append("Detail Distribution Cancelled");
+
+              // If it's not the last item in the loop, ask the user to exit loop or continue
+              if (items.at() != (items.size() -1))
+              {
+                if (QMessageBox::question(this,  tr("Return WO Material"),
+                tr("Posting distribution detail for item number %1 was cancelled but "
+                  "there are more items to issue. Continue issuing the remaining materials?")
+                .arg(items.value("item_number").toString()),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+                {
+                  continue;
+                }
+                else
+                {
+                  break;
+                }
+              }
+              else
+                continue;
+            }
+          }
+
+          // returnWoMaterial
+          returnReturn.prepare("SELECT returnWoMaterial(:womatl_id, :qty, :itemlocSeries, :date, FALSE, TRUE, TRUE) AS result;");
           returnReturn.bindValue(":womatl_id", items.value("womatl_id").toInt());
           returnReturn.bindValue(":qty", items.value("qty").toDouble());
+          returnReturn.bindValue(":itemlocSeries", itemlocSeries);
           returnReturn.bindValue(":date",  _transDate->date());
           returnReturn.exec();
           if (returnReturn.first())
           {
             if (returnReturn.value("result").toInt() < 0)
             {
-              rollback.exec();
-              ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Material Batch, W/O ID #%1")
-                                   .arg(_wo->id()),returnReturn, __FILE__, __LINE__);
-              return;
-            }
-            if (distributeInventory::SeriesAdjust(returnReturn.value("result").toInt(), this) == XDialog::Rejected)
-            {
-              rollback.exec();
-              QMessageBox::information( this, tr("Material Return"), tr("Transaction Canceled") );
-              return;
+              cleanup.exec();
+              failedItems.append(items.value("item_number").toString());
+              errors.append(tr("Return WO Material failed. %1")
+                .arg(returnReturn.lastError().text()));
+              continue;
             }
           }
           else
           {
-            rollback.exec();
-            ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Work Order Material Batch, W/O ID #%1")
-                                 .arg(_wo->id()),returnReturn, __FILE__, __LINE__);\
-            return;
+            cleanup.exec();
+            failedItems.append(items.value("item_number").toString());
+            errors.append(tr("Return WO Material failed. %1")
+              .arg(returnReturn.lastError().text()));
+            continue;
           }
-          returnReturn.exec("COMMIT;");
+          succeeded++;
         }
+
+        if (errors.size() > 0)
+        {
+          QMessageBox dlg(QMessageBox::Critical, "Errors Issuing Material", "", QMessageBox::Ok, this);
+          dlg.setText(tr("%1 Items succeeded.\n%2 Items failed.").arg(succeeded).arg(failedItems.size()));
+
+          QString details;
+          for (int i=0; i<failedItems.size(); i++)
+            details += tr("Item %1 failed with:\n%2\n").arg(failedItems[i]).arg(errors[i]);
+          dlg.setDetailedText(details);
+
+          dlg.exec();
+        }
+
+        if (succeeded == 0 && errors.size() == 0)
+          QMessageBox::information( this, tr("Return WO Material Batch"), tr("There is no Qty to Return.") );
       }
     }
   }

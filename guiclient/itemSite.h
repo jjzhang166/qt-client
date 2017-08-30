@@ -69,6 +69,7 @@ private:
     bool _wasLotSerial;
     bool _wasLocationControl;
     bool _wasCostJob;
+    QString _wasControlMethod;
 
 };
 

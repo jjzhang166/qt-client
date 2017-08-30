@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -52,7 +52,6 @@ apOpenItem::apOpenItem(QWidget* parent, const char* name, bool modal, Qt::Window
 
   _printOnPost->setVisible(false);
 
-  _terms->setType(XComboBox::APTerms);
   _journalNumber->setEnabled(false);
 
   _accntId->setType(GLCluster::cRevenue | GLCluster::cExpense);
@@ -139,23 +138,7 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
     else if (param.toString() == "view")
     {
       _mode = cView;
-
-      _vend->setReadOnly(true);
-      _docDate->setEnabled(false);
-      _dueDate->setEnabled(false);
-      _docType->setEnabled(false);
-      _docNumber->setEnabled(false);
-      _poNumber->setEnabled(false);
-      _journalNumber->setEnabled(false);
-      _amount->setEnabled(false);
-      _terms->setEnabled(false);
-      _terms->setType(XComboBox::Terms);
-      _notes->setReadOnly(true);
-      _usePrepaid->setEnabled(false);
-      _accntId->setEnabled(false);
-      _status->setEnabled(false);
-      _taxzone->setEnabled(false);
-      _buttonBox->setStandardButtons(QDialogButtonBox::Close);
+      sViewMode();
     }
   }
 
@@ -171,6 +154,25 @@ enum SetResponse apOpenItem::set(const ParameterList &pParams)
   }
 
   return NoError;
+}
+
+void apOpenItem::sViewMode()
+{
+  _vend->setReadOnly(true);
+  _docDate->setEnabled(false);
+  _dueDate->setEnabled(false);
+  _docType->setEnabled(false);
+  _docNumber->setEnabled(false);
+  _poNumber->setEnabled(false);
+  _journalNumber->setEnabled(false);
+  _amount->setEnabled(false);
+  _terms->setEnabled(false);
+  _notes->setReadOnly(true);
+  _usePrepaid->setEnabled(false);
+  _accntId->setEnabled(false);
+  _status->setEnabled(false);
+  _taxzone->setEnabled(false);
+  _buttonBox->setStandardButtons(QDialogButtonBox::Close);
 }
 
 void apOpenItem::sSave()
@@ -245,6 +247,7 @@ void apOpenItem::sSave()
                "    apopen_terms_id=:apopen_terms_id, "
 	       "    apopen_notes=:apopen_notes, "
                "    apopen_curr_id=:curr_id, "
+               "    apopen_curr_rate = currrate(:curr_id, :apopen_docdate), "
 	       "    apopen_status = :apopen_status, "
                "    apopen_taxzone_id = :apopen_taxzone_id "
                "WHERE (apopen_id=:apopen_id);" );
@@ -253,6 +256,7 @@ void apOpenItem::sSave()
   if (_apopenid != -1)
     saveOpenItem.bindValue(":apopen_id", _apopenid);
   saveOpenItem.bindValue(":apopen_docnumber", _docNumber->text());
+  saveOpenItem.bindValue(":apopen_docdate", _docDate->date());
   saveOpenItem.bindValue(":apopen_duedate", _dueDate->date());
   saveOpenItem.bindValue(":apopen_ponumber", _poNumber->text());
   saveOpenItem.bindValue(":apopen_amount", _amount->localValue());
@@ -265,7 +269,7 @@ void apOpenItem::sSave()
   if (_status->id() == 1)
     temp = "O" ;
   else
-	temp = "H" ;
+    temp = "H" ;
   saveOpenItem.bindValue(":apopen_status", temp);
   if(!_usePrepaid->isChecked())
     saveOpenItem.bindValue(":apopen_accnt_id", _accntId->id());
@@ -376,15 +380,15 @@ void apOpenItem::populate()
   populateStatus();
   XSqlQuery populateOpenItem;
   populateOpenItem.prepare( "SELECT apopen_vend_id, apopen_docdate, apopen_duedate,"
-             "       apopen_doctype, apopen_docnumber,"
+             "       apopen_doctype, apopen_docnumber, apopen_void,"
              "       apopen_ponumber, apopen_journalnumber,"
              "       apopen_amount,   apopen_paid, "
              "       (apopen_amount - apopen_paid) AS f_balance,"
              "       apopen_terms_id, apopen_notes, apopen_accnt_id, "
              "       apopen_curr_id, apopen_taxzone_id, "
-			 "       CASE WHEN apopen_status ='O' THEN 1 "
-             "         ELSE CASE WHEN apopen_status = 'H' THEN 2 "
-             "         END "
+             "       CASE apopen_status WHEN 'C' THEN 0 "
+             "                          WHEN 'O' THEN 1 "
+             "                          WHEN 'H' THEN 2 "
              "       END AS status_id, apopen_status, "
              "       (SELECT COALESCE(SUM(taxhist_tax),0) "
              "        FROM apopentax "
@@ -393,8 +397,7 @@ void apOpenItem::populate()
              "            ELSE false "
              "       END AS showTax "
              "FROM apopen "
-             "WHERE ( (apopen_id=:apopen_id)"
-             "  AND   (apopen_void = false) );" );
+             "WHERE (apopen_id=:apopen_id);" );
   populateOpenItem.bindValue(":apopen_id", _apopenid);
   populateOpenItem.exec();
   if (populateOpenItem.first())
@@ -413,20 +416,16 @@ void apOpenItem::populate()
     _taxzone->setId(populateOpenItem.value("apopen_taxzone_id").toInt());
     if (populateOpenItem.value("apopen_status").toString() == "C")
     {
-      QString status;
-      status = " SELECT DISTINCT "
-            " CASE WHEN apopen_status ='C' THEN 0 "
-            " END AS status_id, "
-            " CASE WHEN apopen_status ='C' THEN TEXT('Closed') "
-            " END AS status, "
-            " CASE WHEN apopen_status ='C' THEN TEXT('Closed') "
-            " END AS status "
-            " FROM apopen "
-            " WHERE apopen_status <> '' " ;
-          _status->populate(status, -1);
-          _status->setEnabled(false);
+      _status->populate("SELECT 0, TEXT('Closed'), TEXT('Closed')", -1);
+      _status->setEnabled(false);
     }
     _status->setId(populateOpenItem.value("status_id").toInt());
+
+    if (populateOpenItem.value("apopen_void").toBool())
+    {
+      setWindowTitle("A/P Open Item [VOIDED]");
+      sViewMode();
+    }
 	
     XSqlQuery selectpayment;
     selectpayment.prepare("SELECT * FROM apselect WHERE apselect_apopen_id = :apopen_id;");

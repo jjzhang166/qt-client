@@ -27,7 +27,7 @@ public:
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );
     virtual void sPost();
-    virtual void sPopulateQOH( int pWarehousid );
+    virtual void sPopulateQOH();
     virtual void sPopulateQty();
 
 protected slots:
@@ -35,7 +35,9 @@ protected slots:
 
 private:
     int _mode;
+    int _itemsiteId;
     bool _captive;
+    bool _controlledItem;
     double _cachedQOH;
 
 };

@@ -27,9 +27,9 @@ materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt
   setupUi(this);
 
   connect(_item,      SIGNAL(newId(int)), this, SLOT(sPopulateQty()));
-  connect(_post,       SIGNAL(clicked()), this, SLOT(sPost()));
+  connect(_post,      SIGNAL(clicked()), this, SLOT(sPost()));
   connect(_warehouse, SIGNAL(newID(int)), this, SLOT(sPopulateQty()));
-  connect(_cost, SIGNAL(textChanged(const QString&)), this, SLOT(sCostUpdated()));
+  connect(_cost,      SIGNAL(textChanged(const QString&)), this, SLOT(sCostUpdated()));
 
   _captive = false;
 
@@ -56,6 +56,9 @@ materialReceiptTrans::materialReceiptTrans(QWidget* parent, const char* name, Qt
     _tab->removeTab(0);
 
   _item->setFocus();
+
+  _itemsiteId = 0;
+  _controlledItem = false;
 }
 
 materialReceiptTrans::~materialReceiptTrans()
@@ -141,7 +144,7 @@ enum SetResponse materialReceiptTrans::set(const ParameterList &pParams)
 
 void materialReceiptTrans::sPost()
 {
-  XSqlQuery materialPost;
+  int itemlocSeries = 0;
   double cost = _cost->toDouble();
 
   struct {
@@ -170,22 +173,64 @@ void materialReceiptTrans::sPost()
     error[errIndex].widget->setFocus();
     return;
   }
-  
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
 
-  materialPost.exec("BEGIN;");	// because of possible distribution cancelations
-  materialPost.prepare( "SELECT invReceipt(itemsite_id, :qty, '', :docNumber,"
-             "                  :comments, :date, :cost) AS result "
-             "FROM itemsite "
-             "WHERE ( (itemsite_item_id=:item_id)"
-             " AND (itemsite_warehous_id=:warehous_id) );" );
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  
+  // Get parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+      parentSeries, __FILE__, __LINE__);
+    return;
+  }
+
+  // If controlled item: create the parent itemlocdist record, call distributeInventory::seriesAdjust
+  if (_controlledItem)
+  {
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'RX'::TEXT, NULL, :itemlocSeries) AS result;");
+    parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+    parentItemlocdist.bindValue(":qty", _qty->toDouble());
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information(this, tr("Enter Receipt"),
+                               tr("Transaction Canceled") );
+        return;
+      }
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                              parentItemlocdist, __FILE__, __LINE__))
+    {
+      return;
+    }
+  }
+
+  // Proceed to posting inventory transaction
+  XSqlQuery materialPost;
+  materialPost.prepare("SELECT invReceipt(:itemsiteId, :qty, '', :docNumber,"
+             "                  :comments, :date, :cost, :itemlocSeries, TRUE) AS result;");
+  materialPost.bindValue(":itemsiteId", _itemsiteId);
   materialPost.bindValue(":qty", _qty->toDouble());
   materialPost.bindValue(":docNumber", _documentNum->text());
   materialPost.bindValue(":comments", _notes->toPlainText());
-  materialPost.bindValue(":item_id", _item->id());
-  materialPost.bindValue(":warehous_id", _warehouse->id());
   materialPost.bindValue(":date",        _transDate->date());
+  materialPost.bindValue(":itemlocSeries", itemlocSeries);
   if(!_costAdjust->isChecked())
     materialPost.bindValue(":cost", 0.0);
   else if(_costManual->isChecked())
@@ -194,42 +239,25 @@ void materialReceiptTrans::sPost()
   if (materialPost.first())
   {
     int result = materialPost.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
-      rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
                              storedProcErrorLookup("invReceipt", result),
                              __FILE__, __LINE__);
       return;
     }
-    else if (materialPost.lastError().type() != QSqlError::NoError)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
-                           materialPost, __FILE__, __LINE__);
-      return;
-    }
-
-    if (distributeInventory::SeriesAdjust(materialPost.value("result").toInt(), this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information(this, tr("Enter Receipt"),
-                               tr("Transaction Canceled") );
-      return;
-    }
-
-    materialPost.exec("COMMIT;");
   } 
   else if (materialPost.lastError().type() != QSqlError::NoError)
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Inventory Information"),
                          materialPost, __FILE__, __LINE__);
     return;
   }
   else
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Occurred"),
                          tr("%1: <p>No transaction was done because Item %2 "
                             "was not found at Site %3.")
@@ -289,7 +317,8 @@ void materialReceiptTrans::sPost()
 void materialReceiptTrans::sPopulateQty()
 {
   XSqlQuery materialPopulateQty;
-  materialPopulateQty.prepare( "SELECT itemsite_qtyonhand, itemsite_costmethod "
+  materialPopulateQty.prepare( "SELECT itemsite_qtyonhand, itemsite_costmethod, itemsite_id, "
+             "  isControlledItemsite(itemsite_id) AS controlled "
              "FROM itemsite "
              "WHERE ( (itemsite_item_id=:item_id)"
              " AND (itemsite_warehous_id=:warehous_id) );" );
@@ -298,6 +327,8 @@ void materialReceiptTrans::sPopulateQty()
   materialPopulateQty.exec();
   if (materialPopulateQty.first())
   {
+    _itemsiteId = materialPopulateQty.value("itemsite_id").toInt();
+    _controlledItem = materialPopulateQty.value("controlled").toBool();
     _cachedQOH = materialPopulateQty.value("itemsite_qtyonhand").toDouble();
     if(_cachedQOH == 0.0)
       _costManual->setChecked(true);

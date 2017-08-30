@@ -86,6 +86,7 @@ enum SetResponse returnWoMaterialItem::set(const ParameterList &pParams)
 
 void returnWoMaterialItem::sReturn()
 {
+  int itemlocSeries;
   if (!_transDate->isValid())
   {
     QMessageBox::critical(this, tr("Invalid date"),
@@ -101,39 +102,82 @@ void returnWoMaterialItem::sReturn()
     return;
   }
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  
+  // Get parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+      parentSeries, __FILE__, __LINE__);
+    return;
+  }
 
+  // If controlled item: create the parent itemlocdist record, call distributeInventory::seriesAdjust
+  if (_controlledItem)
+  {
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, "
+                              " itemuomtouom(itemsite_item_id, womatl_uom_id, NULL, :qty), "
+                              " 'WO', womatl_wo_id, :itemlocSeries, NULL, NULL, 'IM') AS result "
+                              "FROM womatl "
+                              " JOIN itemsite ON womatl_itemsite_id = itemsite_id "
+                              "WHERE womatl_id = :womatl_id;");
+    parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+    parentItemlocdist.bindValue(":qty", _qty->toDouble());
+    parentItemlocdist.bindValue(":womatl_id", _womatl->id());
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information(this, tr("Material Return"), 
+          tr("Transaction Canceled") );
+        return;
+      }
+    }
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),
+                              parentItemlocdist, __FILE__, __LINE__))
+    {
+      return;
+    }
+  }
+
+  // Proceed to posting inventory transaction
   XSqlQuery returnItem;
-  returnItem.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-  returnItem.prepare("SELECT returnWoMaterial(:womatl_id, :qty, :date) AS result;");
+  returnItem.prepare("SELECT returnWoMaterial(:womatl_id, :qty, :itemlocSeries, :date, false, TRUE) AS result;");
   returnItem.bindValue(":womatl_id", _womatl->id());
   returnItem.bindValue(":qty", _qty->toDouble());
+  returnItem.bindValue(":itemlocSeries", itemlocSeries);
   returnItem.bindValue(":date",  _transDate->date());
   returnItem.exec();
   if (returnItem.first())
   {
     int result = returnItem.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
-      rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
                            storedProcErrorLookup("returnWoMaterial", result),
                            __FILE__, __LINE__);
       return;
     }
-    else if (distributeInventory::SeriesAdjust(returnItem.value("result").toInt(), this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Material Return"), tr("Transaction Canceled") );
-      return;
-    }
-
-    returnItem.exec("COMMIT;");
   }
   else if (returnItem.lastError().type() != QSqlError::NoError)
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Work Order Information"),
                          returnItem, __FILE__, __LINE__);
     return;
@@ -172,16 +216,19 @@ void returnWoMaterialItem::sSetQOH(int pWomatlid)
     }
     
     XSqlQuery qoh;
-    qoh.prepare( "SELECT itemuomtouom(itemsite_item_id, NULL, womatl_uom_id, qtyAvailable(itemsite_id)) AS availableqoh,"
-                 "       uom_name "
-                 "  FROM womatl, itemsite, uom"
-                 " WHERE((womatl_itemsite_id=itemsite_id)"
-                 "   AND (womatl_uom_id=uom_id)"
-                 "   AND (womatl_id=:womatl_id) );" );
+    qoh.prepare( "SELECT itemuomtouom(itemsite_item_id, NULL, womatl_uom_id, "
+                 "  qtyAvailable(itemsite_id)) AS availableqoh, uom_name, itemsite_id, "
+                 "  isControlledItemsite(itemsite_id) AS controlled "
+                 "FROM womatl, itemsite, uom "
+                 "WHERE womatl_itemsite_id = itemsite_id "
+                 "  AND womatl_uom_id = uom_id "
+                 "  AND womatl_id=:womatl_id;" );
     qoh.bindValue(":womatl_id", pWomatlid);
     qoh.exec();
     if (qoh.first())
     {
+      _itemsiteId = qoh.value("itemsite_id").toInt();
+      _controlledItem = qoh.value("controlled").toBool();
       _uom->setText(qoh.value("uom_name").toString());
       _cachedQOH = qoh.value("availableqoh").toDouble();
       _beforeQty->setDouble(_cachedQOH);

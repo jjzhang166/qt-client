@@ -67,6 +67,7 @@
 
 #include "dspSalesOrders.h"
 #include "dspSalesOrdersByItem.h"
+#include "dspReturnAuthorizations.h"
 #include "dspReturnAuthorizationsByItem.h"
 #include "dspQuotesByCustomer.h"
 #include "dspQuotesByItem.h"
@@ -235,6 +236,7 @@ menuSales::menuSales(GUIClient *pParent) :
     
     // Sales | Lookup | Return Auth. Lookup
     { "menu",	tr("&Return Auth."),           (char*)lookupRaMenu,	lookupMenu,	"true",	NULL, NULL, _metrics->boolean("EnableReturnAuth"), NULL },
+    { "so.dspReturnAuthLookup",       tr("&Search RAs..."),	SLOT(sDspReturnAuthLookup())      , lookupRaMenu, "ViewReturns",	NULL, NULL, true, NULL },
     { "so.dspReturnAuthLookupByItem", tr("by &Item..."),	SLOT(sDspReturnAuthLookupByItem()), lookupRaMenu, "ViewReturns",	NULL, NULL, true, NULL },
     
     { "separator",	NULL,	NULL,	lookupMenu,	"true",		NULL, NULL, true, NULL },
@@ -701,6 +703,11 @@ void menuSales::sDspReservations()
 void menuSales::sDspOrderLookupByItem()
 {
   omfgThis->handleNewWindow(new dspSalesOrdersByItem());
+}
+
+void menuSales::sDspReturnAuthLookup()
+{
+  omfgThis->handleNewWindow(new dspReturnAuthorizations());
 }
 
 void menuSales::sDspReturnAuthLookupByItem()

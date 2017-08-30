@@ -27,6 +27,7 @@ public:
 
     Q_INVOKABLE virtual bool captive() const { return _captive; }
     Q_INVOKABLE virtual bool okToPost();
+    Q_INVOKABLE int handleSeriesAdjustBeforePost();
 
 public slots:
     virtual enum SetResponse set(const ParameterList & pParams );

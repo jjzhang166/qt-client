@@ -184,20 +184,10 @@ void shippingInformation::sReturnAllLineStock()
   shippingReturnAllLineStock.bindValue(":ordertype", _order->type());
   shippingReturnAllLineStock.bindValue(":lineitemid", _item->id());
   shippingReturnAllLineStock.exec();
-  if (shippingReturnAllLineStock.first())
+  if (shippingReturnAllLineStock.lastError().type() != QSqlError::NoError)
   {
-    int result = shippingReturnAllLineStock.value("result").toInt();
-    if (result < 0)
-    {
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Items From Shipment"),
-                             storedProcErrorLookup("returnItemShipments", result),
-                             __FILE__, __LINE__);
-      return;
-    }
-  }
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Items From Shipment"),
-                                shippingReturnAllLineStock, __FILE__, __LINE__))
-  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Error Returning Items From Shipment"),
+                                shippingReturnAllLineStock, __FILE__, __LINE__);
     return;
   }
 

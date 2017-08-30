@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -157,9 +157,6 @@ void enterPoReturn::sPost()
       return;
     }
   }
-  
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
 
   // Get the list of returns that are going to be posted
   XSqlQuery reject;
@@ -171,19 +168,90 @@ void enterPoReturn::sPost()
   reject.bindValue(":pohead_id", _po->id());
   reject.exec();
 
-  enterPost.exec("BEGIN;");	// because of possible insertgltransaction failures
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
 
+  // Set the parent series id
+  int itemlocSeries;
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    QMessageBox::information(this, tr("Enter PO Return"),
+                               tr("Failed to Retrieve itemloc_series_seq") );
+    return;
+  }
+
+  bool containsControlledItem = false;
+  
+  // Sql from postPoReturns here because itemlocdist 'parent' records need to be created here for each, post #22868
+  XSqlQuery controlledItems;
+  controlledItems.prepare("SELECT itemsite_id, pohead_number, poitem_id, "
+                          " SUM(poreject_qty) * poitem_invvenduomratio * -1 AS qty "
+                          "FROM pohead "
+                          " JOIN poitem ON (poitem_pohead_id=pohead_id) "
+                          " JOIN poreject ON (poreject_poitem_id=poitem_id AND NOT poreject_posted) "
+                          " JOIN itemsite ON (poitem_itemsite_id=itemsite_id) "
+                          " LEFT OUTER JOIN recv ON (recv_id=poreject_recv_id) "
+                          "WHERE pohead_id = :poheadId "
+                          " AND isControlledItemsite(itemsite_id) "
+                          "GROUP BY poreject_id, pohead_number, itemsite_id, poitem_id, poitem_invvenduomratio "
+                          "ORDER BY poreject_id;");
+  controlledItems.bindValue(":poheadId", _po->id());
+  controlledItems.exec();
+  while (controlledItems.next())
+  {
+    containsControlledItem = true;
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'PO', "
+                              " :orderitemId, :itemlocSeries, NULL, NULL, 'RP') AS result;");
+    parentItemlocdist.bindValue(":itemsite_id", controlledItems.value("itemsite_id").toInt());
+    parentItemlocdist.bindValue(":qty", controlledItems.value("qty").toDouble());
+    parentItemlocdist.bindValue(":orderitemId", controlledItems.value("poitem_id").toInt());
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (!parentItemlocdist.first() || ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Record"),
+                           parentItemlocdist, __FILE__, __LINE__))
+    {
+      cleanup.exec();
+      return;
+    }  
+  }
+
+  // Distribute detail if there is one or more controlled items 
+  if (containsControlledItem && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+    QDate(), true) == XDialog::Rejected)
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Enter PO Return"), tr("Posting Distribution Detail Failed") );
+    return;
+  }
+
+  // TODO - remove this after postPoReturns has had the remaining negative error codes replaced with RAISE EXCEPTIONs
+  XSqlQuery rollback;
+  rollback.prepare("ROLLBACK;");
+  
   // post the returns
-  enterPost.prepare("SELECT postPoReturns(:pohead_id,false) AS result;");
+  enterPost.exec("BEGIN;");
+  enterPost.prepare("SELECT postPoReturns(:pohead_id, false, :itemlocSeries, TRUE) AS result;");
   enterPost.bindValue(":pohead_id", _po->id());
+  enterPost.bindValue(":itemlocSeries", itemlocSeries);
   enterPost.exec();
   int result = 0;
   if (enterPost.first())
   {
     result = enterPost.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Return"),
                              storedProcErrorLookup("postPoReturns", result),
                              __FILE__, __LINE__);
@@ -193,18 +261,11 @@ void enterPoReturn::sPost()
   else if (enterPost.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting P/O Return"),
                          enterPost, __FILE__, __LINE__);
     return;
   }
-
-  if (distributeInventory::SeriesAdjust(enterPost.value("result").toInt(), this) == XDialog::Rejected)
-  {
-    rollback.exec();
-    QMessageBox::information( this, tr("Enter PO Return"), tr("Transaction Canceled") );
-    return;
-  }
-  
   enterPost.exec("COMMIT;");
 
   // if we are creating the credit memo go ahead and loop the returns that
@@ -222,7 +283,6 @@ void enterPoReturn::sPost()
       newdlg.exec();
     }
   }
-
 
   if (_captive)
     close();

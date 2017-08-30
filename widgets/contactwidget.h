@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -87,7 +87,6 @@ private:
 class XTUPLEWIDGETS_EXPORT ContactWidget : public VirtualCluster
 {
   Q_OBJECT
-  Q_ENUMS   (Mode);
   Q_PROPERTY(bool     accountVisible        READ accountVisible       	WRITE setAccountVisible);
   Q_PROPERTY(bool     ownerVisible          READ ownerVisible           WRITE setOwnerVisible);
   Q_PROPERTY(bool     ownerEnabled          READ ownerEnabled           WRITE setOwnerEnabled);
@@ -132,10 +131,8 @@ class XTUPLEWIDGETS_EXPORT ContactWidget : public VirtualCluster
   friend class ContactSearch;
 
 public:
-  // AccountLimits may be ORed together
-  enum AccountLimits { Employee = 1,	Customer =  2,	Vendor     = 4,
-                       Partner  = 8,	Prospect = 16,	Competitor = 32};
   enum Mode          { Edit, View, Select };
+  Q_ENUM(Mode);
 
   ContactWidget(QWidget*, const char* = 0);
   Q_INVOKABLE inline virtual AddressCluster* addressWidget() { return _address; }
@@ -370,7 +367,6 @@ private:
 
   int     _id;
   bool    _layoutDone;
-  int     _limits;
   bool    _minimalLayout;
   QString _notes;
   bool    _valid;
@@ -406,5 +402,7 @@ private:
   QString  _subjText;
   QString  _bodyText;
 };
+
+void setupContactWidget(QScriptEngine *engine);
 
 #endif

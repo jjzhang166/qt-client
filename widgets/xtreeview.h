@@ -28,7 +28,7 @@ class XTUPLEWIDGETS_EXPORT XTreeView : public QTreeView
     Q_PROPERTY(QString         schemaName            READ schemaName           WRITE setSchemaName       )
     Q_PROPERTY(QString         tableName             READ tableName            WRITE setTableName        )
     Q_PROPERTY(int             primaryKeyCoulmns     READ primaryKeyColumns    WRITE setPrimaryKeyColumns)
-    
+
     public:
       XTreeView(QWidget *parent = 0);
       ~XTreeView();
@@ -53,18 +53,20 @@ class XTUPLEWIDGETS_EXPORT XTreeView : public QTreeView
       virtual bool ignoreGeometrySizing() { return _ignoreSizing; }
       virtual void setIgnoreGeometrySizing(bool ignore) { _ignoreSizing = ignore; }
       virtual void setGeometry( int x, int y, int w, int h );
-            
+
+      using QTreeView::dataChanged;
+
     public slots:
       virtual int  currentIndex();
       virtual int  rowCount();
       virtual int  rowCountVisible();
       virtual QString filter();
       virtual QVariant value(int row, int column);
-      virtual QVariant selectedValue(int column); 
+      virtual QVariant selectedValue(int column);
       virtual void insert();
       virtual void populate(int p);
       virtual void removeSelected();
-      virtual void revertAll(); 
+      virtual void revertAll();
       virtual void save();
       virtual void select();
       virtual void selectRow(int index);
@@ -91,7 +93,7 @@ class XTUPLEWIDGETS_EXPORT XTreeView : public QTreeView
       void  valid(bool);
       void  saved();
       void  populateMenu(QMenu *, QModelIndex);
-      
+
     protected:
       virtual void resizeEvent(QResizeEvent*);
       virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
@@ -122,7 +124,7 @@ class XTUPLEWIDGETS_EXPORT XTreeView : public QTreeView
       QString              _tableName;
       QString              _windowName;
 
-      struct ColumnProps { 
+      struct ColumnProps {
         QString columnName;
         int     logicalIndex;
         int     defaultWidth;

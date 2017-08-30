@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -208,22 +208,23 @@ QScriptValue constructNumberGenComboBox(QScriptContext *context,
   else
     obj = new NumberGenComboBox();
 
+#if QT_VERSION >= 0x050000
   return engine->toScriptValue(obj);
+#else
+  Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 #define CONST(a)    QScriptValue(engine, a)
-#define CONSTFLAGS  QScriptValue::ReadOnly | QScriptValue::Undeletable
 
 void setupNumberGenComboBox(QScriptEngine *engine)
 {
-  QScriptValue glob = engine->newFunction(constructNumberGenComboBox);
+  if (! engine->globalObject().property("NumberGenComboBox").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructNumberGenComboBox);
+    QScriptValue meta = engine->newQMetaObject(&NumberGenComboBox::staticMetaObject, ctor);
 
-  qScriptRegisterMetaType(engine, NumberGenComboBoxToScriptValue, NumberGenComboBoxFromScriptValue);
-
-  glob.setProperty("Manual",    CONST(NumberGenComboBox::Manual),    CONSTFLAGS);
-  glob.setProperty("Automatic", CONST(NumberGenComboBox::Automatic), CONSTFLAGS);
-  glob.setProperty("Override",  CONST(NumberGenComboBox::Override),  CONSTFLAGS);
-  glob.setProperty("Shared",    CONST(NumberGenComboBox::Shared),    CONSTFLAGS);
-
-  engine->globalObject().setProperty("NumberGenComboBox", glob, CONSTFLAGS);
+    engine->globalObject().setProperty("NumberGenComboBox", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

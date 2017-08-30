@@ -228,7 +228,7 @@ class GUIClient : public QMainWindow
     Q_INVOKABLE void tabifyDockWidget ( QDockWidget * first, QDockWidget * second );
     Q_INVOKABLE void setCentralWidget(QWidget * widget);
 
-	TimeoutHandler   *_timeoutHandler;
+    TimeoutHandler   *_timeoutHandler;
     ReportHandler    *_reportHandler;
 
     QMap<const QObject*,int> _customCommands;
@@ -248,6 +248,7 @@ class GUIClient : public QMainWindow
     void removeFromMacDockMenu(QWidget *w);
 #endif
 
+    Q_INVOKABLE void hunspell_initialize();
     //check hunspell is ready
     Q_INVOKABLE bool hunspell_ready();
     //spellcheck word, returns 1 if word ok otherwise 0
@@ -325,6 +326,7 @@ class GUIClient : public QMainWindow
     void tick();
 
     void messageNotify();
+    void dbConnectionLost();
 
     /** @name Data Update Signals
      
@@ -403,7 +405,6 @@ class GUIClient : public QMainWindow
 
   private slots:
     void handleDocument(QString path);
-    void hunspell_initialize();
     void hunspell_uninitialize();
 
   private:
@@ -457,11 +458,10 @@ class GUIClient : public QMainWindow
     bool _shown;
     bool _shuttingDown;
 
-    QFileSystemWatcher* _fileWatcher;
-    QMap<QString, int> _fileMap;
-    QTextCodec * _spellCodec;
-    Hunspell * _spellChecker;
-    bool _spellReady;
+    QFileSystemWatcher *_fileWatcher;
+    QMap<QString, int>  _fileMap;
+    QTextCodec *_spellCodec;
+    Hunspell   *_spellChecker;
     QStringList _spellAddWords;
 
     QMenu *_menu;

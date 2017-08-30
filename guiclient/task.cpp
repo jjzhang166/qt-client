@@ -145,6 +145,8 @@ enum SetResponse task::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
+      connect(_completed,  SIGNAL(newDate(QDate)), this, SLOT(sCompletedChanged()));
+      connect(_pctCompl,  SIGNAL(valueChanged(int)), this, SLOT(sCompletedChanged()));
 
       _alarms->setId(_prjtaskid);
       _comments->setId(_prjtaskid);
@@ -157,6 +159,8 @@ enum SetResponse task::set(const ParameterList &pParams)
 
       connect(_assignedTo, SIGNAL(newId(int)), this, SLOT(sAssignedToChanged(int)));
       connect(_status,  SIGNAL(currentIndexChanged(int)), this, SLOT(sStatusChanged(int)));
+      connect(_completed,  SIGNAL(newDate(QDate)), this, SLOT(sCompletedChanged()));
+      connect(_pctCompl,  SIGNAL(valueChanged(int)), this, SLOT(sCompletedChanged()));
     }
     if (param.toString() == "view")
     {
@@ -201,12 +205,14 @@ void task::populate()
     _number->setText(taskpopulate.value("prjtask_number"));
     _name->setText(taskpopulate.value("prjtask_name"));
     _descrip->setText(taskpopulate.value("prjtask_descrip").toString());
+    _priority->setId(taskpopulate.value("prjtask_priority_id").toInt());
     _owner->setUsername(taskpopulate.value("prjtask_owner_username").toString());
     _assignedTo->setUsername(taskpopulate.value("prjtask_username").toString());
     _started->setDate(taskpopulate.value("prjtask_start_date").toDate());
     _assigned->setDate(taskpopulate.value("prjtask_assigned_date").toDate());
     _due->setDate(taskpopulate.value("prjtask_due_date").toDate());
     _completed->setDate(taskpopulate.value("prjtask_completed_date").toDate());
+    _pctCompl->setValue(taskpopulate.value("prjtask_pct_complete").toInt());
 
     for (int counter = 0; counter < _status->count(); counter++)
     {
@@ -257,7 +263,8 @@ void task::sSave()
                "  prjtask_exp_budget, prjtask_exp_actual,"
                "  prjtask_start_date, prjtask_due_date,"
                "  prjtask_assigned_date, prjtask_completed_date,"
-               "  prjtask_owner_username, prjtask_username ) "
+               "  prjtask_owner_username, prjtask_username, "
+               "  prjtask_priority_id, prjtask_pct_complete ) "
                "VALUES "
                "( :prjtask_id, :prjtask_prj_id, :prjtask_number,"
                "  :prjtask_name, :prjtask_descrip, :prjtask_status,"
@@ -265,7 +272,8 @@ void task::sSave()
                "  :prjtask_exp_budget, :prjtask_exp_actual,"
                "  :prjtask_start_date, :prjtask_due_date,"
                "  :prjtask_assigned_date, :prjtask_completed_date,"
-               "  :prjtask_owner_username, :username );" );
+               "  :prjtask_owner_username, :username, "
+               "  :prjtask_priority_id, :prj_pct_complete );" );
     taskSave.bindValue(":prjtask_prj_id", _prjid);
   }
   else if (_mode == cEdit)
@@ -281,7 +289,9 @@ void task::sSave()
                "    prjtask_start_date=:prjtask_start_date,"
                "    prjtask_due_date=:prjtask_due_date,"
                "    prjtask_assigned_date=:prjtask_assigned_date,"
-               "    prjtask_completed_date=:prjtask_completed_date "
+               "    prjtask_completed_date=:prjtask_completed_date, "
+               "    prjtask_priority_id=:prj_priority_id, "
+               "    prjtask_pct_complete=:prj_pct_complete "
                "WHERE (prjtask_id=:prjtask_id);" );
 
   taskSave.bindValue(":prjtask_id", _prjtaskid);
@@ -289,6 +299,8 @@ void task::sSave()
   taskSave.bindValue(":prjtask_name", _name->text());
   taskSave.bindValue(":prjtask_descrip", _descrip->toPlainText());
   taskSave.bindValue(":prjtask_status", _taskStatuses[_status->currentIndex()]);
+  taskSave.bindValue(":prjtask_priority_id", _priority->id());
+  taskSave.bindValue(":prjtask_pct_complete", _pctCompl->value());
   taskSave.bindValue(":prjtask_owner_username", _owner->username());
   taskSave.bindValue(":username",   _assignedTo->username());
   taskSave.bindValue(":prjtask_start_date", _started->date());
@@ -336,6 +348,14 @@ void task::sStatusChanged(const int pStatus)
       _completed->setDate(omfgThis->dbDate());
       break;
   }
+}
+
+void task::sCompletedChanged()
+{
+  if (_completed->isValid())
+    _pctCompl->setValue(100);
+  if (_pctCompl->value() == 100)
+    _completed->setDate(omfgThis->dbDate());
 }
 
 void task::sHoursAdjusted()

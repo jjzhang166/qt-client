@@ -57,6 +57,8 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(_amountToDistribute,       SIGNAL(idChanged(int)),                            this,          SLOT(sFillList()));
   connect(_amountDistributed,        SIGNAL(valueChanged()),                            this,          SLOT(sPopulateBalanceDue()));
   connect(_freight,                  SIGNAL(valueChanged()),                            this,          SLOT(sPopulateDistributed()));
+  connect(_freightDistr,             SIGNAL(toggled(bool)),                             this,          SLOT(sFreightDistribution(bool)));
+  connect(_distributeFreight,        SIGNAL(clicked()),                                 this,          SLOT(sDistributeFreight()));
 
   _terms->setType(XComboBox::APTerms);
   _poNumber->setAllowedStatuses(OrderLineEdit::Open);
@@ -92,6 +94,17 @@ voucher::voucher(QWidget* parent, const char* name, Qt::WindowFlags fl)
 
   _charass->setType("VCH");
 
+  _freightCostElement->populate("SELECT costelem_id, costelem_type "
+                                "FROM costelem "
+                                "WHERE ( (costelem_active)"
+                                " AND (NOT costelem_sys)"
+                                " AND (costelem_po) ) "
+                                "ORDER BY costelem_type;");
+
+  if (_metrics->value("DefaultFreightCostElement") > 0)
+    _freightCostElement->setId(_metrics->value("DefaultFreightCostElement").toInt());
+
+  _frghtdistr = 0;
   _vendid = -1;
 
   setWindowModified(false);
@@ -174,9 +187,8 @@ enum SetResponse voucher::set(const ParameterList &pParams)
 //      _documents->setReadOnly(true);
       _charass->setReadOnly(true);
       _close->setText(tr("&Close"));
-      _freight->setEnabled(false);
-      _freightExpcat->setEnabled(false);
-   
+      _freightGroup->setEnabled(false);
+
       _save->hide();
 
       disconnect(_poitem, SIGNAL(valid(bool)), _distributions, SLOT(setEnabled(bool)));
@@ -233,9 +245,11 @@ bool voucher::sSave()
                           _invoiceNum,
                           tr("<p>You must enter a Vendor Invoice Number "
                              "before you may save this Voucher."))
-         << GuiErrorCheck(_freight->localValue() > 0 && !_freightExpcat->isValid(), _freightExpcat,
+         << GuiErrorCheck(_freight->localValue() > 0 && !_freightDistr->isChecked() && !_freightExpcat->isValid(), _freightExpcat,
                            tr("<p>You must select an Expense Category to post the  "
                               "freight value to."))
+         << GuiErrorCheck(_freight->localValue() > 0 && _freightDistr->isChecked() && _frghtdistr == 0, _freight,
+                           tr("<p>You must first distribute freight to item cost elements."))
   ;
 
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Save Voucher"), errors))
@@ -283,6 +297,7 @@ bool voucher::sSave()
              "    vohead_amount=:vohead_amount,"
              "    vohead_freight=:vohead_freight,"
              "    vohead_freight_expcat_id=:vohead_freight_expcat,"
+             "    vohead_freight_distributed=:frghtDistr,"
              "    vohead_1099=:vohead_1099, "
              "    vohead_curr_id=:vohead_curr_id, "
              "    vohead_notes=:vohead_notes "
@@ -301,6 +316,7 @@ bool voucher::sSave()
   updq.bindValue(":vohead_reference", _reference->text().trimmed());
   updq.bindValue(":vohead_amount", _amountToDistribute->localValue());
   updq.bindValue(":vohead_freight", _freight->localValue());
+  updq.bindValue(":frghtDistr", _frghtdistr);
   if (_freightExpcat->isValid())
     updq.bindValue(":vohead_freight_expcat", _freightExpcat->id());
   updq.bindValue(":vohead_1099", QVariant(_flagFor1099->isChecked()));
@@ -427,11 +443,12 @@ void voucher::sDistributions()
 void voucher::sDistributeLine()
 {
   saveDetail();
+  XSqlQuery distq;
+  distq.prepare("SELECT distributeVoucherLine(:vohead_id,:poitem_id,:curr_id) "
+                "AS result;");
+
   foreach (XTreeWidgetItem *item, _poitem->selectedItems())
   {
-    XSqlQuery distq;
-    distq.prepare("SELECT distributeVoucherLine(:vohead_id,:poitem_id,:curr_id) "
-              "AS result;");
     distq.bindValue(":vohead_id", _voheadid);
     distq.bindValue(":poitem_id",  item->id());
     distq.bindValue(":curr_id", _amountToDistribute->id());
@@ -439,6 +456,25 @@ void voucher::sDistributeLine()
     if (distq.first())
     {
       int result = distq.value("result").toInt();
+      if (result == -5 &&
+          QMessageBox::question(this, tr("Error Distributing"),
+            tr("Item has multiple cost elements. Do you wish to distribute "
+               "to the Material cost element only?"),
+                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+      {
+        return;
+      } 
+      else
+      {
+         distq.prepare("SELECT distributeVoucherLine(:vohead_id,:poitem_id,:curr_id, true) "
+                       "AS result;");
+         distq.bindValue(":vohead_id", _voheadid);
+         distq.bindValue(":poitem_id", item->id());
+         distq.bindValue(":curr_id", _amountToDistribute->id());
+         distq.exec();
+         if (distq.first())
+            result = distq.value("result").toInt();
+      }
       if (result < 0)
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Distributing"),
                     storedProcErrorLookup("distributeVoucherLine", result),
@@ -510,6 +546,26 @@ void voucher::sDistributeAll()
     if (distq.first())
     {
       int result = distq.value("result").toInt();
+      if (result == -5 &&
+          QMessageBox::question(this, tr("Error Distributing"),
+            tr("Item has multiple cost elements. Do you wish to distribute "
+               "to the Material cost element only?"),
+                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+      {
+        return;
+      } 
+      else
+      {
+         distq.prepare("SELECT distributeVoucherLine(:vohead_id,:poitem_id,:curr_id, true) "
+                       "AS result;");
+         distq.bindValue(":vohead_id", _voheadid);
+         distq.bindValue(":poitem_id", item->id());
+         distq.bindValue(":curr_id", _amountToDistribute->id());
+         distq.exec();
+         if (distq.first())
+            result = distq.value("result").toInt();
+
+      }
       if (result < 0)
         ErrorReporter::error(QtCriticalMsg, this, tr("Error Distributing"),
                              storedProcErrorLookup("distributeVoucherLine", result),
@@ -563,7 +619,8 @@ void voucher::sEditMiscDistribution()
   newdlg.set(params);
   if (newdlg.exec() != XDialog::Rejected)
   {
-    sUpdateVoucherTax();
+    if (_miscDistrib->altId() != 4) // Don't auto update taxes to allow manual override
+      sUpdateVoucherTax();
     sFillMiscList();
     sPopulateDistributed();
   }
@@ -644,7 +701,7 @@ void voucher::sPopulatePoInfo()
 {
   XSqlQuery po;
   po.prepare("SELECT pohead_terms_id, pohead_taxzone_id, vend_1099, "
-             "       pohead_curr_id, vend_id, vend_number, vend_name,"
+             "       pohead_curr_id, pohead_freight, vend_id, vend_number, vend_name,"
              "       addr_line1, addr_line2"
              "  FROM pohead"
              "  JOIN vendinfo ON (pohead_vend_id=vend_id)"
@@ -660,6 +717,7 @@ void voucher::sPopulatePoInfo()
     _terms->setId(po.value("pohead_terms_id").toInt());
     _taxzone->setId(po.value("pohead_taxzone_id").toInt());
     _amountToDistribute->setId(po.value("pohead_curr_id").toInt());
+    _freight->setLocalValue(po.value("pohead_freight").toDouble());
     _freight->setId(po.value("pohead_curr_id").toInt());
     _vendid = po.value("vend_id").toInt();
     _vendor->setText(po.value("vend_number").toString());
@@ -669,8 +727,10 @@ void voucher::sPopulatePoInfo()
     _vendAddress2->setText(po.value("addr_line2").toString());
     if (_mode != cView)
       _new->setEnabled(true);
+  } else {
+    _freight->setLocalValue(0.00);
   }
-  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting P/O Information"),
+  if (ErrorReporter::error(QtCriticalMsg, this, tr("Getting P/O Information"),
                                 po, __FILE__, __LINE__))
     return;
 }
@@ -699,7 +759,7 @@ void voucher::sPopulateDistributed()
     getq.exec();
     if (getq.first())
     {
-      _amountDistributed->setLocalValue(getq.value("distrib").toDouble() + _freight->localValue());
+      _amountDistributed->setLocalValue(getq.value("distrib").toDouble() + _freight->localValue() - _frghtdistr);
     }
     else if (ErrorReporter::error(QtCriticalMsg, this,
                                   tr("Getting Distributions"),
@@ -710,7 +770,7 @@ void voucher::sPopulateDistributed()
 
 void voucher::sPopulateBalanceDue()
 {
-  _balance->setLocalValue(_amountToDistribute->localValue() - 
+  _balance->setLocalValue(_amountToDistribute->localValue() -
                           _amountDistributed->localValue());
 
   if (_balance->isZero())
@@ -721,8 +781,8 @@ void voucher::sPopulateBalanceDue()
   if (_freight->localValue() <= 0)
     _freightExpcat->setId(-1);
 
-  _freightExpcat->setEnabled(_freight->localValue() > 0 && _mode != cView);
- 
+  _freightGroup->setEnabled(_frghtdistr == 0 && _mode != cView);
+
 }
 
 void voucher::populateNumber()
@@ -745,6 +805,7 @@ void voucher::populate()
   vohead.prepare( "SELECT vohead_number, vohead_pohead_id, vohead_taxzone_id, vohead_terms_id,"
                   "       vohead_distdate, vohead_docdate, vohead_duedate,"
                   "       vohead_invcnumber, vohead_reference, vohead_freight, vohead_freight_expcat_id,"
+                  "       vohead_freight_distributed,"
                   "       vohead_1099, vohead_amount, vohead_curr_id, vohead_notes "
                   "FROM vohead "
                   "WHERE (vohead_id=:vohead_id);" );
@@ -762,6 +823,12 @@ void voucher::populate()
     _freight->set(vohead.value("vohead_freight").toDouble(),
                              vohead.value("vohead_curr_id").toInt(),
                              vohead.value("vohead_docdate").toDate(), false);
+
+    _frghtdistr = vohead.value("vohead_freight_distributed").toDouble();
+    if (_frghtdistr > 0)
+      sIsDistributed();
+
+    _freightDistr->setChecked(_frghtdistr > 0);
     _freightExpcat->setId(vohead.value("vohead_freight_expcat_id").toInt());
 
     _distributionDate->setDate(vohead.value("vohead_distdate").toDate(), true);
@@ -901,6 +968,7 @@ bool voucher::saveDetail()
                "    vohead_amount=:vohead_amount,"
                "    vohead_freight=:vohead_freight,"
                "    vohead_freight_expcat_id=:vohead_freightexpcat,"
+               "    vohead_freight_distributed=:frghtDistr,"
                "    vohead_1099=:vohead_1099, "
                "    vohead_curr_id=:vohead_curr_id, "
                "    vohead_notes=:vohead_notes "
@@ -919,6 +987,7 @@ bool voucher::saveDetail()
     updq.bindValue(":vohead_reference", _reference->text().trimmed());
     updq.bindValue(":vohead_amount", _amountToDistribute->localValue());
     updq.bindValue(":vohead_freight", _freight->localValue());
+    updq.bindValue(":frghtDistr", _frghtdistr);
     if (_freightExpcat->isValid())
       updq.bindValue(":vohead_freightexpcat", _freightExpcat->id());
     updq.bindValue(":vohead_1099", QVariant(_flagFor1099->isChecked()));
@@ -1018,5 +1087,81 @@ void voucher::enableWindowModifiedSetting()
 void voucher::sDataChanged()
 {
   setWindowModified(true);
+}
+
+void voucher::sFreightDistribution(bool distFreight)
+{
+  if (distFreight)
+    _freightStack->setCurrentIndex(1);
+  else
+    _freightStack->setCurrentIndex(0);
+}
+
+void voucher::sIsDistributed()
+{
+  _freight->setEnabled(false);
+  _freightDistr->setEnabled(false);
+  _freightDistr->setText(tr("Freight Distributed"));
+  _freightStack->setVisible(false);
+//  _freightCostElement->setVisible(false);
+//  _freightDistrMethod->setVisible(false);
+//  _distributeFreight->setVisible(false);
+}
+
+void voucher::sDistributeFreight()
+{
+  XSqlQuery distr;
+
+  if (!saveDetail())
+    return;
+
+  // Check for partial PO distributions before proceeding
+  distr.prepare("SELECT COALESCE(SUM(recv_qty),0) AS qtyreceived"
+                " FROM poitem "
+                " JOIN recv ON poitem_id=recv_orderitem_id"
+                " WHERE poitem_pohead_id=:pohead_id"
+                "  AND recv_posted"
+                "  AND NOT recv_invoiced"
+                "  AND recv_vohead_id IS NULL"
+                "  AND recv_order_type='PO';");
+  distr.bindValue(":pohead_id", _poNumber->id());
+  distr.exec();
+  if (distr.first())
+  {
+    if (distr.value("qtyreceived").toInt() > 0)
+    {
+      if (QMessageBox::question(this, tr("Incomplete Distribution"),
+                              tr("The Purchase Order has not been "
+                                 "completely distributed. "
+                                 "Do you wish to continue?"),
+                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+        return;
+    }
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Distributing Voucher Freight"),
+                              distr, __FILE__, __LINE__))
+    return;
+
+  distr.prepare("SELECT distributeVoucherFreight(:vohead_id, :costelem, :dist_type, :freight) AS result;");
+  distr.bindValue(":vohead_id", _voheadid);
+  distr.bindValue(":costelem", _freightCostElement->id());
+  if (_freightDistQty->isChecked())
+    distr.bindValue(":dist_type", "Q");
+  else if (_freightDistVal->isChecked())
+    distr.bindValue(":dist_type", "V");
+  else if (_freightDistWgt->isChecked())
+    distr.bindValue(":dist_type", "W");
+  distr.bindValue(":freight", _freight->localValue());
+  distr.exec();
+  if (distr.first())  
+  {
+    _frghtdistr = _freight->localValue();
+    sIsDistributed();
+    sFillList();
+    sDataChanged();
+  }
+  else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Distributing Voucher Freight"),
+                              distr, __FILE__, __LINE__))
+    return;
 }
 

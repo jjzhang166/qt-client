@@ -25,7 +25,6 @@
 
 #include "xtsettings.h"
 #include "guiclient.h"
-#include "helpDownload.h"
 
 #include <parameter.h>
 #include <openreports.h>
@@ -58,7 +57,6 @@
 #include "packages.h"
 #include "reports.h"
 #include "scripts.h"
-#include "helpView.h"
 #include "uiforms.h"
 
 #include "fixACL.h"
@@ -158,7 +156,6 @@ menuSystem::menuSystem(GUIClient *Pparent) :
   if(m)
     m->setText(tr("S&ystem"));
 
-  //  Help
   helpMenu = new QMenu();
   actionProperties help[] = {
     { "help.about",          tr("&About..."),                  SLOT(sAbout()),            helpMenu, "true", NULL, NULL, true },
@@ -349,17 +346,6 @@ void menuSystem::sPrintAlignment()
 void menuSystem::sExit()
 {
   parent->close();
-}
-
-void menuSystem::sTOC()
-{
-  helpView *_help = helpView::getInstance(parent);
-  _help->show();
-}
-
-void menuSystem::sDownload()
-{
-  omfgThis->handleNewWindow(new helpDownload());
 }
 
 void menuSystem::sReferenceGuide()

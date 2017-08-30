@@ -32,6 +32,7 @@ public slots:
     virtual void sPopulateMenu( QMenu * pMenu, QTreeWidgetItem * selected );
     virtual void sAssignedToChanged(const int);
     virtual void sStatusChanged(const int);
+    virtual void sCompletedChanged();
     virtual void sCRMAcctChanged(const int);
     virtual void sClose();
     virtual bool sSave(bool partial = false);

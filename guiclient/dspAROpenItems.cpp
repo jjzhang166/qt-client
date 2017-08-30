@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -82,6 +82,7 @@ dspAROpenItems::dspAROpenItems(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Recurring"),       _ynColumn, Qt::AlignCenter, false, "recurring");
   list()->addColumn(tr("Open"),            _ynColumn, Qt::AlignCenter, false, "open");
   list()->addColumn(tr("Doc. #"),       _orderColumn, Qt::AlignLeft,   true,  "docnumber");
+  list()->addColumn(tr("Cust. PO#"),    _orderColumn, Qt::AlignLeft,   false, "custpo");
   list()->addColumn(tr("Cust./Assign To"),_itemColumn, Qt::AlignLeft,  false, "cust_number");
   list()->addColumn(tr("Name/Desc."),             -1, Qt::AlignLeft,   true,  "cust_name");
   list()->addColumn(tr("Order/Incident"),_itemColumn, Qt::AlignRight,  false, "ordernumber");
@@ -642,31 +643,71 @@ void dspAROpenItems::sVoidCreditMemo()
     return;
   }
 
+  bool hasControlledItems = false;
+  int itemlocSeries = distributeInventory::SeriesCreate(0, 0, QString(), QString());
+  if (itemlocSeries < 0)
+    return;
+
+  XSqlQuery cleanup; // Stage cleanup function to be called on error
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  
+  // Cycle through credit memo items that are controlled and have qty returned, create an itemlocdist record for each
+  XSqlQuery cmitems;
+  cmitems.prepare("SELECT cmitem_id, cmitem_itemsite_id, item_number, "
+                  " (cmitem_qtyreturned * cmitem_qty_invuomratio) * -1 AS qty "
+                  "FROM cmhead "
+                  " JOIN cmitem ON cmhead_id=cmitem_cmhead_id "
+                  " JOIN itemsite ON cmitem_itemsite_id=itemsite_id "
+                  " JOIN item ON itemsite_item_id=item_id "
+                  "WHERE cmhead_id=:cmheadId "
+                  " AND cmitem_qtyreturned <> 0 "
+                  " AND cmitem_updateinv "
+                  " AND isControlledItemsite(cmitem_itemsite_id) "
+                  "ORDER BY cmitem_id;");
+  cmitems.bindValue(":cmheadId", list()->currentItem()->id("docnumber"));
+  cmitems.exec();
+  while (cmitems.next())
+  {
+    if (distributeInventory::SeriesCreate(cmitems.value("cmitem_itemsite_id").toInt(), 
+      cmitems.value("qty").toDouble(), "CM", "RS", cmitems.value("cmitem_id").toInt(), itemlocSeries) < 0)
+    {
+      cleanup.exec();
+      return;
+    }
+
+    hasControlledItems = true;
+  }
+
+  // Distribute detail for the records created above
+  if (hasControlledItems && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+    QDate(), true) == XDialog::Rejected)
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Void Credit Memo"), tr("Transaction Cancelled") );
+    return;
+  }
+
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
+  dspVoidCreditMemo.exec("BEGIN;"); // TODO - remove this once voidCreditMemo no longer returns negative error codes
   XSqlQuery post;
-  post.prepare("SELECT voidCreditMemo(:cmhead_id) AS result;");
-
-  dspVoidCreditMemo.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  post.prepare("SELECT voidCreditMemo(:cmhead_id, :itemlocSeries, TRUE) AS result;");
   post.bindValue(":cmhead_id", list()->currentItem()->id("docnumber"));
+  post.bindValue(":itemlocSeries", itemlocSeries);
   post.exec();
   if (post.first())
   {
     int result = post.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this,
                               tr("Error Voiding Credit Memo %1\n").arg(list()->currentItem()->text("docnumber")),
                                storedProcErrorLookup("voidCreditMemo", result),
                                __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Void Memo"), tr("Transaction Canceled") );
       return;
     }
 
@@ -676,6 +717,7 @@ void dspAROpenItems::sVoidCreditMemo()
   else if (post.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg,this,
                          tr("Error Voiding Credit Memo %1\n").arg(list()->currentItem()->text("docnumber")),
                          post, __FILE__, __LINE__);
@@ -798,31 +840,72 @@ void dspAROpenItems::sVoidInvoiceDetails()
     return;
   }
 
+  bool hasControlledItems = false;
+  int itemlocSeries = distributeInventory::SeriesCreate(0, 0, QString(), QString());
+  if (itemlocSeries < 0)
+    return;
+
+  XSqlQuery cleanup; // Stage cleanup function to be called on error
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  
+  // Cycle through credit memo items that are controlled and have qty returned, create an itemlocdist record for each
+  XSqlQuery invcitems;
+  invcitems.prepare("SELECT invcitem_id, itemsite_id, item_number, "
+                    " (invcitem_billed * invcitem_qty_invuomratio) AS qty "
+                    "FROM invchead "
+                    " JOIN invcitem ON invcitem_invchead_id=invchead_id "
+                    "   AND invcitem_billed <> 0 "
+                    "   AND invcitem_updateinv "
+                    " JOIN itemsite ON itemsite_item_id=invcitem_item_id "
+                    "   AND itemsite_warehous_id=invcitem_warehous_id "
+                    " JOIN item ON item_id=invcitem_item_id "
+                    "WHERE invchead_id=:invcheadId "
+                    " AND isControlledItemsite(itemsite_id) "
+                    "ORDER BY invcitem_id;");
+  invcitems.bindValue(":invcheadId", list()->currentItem()->id("docnumber"));
+  invcitems.exec();
+  while (invcitems.next())
+  {
+    if (distributeInventory::SeriesCreate(invcitems.value("itemsite_id").toInt(), 
+      invcitems.value("qty").toDouble(), "IN", "SH", invcitems.value("invcitem_id").toInt(), itemlocSeries) < 0)
+    {
+      cleanup.exec();
+    }
+
+    hasControlledItems = true;
+  }
+
+  // Distribute detail for the records created above
+  if (hasControlledItems && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+    QDate(), true) == XDialog::Rejected)
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Void Invoice"), tr("Transaction Cancelled") );
+    return;
+  }
+
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
 
-  XSqlQuery post;
-  post.prepare("SELECT voidInvoice(:invchead_id) AS result;");
+  dspVoidInvoiceDetails.exec("BEGIN;"); // TODO - remove after voidInvoice no longer returns negative error codes
 
-  dspVoidInvoiceDetails.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  XSqlQuery post;
+  post.prepare("SELECT voidInvoice(:invchead_id, :itemlocSeries, TRUE) AS result;");
   post.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
+  post.bindValue(":itemlocSeries", itemlocSeries);
   post.exec();
   if (post.first())
   {
     int result = post.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this,
                            tr("Error Voiding Invoice %1\n").arg(list()->currentItem()->text("docnumber")),
                            storedProcErrorLookup("voidInvoice", result),
                            __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Void Invoice"), tr("Transaction Canceled") );
       return;
     }
 
@@ -832,6 +915,7 @@ void dspAROpenItems::sVoidInvoiceDetails()
   else if (post.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this,
                          tr("Error Voiding Invoice %1\n").arg(list()->currentItem()->text("docnumber")),
                          post, __FILE__, __LINE__);
@@ -1086,23 +1170,71 @@ void dspAROpenItems::sPostCreditMemo()
     }
   }
 
+  bool hasControlledItems = false;
+  int itemlocSeries = distributeInventory::SeriesCreate(0, 0, QString(), QString());
+  if (itemlocSeries < 0)
+    return;
+
+  XSqlQuery cleanup; // Stage cleanup function to be called on error
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  
+  // Cycle through credit memo items that are controlled and have qty returned, create an itemlocdist record for each
+  XSqlQuery cmitems;
+  cmitems.prepare("SELECT itemsite_id, item_number, "
+                    " SUM(cmitem_qtyreturned * cmitem_qty_invuomratio) AS qty "
+                    "FROM cmhead JOIN cmitem ON cmitem_cmhead_id=cmhead_id "
+                    " JOIN itemsite ON itemsite_id=cmitem_itemsite_id "
+                    " JOIN item ON item_id=itemsite_item_id "
+                    " JOIN costcat ON costcat_id=itemsite_costcat_id "
+                    "WHERE cmitem_qtyreturned <> 0 "
+                    " AND cmitem_updateinv "
+                    " AND cmhead_id=:cmheadId "
+                    " AND isControlledItemsite(itemsite_id) "
+                    " AND itemsite_costmethod != 'J' "
+                    "GROUP BY itemsite_id, item_number "
+                    "ORDER BY itemsite_id;");
+  cmitems.bindValue(":cmheadId", id);
+  cmitems.exec();
+  while (cmitems.next())
+  {
+    if (distributeInventory::SeriesCreate(cmitems.value("itemsite_id").toInt(), 
+      cmitems.value("qty").toDouble(), "CM", "RS", cmitems.value("cmitem_id").toInt(), itemlocSeries) < 0)
+    {
+      cleanup.exec();
+      return;
+    }
+
+    hasControlledItems = true;
+  }
+
+  // Distribute detail for the records created above
+  if (hasControlledItems && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+    QDate(), true) == XDialog::Rejected)
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Post Credit Memo"), tr("Transaction Cancelled") );
+    return;
+  }
+
   XSqlQuery rollback;
   rollback.prepare("ROLLBACK;");
+
+  XSqlQuery tx;
+  tx.exec("BEGIN;");  // TODO - remove this after postCreditMemo can no longer return negative error codes
     
   XSqlQuery postq;
-  postq.prepare("SELECT postCreditMemo(:cmhead_id, 0) AS result;");
- 
-  XSqlQuery tx;
-  tx.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-
+  postq.prepare("SELECT postCreditMemo(:cmhead_id, fetchJournalNumber('AR-CM'), :itemlocSeries, TRUE) AS result;");
   postq.bindValue(":cmhead_id", id);
+  postq.bindValue(":itemlocSeries", itemlocSeries);
   postq.exec();
   if (postq.first())
   {
     int result = postq.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this,
                            tr("Error Posting Credit Memo %1\n").arg(list()->currentItem()->text("docnumber")),
                            storedProcErrorLookup("postCreditMemo", result),
@@ -1110,29 +1242,12 @@ void dspAROpenItems::sPostCreditMemo()
       return;
     }
     else
-    {
-      if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-      {
-        rollback.exec();
-        QMessageBox::information( this, tr("Post Credit Memo"), tr("Transaction Canceled") );
-        return;
-      }
-
       dspPostCreditMemo.exec("COMMIT;");
-    }
-  }
-  // contains() string is hard-coded in stored procedure
-  else if (postq.lastError().databaseText().contains("post to closed period"))
-  {
-    rollback.exec();
-    ErrorReporter::error(QtCriticalMsg, this,
-                         tr("Error Posting Credit Memo %1\n").arg(list()->currentItem()->text("docnumber")),
-                         postq, __FILE__, __LINE__);
-    return;
   }
   else if (postq.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this,
                          tr("Error Posting Credit Memo#%1.\n%2")
                                      .arg(list()->currentItem()->text("docnumber"))
@@ -1204,12 +1319,6 @@ void dspAROpenItems::sPostInvoice()
   XSqlQuery sum;
   sum.prepare("SELECT invoicetotal(:invchead_id) AS subtotal;");
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  XSqlQuery post;
-  post.prepare("SELECT postInvoice(:invchead_id, :journal) AS result;");
-
   XSqlQuery setDate;
   setDate.prepare("UPDATE invchead SET invchead_gldistdate=:distdate "
 		  "WHERE invchead_id=:invchead_id;");
@@ -1276,18 +1385,72 @@ void dspAROpenItems::sPostInvoice()
     return;
   }
 
-  XSqlQuery tx;
-  tx.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
+  bool hasControlledItems = false;
+  int itemlocSeries = distributeInventory::SeriesCreate(0, 0, QString(), QString());
+  if (itemlocSeries < 0)
+    return;
 
+  XSqlQuery cleanup; // Stage cleanup function to be called on error
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
+  cleanup.bindValue(":itemlocSeries", itemlocSeries);
+
+  // Cycle through credit memo items that are controlled and have qty returned, create an itemlocdist record for each
+  XSqlQuery invcitems;
+  invcitems.prepare("SELECT invcitem_id, itemsite_id, item_number, "
+                  " (invcitem_billed * invcitem_qty_invuomratio) * -1 AS qty "
+                  "FROM invchead "
+                  " JOIN invcitem ON invcitem_invchead_id=invchead_id "
+                  "   AND invcitem_billed <> 0 "
+                  "   AND invcitem_updateinv "
+                  " JOIN itemsite ON itemsite_item_id=invcitem_item_id "
+                  "   AND itemsite_warehous_id=invcitem_warehous_id "
+                  " JOIN item ON item_id=invcitem_item_id "
+                  "WHERE invchead_id=:invcheadId "
+                  " AND isControlledItemsite(itemsite_id) "
+                  " AND itemsite_costmethod != 'J' "
+                  "ORDER BY invcitem_id;");
+  invcitems.bindValue(":invcheadId", list()->currentItem()->id("docnumber"));
+  invcitems.exec();
+  while (invcitems.next())
+  {
+    if (distributeInventory::SeriesCreate(invcitems.value("itemsite_id").toInt(), 
+      invcitems.value("qty").toDouble(), "IN", "SH", invcitems.value("invcitem_id").toInt(), itemlocSeries) < 0)
+    {
+      cleanup.exec();
+      return;
+    }
+
+    hasControlledItems = true;
+  }
+
+  // Distribute detail for the records created above
+  if (hasControlledItems && distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+    QDate(), true) == XDialog::Rejected)
+  {
+    cleanup.exec();
+    QMessageBox::information( this, tr("Post Invoice"), tr("Transaction Cancelled") );
+    return;
+  }
+
+  XSqlQuery rollback;
+  rollback.prepare("ROLLBACK;");
+
+  XSqlQuery tx;
+  tx.exec("BEGIN;");	// TODO - remove this after postInvoice function no longer returns negative error codes.
+
+  XSqlQuery post;
+  post.prepare("SELECT postInvoice(:invchead_id, :journal, :itemlocSeries, TRUE) AS result;");
   post.bindValue(":invchead_id", list()->currentItem()->id("docnumber"));
   post.bindValue(":journal",     journal);
+  post.bindValue(":itemlocSeries", itemlocSeries);
   post.exec();
   if (post.first())
   {
     int result = post.value("result").toInt();
-    if (result < 0)
+    if (result < 0 || result != itemlocSeries)
     {
       rollback.exec();
+      cleanup.exec();
       ErrorReporter::error(QtCriticalMsg, this,
                            tr("Error Posting Invoice#%1.\n%2")
                                        .arg(list()->currentItem()->text("docnumber"))
@@ -1296,30 +1459,12 @@ void dspAROpenItems::sPostInvoice()
                            __FILE__, __LINE__);
     }
     else
-    {
-      if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-      {
-        rollback.exec();
-        QMessageBox::information( this, tr("Post Invoice"), tr("Transaction Canceled") );
-        return;
-      }
-
       dspPostInvoice.exec("COMMIT;");
-    }
-  }
-  // contains() string is hard-coded in stored procedure
-  else if (post.lastError().databaseText().contains("post to closed period"))
-  {
-    rollback.exec();
-    ErrorReporter::error(QtCriticalMsg, this,
-                         tr("Error Posting Invoice#%1.\n%2")
-                                     .arg(list()->currentItem()->text("docnumber"))
-                                     .arg(post.lastError().databaseText()),
-                         post, __FILE__, __LINE__);
   }
   else if (post.lastError().type() != QSqlError::NoError)
   {
     rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this,
                          tr("Error Posting Invoice#%1.\n%2")
                                      .arg(list()->currentItem()->text("docnumber"))

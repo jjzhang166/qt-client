@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -58,9 +58,6 @@ class QMenu;
 class QScriptEngine;
 class XTreeWidget;
 class XTreeWidgetProgress;
-
-void  setupXTreeWidgetItem(QScriptEngine *engine);
-void  setupXTreeWidget(QScriptEngine *engine);
 
 class XTUPLEWIDGETS_EXPORT XTreeWidgetItem : public QObject, public QTreeWidgetItem
 {
@@ -161,9 +158,6 @@ class XTUPLEWIDGETS_EXPORT XTreeWidgetItem : public QObject, public QTreeWidgetI
     int _altId;
 };
 
-Q_DECLARE_METATYPE(XTreeWidgetItem *)
-// Q_DECLARE_METATYPE(XTreeWidgetItem)
-
 class XTreeWidgetPopulateParams;
 
 class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
@@ -172,10 +166,10 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
   Q_PROPERTY( QString altDragString READ altDragString WRITE setAltDragString)
   Q_PROPERTY( bool populateLinear READ populateLinear WRITE setPopulateLinear)
 
-  Q_ENUMS(PopulateStyle)
-
   public :
     enum PopulateStyle { Replace, Append };
+    Q_ENUM(PopulateStyle)
+
     XTreeWidget(QWidget *);
     ~XTreeWidget();
 
@@ -198,6 +192,7 @@ class XTUPLEWIDGETS_EXPORT XTreeWidget : public QTreeWidget
     Q_INVOKABLE void  setId(int pId,int pAltId, bool pClear = true);
 
     Q_INVOKABLE virtual int column(const QString) const;
+    Q_INVOKABLE virtual QString column(const int) const;
     Q_INVOKABLE virtual XTreeWidgetItem *currentItem()         const;
     Q_INVOKABLE virtual void            setColumnCount(int columns);
     Q_INVOKABLE virtual void            setColumnLocked(int, bool);
@@ -367,5 +362,8 @@ class XTreeWidgetPopulateParams
     bool      _workingUseAlt;
     XTreeWidget::PopulateStyle _workingPopstyle;
 };
+
+void  setupXTreeWidgetItem(QScriptEngine *engine);
+void  setupXTreeWidget(QScriptEngine *engine);
 
 #endif

@@ -142,7 +142,13 @@ void locations::sDelete()
 void locations::sPrint()
 {
   ParameterList params;
-  _warehouse->appendValue(params);
+  if (_warehouse->isSelected())
+    params.append("warehous_id", _warehouse->id());
+  if (_zone->id() > 0)
+    params.append("zone_id", _zone->id());
+  if (_active->isChecked())
+    params.append("showInactive", true);
+
   orReport report("WarehouseLocationMasterList", params);
   if (report.isValid())
     report.print();

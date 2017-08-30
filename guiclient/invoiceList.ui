@@ -107,8 +107,8 @@ to be bound by its terms.</comment>
                <property name="text">
                 <string>&amp;Select</string>
                </property>
-               <property name="default">
-                <bool>true</bool>
+               <property name="enabled">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -212,12 +212,49 @@ to be bound by its terms.</comment>
   <tabstop>_cust</tabstop>
   <tabstop>_dates</tabstop>
   <tabstop>_invoice</tabstop>
-  <tabstop>_select</tabstop>
   <tabstop>_close</tabstop>
+  <tabstop>_select</tabstop>
  </tabstops>
  <includes>
   <include location="global">parameter.h</include>
  </includes>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>_close</sender>
+   <signal>clicked()</signal>
+   <receiver>invoiceList</receiver>
+   <slot>sClose()</slot>
+  </connection>
+  <connection>
+   <sender>_select</sender>
+   <signal>clicked()</signal>
+   <receiver>invoiceList</receiver>
+   <slot>sSelect()</slot>
+  </connection>
+  <connection>
+   <sender>_invoice</sender>
+   <signal>itemSelected(int)</signal>
+   <receiver>invoiceList</receiver>
+   <slot>sSelect()</slot>
+  </connection>
+  <connection>
+   <sender>_cust</sender>
+   <signal>newId(int)</signal>
+   <receiver>invoiceList</receiver>
+   <slot>sFillList()</slot>
+  </connection>
+  <connection>
+   <sender>_dates</sender>
+   <signal>updated()</signal>
+   <receiver>invoiceList</receiver>
+   <slot>sFillList()</slot>
+  </connection>
+  <connection>
+   <sender>_invoice</sender>
+   <signal>valid(bool)</signal>
+   <receiver>_select</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+ </connections>
 </ui>

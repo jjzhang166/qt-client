@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2015 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -21,6 +21,7 @@
 #include "createCountTagsByItem.h"
 #include "dspInventoryLocator.h"
 #include "parameterwidget.h"
+#include "xtreewidget.h"
 
 dspQOHByZone::dspQOHByZone(QWidget* parent, const char*, Qt::WindowFlags fl)
     : display(parent, "dspQOHByZone", fl)
@@ -37,9 +38,6 @@ dspQOHByZone::dspQOHByZone(QWidget* parent, const char*, Qt::WindowFlags fl)
                     "JOIN whsinfo ON (warehous_id=whsezone_warehous_id) "
                     " ORDER BY warehous_code, whsezone_name;");
 
-  //if (_metrics->boolean("MultiWhs"))
-  //  parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site, "", true);
-  // TODO filter Zone based on Site selection
   parameterWidget()->appendComboBox(tr("Zone"), "whsezone_id", _zoneSQL, "", true);
 
   if (_metrics->boolean("MultiWhs"))
@@ -53,7 +51,6 @@ dspQOHByZone::dspQOHByZone(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Aisle"),              -1,          Qt::AlignLeft,   false, "location_aisle"  );
   list()->addColumn(tr("Rack"),               -1,          Qt::AlignLeft,   false, "location_rack"  );
   list()->addColumn(tr("Bin"),                -1,          Qt::AlignLeft,   false, "location_bin"  );
-
 }
 
 void dspQOHByZone::languageChange()
@@ -73,8 +70,6 @@ SetResponse dspQOHByZone::set(const ParameterList &pParams)
   param = pParams.value("whsezone_id", &valid);
   if (valid)
     parameterWidget()->setDefault(tr("Zone"), param);
-
-  parameterWidget()->applyDefaultFilterSet();
 
   return NoError;
 }

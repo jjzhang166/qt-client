@@ -1,6 +1,5 @@
 # The xTuple ERP Desktop Client Application
 
-[![Build Status for xtuple/qt-client](https://travis-ci.org/xtuple/qt-client.png)](https://travis-ci.org/xtuple/qt-client)
 [This repository](http://github.com/xtuple/qt-client) contains the source code
 for the xTuple ERP desktop client. xTuple ERP is a collection of programs
 designed to help you run your business.

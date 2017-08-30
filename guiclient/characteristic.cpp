@@ -153,6 +153,15 @@ characteristic::characteristic(QWidget* parent, const char* name, bool modal, Qt
 
   _d = new characteristicPrivate(this);
 
+  QString _charSql = "SELECT rownum AS id, char_group "
+                     " FROM ( "
+                     "   SELECT distinct char_group, "
+                     "          DENSE_RANK() OVER (ORDER BY  char_group) AS rownum "
+                     "   FROM char"
+                     "   WHERE char_group IS NOT NULL "
+                     "   ORDER BY char_group) foo;";
+  _charGroup->populate(_charSql);
+
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(sSave()));
   connect(_name, SIGNAL(editingFinished()), this, SLOT(sCheck()));
   connect(_new, SIGNAL(clicked()), this, SLOT(sNew()));
@@ -215,6 +224,7 @@ enum SetResponse characteristic::set(const ParameterList &pParams)
     {
       _d->setMode(cView);
       _name->setEnabled(false);
+      _charGroup->setEnabled(false);
       _search->setEnabled(false);
       _unique->setEnabled(false);
       _useGroup->setEnabled(false);
@@ -279,11 +289,11 @@ void characteristic::sSave()
     characteristicSave.prepare( "INSERT INTO char "
                "( char_id, char_name, char_options, char_attributes,"
                "  char_notes, char_mask, char_validator, char_type, "
-               "  char_order, char_search, char_unique ) "
+               "  char_order, char_search, char_unique, char_group ) "
                "VALUES "
                "( :char_id, :char_name, :char_options, :char_attributes,"
                "  :char_notes, :char_mask, :char_validator, :char_type, "
-               "  :char_order, :char_search, :char_unique );" );
+               "  :char_order, :char_search, :char_unique, :char_group );" );
 
     characteristicSave.bindValue(":char_type", _type->currentIndex());
   }
@@ -297,11 +307,13 @@ void characteristic::sSave()
                "    char_validator=:char_validator, "
                "    char_order=:char_order, "
                "    char_search=:char_search, "
-               "    char_unique=:char_unique "
+               "    char_unique=:char_unique, "
+               "    char_group=:char_group "
                "WHERE (char_id=:char_id);" );
 
   characteristicSave.bindValue(":char_id", _d->charid);
   characteristicSave.bindValue(":char_name", _name->text());
+  characteristicSave.bindValue(":char_group", _charGroup->currentText());
 
   characteristicSave.bindValue(":char_options",     QVariant(false));
   characteristicSave.bindValue(":char_attributes",  QVariant(false));
@@ -368,6 +380,11 @@ void characteristic::populate()
   if (charq.first())
   {
     _name->setText(charq.value("char_name").toString());
+#if QT_VERSION >= 0x050000
+    _charGroup->setCurrentText(charq.value("char_group").toString());
+#else
+    _charGroup->setCode(charq.value("char_group").toString());
+#endif
     _description->setText(charq.value("char_notes").toString());
     _mask->setText(charq.value("char_mask").toString());
     _validator->setText(charq.value("char_validator").toString());

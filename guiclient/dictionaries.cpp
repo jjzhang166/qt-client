@@ -24,7 +24,6 @@
 #include <parameter.h>
 #include <gunzip.h>
 #include <tarfile.h>
-#include <xtHelp.h>
 
 dictionaries::dictionaries(QWidget* parent, const char* name, Qt::WindowFlags fl)
   : XWidget(parent, name, fl)
@@ -115,7 +114,6 @@ void dictionaries::finished(QNetworkReply * nwrep)
               else
               {
                 _label->setText(tr("Dictionaries downloaded."));
-                xtHelp::reload();
               }
             }
             else

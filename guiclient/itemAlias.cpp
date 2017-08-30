@@ -156,8 +156,11 @@ void itemAlias::sSave()
   itemSave.bindValue(":itemalias_number", _number->text().trimmed());
   if (_crmacct->id() != -1)
     itemSave.bindValue(":itemalias_crmacct_id", _crmacct->id());
-  itemSave.bindValue(":itemalias_descrip1", _descrip1->text().trimmed());
-  itemSave.bindValue(":itemalias_descrip2", _descrip2->text().trimmed());
+  if (_useDescription->isChecked())
+  {
+    itemSave.bindValue(":itemalias_descrip1", _descrip1->text().trimmed());
+    itemSave.bindValue(":itemalias_descrip2", _descrip2->text().trimmed());
+  }
   itemSave.bindValue(":itemalias_comments", _comments->toPlainText());
   itemSave.bindValue(":itemalias_usedescrip", QVariant(_useDescription->isChecked()));
   itemSave.exec();

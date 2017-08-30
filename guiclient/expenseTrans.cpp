@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -26,9 +26,10 @@ expenseTrans::expenseTrans(QWidget* parent, const char* name, Qt::WindowFlags fl
 {
   setupUi(this);
 
-  connect(_post,                 SIGNAL(clicked()), this, SLOT(sPost()));
-  connect(_qty,SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
-  connect(_warehouse,           SIGNAL(newID(int)), this, SLOT(sPopulateQOH(int)));
+  connect(_post,          SIGNAL(clicked()), this, SLOT(sPost()));
+  connect(_qty,           SIGNAL(textChanged(const QString&)), this, SLOT(sPopulateQty()));
+  connect(_warehouse,     SIGNAL(newID(int)), this, SLOT(sPopulateQOH()));
+  connect(_item,          SIGNAL(newId(int)), this, SLOT(sPopulateQOH()));
 
   _captive = false;
   _prjid = -1;
@@ -128,6 +129,7 @@ enum SetResponse expenseTrans::set(const ParameterList &pParams)
 
 void expenseTrans::sPost()
 {
+  int itemlocSeries = 0;
   QList<GuiErrorCheck> errors;
   errors << GuiErrorCheck(! _item->isValid(), _item,
                           tr("You must select an Item before posting this "
@@ -142,40 +144,78 @@ void expenseTrans::sPost()
   if (GuiErrorCheck::reportErrors(this, tr("Cannot Post Transaction"), errors))
     return;
 
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE);");
 
-  XSqlQuery begin("BEGIN;");	// because of possible distribution cancelations
+  // Get parent series id
+  XSqlQuery parentSeries;
+  parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result;");
+  parentSeries.exec();
+  if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
+  {
+    itemlocSeries = parentSeries.value("result").toInt();
+    cleanup.bindValue(":itemlocSeries", itemlocSeries);
+  }
+  else
+  {
+    ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+                            parentSeries, __FILE__, __LINE__);
+    return;
+  }
+
+  // If controlled item: create the parent itemlocdist record, call distributeInventory::seriesAdjust
+  if (_controlledItem)
+  {
+    XSqlQuery parentItemlocdist;
+    parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, 'EX'::TEXT, NULL, :itemlocSeries) AS result;");
+    parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+    parentItemlocdist.bindValue(":qty", _qty->toDouble() * -1);
+    parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+    parentItemlocdist.exec();
+    if (parentItemlocdist.first())
+    {
+      if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+        QDate(), true) == XDialog::Rejected)
+      {
+        cleanup.exec();
+        QMessageBox::information( this, tr("Expense Transaction"), tr("Posting Distribution Detail Failed") );
+        return;
+      }
+    }
+    else
+    {
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Record"),
+                           parentItemlocdist, __FILE__, __LINE__);
+      return;
+    }
+  }
+
+  // Proceed to post inventory transaction
   XSqlQuery expq;
-  expq.prepare("SELECT invExpense(itemsite_id, :qty, :expcatid, :docNumber,"
-               "                  :comments, :date, :prj_id) AS result"
-               "  FROM itemsite"
-               " WHERE ((itemsite_item_id=:item_id)"
-               "    AND (itemsite_warehous_id=:warehous_id));" );
+  expq.prepare("SELECT invExpense(:itemsite_id, :qty, :expcatid, :docNumber, "
+               "  :comments, :date, :prj_id, :itemlocSeries, TRUE) AS result;");
+  expq.bindValue(":itemsite_id",         _itemsiteId);
   expq.bindValue(":qty",         _qty->toDouble());
   expq.bindValue(":expcatid",    _expcat->id());
   expq.bindValue(":docNumber",   _documentNum->text());
   expq.bindValue(":comments",    _notes->toPlainText());
-  expq.bindValue(":item_id",     _item->id());
-  expq.bindValue(":warehous_id", _warehouse->id());
   expq.bindValue(":date",        _transDate->date());
+  expq.bindValue(":itemlocSeries", itemlocSeries);
   if (_prjid != -1)
     expq.bindValue(":prj_id", _prjid);
   expq.exec();
-
   if (expq.first())
   {
-    if (distributeInventory::SeriesAdjust(expq.value("result").toInt(),
-                                          this) == XDialog::Rejected)
+    int result = expq.value("result").toInt();
+    if (result < 0 || result != itemlocSeries)
     {
-      rollback.exec();
-      QMessageBox::information(this, tr("Expense Transaction"),
-                               tr("Transaction Canceled") );
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Posting Inventory Expense transaction."),
+        expq, __FILE__, __LINE__);
       return;
     }
-
-    XSqlQuery commit("COMMIT;");
-
     if (_captive)
       close();
     else
@@ -194,14 +234,14 @@ void expenseTrans::sPost()
   }
   else if (expq.lastError().type() != QSqlError::NoError)
   {
-    rollback.exec();
+    cleanup.exec(); 
     ErrorReporter::error(QtCriticalMsg, this, tr("Could Not Post"),
                          expq, __FILE__, __LINE__);
     return;
   }
   else
   {
-    rollback.exec();
+    cleanup.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Item not found"),
                          tr("<p>No transaction was done because Item %1 "
                             "was not found at Site %2.")
@@ -209,20 +249,23 @@ void expenseTrans::sPost()
   }
 }
 
-void expenseTrans::sPopulateQOH(int pWarehousid)
+void expenseTrans::sPopulateQOH()
 {
-  if (_mode != cView)
+  if (_mode != cView && _item->isValid() && _warehouse->isValid())
   {
     XSqlQuery qohq;
-    qohq.prepare( "SELECT itemsite_qtyonhand "
+    qohq.prepare( "SELECT itemsite_qtyonhand, "
+               "  itemsite_id, isControlledItemsite(itemsite_id) AS controlled "
                "FROM itemsite "
                "WHERE ( (itemsite_item_id=:item_id)"
                " AND (itemsite_warehous_id=:warehous_id) );" );
     qohq.bindValue(":item_id", _item->id());
-    qohq.bindValue(":warehous_id", pWarehousid);
+    qohq.bindValue(":warehous_id", _warehouse->id());
     qohq.exec();
     if (qohq.first())
     {
+      _itemsiteId = qohq.value("itemsite_id").toInt();
+      _controlledItem = qohq.value("controlled").toBool();
       _cachedQOH = qohq.value("itemsite_qtyonhand").toDouble();
       _beforeQty->setDouble(qohq.value("itemsite_qtyonhand").toDouble());
 

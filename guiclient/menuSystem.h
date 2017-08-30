@@ -72,8 +72,6 @@ class menuSystem : public QObject
     void sExit();
 
     void sAbout();
-    void sTOC();
-    void sDownload();
     void sReferenceGuide();
 
     void sCommunityHome();

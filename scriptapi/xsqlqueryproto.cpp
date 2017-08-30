@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2012 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -11,6 +11,8 @@
 #include "xsqlqueryproto.h"
 
 #include <QSqlError>
+
+#include "qsqldatabaseproto.h"
 
 void setupXSqlQueryProto(QScriptEngine *engine)
 {
@@ -25,29 +27,15 @@ void setupXSqlQueryProto(QScriptEngine *engine)
 QScriptValue constructXSqlQuery(QScriptContext *context, QScriptEngine  *engine)
 {
   XSqlQuery *obj = 0;
-  if (context->argumentCount() > 0) {
-    QScriptValue arg = context->argument(0);
-    if (arg.isString()) {
-      /* TODO: Cannot pass QSqlDatabase.
-      if (context->argumentCount() == 2) {
-        QSqlDatabase db = context->argument(1).toVariant().value<QSqlDatabase>();
-        obj = new XSqlQuery(arg.toString(), db);
-      } else {
-        obj = new XSqlQuery(arg.toString());
-      }
-      */
-      obj = new XSqlQuery(arg.toString());
-    } else {
-      /* TODO: Cannot pass QSqlDatabase.
-      QSqlDatabase db = arg.toVariant().value<QSqlDatabase>();
-      obj = new XSqlQuery(db);
-      */
-      context->throwError(QScriptContext::UnknownError,
-                          "Qt Script XSqlQuery() can only take one QString arg. No other instantiation is supported at this time.");
-    }
-  } else {
+  if (context->argumentCount() >= 2)
+    obj = new XSqlQuery(context->argument(0).toString(),
+                        context->argument(1).toVariant().value<QSqlDatabase>());
+  else if (context->argumentCount() == 1 && context->argument(0).isString())
+    obj = new XSqlQuery(context->argument(0).toString());
+  else if (context->argumentCount() == 1)
+    obj = new XSqlQuery(context->argument(0).toVariant().value<QSqlDatabase>());
+  else
     obj = new XSqlQuery();
-  }
 
   return engine->toScriptValue(obj);
 }

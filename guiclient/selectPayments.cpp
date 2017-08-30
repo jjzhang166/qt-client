@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2016 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -12,6 +12,7 @@
 #include "mqlutil.h"
 
 #include <QSqlError>
+#include <QInputDialog>
 
 #include <metasql.h>
 #include <openreports.h>
@@ -42,6 +43,7 @@ selectPayments::selectPayments(QWidget* parent, const char* name, Qt::WindowFlag
   connect(_startDate, SIGNAL(newDate(const QDate&)), this, SLOT(sFillList()));
   connect(_endDate, SIGNAL(newDate(const QDate&)), this, SLOT(sFillList()));
   connect(_onOrBeforeDate, SIGNAL(newDate(const QDate&)), this, SLOT(sFillList()));
+  connect(_query, SIGNAL(clicked()), this, SLOT(sFillList()));
   connect(_print, SIGNAL(clicked()), this, SLOT(sPrint()));
   connect(_select, SIGNAL(clicked()), this, SLOT(sSelect()));
   connect(_selectDiscount, SIGNAL(clicked()), this, SLOT(sSelectDiscount()));
@@ -71,6 +73,7 @@ selectPayments::selectPayments(QWidget* parent, const char* name, Qt::WindowFlag
   _apopen->addColumn(tr("Discount (%1)").arg(CurrDisplay::baseCurrAbbr()), _moneyColumn, Qt::AlignRight, false, "base_discount"  );
   _apopen->addColumn(tr("Currency"),       _currencyColumn, Qt::AlignLeft,       true, "curr_concat" );
   _apopen->addColumn(tr("Status"),         _currencyColumn, Qt::AlignCenter,     true, "apopen_status" );
+  _apopen->addColumn(tr("On Hold Comment"), -1,             Qt::AlignLeft,       true, "apopen_hold_comment" );
 
 //  if (omfgThis->singleCurrency())
 //  {
@@ -541,7 +544,7 @@ void selectPayments::sViewGLSeries()
 void selectPayments::sOpen()
 {
   XSqlQuery open;
-  open.prepare("UPDATE apopen SET apopen_status = 'O' WHERE apopen_id=:apopen_id;");
+  open.prepare("UPDATE apopen SET apopen_status = 'O', apopen_hold_comment = NULL WHERE apopen_id=:apopen_id;");
   open.bindValue(":apopen_id", _apopen->id());
   open.exec();
   sFillList();
@@ -550,6 +553,9 @@ void selectPayments::sOpen()
 void selectPayments::sOnHold()
 {
   XSqlQuery selectpayment;
+  bool ok;
+  QString comment;
+
   selectpayment.prepare("SELECT * FROM apselect WHERE apselect_apopen_id = :apopen_id;");
   selectpayment.bindValue(":apopen_id", _apopen->id());
   selectpayment.exec();
@@ -561,9 +567,16 @@ void selectPayments::sOnHold()
     return;
   }
 
+  comment = QInputDialog::getText(this, tr("On Hold Comment"),
+        tr("Enter an On Hold Comment:"), QLineEdit::Normal, comment, &ok);
+  if(!ok)
+    return;
+
   XSqlQuery onhold;
-  onhold.prepare("UPDATE apopen SET apopen_status = 'H' WHERE apopen_id=:apopen_id;");
+  onhold.prepare("UPDATE apopen SET apopen_status = 'H', apopen_hold_comment = :comment "
+                 " WHERE apopen_id=:apopen_id;");
   onhold.bindValue(":apopen_id", _apopen->id());
+  onhold.bindValue(":comment", comment);
   onhold.exec();
   sFillList();
 }

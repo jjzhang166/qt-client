@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -16,6 +16,7 @@
 #include <QScriptEngineDebugger>
 
 #include "getscreen.h"
+#include "include.h"
 #include "scripttoolbox.h"
 #include "setup.h"
 #include "xt.h"
@@ -76,19 +77,6 @@ setup::setup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
   insert(tr("Purchase"), "configurePO", Configure, Xt::PurchaseModule, mode("ConfigurePO"), 0 );
   insert(tr("Registration"), "registrationKey", Configure, Xt::SystemModule, mode("MaintainRegistrationKey"), 0 );
   insert(tr("Schedule"), "configureMS", Configure, Xt::ScheduleModule, mode("ConfigureMS"), 0 );
-
-  // TODO: remove this 4.10 hack when WF is self-contained
-  XSqlQuery wf("SELECT EXISTS("
-               "  SELECT 1"
-               "    FROM pg_proc"
-               "    JOIN pg_namespace n ON pronamespace = n.oid"
-               "   WHERE nspname = 'xt'"
-               "     AND proname = 'createwf_after_insert'"
-               "  ) AS isInstalled;");
-  if (wf.first() && wf.value("isInstalled").toBool())
-  {
-    insert(tr("Workflow"), "configureWF", Configure, Xt::SystemModule, mode("ConfigureWF"), 0 );
-  }
 
   insert(tr("Search Path"), "configureSearchPath", Configure, Xt::SystemModule, _privileges->isDba() ? cEdit : 0, 0);
 
@@ -205,6 +193,9 @@ setup::setup(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
 
   modeVal = mode("MaintainReasonCodes");
   insert(tr("Reason Codes"), "reasonCodes", MasterInformation, Xt::InventoryModule | Xt::AccountingModule, modeVal, modeVal);
+
+  modeVal = mode("MaintainPurchaseTypes", "ViewPurchaseTypes");
+  insert(tr("Purchase Types"), "poTypes", MasterInformation, Xt::PurchaseModule, modeVal, modeVal);
 
   modeVal = mode("MaintainRejectCodes", "ViewRejectCodes");
   insert(tr("Reject Codes"), "rejectCodes", MasterInformation, Xt::PurchaseModule, modeVal, modeVal);
@@ -540,12 +531,13 @@ void setup::setCurrentIndex(XTreeWidgetItem* item)
           debugger->attachTo(engine);
         }
         omfgThis->loadScriptGlobals(engine);
+        setupInclude(engine);
         QScriptValue mywindow = engine->newQObject(w);
         engine->globalObject().setProperty("mywindow", mywindow);
 
         while(scriptq.next())
         {
-          QString script = scriptHandleIncludes(scriptq.value("script_source").toString());
+          QString script = scriptq.value("script_source").toString();
           QScriptValue result = engine->evaluate(script, uiName);
           if (engine->hasUncaughtException())
           {

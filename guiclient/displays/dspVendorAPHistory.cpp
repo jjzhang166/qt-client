@@ -157,7 +157,7 @@ bool dspVendorAPHistory::setParams(ParameterList &params)
 {
   if (isVisible())
   {
-    if (!_vend->isValid())
+    if (_vend->isVisible() && !_vend->isValid())
     {
       QMessageBox::warning( this, tr("Select Vendor"),
                             tr("Please select a valid Vendor.") );

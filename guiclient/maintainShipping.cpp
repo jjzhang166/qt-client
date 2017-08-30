@@ -174,40 +174,17 @@ void maintainShipping::sShipOrder()
 void maintainShipping::sReturnAllOrderStock()
 {
   XSqlQuery maintainReturnAllOrderStock;
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  maintainReturnAllOrderStock.exec("BEGIN");
   maintainReturnAllOrderStock.prepare("SELECT returnCompleteShipment(:ship_id) AS result;");
   maintainReturnAllOrderStock.bindValue(":ship_id", _ship->id());
   maintainReturnAllOrderStock.exec();
-  if (maintainReturnAllOrderStock.first())
+  if (maintainReturnAllOrderStock.lastError().type() != QSqlError::NoError)
   {
-    int result = maintainReturnAllOrderStock.value("result").toInt();
-    if (result < 0)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
-                             storedProcErrorLookup("returnCompleteShipment", result),
-                             __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Issue to Shipping"), tr("Return Canceled") );
-      return;
-    }
-    maintainReturnAllOrderStock.exec("COMMIT;"); 
-    sFillList();
-  }
-  else if (maintainReturnAllOrderStock.lastError().type() != QSqlError::NoError)
-  {
-    rollback.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
                          maintainReturnAllOrderStock, __FILE__, __LINE__);
     return;
   }
+
+  sFillList();
 }
 
 void maintainShipping::sViewOrder()
@@ -258,40 +235,17 @@ void maintainShipping::sIssueStock()
 void maintainShipping::sReturnAllLineStock()
 {
   XSqlQuery maintainReturnAllLineStock;
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  maintainReturnAllLineStock.exec("BEGIN");
   maintainReturnAllLineStock.prepare("SELECT returnItemShipments(:ship_id) AS result;");
   maintainReturnAllLineStock.bindValue(":ship_id", _ship->altId());
   maintainReturnAllLineStock.exec();
-  if (maintainReturnAllLineStock.first())
+  if (maintainReturnAllLineStock.lastError().type() != QSqlError::NoError)
   {
-    int result = maintainReturnAllLineStock.value("result").toInt();
-    if (maintainReturnAllLineStock.value("result").toInt() < 0)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
-                             storedProcErrorLookup("returnItemShipments", result),
-                             __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Issue to Shipping"), tr("Return Canceled") );
-      return;
-    }    
-    maintainReturnAllLineStock.exec("COMMIT;"); 
-    sFillList();
-  }
-  else if (maintainReturnAllLineStock.lastError().type() != QSqlError::NoError)
-  {
-    rollback.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
                          maintainReturnAllLineStock, __FILE__, __LINE__);
     return;
   }
+
+  sFillList();
 }
 
 void maintainShipping::sViewLine()
@@ -319,40 +273,17 @@ void maintainShipping::sViewLine()
 void maintainShipping::sReturnAllStock()
 {
   XSqlQuery maintainReturnAllStock;
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-
-  maintainReturnAllStock.exec("BEGIN");
   maintainReturnAllStock.prepare("SELECT returnShipmentTransaction(:ship_id) AS result;");
   maintainReturnAllStock.bindValue(":ship_id", _ship->altId());
   maintainReturnAllStock.exec();
-  if (maintainReturnAllStock.first())
+  if (maintainReturnAllStock.lastError().type() != QSqlError::NoError)
   {
-    int result = maintainReturnAllStock.value("result").toInt();
-    if (maintainReturnAllStock.value("result").toInt() < 0)
-    {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
-                             storedProcErrorLookup("returnShipmentTransaction", result),
-                             __FILE__, __LINE__);
-      return;
-    }
-    else if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      QMessageBox::information( this, tr("Issue to Shipping"), tr("Return Canceled") );
-      return;
-    }    
-    maintainReturnAllStock.exec("COMMIT;"); 
-    sFillList();
-  }
-  else if (maintainReturnAllStock.lastError().type() != QSqlError::NoError)
-  {
-    rollback.exec();
     ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving Shipment Information"),
                          maintainReturnAllStock, __FILE__, __LINE__);
     return;
   }
+
+  sFillList();
 }
 
 void maintainShipping::sFillList()

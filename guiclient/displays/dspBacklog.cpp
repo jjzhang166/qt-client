@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -49,8 +49,6 @@ dspBacklog::dspBacklog(QWidget* parent, const char*, Qt::WindowFlags fl)
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   list()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   list()->addColumn(tr("S/O #/Line #"),_itemColumn, Qt::AlignLeft,  true, "coitem_linenumber");
@@ -62,6 +60,7 @@ dspBacklog::dspBacklog(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Ordered"),      _qtyColumn, Qt::AlignRight, true, "coitem_qtyord");
   list()->addColumn(tr("Shipped"),      _qtyColumn, Qt::AlignRight, true, "coitem_qtyshipped");
   list()->addColumn(tr("Balance"),      _qtyColumn, Qt::AlignRight, true, "qtybalance");
+  list()->addColumn(tr("QOH"),          _qtyColumn, Qt::AlignRight, true, "qtyonhand");
   if (_privileges->check("ViewCustomerPrices") || _privileges->check("MaintainCustomerPrices"))
   {
     list()->addColumn(tr("Base Ext. Price"), _bigMoneyColumn, Qt::AlignRight,  true, "baseextpricebalance");

@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -13,8 +13,6 @@
 
 #include <QObject>
 #include <QtScript>
-
-Q_DECLARE_METATYPE(QObject*)
 
 void setupQObjectProto(QScriptEngine *engine);
 QScriptValue constructQObject(QScriptContext *context, QScriptEngine *engine);
@@ -41,6 +39,8 @@ class QObjectProto : public QObject, public QScriptable
     Q_INVOKABLE QList<QByteArray>           dynamicPropertyNames() const;
     Q_INVOKABLE bool                        event(QEvent * e);
     Q_INVOKABLE bool                        eventFilter(QObject * watched, QEvent * event);
+
+    Q_INVOKABLE QList<QObject*>            *findChildren(const QString &name = QString(), Qt::FindChildOptions options = Qt::FindChildrenRecursively, const QString &classname = QString()) const;
     // TODO: Does not work. `T` does not have a type
     /*
     Q_INVOKABLE T                           findChild(const QString & name = QString(), Qt::FindChildOptions options = Qt::FindChildrenRecursively) const;
@@ -83,5 +83,6 @@ class QObjectProto : public QObject, public QScriptable
 };
 
 Q_SCRIPT_DECLARE_QMETAOBJECT(QObjectProto, QObject*)
+Q_DECLARE_METATYPE(QList<QObject*>*)
 
 #endif

@@ -112,8 +112,6 @@ enum SetResponse itemSites::set(const ParameterList &pParams)
   if (valid)
     parameterWidget()->setDefault(tr("Cost Category Pattern"), param);
 
-  parameterWidget()->applyDefaultFilterSet();;
-
   if (pParams.inList("run"))
   {
     sFillList();

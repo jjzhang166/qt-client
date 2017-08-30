@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -46,9 +46,9 @@ metasqls::metasqls(QWidget* parent, const char* name, Qt::WindowFlags fl)
 
   _list->addColumn(tr("Group"),  _itemColumn, Qt::AlignLeft, true, "metasql_group");
   _list->addColumn(tr("Name"),   _itemColumn, Qt::AlignLeft, true, "metasql_name");
-  _list->addColumn(tr("Grade"),   _seqColumn, Qt::AlignRight,false,"metasql_grade");
+  _list->addColumn(tr("Grade"),   _seqColumn, Qt::AlignRight,true,"metasql_grade");
   _list->addColumn(tr("Notes"),           -1, Qt::AlignLeft, true, "metasql_notes");
-  _list->addColumn(tr("Package"),_itemColumn, Qt::AlignLeft, false,"pkgname");
+  _list->addColumn(tr("Package"),_itemColumn, Qt::AlignLeft, true,"pkgname");
 
   if (! userHasPriv(cEdit) && userHasPriv(cView))
   {
@@ -113,6 +113,9 @@ void metasqls::sDelete()
 
 void metasqls::sEdit()
 {
+  if (_list->id() == -1)
+    return;
+
   MQLEdit *newdlg = new MQLEdit(0);
   newdlg->fileDatabaseOpen(_list->id());
   newdlg->setReadOnly(! userHasPriv(cEdit) && userHasPriv(cView));

@@ -933,9 +933,6 @@ to be bound by its terms.</comment>
                 </item>
                 <item row="3" column="1">
                  <widget class="XLineEdit" name="_invVendorUOMRatio">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>80</width>

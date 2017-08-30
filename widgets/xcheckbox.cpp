@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -15,12 +15,14 @@
 XCheckBox::XCheckBox(QWidget *pParent) :
   QCheckBox(pParent)
 {
+  connect(this, SIGNAL(objectNameChanged(const QString &)), this, SLOT(init()));
   constructor();
 }
 
 XCheckBox::XCheckBox(const QString &pText, QWidget *pParent) :
   QCheckBox(pText, pParent)
 {
+  connect(this, SIGNAL(objectNameChanged(const QString &)), this, SLOT(init()));
   constructor();
 }
 
@@ -33,7 +35,7 @@ void XCheckBox::constructor()
   _default=false;
   setForgetful(false);
   _initialized = false;
-    
+
   _mapper = new XDataWidgetMapper(this);
 }
 
@@ -44,13 +46,28 @@ void XCheckBox::setData()
   _mapper->model()->setData(_mapper->model()->index(_mapper->currentIndex(),_mapper->mappedSection(this)), isChecked());
 }
 
+QWidget* getRootWidget(QWidget* child)
+{
+  while (child->parentWidget()) {
+    if (child->parentWidget()->objectName() != "") {
+      child = child->parentWidget();
+    } else {
+      break;
+    }
+  }
+
+  return child;
+}
+
 void XCheckBox::init()
 {
   if(_initialized)
     return;
+
   QString pname;
-  if(window())
-    pname = window()->objectName() + "/";
+  if (parent()) {
+    pname = getRootWidget(this)->objectName() + "/";
+  }
   _settingsName = pname + objectName();
 
   if(_x_preferences)
@@ -67,24 +84,18 @@ void XCheckBox::setForgetful(bool p)
     _forgetful = _x_preferences->value("XCheckBox/forgetful").startsWith("t", Qt::CaseInsensitive);
   else
     _forgetful = p;
-    
+
   if (! _forgetful)
   {
     Q_INIT_RESOURCE(widgets);
     if (! _checkedIcon)
       _checkedIcon = new QPixmap(":/widgets/images/xcheckbox.png");
-      
+
     setIcon(*_checkedIcon);
     setIconSize(_checkedIcon->size());
   }
   else
-    setIcon(QPixmap());    
-}
-
-void XCheckBox::showEvent(QShowEvent * event)
-{
-  init();
-  QCheckBox::showEvent(event);
+    setIcon(QPixmap());
 }
 
 XCheckBox::~XCheckBox()
@@ -102,24 +113,15 @@ void XCheckBox::setDataWidgetMap(XDataWidgetMapper* m)
 {
   m->addMapping(this, _fieldName, "checked", "defaultChecked");
   _mapper=m;
-  connect(this, SIGNAL(stateChanged(int)), this, SLOT(setData())); 
+  connect(this, SIGNAL(stateChanged(int)), this, SLOT(setData()));
 }
 
 // scripting exposure /////////////////////////////////////////////////////////
 
-QScriptValue XCheckBoxtoScriptValue(QScriptEngine *engine, XCheckBox* const &item)
-{
-  return engine->newQObject(item);
-}
-
-void XCheckBoxfromScriptValue(const QScriptValue &obj, XCheckBox* &item)
-{
-  item = qobject_cast<XCheckBox*>(obj.toQObject());
-}
-
 QScriptValue constructXCheckBox(QScriptContext *context,
                                 QScriptEngine  *engine)
 {
+#if QT_VERSION >= 0x050000
   XCheckBox *cbox = 0;
 
   if (context->argumentCount() == 0)
@@ -143,11 +145,19 @@ QScriptValue constructXCheckBox(QScriptContext *context,
                         QString("Could not find an appropriate XCheckBox constructor"));
 
   return engine->toScriptValue(cbox);
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupXCheckBox(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, XCheckBoxtoScriptValue, XCheckBoxfromScriptValue);
-  QScriptValue widget = engine->newFunction(constructXCheckBox);
-  engine->globalObject().setProperty("XCheckBox", widget, QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  if (! engine->globalObject().property("XCheckBox").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructXCheckBox);
+    QScriptValue meta = engine->newQMetaObject(&XCheckBox::staticMetaObject, ctor);
+
+    engine->globalObject().setProperty("XCheckBox", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

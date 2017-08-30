@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -33,6 +33,10 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
   _nextCmNumber->setValidator(omfgThis->orderVal());
   _nextInNumber->setValidator(omfgThis->orderVal());
   _creditLimit->setValidator(omfgThis->moneyVal());
+
+  _creditStatus->append(0, tr("In Good Standing"), "G");
+  _creditStatus->append(1, tr("On Credit Warning"), "W");
+  _creditStatus->append(2, tr("On Credit Hold"), "H");
 
   _orderNumGeneration->setMethod(_metrics->value("CONumberGeneration"));
   _quoteNumGeneration->setMethod(_metrics->value("QUNumberGeneration"));
@@ -107,6 +111,9 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
   else if (_metrics->value("DefaultBalanceMethod") == "O")
     _balanceMethod->setCurrentIndex(1);
 
+  int defDays = _metrics->value("DefaultOrderStartDays").toInt() ? : -90;
+  _defaultStartDays->setValue(defDays);
+
   _custtype->setId(_metrics->value("DefaultCustType").toInt());
   _salesrep->setId(_metrics->value("DefaultSalesRep").toInt());
   _terms->setId(_metrics->value("DefaultTerms").toInt());
@@ -117,6 +124,9 @@ configureSO::configureSO(QWidget* parent, const char* name, bool /*modal*/, Qt::
 
   _creditLimit->setText(_metrics->value("SOCreditLimit"));
   _creditRating->setText(_metrics->value("SOCreditRate"));
+
+  if(_metrics->value("SoCreditStatus")!="")
+    _creditStatus->setCode(_metrics->value("SoCreditStatus"));
 
   if (_metrics->value("soPriceEffective") == "OrderDate")
     _priceOrdered->setChecked(true);
@@ -339,6 +349,7 @@ bool configureSO::sSave()
 
   _metrics->set("SOCreditLimit", _creditLimit->text());
   _metrics->set("SOCreditRate", _creditRating->text());
+  _metrics->set("SOCreditStatus", _creditStatus->code());
 
   if (_priceOrdered->isChecked())
     _metrics->set("soPriceEffective", QString("OrderDate"));
@@ -381,6 +392,8 @@ bool configureSO::sSave()
     _metrics->set("DefaultBalanceMethod", QString("O"));
     break;
   }
+
+  _metrics->set("DefaultOrderStartDays", _defaultStartDays->value());
 
   configureSave.prepare( "SELECT setNextSoNumber(:sonumber), setNextQuNumber(:qunumber),"
              "       setNextCmNumber(:cmnumber), setNextInvcNumber(:innumber);" );

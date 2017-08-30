@@ -41,6 +41,8 @@ private:
     int		_itemid;
     QString	_ordertype;
     QDateTime   _transTS;
+    int         _itemsiteId;
+    bool        _controlled;
 
 };
 

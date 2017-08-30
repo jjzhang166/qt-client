@@ -40,8 +40,6 @@ dspTimePhasedBookings::dspTimePhasedBookings(QWidget* parent, const char*, Qt::W
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
 
-  parameterWidget()->applyDefaultFilterSet();
-
   _groupBy->append(0,tr("Customer"));
   _groupBy->append(1,tr("Product Category"));
   _groupBy->append(2,tr("Item"));

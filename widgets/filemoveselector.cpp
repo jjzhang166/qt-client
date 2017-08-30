@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -195,6 +195,7 @@ bool FileMoveSelector::setSuffix(QString psuffix)
 QScriptValue constructFileMoveSelector(QScriptContext *context,
                                        QScriptEngine  *engine)
 {
+#if QT_VERSION >= 0x050000
   FileMoveSelector *obj = 0;
 
   if (context->argumentCount() == 0)
@@ -212,23 +213,19 @@ QScriptValue constructFileMoveSelector(QScriptContext *context,
                          "Could not find an appropriate FileMoveSelector constructor");
 
   return engine->toScriptValue(obj);
-}
-
-QScriptValue FileMoveSelectorToScriptValue(QScriptEngine *engine, FileMoveSelector *const &item)
-{
-  return engine->newQObject(item);
-}
-
-void FileMoveSelectorFromScriptValue(const QScriptValue &obj, FileMoveSelector * &item)
-{
-  item = qobject_cast<FileMoveSelector*>(obj.toQObject());
+#else
+  Q_UNUSED(context); Q_UNUSED(engine); return QScriptValue();
+#endif
 }
 
 void setupFileMoveSelector(QScriptEngine *engine)
 {
-  qScriptRegisterMetaType(engine, FileMoveSelectorToScriptValue, FileMoveSelectorFromScriptValue);
+  if (! engine->globalObject().property("FileMoveSelector").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructFileMoveSelector);
+    QScriptValue meta = engine->newQMetaObject(&FileMoveSelector::staticMetaObject, ctor);
 
-  QScriptValue constructor = engine->newFunction(constructFileMoveSelector);
-  engine->globalObject().setProperty("FileMoveSelector", constructor,
-                                     QScriptValue::ReadOnly | QScriptValue::Undeletable);
+    engine->globalObject().setProperty("FileMoveSelector", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
 }

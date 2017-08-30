@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -37,8 +37,9 @@ standardJournal::standardJournal(QWidget* parent, const char* name, bool modal, 
   _stdjrnlitem->addColumn(tr("Debit"),   _priceColumn, Qt::AlignRight,  true,  "debit" );
   _stdjrnlitem->addColumn(tr("Credit"),  _priceColumn, Qt::AlignRight,  true,  "credit" );
 
-  _debits->setValidator(omfgThis->moneyVal());
-  _credits->setValidator(omfgThis->moneyVal());
+  _credits->setPrecision(omfgThis->moneyVal());
+  _debits->setPrecision(omfgThis->moneyVal());
+
 }
 
 standardJournal::~standardJournal()
@@ -260,12 +261,12 @@ void standardJournal::sFillList()
   standardFillList.exec();
   _stdjrnlitem->populate(standardFillList);
 
-  standardFillList.prepare( "SELECT SUM( CASE WHEN (stdjrnlitem_amount < 0) THEN (stdjrnlitem_amount * -1)"
+  standardFillList.prepare( "SELECT formatMoney(SUM( CASE WHEN (stdjrnlitem_amount < 0) THEN (stdjrnlitem_amount * -1)"
              "                 ELSE 0"
-             "            END ) AS debit,"
-             "       SUM( CASE WHEN (stdjrnlitem_amount > 0) THEN stdjrnlitem_amount"
+             "            END )) AS debit,"
+             "       formatMoney(SUM( CASE WHEN (stdjrnlitem_amount > 0) THEN stdjrnlitem_amount"
              "                 ELSE 0"
-             "            END ) AS credit,"
+             "            END )) AS credit,"
              "       (SUM(stdjrnlitem_amount) <> 0) AS oob "
              "FROM stdjrnlitem "
              "WHERE (stdjrnlitem_stdjrnl_id=:stdjrnl_id);" );
@@ -273,8 +274,8 @@ void standardJournal::sFillList()
   standardFillList.exec();
   if (standardFillList.first())
   {
-    _debits->setDouble(standardFillList.value("debit").toDouble());
-    _credits->setDouble(standardFillList.value("credit").toDouble());
+    _debits->setText(standardFillList.value("debit"));
+    _credits->setText(standardFillList.value("credit"));
 
     QString stylesheet;
     if (standardFillList.value("oob").toBool())

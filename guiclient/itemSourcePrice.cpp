@@ -79,7 +79,7 @@ enum SetResponse itemSourcePrice::set(const ParameterList &pParams)
     _price->setEffective(param.toDate());
 
   param = pParams.value("itemsrcp_id", &valid);
-  if (valid)
+  if (valid && param.toInt() > 0)
   {
     _itemsrcpid = param.toInt();
     populate();

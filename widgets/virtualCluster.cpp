@@ -1,27 +1,35 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
  * to be bound by its terms.
  */
 
+#include <QAction>
+#include <QCompleter>
 #include <QDebug>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QKeySequence>
+#include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
-#include <QSqlError>
+#include <QPushButton>
+#include <QSqlQueryModel>
 #include <QSqlRecord>
 #include <QVBoxLayout>
 
-#include "xlineedit.h"
-#include "xcheckbox.h"
-#include "xsqlquery.h"
-#include "xsqltablemodel.h"
+#include "errorReporter.h"
+#include "guiclientinterface.h"
 #include "shortcuts.h"
+#include "xcheckbox.h"
+#include "xdatawidgetmapper.h"
+#include "xsqlquery.h"
+#include "xtreewidget.h"
 
 #include "virtualCluster.h"
 
@@ -29,39 +37,41 @@
 
 void VirtualCluster::init()
 {
-    _number = 0;
+  _number = 0;
 
-    setFocusPolicy(Qt::StrongFocus);
-    _label = new QLabel(this);
-    _label->setObjectName("_label");
-    _label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    _label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+  setFocusPolicy(Qt::StrongFocus);
+  _label = new QLabel(this);
+  _label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  _label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
-    _name = new QLabel(this);
-    _name->setObjectName("_name");
-    _name->setVisible(false);
+  _name = new QLabel(this);
+  _name->setVisible(false);
 
-    _description = new QLabel(this);
-    _description->setObjectName("_description");
-    _description->setVisible(false);
-    if(!(_x_metrics && _x_metrics->boolean("VirtualClusterDisableMultiLineDesc")))
-      _description->setWordWrap(true);
+  _description = new QLabel(this);
+  _description->setVisible(false);
+  if(!(_x_metrics && _x_metrics->boolean("VirtualClusterDisableMultiLineDesc")))
+    _description->setWordWrap(true);
 
-    _grid = new QGridLayout(this);
-    _grid->setMargin(0);
-    _grid->setSpacing(6);
-    if (!_label->text().isEmpty())
-      _grid->addWidget(_label,  0, 0);
-    _hspcr = new QSpacerItem(0, 0, QSizePolicy::Expanding);
-    _grid->addItem(_hspcr, 0, _grid->columnCount() + 1);
-    _orientation = Qt::Horizontal;
-    setOrientation(Qt::Vertical);
-    
-    _mapper = new XDataWidgetMapper(this);
+  _label->setObjectName("_label");
+  _name->setObjectName("_name");
+  _description->setObjectName("_description");
+
+  _grid = new QGridLayout(this);
+  _grid->setMargin(0);
+  _grid->setSpacing(6);
+  if (!_label->text().isEmpty())
+    _grid->addWidget(_label,  0, 0);
+  _hspcr = new QSpacerItem(0, 0, QSizePolicy::Expanding);
+  _grid->addItem(_hspcr, 0, _grid->columnCount() + 1);
+  _orientation = Qt::Horizontal;
+  setOrientation(Qt::Vertical);
+
+  _mapper = new XDataWidgetMapper(this);
+  _mapper->setObjectName("_mapper");
 }
 
-VirtualCluster::VirtualCluster(QWidget* pParent, const char* pName) :
-    QWidget(pParent)
+VirtualCluster::VirtualCluster(QWidget* pParent, const char* pName)
+  : QWidget(pParent), ScriptableWidget(this)
 {
   setObjectName(pName ? pName : "VirtualCluster");
   init();
@@ -69,8 +79,8 @@ VirtualCluster::VirtualCluster(QWidget* pParent, const char* pName) :
 
 VirtualCluster::VirtualCluster(QWidget* pParent,
 			       VirtualClusterLineEdit* pNumberWidget,
-			       const char* pName) :
-    QWidget(pParent)
+			       const char* pName)
+  : QWidget(pParent), ScriptableWidget(this)
 {
   setObjectName(pName);
 
@@ -78,6 +88,29 @@ VirtualCluster::VirtualCluster(QWidget* pParent,
   if (pNumberWidget)
     addNumberWidget(pNumberWidget);
 }
+
+int     VirtualCluster::id()             const { return _number->id(); }
+QString VirtualCluster::label()          const { return _label->text(); }
+QString VirtualCluster::number()         const { return _number->text(); }
+QString VirtualCluster::description()    const { return _description->text(); }
+bool    VirtualCluster::isValid()        const { return _number->isValid(); }
+QString VirtualCluster::name()           const { return _name->text(); }
+bool    VirtualCluster::isStrict()       const { return _number->isStrict(); }
+bool    VirtualCluster::readOnly()       const { return _readOnly; }
+QString VirtualCluster::defaultNumber()  const { return _default; }
+QString VirtualCluster::fieldName()      const { return _fieldName; }
+QString VirtualCluster::extraClause()    const { return _number->extraClause(); }
+
+// most of the heavy lifting is done by VirtualClusterLineEdit _number
+void VirtualCluster::clearExtraClause()                 { _number->clearExtraClause(); }
+void VirtualCluster::setDefaultNumber(const QString& p) { _default=p;}
+void VirtualCluster::setDescription(const QString& p)   { _description->setText(p); }
+void VirtualCluster::setExtraClause(const QString& p, const QString&)  { _number->setExtraClause(p); }
+void VirtualCluster::setFieldName(QString p)            { _fieldName = p; }
+void VirtualCluster::setId(const int p, const QString&) { _number->setId(p); }
+void VirtualCluster::setName(int, const QString& p)     { _name->setText(p); }
+void VirtualCluster::setNumber(const int p)             { _number->setNumber(QString::number(p)); }
+void VirtualCluster::setNumber(QString p)               { _number->setNumber(p); }
 
 void VirtualCluster::clear()
 {
@@ -266,8 +299,8 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
 					       const char* pDescripColumn,
 					       const char* pExtra,
                                                const char* pName,
-                                               const char* pActiveColumn) :
-    XLineEdit(pParent, pName)
+                                               const char* pActiveColumn)
+  : XLineEdit(pParent, pName)
 {
     if (DEBUG)
       qDebug("VirtualClusterLineEdit(%p, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -304,20 +337,24 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
       if (!_x_metrics->boolean("DisableAutoComplete"))
       {
         QSqlQueryModel* hints = new QSqlQueryModel(this);
+        hints->setObjectName("hints");
+
         _completer = new QCompleter(hints,this);
+        _completer->setObjectName("_completer");
         _completer->setWidget(this);
+
         QTreeView* view = new QTreeView(this);
+        view->setObjectName("_view");
         view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         view->setHeaderHidden(true);
         view->setRootIsDecorated(false);
+
         _completer->setPopup(view);
         _completer->setCaseSensitivity(Qt::CaseInsensitive);
         _completer->setCompletionColumn(1);
-        _completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
         connect(this, SIGNAL(textEdited(QString)), this, SLOT(sHandleCompleter()));
-        connect(_completer, SIGNAL(highlighted(QString)), this, SLOT(setText(QString)));
-        connect(_completer, SIGNAL(highlighted(const QModelIndex &)), this, SLOT(completerHighlighted(const QModelIndex &)));
+        connect(_completer, SIGNAL(activated(const QModelIndex &)), this, SLOT(completerHighlighted(const QModelIndex &)));
       }
     }
 
@@ -326,6 +363,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     connect(_searchAct, SIGNAL(triggered()), this, SLOT(sSearch()));
 
     _infoAct = new QAction(tr("Info..."), this);
+    _infoAct->setObjectName("_infoAct");
     _infoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+I")));
     _infoAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _infoAct->setToolTip(tr("View record information"));
@@ -334,6 +372,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     addAction(_infoAct);
 
     _openAct = new QAction(tr("Open..."), this);
+    _openAct->setObjectName("_openAct");
     _openAct->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
     _openAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _openAct->setToolTip(tr("Open record detail"));
@@ -342,14 +381,16 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     addAction(_openAct);
 
     _copyAct = new QAction(tr("Copy..."), this);
+    _copyAct->setObjectName("_copyAct");
     _copyAct->setShortcut(QKeySequence(tr("Ctrl+Shift+C")));
     _copyAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _copyAct->setToolTip(tr("Copy record detail"));
     _copyAct->setEnabled(false);
     connect(_copyAct, SIGNAL(triggered()), this, SLOT(sCopy()));
     addAction(_copyAct);
-  
+
     _newAct = new QAction(tr("New..."), this);
+    _newAct->setObjectName("_newAct");
     _newAct->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
     _newAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     _newAct->setToolTip(tr("Create new record"));
@@ -360,6 +401,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
     connect(this, SIGNAL(valid(bool)), _infoAct, SLOT(setEnabled(bool)));
 
     _menuLabel = new QLabel(this);
+    _menuLabel->setObjectName("_menuLabel");
     // Menu set up
 
     _menu = 0;
@@ -376,6 +418,7 @@ VirtualClusterLineEdit::VirtualClusterLineEdit(QWidget* pParent,
 
     // Set default menu with standard actions
     QMenu* menu = new QMenu;
+    menu->setObjectName("menu");
     menu->addAction(_listAct);
     menu->addAction(_searchAct);
     menu->addSeparator();
@@ -394,7 +437,9 @@ bool VirtualClusterLineEdit::eventFilter(QObject *obj, QEvent *event)
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
         const QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        disconnect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
         _menu->exec(me->globalPos());
+        connect(this, SIGNAL(editingFinished()), this, SLOT(sParse()));
         return true;
     }
     default:
@@ -477,7 +522,7 @@ void VirtualClusterLineEdit::sUpdateMenu()
 
     if (!menu()->actions().contains(_copyAct))
       menu()->addAction(_copyAct);
-    
+
     if (!menu()->actions().contains(_newAct) &&
         !_newPriv.isEmpty())
       menu()->addAction(_newAct);
@@ -489,7 +534,7 @@ void VirtualClusterLineEdit::sUpdateMenu()
 
     if (menu()->actions().contains(_copyAct))
       menu()->removeAction(_copyAct);
-    
+
     if (menu()->actions().contains(_newAct))
       menu()->removeAction(_newAct);
   }
@@ -517,7 +562,8 @@ void VirtualClusterLineEdit::sHandleCompleter()
   numQ.prepare(_query + _numClause +
                (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                ((_hasActive && ! _showInactive) ? _activeClause : "") +
-               QString(" ORDER BY %1 LIMIT 10;").arg(_numColName));
+               QString(" ORDER BY %1 %2 LIMIT 10;")
+                       .arg(QString(_hasActive ? "active DESC," : ""), _numColName));
   numQ.bindValue(":number", "^" + stripped);
   numQ.exec();
   if (numQ.first())
@@ -525,6 +571,7 @@ void VirtualClusterLineEdit::sHandleCompleter()
     int numberCol = numQ.record().indexOf("number");
     int nameCol = numQ.record().indexOf("name");
     int descripCol = numQ.record().indexOf("description");
+    int activeDCol = numQ.record().indexOf("active_qtdisplayrole");
     model->setQuery(numQ);
     _completer->setCompletionPrefix(stripped);
 
@@ -532,7 +579,8 @@ void VirtualClusterLineEdit::sHandleCompleter()
     {
       if ( (i != numberCol) &&
            (!_hasName || i != nameCol ) &&
-           (!_hasDescription || i != descripCol) )
+           (!_hasDescription || i != descripCol) &&
+           (! _hasActive     || i != activeDCol))
       {
         view->hideColumn(i);
       }
@@ -549,6 +597,11 @@ void VirtualClusterLineEdit::sHandleCompleter()
     {
       view->resizeColumnToContents(descripCol);
       width += view->columnWidth(descripCol);
+    }
+    if (_hasActive)
+    {
+      view->resizeColumnToContents(activeDCol);
+      width += view->columnWidth(activeDCol);
     }
   }
   else
@@ -570,7 +623,8 @@ void VirtualClusterLineEdit::completerHighlighted(const QModelIndex & index)
   _completerId = _completer->completionModel()->data(index.sibling(index.row(), 0)).toInt();
   if (DEBUG)
     qDebug() << objectName() << "::completerHighlighted(" << index << ")"
-             << "enterd with completerId" << _completerId;
+             << "corresponds to completerId" << _completerId;
+  sParse();
 }
 
 void VirtualClusterLineEdit::sHandleNullStr()
@@ -646,9 +700,13 @@ void VirtualClusterLineEdit::setTableAndColumnNames(const char* pTabName,
 
   _hasActive = (pActiveColumn && QString(pActiveColumn).trimmed().length());
   if (_hasActive)
-    _query += QString(", %1 AS active ").arg(pActiveColumn);
+    _query += QString(", %1 AS active,"
+                      "CASE WHEN %1 THEN '%2' ELSE '%3' END AS active_qtdisplayrole,"
+                      "CASE WHEN NOT %1 THEN 'grey' END AS qtforegroundrole ")
+                     .arg(pActiveColumn, tr("Active"), tr("Inactive"));
 
-  _query += QString("FROM %1 WHERE (true) ").arg(pTabName);
+  _query += QString(", UPPER(%1) = UPPER(regexp_replace(:number, E'^\\\\^', '')) AS exactMatch"
+                    "  FROM %2 WHERE (true) ").arg(pNumberColumn, pTabName);
 
   _idClause = QString(" AND (%1=:id) ").arg(pIdColumn);
   _numClause = QString(" AND (%1 ~* :number) ").arg(pNumberColumn);
@@ -660,6 +718,7 @@ void VirtualClusterLineEdit::setTableAndColumnNames(const char* pTabName,
 
   _extraClause = "";
   _model = new QSqlQueryModel(this);
+  _model->setObjectName("_model");
 }
 
 void VirtualClusterLineEdit::setTitles(const QString& s, const QString& p)
@@ -689,6 +748,7 @@ void VirtualClusterLineEdit::clear()
     _id = -1;	// calling setId() or silentSetId() is recursive
     _valid = false;
     _model = new QSqlQueryModel(this);
+    _model->setObjectName("_model");
     if (oldvalid != _valid)
       emit valid(_valid);
     if (oldid != _id)
@@ -731,6 +791,7 @@ void VirtualClusterLineEdit::silentSetId(const int pId)
   {
     XLineEdit::clear();
     _model = new QSqlQueryModel(this);
+    _model->setObjectName("_model");
   }
   else
   {
@@ -756,11 +817,9 @@ void VirtualClusterLineEdit::silentSetId(const int pId)
       if (_hasActive)
         setStrikeOut(!idQ.value("active").toBool());
     }
-    else if (idQ.lastError().type() != QSqlError::NoError)
-      QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-                            .arg(__FILE__)
-                            .arg(__LINE__),
-                            idQ.lastError().databaseText());
+    else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error setting id"),
+                                  idQ, __FILE__, __LINE__))
+      return;
   }
 
   _parsed = true;
@@ -800,7 +859,11 @@ void VirtualClusterLineEdit::sParse()
         numQ.prepare(_query + _numClause +
 		    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                     ((_hasActive && ! _showInactive) ? _activeClause : "" ) +
-                    QString("ORDER BY %1 LIMIT 1;").arg(_numColName));
+                    " ORDER BY " +
+                    (_query.contains("exactMatch", Qt::CaseInsensitive) ? "exactMatch DESC," : " ") +
+                    (_hasActive ? "active DESC," : " ") +
+                    _numColName +
+                    " LIMIT 1;");
         numQ.bindValue(":number", "^" + stripped);
         numQ.exec();
         if (numQ.first())
@@ -814,12 +877,9 @@ void VirtualClusterLineEdit::sParse()
 	}
 	else
 	{
-            setId(-1);
-            if (numQ.lastError().type() != QSqlError::NoError)
-		QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-					      .arg(__FILE__)
-					      .arg(__LINE__),
-                        numQ.lastError().databaseText());
+          setId(-1);
+          ErrorReporter::error(QtCriticalMsg, this, tr("Error parsing"),
+                               numQ, __FILE__, __LINE__);
 	}
       }
       emit valid(_valid);
@@ -862,7 +922,8 @@ void VirtualClusterLineEdit::sSearch()
       numQ.prepare(_query + _numClause +
                    (_extraClause.isEmpty() || !_strict ? "" : " AND " + _extraClause) +
                    ((_hasActive && ! _showInactive) ? _activeClause : "" ) +
-                   QString("ORDER BY %1;").arg(_numColName));
+                   QString(" ORDER BY %1 %2;")
+                           .arg(QString(_hasActive ? "active DESC," : ""), _numColName));
       numQ.bindValue(":number", "^" + stripped);
       numQ.exec();
       if (numQ.first())
@@ -885,6 +946,14 @@ void VirtualCluster::sEllipses()
 {
   _number->sEllipses();
 }
+
+void VirtualCluster::showEvent(QShowEvent *e)
+{
+  loadScriptEngine();
+  QWidget::showEvent(e);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 void VirtualClusterLineEdit::sInfo()
 {
@@ -954,12 +1023,12 @@ void VirtualClusterLineEdit::setStrict(const bool b)
 
 VirtualInfo* VirtualClusterLineEdit::infoFactory()
 {
-    return new VirtualInfo(this);
+  return new VirtualInfo(this);
 }
 
 VirtualList* VirtualClusterLineEdit::listFactory()
 {
-    return new VirtualList(this);
+  return new VirtualList(this);
 }
 
 VirtualSearch* VirtualClusterLineEdit::searchFactory()
@@ -974,10 +1043,8 @@ void VirtualList::init()
     setWindowModality(Qt::ApplicationModal);
     setAttribute(Qt::WA_DeleteOnClose);
     _search	= new QLineEdit(this);
-    _search->setObjectName("_search");
     _searchLit	= new QLabel(tr("S&earch for:"), this);
     _searchLit->setBuddy(_search);
-    _searchLit->setObjectName("_searchLit");
 #ifdef Q_OS_MAC
     _search->setMinimumHeight(22);
 #endif
@@ -987,14 +1054,17 @@ void VirtualList::init()
     _listTab	= new XTreeWidget(this);
     _titleLit	= new QLabel("", this);
     _titleLit->setBuddy(_listTab);
+
+    _search->setObjectName("_search");
+    _searchLit->setObjectName("_searchLit");
+    _buttonBox->setObjectName("_buttonBox");
+    _listTab->setObjectName("_listTab");
     _titleLit->setObjectName("_titleLit");
 
-    _listTab->setObjectName("_listTab");
     _listTab->setPopulateLinear(false);
 
     _searchLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     _select->setEnabled(false);
-    //_listTab->setMinimumHeight(250);
     _titleLit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
     _dialogLyt                = new QVBoxLayout(this);
@@ -1038,13 +1108,14 @@ void VirtualList::init()
     connect(_buttonBox,  SIGNAL(accepted()),         this,	 SLOT(sSelect()));
 }
 
-VirtualList::VirtualList() : QDialog()
+VirtualList::VirtualList()
+  : QDialog(), ScriptableWidget(this)
 {
   init();
 }
 
-VirtualList::VirtualList(QWidget* pParent, Qt::WindowFlags pFlags ) :
-    QDialog(pParent, pFlags)
+VirtualList::VirtualList(QWidget* pParent, Qt::WindowFlags pFlags )
+  : QDialog(pParent, pFlags), ScriptableWidget(this)
 {
     init();
 
@@ -1068,7 +1139,12 @@ VirtualList::VirtualList(QWidget* pParent, Qt::WindowFlags pFlags ) :
       if (_parent->_hasDescription)
       {
 	  _listTab->addColumn(tr("Description"),  -1, Qt::AlignLeft, true, "description");
-	  _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
+      }
+
+      if (_parent->_hasActive)
+      {
+        _listTab->addColumn("Active", -1, Qt::AlignLeft, true, "active");
+        _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
       }
 
       _id = _parent->_id;
@@ -1114,51 +1190,57 @@ void VirtualList::sFillList()
       return;
 
     _listTab->clear();
-    XSqlQuery query(_parent->_query +
+    XSqlQuery query;
+    query.prepare(_parent->_query +
 		    (_parent->_extraClause.isEmpty() ? "" :
 					    " AND " + _parent->_extraClause) +
                     ((_parent->_hasActive && ! _parent->_showInactive) ? _parent->_activeClause : "") +
-		    QString(" ORDER BY ") +
-		    QString((_parent->_hasName) ? "name" : "number"));
+                    QString(" ORDER BY %1 %2;")
+                            .arg(QString(_parent->_hasActive ? "active DESC," : ""),
+                                 QString(_parent->_hasName   ? "name"         : "number")));
+    query.exec();
     _listTab->populate(query);
 }
 
 void VirtualList::showEvent(QShowEvent* e)
 {
   sFillList();
+  loadScriptEngine();
   QDialog::showEvent(e);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
-    QDialog(pParent, pFlags)
+VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags)
+  : QDialog(pParent, pFlags), ScriptableWidget(this)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::ApplicationModal);
     setObjectName("virtualSearch");
 
     _search = new QLineEdit(this);
-    _search->setObjectName("_search");
     _searchLit = new QLabel(tr("S&earch for:"), this);
     _searchLit->setBuddy(_search);
-    _searchLit->setObjectName("_searchLit");
 
     _searchNumber = new XCheckBox(tr("Search through Numbers"), this);
-    _searchNumber->setObjectName("_searchNumber");
     _searchName = new XCheckBox(tr("Search through Names"), this);
-    _searchName->setObjectName("_searchName");
     _searchDescrip = new XCheckBox(tr("Search through Descriptions"), this);
-    _searchDescrip->setObjectName("_searchDescrip");
     _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                       Qt::Vertical, this);
     _select = _buttonBox->button(QDialogButtonBox::Ok);
     _listTab = new XTreeWidget(this);
     _titleLit = new QLabel("", this);
     _titleLit->setBuddy(_listTab);
+
+    _search->setObjectName("_search");
+    _searchLit->setObjectName("_searchLit");
+    _searchNumber->setObjectName("_searchNumber");
+    _searchName->setObjectName("_searchName");
+    _searchDescrip->setObjectName("_searchDescrip");
+    _buttonBox->setObjectName("_buttonBox");
+    _listTab->setObjectName("_listTab");
     _titleLit->setObjectName("_titleLit");
 
-    _listTab->setObjectName("_listTab");
     _listTab->setPopulateLinear(false);
 
     _searchLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -1233,6 +1315,12 @@ VirtualSearch::VirtualSearch(QWidget* pParent, Qt::WindowFlags pFlags) :
 	  _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
       }
 
+      if (_parent->_hasActive)
+      {
+        _listTab->addColumn("Active", -1, Qt::AlignLeft, true, "active");
+        _listTab->setColumnWidth(_listTab->columnCount() - 1, 100);
+      }
+
       _searchName->setHidden(! _parent->_hasName);
       _searchDescrip->setHidden(! _parent->_hasDescription);
       _id = _parent->_id;
@@ -1283,11 +1371,11 @@ void VirtualSearch::sFillList()
         search += QString("%1~*'%2'").arg(_parent->_numColName).arg(_search->text());
     if (_parent->_hasName &&
         (_searchName->isChecked()))
-        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_nameColName).arg(_search->text()) :  
+        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_nameColName).arg(_search->text()) :
         " OR " +  QString("%1~'%2'").arg(_parent->_nameColName).arg(_search->text()));
     if (_parent->_hasDescription &&
         (_searchDescrip->isChecked()))
-        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()) :  
+        search += (search.isEmpty() ?  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()) :
         " OR " +  QString("%1~*'%2'").arg(_parent->_descripColName).arg(_search->text()));
     if (!search.isEmpty())
     {
@@ -1296,21 +1384,29 @@ void VirtualSearch::sFillList()
     }
 
 
-    XSqlQuery qry(_parent->_query +
+    XSqlQuery qry;
+    qry.prepare(_parent->_query +
 		    (search.isEmpty() ? "" :  " AND " + search) +
 		    (_parent->_extraClause.isEmpty() ? "" :
 					    " AND " + _parent->_extraClause) +
                     ((_parent->_hasActive && ! _parent->_showInactive) ? _parent->_activeClause : "") +
-		    QString(" ORDER BY ") +
-		    QString((_parent->_hasName) ? "name" : "number"));
-                    
+                    QString(" ORDER BY %1 %2;")
+                            .arg(QString(_parent->_hasActive ? "active DESC," : ""),
+                                 QString(_parent->_hasName   ? "name"         : "number")));
+    qry.exec();
     _listTab->populate(qry);
+}
+
+void VirtualSearch::showEvent(QShowEvent* e)
+{
+  loadScriptEngine();
+  QDialog::showEvent(e);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-VirtualInfo::VirtualInfo(QWidget* pParent, Qt::WindowFlags pFlags) :
-    QDialog(pParent, pFlags)
+VirtualInfo::VirtualInfo(QWidget* pParent, Qt::WindowFlags pFlags)
+  : QDialog(pParent, pFlags), ScriptableWidget(this)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::WindowModal);
@@ -1318,28 +1414,29 @@ VirtualInfo::VirtualInfo(QWidget* pParent, Qt::WindowFlags pFlags) :
     setObjectName("virtualInfo");
     setWindowTitle(_parent->_titleSingular);
     _id = _parent->_id;
-    
+
     _titleLit	= new QLabel(_parent->_titleSingular, this);
-    _titleLit->setObjectName("_titleLit");
     _numberLit	= new QLabel(tr("Number:"), this);
-    _numberLit->setObjectName("_numberLit");
     _number	= new QLabel(this);
-    _number->setObjectName("_number");
     _nameLit	= new QLabel(tr("Name:"), this);
-    _nameLit->setObjectName("_nameLit");
     _name	= new QLabel(this);
-    _name->setObjectName("_name");
     _descripLit	= new QLabel(tr("Description:"), this);
-    _descripLit->setObjectName("_descripLit");
     _descrip	= new QLabel(this);
+    _close	= new QPushButton(tr("&Close"), this);
+
+    _titleLit->setObjectName("_titleLit");
+    _numberLit->setObjectName("_numberLit");
+    _number->setObjectName("_number");
+    _nameLit->setObjectName("_nameLit");
+    _name->setObjectName("_name");
+    _descripLit->setObjectName("_descripLit");
     _descrip->setObjectName("_descrip");
+    _close->setObjectName("_close");
 
     _titleLit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     _numberLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     _nameLit->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
 
-    _close	= new QPushButton(tr("&Close"), this);
-    _close->setObjectName("_close");
     _close->setDefault(true);
 
     QHBoxLayout* dialogLyt = new QHBoxLayout(this);
@@ -1400,10 +1497,97 @@ void VirtualInfo::sPopulate()
 	if (_parent->_hasDescription)
 	    _descrip->setText(qry.value("description").toString());
     }
-    else if (qry.lastError().type() != QSqlError::NoError)
-	QMessageBox::critical(this, tr("A System Error Occurred at %1::%2.")
-					  .arg(__FILE__)
-					  .arg(__LINE__),
-				  qry.lastError().databaseText());
+    else ErrorReporter::error(QtCriticalMsg, this, tr("Error populating Info"),
+                              qry, __FILE__, __LINE__);
 }
 
+void VirtualInfo::showEvent(QShowEvent* e)
+{
+  loadScriptEngine();
+  QDialog::showEvent(e);
+}
+
+// script exposure /////////////////////////////////////////////////////////////
+
+QScriptValue constructVirtualClusterLineEdit(QScriptContext *context,
+                                             QScriptEngine  *engine)
+{
+  VirtualClusterLineEdit *w = 0;
+
+  if (context->argumentCount() >= 9)
+    w = new VirtualClusterLineEdit(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                                   context->argument(1).toString().toLatin1().data(),
+                                   context->argument(2).toString().toLatin1().data(),
+                                   context->argument(3).toString().toLatin1().data(),
+                                   context->argument(4).toString().toLatin1().data(),
+                                   context->argument(5).toString().toLatin1().data(),
+                                   context->argument(6).toString().toLatin1().data(),
+                                   context->argument(7).toString().toLatin1().data(),
+                                   context->argument(8).toString().toLatin1().data());
+  else if (context->argumentCount() == 8)
+    w = new VirtualClusterLineEdit(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                                   context->argument(1).toString().toLatin1().data(),
+                                   context->argument(2).toString().toLatin1().data(),
+                                   context->argument(3).toString().toLatin1().data(),
+                                   context->argument(4).toString().toLatin1().data(),
+                                   context->argument(5).toString().toLatin1().data(),
+                                   context->argument(6).toString().toLatin1().data(),
+                                   context->argument(7).toString().toLatin1().data());
+  else if (context->argumentCount() == 7)
+    w = new VirtualClusterLineEdit(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                                   context->argument(1).toString().toLatin1().data(),
+                                   context->argument(2).toString().toLatin1().data(),
+                                   context->argument(3).toString().toLatin1().data(),
+                                   context->argument(4).toString().toLatin1().data(),
+                                   context->argument(5).toString().toLatin1().data(),
+                                   context->argument(6).toString().toLatin1().data());
+  else
+    context->throwError(QScriptContext::UnknownError,
+                        QString("Could not find an appropriate VirtualClusterLineEdit constructor"));
+
+  return engine->toScriptValue(w);
+}
+
+QScriptValue constructVirtualCluster(QScriptContext *context,
+                                     QScriptEngine  *engine)
+{
+  VirtualCluster         *w = 0;
+  VirtualClusterLineEdit *l = 0;
+  
+  if (context->argumentCount() >= 2)
+    l = qscriptvalue_cast<VirtualClusterLineEdit*>(context->argument(1));
+
+  if (context->argumentCount() >= 3)
+    w = new VirtualCluster(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                           l,
+                           context->argument(2).toString().toLatin1().data());
+  else if (context->argumentCount() == 2 && l)
+    w = new VirtualCluster(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                           l);
+  else if (context->argumentCount() == 2 && ! l)
+    w = new VirtualCluster(qscriptvalue_cast<QWidget*>(context->argument(0)),
+                           context->argument(1).toString().toLatin1().data());
+  else if (context->argumentCount() == 1)
+    w = new VirtualCluster(qscriptvalue_cast<QWidget*>(context->argument(0)), "VirtualCluster");
+  else
+    context->throwError(QScriptContext::UnknownError,
+                        QString("Could not find an appropriate VirtualCluster constructor"));
+
+  return engine->toScriptValue(w);
+}
+
+void setupVirtualCluster(QScriptEngine *engine)
+{
+  if (! engine->globalObject().property("VirtualClusterLineEdit").isFunction())
+  {
+    QScriptValue ctor = engine->newFunction(constructVirtualClusterLineEdit);
+    QScriptValue meta = engine->newQMetaObject(&VirtualClusterLineEdit::staticMetaObject, ctor);
+    engine->globalObject().setProperty("VirtualClusterLineEdit", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+
+    ctor = engine->newFunction(constructVirtualCluster);
+    meta = engine->newQMetaObject(&VirtualCluster::staticMetaObject, ctor);
+    engine->globalObject().setProperty("VirtualCluster", meta,
+                                       QScriptValue::ReadOnly | QScriptValue::Undeletable);
+  }
+}

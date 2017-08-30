@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -234,12 +234,15 @@ void enterPoitemReceipt::populate()
     else if (_ordertype == "RA")
       _orderType->setText(tr("R/A"));
 
-    int itemsiteid = enterpopulate.value("itemsiteid").toInt();
+    // Set class vars
+    _itemsiteId = enterpopulate.value("itemsiteid").toInt();
+    if (_mode == cEdit)
+      _recvPosted = enterpopulate.value("recv_posted").toBool();
 
     if (enterpopulate.value("inventoryitem").toBool())   
     {
-      if (itemsiteid > 0)
-        _item->setItemsiteid(itemsiteid);
+      if (_itemsiteId > 0)
+        _item->setItemsiteid(_itemsiteId);
       _item->setEnabled(false);
       _itemLitStack->setCurrentIndex(0);
       _itemStack->setCurrentIndex(0);
@@ -261,19 +264,19 @@ void enterPoitemReceipt::populate()
 
     _extendedCost->setId(enterpopulate.value("recv_purchcost_curr_id").toInt());
 
-    if (enterpopulate.value("inventoryitem").toBool() && itemsiteid <= 0)
+    if (enterpopulate.value("inventoryitem").toBool() && _itemsiteId <= 0)
     {
       MetaSQLQuery ism = mqlLoad("itemReceipt", "sourceItemSite");
       XSqlQuery isq = ism.toQuery(params);
       if (isq.first())
       {
-        itemsiteid = itemSite::createItemSite(this,
+        _itemsiteId = itemSite::createItemSite(this,
                       isq.value("itemsite_id").toInt(),
                       isq.value("warehous_id").toInt(),
                       true);
-        if (itemsiteid < 0)
+        if (_itemsiteId < 0)
           return;
-        _item->setItemsiteid(itemsiteid);
+        _item->setItemsiteid(_itemsiteId);
       }
       else if (ErrorReporter::error(QtCriticalMsg, this, tr("Error Retrieving P/O Receipt Information"),
                                     isq, __FILE__, __LINE__))
@@ -290,11 +293,7 @@ void enterPoitemReceipt::populate()
 }
 
 void enterPoitemReceipt::sReceive()
-{
-  XSqlQuery enterReceive;
-  XSqlQuery rollback;
-  rollback.prepare("ROLLBACK;");
-    
+{   
   if(_metrics->boolean("DisallowReceiptExcessQty") && _receivable < _toReceive->toDouble())
   {
     XMessageBox::message( (isVisible() ? this : parentWidget()), QMessageBox::Warning, tr("Cannot Receive"),
@@ -323,8 +322,15 @@ void enterPoitemReceipt::sReceive()
       return;
   }
 
-  int result = 0;
+  XSqlQuery enterReceive;
+  XSqlQuery updateNotes;
+  int itemlocSeries = 0;
   QString storedProc;
+
+  // Stage cleanup function to be called on error
+  XSqlQuery cleanup;
+  cleanup.prepare("SELECT deleteitemlocseries(:itemlocSeries, TRUE); ");
+
   if (_mode == cNew)
   {
     enterReceive.prepare("SELECT enterReceipt(:ordertype, :poitem_id, :qty, :freight, :notes, "
@@ -335,22 +341,88 @@ void enterPoitemReceipt::sReceive()
   }
   else if (_mode == cEdit)
   {
-    enterReceive.exec("BEGIN;");	// because of possible lot, serial, or location distribution cancelations
-    enterReceive.prepare("UPDATE recv SET recv_notes = :notes WHERE (recv_id=:recv_id);" );
-    enterReceive.bindValue(":notes",	_notes->toPlainText());
-    enterReceive.bindValue(":recv_id",	_recvid);
-    enterReceive.exec();
-    if (enterReceive.lastError().type() != QSqlError::NoError)
+    // Get parent series id
+    XSqlQuery parentSeries;
+    parentSeries.prepare("SELECT NEXTVAL('itemloc_series_seq') AS result, "
+                         "  isControlledItemsite(:itemsite_id) AS controlled;");
+    parentSeries.bindValue(":itemsite_id", _itemsiteId);
+    parentSeries.exec();
+    if (parentSeries.first() && parentSeries.value("result").toInt() > 0)
     {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
-                           enterReceive, __FILE__, __LINE__);
+      itemlocSeries = parentSeries.value("result").toInt();
+      cleanup.bindValue(":itemlocSeries", itemlocSeries);
+    }
+    else
+    {
+      ErrorReporter::error(QtCriticalMsg, this, tr("Failed to Retrieve the Next itemloc_series_seq"),
+                              parentSeries, __FILE__, __LINE__);
       return;
     }
+
+    // If controlled item, unposted, qty >= qty already received: 
+    // create the parent itemlocdist record, call distributeInventory::seriesAdjust
+    if ((_recvPosted && (_toReceive->toDouble() != _received->toDouble()) && _itemsiteId != -1)
+      && parentSeries.value("controlled").toBool())
+    {
+      XSqlQuery parentItemlocdist;
+      parentItemlocdist.prepare("SELECT createitemlocdistparent(:itemsite_id, :qty, :orderType, "
+                                " :orderitemId, :itemlocSeries, NULL, NULL, 'RP');");
+      parentItemlocdist.bindValue(":itemsite_id", _itemsiteId);
+      parentItemlocdist.bindValue(":qty", 
+        (_toReceive->toDouble() - _received->toDouble()) * _invVendorUOMRatio->toDouble());
+      parentItemlocdist.bindValue(":orderType", _ordertype);
+      parentItemlocdist.bindValue(":orderitemId", _orderitemid);
+      parentItemlocdist.bindValue(":itemlocSeries", itemlocSeries);
+      parentItemlocdist.exec();
+      if (parentItemlocdist.first())
+      {
+        if (distributeInventory::SeriesAdjust(itemlocSeries, this, QString(), QDate(),
+          QDate(), true) == XDialog::Rejected)
+        {
+          cleanup.exec();
+          XMessageBox::message( (isVisible() ? this : parentWidget()), QMessageBox::Warning, tr("Enter PO Receipt"),
+                            tr(  "<p>Transaction Cancelled." ),
+                            QString::null, QString::null, _snooze );
+          return;
+        }
+      }
+      else
+      {
+        cleanup.exec();
+        ErrorReporter::error(QtCriticalMsg, this, tr("Error Creating itemlocdist Records"),\
+          parentItemlocdist, __FILE__, __LINE__);
+        return;
+      }
+    }
+
+    // Update notes, bind the old to the cleanup query in case of correctReceipt error
+    XSqlQuery updateNotes;
+    updateNotes.prepare("UPDATE recv n "
+                         "SET recv_notes = :notes "
+                         "FROM recv o "
+                         "WHERE n.recv_id = :recv_id "
+                         "  AND n.recv_id = o.recv_id "
+                         "RETURNING o.recv_notes;");
+    updateNotes.bindValue(":notes",	_notes->toPlainText());
+    updateNotes.bindValue(":recv_id",	_recvid);
+    updateNotes.exec();
+    if (updateNotes.lastError().type() != QSqlError::NoError)
+    {
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
+                           updateNotes, __FILE__, __LINE__);
+      return;
+    }
+
+    // Stage old notes value to call updateNotes again if correctReceipt fails
+    updateNotes.bindValue(":recv_id",  _recvid);
+    updateNotes.bindValue(":notes", updateNotes.value("recv_notes").toString());
     
-    enterReceive.prepare("SELECT correctReceipt(:recv_id, :qty, :freight, 0, "
-              ":curr_id, :effective, :purchcost) AS result;");
+    // Proceed to post inventory transaction with detail
+    enterReceive.prepare("SELECT correctReceipt(:recv_id, :qty, :freight, :itemlocSeries, "
+              ":curr_id, :effective, :purchcost, TRUE) AS result;");
     enterReceive.bindValue(":recv_id", _recvid);
+    enterReceive.bindValue(":itemlocSeries", itemlocSeries);
     storedProc = "correctReceipt";
   }
 
@@ -363,36 +435,27 @@ void enterPoitemReceipt::sReceive()
   enterReceive.exec();
   if (enterReceive.first())
   {
-    result = enterReceive.value("result").toInt();
-    if (result < 0)
+    int result = enterReceive.value("result").toInt();
+    // For cEdit (correctReceipt), make sure the returned series matches the series passed
+    if ((result < 0) || (_mode == cEdit && (itemlocSeries != result)))
     {
-      rollback.exec();
-      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
-                             storedProcErrorLookup(storedProc, result),
-                             __FILE__, __LINE__);
+      updateNotes.exec();
+      cleanup.exec();
+      ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving PO Receipt Information"),
+        storedProcErrorLookup(storedProc, result), __FILE__, __LINE__);
       return;
     }
   }
   else if (enterReceive.lastError().type() != QSqlError::NoError)
   {
-      rollback.exec();
+      if (_mode == cEdit) // Only cEdit created itemlocdist records
+      {
+        updateNotes.exec();
+        cleanup.exec();
+      }
       ErrorReporter::error(QtCriticalMsg, this, tr("Error Saving P/O Receipt Information"),
                            enterReceive, __FILE__, __LINE__);
       return;
-  }
-
-  if(cEdit == _mode)
-  {
-    if (distributeInventory::SeriesAdjust(result, this) == XDialog::Rejected)
-    {
-      rollback.exec();
-      XMessageBox::message( (isVisible() ? this : parentWidget()), QMessageBox::Warning, tr("Enter PO Receipt"),
-                            tr(  "<p>Transaction Cancelled." ),
-                            QString::null, QString::null, _snooze );
-      return;
-    }
-
-    enterReceive.exec("COMMIT;");
   }
 
   omfgThis->sPurchaseOrderReceiptsUpdated();

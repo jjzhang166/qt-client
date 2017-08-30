@@ -1,7 +1,7 @@
 /*
  * This file is part of the xTuple ERP: PostBooks Edition, a free and
  * open source Enterprise Resource Planning software suite,
- * Copyright (c) 1999-2014 by OpenMFG LLC, d/b/a xTuple.
+ * Copyright (c) 1999-2017 by OpenMFG LLC, d/b/a xTuple.
  * It is licensed to you under the Common Public Attribution License
  * version 1.0, the full text of which (including xTuple-specific Exhibits)
  * is available at www.xtuple.com/CPAL.  By using this software, you agree
@@ -20,14 +20,9 @@
 class QScriptEngine;
 class QStandardItemModel;
 
-void setupNumberGenComboBox(QScriptEngine *engine);
-
 class XTUPLEWIDGETS_EXPORT NumberGenComboBox : public QComboBox
 {
   Q_OBJECT
-
-  Q_ENUMS(GenMethod)
-  Q_FLAGS(GenMethods)
 
   Q_PROPERTY(GenMethods allowedMethods READ allowedMethods WRITE setAllowedMethods )
   Q_PROPERTY(QString    automaticText  READ automaticText  WRITE setAutomaticText  )
@@ -41,6 +36,8 @@ class XTUPLEWIDGETS_EXPORT NumberGenComboBox : public QComboBox
 
     enum GenMethod { Manual   = 0x01, Automatic = 0x02,
                      Override = 0x04, Shared    = 0x08 };
+    Q_ENUM(GenMethod)
+    Q_FLAGS(GenMethods)
     Q_DECLARE_FLAGS(GenMethods, GenMethod)
 
     Q_INVOKABLE void append(GenMethod method, QString text, QString code = QString());
@@ -78,9 +75,7 @@ class XTUPLEWIDGETS_EXPORT NumberGenComboBox : public QComboBox
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(NumberGenComboBox::GenMethods);
 
-Q_DECLARE_METATYPE(NumberGenComboBox*)
-// TODO: is this necessary for script exposure?
-Q_DECLARE_METATYPE(enum NumberGenComboBox::GenMethod)
+void setupNumberGenComboBox(QScriptEngine *engine);
 
 #endif
 

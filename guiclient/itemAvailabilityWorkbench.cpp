@@ -371,7 +371,12 @@ void itemAvailabilityWorkbench::sFillList()
     if (_costedIndentedBOMButton->isChecked())
       _dspCostedIndentedBOM->sFillList();
     else if (_whereUsedButton->isChecked())
-      _dspSingleLevelWhereUsed->sFillList();
+    {
+      if (_dspSingleLevelWhereUsed->findChild<ItemCluster*>("_item")->isValid())
+        _dspSingleLevelWhereUsed->sFillList();
+      else
+        _dspSingleLevelWhereUsed->list()->clear();
+    }
     else if (_singleLevelBOMButton->isChecked())
       _dspSingleLevelBOM->sFillList();
   }

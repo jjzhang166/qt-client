@@ -38,7 +38,6 @@ employees::employees(QWidget* parent, const char*, Qt::WindowFlags fl)
   parameterWidget()->append(tr("Show Active Only"), "activeOnly", ParameterWidget::Exists);
   if (_metrics->boolean("MultiWhs"))
     parameterWidget()->append(tr("Site"), "warehous_id", ParameterWidget::Site);
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(omfgThis, SIGNAL(employeeUpdated(int)),     this, SLOT(sFillList()));
 
@@ -50,7 +49,6 @@ employees::employees(QWidget* parent, const char*, Qt::WindowFlags fl)
   list()->addColumn(tr("Last"),   _itemColumn, Qt::AlignLeft, true, "cntct_last_name");
 
   setupCharacteristics("EMP");
-  parameterWidget()->applyDefaultFilterSet();
 
   connect(list(), SIGNAL(itemSelected(int)), this, SLOT(sOpen()));
 

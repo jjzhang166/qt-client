@@ -17,13 +17,6 @@ invoiceList::invoiceList(QWidget* parent, const char* name, bool modal, Qt::Wind
 {
   setupUi(this);
 
-  // signals and slots connections
-  connect(_close, SIGNAL(clicked()), this, SLOT(sClose()));
-  connect(_select, SIGNAL(clicked()), this, SLOT(sSelect()));
-  connect(_invoice, SIGNAL(itemSelected(int)), this, SLOT(sSelect()));
-  connect(_cust, SIGNAL(newId(int)), this, SLOT(sFillList()));
-  connect(_dates, SIGNAL(updated()), this, SLOT(sFillList()));
-
   QDate today(omfgThis->dbDate());
   _dates->setEndDate(today);
   _dates->setStartDate(today.addMonths(-1));
@@ -80,7 +73,7 @@ enum SetResponse invoiceList::set(const ParameterList &pParams)
 
 void invoiceList::sClose()
 {
-  done(_invoice->id());
+  close();
 }
 
 void invoiceList::sSelect()

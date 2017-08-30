@@ -182,19 +182,6 @@ to be bound by its terms.</comment>
               </item>
              </layout>
             </item>
-            <item>
-             <widget class="QLabel" name="_warehouseLit">
-              <property name="text">
-               <string>Calculate Net Price using Site:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="WComboBox" name="_warehouse"/>
-            </item>
            </layout>
           </item>
          </layout>
@@ -318,6 +305,36 @@ to be bound by its terms.</comment>
         </layout>
        </item>
       </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <widget class="QLabel" name="_warehouseLit">
+       <property name="text">
+        <string>Display Net Price for Site:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="WComboBox" name="_warehouse"/>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

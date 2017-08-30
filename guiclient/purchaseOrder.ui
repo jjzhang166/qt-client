@@ -145,13 +145,36 @@ to be bound by its terms.</comment>
                </property>
               </widget>
              </item>
-             <item row="1" column="5">
-              <widget class="QCheckBox" name="_printPO">
-               <property name="text">
-                <string>Print on Save</string>
-               </property>
-              </widget>
-             </item>
+                <item row="1" column="4">
+                 <widget class="XLabel" name="_purchaseTypeLit">
+                  <property name="text">
+                   <string>Purchase Type:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="5">
+                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                  <item>
+                   <widget class="XComboBox" name="_purchaseType"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
              <item row="3" column="1" colspan="3">
               <widget class="VendorCluster" name="_vendor">
                <property name="label">
@@ -1007,6 +1030,13 @@ to be bound by its terms.</comment>
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="_printPO">
+       <property name="text">
+        <string>Print on Save</string>
+       </property>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout">
